@@ -325,6 +325,7 @@ void orbit(void)
     /*
      * See if this is the first touch of this planet: */
     if ((l->pl_info & me->p_team) == 0) {
+#ifndef LTD_STATS
 #ifdef FLAT_BONUS                        
       /* Give 1 army credit */
       if ((l->pl_armies < 10) && (status->tourn) &&
@@ -332,6 +333,7 @@ void orbit(void)
 	me->p_stats.st_tarmsbomb++;
 	status->armsbomb++;
       } 
+#endif
 #endif
       l->pl_info |= me->p_team;
     }

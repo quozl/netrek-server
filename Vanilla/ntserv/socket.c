@@ -1,4 +1,4 @@
-/* $Id: socket.c,v 1.1 2005/03/21 05:23:44 jerub Exp $
+/* $Id: socket.c,v 1.2 2005/03/21 10:17:17 quozl Exp $
  */
 
 /*
@@ -100,7 +100,7 @@ static void handleShortReq(struct shortreq_cpacket *packet);
 static void handleThresh(struct threshold_cpacket *packet);
 static void handleSMessageReq(struct mesg_s_cpacket *packet);
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 static void handleOggV(struct oggv_cpacket *packet);
 #endif
 #ifdef FEATURE_PACKETS
@@ -200,7 +200,7 @@ struct packet_handler handlers[] = {
     { 0, NULL },					   /* 47 */
     { 0, NULL },					   /* 48 */
     { 0, NULL },					   /* 49 */
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
     { sizeof(struct oggv_cpacket), handleOggV },           /* CP_OGGV */
 #else
     { 0, NULL },					   /* 50 */
@@ -2029,7 +2029,7 @@ static void handlePingResponse(struct ping_cpacket  *packet)
 }
 #endif /*PING*/
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 /* these are sent by the robots when a parameter changes */
 static void handleOggV(struct oggv_cpacket *packet)
 {
@@ -2835,8 +2835,13 @@ static int check_mesgs(struct mesg_cpacket  *packet)
 #else
 	strftime(tbuf, 40, "%Y-%m-%d %T", tmv);
 #endif
+#ifdef FULL_HOSTNAMES
 	sprintf(buf, "%s %s@%s %s \"%s\"", tbuf, me->p_login, 
 		me->p_full_hostname, me->p_longname, packet->mesg);
+#else
+	sprintf(buf, "%s %s@%s %s \"%s\"", tbuf, me->p_login, 
+		me->p_monitor, me->p_longname, packet->mesg);
+#endif
 	if(logall){
 	    if(!mlog) {
 		ERROR(1,( "ntserv: ERROR, null mlog file descriptor\n"));

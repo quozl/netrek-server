@@ -23,6 +23,13 @@
 #include "data.h"
 #include "puckdefs.h"
 
+#ifdef PUCK_FIRST 
+#include <sys/sem.h> 
+
+extern struct sembuf sem_puck_op[1];
+extern int sem_puck;
+#endif /*PUCK_FIRST */
+
 
 
 #define WEAKER_STR 2		/* integer factor to divide tractstr down */
@@ -161,7 +168,19 @@ static int ori_old_ship_type, kli_old_ship_type;
 int team_offsides = 0;
 #endif
 
+#ifdef PUCK_FIRST
+void _rmove(void); /* original rmove we're hijacking */
+
 void rmove(void)
+{
+  _rmove();
+  semop(sem_puck, sem_puck_op, 1);  /* we're done, everyone else's turn now */
+}
+
+void _rmove(void)
+#else /*PUCK_FIRST */
+void rmove(void)
+#endif /*PUCK_FIRST */
 {
     extern struct Enemy *get_nearest();
     struct Enemy *enemy_buf;
@@ -173,6 +192,10 @@ void rmove(void)
     static int shotby;
 
     static int pauseticks;
+
+#ifdef FO_BIAS
+    static int faceoffbias = 0;
+#endif /*FO_BIAS*/
 
     /***** Start The Code Here *****/
 
@@ -193,12 +216,18 @@ void rmove(void)
     /* This is done first to allow for a good short_game  */
     if (roboclock >= END_OF_PERIOD) {
         if (period >= PERIODS_PER_GAME) {
+#ifdef FO_BIAS
+            faceoffbias = 0;
+#endif /*FO_BIAS*/
 	    messAll(anncer->p_no,roboname,"#############################");
 	    messAll(anncer->p_no,roboname,"#");
 	    messAll(me->p_no,    roboname,"#  END OF GAME.");
 	    messAll(anncer->p_no,roboname,"#");
 	    woomp();
 	} else {
+#ifdef FO_BIAS
+            faceoffbias = 0;
+#endif /*FO_BIAS*/
 	    messAll(anncer->p_no,roboname,"#");
 	    messAll(me->p_no,    roboname,"#  END OF PERIOD.");
 	    messAll(anncer->p_no,roboname,"#");
@@ -288,7 +317,13 @@ void rmove(void)
 	    }
 	    messAll(me->p_no,roboname,"<thunk!>");
 	    me->p_x = 45000 + random()%10000; /* reappear */
+#ifdef FO_BIAS
+	    if (scores[KLI] >= (scores[ORI]+5)) faceoffbias = 1;
+	    if (scores[ORI] >= (scores[KLI]+5)) faceoffbias = -1;
+	    me->p_y = R_MID + FACEOFF_HELP * faceoffbias;
+#else /*FO_BIAS */
 	    me->p_y = R_MID;
+#endif /*FO_BIAS */
 	    me->p_speed = 0;	/* *** BAV *** */
             me->p_desspeed = 0;
             me->p_subspeed = 0;
@@ -378,6 +413,9 @@ void rmove(void)
         else{
 #endif
   	   do_goal(ORI);
+#ifdef FO_BIAS
+	   faceoffbias = -1;
+#endif /*FO_BIAS*/
 #ifdef OFFSIDE
 	}
 #endif
@@ -397,6 +435,10 @@ void rmove(void)
         else{
 #endif
            do_goal(KLI);
+#ifdef FO_BIAS
+	   faceoffbias = 1;
+#endif /*FO_BIAS*/
+
 #ifdef OFFSIDE
 	}
 #endif
@@ -949,11 +991,15 @@ void place_sitout(int who)
     /*Place people on opposite sides of the rink*/
     if (j->p_team == KLI){
        j->p_x = track->t_x = SITOUT_X;
+#ifdef SITOUT_HURTS
        j->p_y = track->t_y = KLI_B + (random() % (2*DISPLACE) - DISPLACE);
+#endif /*SITOUT_HURTS */
     }
     else if (j->p_team == ORI){
        j->p_x = track->t_x = GWIDTH - SITOUT_X;
+#ifdef SITOUT_HURTS
        j->p_y = track->t_y = ORI_B + (random() % (2*DISPLACE) - DISPLACE);
+#endif /*SITOUT_HURTS*/
     }
     else 
        return;  /*Not ORI, not KLI, so do nothing... Weird*/
@@ -987,10 +1033,11 @@ void do_sitout(char *comm, struct message *mess)
     j->p_desspeed = 0;
     j->p_subspeed = 0;
     j->p_flags = PFSHIELD;               
+#ifdef SITOUT_HURTS
     j->p_fuel   = 0;                     /*Hah, you're hosed anyway */
     j->p_damage = j->p_ship.s_maxdamage - 5;
     j->p_shield = j->p_ship.s_maxshield; /*OK, a potential help     */
-
+#endif /*SITOUT_HURTS*/
   }
 
 void do_offsides(void)
@@ -1599,6 +1646,13 @@ void exitRobot(void)
 	    messAll(me->p_no,roboname,"#");
 	}
     }
+
+#ifdef PUCK_FIRST
+    if (sem_puck > -1) 
+      {
+	semop(sem_puck, sem_puck_op, 1);
+      }
+#endif /*PUCK_FIRST*/
     
     freeslot(me);
     freeslot(anncer);

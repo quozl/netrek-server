@@ -4,6 +4,8 @@
 
 VPATH = @srcdir@
 srcdir = @srcdir@
+CONFIG = system.mk
+include ../$(CONFIG)
 
 .PHONY: clean reallyclean install checkin checkout tar dist depend
 
@@ -105,10 +107,9 @@ robot: $(R_OBJS) $(INPUT)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o robot $(R_OBJS) $(INPUT) $(LIBS) $(EXTRALIBS)
 
 install:	robot
-	-mkdir $(DESTDIR)
-	-mv $(DESTDIR)/robot $(DESTDIR)/robot.old
-	cp robot $(DESTDIR)/robot
-	if [ -d ${srcdir}/og -a `ls -a ${srcdir}/og | wc -l ` != 2 ]; then cp ${srcdir}/og/* $(DESTDIR); fi
+	-mkdir $(DESTDIR)$(LIBDIR)/og
+	cp robot $(DESTDIR)$(LIBDIR)/og/robot
+	if [ -d ${srcdir}/og -a `ls -a ${srcdir}/og | wc -l ` != 2 ]; then cp ${srcdir}/og/* $(DESTDIR)$(LIBDIR)/og/; fi
 
 
 _robot: $(R_OBJS) $(INPUT)

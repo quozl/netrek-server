@@ -37,11 +37,11 @@ lint: $(SRCS)
 	touch lint
 
 install: rsa_keycomp rsa_key2cap
-	-@if [ ! -d $(LIBDIR) ]; then \
-          /bin/mkdir $(LIBDIR); \
+	-@if [ ! -d $(DESTDIR)$(LIBDIR) ]; then \
+          /bin/mkdir $(DESTDIR)$(LIBDIR); \
         fi
-	$(INSTALLPROG) $(INSTALLOPTS) rsa_keycomp $(LIBDIR)/rsa_keycomp
-	$(INSTALLPROG) $(INSTALLOPTS) rsa_key2cap $(LIBDIR)/rsa_key2cap
+	$(INSTALLPROG) $(INSTALLOPTS) rsa_keycomp $(DESTDIR)$(LIBDIR)/rsa_keycomp
+	$(INSTALLPROG) $(INSTALLOPTS) rsa_key2cap $(DESTDIR)$(LIBDIR)/rsa_key2cap
 
 clean: rmdependencies
 	/bin/rm -f *.o *.ln core rsa_keycomp rsa_key2cap

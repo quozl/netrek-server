@@ -34,7 +34,7 @@ C_OBJS = ../ntserv/data.o detonate.o  enter.o ../ntserv/getship.o interface.o \
 
 #	Puck Objects
 
-P_OBJS = puck.o  puckmove.o commands_puck.o $(C_OBJS)
+PUCK_OBJS = puck.o  puckmove.o commands_puck.o $(C_OBJS)
 
 #	Mars (dogfighter) Objects
 
@@ -51,6 +51,10 @@ B_OBJS = basep.o commands_basep.o $(C_OBJS)
 #       newbie server object files
 
 N_OBJS = newbie.o commands_newbie.o $(C_OBJS)
+
+#       pre-T server object files
+
+P_OBJS = pret.o commands_pret.o $(C_OBJS)
 
 #	INL Objects
 
@@ -69,14 +73,14 @@ SRCS = ${srcdir}/puck.c ${srcdir}/puckmove.c ${srcdir}/mars.c \
 	${srcdir}/../ntserv/smessage.c ${srcdir}/basep.c  ${srcdir}/../ntserv/wander2.c \
 	${srcdir}/newbie.c ${srcdir}/inl.c ${srcdir}/inlcomm.c \
 	${srcdir}/../ntserv/slotmaint.c ${srcdir}/inlcmds.c \
-	${srcdir}/../ntserv/gencmds.c
+	${srcdir}/../ntserv/gencmds.c ${srcdir}/pret.c
 
-EXECS =	puck mars robotII basep newbie inl
+EXECS =	puck mars robotII basep newbie inl pret
 
 all: $(PMAKE) $(EXECS)
 
-puck: $(PMAKE) $(P_OBJS)
-	$(CC) $(CFLAGS)  ${LDFLAGS} -o puck $(P_OBJS) $(EXTRALIBS)
+puck: $(PMAKE) $(PUCK_OBJS)
+	$(CC) $(CFLAGS)  ${LDFLAGS} -o puck $(PUCK_OBJS) $(EXTRALIBS)
 
 mars: $(PMAKE) $(M_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o mars $(M_OBJS) $(EXTRALIBS)
@@ -89,6 +93,9 @@ basep: $(PMAKE) $(B_OBJS)
 
 newbie: $(PMAKE) $(N_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o newbie $(N_OBJS) $(EXTRALIBS)
+
+pret: $(PMAKE) $(P_OBJS)
+	$(CC) $(CFLAGS)  ${LDFLAGS} -o pret $(P_OBJS) $(EXTRALIBS)
 
 inl: $(PMAKE) $(I_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o inl $(I_OBJS) $(EXTRALIBS)
@@ -120,6 +127,9 @@ commands_basep.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 commands_newbie.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 	$(CC) $(CFLAGS) $(DEP) -DNEWBIE -c ${srcdir}/../ntserv/commands.c -o commands_newbie.o
 
+commands_pret.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
+	$(CC) $(CFLAGS) $(DEP) -DPRET -c ${srcdir}/../ntserv/commands.c -o commands_pret.o
+
 clean:: 
 	@rm -f *.o *.ln
 
@@ -128,14 +138,15 @@ reallyclean:: clean
 
 
 install: $(EXECS) 
-	$(INSTALLPROG) $(INSTALLOPTS) puck $(LIBDIR)/puck
-	$(INSTALLPROG) $(INSTALLOPTS) mars $(LIBDIR)/mars
-	$(INSTALLPROG) $(INSTALLOPTS) robotII $(LIBDIR)/robotII
-	$(INSTALLPROG) $(INSTALLOPTS) basep $(LIBDIR)/basep
-	$(INSTALLPROG) $(INSTALLOPTS) newbie $(LIBDIR)/newbie
-	$(INSTALLPROG) $(INSTALLOPTS) inl $(LIBDIR)/inl
-	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/end_tourney.pl $(LIBDIR)/end_tourney.pl
-	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/auto-archive.pl $(LIBDIR)/auto-archive.pl
+	$(INSTALLPROG) $(INSTALLOPTS) puck $(DESTDIR)$(LIBDIR)/puck
+	$(INSTALLPROG) $(INSTALLOPTS) mars $(DESTDIR)$(LIBDIR)/mars
+	$(INSTALLPROG) $(INSTALLOPTS) robotII $(DESTDIR)$(LIBDIR)/robotII
+	$(INSTALLPROG) $(INSTALLOPTS) basep $(DESTDIR)$(LIBDIR)/basep
+	$(INSTALLPROG) $(INSTALLOPTS) newbie $(DESTDIR)$(LIBDIR)/newbie
+	$(INSTALLPROG) $(INSTALLOPTS) pret $(DESTDIR)$(LIBDIR)/pret
+	$(INSTALLPROG) $(INSTALLOPTS) inl $(DESTDIR)$(LIBDIR)/inl
+	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/end_tourney.pl $(DESTDIR)$(LIBDIR)/end_tourney.pl
+	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/auto-archive.pl $(DESTDIR)$(LIBDIR)/auto-archive.pl
 
 updated: update.o ../ntserv/data.o getpath.o
 	$(CC) $(CFLAGS) -o updated  update.o data.o getpath.o $(EXTRALIBS)

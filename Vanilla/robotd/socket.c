@@ -1123,7 +1123,11 @@ struct status_spacket *packet;
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleStatus");
 #endif DEBUG_SCK
-    status->tourn=packet->tourn;
+    if(ignoreTMode) {
+      status->tourn=1;
+    } else {
+        status->tourn=packet->tourn;
+    }
     status->armsbomb=ntohl(packet->armsbomb);
     status->planets=ntohl(packet->planets);
     status->kills=ntohl(packet->kills);

@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.1 2005/03/21 05:23:43 jerub Exp $
+/* $Id: ntscmds.c,v 1.2 2005/03/21 10:17:17 quozl Exp $
  */
 
 /*
@@ -56,6 +56,9 @@ void do_password(char *comm, struct message *mess);
 void do_nodock(char *comm, struct message *mess);
 void do_transwarp(char *comm, struct message *mess);
 void do_admin(char *comm, struct message *mess);
+#ifdef REGISTERED_USERS
+void do_register(char *comm, struct message *mess);
+#endif
 
 const char myname[] = {"GOD"};
 
@@ -117,6 +120,12 @@ static struct command_handler_2 nts_commands[] =
 		C_PR_INPICKUP,
 		"Administration commands for privileged users",
 		do_admin },			/* ADMIN */
+#ifdef REGISTERED_USERS
+    { "REGISTER",
+		C_PR_INPICKUP,
+		"Register your character, e.g. 'register you@example.com'",
+		do_register },			/* ADMIN */
+#endif
 #ifdef NODOCK
     { "DOCK",
       C_PR_INPICKUP,
@@ -653,14 +662,19 @@ void do_queue_msg(char *comm, struct message *mess)
 		int j;
 		
 		for (j=0; j < count; j++) {
+#ifdef NO_HOSTNAMES
+		  char *them = "hidden";
+#else
+		  char *them = waiting[k].host;
+#endif
                     int m = find_slot_by_host(waiting[k].host, 0);
 		    if (m != -1) {
 		        struct player *p = &players[m];
 		        pmessage(who, MINDIV, addr, "Q%d: (aka %s %s) %s",
-				 j, p->p_mapchars, p->p_name, waiting[k].host);
+				 j, p->p_mapchars, p->p_name, them);
 		    } else {
 		        pmessage(who, MINDIV, addr, "Q%d: %s",
-				 j, waiting[k].host);
+				 j, them);
 		    }
 		    k = waiting[k].next;
 		}
@@ -1364,3 +1378,76 @@ void do_admin(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "admin: what? kill/quit/ban/reset, lowercase");
   }
 }
+
+#ifdef REGISTERED_USERS
+void do_register(char *comm, struct message *mess)
+{
+  int who = mess->m_from;
+  struct player *p = &players[who];
+  char *addr = addr_mess(who,MINDIV);
+  extern char *registered_users_name, *registered_users_pass;
+  char *one, *two, filename[64], command[128];
+  FILE *file;
+  int status;
+
+  if (strchr(registered_users_name, '\t') != NULL) {
+    pmessage(who, MINDIV, addr, "Registration refused for character names containing tabs.");
+    return;
+  }
+
+  if (strchr(registered_users_pass, '\t') != NULL) {
+    pmessage(who, MINDIV, addr, "Registration refused for passwords containing tabs.");
+    return;
+  }
+
+  if (strchr(host, '\t') != NULL) {
+    pmessage(who, MINDIV, addr, "Registration refused for hosts containing tabs.");
+    return;
+  }
+
+  /* register */
+  one = strtok(comm, " ");
+  if (one == NULL) return;
+
+  /* address */
+  two = strtok(NULL, " ");
+  if (two == NULL) {
+    pmessage(who, MINDIV, addr, "Try again, type your e-mail address after the word REGISTER");
+    return;
+  }
+
+  if (strchr(two, '@') == NULL) {
+    pmessage(who, MINDIV, addr, "That doesn't look like an e-mail address!");
+    return;
+  }
+
+  if (strchr(two, '\t') != NULL) {
+    pmessage(who, MINDIV, addr, "Registration refused for e-mail addresses containing a tab.");
+    return;
+  }
+
+  sprintf(filename, "user-requests/%d", p->p_no);
+  file = fopen(filename, "a");
+  if (file == NULL) {
+    pmessage(who, MINDIV, addr, "Registration refused.");
+    return;
+  }
+
+  fprintf(file, "%s\t%s\t%s\t%s\t%s\n",
+	  (!strcmp(p->p_name, "guest")) ? "add" : "change", 
+	  host, registered_users_name, registered_users_pass, two);
+  if (fclose(file) != 0) {
+    pmessage(who, MINDIV, addr, "Registration could not be recorded.");
+    return;
+  }
+
+  sprintf(command, "tools/register %s", filename);
+  status = system(command);
+  if (status != 0) {
+    pmessage(who, MINDIV, addr, "Registration could not be processed.");
+    return;
+  }
+
+  pmessage(who, MINDIV, addr, "Registration recorded, expect an e-mail.");
+}
+#endif

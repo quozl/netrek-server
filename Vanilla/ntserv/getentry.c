@@ -299,7 +299,7 @@ static int tournamentMask(int team, int w_queue)
             nextlargest = np[i];
             inl = 1 << i;
         }
-        if (deadTeam(1 << i) || (np[i] >= 8))
+        if (deadTeam(1 << i) || (np[i] >= 8) || (bot_in_game && np[i] >=  4))
             allteams &= ~ (1 <<i);
     }
     if (nodiag) {
@@ -308,7 +308,7 @@ static int tournamentMask(int team, int w_queue)
                rem >>= 4;
       allteams &= ~rem; 
       }
-    if (! status -> tourn)
+    if((pre_t_mode && inl == 0) || (!pre_t_mode && !status->tourn))
       return allteams;
     /*
      * We think we are in t-mode and go for re-entry.  

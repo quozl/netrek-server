@@ -1,4 +1,4 @@
-/* $Id: defs.h,v 1.1 2005/03/21 05:23:36 jerub Exp $
+/* $Id: defs.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
  */
 
 #ifndef _h_defs
@@ -67,7 +67,7 @@
 #define PV_TOTAL        MAXPLAYER   /* total number of votable slots */
 #endif
 
-#ifdef NEWBIESERVER
+#if defined(NEWBIESERVER) || defined(PRETSERVER)
 #define MAXQUEUE 13	/* Number of different  waitqueues */
 #else
 #define MAXQUEUE 9
@@ -207,6 +207,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #define N_ROBOT		"robotII"
 #define N_LOGFILENAME	"logfile"
 #define N_PLAYERFILE	".players"
+#define N_PLAYERINDEXFILE	".players.index"
 #define N_CONQFILE	".conquer"
 #define N_SYSDEF_FILE	".sysdef"
 #define N_TIME_FILE	".time"
@@ -252,7 +253,12 @@ because they have initialisation of variables dependent on UPDATE. */
 #define NEWBIE_ROBOT	5
 #endif
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#ifdef PRETSERVER
+#define N_PRET		"pret"
+#define PRET_ROBOT	6
+#endif
+
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 #define N_ROBODIR       "og"
 #endif
 
@@ -468,5 +474,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #define SVALID   253 /* Mark server messages as valid to send over SP_S_MESSAGE */
 #define SINVALID 254    /* Mark server Message as invalid to send over SP_S_MESSAGE */
 #define DINVALID 255    /* Mark daemon ( GOD) Message as invalid to send over SP_S_WARNING */
+
+/* #undef PUCK_FIRST  99 */  /* make sure puck runs before players do */
 
 #endif /* _h_defs */

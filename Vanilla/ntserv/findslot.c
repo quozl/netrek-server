@@ -15,6 +15,20 @@
 #include "data.h"
 #include "proto.h"
 
+/* return true if the host is not already in the game */
+static int absent(int w_queue, char *host) {
+  int i, here = 0;
+  for (i=0; i<MAXPLAYER; i++) {
+    if (players[i].p_status == PFREE) continue;
+    if ((players[i].p_flags & PFROBOT)) continue;
+#ifdef OBSERVERS
+    /* if we want a pickup slot, ignore any observer slot we have */
+    if (w_queue == QU_PICKUP && players[i].p_status == POBSERV) continue;
+#endif	
+    if (strcmp(players[i].p_full_hostname, host) == 0) return 0;
+  }
+  return 1;
+}
 
 /*
  * The following code for findslot() is really nice.
@@ -30,7 +44,7 @@
  *   oldcount:      (local) My position last time I looked.
  */
 
-int findslot(int w_queue)
+int findslot(int w_queue, char *host)
 {
     u_int oldcount;	/* My old number */
     pid_t mypid = getpid();
@@ -41,6 +55,19 @@ int findslot(int w_queue)
     /* Ensure that the queue is open */
     if (!(queues[w_queue].q_flags & QU_OPEN)) return (-1);
 
+#ifdef NO_DUPLICATE_HOSTS
+    /* pre-queue if client from same ip address is already playing */
+    if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
+      for (;;) {
+	if (absent(w_queue, host)) break;
+	if (rep++ % 10 == 1) { sendQueuePacket((short) MAXPLAYER); }
+	if (isClientDead()) { fflush(stderr); exit(0); }
+	if (!(status->gameup & GU_GAMEOK)) { return (-1); }
+	sleep(1);
+      }
+    }
+#endif
+
     /* If no one is waiting, I will try to enter now */
     if (queues[w_queue].first == -1)
 	if ( (i=pickslot(w_queue)) >= 0 )  return (i);
@@ -48,6 +75,7 @@ int findslot(int w_queue)
     mywait = queue_add(w_queue);    /* Get me into the queue */
     if (mywait == -1) return (-1);   /* The queue is full! */
 
+    rep = 0;
     oldcount = waiting[mywait].count;
 
     for (;;) {

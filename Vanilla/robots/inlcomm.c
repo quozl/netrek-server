@@ -14,7 +14,6 @@
 #include <sys/resource.h>
 #include <signal.h>
 #include <setjmp.h>
-#include <varargs.h>
 #include <sys/file.h>
 #include <sys/wait.h>
 #include <sys/ipc.h>

@@ -160,3 +160,15 @@ design detail, index
     - else if found, append .index record, return offset
 - cause tools that write new .players file to remove .index file
 
+second design idea, 2004-02
+
+- use libgdbm3 GNU dbm database
+  - player name as key
+  - .players offset as value
+- getname.c
+  - find entry in dbm
+  - if not found, 
+    - do manual search
+    - if found, lock, add to dbm, unlock
+  - else if found, use normally.
+- cause tools that write new .players file to remove .index file

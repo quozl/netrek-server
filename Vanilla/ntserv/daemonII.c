@@ -36,6 +36,22 @@
 #include <sys/stat.h>
 #endif
 
+#ifdef PUCK_FIRST 
+#include <sys/sem.h> 
+/* this is from a semctl man page */
+#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED) 
+/* union semun is defined by including <sys/sem.h> */ 
+#else /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
+/* according to X/OPEN we have to define it ourselves */ 
+union semun {
+   int val;                                   /* value for SETVAL */
+   struct semid_ds *buf;              /* buffer for IPC_STAT, IPC_SET */
+   unsigned short int *array;         /* array for GETALL, SETALL */
+   struct seminfo *__buf;             /* buffer for IPC_INFO */ 
+   }; 
+#endif /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
+#endif /*PUCK_FIRST*/
+
 #define fuse(X) ((ticks % (X)) == 0)
 #define TOURNEXTENSION 15       /* Tmode gone for 15 seconds 8/26/91 TC */
 #define NotTmode(X) (!(status->tourn) && ((X - tourntimestamp)/10 > TOURNEXTENSION))
@@ -111,6 +127,13 @@ static void signal_servers(void);
 extern void pinit(void);
 extern void solicit(int force);
 extern void pmove(void);
+
+#ifdef PUCK_FIRST
+static void signal_puck(void);
+static int pucksem_id;
+static union semun pucksem_arg;
+static struct sembuf pucksem_op[1];
+#endif /*PUCK_FIRST*/
 
 static int debug = 0;
 static int ticks = 0;
@@ -245,6 +268,21 @@ int main(int argc, char **argv)
 
    if (start_robot) fork_robot(start_robot);
 
+#ifdef PUCK_FIRST
+    if ((pucksem_id = semget(PUCK_FIRST, 1, 0600 | IPC_CREAT)) != -1 ||
+        (pucksem_id = semget(PUCK_FIRST, 1, 0600)) != -1) 
+    {
+	pucksem_arg.val = 0;
+	pucksem_op[0].sem_num = 0;
+	pucksem_op[0].sem_op = -1;
+	pucksem_op[0].sem_flg = 0;
+    }
+    else 
+    {
+	ERROR(1,("Unable to get puck semaphore."));
+    }
+#endif /*PUCK_FIRST*/
+    
     (void) SIGNAL(SIGALRM, move);
     udt.it_interval.tv_sec = 0;
     udt.it_interval.tv_usec = reality;
@@ -328,6 +366,10 @@ static int tournamentMode(void)
 
     if (practice_mode) return(0);     /* No t-mode in practice mode 
                                          06/19/94 [007] */
+#ifdef PRETSERVER    
+    if(bot_in_game) return(0);
+#endif
+    
     MZERO((int *) teams, sizeof(int) * (MAXTEAM + 1));
     for (i=0, p=players; i<MAXPLAYER; i++, p++) {
         if (((p->p_status != PFREE) && 
@@ -586,6 +628,14 @@ static void move(int ignored)
         oldtourn=0;
         status->tourn=0;
     }
+
+#ifdef PUCK_FIRST
+    /* The placement of signal_puck before udplayers() is key.  If udplayers()
+       happens first the puck can be pushed out of range of a valid shot,
+       among other things.  */
+    signal_puck();
+#endif /*PUCK_FIRST */
+
     if (fuse(PLAYERFUSE)) {
         udplayers();
     }
@@ -817,6 +867,8 @@ static void udplayers(void)
                 if (++(j->p_ghostbuster) > outfitdelay) {
 		    ERROR(4,("%s: ship in POUTFIT too long (of=%d,wd=%d)\n", 
 			     j->p_mapchars, outfitdelay, j->p_whydead));
+
+                    fflush(stdout);
 
 		    /* Force the player out of the game */
                     saveplayer(j);
@@ -2858,6 +2910,9 @@ static void plfight(void)
     if (!(status->gameup & GU_INROBOT)) {
       if (((tcount[l->pl_owner] == 0) || (NotTmode(ticks))) && 
 	(l->pl_flags & l->pl_owner) &&
+#ifdef PRETSERVER
+    !bot_in_game &&
+#endif
 	tm_robots[l->pl_owner] == 0) {
 
 	rescue(l->pl_owner, NotTmode(ticks));
@@ -3048,7 +3103,11 @@ static void beam(void)
 
                             /* out of Tmode?  Terminate.  8/2/91 TC */
 
-                            if (NotTmode(ticks)) {
+                            if (NotTmode(ticks)
+#ifdef PRETSERVER
+                                && !bot_in_game
+#endif
+                                ) {
                                 if ((l->pl_flags & (FED|ROM|KLI|ORI)) !=
                                     j->p_team) /* not in home quad, give them an extra one 8/26/91 TC */
                                     rescue(STERMINATOR, j->p_no);
@@ -3418,6 +3477,12 @@ static void exitDaemon(int sig)
     if (!removemem())
         ERROR(1,("exitDaemon: cannot removed shared memory segment"));
 
+#ifdef PUCK_FIRST
+    if(pucksem_id != -1)
+        if (semctl(pucksem_id, 0, IPC_RMID, pucksem_arg) == -1)
+          ERROR(1,("exitDaemon: cannot remove puck semaphore"));
+#endif /*PUCK_FIRST*/
+
     switch(sig){
         case SIGSEGV:
         case SIGBUS:
@@ -3682,6 +3747,10 @@ static int checkwin(struct player *winner)
 #ifdef NEWBIESERVER
                 /* Don't kill newbie robot. */
                 if (status->gameup & GU_NEWBIE && j->p_flags & PFROBOT) continue;
+#endif
+#ifdef PRETSERVER
+                /* Don't kill pre-T robot. */
+                if (status->gameup & GU_PRET && j->p_flags & PFROBOT) continue;
 #endif
                 j->p_status = PEXPLODE;
                 j->p_whydead = KWINNER;
@@ -4180,6 +4249,12 @@ static void fork_robot(int robot)
                 perror(Newbie);
                 break;
 #endif
+#ifdef PRETSERVER
+        case PRET_ROBOT:
+                execl(PreT, "pret", 0);
+                perror(PreT);
+                break;
+#endif
 #ifdef DOGFIGHT
         case MARS_ROBOT:
                 execl(Mars, "mars", 0);
@@ -4337,6 +4412,52 @@ static void doRotateGalaxy(void)
    }
 }
 #endif
+#ifdef PUCK_FIRST
+void do_nuttin (int sig) { }
+
+/* This has [should have] the daemon wait until the puck has finished by
+   waiting on a semaphore.  Error logging is not entirely useful.
+*/
+static void signal_puck(void)
+{
+    int i;
+    struct player *j;
+    int puckwait = 0;
+    
+    for (i = 0, j = players; i < MAXPLAYER; i++, j++)
+        if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
+	    strcmp(j->p_name, "Puck") == 0) 
+	{ 
+	    /* Set semaphore to 0 in case there are multiple pucks. Yuck. */
+	    if (pucksem_id != -1 &&
+		semctl(pucksem_id, 0, SETVAL, pucksem_arg) == -1) 
+	    {
+		perror("signal_puck semctl");
+		pucksem_id = -1;
+		/* are there any errors that would 'fix themselves?' */
+	    }
+	    if (kill(j->p_process, SIGALRM) < 0) 
+	    {
+		if (errno == ESRCH) 
+		{
+		    ERROR(1,("daemonII/signal_puck: slot %d missing\n", i));
+		    freeslot(j);
+		}
+	    }
+	    else if (pucksem_id != -1) 
+	    {
+		puckwait = 1;
+	    }
+	}
+    
+    if (puckwait)
+    {
+	SIGNAL(SIGALRM, do_nuttin);
+	semop(pucksem_id, pucksem_op, 1);
+	SIGNAL(SIGALRM, SIG_IGN);
+    }
+}
+#endif /*PUCK_FIRST*/
 
 /*
  * The minor problem here is that the only client update speeds that
@@ -4357,6 +4478,14 @@ static void signal_servers(void)
         continue;
       if (j->p_process <= 1)
         continue;
+
+#ifdef PUCK_FIRST
+      if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
+	  strcmp(j->p_name, "Puck") == 0)
+      {
+	  continue; 
+      }
+#endif /*PUCK_FIRST*/
 
       t = j->p_timerdelay;
       if (!t)                   /* paranoia */

@@ -176,7 +176,8 @@ int main(int argc, char **argv)
 
     sendMotd();
 
-    pno = findslot(w_queue);
+    /* wait for a slot to become free */
+    pno = findslot(w_queue, host);
     if (pno < 0) {
 	/* trigger client's "Sorry, but you cannot play xtrek now.
 	   Try again later." */
@@ -186,7 +187,6 @@ int main(int argc, char **argv)
 	sendClientPacket (&packet);
 	flushSockBuf ();
 	ERROR(2,("ntserv/main.c: Quitting: No slot available on queue %d\n",w_queue));
-	/* print some appropriate message */
 	exit(1);
     }
 
@@ -284,6 +284,12 @@ int main(int argc, char **argv)
 
     logEntry(); /* moved down to get login/monitor 2/12/92 TMC */
 
+#ifdef NO_HOSTNAMES
+    strcpy(me->p_full_hostname, "hidden");
+    strcpy(me->p_monitor, "hidden");
+    strcpy(me->p_login, "anonymous");
+#endif
+
 #ifdef PING     /* 0 might just be legit for a local player */
     me->p_avrt = -1;
     me->p_stdv = -1;
@@ -376,6 +382,7 @@ int main(int argc, char **argv)
     me->p_status = PALIVE;			/* Put player in game */
     me->p_ghostbuster = 0;
 
+    if (!bypassed)
     if (checkbanned(login, host) == TRUE) {
       FILE        *logfile;
       time_t curtime;

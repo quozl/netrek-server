@@ -1,4 +1,4 @@
-#	$Id: Makefile.in,v 1.1 2005/03/21 05:23:33 jerub Exp $	
+#	$Id: Makefile.in,v 1.2 2005/03/21 10:17:15 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
@@ -126,25 +126,25 @@ reallyclean:
 distclean: clean reallyclean rmdependencies
 
 installbin: all
-	cd ntserv;    $(MAKE) install
-	cd robots;    $(MAKE) install
-	cd robotd;    $(MAKE) install
+	cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
+	cd robots;    $(MAKE) install DESTDIR=$(DESTDIR)
+	cd robotd;    $(MAKE) install DESTDIR=$(DESTDIR)
 	if [ x@GUM@ = xdo_gum ]; then \
-		cd gum;       $(MAKE) install; \
+		cd gum;       $(MAKE) install DESTDIR=$(DESTDIR); \
 	fi
-	cd newstartd; $(MAKE) install
+	cd newstartd; $(MAKE) install DESTDIR=$(DESTDIR)
 	-@if [ -f res-rsa/Makefile ]; then \
-		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install; \
+		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install DESTDIR=$(DESTDIR); \
 	fi
-	cd tools;     $(MAKE) install
-	cd keycomp;   $(MAKE) install
-	cd pledit;    $(MAKE) install
-	cd sequencer; $(MAKE) install
-	cd xsg;       $(MAKE) install
+	cd tools;     $(MAKE) install DESTDIR=$(DESTDIR)
+	cd keycomp;   $(MAKE) install DESTDIR=$(DESTDIR)
+	cd pledit;    $(MAKE) install DESTDIR=$(DESTDIR)
+	cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
+	cd xsg;       $(MAKE) install DESTDIR=$(DESTDIR)
 
 install: installbin 
-	cd docs;   $(MAKE) install
-	cd tools;  $(MAKE) installtrekon
+	cd docs;   $(MAKE) install DESTDIR=$(DESTDIR)
+	cd tools;  $(MAKE) installtrekon DESTDIR=$(DESTDIR)
 	-cd tools; ./convert
 	@echo
 	@echo "Vanilla Netrek Server installation is completed."

@@ -1,7 +1,19 @@
 
-$Id: PROJECTS,v 1.1 2005/03/21 05:23:33 jerub Exp $	
+$Id: PROJECTS,v 1.2 2005/03/21 10:17:15 quozl Exp $	
 
 List of things to do in the future
+
+	- If you are observing a friendly player who is t-warping, you
+	  can lock on to other players/planets, but will not swap to
+	  their viewpoint.  Only when twarping is over, you can swap
+	  again [Shadow.Hunter@netrek.org]
+
+	- You can always lock onto an independent ship (Iggy)
+	  (->planets too?) but after doing that you cannot revert to
+	  observing your own team anymore. Bummer ;-(
+	  [Shadow.Hunter@netrek.org]
+
+	- tools/update.c sa_sigaction not present on NetBSD.  [Hietbrink]
 
 	- 'transwarp 0 off' to prevent slot 0 from transwarping.  [Swasey]
 

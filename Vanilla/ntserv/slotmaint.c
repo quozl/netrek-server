@@ -73,6 +73,10 @@ int pickslot(int w_queue)
     }
 
     for (i=queues[w_queue].low_slot; i<queues[w_queue].high_slot; i++) {
+
+        /* avoid allocating slot t unless flags say we can */
+        if (i == 29 && !(queues[w_queue].q_flags & QU_TOK)) continue;
+
 	if (players[i].p_status == PFREE) {     /* We have free slot */
 	    int j;
 

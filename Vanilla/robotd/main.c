@@ -26,7 +26,7 @@
 #define TIMEOUT1		50
 #define TIMEOUT2		50
 
-char	revision[] = "$Revision: 1.1 $";
+char	revision[] = "$Revision: 1.2 $";
 
 static   int    first = 1;
 jmp_buf         env;
@@ -264,8 +264,12 @@ main(argc, argv)
 	    oggv_packet = 1;
 	    break;
 
+	 case 'I':
+	    ignoreTMode = 1;
+	    break;
+
 	 default:
-	    mfprintf(stderr, "%s: unknown option '%c'\n", name, *ptr);
+	    fprintf(stderr, "%s: unknown option '%c'\n", name, *ptr);
 	    err++;
 	    break;
 	 }

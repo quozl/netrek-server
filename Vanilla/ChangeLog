@@ -1,3 +1,111 @@
+Tue Feb 16 22:32:11 2004  James Cameron  <quozl@us.netrek.org>
+
+	* include/config.h.in, include/proto.h, ntserv/main.c,
+	ntserv/findslot.c (findslot): add NO_DUPLICATE_HOSTS define, add
+	host to findslot() arguments, to reduce multiple connections from
+	the same host.
+
+Sun Feb 15 22:47:15 2004  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/db.c, ntserv/Makefile.in, ntserv/Makefile: add database
+	access timing, temporary support for glib linked with ntserv and
+	for compile of db.c, a more comprehensive solution would involve
+	conditionals determined at configure time.
+	
+	* include/config.h.in: add PLAYER_INDEX define, default on,
+	requires libgdbm, ==TODO== add to configure.
+	* ntserv/db.c: add creation and maintenance of the player index.
+	* include/defs.h, ntserv/data.c, include/data.h, ntserv/getpath.c
+	(getpath): add player index file name.
+
+Sat Feb 14 14:59:37 2004  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/Makefile.in (install): place robot where pret and other
+	code expects to find it.
+
+Wed Jan  7 18:30:36 2004  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* robots/puck.c (main): Added items for makeing sure puck robot
+	runs before player process and Faceoff Bias.  Code originally came
+	from psychosis hockey server.
+	* robots/puckmove.c (rmove): wrapped this function with puck_first
+	capability.
+	* ntserv/daemonII.c (main): Added puck_first capabilities.
+
+Wed Jan  7 18:09:04 2004  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* robots/Makefile.in (PUCK_OBJS): variable name collision for
+	puck objects and pre-t objects.
+
+Fri Oct 31 09:15:42 2003  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/util.c, robots/inlcomm.c, sequencer/roboshar.c: use
+	stdargs instead of varargs, to fix compilation on GCC 3.3.  From:
+	"ReKleSS" <rekless@fastmail.fm>
+
+Fri Aug 22 22:53:57 2003  James Cameron  <quozl@us.netrek.org>
+
+	* Makefile.in (install): added DESTDIR to all Makefile.in files to
+	assist with packaging, per GNU standards.
+
+Tue Feb 25 17:15:00 2003  James Cameron  <quozl@us.netrek.org>
+
+	* tools/setgalaxy.c: creative server shutdown ... simulate
+	galactic collapse.
+
+Mon Feb 24 21:36:04 2003  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_register): add user registration data
+	capture.
+
+Fri Feb 21 19:40:50 2003  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/main.c (main): add NO_HOSTNAMES define for testing.
+	* ntserv/socket.c (check_mesgs): FULL_HOSTNAMES not defined fix.
+	* ntserv/orbit.c (orbit): avoid FLAT_BONUS when compiling without
+	LTD_STATS.
+	* ntserv/enter.c (enter): fix compilation error when
+	FULL_HOSTNAMES is not defined.
+
+Mon Feb 17 10:54:19 2003  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/robot.c (mtime): correct time to be monotonic increase.
+	Fixes inability of practice robots to fire at enemy.  From: Trent
+	Piepho <xyzzy@speakeasy.org>
+
+Sat Feb 15 20:56:56 2003  James Cameron  <quozl@us.netrek.org>
+
+	* docs/sample_sysdef.in (INL_RECORD): change default to match INL
+	mode, so that cambot recordings are made on a fresh install
+	without having to change .sysdef.  From: Tom Holub <doosh@inl.org>
+
+Mon Jan 13 08:56:18 2003  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/genspkt.c (updatePlayerStats): fix to get INL server with
+	LTD stats to compile.  From: David Watson <David.Watson@team17.com>
+
+Wed Jan  8 17:38:32 2003  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/genspkt.c (sndFlags): fix visible tractors for observers
+	* tools/cambot.c (cb_updt): fix visible tractors for observers
+	From: Stas Pirogov <keyos@keyos.org>
+
+Thu Jan  2 13:35:39 2003  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/slotmaint.c (pickslot): add parentheses to clarify slot t
+	check.  From: Tseug Larimda
+
+Mon Dec  9 17:59:28 2002  James Cameron  <quozl@us.netrek.org>
+
+	* include/struct.h (QU_TOK): add a flag to a queue to describe
+	whether slot t can be allocated by a player using the queue.
+
+	* ntserv/slotmaint.c (pickslot): avoid allocating slot t unless
+	queue flags allow it.
+
+	* ntserv/queue.c (queues_init): change god observer queue to use
+	slot t.
+
 Mon Nov 25 16:06:39 2002  James Cameron  <quozl@us.netrek.org>
 
 	* include/proto.h, ntserv/ntscmds.c, ntserv/getname.c: fix
@@ -1415,4 +1523,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.1 2005/03/21 05:23:33 jerub Exp $
+	$Id: ChangeLog,v 1.2 2005/03/21 10:17:15 quozl Exp $

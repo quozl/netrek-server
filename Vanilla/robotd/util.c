@@ -4,7 +4,7 @@
 #include "copyright.h"
 
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #include <math.h>
 #include <signal.h>
@@ -430,38 +430,30 @@ nint(x)
 }
 #endif
 
-mprintf(va_alist)
-   
-   va_dcl
+mprintf(char *format, ...)
 {
    va_list	ap;
-   char	*format;
 
    if(!read_stdin)
       return;
    
-   va_start(ap);
-   format =  va_arg(ap, char *);
+   va_start(ap, format);
    (void)vprintf(format, ap);
    fflush(stdout);
    va_end(ap);
 }
 
 
-mfprintf(va_alist)
-   
-   va_dcl
+mfprintf(char *format, ...)
 {
    FILE	*fo;
-   char	*format;
    va_list	ap;
 
    if(!read_stdin)
       return;
    
-   va_start(ap);
+   va_start(ap, format);
    fo = va_arg(ap, FILE *);
-   format = va_arg(ap, char *);
    (void)vfprintf(fo, format, ap);
    fflush(stdout);
    va_end(ap);

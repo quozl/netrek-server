@@ -58,7 +58,7 @@ reallyclean:  clean
 	/bin/rm -f xsg #* *~
 
 install: xsg
-	$(INSTALLPROG) $(INSTALLOPTS) xsg $(LIBDIR)/xsg
+	$(INSTALLPROG) $(INSTALLOPTS) xsg $(DESTDIR)$(LIBDIR)/xsg
 
 uninstall:
 	-cd $(LIBDIR); rm -f xsg 

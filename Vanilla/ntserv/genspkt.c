@@ -304,7 +304,7 @@ void sendVKills(void)
 
 }
 
-inline static int
+int
 sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 {
 /*#define FLAGMASK (PFSHIELD|PFBOMB|PFORBIT|PFCLOAK|PFROBOT|PFBEAMUP|PFBEAMDOWN|PFPRACTR|PFDOCK|PFTRACT|PFPRESS|PFDOCKOK) aieee, too much.  7/27/91 TC */ 
@@ -316,12 +316,12 @@ sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 #define FLAGMASK   (PFSHIELD | INVISOMASK)
 
     int mask;
-    int tractor = (F_show_all_tractors && pl->p_flags&PFTRACT)?
+    int tractor = ((F_show_all_tractors || f_many_self) && pl->p_flags&PFTRACT)?
                       (pl->p_tractor|0x40):0;
 
     if (howmuch == UPDT_ALL) {
 	mask = FLAGMASK;
-	if(F_show_all_tractors) mask |= PFTRACT|PFPRESS;
+	if(F_show_all_tractors || f_many_self) mask |= PFTRACT|PFPRESS;
     } else
 	mask = INVISOMASK;
 	
@@ -757,6 +757,9 @@ int sndPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
     return (FALSE);
 }
 
+/* Determines if the planet's info has changed since it was last sent to the
+   client.  If so, it updates the planet packet with current data and returns
+   true. */
 inline static int
 updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 {
@@ -776,7 +779,7 @@ updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 	    pl->owner=plan->pl_owner;
 	    return (TRUE);
 	} 
-    } else {
+    } else { /* UPDT_LITTLE */
 	if (pl->info & me->p_team) {
 	    pl->type=SP_PLANET;
 	    pl->pnum=plan->pl_no;
@@ -790,6 +793,9 @@ updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
     return (FALSE);
 }
 
+/* Given a normal planet packet in pl, pack the data onto the end of the
+   VPlanet buffer and increment the count.  The vplanet packet is a more
+   efficient way to send multiple planet updates with typical values.  */
 inline static int
 addVPlanet(struct planet_spacket *pl)
 {
@@ -800,17 +806,22 @@ addVPlanet(struct planet_spacket *pl)
     npl->pnum=pl->pnum;
     npl->info=pl->info;
     npl->flags=pl->flags;
-    npl->armies=(u_char) pl->armies;
+    npl->armies=(u_char) ntohl(pl->armies);
     npl->owner=pl->owner;
     npl++;
     clientVPlanetCount++;
     return (TRUE);
 }
 
+/* howmuch is how much info to send, UPDT_LITTLE means just the information
+   sent for unscouted planets, UPDT_ALL means send everything.  The return
+   value isn't actually used.  */
 int sndPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 {
     if (updtPlanet(pl, plan, howmuch)) {
-	if ( send_short  && pl->armies < 256 )
+	/* Vplanet is more efficient, but only works when there are less than
+	   256 armies */
+	if ( send_short  && plan->pl_armies < 256 )
 	    addVPlanet(pl);
 	else
 	    sendClientPacket(pl);
@@ -1035,6 +1046,7 @@ int sndSSelf(struct you_short_spacket *youp, struct player* pl, int howmuch)
 inline static int
 sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 {
+    int tractor = (pl->p_flags&PFTRACT)?(char)(pl->p_tractor|0x40):0;
     if ( howmuch == UPDT_ALL
 	 || ntohl(youp->fuel) != pl->p_fuel
 	 || ntohl(youp->shield) != pl->p_shield
@@ -1046,6 +1058,7 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	 || youp->swar != pl->p_swar
 	 || ntohs(youp->whydead) != pl->p_whydead
 	 || ntohs(youp->whodead) != pl->p_whodead
+	 || youp->tractor != tractor 
 	 || youp->pnum != pl->p_no) {
 
 	/* we want to send it, but how? */
@@ -1076,7 +1089,7 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	youp->whydead=htons(pl->p_whydead);
 	youp->whodead=htons(pl->p_whodead);
 	youp->damage=htonl(pl->p_damage);
-	/* youp->tractor=(char)pl->p_tractor |0x40;		 ATM - visible tractor */
+	youp->tractor=tractor;
 	sendClientPacket((CVOID) youp);
 	return (TRUE);
     }
@@ -1411,10 +1424,12 @@ void updatePlanets(void)
 	 */
 	if ((me->p_x > 0) && (me->p_y > 0) && (me->p_team == NOBODY) ) {
 	    sndPlanet(pl, plan, UPDT_ALL);
-	} else if ((plan->pl_info & me->p_team)==0) {
-	    sndPlanet(pl, plan, UPDT_LITTLE);
 	} else if ( plan->pl_info & me->p_team ) {
+	    /* scouted */
 	    sndPlanet(pl, plan, UPDT_ALL);
+	} else {
+	    /* Not scouted */
+	    sndPlanet(pl, plan, UPDT_LITTLE);
 	}
 	/* Assume that the planet only needs to be updated once... */
 
@@ -2090,8 +2105,8 @@ void updatePlayerStats(void)
     sblosses   = ltd_deaths(pl, LTD_SB);
     sbticks    = ltd_ticks(pl, LTD_SB);
     tticks     = ltd_ticks(pl, LTD_TOTAL);
-    maxkills   = ltd_kills_max(pl, LTD_TOTAL)
-    sbmaxkills = ltd_kills_max(pl, LTD_SB)
+    maxkills   = ltd_kills_max(pl, LTD_TOTAL);
+    sbmaxkills = ltd_kills_max(pl, LTD_SB);
 
     my_tkills    = ltd_kills(me, LTD_TOTAL);
     my_tlosses   = ltd_deaths(me, LTD_TOTAL);

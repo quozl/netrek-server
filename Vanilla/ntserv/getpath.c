@@ -41,6 +41,8 @@ void getpath()
 
    sprintf(PlayerFile,"%s/%s",path,N_PLAYERFILE);
 
+   sprintf(PlayerIndexFile,"%s/%s",path,N_PLAYERINDEXFILE);
+
    sprintf(ConqFile,"%s/%s",path,N_CONQFILE);
 
    sprintf(SysDef_File,"%s/%s",path,N_SYSDEF_FILE);
@@ -86,7 +88,11 @@ void getpath()
    sprintf(Newbie,"%s/%s",path,N_NEWBIE);
 #endif
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#ifdef PRETSERVER
+   sprintf(PreT,"%s/%s",path,N_PRET);
+#endif
+
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
    sprintf(Robodir,"%s/%s",path,N_ROBODIR);
 #endif
 

@@ -46,7 +46,7 @@ commands_sequencer.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 	$(CC) $(CFLAGS) $(DEP) -DSEQUENCER -c ${srcdir}/../ntserv/commands.c -o commands_sequencer.o
 
 install: $(EXECS) 
-	$(INSTALLPROG) $(INSTALLOPTS) sequencer $(LIBDIR)/sequencer
+	$(INSTALLPROG) $(INSTALLOPTS) sequencer $(DESTDIR)$(LIBDIR)/sequencer
 
 lint: $(SRCS)
 	lint $(LINTFLAGS) -u $?

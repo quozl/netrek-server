@@ -353,18 +353,6 @@ create_gum (void)
   GtkWidget *MAX_POP;
   GtkWidget *label116;
   GtkWidget *label17;
-  GtkWidget *table7;
-  GtkWidget *label126;
-  GtkWidget *BASEPRACTICE_LABEL;
-  GtkWidget *ROBOTHOST_LABEL;
-  GtkWidget *hbox42;
-  GSList *BASEPRACTICE_group = NULL;
-  GtkWidget *BASEPRACTICE_0;
-  GtkWidget *BASEPRACTICE_1;
-  GtkWidget *hbox43;
-  GtkWidget *ROBOTHOST;
-  GtkWidget *label127;
-  GtkWidget *label51;
   GtkWidget *table16;
   GtkWidget *label1395;
   GtkWidget *NEWBIE_LABEL;
@@ -373,16 +361,13 @@ create_gum (void)
   GtkWidget *NEWBIE_0;
   GtkWidget *NEWBIE_1;
   GtkWidget *label1397;
+  GtkWidget *label1398;
+  GtkWidget *PRET_LABEL;
+  GtkWidget *hbox59;
+  GSList *PRET_group = NULL;
+  GtkWidget *PRET_0;
+  GtkWidget *PRET_1;
   GtkWidget *label1392;
-  GtkWidget *table8;
-  GtkWidget *label128;
-  GtkWidget *HOCKEY_LABEL;
-  GtkWidget *hbox44;
-  GSList *HOCKEY_group = NULL;
-  GtkWidget *HOCKEY_0;
-  GtkWidget *HOCKEY_1;
-  GtkWidget *label131;
-  GtkWidget *label54;
   GtkWidget *table9;
   GtkWidget *hbox45;
   GSList *INL_group = NULL;
@@ -397,6 +382,27 @@ create_gum (void)
   GtkWidget *INL_RECORD_0;
   GtkWidget *INL_RECORD_1;
   GtkWidget *INL_NOTEBOOK_LABEL;
+  GtkWidget *table7;
+  GtkWidget *label126;
+  GtkWidget *BASEPRACTICE_LABEL;
+  GtkWidget *ROBOTHOST_LABEL;
+  GtkWidget *hbox42;
+  GSList *BASEPRACTICE_group = NULL;
+  GtkWidget *BASEPRACTICE_0;
+  GtkWidget *BASEPRACTICE_1;
+  GtkWidget *hbox43;
+  GtkWidget *ROBOTHOST;
+  GtkWidget *label127;
+  GtkWidget *label51;
+  GtkWidget *table8;
+  GtkWidget *label128;
+  GtkWidget *HOCKEY_LABEL;
+  GtkWidget *hbox44;
+  GSList *HOCKEY_group = NULL;
+  GtkWidget *HOCKEY_0;
+  GtkWidget *HOCKEY_1;
+  GtkWidget *label131;
+  GtkWidget *label54;
   GtkWidget *table10;
   GtkWidget *label124;
   GtkWidget *DOGFIGHT_LABEL;
@@ -828,7 +834,7 @@ create_gum (void)
   gtk_widget_show (hseparator2);
   gtk_box_pack_start (GTK_BOX (vbox2), hseparator2, FALSE, TRUE, 6);
 
-  label139 = gtk_label_new ("Listener Process Commands");
+  label139 = gtk_label_new ("netrekd - Listener Process Commands");
   gtk_widget_ref (label139);
   gtk_object_set_data_full (GTK_OBJECT (gum), "label139", label139,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -3283,105 +3289,7 @@ create_gum (void)
   gtk_widget_show (label17);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 6), label17);
 
-  table7 = gtk_table_new (4, 2, FALSE);
-  gtk_widget_ref (table7);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "table7", table7,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (table7);
-  gtk_container_add (GTK_CONTAINER (notebook1), table7);
-  gtk_container_set_border_width (GTK_CONTAINER (table7), 6);
-  gtk_table_set_row_spacings (GTK_TABLE (table7), 6);
-  gtk_table_set_col_spacings (GTK_TABLE (table7), 6);
-
-  label126 = gtk_label_new ("Base Practice Mode Settings\n");
-  gtk_widget_ref (label126);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "label126", label126,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label126);
-  gtk_table_attach (GTK_TABLE (table7), label126, 0, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  BASEPRACTICE_LABEL = gtk_label_new ("BASEPRACTICE:");
-  gtk_widget_ref (BASEPRACTICE_LABEL);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "BASEPRACTICE_LABEL", BASEPRACTICE_LABEL,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (BASEPRACTICE_LABEL);
-  gtk_table_attach (GTK_TABLE (table7), BASEPRACTICE_LABEL, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (BASEPRACTICE_LABEL), 1, 0.5);
-  gtk_misc_set_padding (GTK_MISC (BASEPRACTICE_LABEL), 10, 0);
-
-  ROBOTHOST_LABEL = gtk_label_new ("ROBOTHOST:");
-  gtk_widget_ref (ROBOTHOST_LABEL);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "ROBOTHOST_LABEL", ROBOTHOST_LABEL,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (ROBOTHOST_LABEL);
-  gtk_table_attach (GTK_TABLE (table7), ROBOTHOST_LABEL, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (ROBOTHOST_LABEL), 1, 0.5);
-  gtk_misc_set_padding (GTK_MISC (ROBOTHOST_LABEL), 10, 0);
-
-  hbox42 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox42);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox42", hbox42,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hbox42);
-  gtk_table_attach (GTK_TABLE (table7), hbox42, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  BASEPRACTICE_0 = gtk_radio_button_new_with_label (BASEPRACTICE_group, "No");
-  BASEPRACTICE_group = gtk_radio_button_group (GTK_RADIO_BUTTON (BASEPRACTICE_0));
-  gtk_widget_ref (BASEPRACTICE_0);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "BASEPRACTICE_0", BASEPRACTICE_0,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (BASEPRACTICE_0);
-  gtk_box_pack_start (GTK_BOX (hbox42), BASEPRACTICE_0, FALSE, FALSE, 0);
-
-  BASEPRACTICE_1 = gtk_radio_button_new_with_label (BASEPRACTICE_group, "Yes");
-  BASEPRACTICE_group = gtk_radio_button_group (GTK_RADIO_BUTTON (BASEPRACTICE_1));
-  gtk_widget_ref (BASEPRACTICE_1);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "BASEPRACTICE_1", BASEPRACTICE_1,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (BASEPRACTICE_1);
-  gtk_box_pack_start (GTK_BOX (hbox42), BASEPRACTICE_1, FALSE, FALSE, 0);
-
-  hbox43 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox43);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox43", hbox43,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hbox43);
-  gtk_table_attach (GTK_TABLE (table7), hbox43, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  ROBOTHOST = gtk_entry_new ();
-  gtk_widget_ref (ROBOTHOST);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "ROBOTHOST", ROBOTHOST,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (ROBOTHOST);
-  gtk_box_pack_start (GTK_BOX (hbox43), ROBOTHOST, TRUE, TRUE, 0);
-
-  label127 = gtk_label_new ("");
-  gtk_widget_ref (label127);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "label127", label127,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label127);
-  gtk_table_attach (GTK_TABLE (table7), label127, 0, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-  label51 = gtk_label_new ("Base Practice");
-  gtk_widget_ref (label51);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "label51", label51,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label51);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 7), label51);
-
-  table16 = gtk_table_new (3, 2, FALSE);
+  table16 = gtk_table_new (5, 2, FALSE);
   gtk_widget_ref (table16);
   gtk_object_set_data_full (GTK_OBJECT (gum), "table16", table16,
                             (GtkDestroyNotify) gtk_widget_unref);
@@ -3441,87 +3349,61 @@ create_gum (void)
   gtk_object_set_data_full (GTK_OBJECT (gum), "label1397", label1397,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (label1397);
-  gtk_table_attach (GTK_TABLE (table16), label1397, 0, 2, 2, 3,
+  gtk_table_attach (GTK_TABLE (table16), label1397, 0, 2, 4, 5,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-  label1392 = gtk_label_new ("Newbie");
+  label1398 = gtk_label_new ("Pre-T-mode Entertainment Settings\n");
+  gtk_widget_ref (label1398);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label1398", label1398,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label1398);
+  gtk_table_attach (GTK_TABLE (table16), label1398, 0, 2, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+
+  PRET_LABEL = gtk_label_new ("PRET:");
+  gtk_widget_ref (PRET_LABEL);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "PRET_LABEL", PRET_LABEL,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (PRET_LABEL);
+  gtk_table_attach (GTK_TABLE (table16), PRET_LABEL, 0, 1, 3, 4,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (PRET_LABEL), 1, 0.5);
+  gtk_misc_set_padding (GTK_MISC (PRET_LABEL), 10, 0);
+
+  hbox59 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox59);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox59", hbox59,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox59);
+  gtk_table_attach (GTK_TABLE (table16), hbox59, 1, 2, 3, 4,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  PRET_0 = gtk_radio_button_new_with_label (PRET_group, "No");
+  PRET_group = gtk_radio_button_group (GTK_RADIO_BUTTON (PRET_0));
+  gtk_widget_ref (PRET_0);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "PRET_0", PRET_0,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (PRET_0);
+  gtk_box_pack_start (GTK_BOX (hbox59), PRET_0, FALSE, FALSE, 0);
+
+  PRET_1 = gtk_radio_button_new_with_label (PRET_group, "Yes");
+  PRET_group = gtk_radio_button_group (GTK_RADIO_BUTTON (PRET_1));
+  gtk_widget_ref (PRET_1);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "PRET_1", PRET_1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (PRET_1);
+  gtk_box_pack_start (GTK_BOX (hbox59), PRET_1, FALSE, FALSE, 0);
+
+  label1392 = gtk_label_new ("Robots");
   gtk_widget_ref (label1392);
   gtk_object_set_data_full (GTK_OBJECT (gum), "label1392", label1392,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (label1392);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 8), label1392);
-
-  table8 = gtk_table_new (3, 2, FALSE);
-  gtk_widget_ref (table8);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "table8", table8,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (table8);
-  gtk_container_add (GTK_CONTAINER (notebook1), table8);
-  gtk_container_set_border_width (GTK_CONTAINER (table8), 6);
-  gtk_table_set_row_spacings (GTK_TABLE (table8), 6);
-  gtk_table_set_col_spacings (GTK_TABLE (table8), 6);
-
-  label128 = gtk_label_new ("Hockey Mode Settings\n");
-  gtk_widget_ref (label128);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "label128", label128,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label128);
-  gtk_table_attach (GTK_TABLE (table8), label128, 0, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  HOCKEY_LABEL = gtk_label_new ("HOCKEY:");
-  gtk_widget_ref (HOCKEY_LABEL);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "HOCKEY_LABEL", HOCKEY_LABEL,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (HOCKEY_LABEL);
-  gtk_table_attach (GTK_TABLE (table8), HOCKEY_LABEL, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (HOCKEY_LABEL), 1, 0.5);
-  gtk_misc_set_padding (GTK_MISC (HOCKEY_LABEL), 10, 0);
-
-  hbox44 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox44);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox44", hbox44,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (hbox44);
-  gtk_table_attach (GTK_TABLE (table8), hbox44, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  HOCKEY_0 = gtk_radio_button_new_with_label (HOCKEY_group, "No");
-  HOCKEY_group = gtk_radio_button_group (GTK_RADIO_BUTTON (HOCKEY_0));
-  gtk_widget_ref (HOCKEY_0);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "HOCKEY_0", HOCKEY_0,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (HOCKEY_0);
-  gtk_box_pack_start (GTK_BOX (hbox44), HOCKEY_0, FALSE, FALSE, 0);
-
-  HOCKEY_1 = gtk_radio_button_new_with_label (HOCKEY_group, "Yes");
-  HOCKEY_group = gtk_radio_button_group (GTK_RADIO_BUTTON (HOCKEY_1));
-  gtk_widget_ref (HOCKEY_1);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "HOCKEY_1", HOCKEY_1,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (HOCKEY_1);
-  gtk_box_pack_start (GTK_BOX (hbox44), HOCKEY_1, FALSE, FALSE, 0);
-
-  label131 = gtk_label_new ("");
-  gtk_widget_ref (label131);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "label131", label131,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label131);
-  gtk_table_attach (GTK_TABLE (table8), label131, 0, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-  label54 = gtk_label_new ("Hockey");
-  gtk_widget_ref (label54);
-  gtk_object_set_data_full (GTK_OBJECT (gum), "label54", label54,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label54);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 9), label54);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 7), label1392);
 
   table9 = gtk_table_new (4, 2, FALSE);
   gtk_widget_ref (table9);
@@ -3630,7 +3512,176 @@ create_gum (void)
   gtk_object_set_data_full (GTK_OBJECT (gum), "INL_NOTEBOOK_LABEL", INL_NOTEBOOK_LABEL,
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (INL_NOTEBOOK_LABEL);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 10), INL_NOTEBOOK_LABEL);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 8), INL_NOTEBOOK_LABEL);
+
+  table7 = gtk_table_new (4, 2, FALSE);
+  gtk_widget_ref (table7);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "table7", table7,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (table7);
+  gtk_container_add (GTK_CONTAINER (notebook1), table7);
+  gtk_container_set_border_width (GTK_CONTAINER (table7), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table7), 6);
+  gtk_table_set_col_spacings (GTK_TABLE (table7), 6);
+
+  label126 = gtk_label_new ("Base Practice Mode Settings\n");
+  gtk_widget_ref (label126);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label126", label126,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label126);
+  gtk_table_attach (GTK_TABLE (table7), label126, 0, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  BASEPRACTICE_LABEL = gtk_label_new ("BASEPRACTICE:");
+  gtk_widget_ref (BASEPRACTICE_LABEL);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "BASEPRACTICE_LABEL", BASEPRACTICE_LABEL,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (BASEPRACTICE_LABEL);
+  gtk_table_attach (GTK_TABLE (table7), BASEPRACTICE_LABEL, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (BASEPRACTICE_LABEL), 1, 0.5);
+  gtk_misc_set_padding (GTK_MISC (BASEPRACTICE_LABEL), 10, 0);
+
+  ROBOTHOST_LABEL = gtk_label_new ("ROBOTHOST:");
+  gtk_widget_ref (ROBOTHOST_LABEL);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "ROBOTHOST_LABEL", ROBOTHOST_LABEL,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (ROBOTHOST_LABEL);
+  gtk_table_attach (GTK_TABLE (table7), ROBOTHOST_LABEL, 0, 1, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (ROBOTHOST_LABEL), 1, 0.5);
+  gtk_misc_set_padding (GTK_MISC (ROBOTHOST_LABEL), 10, 0);
+
+  hbox42 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox42);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox42", hbox42,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox42);
+  gtk_table_attach (GTK_TABLE (table7), hbox42, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  BASEPRACTICE_0 = gtk_radio_button_new_with_label (BASEPRACTICE_group, "No");
+  BASEPRACTICE_group = gtk_radio_button_group (GTK_RADIO_BUTTON (BASEPRACTICE_0));
+  gtk_widget_ref (BASEPRACTICE_0);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "BASEPRACTICE_0", BASEPRACTICE_0,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (BASEPRACTICE_0);
+  gtk_box_pack_start (GTK_BOX (hbox42), BASEPRACTICE_0, FALSE, FALSE, 0);
+
+  BASEPRACTICE_1 = gtk_radio_button_new_with_label (BASEPRACTICE_group, "Yes");
+  BASEPRACTICE_group = gtk_radio_button_group (GTK_RADIO_BUTTON (BASEPRACTICE_1));
+  gtk_widget_ref (BASEPRACTICE_1);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "BASEPRACTICE_1", BASEPRACTICE_1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (BASEPRACTICE_1);
+  gtk_box_pack_start (GTK_BOX (hbox42), BASEPRACTICE_1, FALSE, FALSE, 0);
+
+  hbox43 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox43);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox43", hbox43,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox43);
+  gtk_table_attach (GTK_TABLE (table7), hbox43, 1, 2, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  ROBOTHOST = gtk_entry_new ();
+  gtk_widget_ref (ROBOTHOST);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "ROBOTHOST", ROBOTHOST,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (ROBOTHOST);
+  gtk_box_pack_start (GTK_BOX (hbox43), ROBOTHOST, TRUE, TRUE, 0);
+
+  label127 = gtk_label_new ("");
+  gtk_widget_ref (label127);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label127", label127,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label127);
+  gtk_table_attach (GTK_TABLE (table7), label127, 0, 2, 3, 4,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+
+  label51 = gtk_label_new ("Base Practice");
+  gtk_widget_ref (label51);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label51", label51,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label51);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 9), label51);
+
+  table8 = gtk_table_new (3, 2, FALSE);
+  gtk_widget_ref (table8);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "table8", table8,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (table8);
+  gtk_container_add (GTK_CONTAINER (notebook1), table8);
+  gtk_container_set_border_width (GTK_CONTAINER (table8), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table8), 6);
+  gtk_table_set_col_spacings (GTK_TABLE (table8), 6);
+
+  label128 = gtk_label_new ("Hockey Mode Settings\n");
+  gtk_widget_ref (label128);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label128", label128,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label128);
+  gtk_table_attach (GTK_TABLE (table8), label128, 0, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  HOCKEY_LABEL = gtk_label_new ("HOCKEY:");
+  gtk_widget_ref (HOCKEY_LABEL);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "HOCKEY_LABEL", HOCKEY_LABEL,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (HOCKEY_LABEL);
+  gtk_table_attach (GTK_TABLE (table8), HOCKEY_LABEL, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (HOCKEY_LABEL), 1, 0.5);
+  gtk_misc_set_padding (GTK_MISC (HOCKEY_LABEL), 10, 0);
+
+  hbox44 = gtk_hbox_new (FALSE, 0);
+  gtk_widget_ref (hbox44);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "hbox44", hbox44,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox44);
+  gtk_table_attach (GTK_TABLE (table8), hbox44, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  HOCKEY_0 = gtk_radio_button_new_with_label (HOCKEY_group, "No");
+  HOCKEY_group = gtk_radio_button_group (GTK_RADIO_BUTTON (HOCKEY_0));
+  gtk_widget_ref (HOCKEY_0);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "HOCKEY_0", HOCKEY_0,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (HOCKEY_0);
+  gtk_box_pack_start (GTK_BOX (hbox44), HOCKEY_0, FALSE, FALSE, 0);
+
+  HOCKEY_1 = gtk_radio_button_new_with_label (HOCKEY_group, "Yes");
+  HOCKEY_group = gtk_radio_button_group (GTK_RADIO_BUTTON (HOCKEY_1));
+  gtk_widget_ref (HOCKEY_1);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "HOCKEY_1", HOCKEY_1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (HOCKEY_1);
+  gtk_box_pack_start (GTK_BOX (hbox44), HOCKEY_1, FALSE, FALSE, 0);
+
+  label131 = gtk_label_new ("");
+  gtk_widget_ref (label131);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label131", label131,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label131);
+  gtk_table_attach (GTK_TABLE (table8), label131, 0, 2, 2, 3,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+
+  label54 = gtk_label_new ("Hockey");
+  gtk_widget_ref (label54);
+  gtk_object_set_data_full (GTK_OBJECT (gum), "label54", label54,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label54);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 10), label54);
 
   table10 = gtk_table_new (6, 2, FALSE);
   gtk_widget_ref (table10);
@@ -4157,15 +4208,15 @@ create_gum (void)
                       NULL);
 
   gtk_widget_add_accelerator (PING_FREQ, "grab_focus", accel_group,
-                              PING_FREQ_LABEL_key, GDK_MOD1_MASK, 0);
+                              PING_FREQ_LABEL_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
   gtk_widget_add_accelerator (PING_ILOSS_INTERVAL, "grab_focus", accel_group,
-                              PING_ILOSS_INTERVAL_LABEL_key, GDK_MOD1_MASK, 0);
+                              PING_ILOSS_INTERVAL_LABEL_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
   gtk_widget_add_accelerator (PING_GHOSTBUST, "grab_focus", accel_group,
-                              PING_GHOSTBUST_LABEL_key, GDK_MOD1_MASK, 0);
+                              PING_GHOSTBUST_LABEL_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
   gtk_widget_add_accelerator (PING_GHOSTBUST_INTERVAL, "grab_focus", accel_group,
-                              PING_GHOSTBUST_INTERVAL_LABEL_key, GDK_MOD1_MASK, 0);
+                              PING_GHOSTBUST_INTERVAL_LABEL_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
   gtk_widget_add_accelerator (SAVE_DOG_STAT, "grab_focus", accel_group,
-                              SAVE_DOG_STAT_LABEL_key, GDK_MOD1_MASK, 0);
+                              SAVE_DOG_STAT_LABEL_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
 
   gtk_object_set_data (GTK_OBJECT (gum), "tooltips", tooltips);
 

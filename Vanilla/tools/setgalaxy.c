@@ -8,6 +8,7 @@
    setgalaxy F              top out all planets at START_ARMIES
    setgalaxy n <num>:<str>  rename planet <num> to <str>
    setgalaxy C              cool server idea from felix@coop.com 25 Mar 1994
+   setgalaxy Z              close up shop for maintenance
 */
 
 #include <stdio.h>
@@ -34,6 +35,7 @@ extern int openmem(int);
 
 static void usage(void);
 static void CoolServerIdea(void);
+static void CloseUpShop(void);
 static void doINLResources(void);
 static void doResources(void);
 
@@ -73,6 +75,11 @@ int main(int argc, char **argv)
  
     if (*argv[1] == 'C') {
         CoolServerIdea();
+        exit(0);
+    }
+
+    if (*argv[1] == 'Z') {
+        CloseUpShop();
         exit(0);
     }
 
@@ -286,5 +293,98 @@ static void CoolServerIdea(void)
     {
         planets[i].pl_namelen = strlen(planets[i].pl_name);
     }
+}
+
+static void CloseUp(int i) {
+  int m, dx, dy, t = 200;
+  dx = (planets[i].pl_x - 50000)/t;
+  dy = (planets[i].pl_y - 50000)/t;
+  for(m=0; m<t; m++) {
+    planets[i].pl_x -= dx;
+    planets[i].pl_y -= dy;
+    usleep(100000);
+  }
+  planets[i].pl_x = -10000;
+  planets[i].pl_y = -10000;
+  planets[i].pl_flags = 0;
+  planets[i].pl_owner = 0;
+  planets[i].pl_info = 0;
+  planets[i].pl_armies = 0;
+  strcpy ( planets[i].pl_name, "" );
+  planets[i].pl_namelen = strlen(planets[i].pl_name);
+  
+}
+
+static void CloseUpShop2(void)
+{
+  int x, y;
+
+  for (y=0; y<5; y++) {
+    for (x=0; x<4; x++) {
+      CloseUp(front_planets[x][y]);
+    }
+    sleep(2);
+  }
+  for (y=0; y<4; y++) {
+    for (x=0; x<4; x++) {
+      CloseUp(core_planets[x][y]);
+    }
+    sleep(2);
+  }
+  CloseUp(0);
+  CloseUp(10);
+  CloseUp(20);
+  CloseUp(30);
+}
+
+static void CloseUpShop() {
+  int i, m, dx[MAXPLANETS], dy[MAXPLANETS], t = 600;
+
+  for(i=0; i<MAXPLANETS; i++) {
+    dx[i] = (planets[i].pl_x - 50000)/t;
+    dy[i] = (planets[i].pl_y - 50000)/t;
+  }
+
+  for(m=0; m<t; m++) {
+    for(i=0; i<MAXPLANETS; i++) {
+      planets[i].pl_x -= dx[i];
+      planets[i].pl_y -= dy[i];
+    }
+    if (m == (t-100)) {
+      for(i=0; i<MAXPLANETS; i++) {
+	planets[i].pl_flags = 0;
+	planets[i].pl_owner = 0;
+	planets[i].pl_info = ALLTEAM;
+	planets[i].pl_armies = 0;
+	strcpy ( planets[i].pl_name, "   " );
+	planets[i].pl_namelen = strlen(planets[i].pl_name);
+      }
+    }
+    usleep(200000);
+  }
+
+  for(i=0; i<MAXPLANETS; i++) {
+    planets[i].pl_x = -20000;
+    planets[i].pl_y = -20000;
+  }
+
+  sleep(2);
+
+  for(i=0; i<MAXPLAYER; i++) {
+    players[i].p_team = 0;
+    players[i].p_hostile = ALLTEAM;
+    players[i].p_swar = ALLTEAM;
+    players[i].p_war = ALLTEAM;
+    sprintf(players[i].p_mapchars, "%c%c", 
+	    teamlet[players[i].p_team], shipnos[i]);
+    sprintf(players[i].p_longname, "%s (%s)", 
+	    players[i].p_name, players[i].p_mapchars);
+  }
+
+  /* don't let them come back? */
+  planets[0].pl_couptime = 999999;
+  planets[10].pl_couptime = 999999;
+  planets[20].pl_couptime = 999999;
+  planets[30].pl_couptime = 999999;
 }
 

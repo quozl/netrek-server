@@ -57,3 +57,27 @@ This is handled by program code at the metaserver.
 --
 James Cameron                                    (cameron@stl.dec.com)
 Digital Equipment Corporation (Australia) Pty. Ltd. A.C.N. 000 446 800
+
+
+--
+
+
+INL Metaservers HOWTO
+by James Cameron <quozl@us.netrek.org>
+from work by "E. Hietbrink" <Shadow.Hunter@netrek.org> on 7th June 2004
+
+a) list your server twice each time, with "home." and "away." in front
+of the host name (these names need not be registered, as the server
+will strip the name before sending the host name to the metaserver),
+
+b) set the server type to I,
+
+c) list the appropriate ports.
+
+For example;
+
+metaserver.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
+metaserver.us.netrek.org 3521 60 120 away.nl.netrek.org I 4577 5000 open
+metaserver2.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
+metaserver2.us.netrek.org 3521 60 120 away.nl.netrek.org I 4577 5000 open
+

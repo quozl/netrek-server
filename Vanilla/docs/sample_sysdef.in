@@ -1,4 +1,4 @@
-#	$Id: sample_sysdef.in,v 1.1 2005/03/21 05:23:34 jerub Exp $	
+#	$Id: sample_sysdef.in,v 1.2 2005/03/21 10:17:16 quozl Exp $	
 #
 #	The sample sysdef file shipped with the server.
 #
@@ -153,8 +153,11 @@ BASEPRACTICE=0
 #
 #ROBOTHOST=myrtle
 #
-#       Newbie Server
+#    Newbie Server
 NEWBIE=0
+#
+#    Pre T-mode Entertainment (maintains 4 on 4 with robots) 
+PRET=0
 #
 #	Hockey Server
 HOCKEY=0
@@ -168,7 +171,7 @@ GALACTIC_SMOOTH=1
 INL=@INL@
 #
 #	Record INL games server side with CamBot.  (0 = no, 1 = yes)
-INL_RECORD=0
+INL_RECORD=@INL@
 #
 #	Enable Dogfight practice robot.
 DOGFIGHT=0

@@ -1,4 +1,4 @@
-/* $Id: data.h,v 1.1 2005/03/21 05:23:36 jerub Exp $
+/* $Id: data.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
  */
 
 #ifndef _h_data
@@ -258,6 +258,7 @@ extern char Daemon[FNAMESIZE];
 extern char Robot[FNAMESIZE];
 extern char LogFileName[FNAMESIZE];
 extern char PlayerFile[FNAMESIZE];
+extern char PlayerIndexFile[FNAMESIZE];
 extern char ConqFile[FNAMESIZE];
 extern char SysDef_File[FNAMESIZE];
 extern char Time_File[FNAMESIZE];
@@ -288,7 +289,10 @@ extern char Basep[FNAMESIZE];
 #ifdef NEWBIESERVER
 extern char Newbie[FNAMESIZE];
 #endif
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#ifdef PRETSERVER
+extern char PreT[FNAMESIZE];
+#endif
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 extern char Robodir[FNAMESIZE];
 extern char robofile[FNAMESIZE];
 extern char robot_host[FNAMESIZE];
@@ -333,5 +337,8 @@ extern int sent_ship[];
 
 extern char Cambot[FNAMESIZE];
 extern char Cambot_out[FNAMESIZE];
+
+/*this is also defined in ../robotd/data.h*/
+#define PRE_T_ROBOT_LOGIN "Pre_T_Robot!"
 
 #endif /* _h_data */

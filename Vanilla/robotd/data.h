@@ -159,3 +159,8 @@ extern long             packets_received;       /* # all packets received */
 extern int		no_cloak;
 extern int		oggv_packet;
 extern int		off,def;
+
+extern int      ignoreTMode;
+
+/*this is also defined in ../include/data.h*/
+#define PRE_T_ROBOT_LOGIN "Pre_T_Robot!"

@@ -306,6 +306,9 @@
                                 /* NEWBIESERVER    - twinkserver support */
 #define NEWBIESERVER
 
+                                /* PRETSERVER      - pre-T bot  support */
+#define PRETSERVER
+
                                 /* NEW_CREDIT      - give 1 planet for
                                                      destroying, two planets
                                                      for taking.  Be sure to
@@ -455,6 +458,25 @@ only if you have no intention of retaining stats on the server for pickup */
 				beaming down from working if t-mode is not
 				active. */
 #undef NO_BEAM_DOWN_OUT_OF_T_MODE
+
+				/* PLAYER_INDEX - create and maintain
+				an index of the player database, to
+				reduce time to log in for servers with
+				large or untrimmed player databases,
+				requires libgdbm, and indexes only
+				characters who return to the
+				server. */
+#define PLAYER_INDEX
+
+				/* NO_DUPLICATE_HOSTS - prevents two
+				pickup players from the same host,
+				prevents a player opening an observer
+				slot, but does not prevent a player
+				slot being opened by an existing
+				observer slot.  The new client is
+				given a wait queue response of
+				MAXPLAYERS.   Requires FULL_HOSTNAMES. */
+#undef NO_DUPLICATE_HOSTS
 
 #endif		/* SERVER */
 

@@ -23,43 +23,43 @@ DOCS = ${srcdir}/sample_features ${srcdir}/sample_motdclue \
 	${srcdir}/sample_reserved ${srcdir}/sample_tourn.map
 
 install: $(DOCS)
-	if [ ! -f $(LIBDIR)/.features ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_features	$(LIBDIR)/.features ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.features ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_features	$(DESTDIR)$(LIBDIR)/.features ; \
 	fi
-	if [ ! -f $(LIBDIR)/.motd_clue ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(LIBDIR)/.motd_clue ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.motd_clue ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(DESTDIR)$(LIBDIR)/.motd_clue ; \
 	fi
-	if [ ! -f $(LIBDIR)/motd_clue_logo.MASTER ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(LIBDIR)/motd_clue_logo.MASTER ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/motd_clue_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(DESTDIR)$(LIBDIR)/motd_clue_logo.MASTER ; \
 	fi
-	if [ ! -f $(LIBDIR)/motd_basep_logo.MASTER ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(LIBDIR)/motd_basep_logo.MASTER ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/motd_basep_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(DESTDIR)$(LIBDIR)/motd_basep_logo.MASTER ; \
 	fi
-	if [ ! -f $(LIBDIR)/.sysdef ]; then \
-		$(INSTALLDATA) sample_sysdef	$(LIBDIR)/.sysdef ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.sysdef ]; then \
+		$(INSTALLDATA) sample_sysdef	$(DESTDIR)$(LIBDIR)/.sysdef ; \
 	fi
-	if [ ! -f $(LIBDIR)/.motd ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motd	$(LIBDIR)/.motd ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.motd ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motd	$(DESTDIR)$(LIBDIR)/.motd ; \
 	fi
-	if [ ! -f $(LIBDIR)/motd_logo.MASTER ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motd	$(LIBDIR)/motd_logo.MASTER ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/motd_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motd	$(DESTDIR)$(LIBDIR)/motd_logo.MASTER ; \
 	fi
-	if [ ! -f $(LIBDIR)/.ports ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_ports	$(LIBDIR)/.ports ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.ports ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_ports	$(DESTDIR)$(LIBDIR)/.ports ; \
 	fi
-	if [ ! -f $(LIBDIR)/.time ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_time	$(LIBDIR)/.time ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.time ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_time	$(DESTDIR)$(LIBDIR)/.time ; \
 	fi
-	if [ ! -f $(LIBDIR)/.motd_basep ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(LIBDIR)/.motd_basep ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.motd_basep ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(DESTDIR)$(LIBDIR)/.motd_basep ; \
 	fi
-	if [ ! -f $(LIBDIR)/.reserved ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_reserved	$(LIBDIR)/.reserved ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.reserved ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_reserved	$(DESTDIR)$(LIBDIR)/.reserved ; \
 	fi
-	if [ ! -f $(LIBDIR)/.tourn.map ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_tourn.map	$(LIBDIR)/.tourn.map ; \
+	if [ ! -f $(DESTDIR)$(LIBDIR)/.tourn.map ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_tourn.map	$(DESTDIR)$(LIBDIR)/.tourn.map ; \
 	fi
-	touch $(LIBDIR)/.nocount
-	touch $(LIBDIR)/.banned
-	touch $(LIBDIR)/.bypass
-	touch $(LIBDIR)/.clue-bypass
+	touch $(DESTDIR)$(LIBDIR)/.nocount
+	touch $(DESTDIR)$(LIBDIR)/.banned
+	touch $(DESTDIR)$(LIBDIR)/.bypass
+	touch $(DESTDIR)$(LIBDIR)/.clue-bypass

@@ -1,4 +1,4 @@
-/* $Id: packets.h,v 1.1 2005/03/21 05:23:36 jerub Exp $
+/* $Id: packets.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
  */
 
 /* 
@@ -136,7 +136,7 @@
 #define CP_S_RESERVED	46
 #define CP_S_DUMMY	47
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 #define CP_OGGV         50
 #endif
 
@@ -910,7 +910,7 @@ struct stats_s_spacket
   };
 
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 struct oggv_cpacket {
    char                 type;   /* CP_OGGV */
    u_char		def;    /* defense 1-100 */

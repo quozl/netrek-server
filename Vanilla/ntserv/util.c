@@ -137,4 +137,3 @@ int find_slot_by_host(char *host, int j)
 #endif
   return -1;
 }
-

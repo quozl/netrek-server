@@ -140,7 +140,21 @@ int main(int argc, char **argv)
       case 'd': getship(&players[player].p_ship, DESTROYER); break;
       case 's': getship(&players[player].p_ship, SCOUT); break;
       case 'o': getship(&players[player].p_ship, STARBASE); break;
-      case 'A': getship(&players[player].p_ship, ATT); break;
+      case 'A': 
+	getship(&players[player].p_ship, ATT); 
+	players[player].p_ship.s_width = 20;
+	players[player].p_ship.s_height = 20;
+	break;
+      case 'g': 
+	getship(&players[player].p_ship, SCOUT);
+	players[player].p_ship.s_torpdamage = 1;
+	players[player].p_ship.s_torpfuse = 8;
+	players[player].p_ship.s_phaserdamage = 1;
+	players[player].p_ship.s_plasmadamage = 1;
+	players[player].p_ship.s_plasmaspeed = 1;
+	players[player].p_ship.s_plasmaturns = 1;
+	players[player].p_ship.s_maxshield = 750;
+	break;
       default:
 	printf("Valid ship types: abcdsoA.\n");
 	exit(1);
@@ -151,6 +165,7 @@ int main(int argc, char **argv)
       players[player].p_wtemp = 0;
       players[player].p_etemp = 0;
       players[player].p_fuel = players[player].p_ship.s_maxfuel;
+      if (argv[2][1] == 'o') players[player].p_flags |= PFDOCKOK;
       break;
     case 'p':		/* puck? */
       players[player].p_ship.s_tractstr = 1;
@@ -201,6 +216,10 @@ int main(int argc, char **argv)
     case 'h':		/* harm */
       players[player].p_shield = 0;
       players[player].p_damage = players[player].p_ship.s_maxdamage/2;
+      break;
+    case 'u':
+      players[player].p_flags |= PFSHIELD;
+      players[player].p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
       break;
     case 'R':		/* robot kill? */
       if (players[player].p_flags & PFROBOT) {

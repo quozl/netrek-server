@@ -165,6 +165,7 @@ cb_updt(int unused)
 	struct stats_spacket *stats;
 	struct you_short_spacket *self;
 	struct youss_spacket *self2;
+	struct flags_spacket *flags;
 
 	clientVKillsCount = 0;
 
@@ -182,6 +183,7 @@ cb_updt(int unused)
 	    sndPlayerInfo(cpli, pl);
 	    sndKills(kills, pl);
 	    sndPStatus(pstatus, pl);
+	    sndFlags(flags, pl, UPDT_ALL);
 
 	    /* NOTE: Can't send VPlayer packets, it only sends player positions
 	     * relative to me->p_x/me->p_y.  We need to use the older packets

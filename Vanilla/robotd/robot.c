@@ -1863,7 +1863,7 @@ mtime(x)
    if(x){
       gettimeofday(&tm, NULL);
       /* mask off 16 high bits and add in milliseconds */
-      v = (tm.tv_sec & 0x0000ffff)*1000+tm.tv_usec;
+      v = (tm.tv_sec & 0x0000ffff)*1000+tm.tv_usec/1000;
       mtime_cache = v;
    }
    return mtime_cache;

@@ -15,7 +15,7 @@ INSTALLDATA = @INSTALL_DATA@
 
 #	ntserv object files
 
-R_OBJS =    cluecheck.o  coup.o  data.o  death.o  detonate.o  enter.o \
+R_OBJS =    cluecheck.o coup.o data.o db.o death.o detonate.o enter.o \
 	    findslot.o  getentry.o  getname.o  salt.o getship.o  input.o \
 	    interface.o  main.o  orbit.o  phaser.o  plasma.o  redraw.o \
 	    reserved.o  sintab.o  socket.o  genspkt.o  smessage.o  \
@@ -34,6 +34,7 @@ D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  data.o  slotmaint.o \
 #	Src files
 
 R_FILES =   ${srcdir}/cluecheck.c ${srcdir}/coup.c ${srcdir}/data.c \
+            ${srcdir}/db.c \
             ${srcdir}/death.c ${srcdir}/detonate.c  ${srcdir}/enter.c \
 	    ${srcdir}/findslot.c  ${srcdir}/getentry.c \
             ${srcdir}/getname.c  ${srcdir}/salt.c ${srcdir}/getship.c  ${srcdir}/input.c \
@@ -64,13 +65,16 @@ LINTFLAGS = -habxc $(INCS)
 all: $(PMAKE) ntserv daemonII 
 
 ntserv: $(PMAKE) $(R_OBJS)
-	$(CC) $(CFLAGS) ${LDFLAGS} -o ntserv $(R_OBJS) $(LIBS) $(LIBCRYPT)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ntserv $(R_OBJS) $(LIBS) $(LIBCRYPT) `glib-config --libs` -lgdbm
 
 daemonII: $(PMAKE) $(D_OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o daemonII $(D_OBJS) $(EXTRALIBS)
 
 commands.o: $(PMAKE) ${srcdir}/commands.c
 	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/commands.c
+
+db.o: $(PMAKE) db.c
+	$(CC) $(CFLAGS) $(DEP) `glib-config --cflags` -c db.c
 
 cflags:
 	echo "static char cflags[]=\"$(CFLAGS) $(LIBS)\";" >../cflags.h
@@ -101,12 +105,12 @@ uninstall:
 
 install: ntserv daemonII 
 	-@if [ ! -d $(LIBDIR) ]; then \
-	  $(INSTALL) -d $(LIBDIR); \
+	  $(INSTALL) -d $(DESTDIR)$(LIBDIR); \
 	fi
-	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(LIBDIR)/ntserv
-	$(INSTALLPROG) $(INSTALLOPTS) daemonII $(LIBDIR)/daemonII
-	touch $(LIBDIR)/.planets
-	chmod 600 $(LIBDIR)/.planets
+	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
+	$(INSTALLPROG) $(INSTALLOPTS) daemonII $(DESTDIR)$(LIBDIR)/daemonII
+	touch $(DESTDIR)$(LIBDIR)/.planets
+	chmod 600 $(DESTDIR)$(LIBDIR)/.planets
 
 installbin: install
 	echo "target installbin deprecated, assumed install"

@@ -1,4 +1,4 @@
-/* $Id: proto.h,v 1.1 2005/03/21 05:23:36 jerub Exp $
+/* $Id: proto.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
  *
  * Function prototypes for externally accessed functions.
  */
@@ -11,6 +11,12 @@ void clue_check(void);
 
 /* coup.c */
 void coup(void);
+
+/* db.c */
+int findplayer(char *namePick, struct statentry *player);
+void savestats(void);
+void changepassword(char *passPick);
+void savepass(const struct statentry *);
 
 /* death.c */
 void death(void);
@@ -39,7 +45,7 @@ void getFeature(struct feature_cpacket *cpack, struct feature_spacket *spack);
 void TellClient(char *typ);
 
 /* findslot.c */
-int findslot(int w_queue);
+int findslot(int w_queue, char *host);
 
 /* gencmds.c */
 char *addr_mess(int who, int type);
@@ -70,8 +76,6 @@ void getEntry(int *team, int *stype);
 
 /* getname.c */
 void getname(void);
-void savestats(void);
-void changepassword(char *passPick);
 
 /* getpath.c */
 void getpath(void);

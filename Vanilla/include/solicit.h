@@ -2,7 +2,7 @@
 #define MAXMETABYTES 2048
 
 /* maximum number of metaservers supported */
-#define MAXMETASERVERS 3
+#define MAXMETASERVERS 4
 
 /* minimum allowable delay between updates to metaserver */
 #define META_MINIMUM_DELAY 60

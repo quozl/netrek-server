@@ -272,8 +272,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
                 me->p_login,
 		me->p_full_hostname);
 #endif
-	}	
-	else {
+	} else {
 #ifndef FULL_HOSTNAMES
 	/* old-style join message 4/13/92 TC */
 	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
@@ -292,8 +291,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_mapchars, 
 		me->p_login,
 		me->p_full_hostname);
-	}
 #endif
+	}
 
 	lastrank = mystats->st_rank;
     }

@@ -40,7 +40,7 @@ clobber: clean
 	-rm -f $(PROGRAM)
 
 install: all
-	$(INSTALLPROG) $(INSTALLOPTS) $(PROGRAM) $(LIBDIR)
+	$(INSTALLPROG) $(INSTALLOPTS) $(PROGRAM) $(DESTDIR)$(LIBDIR)
 
 shar:
 	shar README Makefile $(HDRS) $(SRCS) > pledit.shar

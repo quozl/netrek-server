@@ -20,6 +20,13 @@
 #include "puckdefs.h"
 #include "proto.h"
 
+#ifdef PUCK_FIRST 
+#include <sys/sem.h> 
+
+struct sembuf sem_puck_op[1]; 
+int sem_puck;
+#endif /*PUCK_FIRST*/
+
 void config(int);
 
 extern int redrawall;
@@ -104,6 +111,17 @@ char **argv;
     myship = &me->p_ship;
     mystats = &me->p_stats;
     lastm = mctl->mc_current;
+ 
+#ifdef PUCK_FIRST
+    if((sem_puck = semget(PUCK_FIRST, 1, 0600)) == -1)
+      {
+	ERROR(1,("Puck unable to get semaphore."));
+      }
+
+    sem_puck_op[0].sem_num = 0;
+    sem_puck_op[0].sem_op = 1;
+    sem_puck_op[0].sem_flg = 0; 
+#endif /*PUCK_FIRST*/
 
     /* At this point we have memory set up.  If we aren't a fleet, we don't
        want to replace any other robots on this team, so we'll check the

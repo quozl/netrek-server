@@ -155,3 +155,5 @@ long            packets_received=0;     /* # all packets received */
 int		no_cloak = 0;
 int		oggv_packet=0;
 int		off=0,def=0;
+
+int     ignoreTMode = 0;

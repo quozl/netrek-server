@@ -10,17 +10,11 @@
   <language>C</language>
   <gnome_support>False</gnome_support>
   <gettext_support>False</gettext_support>
-  <use_widget_names>False</use_widget_names>
   <output_main_file>False</output_main_file>
-  <output_support_files>True</output_support_files>
-  <output_build_files>True</output_build_files>
-  <backup_source_files>True</backup_source_files>
   <main_source_file>main.c</main_source_file>
   <main_header_file>main.h</main_header_file>
   <handler_source_file>signals.c</handler_source_file>
   <handler_header_file>signals.h</handler_header_file>
-  <support_source_file>support.c</support_source_file>
-  <support_header_file>support.h</support_header_file>
 </project>
 
 <widget>
@@ -699,6 +693,7 @@
 	      <last_modification_time>Tue, 09 Feb 1999 23:22:27 GMT</last_modification_time>
 	    </signal>
 	    <label>Add</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 
 	  <widget>
@@ -712,6 +707,7 @@
 	      <last_modification_time>Wed, 10 Feb 1999 13:01:48 GMT</last_modification_time>
 	    </signal>
 	    <label>Update</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 
 	  <widget>
@@ -726,6 +722,7 @@
 	      <last_modification_time>Tue, 09 Feb 1999 23:22:40 GMT</last_modification_time>
 	    </signal>
 	    <label>Delete</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 
 	  <widget>
@@ -740,6 +737,7 @@
 	      <last_modification_time>Tue, 09 Feb 1999 23:22:55 GMT</last_modification_time>
 	    </signal>
 	    <label>Save</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 	</widget>
 
@@ -756,7 +754,7 @@
 	<widget>
 	  <class>GtkLabel</class>
 	  <name>label139</name>
-	  <label>Listener Process Commands</label>
+	  <label>netrekd - Listener Process Commands</label>
 	  <justify>GTK_JUSTIFY_CENTER</justify>
 	  <wrap>False</wrap>
 	  <xalign>0.5</xalign>
@@ -826,6 +824,7 @@ Remember the players.</label>
 		<last_modification_time>Tue, 09 Feb 1999 23:23:58 GMT</last_modification_time>
 	      </signal>
 	      <label>Enable</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
 	    </widget>
 
 	    <widget>
@@ -840,6 +839,7 @@ Remember the players.</label>
 		<last_modification_time>Tue, 09 Feb 1999 23:24:23 GMT</last_modification_time>
 	      </signal>
 	      <label>Start</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
 	    </widget>
 
 	    <widget>
@@ -854,6 +854,7 @@ Remember the players.</label>
 		<last_modification_time>Tue, 09 Feb 1999 23:24:32 GMT</last_modification_time>
 	      </signal>
 	      <label>Restart</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
 	    </widget>
 
 	    <widget>
@@ -868,6 +869,7 @@ Remember the players.</label>
 		<last_modification_time>Tue, 09 Feb 1999 23:24:44 GMT</last_modification_time>
 	      </signal>
 	      <label>Stop</label>
+	      <relief>GTK_RELIEF_NORMAL</relief>
 	    </widget>
 	  </widget>
 	</widget>
@@ -1840,6 +1842,7 @@ Comments</label>
 	      <last_modification_time>Tue, 25 May 1999 06:55:47 GMT</last_modification_time>
 	    </signal>
 	    <label>Add</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 
 	  <widget>
@@ -1852,6 +1855,7 @@ Comments</label>
 	      <last_modification_time>Tue, 25 May 1999 06:55:53 GMT</last_modification_time>
 	    </signal>
 	    <label>Update</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 
 	  <widget>
@@ -1864,6 +1868,7 @@ Comments</label>
 	      <last_modification_time>Tue, 25 May 1999 06:56:10 GMT</last_modification_time>
 	    </signal>
 	    <label>Delete</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 
 	  <widget>
@@ -1876,6 +1881,7 @@ Comments</label>
 	      <last_modification_time>Tue, 25 May 1999 06:56:19 GMT</last_modification_time>
 	    </signal>
 	    <label>Save</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	  </widget>
 	</widget>
       </widget>
@@ -2048,6 +2054,7 @@ Comments</label>
 	      <last_modification_time>Thu, 14 Jan 1999 16:22:13 GMT</last_modification_time>
 	    </signal>
 	    <label>Select File...</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	    <child>
 	      <padding>0</padding>
 	      <expand>True</expand>
@@ -3045,6 +3052,7 @@ Comments</label>
 	    <name>WEAPONS_PLASMA</name>
 	    <can_focus>True</can_focus>
 	    <label>PLASMA</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	    <active>True</active>
 	    <child>
 	      <padding>0</padding>
@@ -3058,6 +3066,7 @@ Comments</label>
 	    <name>WEAPONS_TRACTOR</name>
 	    <can_focus>True</can_focus>
 	    <label>TRACTOR</label>
+	    <relief>GTK_RELIEF_NORMAL</relief>
 	    <active>True</active>
 	    <child>
 	      <padding>0</padding>
@@ -5900,225 +5909,9 @@ Antares
 
       <widget>
 	<class>GtkTable</class>
-	<name>table7</name>
-	<border_width>6</border_width>
-	<rows>4</rows>
-	<columns>2</columns>
-	<homogeneous>False</homogeneous>
-	<row_spacing>6</row_spacing>
-	<column_spacing>6</column_spacing>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label126</name>
-	  <label>Base Practice Mode Settings
-</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>BASEPRACTICE_LABEL</name>
-	  <label>BASEPRACTICE:</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>1</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>10</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>ROBOTHOST_LABEL</name>
-	  <label>ROBOTHOST:</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>1</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>10</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkHBox</class>
-	  <name>hbox42</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkRadioButton</class>
-	    <name>BASEPRACTICE_0</name>
-	    <can_focus>True</can_focus>
-	    <label>No</label>
-	    <active>False</active>
-	    <draw_indicator>True</draw_indicator>
-	    <group>BASEPRACTICE</group>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkRadioButton</class>
-	    <name>BASEPRACTICE_1</name>
-	    <can_focus>True</can_focus>
-	    <label>Yes</label>
-	    <active>False</active>
-	    <draw_indicator>True</draw_indicator>
-	    <group>BASEPRACTICE</group>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkHBox</class>
-	  <name>hbox43</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkEntry</class>
-	    <name>ROBOTHOST</name>
-	    <can_focus>True</can_focus>
-	    <editable>True</editable>
-	    <text_visible>True</text_visible>
-	    <text_max_length>0</text_max_length>
-	    <text></text>
-	    <child>
-	      <padding>0</padding>
-	      <expand>True</expand>
-	      <fill>True</fill>
-	    </child>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label127</name>
-	  <label></label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>3</top_attach>
-	    <bottom_attach>4</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>True</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkLabel</class>
-	<child_name>Notebook:tab</child_name>
-	<name>label51</name>
-	<label>Base Practice</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0.5</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-      </widget>
-
-      <widget>
-	<class>GtkTable</class>
 	<name>table16</name>
 	<border_width>6</border_width>
-	<rows>3</rows>
+	<rows>5</rows>
 	<columns>2</columns>
 	<homogeneous>False</homogeneous>
 	<row_spacing>6</row_spacing>
@@ -6241,8 +6034,8 @@ Antares
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
+	    <top_attach>4</top_attach>
+	    <bottom_attach>5</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>True</xexpand>
@@ -6253,35 +6046,11 @@ Antares
 	    <yfill>True</yfill>
 	  </child>
 	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkLabel</class>
-	<child_name>Notebook:tab</child_name>
-	<name>label1392</name>
-	<label>Newbie</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0.5</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-      </widget>
-
-      <widget>
-	<class>GtkTable</class>
-	<name>table8</name>
-	<border_width>6</border_width>
-	<rows>3</rows>
-	<columns>2</columns>
-	<homogeneous>False</homogeneous>
-	<row_spacing>6</row_spacing>
-	<column_spacing>6</column_spacing>
 
 	<widget>
 	  <class>GtkLabel</class>
-	  <name>label128</name>
-	  <label>Hockey Mode Settings
+	  <name>label1398</name>
+	  <label>Pre-T-mode Entertainment Settings
 </label>
 	  <justify>GTK_JUSTIFY_CENTER</justify>
 	  <wrap>False</wrap>
@@ -6292,23 +6061,23 @@ Antares
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
+	    <xexpand>False</xexpand>
 	    <yexpand>False</yexpand>
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
-	    <yfill>True</yfill>
+	    <yfill>False</yfill>
 	  </child>
 	</widget>
 
 	<widget>
 	  <class>GtkLabel</class>
-	  <name>HOCKEY_LABEL</name>
-	  <label>HOCKEY:</label>
+	  <name>PRET_LABEL</name>
+	  <label>PRET:</label>
 	  <justify>GTK_JUSTIFY_CENTER</justify>
 	  <wrap>False</wrap>
 	  <xalign>1</xalign>
@@ -6318,8 +6087,8 @@ Antares
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
+	    <top_attach>3</top_attach>
+	    <bottom_attach>4</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
@@ -6327,20 +6096,20 @@ Antares
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
-	    <yfill>True</yfill>
+	    <yfill>False</yfill>
 	  </child>
 	</widget>
 
 	<widget>
 	  <class>GtkHBox</class>
-	  <name>hbox44</name>
+	  <name>hbox59</name>
 	  <homogeneous>False</homogeneous>
 	  <spacing>0</spacing>
 	  <child>
 	    <left_attach>1</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
+	    <top_attach>3</top_attach>
+	    <bottom_attach>4</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
@@ -6353,12 +6122,12 @@ Antares
 
 	  <widget>
 	    <class>GtkRadioButton</class>
-	    <name>HOCKEY_0</name>
+	    <name>PRET_0</name>
 	    <can_focus>True</can_focus>
 	    <label>No</label>
 	    <active>False</active>
 	    <draw_indicator>True</draw_indicator>
-	    <group>HOCKEY</group>
+	    <group>PRET</group>
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
@@ -6368,52 +6137,26 @@ Antares
 
 	  <widget>
 	    <class>GtkRadioButton</class>
-	    <name>HOCKEY_1</name>
+	    <name>PRET_1</name>
 	    <can_focus>True</can_focus>
 	    <label>Yes</label>
 	    <active>False</active>
 	    <draw_indicator>True</draw_indicator>
-	    <group>HOCKEY</group>
+	    <group>PRET</group>
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
 	      <fill>False</fill>
 	    </child>
 	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label131</name>
-	  <label></label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>True</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
 	</widget>
       </widget>
 
       <widget>
 	<class>GtkLabel</class>
 	<child_name>Notebook:tab</child_name>
-	<name>label54</name>
-	<label>Hockey</label>
+	<name>label1392</name>
+	<label>Robots</label>
 	<justify>GTK_JUSTIFY_CENTER</justify>
 	<wrap>False</wrap>
 	<xalign>0.5</xalign>
@@ -6645,6 +6388,376 @@ Antares
 	<child_name>Notebook:tab</child_name>
 	<name>INL_NOTEBOOK_LABEL</name>
 	<label>INL</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+      </widget>
+
+      <widget>
+	<class>GtkTable</class>
+	<name>table7</name>
+	<border_width>6</border_width>
+	<rows>4</rows>
+	<columns>2</columns>
+	<homogeneous>False</homogeneous>
+	<row_spacing>6</row_spacing>
+	<column_spacing>6</column_spacing>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label126</name>
+	  <label>Base Practice Mode Settings
+</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>True</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>BASEPRACTICE_LABEL</name>
+	  <label>BASEPRACTICE:</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>1</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>10</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>1</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>ROBOTHOST_LABEL</name>
+	  <label>ROBOTHOST:</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>1</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>10</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>1</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkHBox</class>
+	  <name>hbox42</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+	  <child>
+	    <left_attach>1</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>BASEPRACTICE_0</name>
+	    <can_focus>True</can_focus>
+	    <label>No</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>BASEPRACTICE</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>BASEPRACTICE_1</name>
+	    <can_focus>True</can_focus>
+	    <label>Yes</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>BASEPRACTICE</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkHBox</class>
+	  <name>hbox43</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+	  <child>
+	    <left_attach>1</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+
+	  <widget>
+	    <class>GtkEntry</class>
+	    <name>ROBOTHOST</name>
+	    <can_focus>True</can_focus>
+	    <editable>True</editable>
+	    <text_visible>True</text_visible>
+	    <text_max_length>0</text_max_length>
+	    <text></text>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label127</name>
+	  <label></label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>3</top_attach>
+	    <bottom_attach>4</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>True</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<child_name>Notebook:tab</child_name>
+	<name>label51</name>
+	<label>Base Practice</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+      </widget>
+
+      <widget>
+	<class>GtkTable</class>
+	<name>table8</name>
+	<border_width>6</border_width>
+	<rows>3</rows>
+	<columns>2</columns>
+	<homogeneous>False</homogeneous>
+	<row_spacing>6</row_spacing>
+	<column_spacing>6</column_spacing>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label128</name>
+	  <label>Hockey Mode Settings
+</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>True</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>HOCKEY_LABEL</name>
+	  <label>HOCKEY:</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>1</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>10</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>1</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkHBox</class>
+	  <name>hbox44</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+	  <child>
+	    <left_attach>1</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>HOCKEY_0</name>
+	    <can_focus>True</can_focus>
+	    <label>No</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>HOCKEY</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>HOCKEY_1</name>
+	    <can_focus>True</can_focus>
+	    <label>Yes</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>HOCKEY</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label131</name>
+	  <label></label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>True</xexpand>
+	    <yexpand>True</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<child_name>Notebook:tab</child_name>
+	<name>label54</name>
+	<label>Hockey</label>
 	<justify>GTK_JUSTIFY_CENTER</justify>
 	<wrap>False</wrap>
 	<xalign>0.5</xalign>
@@ -7500,6 +7613,7 @@ Antares
 	    <last_modification_time>Thu, 14 Jan 1999 02:35:18 GMT</last_modification_time>
 	  </signal>
 	  <label>Reload</label>
+	  <relief>GTK_RELIEF_NORMAL</relief>
 	</widget>
 
 	<widget>
@@ -7512,6 +7626,7 @@ Antares
 	    <last_modification_time>Thu, 14 Jan 1999 02:35:33 GMT</last_modification_time>
 	  </signal>
 	  <label>Save</label>
+	  <relief>GTK_RELIEF_NORMAL</relief>
 	</widget>
 
 	<widget>
@@ -7524,6 +7639,7 @@ Antares
 	    <last_modification_time>Thu, 14 Jan 1999 02:35:43 GMT</last_modification_time>
 	  </signal>
 	  <label>Quit</label>
+	  <relief>GTK_RELIEF_NORMAL</relief>
 	</widget>
       </widget>
     </widget>
@@ -7562,6 +7678,7 @@ Antares
       <last_modification_time>Thu, 14 Jan 1999 15:51:20 GMT</last_modification_time>
     </signal>
     <label>OK</label>
+    <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
 
   <widget>
@@ -7576,6 +7693,7 @@ Antares
       <last_modification_time>Thu, 14 Jan 1999 15:51:43 GMT</last_modification_time>
     </signal>
     <label>Cancel</label>
+    <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
 </widget>
 
@@ -7604,23 +7722,6 @@ Antares
     <border_width>6</border_width>
     <homogeneous>False</homogeneous>
     <spacing>0</spacing>
-
-    <widget>
-      <class>GtkLabel</class>
-      <name>message_label</name>
-      <label>unset label</label>
-      <justify>GTK_JUSTIFY_CENTER</justify>
-      <wrap>False</wrap>
-      <xalign>0.5</xalign>
-      <yalign>0.5</yalign>
-      <xpad>0</xpad>
-      <ypad>0</ypad>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
-    </widget>
 
     <widget>
       <class>GtkHBox</class>
@@ -7664,8 +7765,26 @@ Antares
 	    <last_modification_time>Thu, 21 Jan 1999 13:13:58 GMT</last_modification_time>
 	  </signal>
 	  <label>OK</label>
+	  <relief>GTK_RELIEF_NORMAL</relief>
 	</widget>
       </widget>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <name>message_label</name>
+      <label>unset label</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
     </widget>
   </widget>
 </widget>
@@ -7702,6 +7821,7 @@ Antares
       <last_modification_time>Thu, 14 Jan 1999 15:48:14 GMT</last_modification_time>
     </signal>
     <label>OK</label>
+    <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
 
   <widget>
@@ -7716,6 +7836,7 @@ Antares
       <last_modification_time>Thu, 14 Jan 1999 15:51:59 GMT</last_modification_time>
     </signal>
     <label>Cancel</label>
+    <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
 </widget>
 
@@ -7751,6 +7872,7 @@ Antares
       <last_modification_time>Thu, 14 Jan 1999 15:51:07 GMT</last_modification_time>
     </signal>
     <label>OK</label>
+    <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
 
   <widget>
@@ -7765,6 +7887,7 @@ Antares
       <last_modification_time>Thu, 14 Jan 1999 15:50:59 GMT</last_modification_time>
     </signal>
     <label>Cancel</label>
+    <relief>GTK_RELIEF_NORMAL</relief>
   </widget>
 </widget>
 

@@ -60,9 +60,9 @@ decide()
    }
 
    /* no automatic decisions unless t-mode */
-   if(!status->tourn && !_state.itourn)
+   if(!status->tourn && !_state.itourn) {
       return;
-
+   }
 
    /* decide ship and course of action */
    if(_state.dead && !_donedead){
@@ -453,7 +453,9 @@ pick_df_ship()
    
    if(r < 5) return CRUISER;
    if(r < 7) return BATTLESHIP;
-   if(r < 9) return DESTROYER;
+   if(r < 9
+       && strcmp(me->p_login, PRE_T_ROBOT_LOGIN) /* if we're ignoring T we should keep the ships large */
+       ) return DESTROYER;
    return CRUISER;
 }
 
@@ -471,6 +473,9 @@ check_protect(min_pl, ship, value)
    int			min_p = INT_MAX-1;
    struct planet	*defp = NULL, *cp;
    int			armycount = 1;
+
+   if(!strcmp(me->p_login, PRE_T_ROBOT_LOGIN)) 
+      return 0; /* we can't be protecting if we're just maintaining 4 on 4 */
 
    /* would have gotten here if take failed with too few armies */
    if(me->p_armies > 0 && (pls->total_tarmies + me->p_armies < 3)){
@@ -715,16 +720,18 @@ check_take(ship)
 	 *ship = ASSAULT;
 
       if(ship){
-	 if((home_dist() < 15000 && me->p_kills < 2 && pls->total_textra_armies > 10) || tpl->pl_armies > 20)
-	    *ship = ASSAULT;
-	 else if((tpl->pl_flags & PLAGRI) && me->p_kills < 2)
-	    *ship = ASSAULT;
-	 else if(me->p_kills >= 2.0 && tpl->pl_armies < 10)
-	    *ship = DESTROYER;
-	 else if(tpl->pl_armies < 10)
-	    *ship = SCOUT;
-	 else
-	    *ship = SCOUT;
+            if((home_dist() < 15000 && me->p_kills < 2 && pls->total_textra_armies > 10) || tpl->pl_armies > 20)
+                  *ship = ASSAULT;
+            else if((tpl->pl_flags & PLAGRI) && me->p_kills < 2)
+                  *ship = ASSAULT;
+            else if(!strcmp(me->p_login, PRE_T_ROBOT_LOGIN)) /* if we're ignoring T we probably should keep ships larger */
+                  *ship = CRUISER;
+            else if(me->p_kills >= 2.0 && tpl->pl_armies < 10)
+                  *ship = DESTROYER;
+            else if(tpl->pl_armies < 10)
+                  *ship = SCOUT;
+            else
+                  *ship = SCOUT;
       }
 
       take_c(tpl, NULL);
@@ -770,6 +777,10 @@ check_ogg(ship, dist)
 	       *ship = CRUISER;
 	       break;
 	    case SCOUT:
+             if(!strcmp(me->p_login, PRE_T_ROBOT_LOGIN)) { /* if we're ignoring T we should keep the ships large */
+               *ship = CRUISER;
+               break;
+             }
 	       *ship = DESTROYER;
 	       break;
 	    case CRUISER:

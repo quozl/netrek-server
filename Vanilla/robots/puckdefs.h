@@ -45,6 +45,18 @@
 
 #define NUMSKATERS	12
 
+                       /* With SITOUT_HURTS defined, sitout causes
+                          ships to be severely damaged (in order to prevent
+                          abuse of sitout to gain position). If undefined,
+                          sitout does not damage, but also does not
+                          change a ship's y-position (allowing ships to
+                          return to the rink quickly if a sitout wasn't
+                          really needed, etc, which happens far more often
+                          than abuse). Default was defined  */
+#define SITOUT_HURTS
+ 
+
+
 /* Some "computer speed" definitions */
 #define HOWOFTEN 1                       /*Robot moves every HOWOFTEN cycles*/
 #define PERSEC (1000000/UPDATE/HOWOFTEN) /* # of robo calls per second*/
@@ -78,6 +90,17 @@
 #define KLI_E (RINK_TOP    +   TENTH/2) /* end of Kli goal */
 #define KLI_B (RINK_TOP    + (RINK_LENGTH/3)) /* Kli blue line */
 
+                       /* FO_BIAS adds in code for biasing Faceoff against
+                          the scoring team, or a team ahead by more than 5
+                          points.  Leaving this undefined is the default 
+                          behavior of leaving puck in the center without
+                          FACEOFF_HELP code */
+/* #undef FO_BIAS */
+                       /* FACEOFF_HELP should be defined, either as 0
+                          to leave the default behaviour, or > 0 as the
+                          offset to apply to the puck's droppoint at faceoff
+                          to assist the losing team. */
+#define FACEOFF_HELP (TENTH*2/3)
 
 
 /* Some global puck variable definitions */

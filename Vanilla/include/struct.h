@@ -41,6 +41,10 @@ struct pqueue {        /* A player queue */
 #define  QU_NEWBIE_BOT 10   /* Newbie server robots */
 #define  QU_NEWBIE_OBS 11   /* Newbie server observers */
 #define  QU_NEWBIE_DMN 12   /* Newbie server daemon */
+#define  QU_PRET_PLR   9    /* Pre-T server players */
+#define  QU_PRET_BOT   10   /* Pre-T server robots */
+#define  QU_PRET_OBS   11   /* Pre-T server observers */
+#define  QU_PRET_DMN   12   /* Pre-T server daemon */
 /*
  * Queue flag definitions.
  */
@@ -49,6 +53,7 @@ struct pqueue {        /* A player queue */
 #define  QU_OBSERVER  0x002	/* It is an observer queue */
 #define  QU_RESTRICT  0x004	/* Tournmask may be restricted */
 #define  QU_REPORT    0x008	/* Report this queue in the queue command */
+#define  QU_TOK       0x010	/* Allow use of slot t in this queue */
 
 /*
  * Structure for people who are waiting.
@@ -88,6 +93,10 @@ struct status {
 #define ispaused ((status->gameup) & GU_PAUSED)
 #define GU_INROBOT 16			/* INL robot is present	*/
 #define GU_NEWBIE 32
+#define GU_PRET 64
+#define pre_t_mode ((status->gameup) & GU_PRET)
+#define GU_BOT_IN_GAME 128
+#define bot_in_game ((status->gameup) & GU_BOT_IN_GAME)
 
 /* values of p_status */
 #define PFREE 		   0x0000
@@ -135,7 +144,7 @@ struct status {
 #define PFTWARP	       0x40000000	/* isae -- SB transwarp */
 #endif
 
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) ||  defined(PRETSERVER)
 #define PFBPROBOT      0x80000000
 #endif
 
@@ -377,7 +386,7 @@ struct player {
 #endif
     int p_timerdelay;           /* updates per second */
     pid_t p_process;            /* process id number */
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) ||  defined(PRETSERVER)
     /* robot ogger variables */
     int p_df;			/* defense (0 unknown, 1 worst, 100 best) */
     int p_tg;			/* target+1 */

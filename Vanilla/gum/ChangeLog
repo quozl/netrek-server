@@ -1,3 +1,13 @@
+Sat Feb 14 16:24:06 2004  James Cameron  <quozl@us.netrek.org>
+
+	* gum.xml: add PRET support following untracked change to
+	sysdefaults.h.
+
+Sat Feb 14 15:00:16 2004  James Cameron  <quozl@us.netrek.org>
+
+	* Makefile.am (install-data-local): add DESTDIR support for
+	packaging.
+
 Tue May  8 22:35:41 2001  Benjamin `Quisar' Lerman  <quisar@quisar.ambre.net>
 
 	* gum.xml: add newbie flag.  [rebuild using glade 0.5.5 by Quozl]
@@ -76,6 +86,6 @@ Mon Jul 19 00:49:55 1999  James Cameron  <quozl@us.netrek.org>
 	* signals.c (on_About_activate): revise about screen to show who
 	to complain to.
 
-	$Id: ChangeLog,v 1.1 2005/03/21 05:23:35 jerub Exp $	
+	$Id: ChangeLog,v 1.2 2005/03/21 10:17:16 quozl Exp $	
 
 

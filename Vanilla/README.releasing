@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.1 2005/03/21 05:23:33 jerub Exp $
+$Id: README.releasing,v 1.2 2005/03/21 10:17:15 quozl Exp $
 
 Release Procedure
 
@@ -8,8 +8,8 @@ Release Procedure
 cd Vanilla
 
 # set variables to ease the rest of this ... (sh or bash)
-VS=2.9pl8
-VL=v_2_9_8
+VS=2.9pl9
+VL=v_2_9_9
 
 # make sure you have committed all changes
 cvs -z9 diff -u > tmp.tmp
@@ -63,8 +63,14 @@ cd /usr/src/redhat/SPECS
 rpm -ba netrek.spec
 # test package install
 
+# sign package
+gpg --detach-sign -a Vanilla-$VS.tar.gz
+
 # send .tar.gz and .rpm to ftp sites
 ftp://ftp.netrek.org/pub/netrek/incoming/ (note 15 second login timer)
+put Vanilla-2.9pl8.tar.gz
+put Vanilla-2.9pl8.tar.gz.asc
+put Vanilla-2.9pl8.tar.gz.md5sum
 ftp://ftp.real-time.com/pub/Incoming/
 	
 # notify mirror owners, include URL of incoming copy and md5sum.

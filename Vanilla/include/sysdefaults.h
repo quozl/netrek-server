@@ -1,4 +1,4 @@
-/* 	$Id: sysdefaults.h,v 1.1 2005/03/21 05:23:36 jerub Exp $	 */
+/* 	$Id: sysdefaults.h,v 1.2 2005/03/21 10:17:16 quozl Exp $	 */
 
 /* structure for default values that are represented as array of flags */
 struct sysdef_array {
@@ -154,7 +154,11 @@ struct sysdef_keywords {
   { "NEWBIE",	SYSDEF_ROBOT,	(void *) NEWBIE_ROBOT,
     "Enable newbie server robot on startup" },
 #endif
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#ifdef PRETSERVER
+  { "PRET",	SYSDEF_ROBOT,	(void *) PRET_ROBOT,
+    "Enable pre T entertainment robot on startup" },
+#endif
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,
     "Robot host" },
 #endif
@@ -198,11 +202,11 @@ struct sysdef_keywords {
 /*
 
 Procedure for adding new default value.
-James Cameron, 28th February 2000.
+James Cameron, 14th February 2004.
 
 - add to ntserv/data.c
-- add to ntserv/data.h
-- add to sysdef_keywords in ntserv/sysdefaults.h, in any order, prefer end
+- add to include/data.h
+- add to sysdef_keywords in include/sysdefaults.h, in any order, prefer end
 - add to docs/sample_sysdef with comment about value meanings
 - use glade (http://glade.pn.org/) to add to gum/gum.xml and regenerate code
 - leave a comment here if your defaults have not been added to gum

@@ -1,4 +1,4 @@
-/* $Id: data.c,v 1.1 2005/03/21 05:23:43 jerub Exp $
+/* $Id: data.c,v 1.2 2005/03/21 10:17:17 quozl Exp $
  */
 
 #include "copyright.h"
@@ -237,6 +237,7 @@ char Daemon[FNAMESIZE];
 char Robot[FNAMESIZE];
 char LogFileName[FNAMESIZE];
 char PlayerFile[FNAMESIZE];
+char PlayerIndexFile[FNAMESIZE];
 char ConqFile[FNAMESIZE];
 char SysDef_File[FNAMESIZE];
 char Time_File[FNAMESIZE];
@@ -267,7 +268,10 @@ char Basep[FNAMESIZE];
 #ifdef NEWBIESERVER
 char Newbie[FNAMESIZE];
 #endif
-#if defined(BASEPRACTICE) || defined(NEWBIESERVER)
+#ifdef PRETSERVER
+char PreT[FNAMESIZE];
+#endif
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
 char Robodir[FNAMESIZE];
 char robofile[FNAMESIZE];
 char robot_host[FNAMESIZE];

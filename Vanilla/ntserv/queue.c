@@ -128,12 +128,12 @@ int queues_init(void)
     queues[QU_GOD].q_flags    = QU_OPEN;
     queue_setname(QU_GOD,"god");
 
-    queues[QU_GOD_OBS].free_slots = MAXPLAYER;
-    queues[QU_GOD_OBS].max_slots  = MAXPLAYER;
+    queues[QU_GOD_OBS].free_slots = 1;
+    queues[QU_GOD_OBS].max_slots  = 1;
     queues[QU_GOD_OBS].tournmask  = ALLTEAM;
-    queues[QU_GOD_OBS].low_slot   = MAXPLAYER - 1;
-    queues[QU_GOD_OBS].high_slot  = MAXPLAYER;
-    queues[QU_GOD_OBS].q_flags    = QU_OPEN|QU_OBSERVER;
+    queues[QU_GOD_OBS].low_slot   = 29;
+    queues[QU_GOD_OBS].high_slot  = 29;
+    queues[QU_GOD_OBS].q_flags    = QU_OPEN|QU_OBSERVER|QU_TOK;
     queue_setname(QU_GOD_OBS,"god observer");
 
 #ifdef NEWBIESERVER
@@ -168,6 +168,39 @@ int queues_init(void)
     queues[QU_NEWBIE_DMN].high_slot = MAXPLAYER;
     queues[QU_NEWBIE_DMN].q_flags = QU_OPEN;
     queue_setname(QU_NEWBIE_DMN, "newbie daemon");
+#endif
+#ifdef PRETSERVER
+    queues[QU_PRET_PLR].free_slots = MAXPLAYER - TESTERS;
+    queues[QU_PRET_PLR].max_slots = MAXPLAYER - TESTERS;
+    queues[QU_PRET_PLR].tournmask = ALLTEAM;
+    queues[QU_PRET_PLR].low_slot = 0;
+    queues[QU_PRET_PLR].high_slot = MAXPLAYER - TESTERS;
+    queues[QU_PRET_PLR].q_flags = QU_OPEN|QU_RESTRICT;
+    queue_setname(QU_PRET_PLR, "preT player");
+
+    queues[QU_PRET_BOT].free_slots = MAXPLAYER - TESTERS;
+    queues[QU_PRET_BOT].max_slots = MAXPLAYER - TESTERS;
+    queues[QU_PRET_BOT].tournmask = ALLTEAM;
+    queues[QU_PRET_BOT].low_slot = (MAXPLAYER - TESTERS) / 2;
+    queues[QU_PRET_BOT].high_slot = MAXPLAYER - (TESTERS / 2);
+    queues[QU_PRET_BOT].q_flags = QU_OPEN;
+    queue_setname(QU_PRET_BOT, "preT robot");
+
+    queues[QU_PRET_OBS].free_slots = (MAXPLAYER - TESTERS) / 2 - 1;
+    queues[QU_PRET_OBS].max_slots = (MAXPLAYER - TESTERS) / 2 - 1;
+    queues[QU_PRET_OBS].tournmask = ALLTEAM;
+    queues[QU_PRET_OBS].low_slot = MAXPLAYER - (TESTERS / 2);
+    queues[QU_PRET_OBS].high_slot = MAXPLAYER - 1;
+    queues[QU_PRET_OBS].q_flags = QU_OPEN|QU_RESTRICT|QU_OBSERVER;
+    queue_setname(QU_PRET_OBS, "preT observer");
+
+    queues[QU_PRET_DMN].free_slots = 1;
+    queues[QU_PRET_DMN].max_slots = 1;
+    queues[QU_PRET_DMN].tournmask = ALLTEAM;
+    queues[QU_PRET_DMN].low_slot = MAXPLAYER - 1;
+    queues[QU_PRET_DMN].high_slot = MAXPLAYER;
+    queues[QU_PRET_DMN].q_flags = QU_OPEN;
+    queue_setname(QU_PRET_DMN, "preT daemon");
 #endif
 
     return 1;

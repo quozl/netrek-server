@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -103,15 +103,12 @@ struct player *myself;
  * c)  Forge a message by setting mynum to whatever it wants.
  */
 
-void messAll(mynum,name,va_alist)
-int mynum;
-char *name;
-va_dcl
+void messAll(int mynum,char *name,...)
 {
     va_list args;
     char addrbuf[15];
 
-    va_start(args);
+    va_start(args, name);
 
 /* +++ 2.6pl0 cameron@sna.dec.com */
 #if defined(__alpha)
@@ -130,11 +127,7 @@ va_dcl
  * The same comments as messAll apply here, too.
  */
 
-void messOne(mynum,name,who, va_alist)
-int mynum;
-char *name;
-int who;
-va_dcl
+void messOne(int mynum,char *name,int who, ...)
 {
     va_list args;
     char addrbuf[15];
@@ -146,7 +139,7 @@ va_dcl
       return; /* hack: don't message self :) */
     }
     sprintf(addrbuf, "%s->%2s", name, players[who].p_mapchars);
-    va_start(args);
+    va_start(args, who);
     do_message(who, MINDIV, addrbuf, mynum, args);
     va_end(args);
 }

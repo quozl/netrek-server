@@ -237,6 +237,11 @@ R_ProcMessage(message, flags, from, to, std)
    if (inl) return;
 
    if((flags & MINDIV) || std){
+     if(!strcmp(me->p_login, PRE_T_ROBOT_LOGIN)
+         && players[from].p_team != players[to].p_team) {
+       sendMessage("Try pushing around your own team punk.", MINDIV, from);
+       return;
+     }
 
       /* nopwd means accept commands from anyone */
       if(!std && (!nopwd || (nopwd && locked))){
@@ -651,10 +656,15 @@ R_ProcMessage(message, flags, from, to, std)
       else if(strncmp(m, "ogg", 3) == 0){
 	 Player	*p;
 	 eoggtype	ot;
+         char defaultOgg = 'x';
 	 _state.ogg_req = 1;
 	 set_ogg_vars();
 	 p = id_to_player(&m[4], HOSTILE);
-	 ot = oggtype(&m[5]);
+         if(strlen(m) == 5) {
+           ot = oggtype(&defaultOgg);
+         } else {
+	   ot = oggtype(&m[5]);
+         }
 	 if(!p){
 	    response("unknown or friendly player");
 	    _state.ogg_req = 0;

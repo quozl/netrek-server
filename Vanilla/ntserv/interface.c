@@ -86,18 +86,35 @@ void bomb_planet(void)
 	return;
     }
 
-    if(restrict_bomb) {
+    if(restrict_bomb
+#ifdef PRETSERVER
+            /* if this is the pre-T entertainment we don't require confirmation */
+            && !bot_in_game 
+#endif
+        ) {
         if (!status->tourn){
             new_warning(UNDEF,"You may not bomb out of T-mode.");
           return;
         }
     }
 
-    if ((!status->tourn) && (bombsOutOfTmode == 0)) {
+    if ((!status->tourn) && (bombsOutOfTmode == 0)
+#ifdef PRETSERVER
+            /* if this is the pre-T entertainment we don't require confirmation */
+            && !bot_in_game 
+#endif
+        ) {
         new_warning(42,"Bomb out of T-mode?  Please verify your order to bomb.");
         bombsOutOfTmode++;
         return;
     }
+
+#ifdef PRETSERVER
+    if(bot_in_game && realNumShips(owner) == 0) {
+        new_warning(UNDEF,"You may not bomb 3rd and 4th space planets.");
+        return;
+    }
+#endif
 
     if(no_unwarring_bombing) {
 /* Added ability to take back your own planets from 3rd team 11-15-93 ATH */
@@ -108,12 +125,17 @@ void bomb_planet(void)
          }
     }
 
-    if(! restrict_bomb)
+    if(! restrict_bomb
+#ifdef PRETSERVER
+            /* if this is the pre-T entertainment we don't require confirmation */
+            && !bot_in_game 
+#endif
+        )
     {
         if ((!status->tourn) && (bombsOutOfTmode == 1)) {
             new_warning(43,"Hoser!");
-	    bombsOutOfTmode++;
-	}
+            bombsOutOfTmode++;
+        }
     }
 
     if (status->tourn) bombsOutOfTmode = 0;
@@ -145,15 +167,28 @@ void beam_up(void)
 
 void beam_down(void)
 {
+    int owner;
+
     if (!(me->p_flags & (PFORBIT | PFDOCK))) {
         new_warning(47, "Must be orbiting or docked to beam down.");
-	return;
+        return;
     }
+
+#ifdef PRETSERVER
+    if(pre_t_mode && me->p_flags & PFORBIT) {
+        owner = planets[me->p_planet].pl_owner;
+        if(bot_in_game && realNumShips(owner) == 0 && owner != NOBODY) {
+            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets. Sorry Bill.");
+            return;
+        }
+    }
+#endif
+
     if (me->p_flags & PFDOCK) {
-	if (me->p_team != players[me->p_docked].p_team) {
+        if (me->p_team != players[me->p_docked].p_team) {
             new_warning(48,"Comm Officer: Starbase refuses permission to beam our troops over.");
 	    return;
-	}
+        }
     }
     me->p_flags |= PFBEAMDOWN;
     me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP);

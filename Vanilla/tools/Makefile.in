@@ -60,33 +60,33 @@ reallyclean: clean
 
 
 install: $(EXECS) 
-	-@if [ ! -d $(LIBDIR)/tools ]; then \
-          /bin/mkdir $(LIBDIR)/tools; \
+	-@if [ ! -d $(DESTDIR)$(LIBDIR)/tools ]; then \
+          /bin/mkdir $(DESTDIR)$(LIBDIR)/tools; \
         fi
-	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(LIBDIR)/tools/updatekeys
-	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(LIBDIR)/tools/blotpassword
-	$(INSTALLPROG) $(INSTALLOPTS) loadchecker $(LIBDIR)/tools/loadchecker
-	$(INSTALLPROG) $(INSTALLOPTS) mess $(LIBDIR)/tools/mess
-	$(INSTALLPROG) $(INSTALLOPTS) message $(LIBDIR)/tools/message
-	$(INSTALLPROG) $(INSTALLOPTS) newscores $(LIBDIR)/tools/newscores
-	$(INSTALLPROG) $(INSTALLOPTS) planets $(LIBDIR)/tools/planets
-	$(INSTALLPROG) $(INSTALLOPTS) players $(LIBDIR)/tools/players
-	$(INSTALLPROG) $(INSTALLOPTS) nuke $(LIBDIR)/tools/nuke
-	$(INSTALLPROG) $(INSTALLOPTS) scores $(LIBDIR)/tools/scores
-	$(INSTALLPROG) $(INSTALLOPTS) setgalaxy $(LIBDIR)/tools/setgalaxy
-	$(INSTALLPROG) $(INSTALLOPTS) showgalaxy $(LIBDIR)/tools/showgalaxy
-	$(INSTALLPROG) $(INSTALLOPTS) stat $(LIBDIR)/tools/stat
-	$(INSTALLPROG) $(INSTALLOPTS) trimscores $(LIBDIR)/tools/trimscores
-	$(INSTALLPROG) $(INSTALLOPTS) watchmes $(LIBDIR)/tools/watchmes
-	$(INSTALLPROG) $(INSTALLOPTS) xtkill $(LIBDIR)/tools/xtkill
-	$(INSTALLPROG) $(INSTALLOPTS) mergescores $(LIBDIR)/tools/mergescores
-	$(INSTALLPROG) $(INSTALLOPTS) keyman $(LIBDIR)/tools/keyman
-	$(INSTALLPROG) $(INSTALLOPTS) fun $(LIBDIR)/tools/fun
-	$(INSTALLPROG) $(INSTALLOPTS) sortdb $(LIBDIR)/tools/sortdb
-	$(INSTALLPROG) $(INSTALLOPTS) ntpasswd $(LIBDIR)/tools/ntpasswd
-	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(LIBDIR)/tools/ltd_dump
-	$(INSTALLPROG) $(INSTALLOPTS) updated $(LIBDIR)/updated
-	$(INSTALLPROG) $(INSTALLOPTS) cambot $(LIBDIR)/cambot
+	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(DESTDIR)$(LIBDIR)/tools/updatekeys
+	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(DESTDIR)$(LIBDIR)/tools/blotpassword
+	$(INSTALLPROG) $(INSTALLOPTS) loadchecker $(DESTDIR)$(LIBDIR)/tools/loadchecker
+	$(INSTALLPROG) $(INSTALLOPTS) mess $(DESTDIR)$(LIBDIR)/tools/mess
+	$(INSTALLPROG) $(INSTALLOPTS) message $(DESTDIR)$(LIBDIR)/tools/message
+	$(INSTALLPROG) $(INSTALLOPTS) newscores $(DESTDIR)$(LIBDIR)/tools/newscores
+	$(INSTALLPROG) $(INSTALLOPTS) planets $(DESTDIR)$(LIBDIR)/tools/planets
+	$(INSTALLPROG) $(INSTALLOPTS) players $(DESTDIR)$(LIBDIR)/tools/players
+	$(INSTALLPROG) $(INSTALLOPTS) nuke $(DESTDIR)$(LIBDIR)/tools/nuke
+	$(INSTALLPROG) $(INSTALLOPTS) scores $(DESTDIR)$(LIBDIR)/tools/scores
+	$(INSTALLPROG) $(INSTALLOPTS) setgalaxy $(DESTDIR)$(LIBDIR)/tools/setgalaxy
+	$(INSTALLPROG) $(INSTALLOPTS) showgalaxy $(DESTDIR)$(LIBDIR)/tools/showgalaxy
+	$(INSTALLPROG) $(INSTALLOPTS) stat $(DESTDIR)$(LIBDIR)/tools/stat
+	$(INSTALLPROG) $(INSTALLOPTS) trimscores $(DESTDIR)$(LIBDIR)/tools/trimscores
+	$(INSTALLPROG) $(INSTALLOPTS) watchmes $(DESTDIR)$(LIBDIR)/tools/watchmes
+	$(INSTALLPROG) $(INSTALLOPTS) xtkill $(DESTDIR)$(LIBDIR)/tools/xtkill
+	$(INSTALLPROG) $(INSTALLOPTS) mergescores $(DESTDIR)$(LIBDIR)/tools/mergescores
+	$(INSTALLPROG) $(INSTALLOPTS) keyman $(DESTDIR)$(LIBDIR)/tools/keyman
+	$(INSTALLPROG) $(INSTALLOPTS) fun $(DESTDIR)$(LIBDIR)/tools/fun
+	$(INSTALLPROG) $(INSTALLOPTS) sortdb $(DESTDIR)$(LIBDIR)/tools/sortdb
+	$(INSTALLPROG) $(INSTALLOPTS) ntpasswd $(DESTDIR)$(LIBDIR)/tools/ntpasswd
+	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(DESTDIR)$(LIBDIR)/tools/ltd_dump
+	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
+	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
 
 # cb_sock.o: packets.h ../ntserv/socket.c
 #	$(CC) -o ./cb_sock.o -g $(CFLAGS) -DCAMBOT -c ../ntserv/socket.c
@@ -179,14 +179,14 @@ trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
 	chmod a+x trekon
 
 installtrekon: trekon
-	@if [ -f $(LIBDIR)/trekon ]; then touch $(LIBDIR)/trekon; \
-	 else cp trekon $(LIBDIR)/trekon; \
+	@if [ -f $(DESTDIR)$(LIBDIR)/trekon ]; then touch $(DESTDIR)$(LIBDIR)/trekon; \
+	 else cp trekon $(DESTDIR)$(LIBDIR)/trekon; \
 	 fi
-	@if [ -f $(LIBDIR)/trekon.bitmap ]; then touch $(LIBDIR)/trekon.bitmap; \
-	 else cp ${srcdir}/trekon.bitmap $(LIBDIR)/trekon.bitmap; \
+	@if [ -f $(DESTDIR)$(LIBDIR)/trekon.bitmap ]; then touch $(DESTDIR)$(LIBDIR)/trekon.bitmap; \
+	 else cp ${srcdir}/trekon.bitmap $(DESTDIR)$(LIBDIR)/trekon.bitmap; \
 	 fi
-	@if [ -f $(LIBDIR)/trekoff.bitmap ]; then touch $(LIBDIR)/trekoff.bitmap; \
-	 else cp ${srcdir}/trekoff.bitmap $(LIBDIR)/trekoff.bitmap; \
+	@if [ -f $(DESTDIR)$(LIBDIR)/trekoff.bitmap ]; then touch $(DESTDIR)$(LIBDIR)/trekoff.bitmap; \
+	 else cp ${srcdir}/trekoff.bitmap $(DESTDIR)$(LIBDIR)/trekoff.bitmap; \
 	 fi
 
 lint: $(SRCS)

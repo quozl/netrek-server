@@ -32,8 +32,11 @@
 /* file scope prototypes */
 static void handleLogin(void);
 static int lockout(void);
-static void savepass(const struct statentry *);
 
+#ifdef REGISTERED_USERS
+char *registered_users_name;
+char *registered_users_pass;
+#endif
 
 void getname(void)
 /* Let person identify themselves from w */
@@ -65,16 +68,20 @@ static void handleLogin(void)
 	readFromClient();
     }
 
-    if ((strcmp(namePick, "Guest")==0 || strcmp(namePick, "guest")==0) &&
+    ERROR(8,("handleLogin: %s %s %s\n", 
+	     passPick[15] == 0 ? "attempt" : "query", namePick, passPick));
+
+    if (streq(namePick, "Guest") || streq(namePick, "guest") &&
 	!lockout()) {
 
+    handlelogin_guest:
         /* all INL games prohibit guest login */
         if (status->gameup & GU_INROBOT) {
 	  sendClientLogin(NULL);
 	  flushSockBuf();
 	  return;
 	}
-	/* but we don't check for existing players on INL robot entry */
+	/* todo: we don't check for existing guests on INL robot entry */
 
 	hourratio=5;
 	MZERO(&player.stats, sizeof(struct stats));
@@ -123,47 +130,39 @@ static void handleLogin(void)
     hourratio=1;
 
     /* We look for the guy in the stat file */
-    if (strcmp(player.name, namePick) != 0) {
-	for (;;) {	/* so I can use break; */
-	    plfd = open(PlayerFile, O_RDONLY, 0644);
-	    if (plfd < 0) {
-		ERROR(1,("I cannot open the player file!\n"));
-		strcpy(player.name, namePick);
-		position= -1;
-		ERROR(1,("Error number: %d\n", errno));
-		break;
-	    }
-	    /* sequential search of player file */
-	    position=0;
-	    while (read(plfd, (char *) &player, sizeof(struct statentry)) ==
-		    sizeof(struct statentry)) {
-		if (strcmp(namePick, player.name)==0) {
-		    close(plfd);
-		    break;
-		}
-		position++;
-	    }
-	    if (strcmp(namePick, player.name)==0) break;
-	    close(plfd);
-	    position= -1;
-	    strcpy(player.name, namePick);
-	    break;
-	}
+    if (!streq(player.name, namePick)) {
+        position = findplayer(namePick, &player);
     } 
 
     /* Was this just a query? */
     if (passPick[15]!=0) {
-	if (position== -1) {
+	if (position == -1) {
 	    sendClientLogin(NULL);
 	} else {
 	    sendClientLogin(&player.stats);
 	}
 	flushSockBuf();
 	return;
-    } 
+    }
+ 
+#ifdef REGISTERED_USERS
+    /* record the username they wanted, but if we don't have it in the
+       score file, force them to be a guest */
+    registered_users_name = strdup(namePick);
+    registered_users_pass = strdup(passPick);
+    if (position == -1) {
+      /* ERROR(8,("handleLogin: unregistered %s\n", namePick)); */
+      strcpy(namePick, "guest");
+      goto handlelogin_guest;
+    }
+    /* ERROR(8,("handleLogin: registered %s\n", namePick)); */
+    /* todo: tell this user when they log in to try registering */
+    /* todo: turn off certain privs if guest, e.g. eject voting */
+    /* todo: replicate code below in the registration response program */
+#endif
 
     /* A new guy? */
-    if ((position== -1) && !lockout()) {
+    if ((position == -1) && !lockout()) {
 	strcpy(player.name, namePick);
 	/* Linux: compiler warnings with -Wall here, as crypt is in unistd.h
 	   but needs _XOPEN_SOURCE defined, which then breaks lots of other
@@ -182,24 +181,18 @@ static void handleLogin(void)
 	/* race condition: Two new players joining at once
 	 * can screw up the database.
 	 */
-	plfd = open(PlayerFile, O_RDWR|O_CREAT, 0644);
-	if (plfd < 0) {
-	    sendClientLogin(NULL);
+	if (entries = newplayer(&player) < 0) {
+	  sendClientLogin(NULL);
 	} else {
-	    if ((file_pos = lseek(plfd, 0, SEEK_END)) < 0) {
-		sendClientLogin(NULL);
- 	    }
-	    write(plfd, (char *) &player, sizeof(struct statentry));
-	    close(plfd);
-	    entries = file_pos / sizeof(struct statentry);
-	    me->p_pos = entries;
-	    MCOPY(&player.stats, &(me->p_stats), sizeof(struct stats));
-	    strcpy(me->p_name, namePick);
-	    sendClientLogin(&player.stats);
+	  me->p_pos = entries;
+	  MCOPY(&player.stats, &(me->p_stats), sizeof(struct stats));
+	  strcpy(me->p_name, namePick);
+	  sendClientLogin(&player.stats);
 	}
 	flushSockBuf();
 	return;
     }
+
     /* An actual login attempt */
     strcpy(newpass, (char *) crypt(passPick, salt(player.name, sb)));
     if (lockout() ||
@@ -207,8 +200,10 @@ static void handleLogin(void)
 	 !streq(player.password, (char *) crypt(passPick, player.password)))) {
 	    sendClientLogin(NULL);
 	    flushSockBuf();
+	    ERROR(8,("handleLogin: password-failure namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, (char *) crypt(passPick, player.password)));
 	    return;
     }
+    ERROR(8,("handleLogin: password-success namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, (char *) crypt(passPick, player.password)));
     sendClientLogin(&player.stats);
     strcpy(me->p_name, namePick);
     me->p_pos=position;
@@ -220,49 +215,6 @@ static void handleLogin(void)
     }
     flushSockBuf();
     return;
-}
-
-void changepassword (char *passPick)
-{
-  saltbuf sb;
-  struct statentry se;
-  strcpy(se.password, (char *) crypt(passPick, salt(me->p_name, sb)));
-  savepass(&se);
-}
-
-static void savepass(const struct statentry* se)
-{
-    int fd;
-    if (me->p_pos < 0) return;
-    printf("getname.c: updating password for %s\n", se->name);
-    fd = open(PlayerFile, O_WRONLY, 0644);
-    if (fd >= 0) {
-	lseek(fd, me->p_pos * sizeof(struct statentry) +
-	      offsetof(struct statentry, password), SEEK_SET);
-	write(fd, &se->password, sizeof(se->password));
-	close(fd);
-    }
-}
-
-void savestats(void)
-{
-    int fd;
-
-    if (me->p_pos < 0) return;
-
-#ifdef OBSERVERS
-    /* Do not save stats for observers.  This is corrupting the DB. -da */
-    if (Observer) return;
-#endif
-
-    fd = open(PlayerFile, O_WRONLY, 0644);
-    if (fd >= 0) {
-	me->p_stats.st_lastlogin = time(NULL);
-	lseek(fd, me->p_pos * sizeof(struct statentry) +
-	      offsetof(struct statentry, stats), SEEK_SET);
-	write(fd, (char *) &me->p_stats, sizeof(struct stats));
-	close(fd);
-    }
 }
 
 /* return true if we want a lockout */

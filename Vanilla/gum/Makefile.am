@@ -19,8 +19,8 @@ CFLAGS = @CFLAGS@ -DPACKAGE_DATA_DIR=\"@prefix@\"
 
 install-data-local:
 	test -d ${srcdir}/pixmaps \
-	&& install -d -m 0755 $(pkgdatadir)/pixmaps \
-	&& install -m 0644 ${srcdir}/pixmaps/*.xpm $(pkgdatadir)/pixmaps
+	&& install -d -m 0755 $(DESTDIR)$(pkgdatadir)/pixmaps \
+	&& install -m 0644 ${srcdir}/pixmaps/*.xpm $(DESTDIR)$(pkgdatadir)/pixmaps
 
 dist-hook:
 	test -d pixmaps \

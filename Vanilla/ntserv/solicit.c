@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -39,6 +40,8 @@ static char *name_fix(char *name)
 /* attach to a metaserver, i.e. prepare the socket */
 static int udp_attach(struct metaserver *m)
 {
+  char *ours = m->ours;
+
   /* create the socket structure */
   m->sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (m->sock < 0) {
@@ -49,16 +52,24 @@ static int udp_attach(struct metaserver *m)
   /* bind the local socket */
   /* bind to interface attatched to this.host.name */
 
+  /* first check if perhaps it is a fake INL server address */
+  if ((tolower(m->type[0]) == 'i') &&
+      (strncasecmp(m->ours, "home.", 5) == 0 ||
+       strncasecmp(m->ours, "away.", 5) == 0))
+  {
+    ours += 5;
+  }
+
   /* numeric first */
-  if( (m->address.sin_addr.s_addr = inet_addr(m->ours)) == -1 ) {
+  if ((m->address.sin_addr.s_addr = inet_addr(ours)) == -1) {
     struct hostent *hp;
     /* then name */
-    if ((hp = gethostbyname(m->ours)) == NULL) {
+    if ((hp = gethostbyname(ours)) == NULL) {
       /* bad hostname or unable to get ip address */
-      fprintf(stderr, "Bad this.host.name field in .metaservers.\n");
+      ERROR(1,("Bad host name field in .metaservers file.\n"));
       return 0;
     } else {
-      m->address.sin_addr.s_addr = *(long *) hp->h_addr;
+      memcpy(&(m->address.sin_addr.s_addr), hp->h_addr, 4);
     }
   }
 
@@ -80,11 +91,10 @@ static int udp_attach(struct metaserver *m)
     /* then translation by name */
     if ((hp = gethostbyname(m->host)) == NULL) {
       /* if it didn't work, return failure and warning */
-      fprintf(stderr, "solicit: udp_attach: host %s not known\n", 
-	      m->host);
+      ERROR(1,("solicit: udp_attach: metaserver %s not resolved\n", m->host));
       return 0;
     } else {
-      m->address.sin_addr.s_addr = *(long *) hp->h_addr;
+      memcpy( &(m->address.sin_addr.s_addr), hp->h_addr, 4);
     }
   }
   
@@ -95,6 +105,7 @@ static int udp_attach(struct metaserver *m)
 static int udp_tx(struct metaserver *m, char *buffer, int length)
 {
   /* send the packet */
+  ERROR(7,("solicit: udp_tx: sendto (size:%d)\n", length));
   if (sendto(m->sock, buffer, length, 0, (struct sockaddr *)&m->address, 
 	     sizeof(m->address)) < 0) {
     perror("solicit: udp_tx: sendto");
@@ -108,7 +119,6 @@ void solicit(int force)
 {
   int i, nplayers=0, nfree=0; 
   char packet[MAXMETABYTES];
-/*  static char prior[MAXMETABYTES];*/
   char *fixed_name, *fixed_login; /* name/login stripped of unprintables */
   char *name, *login;             /* name and login guaranteed not blank */
   char unknown[] = "unknown";     /* unknown player/login string */
@@ -207,42 +217,81 @@ void solicit(int force)
     struct metaserver *m = &metaservers[i];
     int j;
     
+    ERROR(9,("solicit[%d](ours:'%s' type='%s' pport=%d oport=%d meta='%s' mport=%d)\n", i, m->ours, m->type, m->pport, m->oport, m->host, m->port));
+
     /* skip empty metaserver entries */
-    if (m->sock == -1) continue;
+    if (m->sock == -1)
+    {
+      ERROR(7,("  skip empty metaserver entries\n"));
+      continue;
+    }
+
+    /* only process entries with the correct server type */
+    if (status->gameup & GU_INROBOT && tolower(m->type[0]) != 'i')
+    {
+      ERROR(7,("  skip metaserver entries with non-INL type during INL mode\n"));
+      continue;
+    }
+    else if (!(status->gameup & GU_INROBOT) && (tolower(m->type[0]) == 'i'))
+    {
+      ERROR(7,("  skip metaserver entries with INL type during non-INL mode\n"));
+      continue;
+    }
     
     /* if we told metaserver recently, don't speak yet */
     if (!force)
       if ((now-m->sent) < m->minimum) continue;
     
     /* don't remake the packet unless necessary */
-    if ( here == packet ) {
-        if (status->gameup & GU_NEWBIE)
-            for (j = 0; j < queues[QU_NEWBIE_PLR].high_slot; j++)
-            {
-                if (players[j].p_status == PFREE)
-                    nfree++;
-                else
-                    nplayers++;
-            }
-        else
-            for (j = 0; j < queues[QU_PICKUP].high_slot; j++)
-            {
-                if (players[j].p_status == PFREE)
-                    nfree++;
-                else
-                    nplayers++;
-            }
+    /* for INL the always recreate because we have multiple ports */
+    if (status->gameup & GU_INROBOT)
+    {
+      here = packet; nplayers=0; nfree=0; gamefull=0; isrsa=0;
+    }
+    if (here == packet) {
+      int queue;
+      if (status->gameup & GU_NEWBIE)
+	queue = QU_NEWBIE_PLR;
+      else if (status->gameup & GU_PRET)
+	queue = QU_PRET_PLR;
+      else if (status->gameup & GU_INROBOT &&
+	       strncasecmp( m->ours, "home.", 5 ) == 0 )
+	queue = QU_HOME;
+      else if (status->gameup & GU_INROBOT &&
+	       strncasecmp( m->ours, "away.", 5 ) == 0 )
+	queue = QU_AWAY;
+      else
+	queue = QU_PICKUP;
       
+      for (j = queues[queue].low_slot; j < queues[queue].high_slot; j++)
+      {
+	if (players[j].p_status == PFREE)
+	  nfree++;
+	else
+	  nplayers++;
+      }
+      
+      ERROR(7,("before: nfree=%d nplayers=%d gamefull=%d\n", nfree, nplayers, gamefull));
+
+      /* Special case: do *not* report anything for INL servers if nplayers=0,
+         except one last time when players are leaving. Actually i just want to
+         delist the server. is there a better way?  ehb  */
+      if (nplayers == 0 &&
+          status->gameup & GU_INROBOT &&
+          (strcmp(packet, m->prior) == 0 || strcmp(m->prior, "") == 0))
+      {
+	ERROR(7,("  skip metaserver entries during INL mode if zero players\n"));
+        continue;
+      }
+
       /* if the free slots are zero, translate it to a queue length */
       /* and report that the game is full */
       if (nfree == 0) 
-	{
-      if (status->gameup & GU_NEWBIE)
-          nfree = -queues[QU_NEWBIE_PLR].count;
-      else
-          nfree = -queues[QU_PICKUP].count;
-	  gamefull++;
-	}      
+      {
+	nfree = -queues[queue].count;
+        gamefull++;
+      }      
+      ERROR(7,("  nfree=%d nplayers=%d gamefull=%d\n", nfree, nplayers, gamefull));
 
 #ifdef RSA
       isrsa++;     /* this is an RSA server */
@@ -301,13 +350,19 @@ void solicit(int force)
         free(fixed_login);
       }
     }
+
+    ERROR(7,("  packet created for sending:\n%s\n", packet));
     
     /* if we have exceeded the maximum time, force an update */
     if ((now-m->sent) > m->maximum) force=1;
-    
+
     /* if we are not forcing an update, and nothing has changed, drop */
     if (!force)
-      if (!strcmp(packet, m->prior)) continue;
+      if (!strcmp(packet, m->prior))
+      {
+        ERROR(7,("  No change in packet since last time. dont send.\n"));
+        continue;
+      }
     
     /* send the packet */
     if (udp_tx(m, packet, here-packet)) {
