@@ -1,0 +1,43 @@
+------------------------[   Berkeley Client   ]------------------------
+Sun4 / SunOS 4.1.3 / Sound          386BSD / Xfree
+HP/Apollo 3500/4500                 HP/Apollo 3500/4500
+DS3100+DS5000 / Ultrix4.2           HP9000/300 series / HPUX 8.0
+HP9000/300 series / BSD4.3-reno     HP9000/700 series / HPUX 8.0
+MIPS R4000s / RISCOS 4.X / BSD      MIPS R3000 / RISCOS 4.52 / BSD 
+NeXT / NS3.0                        IBM RS6000/AIX 3.2
+Sequent                             Sony NEWS MIPS workstation
+Sun4 / SunOS 4.1.1 /hopd Amdahl     Sun3 / SunOS
+Sun4 / SunOS 4.1.1                  Amdahl / UTS 2.1 / hopd Amdahl
+------------------------[   BerkRick Moo   ]------------------------
+DS3100+DS5000 / Ultrix4.2           HP9000/700s / HPUX 8.0
+Linux - i386                        IBM RS6000 / AIX 3.2
+Sun3 / SunOS                        Sun4 / SunOS 4.1.3 / Hopd MIT
+Sun4 / SunOS 4.1.1                  Sun4 / SunOS 4.1.3 / hopd TAMU
+Sun4 / SunOS 4.1.3 / hopd MIT       Sun LX / Solaris 2.1
+DS3100+DS5100 / Ultrix 4.2          386/486 SCO Unix
+HP9000/300s / BSD4.3 - reno         Linux / 386/486 / Xfree
+Sun3 / SunOS 4.1.1                  Sequent / PTX
+Sun4 / SunOS 4.1.3 / Sun Relay      INTEL-X86/386BSD
+VAX / Ultrix 4.2                    SGI 4.0.5
+------------------------[   Bronco Client   ]------------------------
+DS3100+DS5000 / Ultrix4.2           Amdahl / UTS
+Amiga                               HP9000/300 series / HPUX 8.0
+HP9000/700 series / HPUX 8.0        Next / NS3.0
+IBM RS6000/AIX 3.2                  IBM RT/PCs / IBM AOS/4.3BSD
+SGI 4.0.5 and 3.2.2                 Sun3 / SunOS
+Sun4 / SunOS 4.1.1                  VAX / Ultrix
+------------------------[   Moo Client   ]------------------------
+386 - 486 / OSF1.2                  DS3100+DS5000 / Ultrix4.2
+DS3100+DS5000 / Ultrix4.2            Sun4 / SunOS 4.1.1 / Sun Relay
+------------------------[   Hadley Client   ]------------------------
+HP9000/700 HPUX8.0                  Sun4/SunOS4.1.3
+Apollo DNs / DomainOS               
+------------------------[   MacTrek Client   ]------------------------
+Dec3100 / Ultrix4.2 / MacTrek       
+------------------------[   BerkRick/Moo/Hadley   ]------------------------
+Sun4 / SunOS 4.1.2                  Sun3 / SunOS 4.1.1
+------------------------[   Paradise 2.01p5   ]------------------------
+Apollo/DomainOS                     DEC MIPS/Ultrix 4.2
+HP 9k series 700/HPUX               RS 6000/AIX
+SGI/IRIX 4.05F                      sparc/SunOS 4.1.3
+Sun3/SunOS 4.1.1                    

@@ -1,0 +1,1418 @@
+Mon Nov 25 16:06:39 2002  James Cameron  <quozl@us.netrek.org>
+
+	* include/proto.h, ntserv/ntscmds.c, ntserv/getname.c: fix
+	password change, it was corrupting player stats when player died
+	after changing password.
+
+	* ntserv/daemonII.c (saveplayer): replace constant 32 with
+	calculated offset to score file stats.
+
+Fri Oct 11 11:20:22 2002  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_nodock): removed restriction that prevented
+	a base from turning off docking for an at-peace enemy.
+
+Fri Oct 11 10:44:35 2002  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/main.c, ntserv/enter.c: fix 'dock' and 'transwarp'
+	functionality defects reported by David Swasey.  Move
+	initialisation of candock to login time rather than ship entry
+	(fixes loss of dock permissions for a ship when it dies).  On
+	entry to game by a starbase, only set the team's permission to
+	dock, rather than the enemy team as well.  Move initialisation of
+	voting array and transwarp from main() to enter() so that all ship
+	entry initialisations are in one place.
+
+Wed Oct  9 15:24:20 2002  James Cameron  <quozl@us.netrek.org>
+
+	* tools/newscores.c: remove width limits on parsing the status
+	line.
+
+Thu Aug 15 12:29:14 2002  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_password): actually change the password.
+
+Fri Jun 21 17:16:39 2002  James Cameron  <quozl@us.netrek.org>
+
+	* newstartd/newstartd.c (main): allow 'start' as argv[1], no
+	effect, for consistency with init.d script semantics.
+
+Fri Jun 21 09:16:47 2002  James Cameron  <quozl@us.netrek.org>
+
+	* tools/README: adjusted documentation for trimscores.
+	* docs/tools.doc: removed documentation for trimscores as it was
+	wrong.
+	* tools/trimscores.c: make usage() consistent with program
+	operation, push all status output to stderr, various other minor
+	fixes.
+
+Thu Jun 20 17:13:30 2002  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/transwarp.c (handleTranswarp): filter transwarp requests
+	according to base's restrictions
+	* include/config.h.in: add NOTRANSWARP default enabled
+	* ntserv/ntscmds.c (do_transwarp): add transwarp command for base
+	* include/struct.h: add p_transwarp to struct player
+
+Thu Jun 20 12:50:21 2002  James Cameron  <quozl@us.netrek.org>
+
+	* robots/inlcmds.c, robots/inlcomm.c (do_pause): grammar fix,
+	'requests that the game continue'.  From: Matthew Furrow.
+
+Wed Jun 19 15:03:56 2002  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_nowobble): add nowobble command to enable
+	prototype code.
+
+	* ntserv/redraw.c (auto_features): add prototype option to
+	suppress midflight wobble while locked on a planet.
+
+Thu May 30 08:32:50 2002  James Cameron  <quozl@us.netrek.org>
+
+	* tools/Makefile.in: add blotpassword.c
+	* tools/trimscores.c: speed up by removing time() from loop.
+	* tools/blotpassword.c: add filter to remove password from dumps.
+	* tools/scores.c (main): add X mode for no-password dumps.
+	From: "Colin Jensen" <cj@accom.com>
+
+Tue May 21 16:11:13 2002  James Cameron  <quozl@us.netrek.org>
+
+	* tools/xtkill.c: allow setting armies to specific value, was
+	required in a clue game today and wasn't available.  Untested.
+
+	* ntserv/ntscmds.c (do_queue_msg): allow for uppercase command
+	'QUEUE HOSTS', and if an entry on the queue represents another
+	connection from the same hostname as an existing player, report
+	that player against the output.  Intended to ease the job of
+	captains doing substitution during an INL game.  Untested.
+
+Fri Dec  7 14:55:21 2001  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/socket.c: fix spacing to be consistent, added NULL
+	handler for when FEATURE_PACKET not defined.
+
+Sun Nov 11 23:00:00 2001  Darryl Palmer Jr  <Darryl_Palmer_Jr@acm.org>
+
+	* ntserv/socket.c: when PING is not defined, all handlers will be
+	off by one.
+
+Wed Oct 10 17:29:13 2001  James Cameron  <quozl@us.netrek.org>
+
+	* xsg/redraw.c: added '#include <time.h>' to fix compilation
+	warnings on Debian woody/testing.
+
+Tue Jun  5 08:55:33 2001  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c: ignore observers for t-mode scum checking.
+
+Fri May 11 08:44:31 2001  James Cameron  <quozl@us.netrek.org>
+
+	* include/struct.h, ntserv/genspkt.c, ntserv/redraw.c: ensure
+	clients are given a consistent view of observers.
+	From: Trent Piepho <xyzzy@speakeasy.org>
+	Message-ID:
+	<Pine.LNX.4.04.10105091653430.6636-200000@xyzzy.dsl.speakeasy.net>
+	Date: Wed, 9 May 2001 17:15:48 -0700 (PDT)
+
+Thu May 10 09:36:57 2001  Benjamin `Quisar' Lerman <quisar@quisar.ambre.net>
+
+	* docs/CUSTOMIZATION, docs/sample_sysdef.in, include/config.h.in,
+	include/data.h, include/sysdefaults.h, ntserv/data.c,
+	ntserv/interface.c: remove RESTRICT_BOMB and NO_UNWARRING_BOMBING
+	from config.h.in and put it in .sysdef.
+
+	* tools/xtkill.c: Correct 'S' option to do what it should (put
+	damages and etemp back to 0.
+
+	* Makefile.in: Correct a syntax error.
+
+Fri May  4 14:45:28 2001  Benjamin `Quisar' Lerman <quisar@quisar.ambre.net>
+
+	* robots/newbie.c, robots/newbiedefs.h: add #define NB_ROBOTS 16
+	to limit the number of processes spawned to 16.
+
+	* gum/id.c: replace getopt.h with unistd.h.
+
+	* gum/xmalloc.c: replace non-standard error().
+
+	* robotd/robot.c: replace obsolete ftime() with gettimeofday().
+
+	* xsg/Makefile.in: add X11INCLUDE to CFLAGS.
+
+Wed May  2 12:34:59 2001  James Cameron  <quozl@us.netrek.org>
+
+	* all: move include files to own directory.  Changes were
+	contributed by Benjamin `Quisar' Lerman <quisar@quisar.ambre.net>
+	and verified by me.
+
+Sun Apr 29 16:52:47 2001  Benjamin `Quisar' Lerman <quisar@quisar.ambre.net>
+	
+	* configure.in: put back AC_SUBST(INL) so that sysdef is correct.
+	Remove the hach about INSTALL that is not necessary. Changed a few
+	things about res-rsa so that it work outside the tree source.
+	Move handling of with-gum so that it does not mess with INSTALL
+
+	* system.mk.in, keycomp/Makefile.in, newstartd/Makefile.in,
+	ntserv/Makefile.in, pledit/Makefile.in, robotd/Makefile.in,
+	robots/Makefile.in, sequencer/Makefile.in, tools/Makefile.in,
+	xsg/Makefile.in: remove OPT (CFLAGS is the way to do it), remove
+	-lm which is already there with configure and remove the double
+	-g.
+
+	* gum/Makefile.am, gum/Makefile.in, gum/signals.c: gum.xpm is now
+	found by gum.
+
+Mon Apr 30 19:06:51 2001  James Cameron  <quozl@us.netrek.org>
+
+	* tools/ltd_dump.c: add ability to query LTD statistics by player
+	name.  Planned for use with a PHP script to display LTD
+	statistics.  Maybe it is time for a database back-end for the
+	.players file.  Need to do some thinking about this.
+
+	* tools/players.c (main): change "Display" to "Host name".
+
+	* ntserv/distress.c (makedistress): core dump on continuum, an RCD
+	was being decoded for transmission to slot R0 "arizzi" from a slot
+	(Xc) which was now in login, with a p_team of 15, causing the
+	APPEND_CAP macro to (probably) wander off.
+
+Sat Apr 28 18:15:01 2001  James Cameron  <quozl@us.netrek.org>
+
+	* configure.in, config.h.in: undo #define of INL that Benjamin
+	inserted, as it was causing commands.c compilation to fail.
+
+Sat Apr 28 14:32:02 2001  James Cameron  <quozl@us.netrek.org>
+
+	* robots/inl.c: change default gametime to 60 20 on request of Tom
+	Holub.
+
+Sat Apr 28 11:39:39 2001  Benjamin `Quisar' Lerman  <quisar@quisar.ambre.net>
+
+	* configure.in, docs/sample_sysdef.in, docs/Makefile.in,
+	INSTALL.INL: change configure --with-inl to also set .sysdef and
+	update installation instructions.
+
+	* ntserv/commands.c, robotd/util.c, robots/inlcmds.c: remove
+	compiler warnings.
+
+	* tools/nuke.c, tools/Makefile.in: restore nuke for systems that
+	do not have ipcrm(8).
+	
+	* tools/ltd_convert.c, tools/sortdb.c: return must give value.
+
+Fri Apr 27 22:09:19 2001  James Cameron  <quozl@us.netrek.org>
+
+	* tools/ltd_convert.c, tools/sortdb.c: main should be int.
+	
+	* ntserv/socket.c: added numerous casts of struct sockaddr,
+	removed always true short packets test code.
+
+	* Makefile.in (reallyclean): include config.cache in target.
+
+Fri Apr 27 10:17:04 2001  James Cameron  <quozl@us.netrek.org>
+
+	* configure.in: changed the warning for RSA utilities not found so
+	that it looks "right" on the output of configure.
+
+Fri Apr 27 10:14:40 2001  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/Makefile.in (robot): target tried to save old robot
+	binary to robot.old, changed to avoid this, as it breaks
+	compilation after make distclean and is non-intuitive.
+
+Fri Apr 27 10:04:23 2001  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/input.c (process_stdin): change gets() to fgets().
+
+Fri Apr 27 10:02:22 2001  James Cameron  <quozl@us.netrek.org>
+
+	* xsg/x11window.c: remove strdup() declaration.
+
+Fri Apr 27 09:43:02 2001  Benjamin `Quisar' Lerman  <quisar@quisar.ambre.net>
+	
+	* configure.in, config.h.in, system.mk.in, gum/Makefile.am: permit
+	compilation outside source tree, tested on Linux, Solaris and
+	OpenBSD.  Include robotd in package make.  Add --with-gum to
+	configure.  Add --with-inl to configure.  Testing of BSD signals
+	in configure shows yes/no answer and is now cached.  Environement
+	variables CFLAGS and LDFLAGS are taken into account by configure.
+	Change to use Makefile.in per directory.
+
+Fri Apr 27 09:33:55 2001  Benjamin `Quisar' Lerman  <quisar@quisar.ambre.net>
+
+	* robotd: Changed in robotd values.h to limits.h and MAXINT to
+	INT_MAX (more portable).
+
+Fri Apr 27 09:25:23 2001  
+	
+	* pledit/main.c (fatal): remove core dump on call to fatal, errno
+	changed to nerrno, since errno is a macro on some platforms.
+	
+Fri Apr 27 09:24:45 2001  James Cameron  <quozl@us.netrek.org>
+
+	* pledit/main.c: main() should be int, when LTD_STATS defined.
+
+Tue Apr 24 09:30:25 2001  Benjamin `Quisar' Lerman  <quisar@quisar.ambre.net>
+
+	* configure.in: check for ncurses before curses.
+	
+	* pledit/Makefile (LIBS): use the curses library found by
+	configure.
+
+Mon Apr 23 18:40:53 2001  James Cameron  <quozl@us.netrek.org>
+
+	* docs/sample_sysdef (DEFUPDATE): change to ten updates per second
+	default, in line with most servers out there.
+
+Thu Feb 22 21:00:12 EST 2001 Dave Ahn <ahn@genocide.netrek.org>
+	
+	* robots/inl.c: Adjust continuous scoring weight formula (again).
+	See README.scores for details.
+	
+Mon Feb 12 23:59:36 EST 2001	Dave Ahn <ahn@genocide.netrek.org>
+	
+	* robots/inlcomm.c: Fix Extra Time message.
+
+Sun Feb 11 16:02:10 2001  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* tools/xtkill.c (main): Added bounds checking to
+	promote/demote. ntserv will crash if there is an invalid rank.
+	
+Sun Feb 11 15:49:06 2001  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/ntscmds.c (nts_commands): Made NODOCK a config.h option
+	* ntserv/ntscmds.c (do_nodock): Observers can't change dock permission
+	
+Fri Feb  2 19:59:53 2001  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/orbit.c (dock): reworked handling of return status,
+	probably in a superfluous manner, but I've tested the various
+	conditions now.
+
+	* ntserv/struct.h, ntserv/ntscmds.c (do_nodock), ntserv/main.c
+	(main), ntserv/enter.c (enter): change candock to p_candock to
+	comply with convention.
+
+	* ntserv/interface.c (lock_player): only mention docking status on
+	a lock if the player is permitted to dock, otherwise treat it as a
+	normal lock on a ship.
+
+Fri Feb  2 19:31:36 2001  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/orbit.c (dock): was returning TRUE for failure to dock,
+	so if a base was in the game orbiting failed to be considered.
+	Moved many of the new checks with messages after the check for
+	proximity.  Adjusted code indent.
+
+Fri Jan 26 18:29:30 EST 2001	Dave Ahn <ahn@genocide.netrek.org>
+
+	* robots/*: Added momentum scoring support.  See README.scores
+	for details.  Changed continuous scoring to do exponential
+	weighting and reduced the points awarded for each planet.
+	See README.scores for details.
+
+Tue Jan 23 08:57:40 2001  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c (udplayers): add a freeslot() call to cope
+	with a hosed slot problem on continuum today.  Not sure of the
+	cause, but a slot was in POUTFIT with a p_process of zero, a
+	p_whydead of KWINNER and a p_ghostbust of 1.8 hours.  The code did
+	not handle this and kept the slot alive.  Removed a fflush(stdout)
+	that had been inserted for debugging.
+
+Wed Jan  3 01:11:36 2001  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_nodock): Added the ability for a starbase
+	to selectively refuse docking permission on an individual player
+	basis.  Syntax, 'nodock <slot> on|off'  nodock on refuses docking,
+	nodock off enables docking.  Must be on same team.  Should this be
+	friendlyPlayer() instead?  
+
+	Addendum: Changed logic from nodock 0 on (disable docking) to 
+        dock 0 off (disable docking) and dock 0 on (enable docking) on 
+        suggestion of James to get rid of the double-negative.
+
+	* ntserv/orbit.c (dock): Added the permission to dock check and
+	changed the behaviour of dock(). Previously, if docking to a
+	starbase failed, starbase warning messages would get clobbered by
+	calling function's ( orbit() ) "no valid targets" warning. Now, 
+	if a warning is generated from a starbase failure other than 
+	"too far away" dock() de-locks you and returns TRUE to surpress
+	orbit()'s warning message. Also added more warning messages to SB
+	docking failures.
+
+
+Wed Nov 15 01:35:41 EST 2000  Dave Ahn <ahn@genocide.netrek.org>
+
+	* ntserv/enter.c: New ships get green alert flag at entry.  This
+	is needed for the udplayerghost() in daemonII.c so that a new
+	player who enters during a pause can quit out immediately.
+
+	* ntserv/daemonII.c: We can finally ignore complaints about the
+	no-quit bug in the INL robot.  Players couldn't quit because player
+	slot maintenance wasn't being done during a game pause.  PEXPLODE
+	would never get updated to PDEAD.  This has been fixed.  Also,
+	I've added a ghostbust timer during the pause.  It should work
+	but I haven't tested it.
+
+Tue Nov 14 23:16:05 EST 2000  Dave Ahn <ahn@genocide.netrek.org>
+
+	* robots/inl.c: Fix core dump at inl robot restart.
+
+Fri Nov 10 22:28:58 EST 2000  Dave Ahn <ahn@genocide.netrek.org>
+	
+	* robots/end_tourney.pl: Run auto-archive.pl at endgame.
+
+	* robots/auto-archive.pl: Send game stats automatically to
+ 	netrek-stats@genocide.netrek.org.
+
+Sat Nov  4 18:51:21 EST 2000  Dave Ahn <ahn@genocide.netrek.org>
+	
+	* robots/inl*.c: Fix INL robot core dump.  Fix bugs in continuous
+ 	scoring.
+
+Wed Nov  1 00:47:45 EST 2000  Dave Ahn <ahn@genocide.netrek.org>
+	
+	* robots/inl*.c: Change continuous score differential to 2.0.
+  	Remove debug messages.  Flush out scores at end-game.
+
+	* docs/README.scores: Update docs on continuous score.
+
+Thu Jul 20 22:07:12 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* ntserv/ltd_stats.c: For some reason, LTD_TOTAL stats weren't
+ 	getting updated correctly.  Should be fixed now.  Also, bombing
+ 	rating compat function now gives 5x bonus for ogged armies under
+ 	LTD_STATS.  Note that this bonus is for ratings calculation only.
+  	Actual armies bombed is still the same.
+	
+	* ntserv/genspkt.c: In LTD_STATS mode, incorrect player stat
+ 	packets were being sent to the client causing session stats to be
+ 	the same as lifetime stats.  Makes no difference in INL mode, but
+ 	causes problems in pickup mode.  Fixed.
+	
+	* ntserv/socket.c: Fix bug where stat reset using 'R' fails to
+ 	clear rank in LTD_STATS mode.
+	
+Mon Jul 17 15:47:02 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* robots/end_tourney.pl: Fix end_tourney.pl script so that output
+ 	is unbuffered.  pwstats.html gets truncated otherwise.
+	
+Thu Jul  6 22:12:10 EDT 2000  Karthik Arumugham <karthik@arumugham.com>
+
+	* ntserv/defs.h, ntserv/queue.c, ntserv/solicit.c,
+	ntserv/struct.h, robots/newbie.c, robots/newbiedefs.h: Newbie
+	server changes to properly limit humans to 8 players by means of a
+	separate queue, as well as to stop reporting bots to the
+	metaserver. (When the human queue is full, the game will still be
+	reported as Wait Queue, but when it is not full, only the human
+	count will be reported.)
+
+Fri Jul  7 09:12:20 2000  root  <quozl@us.netrek.org>
+
+	* ntserv/interface.c (bomb_planet): fix bomb out of t-mode
+	message.  We thought we sent the right message but the client got
+	a "42" instead.  Ahh.
+
+Mon Jul  3 13:55:06 2000  James Cameron  <quozl@us.netrek.org>
+
+	* config.h.in: #undef NO_BEAM_DOWN_OUT_OF_T_MODE
+	* ntserv/daemonII.c (beam): #ifdef NO_BEAM_DOWN_OUT_OF_T_MODE
+	Change not found to be universally accepted.
+
+Tue Jun 27 19:39:01 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* robots/inl*.c: Changed continuous scoring differential to 1.5.
+	
+	* *README*: Updated some docs.
+	
+Fri Jun 23 22:14:47 2000  James Cameron <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_admin): addition of administration commands
+	for player using god queue.  Nuke, eject, note for banning, and
+	reset galaxy.
+
+Fri Jun 23 19:32:52 2000  James Cameron <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c: prevent beaming down out of T-mode.
+	
+	* ntserv/getname.c: change password function added.
+	* ntserv/ntscmds.c: change password function added.
+
+	* ntserv/ntscmds.c (do_player_eject): send failure messages to the
+	team, not to the player, and include an #ifdef'd ejection only if
+	there is a queue feature.  Rework vote help text.
+
+	* ntserv/salt.h: correct typedef of salt buffer, for alpha compilation.
+
+	* tools/update.c: disable sa_sigaction definition, for alpha
+	compilation.
+	
+	* ntserv/Makefile: add note to sinclude for FreeBSD users who are
+	not using GNU make.
+	
+	* config.h.in: remove superfluous SIGSYS definition.
+
+	* ntserv/gencmds.c (getplayer): remove superfluous space from message.
+
+	* ntserv/gencmds.c: minor message typo.
+	
+	* tools/xtkill.c (main): minor fixes, spacing of GOD->ALL messages,
+
+Wed Jun  7 17:13:14 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* robots/*: Finished continuous scoring support.  See
+ 	docs/README.scores for details.  Fixed tournament reset bug; T
+ 	mode now gets cleared before end_tourney.pl is executed.
+	
+Wed Jun  7 15:12:49 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* robots/end_tourney.pl: Change alignment and fix SB stats bug in
+ 	the script.
+	
+Wed Jun  7 15:06:28 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* docs/README.scores: Description of the new continuous scoring
+ 	system.
+
+Tue May 23 22:28:10 EDT 2000  Jeff Nowakowski <jeffno@ccs.neu.edu>
+
+	* Lotsa files: Added newbie server mode.  Keeps a server full with
+	robots.
+
+Mon May 15 18:37:30 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+
+	* robots/inl*.c: Upped INL robot maintenance rate to 10 u/s.
+	Added continuous and semi-continuous scoring support.  This
+	is beta code.  See README.scores for details.
+
+Wed May  3 00:15:09 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* robots/inl.c: Fixed player DB corruption due to player saves at
+ 	endgame during end_tourney after player DB file is renamed but
+ 	before reset_inl is called to reset p_pos for all players.
+  	Hopefully this bug has finally been squashed.
+
+Wed Apr 26 23:39:16 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* ntserv/getname.c: Fixed player DB corruption due to observer
+ 	stats getting saved.
+	
+Thu Apr 20 22:32:59 EDT 2000  Dave Ahn <ahn@users.sourceforge.net>
+	
+	* tools/ltd_convert.c: Program to convert existing .players DB
+ 	file to LTD_STATS enabled DB file.  Not tested.  Use with caution.
+	
+	* docs/README.LTD: Updated docs on LTD_STATS and how to use
+ 	ltd_convert.
+	
+	* tools/ltd_dump.c: Fixed bug where SB stats were not being
+ 	printed for players who base for the entire game.
+	
+	* robots/inlcomm.c: When a captain frees an SB slot, SB's armies
+ 	get moved to homeworld.  If twink captains abuse this feature, it
+ 	should probably be #ifdef'ed out. But for now, trust the captains
+ 	to use this only when SB busts and must free the slot.
+
+	* robots/inl.c: At endgame, reset the player offset position to -1
+ 	so that stats do not carry over to the next game.  Back-to-back
+ 	games are OK, but players must relogin to get a new player offset
+ 	position.  Players with invalid offset positions will get kicked
+ 	out at game start.
+	
+Fri Mar 24 14:54:48 EST 2000  Karthik Arumugham  <karthik@arumugham.com>
+
+	* ntserv/commands.c, ntserv/genspkt.c, ntserv/ntscmds.c,
+	ntserv/proto.h, robots/inlcmds.c, tools/cambot.c: Added a 'whois'
+	command to facilitate identifying a slot in the case where your
+	player list is not long enough to display all players (in
+	particular, with a high MAXPLAYERS value).  Triggered by sending
+	yourself 'whois <slot>', or by sending a single '@' character to
+	the slot that you want to whois.
+
+Thu Mar 23 21:42:14 EST 2000  Karthik Arumugham  <karthik@arumugham.com>
+
+	* ntserv/defs.h: Changed TESTERS to be defined as (MAXPLAYERS - 16)
+	so that there will only be 16 normal players by default.
+	* ntserv/queue.c: Fixed queue-counting code to allocate the proper
+	number of slots per queue based on MAXPLAYERS and TESTERS.
+
+Wed Mar 22 16:07:31 EST 2000  Karthik Arumugham  <karthik@arumugham.com>
+
+	* robots/end_tourney.pl: Copy cambot.pkt if it exists, and allow
+	a new dropfile directory name format for readability ("Home Team
+	Name -vs- Away Team Name" instead of "953757536").
+	* robots/inl.c: Kill cambot before running end_tourney.pl so that
+	cambot.pkt gets closed and renamed for archiving.
+	* tools/Makefile: Added util.o to cambot objects for LTD_STATS.
+
+Tue Mar  7 11:16:04 2000  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/socket.c (check_mesgs): change god log to include player
+	character name, player full host name, ISO 8601 format date.
+	Pretty up replies to player.
+
+Tue Feb 29 18:42:51 2000  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/solicit.c (udp_attach): added support to bind to a
+	specific interface for the outgoing metaserver solicit packet.
+
+	* ntserv/solicit.c (solicit): re-wrote the .metaservers file
+	parser to actually work
+
+Mon Feb 28 21:40:48 2000  Karthik Arumugham  <karthik@arumugham.com>
+
+	* newstartd/newstartd.c: Added capability for binding to a single IP
+	address by prepending "ip:" to a .ports line
+	* docs/sample_ports: Added documentation for above change
+
+Fri Feb 25 19:26:59 2000  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+        
+        * ntserv/util.c (setEnemy): added function to set enemy for
+        LTD_STATS zone tracking
+
+        * ntserv/proto.h: Added function prototype for setting enemy
+        * ntserv/genspkt.c (updateStatus): Added call to set enemy
+        * ntserv/enter.c (enter): Added call to set enemy for team switch
+
+Sat Feb 26 12:35:39 2000  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/defs.h (PKEY): use unique shared memory key for INL
+	server, just in case server owner has two servers.
+
+Fri Feb 25 15:16:26 2000  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* config.h.in: Removed MAXPLAYER due to redundant definition in
+	ntserv/defs.h. defs.h seemed better place for it as config.h is
+	primarily a Exist/noexist definition file while defs.h is a value
+	assignment definition file.  defs.h #includes config.h
+
+	Hmm, dates in changelog are in localtime instead of UTC/GMT. Odd
+	to see a change made later than the previous change dated earlier.
+
+Sat Feb 26 09:37:42 2000  James Cameron  <quozl@us.netrek.org>
+
+	* xsg/Makefile (SRCS): add ntserv/ltd_stats.o to xsg Makefile,
+	still need lots of work here to display stats for xsg user.
+
+Fri Feb 25 15:08:55 2000  James Cameron  <quozl@us.netrek.org>
+
+	* config.h.in: Linux compilation issue.  SIGSYS is defined in
+	glibc-devel-2.1.1-6 used on inl.real-time.com (Red Hat V6.0-1),
+	but not in glibc-devel-2.1.2-11 on my system (Red Hat V6.1).
+
+Fri Feb 25 14:15:48 2000  James Cameron  <quozl@us.netrek.org>
+
+	* xsg/inform.c (inform): suppress LTD_STATS warnings.
+	* xsg/playerlist.c (playerlist1): suppress LTD_STATS warnings.
+
+Fri Feb 25 14:03:43 2000  James Cameron  <quozl@us.netrek.org>
+
+	* tools/ltd_dump.c: initializer element is not constant.
+	
+	* INSTALL: change references to newstartd into netrekd.
+	
+	* INSTALL.INL: validate instructions for 2.9pl5 on
+	inl.real-time.com, change references to newstartd into netrekd,
+	add revision header, include LTD_STATS and LTD_PER_RACE
+
+Wed Jan 12 11:37:00 2000  James Cameron  <quozl@us.netrek.org>
+
+	* tools/update.c (makemotd): 
+	* ntserv/daemonII.c (check_scummers): bad use of tm_year, date
+	format changed to ISO 8601 and use of tm_year corrected.
+
+Thu Jan  6 12:13:55 2000  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/genspkt.c (updateShips): Indi players see all ships always
+	(updatePlanets): Indi players see all planets always
+
+	* ntserv/enter.c (enter): Forced indi to be peaceful to all
+	* ntserv/interface.c (declare_war): Indi can't be hostile
+	* ntserv/defs.h (MAXQUEUE): Added 1 more queue
+	* ntserv/queue.c (queues_init): Added definition for God Obs Q
+	* ntserv/struct.h (QU_GOD_OBS): Added definition for God Obs Q
+	* docs/sample_ports: Added god obs port to .ports file
+
+Thu Jan  6 01:13:35 2000  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/defs.h (PV_TOTAL): Force PV_TOTAL to track MAXPLAYERS,
+	else bad things happen to player struct.
+
+Thu Dec 30 17:11:40 1999  James Cameron  <quozl@us.netrek.org>
+
+	* rpm/netrek.crontab: fix syntax error that generated hourly mail
+	to root on system that package was installed on.
+
+Thu Dec 30 14:49:55 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/defs.h: add N_PORTS and N_NETREKDPID for netrekd.
+
+	* newstartd/newstartd.c: further edits to messages for name change
+	from newstartd to netrekd, add code to prevent duplicate starts.
+
+Wed Dec 29 16:15:01 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/daemonII.c (udsurrend): Bump non-T race observers to the
+	team selection window.
+	
+	* ntserv/getentry.c (tournamentMask): Force observers to choose a
+	T-mode race, if any.
+	
+Tue Nov 16 21:33:31 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c (killerstats): [VANILLA-LIST:2711] do not credit
+	chung (plasma self or team member against wall) army kills.
+	Patch reverted to a #define due to non-universal acceptance.
+
+Mon Nov 22 15:54:12 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/data.c: added variables for all features types
+	* ntserv/data.h: added declarations of all feature types
+	* ntserv/feature.h: filled in null entries for feature variables
+
+Mon Nov 22 14:23:30 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/feature.c: added a memory location for feature flag
+	CLOAK_MAXWARP to allow it to be settable via .features
+
+Mon Nov 15 17:10:25 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* tools/xtkill.c (main): Exclude observers from live slot
+	check. True, they're not alive, but they're not dead either.
+
+Thu Nov 11 12:12:23 1999  James Cameron  <quozl@us.netrek.org>
+
+	* tools/scores.c (main): change status->timeprod printf to be
+	%10lf rather than %10ld in order to match tools/newscores.c
+
+Mon Nov  1 21:31:27 1999  James Cameron  <quozl@us.netrek.org>
+
+	* robots/inl.c (obliterate): [VANILLA-LIST:2710] avoid depositing
+	observer's armies on home planet.
+
+Fri Oct  1 16:38:06 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c (beam): reference to me->p_ship.s_type instead of
+	to j->p_ship.s_type was causing SIGSEGV and total game cessation.
+
+Mon Sep 20 22:05:44 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/redraw.c (auto_features): A check to see if target of
+	twarp was a base was in the wrong place and masking out checks for
+	twarp abort conditions.  Check moved to appropriate place.
+
+Mon Sep 20 22:02:57 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/interface.c (do_refit): do_refit sent new p_ship.s_type
+	to player, but never changed ship type in player struct.
+
+Thu Sep 16 15:24:17 1999  James Cameron  <quozl@us.netrek.org>
+
+	* tools/watchmes.c (spew_mess): add xterm-color compatible output.
+
+Thu Sep 16 12:18:27 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/redraw.c (check_observs): allow independant observers such
+	as god to lock on any player or planet.
+
+Thu Aug 19 18:47:17 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/genspkt.c (sndPStatus): add code to remove observers from
+	the count of ships presented in the team selection window, by
+	telling non observers that observers are not alive.
+
+Mon Aug 16 14:15:44 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* BUGFIX xsg/main.c: Applied patch submitted by Peter Mardahl
+ 	<peterm@langmuir.EECS.Berkeley.EDU> which fixes a buffer overflow
+ 	in the filename used for XSG record.
+	
+	* BUGFIX pledit/main.c: Pledit was still using varargs instead of
+ 	stdargs, causing problems at compile or run time depending on
+ 	platform.
+	
+Wed Aug  4 11:19:54 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* BUGFIX ntserv/orbit.c: Applied patch submitted by Michael Moore
+ 	<mike@miridea.com> to fix SB to SB docking in >1 SB mode,
+ 	e.g. chaos.
+	
+Thu Jul 29 20:27:14 1999  James Cameron  <quozl@us.netrek.org>
+
+	* docs/sample_ports: Added missing quotes to "statistics" line which
+	was preventing newstartd from listening on the port that gum uses to
+	display the connection counters.  Removed superfluous "./" prefix as
+	newstartd now changes directory before commencing work.
+
+Mon Jul 26 00:31:58 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/cvs2rpm: Added GNOME files to be copied over to rpm build area.
+
+	* rpm/netrek.spec (preun): Do a check to see if the server is
+	running, if it us, then shut it down THEN proceed with the
+	uninstall. 
+
+	Added a little message that tells the user that the inability to
+	remove files is ok.
+
+	* rpm/netrek.spec (netrekcfg): Setuid games to the netrekcfg
+	binary so "normal" users can admin the netrek server.
+
+	* rpm/netrek.spec (GNOME): Added GNOME menu option for netrekcfg.
+
+Fri Jul 23 18:01:07 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* CONFIG config.h.in (UDP_PORTSWAP): Reenabled UDP_PORTSWAP mode
+ 	since testing shows that it seems to work fine now.
+	
+	* BUGFIX ntserv/socket.c (UDP_PORTSWAP): Erik Rungle
+ 	<rungus@openface.ca> submitted an updated patch to the
+ 	UDP_PORTSWAP code which fixes the UDP->TCP->UDP bug.
+	
+	* UPDATE robots/end_tourney.pl (INL): Minor fixes from Tom Holub
+ 	<doosh@best.com> and myself to update end_tourney parser for INL
+ 	game mode.
+	
+Thu Jul 22 18:09:53 1999  Bob Tanner  <tanner@real-time.com>
+
+	* Removed Vanilla.spec
+	
+	* rpm/netrek.spec: Created new .spec file to fall in line with new
+	naming convections.
+
+	* rpm/cvs2rpm: Changed Vanilla.spec to netrek.spec
+
+Wed Jul 21 01:00:03 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/netrek.crontab: Only update the keys if CONFIRM > 0, mean
+	RSA or RSA and Reserve.
+
+Tue Jul 20 02:01:38 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (%files): Darn typo in the %ghost file.
+
+	* rpm/Vanilla.spec (Requires): Holding off on 5.2 compatbility and
+	just building for Redhat 6.0.
+
+	* rpm/Vanilla.spec (ghosts): Fixed %ghost entries for the mesg.LOG
+	and pixmaps for gum.
+
+Mon Jul 19 21:25:54 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (init.d): Fixed missing files on rc location.
+
+Tue Jul 20 10:54:30 1999  James Cameron  <quozl@us.netrek.org>
+
+	* rpm/Vanilla.spec (%description): rework gum description.
+
+	* rpm/Vanilla.spec (Summary): rename gum.
+
+	* rpm/Vanilla.spec (%description): intro line, reformat, minor edits.
+
+	* rpm/Vanilla.spec (Packager): remove URL
+
+Tue Jul 20 10:52:53 1999  James Cameron  <quozl@us.netrek.org>
+
+	* rpm/Vanilla.spec (URL): 
+
+Sun Jul 18 23:53:17 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (gum): gum is now netrekcfg.
+
+	* rpm/Vanilla.spec (gum): Activate gum build and install. Setup
+	Prereq and Requires for the package.
+
+	* rpm/Vanilla.spec (preun): Stop the server before uninstallation.
+
+	* rpm/Vanilla.spec (%dir): Make netrek home dir and log dir be
+	2755 (+s on the group) to force the group of all files to be in
+	the games group.
+
+	* rpm/Vanilla.spec (Group): Forgot to symlink mesg.log to /var/log/netrek.
+
+	* rpm/Vanilla.spec (%post): Run the symlinks as the user games to
+	it owns the symlinks.
+
+	* rpm/Vanilla.spec (gum): gum requires the Vanilla server to be
+	installed to work properly. So, Requires: Vanilla.
+
+	* rpm/Vanilla.spec (gum): Added aclocal, automake and autoconf to
+	get gum to build correctly on Redhat 6.0
+
+	* rpm/netrek.init: Do not start the updatedkeys on boot, instead
+	we are storing a version of the keys inside the package.
+
+	* rpm/cvs2rpm (sources): Copy the rsa-keys into the RPM build area.
+
+	* rpm/Vanilla.spec (file): Included the rsa-keyfile with the
+	package, so non-Internet PCs can start up the server without
+	having to get the keys from the metaserver.
+
+	* rpm/Vanilla.spec (doc): Added documentation about %ghost files
+	and why they are needed.
+
+Mon Jul 19 14:07:05 1999  James Cameron  <quozl@us.netrek.org>
+
+	* robots/end_tourney.pl: as provided by Tom Holub [VANILLA-LIST:2537]
+
+Sun Jul 18 02:05:18 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (preun): Need to remove the runlevel script
+	before (preun) removing the package. 
+
+	* rpm/Vanilla.spec (files): More symlinks from /usr/netrek/games /var/log/netrek.
+
+	* rpm/Vanilla.spec (files): More %ghost files that are generated from the server.
+
+	* rpm/Vanilla.spec (%ghost): touch /usr/games/netrek/log for %ghost entry.
+
+Sun Jul 18 14:45:36 1999  James Cameron  <quozl@us.netrek.org>
+
+	* robots/inl.c (start_countdown): change team advice message to be
+	two lines instead of one, [VANILLA-LIST:2528]
+
+Sat Jul 17 00:45:48 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/cvs2rpm (source): Copy the netrek.functions into the
+	RPM_BUILD_SOURCE directory.
+
+	* rpm/netrek.init: New functions for running daemon processes as
+	non-root users AND still keep it looking like a Redhat 6.0 runlevel.
+
+	* rpm/netrek.functions: Some customized init script functions
+	needed to allow Redhat to run daemons as non-root users.
+
+	* rpm/Vanilla.spec (Group): symlink logfiles that are generated in
+	LIBDIR to their linux-location in /var/log/netrek.
+
+	* rpm/netrek.logrotate: Added errors.LOG
+
+Fri Jul 16 17:57:50 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (files): /usr/games/netrek gets installed owned
+	by root by default. Change ownership to games.
+
+	* rpm/Vanilla.spec (files): updatekeys wants to write to a file
+	called /usr/games/netrek/rsa_key. Touch the file and add it to the
+	files section.
+
+	* rpm/netrek.init: Wrong path to updatekeys. daemon does not work
+	when you pass it "su -c", changed to run server by hand. Added
+	redirection of output from netrekd/newstartd to the logfile
+	/var/log/netrek/newstard.LOG
+
+	* rpm/Vanilla.spec (Requires): gtk+ not gtk.
+
+	* rpm/Vanilla.spec (RSA): Since Euro and US RSA have different
+	names, need to add a little code to make the release names
+	variable. As well as sticking the source into a generic res-rsa
+	directory.  
+
+	* rpm/netrek.init: Need to update the keys before starting the
+	server. Under RedHat 6.0, you no longer need to identify the
+	process that are about to be run. Ie, this is not needed:
+
+	echo "Starting myserver..."
+	daemon myserver
+	echo -n "myserver"
+
+	RedHat 6.0's runlevel is different then anything before it.
+
+	* rpm/netrek.crontab: Added the 2nd "-" to give us a clean shell
+	environment. 
+
+	* rpm/Vanilla.spec (%install): You cannot do full path symlink in
+	the %install section of a spec file when you are using a
+	BuildRoot. Because the $RPM_BUILD_ROOT is macro that get expanded
+	to the BuildRoot definition (located at the top of the spec
+	file). If you need to symlink something use relative paths or put
+	the ln into the %post section.
+
+Fri Jul 16 23:21:00 1999  James Cameron  <quozl@us.netrek.org>
+
+	* Makefile (install): add minor hint for installers on how to
+	start the server.
+
+	* rpm/netrek.init: changed to use netrekd symbolic link
+
+	* newstartd/newstartd.c (main): chdir to server directory, check
+	access to files, then fork to background, directing all future
+	output to the LogFile, line buffered, and announce successful
+	start on original stderr.  Add ability to stop the listener from
+	the command line.  If we were to also try to set effective uid to
+	games then things would be easier.
+
+	* rpm/Vanilla.spec (%clean): add -r to rm to fix build failure.
+	
+	* rpm/Vanilla.spec (%install): add symbolic link in
+	/usr/bin/netrekd (it should be /usr/sbin/netrekd since it is a
+	daemon, but it won't work this way because user games does not
+	have /usr/sbin in path).
+
+	* rpm/Vanilla.spec: return to gzip.
+	
+	* rpm/cvs2rpm: return to gzip, check writeability of
+	/usr/src/redhat earlier, fix minor typo.
+
+	* patches: reworked due to dependency on manifest.
+
+	* Makefile: add revision header, change warning to installers,
+	change all "make" to "$(MAKE)", minor spacing changes, remove
+	binary distribution targets, remove manifest references, remove
+	startd references, and since xsg and pledit are now included in
+	distribution, remove them from being conditionally tested.
+
+	* manifest: removed in favour of CVS.
+	
+Fri Jul 16 02:12:14 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/cvs2rpm (export): Changed to grab the latest snapshot of the
+	source from CVS instead of using a tagged release.
+
+	* rpm/netrek.logrotate: Changed start.LOG to newstartd.LOG, added updated.LOG.
+
+	* rpm/Vanilla.spec (crontab): Changed the .spec file to use James'
+	elegant fix to the cron problem.
+
+	* rpm/netrek.crontab: Radical change and very elegant fix from
+	James to get cron to run the updatekeys as user games AND make it
+	easy to add/remove cron entries.
+
+	* rpm/netrek.init: First attempt at getting the server to run as
+	user games.
+
+	* rpm/Vanilla.spec (logfiles):  Added updated.LOG to keep binaries
+	to logfiles synchronized.
+
+	* tools/updatekeys (updated): Redirect updated output to a logfile.
+
+	* rpm/netrek.init (start): Need to grab keys from the metaserver
+	before starting the server. Added a call to updatekeys before
+	starting newstartd.
+
+	* rpm/Vanilla.spec (logfiles): Changed start.LOG to newstartd.LOG
+	to keep the relationship very clear.
+
+	* rpm/netrek.init (start): Add the ability to stop and start the
+	netrek server using the rc scripts.
+
+	* rpm/Vanilla.spec (%clean): Actived the cleaning up routines.
+
+	* rpm/Vanilla.spec (RSA): Added check for Euro RSA code.
+
+Thu Jul 15 18:44:08 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/netrek.crontab: Small change to the comments to allow the
+	sed script to be able to remove the cron entry automatically.
+
+	* tools/Makefile (install): Need the tools Makefile to install the
+	updatekeys shell script.
+
+	* rpm/Vanilla.spec (%post): Need to do crontab -u games for all
+	invocations of crontab. Want to make sure we get games' cron
+	entries not roots.
+
+	* rpm/Vanilla.spec (Requires): Changed cron to vixie-cron.  
+
+	* rpm/Vanilla.spec (%files): Changed the %files section for the
+	server. Needed to break out each file so I could tag certain files
+	as %config.
+
+	* rpm/Vanilla.spec (clean): Added %clean to rm -f the BUILD_ROOT.
+
+	* rpm/Vanilla.spec (RSA): Added logic to look for the RSA
+	source. If it is found, extract into the right directory. The
+	configure script can only detect the US RSA source, it looks for
+	res-rsa/configure, which is not in the Euro version.
+
+	* rpm/cvs2rpm (gzip): Added some documentation. Added the check
+	for gzip, but left it commented out. 
+
+
+	* rpm/cvs2rpm (sources): Changed script to include copying the
+	crontab file into the RPM_SOURCE_DIR.
+
+	* rpm/Vanilla.spec (Source1): Had to remove the
+	ftp://ftp.risc.uni-linz.ac.at/pub/netrek/src/res-rsa2.tar.Z file,
+	since US crypto law sucks and I cannot redistribute it. Still
+	working on how to build the server with RSA enabled and not
+	distribute the source for it.
+	
+	* rpm/Vanilla.spec (Group): Groan! Hate that emacs does not have
+	the same changelog format as RPM .spec files. OR do I hate the RPM
+	.spec files do not have the same format as emacs.
+
+	* tools/updatekeys: New tool (shell script) that is from from cron
+	to suck the keys from the metaserver. A little more documentation
+	in the script would be helpful. The default is to run the same
+	options that Continuum runs.
+
+	* rpm/netrek.crontab: Simple crontab for activating updated. There
+	is a new tool (shell script) called updatekeys, which sets all the
+	command line options for updated to run within cron
+	appropriately. This will also allow the server admin to alter
+	updated's behavior without having to mess with cron.
+
+	* rpm/Vanilla.spec (%postun): Major hack again. Need to get netrek
+	cron entries out of games' crontabs without deleting other
+	potential crontab entries. ** NOTICE ** this method required that
+	"netrek" (the word) be part of the crontab entries that need to be
+	removed. This might come back and bite us in the butt.
+
+	* rpm/Vanilla.spec (%post): Major hack to get cron jobs into
+	games' crontab. Have to be careful, games may already have a
+	crontab tab, so suck the current  crontab out and save it to a
+	temp location. Append netrek's cron entries to the crontab. Put
+	the crontab back into cron. Finally clean up after ourselves.
+
+	* rpm/Vanilla.spec (Requires): The .spec file is becoming more
+	complex. We need to have gtk > 1.2, glib > 1.2 for gum. Cron and
+	sed are necessary for setting up crontab entries for updated on
+	install and deleted those same entries on removal.
+ 
+Wed Jul 14 20:08:32 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/cvs2rpm (RPM_SPEC_DIR): James and Carlos both do not have
+	cvs installed via rpm, so changed the code to walk the $PATH
+	looking for the necessary binaries.
+
+Wed Jul 14 17:33:25 1999  Carlos Y. Villalpando  <unbelver@us.netrek.org>
+
+	* ntserv/solicit.c (solicit): prevent solicit from sending blank
+	lines for name and login to metaserver.  Mainly for new people
+	logging in. Avoids weirdness in metaserver playerlist port output.
+
+Wed Jul 14 18:26:02 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (Group): RPM %changelog format is different
+	then this files format. Changed the .spec files format to keep rpm
+	from complaining.
+
+Wed Jul 14 02:36:02 1999  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (Group): Changed the Source0 from tar.gz to
+	tar.bz2 to fall in line with James distributions.
+
+	* rpm/cvs2rpm: Added a shell script to take the files out of cvs
+	and copy them into the Redhat RPM hierarchy.
+
+1999-07-13  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (Group): Added the %changelog section to the
+	spec file.
+
+Tue Jul 13 20:39:46 1999  Bob Tanner  <tanner@real-time.com>
+
+	* robots/robotII.c (main):  remove warning of return type on main.
+
+Tue Jul 13 20:23:55 1999  Bob Tanner  <tanner@real-time.com>
+
+	* tools/update.c: removed redefination warning.
+
+1999-07-13  Bob Tanner  <tanner@real-time.com>
+
+	* tools/ltd_dump.c (warning): removed warning of return type.
+
+1999-07-13  Bob Tanner  <tanner@real-time.com>
+
+	* tools/update.c: Fixed warning about redefining sa_sigaction.
+
+1999-07-13  Bob Tanner  <tanner@real-time.com>
+
+	* rpm/Vanilla.spec (silly test): Just a test to see how ChangeLog
+	entries work under Emacs. James says this rocks.
+
+Mon Jul 12 13:24:58 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (do_queue_msg): add new player command "queue
+	hosts" that will display who is on the queue as a list of host
+	names rather than just a length of queue.  Untested.
+
+Fri Jun 25 17:58:46 1999	Dave Ahn <ahn@netrek.org>
+	
+	* FEATURE (LTD_STATS): Added code to split the stats further for
+ 	each race per player so that the results can be easily parsed for
+ 	clue games.  Enable LTD_PER_RACE in config.h.  Added SB stats
+ 	dump for tools/ltd_dump.
+	
+	* CONFIG (config.h.in): REVERSED_HOSTNAMES is now defined by
+ 	default.  UDP_PORTSWAP code seems to break UDP->TCP->UDP
+ 	renegotiation, so it is now undefined by default, until this bug
+ 	is fixed.
+	
+	* BUGFIX (crypt): Added char * casts so that crypt doesn't give
+ 	warnings during compile on machines without a prototype in
+ 	unistd.h.
+	
+Mon Jun 21 22:27:34 1999  James Cameron  <quozl@us.netrek.org>
+
+	* robots/roboshar.c: include proto.h
+	* robots/roboshar.c (warning): fix arg type
+	* robots/detonate.c: include proto.h
+	* robots/puck.c: include proto.h
+	* robots/puck.c (main): give function a type.
+	* sequencer/roboshar.c: give functions a type.
+	* tools/cambot.c: add returns to dummy int functions.
+	* tools/convert.c: include stdlib.h for system() prototype.
+	* tools/fun.c (action): fix prototype to match signal().
+	* tools/planets.c (main): remove warning of return type.
+	* tools/message.c (main): remove warning of return type.
+	* tools/mess.c (argv): remove warning of return type.
+	* tools/loadchecker.c (main): remove warning of return type.
+
+Mon Jun 21 20:19:47 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/main.c (main): report host names for lack of version packet
+	to help isolate sources of malicious connections.
+
+Fri Jun 11 18:01:49 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/main.c (main): remove superfluous set of whydead on login.
+	This will have caused ghostbusts on login in conjunction with the
+	"in POUTFIT too long" handler in udplayers().
+
+	* ntserv/daemonII.c (udplayers): ghostbusts on login are happening
+	here, and the code still thinks the outfitdelay should be 300 despite
+	whydead being set to KLOGIN by ntserv/main.c, so for the moment I've
+	added also a dump of the whydead reason and a stdout flush.
+
+	* ntserv/main.c (main): improve error messages for ntserv instances
+	that quit due to lack of version packet or invalid packet format.
+
+Thu Jun  3 21:21:31 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/socket.c (doRead): logs show EINTR is happening on read(),
+	which implies that clients are being disconnected for no good reason,
+	changed to ignore EINTR and retry.
+
+	* ntserv/socket.c (socketPause): remove superfluous comments.
+
+Thu Jun  3 20:01:55 1999  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/socket.c (check_mesgs): change response to messages to GOD
+	so that players will know that it is not GOD replying but a logger,
+	and also suggest a return electronic mail address.
+
+	* ntserv/daemonII.c (udplayers): I fear the calculation of the
+	outfitdelay may actually be incorrect, because lots show that many
+	of the ghostbusts on login are actually POUTFIT SIGTERMs.
+
+	* ntserv/socket.c (doRead): re-inserted report of read() from client
+	error which had been previously removed because it happened too much,
+	but changed the error level to 9 to avoid seeing it.  I'm expecting
+	to find that this is the point where most of the ghostbusts I'm
+	seeing on continuum actually happen; and I want to see if it's EPIPE.
+
+	* ntserv/redraw.c (intrupt): remove superfluous reset of testtime,
+	it had been tested for zero two lines above.
+
+	* ntserv/socket.c (dequeue): changed kill(getpid(),15) to an exit().
+
+Mon May 31 20:49:50 1999	James Cameron  <cameron@us.netrek.org>
+
+	* UPDATE: fixed a few compiler warnings using -Wall.
+
+	* UPDATE: added TCP_NODELAY to ntserv processes.
+
+	* DEBUGGING: changed error reporting again for ntserv processes.
+
+Fri May 28 23:01:25 1999	James Cameron <cameron@stl.dec.com>
+
+	* changed TIME message from INL robot to minutes:seconds.
+
+	* BUGFIX (INL): terminator robots were appearing during INL games.
+
+	* BUGFIX (Bases): default docking permissions on for refit to SB.
+
+	* DEBUGGING: addition of various fragments of code to clean up
+	the output of the ntserv processes for debugging connection problems.
+
+	Okay, guys, how do you generate this ChangeLog semiautomatically?
+
+	
+Tue May 11 19:08:39 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* FEATURE (UDP_PORTSWAP): Erik Rungi <rungus@openface.ca>
+ 	submitted a patch to ntserv/socket.c which allows clients with
+ 	USE_PORTSWAP code to initiate the UDP connection rather than
+ 	having the server do it.  This change should allow those clients
+ 	to establish UDP connections through some packet filtering
+ 	firewalls.  Enabled by default.
+	
+	
+Wed May  5 19:50:07 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* BUGFIX (LTD_STATS): The stat damage_repaired wasn't getting
+ 	updated properly.  Fixed.  Max kills calculations were wrong.
+  	Fixed.  Stats packet sent to the client had doubled values for
+ 	kills, deaths, planets taken and armies bombed.  Fixed.
+	
+	
+Fri Apr 30 19:14:51 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* UPDATE: Cosmetic changes to remove compiler warnings under gcc
+ 	for some files in ntserv/ and robots/.
+	
+	* UPDATE ntserv/getname.c (crypt): Dave Swasey reports that
+ 	crypt.h doesn't exist on RedHat 4.2.  Removed.  configure should
+ 	autocheck for crypt.h in the future.
+	
+	* BUGFIX (LTD_STATS): Ranking and ratings weren't working
+ 	properly.  Fixed to emulate the old style DI ratings and ranking.
+	
+	* BUGFIX robots/roboshar.c (stdarg): The stdarg changes broke
+ 	robot messages and caused them to be garbled.  Fixed now.
+	
+	* BUGFIX tools/update.c, newstartd/newstartd.c (sigaction): Linux
+ 	doesn't have struct sigaction.sa_sigaction, either.  What a lame
+ 	OS.  Patched as Dave Swasey recommended.
+	
+	
+Fri Apr 30 14:31:15 1999	Dave Ahn <ahn@vec.wfubmc.edu>
+	
+	* NOTE: This is a massive changelog entry describing modifications
+ 	to thousands of lines of code.  Some of those changes are
+ 	cosmetic, others are not.  To see the actual changes, take a look
+ 	at the diffs somewhere in the VANILLA-DEVEL archive.  Also, I
+ 	propose that we follow the GNU-style ChangeLog documentation that
+ 	Kevin Oconnor started.  I prefer a less specific, hand-waving,
+ 	bastardized-GNU-style ChangeLog, but the formatting should be
+ 	similar enough.  James and other developers are welcome to follow
+ 	my style, but as long as there is some form of documentation, the
+ 	style shouldn't matter.
+	
+	* CONFIG config.h.in: I have removed the SHORT_PACKETS and SPEEDUP
+ 	ifdefs from the source files.  They exist in config.h.in in case
+ 	COW depends upon it, but they have no meaning for the server code.
+  	LTD_STATS is a new define for the Leonard/Tom/Dave extended
+ 	statistics package for INL gameplay.  For details on LTD stats,
+ 	see the FEATURE entry and the docs/README.LTD file.  SB_CALVINWARP
+ 	is a new define for calvin style sling-transwarp, off by default.
+  	REVERSED_HOSTNAMES is a new define to truncate the player's client
+ 	hostname from the end rather than the beginning, off by default.
+	
+	* UPDATE (RES-RSA): We are now using the new RES-RSA-shell
+ 	packaging so that both the U.S. and Euro versions of RES-RSA.
+  	configure should autodetect U.S. RES-RSA 2.9.1 and Euro RES-RSA
+ 	2.9 and above.
+	
+	* FEATURE (ANSI-C): I have updated almost all files in ntserv/ as
+ 	well as some other files in the other directories to contain
+ 	ANSI-fied prototyped functions.  Most externally accessed
+ 	functions now have a prototype in proto.h.  While additional code
+ 	cleanup should probably be done, I think that these changes are
+ 	good.  There are numerous small bugs that I uncovered and fixed
+ 	during this process.  Let's try to make future contributions ANSI
+ 	C compliant.  Quite a few files, especially in xsg/, still need
+ 	some cleaning up.  I have also corrected numerous warnings and
+ 	remarks that I found in ntserv/, so now ntserv and daemonII can be
+ 	built with cc -fullwarn or equivalent.
+	
+	* FEATURE ntserv/smessage.c, ntserv/warning.c (stdarg): The old
+ 	style varargs have been replaced with stdarg.  The changes are
+ 	mostly in the messaging functions and should not break anything.
+	
+	* FEATURE ntserv/redraw.c (SB_CALVINWARP): The old calvin server
+ 	had a non-degrading sling transwarp feature.  Basically, a
+ 	transwarping ship does not decelerate and can be sling-shot over
+ 	the base if the base presses the incoming ship before it docks.
+  	Really fun for base oggs!
+	
+	* FEATURE ntserv/main.c (REVERSED_HOSTNAMES): Internet hosts these
+ 	days have extremely long hostnames.  To better tell who is logging
+ 	in from where, this config feature truncates the hostname from the
+ 	end rather than the start.  So, me@ppp-host.abcdehijklmnop.dom.com
+ 	becomes me@#mnop.dom.com, where # denotes truncation.  The full
+ 	hostname, up to 31 chars, is still stored in p_fullhostname.  This
+ 	probably should be expanded.
+	
+	* FEATURE (LTD_STATS): This is the new Leonard/Tom/Dave extended
+ 	statistics package.  THIS IS BETA CODE.  DO NOT ENABLE LTD_STATS
+ 	UNLESS YOU KNOW WHAT YOU ARE DOING.  An extensive description of
+ 	the LTD stats package is in docs/README.LTD.  As of right now,
+ 	many tools, including xsg and pledit, are broken with LTD_STATS.
+  	I hope to enlist some help to update the tools and to validate the
+ 	statistics package.
+	
+	* BUGFIX newstartd/newstartd.c (handle_reaper): Some OS's,
+ 	primarily the modern SVR4 derived ones, now generate zombie
+ 	children if a forked process is not waited on.  I have fixed this
+ 	by using sigaction, but this may not work if the OS does not
+ 	support the SA_NOCLDWAIT flag.  See and enable REAPER_HANDLER in
+ 	newstartd.c to use the fix.  I added a workaround fix for Linux
+ 	which does not have SA_NOCLDWAIT.
+	
+	* BUGFIX tools/update.c (no_zombies): Like newstartd.c, updated
+ 	was also creating zombie processes on Solaris.  Same solution
+ 	applies, but again, SA_NOCLDWAIT must be supported for it to work.
+  	I added a workaround fix for Linux which does not have
+ 	SA_NOCLDWAIT.
+	
+	
+Sat Jan 31 14:02:12 1998  Kevin Oconnor  <koconnor@kerosene.eng.buffalo.edu>
+
+	* packets.h (SP2SHORTVERSION): Changed macro SHORTVERSION to
+ 	SP2SHORTVERSION.  ShortVersion alone is not descriptive enough.
+
+Sat Oct 25 03:13:54 1997  Kevin Oconnor  <koconnor@harrier.eng.buffalo.edu>
+
+	* genspkt.c (SupdateTorps): This function had a failsafe #ifdef
+ 	block that checked if MAXPLAYER*MAXTORP wasn't a factor of 8.  The
+ 	failsafe code was just a block copy of the rest of the function
+ 	with a couple of simple changes.  I reimplemented this failsafe by
+ 	adding a few well placed #ifdef checks in the main routine.  This
+ 	has the effect of reducing the code size by over 6K.  Also, this
+ 	simplifies the code - making it easier to understand and
+ 	maintain.
+
+	* genspkt.c: Changed sizes[] array definition from an unbounded
+	array, to a bounded array of size TOTAL_SPACKETS.  TOTAL_SPACKETS
+	is defined in packets.h.  This was done because sizes[] was moved
+	to genspkt.c, and socket.c needed to know the size of the array
+	at compile time.  This is a temporary solution, IMO the sizes[]
+	array should be phased out completely..
+
+Sun Oct 12 19:08:11 1997  Kevin Oconnor  <koconnor@thunderbolt.eng.buffalo.edu>
+
+	* genspkt.c: Removed 'register' declaration from variables in
+ 	non-critical routines - IE. all of genspkt.c.  Perhaps I'm missing
+ 	the "big picture", but the server is compiled by default with -O
+ 	on.  The compiler will automaticly combine certain variables,
+ 	remove certain variables, and make other variables into registers.
+  	Blindly declaring non-critical loop variables as register is at
+ 	best irrelevant, and at worst hampering performance.  Also, some
+ 	of the routines declared 10 or more variables as register.  This
+ 	is silly, many architectures dont even have that many registers!
+
+Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
+
+	* socket.c: Removed #ifdef SHORT_PACKETS from code (Making
+ 	Short_packets a permanent 'feature').
+	Parsed source code through GNU Emacs c-mode auto-indent.  Fixed up
+ 	many #ifdef/#else/#endif directives to make emacs happy.
+	Broke many UpdateXXX functions into multiple parts.  The UpdateX()
+ 	functions determine which data is nedeed by the client, and then
+ 	calls functions sndX() to generate the actual server packets.  The
+ 	sndX() routines determine if the information has changed in the
+ 	'eyes' of the client, and calls sendClientPacket() to send the
+ 	actual data when neccessary.
+	Changed updatePlanet() to send 0 for armies/flags/owner when
+ 	planet is no longer seen.  Done for uniformality, and it 'makes
+ 	sense'.
+	Broke socket.c into two files, socket.c which will
+ 	create,maintain,and send data over the sockets, and genspkt.c
+ 	which will generate the actual server packets.  Reason - socket.c
+ 	was getting too large (> 150K).
+	(updateClient): Moved the resetting of mustUpdate[i] to
+ 	updatePhasers() in genspkt.c - It has the same effect there, and
+ 	allows mustUpdate to be declared locally in genspkt.c.
+	(forceUpdate): Moved most of the code in this function to new
+ 	function in genspkt.c - clearSPackets.
+
+	* genspkt.c (updateMessages): Moved mysterious call to
+ 	update_sys_defaults in updateMessages to a more appropriate
+ 	location - updateClient in socket.c.
+	
+	$Id: ChangeLog,v 1.1 2005/03/21 05:23:33 jerub Exp $

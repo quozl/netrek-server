@@ -1,0 +1,229 @@
+#	$Id: sample_sysdef.in,v 1.1 2005/03/21 05:23:34 jerub Exp $	
+#
+#	The sample sysdef file shipped with the server.
+#
+#	Edit this file to meet your requirements, or use the program gum to
+#	view and update it graphically.
+#
+#	Maximum client update rate per second
+MAXUPDATE=10
+#
+#	Default client update rate per second
+DEFUPDATE=10
+#
+# 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
+#	(We need more twinks, don't turn this on lightly)
+CLUE=0
+#
+#	Do not cluecheck this rank or higher
+CLUERANK=4
+#
+# 	Send in iggy (ie hunterkillers) (0 = no, 1 = yes)
+HUNTERKILLER=0
+#
+# 	Reset galaxy on daemon startup (which happens on the next player to
+#	log in after the daemon has gone because everybody left).
+RESETGALAXY=1
+#
+# 	Log all messages (0 = no, 1 = yes)
+LOGALL=0
+#
+# 	Log messages to god (0 = no, 1 = yes)
+LOGGOD=1
+#
+# 	Check messages for configuration... (0 = no, 1 = yes)?
+CHECKMESG=1
+#
+#       Log all warnings as messages (0 = no, 1 = yes)
+EVENTLOG=0
+#
+# 	Auto-Doosh messages (0 = no, 1 = yes)
+DOOSHER=0
+#
+# 	Show why dead messages (0 = no, 1 = yes)?
+WHYMESS=1
+#
+# 	Show sysdef on galaxy map upon startup (0 = no, 1 = yes)
+SHOWSYSDEF=1
+#
+# 	make planets move around (0 = no, 1 = yes)
+PLANET_MOVE=0
+#
+# 	number of players per team for t-mode
+TOURN=4
+#
+# 	Which ship types are allowed
+SHIPS=SC,DD,CA,BB,AS,SB
+#
+# 	Which additional weapon systems are allowed
+WEAPONS=PLASMA,TRACTOR
+#
+# 	Number of kills for plasma torpedos
+PLKILLS=2
+#
+# 	Rank needed to take out starbase (3 = Commander)
+SBRANK=3
+#
+#	Planets needed to take out starbase
+SBPLANETS=5
+#
+# 	Use Chaos mode (0 = no, 1 = yes)
+CHAOS=0
+#
+#  Use "wrap around" style galaxy (0 = no, 1 = yes)
+WRAP_GALAXY=0
+#
+#  Use "Ping-Pong" plasma mode (0 = no, 1 = yes)
+PINGPONG_PLASMA=0
+#
+#  Maximum number of Starbases allowed in Chaos mode
+MAX_CHAOS_BASES=2
+#
+#  Disallow bombing out of t-mode (1 = no bombing)
+RESTRICT_BOMB=1
+#
+#  Disallow 3rd space bombing (1 = no bombing)
+NO_UNWARRING_BOMBING=1
+#
+# 	Use topgun mode (0 = no, 1 = yes)
+TOPGUN=0
+#
+# 	Use new turn mods (0 = no, 1 = yes)
+NEWTURN=0
+#
+#       Use vector torps (0 = no, 1 = yes)
+VECTOR=0
+#
+# 	Don't show far players in t-mode (0 = no, 1 = yes)
+HIDDEN=1
+#
+#	Check system load every 10 mins.
+LOADCHECK=0
+#
+# 	If load gets above this shut down server (Not sure if this still works)
+MAXLOAD=100.0
+#
+# 	The numbers of the home planets
+PLANETS=00,10,20,30
+#
+# 	Use binary confirmation (0 = no, 1 = RSA, 2 = RSA and reserved.c)
+CONFIRM=0
+#
+#	For use with config.h's NEWMASK define. restrict diagnol games.
+NODIAG=1
+#
+#	Have the server check for t-mode scummers. 
+CHECKSCUM=1
+#
+# 	Allow UDP connections (0 = no, 1 = yes)
+UDP=1
+#
+# 	Number of planets to start surrender counter
+SURRSTART=1
+#
+# 	Frequency of pings in seconds
+PING_FREQ=2
+#
+# 	Allow ghostbusting based on ping stats
+PING_GHOSTBUST=1
+#
+# 	How many pings before we ghostbust the client
+PING_GHOSTBUST_INTERVAL=60
+#
+#	Set the max. # of armies a planet can have out of t-mode.
+MAX_POP=70
+#
+#	The amount of error messages the server will send to ERROR file. (1-3)
+ERROR_LEVEL=2
+#
+#	The amount of armies the planets will be created with.
+START_ARMIES=30
+#
+#	Turn on transwarp capabilities. (1 = on, 0 = off)
+TRANSWARP=0
+#
+#	How fast transwarp is.
+WARPSPEED=60
+#
+#	Special Motd for Robots
+#MOTD=.motd_basep
+#
+#       Basepractice Server
+BASEPRACTICE=0
+#
+#ROBOTHOST=myrtle
+#
+#       Newbie Server
+NEWBIE=0
+#
+#	Hockey Server
+HOCKEY=0
+#
+#	Cause galactic to be updated at same rate as tactical (needed for hockey).
+GALACTIC_SMOOTH=1
+#
+#	Enable INL server mode.
+#	INL server installers should set this to 1.
+#	WARNING: This hoses pickup stats database in this implementation.
+INL=@INL@
+#
+#	Record INL games server side with CamBot.  (0 = no, 1 = yes)
+INL_RECORD=0
+#
+#	Enable Dogfight practice robot.
+DOGFIGHT=0
+#
+#	Dog-fighter: Number of the contestants needed before starting
+CONTESTSIZE=4
+#
+#	Dog-Fighter: Number of matches per contest
+NUMMATCH=10
+#
+#	Dog-Fighter: Save the player stats?	(not implemented yet..)
+SAVE_DOG_STAT=1
+#
+#########################################
+#	BigBang Ships: Make SHIP=1 if you want bigbang style ships.
+#
+SHIP=0
+DD PLASMADAMAGE 85
+DD MAXFUEL 7500
+BB TORPCOST 320
+BB PHASERCOST 945
+!	Warpcost should ONLY be defined with SB_TRANSWARP define && TRANSWARP
+SB WARPCOST 20
+!	Recharge should ONLY be defined with SB_TRANSWARP define && TRANSWARP
+SB RECHARGE 45
+!	MaxWpnTemp should ONLY be defined when non-chaos mode.
+SB MAXWPNTEMP 1500
+END
+#
+#########################################
+#	NewShip Ships: Make SHIP=1 if you want NEWSHIP ships.
+#
+SHIP=0
+BB PHASERCOST 945
+AS TORPCOST 210
+!	MaxWpnTemp should ONLY be defined when non-chaos mode.
+SB MAXWPNTEMP 1500
+END
+#########################################
+#       Hockey Ships: Make SHIP=1 if you want hockey ships.
+#
+SHIP=0
+SC   TRACTSTR  1000
+SC   TRACTRNG  .56
+DD   TRACTSTR  1250
+DD   TRACTRNG  .72
+BB   TRACTSTR  1850
+BB   TRACTRNG  .96
+AS   TRACTSTR  1850
+AS   TRACTRNG  .96
+SB   TRACTSTR  4000
+SB   TRACTRNG  1.2
+CA   TRACTSTR  1500
+CA   TRACTRNG  .8
+GA   TRACTSTR  1500
+GA   TRACTRNG  .8
+END
+# End of hockey ships section.

@@ -1,0 +1,60 @@
+
+Common messsages and what to do:
+
+I get "server not listening" from the client
+
+	1. Check to make sure you have newstartd running.
+		If it is then make sure you have the right port. The
+		port is defined in the .mk file as PORT.
+
+I get "SERVER IS CLOSED" when I log in.
+
+	1. Make sure you have a .time file in your LIBDIR.
+		If you do then check the parameters in it.
+
+I get a connection but then get ghostbusted before a window shows up.
+	
+	1. Your newstartd saw your client but then couldn't run ntserv
+	   correctly. Make sure that you have your ntserv binary in the
+	   LIBDIR.
+
+I get into the server and select a ship but then I can't move
+
+	1. Make sure that the ntserv is running. If it isn't then
+	   it died for some reason.
+
+	2. If it is still alive then your daemon has died. If you fire
+	   torps and the torp counter goes up but you don't see anything
+	   then this is the problem.
+
+	Hint: If you're on a SYSV based machine make sure that you have
+	   defined -DSYSV in your .mk file.
+
+
+
+Advanced debugging:
+
+To use this you will probably want to have some familiarity with gdb or some
+other debugger. 
+
+There are a few steps needed to setup the server for use with the debugger:
+
+	1. Recompile everything with -g -O under gcc. This will make the server
+	   optimized but still have debugging information in it.
+
+	2. When you believe there is something wrong with a ntserv then you
+	   can kill it and make a core file with:
+
+		kill -SIGILL <pid>
+
+	3. The core files will be placed in the directory where you started the
+	   newstartd. Most probably the LIBDIR.
+
+	4. Start gdb in the directory mentioned in 3 with:
+
+		gdb --directory=<your src directory> <your libdir>/ntserv core
+
+	5. Start using gdb in the normal way. Hints: useful commands are: 
+		bt 			- show stack
+		print <variable>	- show value of a variable
+

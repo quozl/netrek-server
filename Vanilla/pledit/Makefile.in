@@ -1,0 +1,58 @@
+#
+# Makefile for pledit
+#
+
+CONFIG = system.mk
+VPATH = @srcdir@
+srcdir = @srcdir@
+ 
+include ../$(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+SRCS	= ${srcdir}/main.c ${srcdir}/edit.c ${srcdir}/input.c \
+	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c \
+	${srcdir}/../ntserv/salt.c
+OBJS	= main.o edit.o input.o ../ntserv/getpath.o ../ntserv/data.o \
+	  ../ntserv/salt.o
+HDRS	= ${srcdir}/pledit.h
+# LIBCURSES = -lcurses
+LIBS	= $(LIBCURSES) $(LIBTERMCAP) $(LIBCRYPT) $(EXTRALIBS)
+PROGRAM	= pledit
+
+# NBR server cflags
+CFLAGS = $(FLAGS) $(EXTRAFLAGS) -I. -I${srcdir} -I../include -I${srcdir}/../include
+
+all:	$(PROGRAM)
+
+$(PROGRAM):	$(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $(PROGRAM) $(OBJS) $(LIBS)
+
+reallyclean: clean
+	rm -f pledit #* *~
+
+clean: rmdependencies
+	-rm -f $(OBJS)
+
+clobber: clean
+	-rm -f $(PROGRAM)
+
+install: all
+	$(INSTALLPROG) $(INSTALLOPTS) $(PROGRAM) $(LIBDIR)
+
+shar:
+	shar README Makefile $(HDRS) $(SRCS) > pledit.shar
+
+tar:
+	tar cvf pledit.tar README Makefile $(HDRS) $(SRCS)
+
+depend::
+	${CC} -M  $(CFLAGS) $(SRCS) > .depend
+
+rmdependencies:
+	rm -f .depend
+
+sinclude .depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -1,0 +1,35 @@
+
+MARS: 	Dog-Fight Robot
+
+
+	The mars robot overseers the players when run. It puts the server into
+dog-fighting mode and handles all tournament activites. To end the tourney
+mode simply kill the mars robot and the server will revert to normal execution.
+
+	This is a first release of the mars robot so a few bugs are expected.
+If you notice anything please email server@ecst.csuchico.edu. In addition,
+be aware that the mars robot will disable saving player stats. This to ensure
+that the player database will not get hosed.
+
+	There are a few sysdefs that determine how the robot will handle some
+events. These are:
+
+	CONTESTSIZE	- 	This is the number of players needed to start
+				a tourney.
+
+	NUMMATCH	-	Number of matches a player must have per
+				tourney.
+
+	SAVE_DOG_STAT	-	Whether to save player stats. Note! This is
+				not implemented yet but is in the works.
+
+
+	There are a lot of commands that you can run while the robot is
+running. To see a list send the robot 'help'. All commands should be sent
+to the robot and not yourself. 
+
+
+-Nick
+
+	Many thanks to Jack Hsu who originally wrote the dog-fighting server.
+	Also thanks to Jeff Nelson who wrote the mars robot.

@@ -1,0 +1,292 @@
+
+	Here is a more in-depth explaination into some of the features
+that can change the server. 
+
+1) config/config.h defines :
+
+	AUTOMOTD - Use this if you're not going to run the update daemon.
+		This will check you .motd and rebuild it every once in a 
+		while. Don't use both AUTOMOTD and the update daemon.
+
+	CHAIN_REACTION - This will not give credit for chain-reaction and
+		will also report how a player died.
+
+	CHECKMESG - log god or all messages. You should use LOGALL and
+		LOGGOD parameters in .sysdef with these.
+
+	ERIKPLAGUE - Eric Mehlhaff's planet plague code that was used for
+		SINL 93.
+
+	FEATURES - This is for client/server communication. You can specify
+		options in the .features file that some servers may have.
+
+	FULL_HOSTNAMES - Show the player's full domain when they enter/leave
+		the game.
+
+	INL_RESOURCES - Follow the INL's rules for resources when making a new
+		galaxy.
+
+	INL_POP - This is the planet pop code used in SINL 93.
+
+	NEED_EXIT - Some systems need exit to be defined in socket.c
+
+	NO_PLANET_PLAGUE - Don't allow planet plagueing. Don't use this with
+		ERIKPLAGUE.
+
+	PING - Allow ping stats support. This may increase the network load a
+		little.
+
+	RSA - Use RSA verification. Some method of verification is recommeneded.
+		RSA is the most accepted method now.
+
+	SHOW_RSA - Display some messages like failed RSA verification message
+		and type of client on entry of player.
+
+	RESETGALAXY - Everytime a conquer occurs reset the galaxy.
+
+	SELF_RESET - galaxy will reset if daemon dies.
+
+	SHORT_PACKETS - Use short packets code. This may increase the load on
+		the server but will decrease the network load by up to %50.
+
+	SHORT_THRESHOLD - More support for Short packets. If you define
+		SHORT_PACKETS it's a good idea to use this also.
+
+	SURRENDER_SHORT - Cut the surrender time in half when the genocide
+		counter starts.
+
+	SPEEDUP - Some misc. improvements to make the daemon faster.
+
+	TWO_RACE - Conquer only a 1/4 of the galaxy for the galaxy to reset.
+
+	SENDFLAGS - Print flags used in the compile on the MOTD.
+
+	CHECK_ENV - Check the environment variable NTSERV_PATH for the
+		location of system files.
+
+	GPPRINT - Print the path that is being used to find the system files.
+
+	ONCHECK - trekon (xbiff) support for checking if the logins.
+
+	NEWMASK - Use a newer tournament mask function that is less rigid
+		than older version. Doesn't take preferences into account.
+
+	RCD - Support Reciever variable distresses. (Saves on a lot of network
+		traffic).
+
+	SB_TRANSWARP - Transwarp capability.
+
+	FLAT_BONUS - 5x bonus for killing last army on a planet 
+
+	BASEPRACTICE - Base training server. (Need special robots, see 
+		README.basep).
+
+	NEW_CREDIT - give 1 planet for destroying, two planets for taking.
+
+
+	FASTER_SB_MAXUPDATES - allow 10 ups/sec for SB's 
+
+	SBFUEL_FIX - fix starbase re-fueling 
+
+	NEW_ETEMP - Wreck's etemp fix 
+
+	DOGFIGHT - .sysdef interface for dogfight robot 
+
+	VOTING - allow voting mode
+
+        ALLOW_EJECT     - define to allow players to eject others (only when
+			  VOTING is defined).
+
+        NO_BRUTALITY    - disallow fighting between waiting players in the 
+			  dogfighting mode (only when DOGFIGHT is defined).
+
+
+	
+
+
+2) .sysdef parameters:
+
+	All parameters follow the rule: <PARAM> <VALUE>
+	1 = TRUE, 0 = FALSE
+
+	CLUE -	(0 or 1) Turn on clue checking
+
+	HUNTERKILLER - (0 or 1) Have the hunterkiller on the server
+
+	RESETGALAXY - (0 or 1) reset the galaxy every time the daemon starts
+
+	LOGALL - (0 or 1) log all messages. Use with CHECKMESG.
+
+	LOGGOD - (0 or 1) log messages with "god:" at the beginning. Use with
+		CHECKMESG.
+
+	CHECKMESG - (0 or 1) check message logging. 
+
+	DOOSHER - (0 or 1) Enable the auto-doosher.
+
+	WHYMESS - (0 or 1) with .mk define CHAIN_REACTION will report how a 
+		player died.
+
+	SHOWSYSDEF - (0 or 1) will show some of the sysdef optiosn on the
+		motd.
+
+	PLANET_MOVE - (0 or 1) Not recommended. Will move the planets around.
+
+	TOURN - ( >3 ) Number of players needed on each side for t-mode.
+
+	SHIPS - ( SC, DD, CA, BB, AS, SB ) Type of ships that are allowed at
+		the server.
+
+	WEAPONS - (TRACTOR, PLASMA) Special weapons that are allowed.
+
+	PLKILLS - ( >=0 ) Number of kills needed to get plasmas.
+
+	SBRANK - ( 0 - 7 ) Rank needed to get a starbase.
+		0 = Ensign , 7 = Admiral
+
+	RESTRICT_BOMB (0 or 1) - Disable bombing out of t-mode.
+
+	NO_UNWARRING_BOMBING - Don't allow 3rd space bombing at any time.
+
+	CHAOS - (0 or 1) Turn on chaos mode. Ships are more powerful and
+		re-generate faster.
+
+	TOPGUN - (0 or 1) Misc things to make playing harder and only clueful
+		players may like.
+
+	NEWTURN - (0 or 1) Different turning speeds.
+
+	HIDDEN - (0 or 1) Enemy players that are far away from a friendly ship
+		during t-mode will be hidden.
+
+	MAXLOAD - (0 or 1) The maximum load allowed on the server's machine.
+
+	PLANETS - (0 - 39) The planets the will be the home planets. There are
+		4 params here. The order is fed, rom, kli, and then ori.
+
+	CONFIRM - (0 or 1) Use binary confirmation. 
+
+	UDP - (0 or 1) Allow UDP packets. Reduces lag.
+
+	PING_FREQ - ( >1 ) how often to ping in seconds (default 1)
+
+   	PING_ILOSS_INTERVAL - ( >0 ) the interval in seconds over which
+		incremental loss statistics are kept (iloss_sc, iloss_cs)
+
+   	PING_GHOSTBUST - (0 or 1) whether or not to allow ghostbusting based on
+		the absence of ping responses from a client.
+
+   	PING_GHOSTBUST_INTERVAL - ( >0) based on PING_GHOSTBUST and PING_FREQ,
+		the number of unaswered pings before ghostbusting a player.
+
+        MAX_POP - Set the maximum number of armies a planet can pop too.
+
+        ERROR_LEVEL - How much errors/debugging is sent to the ERROR file.      
+                Only 1-3 are valid.
+
+        START_ARMIES - How many planets are initially put on a planet.
+
+	VECTOR - (0 or 1) Use vector torps instead of normal torps.
+
+	BASEPRACTICE - (0 or 1) Used to put server in basepractice mode.
+
+	TRANSWARP - (o or 1) Turn on transwarp capabilities.
+
+	WARPSPEED - (0 or 1) How fast transwap is.	
+
+	Dog-Fighter Specific Defines:
+		CONTESTSIZE - ( >0) Number of the contestants needed 
+				    before starting.
+	
+		NUMMATCH - ( >0) Number of matches per contest.
+
+		SAVE_DOG_STAT - (0 or 1) Save the player stats? 
+				(not implemented yet..).
+
+	In addition ship characteristics can be changed. The list of
+	charactistics that can be changed are:         
+          TURNS, ACCS, TORPDAMAGE, PHASERDAMAGE, PHASERFUSE, PLASMADAMAGE, 
+          TORPSPEED, TORPFUSE, TORPTURNS, PLASMASPEED, PLASMAFUSE, PLAMSATURNS, 
+          MAXSPEED, REPAIR, MAXFUEL, TORPCOST, PLASMACOST, PHASERCOST, 
+          DETCOST, WARPCOST, CLOAKCOST, RECHARGE, ACCINT, DECINT, MAXSHIELD, 
+          MAXDAMAGE, MAXEGNTEMP, MAXWPNTEMP, EGNCOOLRATE, WPNCOOLRATE, 
+          MAXARMIES, WIDTH, HEIGHT, TYPE, MASS, TRACTSTR, TRACTRNG.
+
+	  To set ship characteristics you need to do something like the
+	  following: 
+
+		SHIP=1
+		BB PHASERCOST 945
+		AS TORPCOST 210
+		!       MaxWpnTemp should ONLY be defined when non-chaos mode.
+		SB MAXWPNTEMP 1500
+		END
+
+	  Unless SHIP is 1 the stats between SHIP and END will not be read in.
+	  This example sets the NEWSHIP defines found at some servers. A '!'
+	  is a comment.
+
+
+
+
+3) .time file.
+
+	The time file is an array field that is 7 by 24. Each line is for the
+	days of the week and each character in the line is for the hours.
+	Line 0 is Sun. Line 6 is Sat. Char. 0 is 12am and char 23 is 11pm.
+
+	Allowable characters are:
+
+		X - Non-playable hours. The server is down.
+
+		C - Clue hour. The server is up and checking for clue.
+
+		Anything else is interpreted as playable.
+
+4) .features file.
+
+	The .features file specifies the features specific to a client that
+	are allowed at a server. There are two formats for a line in the
+	features file. The client type is gotten from the RSA client type
+	field.
+
+		1) <Client Type>: <Features>
+		   EX:
+			BerkRick Moo: SMARTMACRO NEWMACRO
+
+		   This method doesn't check for the version of the client.
+		   It is assumed that every version of this client will have
+		   these features.
+
+		2) <Client Type>*confirm:<Version>: <Features>
+		   EX:
+			BerkRick Moo*confirm:2.00.15: WHY_DEAD
+
+		   This method checks the version sent by the client to see if
+		   the client is new enough to have this feature. The client
+		   has to have a version >= to the version specified to have
+		   the server send the message to the client. The Version field
+		   in is in the format of: Version:PatchLevel.
+
+5) .banned file, clue-bypass file.
+
+	These both use a similar format. The .banned file lists players that are
+	banned from the server. The .clue-bypass lists players that don't need
+	to go through clue checking.
+
+	Each line in these files should follow the format:
+
+		<login>@<domain>
+	The domain field can contain the total domain such as 
+	guzzler.ecst.csuchico.edu or can contain "*"s for all names such as
+	*.ecst.csuchico.edu would include all machines in the .ecst.csuchico.edu
+	domain.
+
+Under Solaris 2.5.1 the wildcard "*" does not work. If wish to ban
+all login attempts from rpi.edu, I must have something like this in my
+.banned file:
+
+leemy@rpi.edu
+
+If I do a leemy@*.rpi.edu the ban does not work. If the "*" wildcard
+method does not work try this way.

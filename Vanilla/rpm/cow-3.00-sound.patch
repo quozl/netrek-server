@@ -1,0 +1,49 @@
+--- cow-3.00_20020506/sound/soundlib/Makefile	Mon Jan  5 10:41:29 1998
++++ cow/sound/soundlib/Makefile	Mon May  6 22:45:16 2002
+@@ -15,7 +15,7 @@
+ #RANLIB = /bin/true
+ MOC = moc
+ 
+-all: testsnd bgsndplay
++all: testsnd bgsndplay bgsndplay.au
+ 
+ kde: testsnd bgsndplay.kde
+ 	cp bgsndplay.kde bgsndplay
+--- cow-3.00_20020506/sound/soundlib/bgsndplay.au.c	Mon Jan  5 10:37:53 1998
++++ cow/sound/soundlib/bgsndplay.au.c	Mon May  6 22:43:59 2002
+@@ -16,6 +16,7 @@
+ #include <string.h>
+ #ifdef linux
+ #include <linux/soundcard.h>
++#include <errno.h>
+ #endif
+ #include <signal.h>
+ #include <termio.h>
+@@ -27,6 +28,7 @@
+ 
+ #define TRUE 1
+ #define FALSE 0
++#define AUDIO "/dev/dsp"
+ 
+ static int play_sound;
+ static int audio, abuf_size, play_fd, play_speed;
+@@ -186,7 +188,7 @@
+       perror (name);
+       return;
+     }
+-#ifdef 0
++
+   /* Linux 2.0 kernel sound bug fix */
+   if (shared_data->play_sound == FALSE)
+ 	{
+@@ -196,9 +198,8 @@
+ 	  value = FRAG_SIZE;
+ 	  ioctl(audio, SNDCTL_DSP_SETFRAGMENT, &value);
+ 	}
+-#endif	
+   shared_data->play_sound = TRUE;
+-  /*  play(); */
++  play();
+   signal (SIGUSR2, StartSoundI);
+   return;
+ }

@@ -1,0 +1,95 @@
+Player's Guide to bronco.ece.cmu.edu
+------------------------------------
+Last revised 7/24/92.
+
+* Surrender countdown.  T-mode only.  When a team is reduced to
+ownership of 1 planet, countdown is initiated (30 minutes if borgs are
+allowed, otherwise 45 minutes ).  If team gains ownership of 2 or more
+planets, countdown is suspended (but not reset).  If team gains
+ownership of 4 planets, countdown is terminated.  While team has
+ownership of only 1 planet, countdown runs down in real time.  When it
+expires, the team is genocided (surrender), and team's last planet is
+neutralized.
+
+* HunterKillers (aka Iggy) (see server robots).  Appears every 20
+minutes in a random location near the center of the galaxy (but not
+too close to a player), announcing time of day and queue size.
+Hostile to all players.  Is polymorphic: assumes ship class of nearest
+enemy, shields/damage are scaled proportionately when changing ship
+class, adjusts warp while maneuvering according to ship class.  Goes
+away when killed.
+
+* Terminators (see server robots) for planet taking out of T-mode.
+Neutralizing a planet located in the beamer's home quadrant produces a
+Terminator if T-mode has been gone for 15 seconds, and two Terminators
+if the planet is outside the home quadrant.  Does not polymorph, but
+is hostile to target's team and preferentially seeks out the target.
+Has a max warp of 10 and unlimited etmp in order to pursue targets of
+all ship classes.  Goes away when target leaves the game or when
+Terminator is killed.
+
+* Terminators for players on a non-warring race.  T-mode only.  Once
+T-mode begins, after a random delay of several minutes, a Terminator
+will target any players that are not on a warring race (once these
+players die, the distribution server code forces them to join a
+warring race).  Goes away when target switches teams or when
+Terminator is killed.
+
+* Guardians for bombing out of T-mode.  If T-mode has gone for 15
+seconds, a guardian robot can appear in response to bombing even if
+the planet's race is represented by players.  (Distribution code
+produces a guardian robot when bombing a planet located in a team's
+home quadrant which is owned by that team and no players on are that
+team).
+
+* Server robots.  Have sub-optimal tractor/pressor code.  If damaged:
+Will not repair while sitting on top of a hostile planet, and will
+orbit the nearest repair planet if it is friendly.  Robots do not
+count towards T-mode.  After 10 minutes of inactivity they become
+"bored" and declare war on all races.
+
+* Torps.  Torps that hit galaxy boundaries only damage hostile ships
+(no wall kills).
+
+* Messages.  Players can selectively ignore messages (to All, to Team,
+or individual) from other players.  See server motd for usage.
+
+* Kill messages.  Displays number of armies on board when a player
+dies.
+
+* Cyborgs.  The server will list non-blessed clients if you send a ":"
+to yourself.  Sends less that the usual amount of player flags to
+clients, especially on "inviso" players.
+
+* Players entering the game.  The maximum allowed delta in the size of
+T-mode teams is 1 instead of 2 (player may choose between the two
+teams only if they are even in size).
+
+* Resource distribution.  Not more than 3 agris can exist in any one
+quadrant (there was a bug that kept this from working that I just
+fixed, fortunately 4+ agris is pretty rare).
+
+* Lock outs.  The server can reject logins from certain user names.
+
+* Restricted hours.  Server accepts connections 24 hours a day but
+allows players past the motd (message of the day) screen only during
+certain hours.  Motd includes the bronco's local time when the
+connection was established, for those trying to get in right when the
+server opens.
+
+* Supported but not used: planet movement; a fix for the "two
+players/one slot" bug (apparently this bug was corrected elsewhere);
+faster turn rates (from sequent); no rearward torps restrictions.
+
+* Planets.  Planets pop every 10 seconds instead of every 40, but
+there is a 75% chance that a planet will be skipped, so the overall
+pop rate is the same.
+
+* UDP.  UDP v1.0 installed.
+
+* Session statistic query.  Sending yourself (or any other single
+player) a '?' produces a session statisitc query, listing the t-mode
+planets/armies/wins/losses and corresponding ratings and ratio for the
+current session.
+
+End of Player's Summaries.

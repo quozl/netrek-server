@@ -1,0 +1,186 @@
+$Id: README.scores,v 1.1 2005/03/21 05:23:34 jerub Exp $
+
+                      Continuous Scoring System
+                       Momentum Scoring System
+
+Dave Ahn <ahn@genocide.netrek.org>
+
+
+Continuous Scoring and Momentum Scoring are new systems for
+determining the on-going and final score of a league game.  The old
+system uses an absolute planet count of 11-8-1 for the winning
+condition.  It has worked fine for many years, but some players argue
+that it favors the use of a passive strategy to stash a large number
+of armies for a last minute push before end-game.  The consequence is
+that the first 1/2 to 2/3 of a clue game can often be boring and
+somewhat meaningless.  Continuous Scoring and Momentum Scoring
+attempt to address these problems by using the on-going state of the
+entire game to determine the winning condition instead of just the
+final planet count.  Whether these new systems are better than the
+old...only time will tell.
+
+**** Continuous Scoring ****
+
+This system works by tallying the points for each team at every tick.
+One point is worth one pair of armies on a planet, capped at 2 points
+per planet:
+
+	Army count	Points awarded
+	----------	--------------
+	0		0
+	1-2		1
+	3+		2
+
+The INL robots runs at 10 ticks per second, so points are computed 10
+times each second.  This point sum is multiplied by a weight factor so
+that a weak score at the beginning of the game (from poor play such as
+losing the base+25 at opening) can be more easily offset by improved
+play at the end of the game.  The weight factor is exponential and
+ranges from 1.0 to 2.0.  The formula for the weight at each tick
+is:
+
+	weight = exp(time) - (0.71828183 * time)
+	time = range from 0.0 to 1.0, from start to end (regulation)
+
+If the game goes to OT, the weight stays capped at 2.0.
+
+The total number of points awarded at each tick for each team is:
+
+	total = SUM(all planets owned by the team,
+		   (weight * MINMAX(0, 2, points_for_each_planet))
+
+For example, given weight = 1.0 and the team owns 2 planets, each with
+2 and 5 armies, the points given to the team at that tick would be
+(1.0 * 1) + (1.0 * 2) = 3 points.  If the team owns 10 planets, each
+with 17 armies (such as at the beginning of a clue game), it would get
+(1.0 * 2) * 10 = 20 points that tick.
+
+Because these point scores are hard to interpret (what is a score of
+12345 vs 12344?), the continuous scores are presented in
+planet-normalized fashion.  A continuous score of 1.0 means that a
+team has owned the equivalent of 1 planet.  Since the score is
+weighted, 1.0 is not exactly 1 planet.  A running score of 9.23 - 8.01
+means that the winning team has averaged about 9.23 planets while the
+losing team has averaged about 8.01 planets.  The normalization
+formula is:
+
+	cont_score = total_points / (weighted_total_ticks * 2)
+
+The continuous score is announced in regular intervals during the
+game.  A player can also get the current score by sending the word
+"SCORE" to himself.  The announcement looks something like:
+
+	INL->ALL  Planet count: FED - ROM: 12 - 6 - 2 [FED]
+	INL->ALL  Continuous score: FED - ROM: 10.12 - 9.01 [tied]
+	INL->ALL  SCORE: FED is winning by planet count [tie break]
+
+Each score is followed by the winning team under that scoring system.
+Here, FED is winning by planet count.  Continous score is tied.  If
+the game were to end immediately, FED would win by the planet count
+tie breaker.  Please see the WINNING CONDITIONS section below on how
+to interpret these messages.
+
+**** Momentum Scoring ****
+
+Momentum Scoring was first proposed by Doug Pitters to help address
+some of the problems with continuous scoring.  In continuous scoring,
+a team that is down by a large margin for most of the game would have
+little real chance of staging a comeback.  A team could lose the game
+despite being up by planet count.  Momentum scoring uses both the
+planet count and continuous score to add additional time to the game
+until a winner can be determined.
+
+
+**** WINNING CONDITIONS ****
+
+The INL robot now supports three different winning conditions.  The
+first is the traditional 11-8-1 planet count win.  The second is based
+on the new continuous scoring system.  The third is the momentum
+scoring system.  The default is to use the NORMAL scoring mode based
+on planet count.  However, both captains may switch to the CONTINUOUS
+scoring mode using the command "SCOREMODE" during pre-game.
+
+NORMAL scoring mode:
+	At the end of regulation, 11-8-1 planet count by either team
+	WINS the game.
+
+	Otherwise, game goes into sudden death overtime.
+
+	In overtime, the first team to get 11-8-1 WINS the game.
+
+	The score announcements should indicate "winning by planet
+	count" or something similar.
+
+CONTINUOUS scoring mode:
+	At the end of regulation, either team with a continuous score
+	lead of 2.0 or more WINS the game regardless of planet count.
+
+	Otherwise, if continuous scores are within 2.0 of each other,
+	then the planet count is considered.  If the planet count is
+	11-8-1 or greater, then the team with the higher planet count
+	WINS.  This is called "tie breaker win"
+
+	Otherwise, the game goes into sudden death overtime.
+
+	In overtime, the first team to get 11-8-1 WINS the game.
+	Continuous scores are tallied and announced during OT, but
+	they do not affect the winning condition.
+
+	The score announcements should indicate "winning by continuous
+	score" or something similar.
+
+MOMENTUM scoring mode:
+	Score         Team A       Team B
+	-------       ------       ------
+	Continuous    WIN          loss       Team A WINS.
+	Planets       WIN          loss
+
+	Continuous    TIE          TIE        Team A WINS.
+	Planets       WIN          loss
+
+	Continuous    WIN          loss       Team A WINS.
+	Planets       TIE          TIE
+
+	Continuous    TIE          TIE        Game goes to regular OT
+	Planets       TIE          TIE        Whoever gets 11-8-1 wins.
+
+	Continuous    WIN          loss       Game goes to EXTRA TIME.
+	Planets       loss         WIN
+
+	In the first EXTRA TIME mode, all ships are oblierated like
+	sudden death OT.  Exactly 5 minutes are added, and game play
+	resumes.  At the end of 5 minutes, the above rules are used to
+	determine the winner. If the game is tied by rule 5, then an
+	additional 5 minutes of EXTRA TIME are added.  Up to 15
+	minutes (3 rounds of EXTRA TIME) are allowed. If no winner
+	emerges at the end, whoever has the higher continuous score
+	WINS if conditions 1-4 are not met.  Note that EXTRA TIME is
+	not sudden death.
+
+
+**** PROBLEMS ****
+
+There are two major issues with continuous scoring.  The first is to
+fine tune the parameters of the system so that a team that is losing
+the game can reasonably come back to win the game.  The current
+weighting system should help with this, but it will need adjustment.
+
+The other is interpreting the scores for decision-making.  Given a
+score of 11.00 and 9.51, what does the winning team have to do to
+ensure a win with 5 minutes left in regulation?  Because the scores
+are weighted and summed over time, the answer is not clear.  I am
+thinking about adding a planet-minute count to the announcements.  For
+example, "ROM needs 1.25 planet-minutes to win." would mean that ROM
+would have to own 1.25 planets (5 armies worth) for at least 1 full
+minute to meet the winning condition.  But ROM would also be able to
+own 2.50 planets worth for 0.5 minutes to meet the winning condition.
+This code has not yet been added, so suggestions are welcome.
+
+The major issue with momentum scoring is that it is even more
+complicated to interpret than continuous scoring alone.
+
+Continuous scoring and momentum scoring require Vanilla Server 2.9pl6
+or higher.
+
+That's it.
+Dave

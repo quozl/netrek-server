@@ -1,0 +1,274 @@
+
+
+
+                             SERVER INFO
+
+Architecture:        Sequent Symetry 20 i386 processor.
+Internet Connection: sh\*t 64k link 
+Server Type:         NBR Vanilla2 \(Bronco based\) source. 
+
+You can send messages to god\! To do so send a message starting with
+\"GOD\:\"\. For example, \"GOD\: Hey are you listening\!\".
+
+MODIFICATIONS:
+
+07/14/93 - NBR server code automatic .motd and key update
+07/04/93 - SINL style galaxy .feature and ping support.
+06/21/93 - SHORT_PACKAGES and RSA support.
+
+RSA Client check:
+
+  To see which client a player is using send them a '\#'. Thanks to LAB..
+
+
+
+
+
+
+
+$-----------------------------------------------------------------------------
+|
+|                              HELP SHEET
+|                A short summary of the game commands
+|
+| \(s\)cout            \-\- puny, fast, good for high-speed harassment
+| \(d\)estroyer        \-\- ok if you're good at dodging and evading
+| \(c\)ruiser          \-\- the default
+| \(a\)ssault ship     \-\- for planet-killing, 3 armies/kill, tough hulls
+| \(b\)attleship       \-\- tough, powerful, but tricky to maneuver
+| \(o\)utpost/starbase \-\- only allowed to be run by experienced players
+| \(g\)alaxy cruiser   \-\- only used during chaos play.  battleship on steroids
+|
+| left, middle, right mouse keys do torps, phasor, and movement, resp.
+|
+| 0-9 set warp speed, \) for 10, ! for 11, @ for 12, \% for max, \# for half.
+|
+| b : bomb planet                         B : show galactic info \(two levels\)
+| c : cloaking                            C : coup a planet           
+| d : detonate other torpedoes            D : detonate my torpedoes     
+| e : docking permission toggle           E : emergency distress call   
+| f : launch plasma torpedoes             I : extended info on player   
+| h : help window toggle                  L : list players              
+| i : info on player / planet             O : options window            
+| k : set course                          M : map updates toggle        
+| l : lock onto player / planet           N : name mode toggle          
+| o : orbit \(dock at starbase\)            P : list planets              
+| p : fire phaser                         R : repair mode               
+| r : change ship type                    S : toggle status graph
+| s : shields toggle                      T : toggle tractor beam       
+| t : launch torpedoes                    U : list ranks
+| u : shields toggle                      V : show local info \(two levels\)   
+| w : war window toggle                   ? : message window toggle     
+| x : beam down armies                    [ : shield down               
+| y : pressor beam toggle                 ] : shield up                 
+| z : beam up armies                      \* : send in practice robot    
+| ' ' clear windows                       \+ : put up UDP window
+| \= : send full update \(udp\)
+|
+| Messages : put cursor in lower thin window, type: 0-9a-j for player, t
+| for team, A for all, F/R/K/O for races.  Hit Esc to cancel a message.
+|
+| Some clients also use 'm' to start a message without requiring moving
+| the cursor to the message window.
+|
+| Hints : Use guest initially.  Hit "B" and "V" twice each, to get planet
+| resources on tactical and galactic maps.  If you get lots of blink, set
+| updates/second to lower value \('O' to bring up options window\).  Click
+| on updates number until it's correct.  Declare peace with everyone.
+| Watch fuel supply -- orbit a friendly or neutral planet with fuel can.
+| Avoid chasing ships, it's tough to dodge their fire.
+|
+(-----------------------------------------------------------------------------
+|
+| What is Netrek?
+|
+| Netrek is a 16-player graphical real-time battle simulation with a 
+| Star Trek theme.  The game is divided into two teams of 8 \(or less\), who
+| dogfight each other and attempt to conquer each other's planets.  There
+| are several different types of ships, from fast, fragile scouts up to
+| big, slow battleships; this allows a great deal of variance in play
+| styles.
+|
+(-----------------------------------------------------------------------------
+|
+| Hints for Beginners:
+|    Watch your fuel.  When you run out, your weapons won't fire, you can't 
+|       go very fast to run away, and you'll be helpless.
+|    If you run out of fuel, go orbit a friendly or neutral fuel planet.  You
+|       can recognize these by the little fuel can (looks kind of like a square)
+|       on the right side of the planet, assuming your maps show resource 
+|        icons on the planets (if not, see Getting Started, above).
+|    Avoid chasing ships, unless you know they are badly damaged or out of 
+|       fuel.  It's very hard for you to dodge their fire, and very easy for
+|       them to dodge yours.  On the other hand, if you can get someone to
+|       chase you, waste them!
+|
+(-----------------------------------------------------------------------------
+|
+| Ignoring Messages
+| -----------------
+| Any player can now ignore any other player.  There are three types of
+| messages, which can be called "All", "Team", and "Indiv".
+|
+| To toggle "ignore" status for a player, send that player a message of the
+| form
+|
+| :[a][t][i]
+|
+| E.g.:
+|
+| K0->R1 :i       to ignore messages of the form R1->K0
+| K0->R1 :a       to ignore messages of the form R1->ALL
+| K0->R1 :t       to ignore messages of the form R1->KLI
+| K0->R1 :ita     to toggle everything
+| K0->R1 :        to see the current "ignore" status
+|
+| That player will not receive the message.  Instead you will receive a 
+| message telling you what the "ignore" status for that player has been 
+| change to.  When that player quits you will stop ignoring that slot.
+|
+| To ignore the doosh messages the the server sends to you send yourself :D
+| Send :D again to turn back on doosh messages.
+|
+| E.g: 
+|
+| K0->K0 :D	to ignore/accept doosh messages
+|
+(-----------------------------------------------------------------------------
+|
+| I would like to change what some of the keys do; for example, I'd
+| like 't' instead of 'T' to activate my tractor beam.  Is there a way
+| to change this?
+|
+| There are two ways: first, do a shift-O.  This brings up the options
+| window.  Near the bottom there is a box for 'New keymap entries'.  
+| Move your cursor to this box and type your new keymap entries.  The
+| format is \<newchar\>\<oldchar\>, so 'tT' will remap tractor beam to 't'.
+|
+| Netrek also recognizes a .xtrekrc file; a 'keymap:' line in there 
+| will allow you to map as many as you want.  Format is the same
+| as above.
+|
+(-----------------------------------------------------------------------------
+|
+| How does the rating/promotion system work?
+|
+| Do a shift-I on yourself; you'll see four ratings there, one for planets,
+| one for bombing, one for offense, and one for defense.  The planet, 
+| bombing, and offense ratings are measured in DI/hour; for each planet
+| you take, army you bomb, and player you kill you get a certain amount
+| of DI \(which varies depending on the server\)--the average amount per
+| hour is your rating.  Your defense rating is measured in relative
+| life length: if your average life lasts exactly as long as the 
+| overall average life, your defense rating will be 1.00.  If your average
+| life lasts 80\% as long as the overall average life, your defense rating
+| will be .8.  All these ratings are updated only in t-mode.
+|
+| Now do a shift-U.  Listed there are the thresholds for each rank.  
+| Your overall rating is your planets\+bombing\+offense.  To make a rank,
+| you need to have the DI required for that rank, and your ratings need
+| to be above the rating required for that rank \(i.e., to make Admiral,
+| you need 320 DI and your ratings need to be above 8.0\).  You can also
+| make a ranking by having ratings good enough for a level and *twice*
+| the DI you would need for the next level \(So you can make Admiral 
+| with ratings of 7.0 and 640 DI\).  This equation also works for four times the
+| DI, so you can also make it with 6.0 ratings and 1280 DI \(which would take 
+| about 200 hours!\).
+|
+| On some servers, your defense also needs to be above .8 to advance
+| past Lt. Commander.  
+|
+(-----------------------------------------------------------------------------
+|
+| I keep dying.  How can I get better at the game?
+|
+| The best way is probably to talk with someone who knows how to play.
+| There is also an archive of hints and suggestions on how to play 
+| better; read the Netrek Server/FTP list to find out where it is
+| located.
+|
+(-----------------------------------------------------------------------------
+|
+| What is 't-mode'?
+|
+| T-mode is short for 'tournament mode.'  To keep some integrity in the
+| database, ratings are calculated only when there are a certain number
+| of people in the game \(actually, when there are a certain number of
+| people on two separate teams.  On many servers, you need 4 players
+| on 2 different teams; 4 teams of 2 players won't do it\).  When 
+| the game goes into t-mode, there will be a 't' flag in your list
+| of flags, and there will be a message like "Dan Quayle declares self
+| as Galactic Emperor and chaos breaks out!"  When the game drops out
+| of t-mode \(because someone quit\), the 't' flag will disappear and
+| there'll be a "Dan Quayle is locked up and order returns to the galaxy"
+| message.  
+|
+| It's generally considered rude to bomb or take planets out of t-mode.
+| Some servers punish people for trying.
+|
+(-----------------------------------------------------------------------------
+|
+| What does DI stand for, anyway?
+|
+| Destruction Inflicted.
+|
+(-----------------------------------------------------------------------------
+|
+| Getting Started:
+|     When you start playing Xtrek, it's probably best if you use the 'guest'
+|        login handle.
+|     When you first enter the Game, hit the keys 'B' and 'V' twice each.  
+|       This makes the planets resources show up on the tactical and
+|       Galactic Maps.
+|    If you are experiencing a lot of 'blink' (uneven screen updates), try
+|       setting your updates/second to a lower value.  Do this in the options
+|       window ('O' to bring it up).  Click the mouse button on the updates
+|       number until you get the number you want.
+|    Declare peace with everyone (except perhaps the current enemy race).
+|       This way you won't be attacked by neutral planets and robots!
+|
+|    Set stay peaceful when reborn (in the options window again).  This way
+|       you won't have to redo your war settings every time you get shot down.
+|
+(-----------------------------------------------------------------------------
+|
+| Comments on ship choice:
+|
+|       Scouts(SC):  These are fast fragile little things.  Good if you want to
+|               fly around the galaxy at high speed and get shot down by
+|               the first big ship that gets near.  They are very good for 
+|               harassing.
+|
+|       Destroyers(DD):  these are similar to scouts but they are a little more
+|               tough and they have slightly more powerful weapons.  They
+|               are decent to fight in if you're good at dodging and keeping
+|               larger ships away.
+|
+|       Assault Ships(AS): These ships are primarily useful in bombing and
+|               capturing planets (something that beginners should do after
+|               mastering the basics).  One of their unique features is that
+|               they may carry 3 armies per kill their captain has.  Also, 
+|               they are very tough to kill because they can take so much hull
+|               damage.  You have to plug extra torps into them 'just to be 
+|               sure'.  They also can cloak fairly cheaply.
+|
+|        Cruiser(CA):  The standard ship.  It combines a wide variety of
+|               features.  Making it a good all-around ship.  It is the default
+|               ship if you don't select one.
+|
+|       Battleship(BB):   This ship is slow and hard to maneuver.  However, it
+|               has the most firepower of any normal ship.  It is also very 
+|               tough.  Since it can take a fair amount of damage while still
+|               dishing out a lot, it is very effective for offensive players.
+|               This ship or the Cruiser is recommended for inexperienced 
+|               players, since it need not worry so much about evasive 
+|               maneuvers when it is in combat.  Also, it usually lasts
+|               longer, both in damage and fuel.
+|
+|       Starbase(SB): These are very powerful and hard to destroy.  New players
+|               cannot play these (except on chaos night).   Because they
+|               are so powerful, new players should probably avoid getting
+|               in fights with one.  It takes several players working together
+|               to destroy one! 
+|
+<-----------------------------------------------------------------------------

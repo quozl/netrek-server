@@ -1,0 +1,354 @@
+From rec.games.netrek Thu May 21 11:20:28 1992
+Path: ucivax!news.claremont.edu!uunet!charon.amdahl.com!amdahl!fadden
+From: fadden@uts.amdahl.com (Andy McFadden)
+Newsgroups: rec.games.netrek
+Subject: Updated tools.doc
+Message-ID: <f3Jn027kfbBW00@amdahl.uts.amdahl.com>
+Date: 20 May 92 19:09:26 GMT
+Reply-To: fadden@amdahl.uts.amdahl.com (Andy McFadden)
+Organization: Amdahl Corporation, Sunnyvale CA
+Lines: 348
+
+I merged the bronco tools in with my own, and decided to add descriptions of
+the bronco stuff to the tools doc.  Terence added some cool stuff to the
+tools...
+
+Hope this doesn't become too complicated and confusing.  Oh well.
+
+-----
+Admin guide to the Netrek tools and dot files.
+Andy McFadden (fadden@uts.amdahl.com)
+Last updated 20-May-92
+
+Everything applies to the scam sources, except where noted with "**", which
+are local enhancements.  Bronco enhancements are noted with "bronco:".
+
+
+==============================================================================
+	Commands
+==============================================================================
+
+makescores
+----------
+Usage: makescores
+
+Sends "scores a" to "scorefile.a", "scores s" to "scorefile.s", and
+"scores A" to "scoredb".  It then runs "trimscores" using "scoredb" as
+input, and sends the output to "players.old" (which will get a brief
+description of the players which were deleted).
+
+message
+-------
+Usage: message
+
+Allows you to send a message to any player.  You will be prompted for
+a message (80 chars max) and a recipient (same characters 0-9a-jAFKRO as
+in the game).  Note that it sends a "raw" message; you have to supply
+the "GOD->R3" part yourself.
+
+bronco: mess
+------------
+Usage: mess
+
+Like message, only you can enter multi-line messages, which get sent in a
+batch (so you don't have to keep running "mesage" over and over).  Also allows
+multiple recipients (so you can send to "0123" instead of just "0").
+
+newscores
+---------
+Usage: newscores < scoredb
+(don't run while people are playing)
+
+Regenerates the .player database.  "scoredb" should be the output of
+"scores A".  The .player database is overwritten.  Note that the .player
+database is updated by ntserv, and can get really screwed up if you change
+it while the game is running (especially if you delete a player).
+
+** nuke
+-------
+Usage: nuke
+(don't run while the daemon is running)
+
+Removes the shared memory segment.  Useful for when the daemon dies but
+the segment is still there.  (Normally the daemon destroys the segment when
+it quits, but if it crashes, the segment will remain.)
+
+planets
+-------
+Usage: planets
+
+List all planets with some general info about them.  Useful when you want
+to see if the daemon generated a reasonable set of planets.
+
+bronco: pl3
+-----------
+Usage: pl3 [seconds]
+
+Sets "Top Gun" mode, where torps do 130 damage, plasmas are freely available,
+and starbases can be brought out continually.  Automatically turns it off
+when time expires.  Don't forget to configure the save file (default is
+/usr/users/terence/xl/.sysdef.topgunrestore).  Note that CA has torpturns=2,
+and BB/AS have torpturns=3.
+
+players
+-------
+Usage: players [d]
+
+List people playing the game.  The "d" flag will display kills, damage,
+shields, armies, and fuel (currently a restricted mode).
+** New "c" flag continuously checks the game for players, and reports a
+count.  Useful if you're waiting for people to sign on.
+
+bronco: new 'r' flag shows ratings and status (ghostbust slot) stuff.  The
+status codes are Free, Outfit, Alive, Exploding, and Dead.
+
+resetplanets
+------------
+Usage: resetplanets
+(don't run while people are playing... it will work though)
+
+Resets galaxy to default setup, with 30 armies per planet and original
+owners.
+
+bronco: setgalaxy
+-----------------
+Usage: setgalaxy [l|r|t|f|F|n]
+
+Replacement for resetplanets.  Allows you to reset just locations, just
+armies, rename planets, etc.  Run with no args for usage info.
+
+scores
+------
+Usage: scores [aodbprstgAOD]
+a - print best players in order
+o - list players with best offense
+d - list players with best defense
+p - list players with best planet rating
+b - list players with best bombing rating
+s - list best starbase players
+D - list players with DI ratings
+[ for the above, players with <1 hour or >4 weeks of non-play are omitted ]
+r - list all players, hours, and ratings
+t - print rough number of seconds of play time
+g - print stats for all players, with breakdown by non-tournament, tournament,
+    and starbase
+A - list entire database in ASCII form (for use with newscores)
+O - print players who haven't logged in for 4 weeks
+
+bronco: new 't' option - list players with best total ratings.  The old 't'
+option has been moved to 'T'.
+
+The format for "scores A" is:
+(top line: total time, planets, bombing, kills, losses, timeprod?)
+name		password	keymap........................................
+..............................................rank nt-maxkills  nt-kills
+nt-losses nt-armies nt-planets nt-ticks t-kills t-losses t-armies t-planets
+t-ticks sb-kills sb-losses sb-ticks sb-maxkills lastlogin flags
+
+The spacing may be important (especially the first few fields; if you change
+a name, make sure the password lines up correctly).
+
+** See also the "pledit" utility, available via anonymous FTP.
+
+showgalaxy
+----------
+Usage: showgalaxy [-d##]
+
+A curses-based tool to watch the galaxy.  The -d option allows you to set
+the number of frames per update (default is 10 == 1 update/second).
+** default is now 5 (2 updates/second)
+
+Commands are:
+f - full screen view (use this to un-zoom or un-whatever)
+m - send message (press a key for destination (AFKRO0-9abcdef), then type
+    message.  ESC exits this mode without sending anything.)
+z - zoom in (follow with player number)
+P - show list of planets
+L - show list of players (hit space bar to toggle info screen)
+^L- redraw (there seems to be some VT-100 specific stuff here)
+. - ** panic button (clears the screen, waits for keypress)
+
+** See also the "xsg" command, available via anonymous FTP.
+
+bronco:stat
+-----------
+Usage: stat
+
+Displays some stuff from the "status" struct.  Don't worry about it.
+
+[trimscores description ... deleted, out of date, June 2002, quozl]
+
+bronco: wander
+--------------
+Usage: wander
+
+Apparently incomplete attempt to make the core planets circle the home world.
+Try "wander -R" for Romulans, etc.  You can specify a movement increment
+with "-i".  The "-d" flag mentioned in the usage string doesn't seem to be
+handled.  There are three of these, wander.c, wander2.c, wander3.c; if you
+feel like playing around with them, go ahead, but you're on your own...
+
+watchmes
+--------
+Usage: watchmes
+
+Continually display all messages sent in the game.
+
+bronco: supplying an argument (anything) causes certain messages to be
+filtered out.  This makes it more suitable for logging (note that "tee"
+and "tail -f" won't work because of output buffering; just use two watchmes
+processes or a utility like showgalaxy or xsg which displays messages if
+you want to see them and log them at the same time).
+
+xtkill
+------
+Usage: xtkill player
+
+"Utterly obliterates" a player by "divine mercy."  Player is not kicked out
+of the game, just nuked in a big way (the starbase explosion is used).  Note
+that "player" is a NUMBER; currently a-f is not supported (it uses atoi()).
+
+bronco: lots of new options.
+Usage: xtkill {0-9a-j} [mode[mode option]]
+    e - eject (original xtkill purpose; the default if no mode is specified)
+    s - ship class [abcdosA] (change to new type of ship)
+    t - teleport [frkoc] (race or center)
+    S - Super (lots of shields & damage)
+    T - Team [frko] (change which team the player is on)
+    D - Demote (drop one step in rank)
+    P - Promote (bump up one step in rank)
+    F - Free slot (free up a ghostbusted slot - no player but still blocked)
+    k - kills increment (give them free kills)
+    h - harm (remove shields and make them 50% damaged)
+    C - Coup?  Sets the surrender timer to a low value (6)
+
+Keep in mind that the ship changes use an internal version of "getship.c"
+which may or may not match your own.  The ship change also appears to grant
+plasmas.
+
+
+Note that programs like "watchmes" and "showgalaxy" may become confused if
+the daemon exits (usually because nobody has been playing for 60 seconds).
+It is usually necessary to restart the program.
+** UTS showgalaxy now watches for the daemon to die and come back, so you can
+leave it running between sessions.
+
+
+==============================================================================
+	Dot Files
+==============================================================================
+
+.access
+-------
+Controls access from specific machines.  People who are denied access will
+simply be dropped.  A sample file might look like:
+
+default         y
+amdahl          n
+
+.conquer
+--------
+Whenever a team genocides another team or conquers the entire galaxy, a report
+is appended to this file.
+
+.global
+-------
+Raw data file; contains global statistics for tournament mode usage.  Don't
+modify.  The data stored here represents the TOTAL #of ticks of play, the
+total #of armies bombed, etc, etc; it's used for determining ratings (and
+therefore DI).
+
+.motd
+-----
+This is the message displayed when you sign on (news & instructions).  Each
+screenful is 28 lines long; I use line 28, 56, etc as a "next page is..."
+line.
+
+.planets
+--------
+This keeps info on planets between games.  Stores the current #of armies,
+current owner, whether a planet has fuel/repair/agri, etc.  If you truncate
+the file, a new set of planets will be generated the next time the daemon
+is started.  If you remove the file, a new set of planets will be generated
+EVERY TIME the daemon is started (daemonII only updates the file; it doesn't
+create it).
+
+If the game is running but you want to have it re-shuffle at a later date,
+remove the old file and touch a new one.  Truncating the existing file won't
+work, since the daemon has it open and will re-write the info before it exits.
+
+.players
+--------
+The actual player database.  Raw data; access with the "scores" command.
+
+.sysdef
+-------
+System definition constants; allows you to change various features.  This is
+the most interesting of the dot files...
+
+A typical file looks like:
+TOURN=4
+SHIPS=SC,BB,DD,AS,CA,SB
+WEAPONS=PLASMA,TRACTOR
+PLKILLS=2
+SBRANK=3
+PLANETS=00,10,20,30
+CONFIRM=1
+HIDDEN=1
+MAXLOAD=100.0
+CHAOS=0
+UDP=1
+
+TOURN is the #of players required per side for tournament mode.  The default
+is five.  Changing it to nine effectively disables tournament mode.
+
+SHIPS is the allowable ship classes.
+** Add GA for Galaxy class ships, and ?? for ATT ships.
+
+WEAPONS specifies special weapons.  Currently PLASMA and TRACTOR are allowed.
+** Now SCANNER allows scanning beams.
+
+PLKILLS is the #of kills required before you can refit for plasma torps.
+
+SBRANK is the minimum rank required to drive a starbase.  Ensign is 0.
+
+PLANETS specifies a list of possible starting planets.  Every time someone
+enters the game, a planet in their space is chosen at random from the list.
+If there aren't any listed, their home planet will be used.  This implies
+two things: it is possible to have more than one start planet, but it is
+impossible to start in foreign space.
+
+CONFIRM is a boolean flag; if 1, then the server will attempt to verify
+that the client is not modified (see "reserved.c").
+** If 2, then cyborg clients can pass the word "Cyborg" for the verify
+packet and be accepted.
+
+HIDDEN is a boolean flag.  If 0, hidden mode is turned off (you can see
+all players on the galactic map).  If 1, it's activated for tournaments.
+** If 2, it's always active.
+
+MAXLOAD is the maximum load average allowed before the game shuts itself down.
+** Under UTS, if MAXLOAD is set to "0.0", then the game will shut down.  No
+comparison with the actual load averge is performed.
+
+CHAOS is a boolean flag; if TRUE, then "chaos mode" is turned on.  This has
+the following effects:
+- you can join any team at any time, without having to quit.  Self destruction
+  does not force you out.
+- the only restriction on who can have a starbase is rank (you can have as
+  many as you want, you don't need 4 planets, no time delay, can be alone).
+- starbases move at warp 3, and don't have problems with weapon temperature.
+
+** UDP sets UDP mode.  0 turns it off, 1 turns it on, 2 enables connect-message
+debugging, 3 enables verbose debugging.
+
+Note that these changes can be made while the game is being played.  So, you
+can switch to CHAOS mode and drop SBRANK, become a starbase, and change it
+back before anybody else can do anything.  The game DOES print the message
+"The rules of the game have changed", so that people will be aware that
+something is different.
+
+-- 
+fadden@uts.amdahl.com (Andy McFadden)
+[ Above opinions are mine, Amdahl has nothing to do with them, etc, etc. ]
+

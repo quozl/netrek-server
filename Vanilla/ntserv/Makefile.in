@@ -1,0 +1,130 @@
+#	Change CONFIG to your .mk file
+
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+CONFIG = system.mk
+
+include ../$(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+#	Do not edit below here. Everything should be setup in config
+
+#	ntserv object files
+
+R_OBJS =    cluecheck.o  coup.o  data.o  death.o  detonate.o  enter.o \
+	    findslot.o  getentry.o  getname.o  salt.o getship.o  input.o \
+	    interface.o  main.o  orbit.o  phaser.o  plasma.o  redraw.o \
+	    reserved.o  sintab.o  socket.o  genspkt.o  smessage.o  \
+	    startrobot.o  sysdefaults.o  timecheck.o  torp.o  util.o  \
+	    warning.o ping.o $(RANDOMO) getpath.o $(STRDUPO) features.o \
+	    distress.o transwarp.o gencmds.o ntscmds.o openmem.o feature.o \
+	    queue.o slotmaint.o rsa_key.o ltd_stats.o
+
+
+#	daemonII object files
+
+D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  data.o  slotmaint.o \
+	    util.o  $(RANDOMO) getpath.o getship.o smessage.o  queue.o \
+	    wander2.o openmem.o solicit.o ltd_stats.o
+
+#	Src files
+
+R_FILES =   ${srcdir}/cluecheck.c ${srcdir}/coup.c ${srcdir}/data.c \
+            ${srcdir}/death.c ${srcdir}/detonate.c  ${srcdir}/enter.c \
+	    ${srcdir}/findslot.c  ${srcdir}/getentry.c \
+            ${srcdir}/getname.c  ${srcdir}/salt.c ${srcdir}/getship.c  ${srcdir}/input.c \
+	    ${srcdir}/interface.c  ${srcdir}/main.c  ${srcdir}/orbit.c \
+            ${srcdir}/phaser.c  ${srcdir}/plasma.c \
+	    ${srcdir}/redraw.c  ${srcdir}/reserved.c  ${srcdir}/sintab.c \
+            ${srcdir}/socket.c  ${srcdir}/genspkt.c  ${srcdir}/smessage.c \
+	    ${srcdir}/startrobot.c  ${srcdir}/timecheck.c \
+            ${srcdir}/torp.c  ${srcdir}/util.c  ${srcdir}/warning.c \
+	    $(RANDOMC)  ${srcdir}/ping.c ${srcdir}/getpath.c $(STRDUPC) \
+            ${srcdir}/features.c ${srcdir}/distress.c ${srcdir}/transwarp.c \
+            ${srcdir}/gencmds.c ${srcdir}/ntscmds.c ${srcdir}/openmem.c \
+            ${srcdir}/feature.c ${srcdir}/queue.c ${srcdir}/slotmaint.c \
+            ${srcdir}/wander2.c ${srcdir}/sysdefaults.c ${srcdir}/rsa_key.c
+
+SRC = 	    $(R_FILES)  data.h  defs.h planets.h  struct.h \
+	    packets.h  copyright.h
+
+LIBS = $(RSA_LIB) $(EXTRALIBS)
+
+INCS = $(RSA_INCS) $(EXTRAINCS) -I. -I${srcdir} -I../include -I${srcdir}/../include
+
+CFLAGS = $(FLAGS) $(INCS)
+
+LINTFLAGS = -habxc $(INCS)
+
+
+all: $(PMAKE) ntserv daemonII 
+
+ntserv: $(PMAKE) $(R_OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ntserv $(R_OBJS) $(LIBS) $(LIBCRYPT)
+
+daemonII: $(PMAKE) $(D_OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o daemonII $(D_OBJS) $(EXTRALIBS)
+
+commands.o: $(PMAKE) ${srcdir}/commands.c
+	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/commands.c
+
+cflags:
+	echo "static char cflags[]=\"$(CFLAGS) $(LIBS)\";" >../cflags.h
+
+lint: $(SRC)
+	lint $(LINTFLAGS) -u $?
+	touch lint
+
+lintall: $(SRC)
+	ling $(LINTFLAGS) $(SRC)
+
+clean: rmdependencies
+	/bin/rm -f *.o *.ln make.out core
+
+reallyclean:  clean
+	rm -f ntserv daemonII .motd *~ #*#
+
+
+uninstall:
+	-cd $(XTREKDIR); rm -f daemonII .motd .sysdef; rm -rf slots
+	-cd $(LIBDIR); rm -f ntserv ; rm -rf slots
+
+# parallel compiling in DYNIX:
+# uncomment and then /bin/make -P21 parallel
+#parallel: c.o.parallel ntserv daemonII nuke xtkill
+
+#c.o.parallel: & $(R_OBJS) $(D_OBJS) nuke.c xtkill.c
+
+install: ntserv daemonII 
+	-@if [ ! -d $(LIBDIR) ]; then \
+	  $(INSTALL) -d $(LIBDIR); \
+	fi
+	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(LIBDIR)/ntserv
+	$(INSTALLPROG) $(INSTALLOPTS) daemonII $(LIBDIR)/daemonII
+	touch $(LIBDIR)/.planets
+	chmod 600 $(LIBDIR)/.planets
+
+installbin: install
+	echo "target installbin deprecated, assumed install"
+
+depend::
+	${CC} -M $(CFLAGS) $(R_FILES) > .depend
+
+rmdependencies:
+	rm -f .depend
+
+ctags:
+	ctags $(SRC)
+
+tags::
+	@etags $(SRC)
+
+# Note: on systems that are not using GNU make, the following line
+# will likely trigger an error.  Work around this by using GNU make
+# from the command line.
+sinclude .depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.

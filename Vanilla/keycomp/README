@@ -1,0 +1,75 @@
+
+rsa_keycap 	-- sample key descriptions file.  Each key entry contains these
+		   fields:
+   key name : a unique key indentifier currently constructed by concatenating
+	      abbreviations for client type , author, and binary architecture.
+   client type : (ct=) a string identifying the client type 
+   creator  : (cr=) the email address of the author or person who compiled
+	      the binary and created the RSA key.
+   creation data : (cd=) the creation date.
+   architecture : (ar=) binary architecture
+   class : (cl=) client class (inl, standard, borg, paradise, etc.)
+   comments : (cm=) any additional comments such as ftp sites, compilation
+	      details, etc.
+   global key : (gk=) global key in hex.
+   public key : (pk=) public key in hex.
+
+   A sample key:
+
+bronco-trown-hp300:ct=Bronco Vanilla:cr=trown@ecst.csuchico.edu:\
+   :cd=Oct. 1992:ar=HP9000/300 series / HPUX 8.0:cl=inl:\
+   :cm=reserved.c blessed:\
+   :gk=eda48a85695c1f9dad35f60598e502d89f75ae12f84db32098ed3385c8c61f26:\
+   :pk=d1f983bd8b57649217867e3a1c280c05b1bda927247ac7341d521987d4451518:
+
+   Note: If you are creating an RSA key, use Sam Shen's mkkey utility which 
+   generates the keys, rsa-client.c, and outputs a key entry in the above 
+   format.
+
+rsa_keycomp.c	-- compiles the specified keycap file into the 
+		   binary .reserved file.
+
+usage:
+./rsa_keycomp [-options] metaserver-key-file
+
+where options include:
+   -e excludefile       a file containing a list of excluded keys by keyname.
+   -m motdlist          a file to be created that will contain RSA key 
+                        descriptions suitable for inclusion in a server motd.
+   -o reservedfile      the compiled key descriptions used by the server.
+   -t class,class,...   select only clients in the given class where class is:
+                           inl - INLC-approved clients for use in INL games
+                           standard - other clients
+                           borg - borg clients
+			   etc...
+                        multiple classes are seperated by `,' with no spaces.
+   -f classfile         a file containing a list of classes in the above format.
+   -c                   show new keys during compilation.
+   -v                   verbosity.
+   -x class,class,...	select client classes to be excluded where class is:
+			   inl - INLC-approved clients for use in INL games
+                           standard - other clients
+                           borg - borg clients
+			   etc...
+			multiple classes are seperated by `,' with no spaces.
+
+Configuration files:
+   .exclude_rsa_keys                default exclude file (input).
+   rsa_motdlist                     default motd list file (output).
+   .rsa_class                       default class list file (input).
+   .reserved                        default reserved file (output).
+   .rsa_class_exclude		    default class exclude list file (input).
+
+./rsa_keycomp takes an ascii RSA key-descriptions file downloaded from the 
+metaserver (currently from telnet clientkeys.netrek.org 3530) and compiles it 
+into a binary form usable by the RSA authentication mechanism of the netrek 
+server.
+
+If the server admin wishes to exclude any keys, he must know beforehand the 
+key name and add it to the exclude file.
+
+rsa_key2cap.c	-- takes a binary key file containing only global and public
+		   keys, prompts for additional fields, and writes a key
+		   description to standard output suitable for inclusion 
+		   in the keycap file.  This is provided for backward
+		   compatibility with binary key files.

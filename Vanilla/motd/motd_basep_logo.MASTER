@@ -1,0 +1,143 @@
+
+
+                                     \_\_\_\_\_\_\_\_\-\-\-\_\_\_\_\_\_\_\_
+                            \_\_\_\_\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\-\-\-\-\-\-
+ ####\|\=\=\=\=\=\=\=\=\=\=\=\=\=\=~~~   \=\=\=\=\=\=\=\=\=\=\=\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+ ####\|\=\=\=\=\=\=\=\=\=\=\=\=\=\=~~~  \=\=\=\=\=\=\=\=\=
+        -\=\=\=\=\=-        \=\=\=\=\=\=\=\=
+       -\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=     -----\=\=\=\=\=\=\*~   Welcome in Austria
+       -\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=
+                 
+
+                 Base ogg, defend, dogfight TRAINIGS Server
+
+$---------------------------------------%-------------------------------------`
+| RSA clients are on ftp.risc...        | Server Maintainers:                 |
+| in directory /pub/netrek/bin.client   | ~ God  : siegl@risc.uni-linz.ac.at  |
+| Press 'f' to see the RSA keys allowed | ~ Demi-God : ppregler@risc...       |
+<---------------------------------------^------------------------------------->
+
+$-----------------------------------------------------------------------------`
+|                             ~~~~ATTENTION!!!!!~~~~                          |
+|                      This server is now for practice only.                  |
+|         If you are interrested in real game send exit to eject Smack.       |
+|                 READ THE MOTD FOR THE USAGE OF THIS SERVER !!!!!!!          |
+<----------------------------------------------------------------------------->
+
+Press 'R' in this screen to reset your stats.  
+Press 'f' and 'b' to page through news and instructions.
+
+
+
+ BASE PRACTICE
+
+On this server you can practice your play against robot players of any type.
+
+For comments, bug reports and/or suggestions:
+F0-\>F0 GOD: \<your message here\>
+
+There's no base restrictions, so take out a base and practice.  See how
+long you can last.
+
+TO START OGG ROBOTS:
+
+Send a message to Smack of the form 'start \<number\> \<team name\>'
+\(See further down for info about starting other kinds of robots.\)
+
+Example:
+     F0-\>Ig start 2 rom
+
+ROBOT COMMANDS:
+
+Send a message to a robot containing one of these commands:
+
+osync \<player number\>    -- cause robot to synchronize with another robot
+                            \(there are some problems with this:
+                              1. with multiple starbases, it's possible
+                                 for both robots to have different targets.\)
+                            \[ increases defense level \]
+osync?                   -- ask robot who he's synchronizing with
+odist \<number\>           -- specify distance from target to uncloak
+ship \<ship name\>         -- change ship \(CA,SC,DD,BB,SB\)
+status                   -- his status.
+hm \<value\>               -- larger the value the slower the robot's
+                            reaction times are \(default: 0\).
+                            \[ increases/decreases defense level \]
+ovars                    -- query values of certain ogg parameters
+exit                     -- robo-begone
+
+Examples:
+
+     F0-\>R0  osync 1     -- R0 will synchronize with R1 \(when possible\)
+     F0-\>R0  odist 6000  -- R0 will uncloak roughly phaser dist from you
+     F0-\>R0  hm 1        -- R0 will act a bit more human
+     F0-\>R0  ship sc     -- R0 will ogg with a scout after next death
+
+
+Parameters for easier robots:
+
+hm 2                       -- less accurate torps, no autophaser
+                              \(default 0\)
+                           \[ decreases defense level \]
+lookahead 3                -- \(hm must be \> 0\) poor torp/plasma dodging
+                              \(default 100\)
+                           \[ decreases defense level \]
+
+Miscellaneous commands
+
+w?                         -- show war/hostile status
+ogg \<player number\>        -- override random target assignment
+cdist \<value\>              -- set distance when to cloak
+peace \<team\>               -- declare peace with team \(note: by default
+                              robot enters game at peace with everyone\)
+war \<team\>                 -- declare war with team
+
+Other robots:
+
+  F0-\>Ig start rom df
+
+Start a dogfighter robot.  Default: hm 1.
+
+  F0-\>Ig start rom base
+
+Start a robot base.  RoboBase is no Balton, but he can give oggers a decent
+time \(default: hm 1\).  Also for use if you want to practice defending a
+base.
+
+  F0-\>Ig start rom def
+
+Start a defender robot.  Supposed to fill the role of a base escort but
+it has some bugs.  Use the command "defend \<number\>" to assign loyalties.
+\(default: hm 1\).
+
+  F0-\>Ig start cloaker
+
+Start a robot which always cloaks for practicing your phaser locking.
+
+  F0-\>Ig start iggy
+
+Start a Hunterkiller (iggy)
+
+  F0-\>Ig start hoser
+
+Start a Hoser trainings robot.
+
+
+STOP BASEPRACTICE
+
+ Terminate basepractice and return to normal game by 
+ majority vote EXIT to Smack.
+
+Example:
+     F0-\>Ig exit
+
+START BASEPRACTICE
+
+ Restart basepractice by majority vote PRACTICE to yourself.
+
+Example:
+     F0-\>F0 practice
+
+
+Have fun and improve your Netrek playing techniques.
+

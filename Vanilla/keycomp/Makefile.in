@@ -1,0 +1,59 @@
+CONFIG = ../system.mk
+
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+# add or omit as needed (-D_NEED_SYS_PROTOS)
+MOREDEFS =
+
+# Do Not change anything below this line. It should be setup in config.
+
+include $(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+SRCS = ${srcdir}/rsa_keycomp.c ${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c ${srcdir}/rsa_key2cap.c $(RANDOMC)
+OBJS = rsa_keycomp.o ../ntserv/getpath.o ../ntserv/data.o $(STRDUPO) $(RANDOMO)
+
+CFLAGS = $(MOREDEFS) $(FLAGS) -I../include -I${srcdir}/../include -I. -I${srcdir}
+
+LINTFLAGS = -habxc $(MOREDEFS) $(FLAGS)
+
+all: $(PMAKE) rsa_keycomp rsa_key2cap
+
+rsa_keycomp: $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(OBJS)
+
+dist:
+	tar cvf keycomp.tar ${srcdir}/rsa_keycomp.c ${srcdir}/rsa_key2cap.c rsa_keycap ${srcdir}/README Makefile
+	compress keycomp.tar
+shar:
+	shar ${srcdir}/rsa_keycomp.c ${srcdir}/rsa_key2cap.c rsa_keycap ${srcdir}/README Makefile > keycomp.shar
+
+lint: $(SRCS)
+	lint $(LINTFLAGS) -u $?
+	touch lint
+
+install: rsa_keycomp rsa_key2cap
+	-@if [ ! -d $(LIBDIR) ]; then \
+          /bin/mkdir $(LIBDIR); \
+        fi
+	$(INSTALLPROG) $(INSTALLOPTS) rsa_keycomp $(LIBDIR)/rsa_keycomp
+	$(INSTALLPROG) $(INSTALLOPTS) rsa_key2cap $(LIBDIR)/rsa_key2cap
+
+clean: rmdependencies
+	/bin/rm -f *.o *.ln core rsa_keycomp rsa_key2cap
+
+reallyclean:  clean
+	/bin/rm -f rsa_keycomp rsa_key2cap *~ #*#
+
+depend:
+	${CC} -M  $(CFLAGS) $(SRCS) > .depend
+
+rmdependencies:
+	rm -f .depend
+
+sinclude .depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.

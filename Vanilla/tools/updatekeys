@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# These are the options to updated. Continumm runs what is listed at the bottom of the script.
+#
+# Options:
+#  -n : No daemon
+#  -m : Don't make MOTD(s)
+#  -x : List classes to exclude seperated by commas
+#  -t : List classes to include seperated by commas
+#  -b : Show base stats instead of top hours
+#  -f : Download features file
+#  -s : Make MOTD stats based on everyone
+#  -a : Use alias name for MOTD stats
+#  -p : Port
+#
+updated=/usr/games/netrek/updated
+
+if [ ! -x $updated ]; then
+  echo "Error. I cannot execute $update. This is bad. Aborting."
+  exit 1
+fi
+
+$updated -n -m -s -t standard2,paradise2,thd,moo -x robot,test >> /var/log/netrek/updated.LOG 2>&1

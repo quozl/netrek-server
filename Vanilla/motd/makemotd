@@ -1,0 +1,30 @@
+#!/bin/csh -f
+
+# if called by daemon
+
+#
+# SET THIS TO THIS DIRECTORY (CURRENT DIR)
+#
+
+cd /usr/local/netrek/vanilla2/motd
+
+
+#
+# CHANGE THIS TO THE LIBDIR + THE MOTD FILE NAME!!!
+#
+
+set MOTD = /usr/local/netrek/vanilla2/lib/.motd
+
+#echo 'logo ...'
+./convert motd_logo.MASTER > motd_logo.out
+#echo 'local motd ...'
+cat motd_local.MASTER > local_motd.out
+#echo 'info motd ...'
+./convert info.MASTER > info.out
+#echo 'scores ...'
+#./top50 > scores.out
+
+#echo 'installing ...'
+cat motd_logo.out local_motd.out info.out scores.out >! $MOTD
+/bin/rm -f motd_logo.out local_motd.out info.out scores.out
+#echo 'done.'

@@ -1,0 +1,72 @@
+say Welcome!  The Digital 30 minute game sequencer has started.
+say Game will start in five minutes.
+# minutes 3
+say Game will start in two minutes.
+# minutes 1
+say Game will start in one minute.
+seconds 30
+say Game will start in 30 seconds.
+seconds 10
+say Game will start in 20 seconds.
+seconds 10
+say Game will start in 10 seconds.
+seconds 5
+say Game will start in 5 seconds.   ###########                ###########
+seconds 1
+say Game will start in 4 seconds.   #############            #############
+seconds 1
+say Game will start in 3 seconds.   ###############        ###############
+seconds 1
+say Game will start in 2 seconds.   #################    #################
+seconds 1
+say Game will start in 1 second.    ######################################
+seconds 1
+balance
+reset
+shell tools/planets
+seconds 10
+say ====================================================================
+say ===                                                              ===
+say ===                       Game Started                           ===
+say ===                                                              ===
+say ====================================================================
+# minutes 13
+# seconds 50
+say ===                                                              ===
+say ===                        Half time                             ===
+say ===                                                              ===
+# minutes 10
+say Game will end in five minutes.
+# minutes 3
+say Game will end in two minutes.
+# minutes 1
+say Game will end in one minute.
+seconds 30
+say Game will end in 30 seconds.
+seconds 20
+say Game will end in 10 seconds.
+seconds 5
+say Game will end in 5 seconds.   ###########                ###########
+seconds 1
+say Game will end in 4 seconds.   #############            #############
+seconds 1
+say Game will end in 3 seconds.   ###############        ###############
+seconds 1
+say Game will end in 2 seconds.   #################    #################
+seconds 1
+say Game will end in 1 second.    ######################################
+seconds 1
+pause
+say ====================================================================
+say ====================================================================
+say ====                                                            ====
+say ====                        GAME OVER                           ====
+say ====                                                            ====
+say ====================================================================
+say ====================================================================
+shell tools/planets
+seconds 10
+say Thanks for playing, folks!
+continue
+# eject
+exit

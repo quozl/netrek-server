@@ -1,0 +1,162 @@
+Notes by James Cameron <quozl@us.netrek.org> on the possibility of
+redesigning the players file to use some form of indexing.
+
+references to .players file
+    include/defs.h:#define N_PLAYERFILE     ".players"
+	ntserv/getpath.c:   sprintf(PlayerFile,"%s/%s",path,N_PLAYERFILE);
+	robots/inl.c:    sprintf(name, "%s.%d", N_PLAYERFILE, tv.tv_sec);
+	robots/inl.c:    rename(N_PLAYERFILE, name);
+    pledit/pledit.h:#define PLAYERFILE      "./.players"
+    robots/end_tourney.pl:system("./tools/ltd_dump .players." ...
+    rpm/netrek.spec
+    tools/sortdb.c:char pl_filename[] = {".players"};
+
+references to PlayerFile
+    
+include/data.h:extern char PlayerFile[FNAMESIZE];
+ntserv/daemonII.c:    fd = open(PlayerFile, O_WRONLY, 0644);
+ntserv/data.c:char PlayerFile[FNAMESIZE];
+ntserv/getname.c:	    plfd = open(PlayerFile, O_RDONLY, 0644);
+ntserv/getname.c:	plfd = open(PlayerFile, O_RDWR|O_CREAT, 0644);
+ntserv/getname.c:    fd = open(PlayerFile, O_WRONLY, 0644);
+ntserv/getname.c:    fd = open(PlayerFile, O_WRONLY, 0644);
+ntserv/getpath.c:   sprintf(PlayerFile,"%s/%s",path,N_PLAYERFILE);
+pledit/main.c:	pl_filename = PlayerFile;
+tools/html.c:  fd = open(PlayerFile, O_RDONLY, 0777);
+tools/html.c:    perror(PlayerFile);
+tools/ltd_dump.c:    plf = open(PlayerFile, O_RDONLY, 0744);
+tools/mergescores.c:    fd = open(PlayerFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
+tools/mergescores.c:	perror(PlayerFile);
+tools/mergescores.c:    lfd = open(PlayerFile, O_RDONLY);
+tools/mergescores.c:	perror(PlayerFile);
+tools/newscores.c:    fd = open(PlayerFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
+tools/newscores.c:	perror(PlayerFile);
+tools/ntpasswd.c:	f = fopen(PlayerFile, "r+b");
+tools/ntpasswd.c:		perror(PlayerFile);
+tools/scores.c:    fd = open(PlayerFile, O_RDONLY, 0777);
+tools/scores.c:	perror(PlayerFile);
+tools/text.c:    fd = open(PlayerFile, O_RDONLY, 0777);
+tools/text.c:	perror(PlayerFile);
+tools/trimscores.c:    fd = open(PlayerFile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+tools/update.c:    fd = open(PlayerFile, O_RDONLY, 0777);
+tools/update.c:	perror(PlayerFile);
+
+include/data.h
+	defines the string for the file name
+ntserv/daemonII.c
+	saves player statistics directly into file on ghostbust or
+	timeout given a record offset
+ntserv/data.c
+	declares the string for the file name
+ntserv/getname.c
+	129: find player in file, return -1 if not found, otherwise offset
+	186: add new player to file, keep offset
+	238: write record after changing password style
+	259: save statistics
+ntserv/getpath.c
+	prefixes the string with LIBDIR
+pledit/main.c
+	passes name to edit_file()
+	(would be superceded by sql database access)
+tools/html.c
+	sequential read of whole file
+	(would be superceded by sql database access)
+tools/ltd_dump.c
+	multiple sequential reads of whole file
+tools/mergescores.c
+	erase current file and write a batch of records to a new file
+	(would be superceded by sql database access)
+tools/newscores.c
+	erase current file and write a batch of records to a new file
+	(would be superceded by sql database access)
+tools/ntpasswd.c
+	find record and update
+tools/scores.c
+	sequential read of whole file
+tools/text.c
+	sequential read of whole file
+	(would be superceded by sql database access)
+tools/trimscores.c
+	erase current file and write a batch of records to a new file
+tools/update.c
+	sequential read of whole file
+
+
+possible designs
+	1. create a library of functions for player file access
+	2. postgresql conversion of .players and .global file
+	3. name index of .players
+
+pros/cons of creating a library
+
+(+) compatible with the other two designs
+(+) simplicity of implementation within existing code
+(+) complexity placed within one module
+(-) work required
+
+pros/cons of sql database conversion
+
+(+) rapid access via column index to appropriate data, reducing login
+processing, disk I/O and elapsed time,
+(+) commit/rollback transactions; reliability of data,
+(+) ease of integration with future requirements and web content provision,
+(-) extensive changes required,
+(-) creates optional dependency on libpq of postgresql,
+(-) have to plan for delays when daemon saves player.
+
+pros/cons of name index of .players
+
+(+) small change required, adjustments to getname.c and ntpasswd.c only
+(+) can add index entries as players log in, fallback to full search
+(+) deletion of index is not costly
+(-) need to worry about consistency of index against data
+
+problem sizing
+
+* continuum has 38323 records in score file
+* score file is 8277552 bytes total size
+* 216 bytes per record
+* login scan time 1.62 seconds
+* continuum has 192mb of which 92mb is free when no players are on
+* file fits in buffer cache easily
+* 957 lookups done in 19.75 hours, one every minute and a quarter
+
+design detail, library functions
+
+offset pldb_find(char *name, struct ? *stat);
+offset pldb_insert(struct ? *stat);
+pldb_update(offset, struct ? *stat);
+
+ah, also need to consider .global file
+
+
+
+design detail, postgresql
+
+- configure --with-pgsql
+- schema; two tables, global and player, one column for each field in struct
+- daemon should fork() to do emergency player update
+
+
+design detail, index
+
+- use a new .index file (char name[?], off_t offset)
+- getname.c and ntpasswd.c common code required for finding player entry
+  - given character name
+  - scan .index for name
+  - if found
+    - use offset as offset to .players
+    - if offset not invalid
+    - seek .players and read
+    - verify .players file entry matches
+    - if match, return offset and record
+    - write invalid offset
+    - do sequential search
+    - if not found, return not found
+    - else if found, update .index record, return offset
+  - else if not found in .index
+    - do sequential search
+    - if not found, return not found
+    - else if found, append .index record, return offset
+- cause tools that write new .players file to remove .index file
+

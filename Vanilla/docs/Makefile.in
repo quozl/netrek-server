@@ -1,0 +1,65 @@
+#
+#	Only change CONFIG to the right .mk file.
+#
+
+VAPTH = @srcdir@
+srcdir = @srcdir@
+
+CONFIG = ../system.mk
+
+#
+#	Do Not Edit below here. Everything should be setup in the config
+#
+
+include $(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+DOCS = ${srcdir}/sample_features ${srcdir}/sample_motdclue \
+	sample_sysdef ${srcdir}/sample_motd ${srcdir}/sample_ports \
+	${srcdir}/sample_time ${srcdir}/sample_motdbasep \
+	${srcdir}/sample_reserved ${srcdir}/sample_tourn.map
+
+install: $(DOCS)
+	if [ ! -f $(LIBDIR)/.features ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_features	$(LIBDIR)/.features ; \
+	fi
+	if [ ! -f $(LIBDIR)/.motd_clue ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(LIBDIR)/.motd_clue ; \
+	fi
+	if [ ! -f $(LIBDIR)/motd_clue_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(LIBDIR)/motd_clue_logo.MASTER ; \
+	fi
+	if [ ! -f $(LIBDIR)/motd_basep_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(LIBDIR)/motd_basep_logo.MASTER ; \
+	fi
+	if [ ! -f $(LIBDIR)/.sysdef ]; then \
+		$(INSTALLDATA) sample_sysdef	$(LIBDIR)/.sysdef ; \
+	fi
+	if [ ! -f $(LIBDIR)/.motd ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motd	$(LIBDIR)/.motd ; \
+	fi
+	if [ ! -f $(LIBDIR)/motd_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motd	$(LIBDIR)/motd_logo.MASTER ; \
+	fi
+	if [ ! -f $(LIBDIR)/.ports ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_ports	$(LIBDIR)/.ports ; \
+	fi
+	if [ ! -f $(LIBDIR)/.time ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_time	$(LIBDIR)/.time ; \
+	fi
+	if [ ! -f $(LIBDIR)/.motd_basep ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(LIBDIR)/.motd_basep ; \
+	fi
+	if [ ! -f $(LIBDIR)/.reserved ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_reserved	$(LIBDIR)/.reserved ; \
+	fi
+	if [ ! -f $(LIBDIR)/.tourn.map ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_tourn.map	$(LIBDIR)/.tourn.map ; \
+	fi
+	touch $(LIBDIR)/.nocount
+	touch $(LIBDIR)/.banned
+	touch $(LIBDIR)/.bypass
+	touch $(LIBDIR)/.clue-bypass

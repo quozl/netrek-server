@@ -1,0 +1,14 @@
+#ifndef __INCLUDED_config_h__
+#define __INCLUDED_config_h__
+
+/* do we have gmp */
+#undef HAVE_GMP_H
+#undef HAVE_LIB_GMP
+
+/* is is gmp 2.x */
+#undef HAVE_LIB_GMP2
+
+/* some compilers have strange inline directives */
+#undef inline
+
+#endif /* __INCLUDED_config_h__ */

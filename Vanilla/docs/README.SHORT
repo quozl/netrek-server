@@ -1,0 +1,16 @@
+Hello,
+compile all with -DSHORT_PACKETS to get SHORT_PACKET support.
+Otherwise it's an standard bronco.final server.
+Two patches are applied: a) pop patch from Brian Paulsen
+			 b) The better input.c from Tedd Hadley
+
+SHORT_PACKETS programmed by Tedd Hadley and Heiko Wengler.
+
+Send suggestions or bug reports to
+
+	hw@plato.Chemietechnik.Uni-Dortmund.DE
+
+Bye
+	Heiko Wengler
+	21.05.93 9pm 
+

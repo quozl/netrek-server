@@ -1,0 +1,84 @@
+#	$Id: INSTALL,v 1.1 2005/03/21 05:23:33 jerub Exp $	
+Instructions for installing the Vanilla Netrek Server
+
+Summary
+-------
+
+	0)  decide where to install the server on your file system,
+	1)  type "./configure --prefix=path" replacing path with your choice,
+            (default path is /usr/local/games/netrek)
+	2)  type "make install",
+	3)  "cd" to the path you gave, or /usr/local/games/netrek,
+	4)  "./netrekd" to start the server,
+	5)  use a client to connect to the server.
+
+Details
+-------
+
+Refer to INSTALL.RSA if you want your server to authenticate clients.
+
+Edit the file config.h.in to meet your requirements.  You may choose to
+leave this as is for a pure Vanilla default server.
+
+To setup the server to your machine's architecture run the configure program. 
+This is a script that will check your system for system dependent differences
+and configure the server to deal with these.  It will accept an alternate path
+to the directory into which the server is to be installed.  This is called
+LIBDIR and defaults to /usr/local/games/netrek
+
+Configure will make two files for the server to deal with the differences. 
+These are config.h and system.mk.  
+
+(If you intend to do any development work, consider typing at this stage "make
+depend".  This will add file dependencies to the Makefiles to optimise
+recompilation.  However, please "make rmdependencies" before submitting patches
+or changes back to CVS.)
+
+Now you're ready to make the server.  Type "make" in the source root
+directory.
+
+If everything is made okay then type "make install" to move the files to the
+installation directory.
+
+Once everything is compiled and installed you may wish to edit the server
+configuration files for your requirements.  Here are some of the files and what
+they do:
+
+	.sysdef 	- tunable parameters
+	.time		- playable/clue hours in it
+	.banned		- list of players that are banned from server
+	.clue-bypass	- list of players that don't have to go through
+			  clue checking
+	.conquer	- server's conquest stats output
+	.features	- list of special features allowed at the server
+			  that some clients might have. Some of these
+			  features may be considered 'borgish'.
+	.motd		- This is the information about the server for the
+			  players.
+	.motd_clue	- Another motd for clue playing hours.
+	.reserved	- RSA public/global key listing for verification
+
+If the install worked then go to the installation directory. There are two
+programs that should be running all the time.  They are:
+
+    1.  netrekd - waits around for a connection from a client. It then forks
+	and execs an ntserv.  This also accepts connections from the metaserver
+	and via telnet for the current player list.
+
+    2.	update - wakes up once a day and gets a new key list from the
+	metaserver port 3530.  It then makes a new .reserved through
+	rsa_keycomp and reconstructs your .motd file.  [Note that this program
+	need not run if you are behind a firewall or if you are not using RSA].
+
+Start these two programs.  Once they are running then try connecting to the
+server and check things out.  If there is a problem then check out the
+docs/DEBUG.HELP file for possible solutions.
+
+See docs/metaservers-HowTo for soliciting players via the metaservers.
+
+For assistance, write to vanilla-list@us.netrek.org.
+
+Developers may wish to subscribe to vanilla-list by sending an empty
+email message to vanilla-list-subscribe@us.netrek.org.  No subject or
+body required.  See the README for more details and other mailing
+lists the Vanilla Team offers.

@@ -1,0 +1,33 @@
+#!/bin/csh
+# Script to make patches from an older distribution of the server,
+# found in the directory below arg1, and the source located below this
+# file's location.
+
+if (0 == ${#argv}) then
+  echo Usage: $0 "<old-version-root-dir>"
+  exit 1
+endif
+
+set olddir=$1
+make name
+make rmdependencies
+(cd $olddir/Server; make name)
+(cd $olddir/Server; make rmdependencies)
+set patchfile=Server`$olddir/Server/name`\-`name`.diffs
+
+if (-f $patchfile) then
+  /bin/rm -f $patchfile
+endif
+
+foreach f (`cat manifest`)
+  echo `ls -l ../$f`
+  set notlink=`ls -l ../$f | awk '$1 ~ /^l/ {print 0; exit} {print 1}'`
+  if ( $notlink ) then
+    if (! -f $olddir/$f ) then
+      touch $olddir/$f
+    endif
+    diff -c $olddir/$f ../$f >> $patchfile
+  else
+    echo Link.  Ignored.
+  endif
+end

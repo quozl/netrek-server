@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# Given a Vanilla-${VERSION}.tar.gz file in current working directory,
+# prepare the RPM environment for building the package.
+#
+# Make sure you check and set your VS variable to get this to work.
+# $Id: tar2rpm,v 1.1 2005/03/21 05:23:46 jerub Exp $
+#
+
+VS=2.9pl8
+RPM_SOURCE_DIR=/usr/src/redhat/SOURCES
+RPM_SPEC_DIR=/usr/src/redhat/SPECS
+IFS=:
+
+echo "RPM build preparation script"
+echo "	Package Version : ${VS}"
+
+echo -n "Copying Vanilla-${VS}.tar.gz to ${RPM_SOURCE_DIR} ... "
+cp Vanilla-${VS}.tar.gz ${RPM_SOURCE_DIR}
+if [ $? -ne 0 ]; then
+  echo "Failed, aborting."
+  exit 1
+fi
+echo "OK"
+
+echo -n "Unpacking Vanilla-${VS}/rpm ... "
+tar -xvzf Vanilla-${VS}.tar.gz Vanilla-${VS}/rpm
+if [ $? -ne 0 ]; then
+  echo "Failed, aborting."
+  exit 1
+fi
+echo "OK"
+
+echo -n "Copying packaging files to ${RPM_SOURCE_DIR} ... "
+cd Vanilla-$VS/rpm
+for file in init logrotate crontab functions keys png gnome; do
+  echo -n "${file} "
+  cp netrek.${file} ${RPM_SOURCE_DIR}
+  if [ $? -ne 0 ]; then
+    echo "Failed, aborting."
+    exit 1
+  fi
+done
+echo "OK"
+
+echo -n "Copying specification file to ${RPM_SPEC_DIR} ... "
+cp netrek.spec ${RPM_SPEC_DIR}
+if [ $? -ne 0 ]; then
+  echo "Failed, aborting."
+  exit 1
+fi
+echo "OK"
+echo ""
+
+echo "Preparation complete.  To build an RPM, do the following:"
+echo "cd $RPM_SPEC_DIR"
+echo "rpm -ba netrek.spec"

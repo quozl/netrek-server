@@ -1,0 +1,9 @@
+#
+# NO geno timer
+#
+30 19 * * * @libdir@/tools/no_geno_timer
+#
+# geno timer
+#
+30 07 * * * @libdir@/tools/geno_timer
+

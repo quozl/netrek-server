@@ -1,0 +1,166 @@
+v2.1
+- Added support for INL POBSERV (observers).  
+ 	Observers don't show up on the display since they would only obscure
+	planets and "legitimate" players.  However, you can lock on an observer
+	(or any player) by selecting their entry in the player list.  Messages
+	can also be sent to observers now.
+- Added SHORT-PACKETS fix to pmessage2()
+- xsg now uses an Imakefile (not to worry, if you have X, you have xmkmf).
+- Added Makefile.INL for a version that will compile transparently with the INL 
+  server (will be available with the INL server distribution).
+
+UPDATE/CHANGES by Bharat Mediratta (bharat@shadow.eng.sun.com)
+
+BUGS FIXED
+- Added more SYSV support everywhere.
+	I removed dependancies on the BSD libraries by macro-defining
+	bcopy(), bzero(), etc to be the SYSV compliments, ie memmove(),
+	memset(), etc.
+	SysV support is still not entirely solid.  I occasionally get
+	read() errors which crash xsg.
+- Made code more ANSI compliant
+	Changed all the 'static char' lines for bitmap definitions to
+	the more appropriate 'static unsigned char' to prevent ANSI
+	compilers from barfing.
+
+FEATURES
+- Added facility to extract segments of the game
+	This is solid with -DSHRINKFRAME, but for some reason is
+	flaky without it.  Hit X to start extracting and X again to
+	stop.
+	Modified XSG.doc to reflect this new command.
+- Added option to view game at 10ud/s
+	Not only is it nifty, it lets you skim over boring parts of the
+	game.  Since this might not work on all machines, it's #ifdef'd
+	with the -DREALLYFAST macro.
+- Turning on FF mode no longer turns off BACKWARD and SINGLE_STEP
+	It wasn't very intuitive.  Sure it's rare that the user would
+	seriously want to use FF with BACKWARD or SINGLE_STEP, but 
+	it's confusing if they're turned off without the user knowing
+	about it.
+	FF no longer overrides SINGLE_STEP, either.  Now you can SINGLE_STEP
+	frame-skip frames at a time, if you really want to.
+- Replaced the clock with a frame counter when in playback mode.
+	It's more useful when replaying a game to be able to say "skip to
+	frame 3175 and watch Spaceace! doosh the base!"
+	I had to extend itoa() a bit in order to get 6-digit numbers to work.
+- Added a real playback status line that tells you exactly what you're doing.
+	The new status line will say things like:
+		FORWARD
+		SINGLE-STEP REWIND
+		FAST-FORWARD
+	and the like, which is easier for clueless twinks to understand.
+
+KNOWN PROBLEMS
+- Extract is not entirely solid without SHRINKFRAME defined.
+- Still crashes occasionally under SYSV
+
+v2.01pl2
+- changed messages to have from set to 255 instead of 19 (Ij) since most
+  clients ignore MGOD.
+- Added Sheldon's TrueColor patch to x11window.c
+
+v2.01pl1
+- took out abort() debug in W_CacheLine.  
+- added fast forward ('F') for playback along with a defaults variable
+  'frameskip' to set how many frames to skip each time (default 20).
+- added patchlevel.h, version.h, Manifest
+
+v2.01
+BUGS FIXED
+- removed string-constant writes in defaults.c.  Was causing segv when 
+  compiled with gcc.
+- zero'd the frame initialization during playback.
+- added better checking in dmessage.c for bad messages
+- added setvbuf and newer libraries in Makefile for SYSV (from Nick Trown).
+- simpler GALAXY/ATT/IGGY scheme -- no Makefile symbols, detects if 
+  GALAXY and/or ATT defined.  All bitmaps defined.
+- various fixes by James Hawtin
+
+FEATURES
+- added ghostbust and free slot menu options for modify-player
+- added ability to select players or planets from player/planet list.
+- added 'godsname' variable to configuration file and entry in options menu 
+  to set something other then "GOD" when you send messages.
+
+KNOWN PROBLEMS
+- record files are not compatible across different servers if the struct.h's
+  differ (i.e. record file from INL3.98 xsg will not work on xsg compiled for
+  bronco-final).  The solution for now: recompile xsg with the struct.h used
+  in the record file.  Eventually a struct.h-independent record file format
+  should be developed.
+- some servers occasionally construct a message over 80 chars which overwrites
+  the 'm_from' field of that messages struct.  This was causing xsg to crash
+  before; now increased checking avoids the crash and an error message is
+  reported.  Thanks to Nick Trown for tracking this down.
+
+
+v2.00
+UPDATES/CHANGES by Tedd Hadley  (hadley@uci.edu)
+
+BUGS FIXED
+- removed accidental update of phaser/torp/cloak/explode fuses in 
+  redraw.c'local().  Affect discovered at inl.ksu.edu, first diagnosed
+  by Jimmy Huang.
+- Xlib calls don't work from signal handlers.  New scheme sets a flag
+  when the alarm clock goes off and draws.
+- Program now shuts down when daemon exits and ignores gameup status.
+  (The original scheme used status->gameup to cause xsg to shut down.
+  Unfortunately, if gameup went to zero for some other reason (i.e. load
+  average too high) you weren't able to use xsg.)
+
+OPTIMIZATIONS
+- Added several optimization features from the netrek client to make display
+  smoother and reduce X packet overhead.
+- Discovered that sprintf() was causing xsg to use much more cpu then would
+  be expected.  Replaced it with byte-by-byte initialization scheme used in 
+  netrek client.
+- Changed record feature to store differences rather then complete state
+  (See SHRINKFRAME in main.c). Produces 50% reduction in game file but 
+  further shrinkage still possible.
+
+FEATURES
+- Added ability to display torps and phasers on the galactic map.  Torps
+  show up as points, phasers same as before.  Slight smearing of planet
+  names and army numbers a possibility.
+- Added "Cool weapons" feature to ship modify menu.
+- Added WT (weapon temperature) to player stats list.
+- Changed tractor/pressor lines to be dotted and color coded (green: tractor,
+  yellow: pressor) as in recent netrek clients.
+- Changed display of cloaked players on galactic map from grey '??' to 
+  '?<player number>' with appropriate team color.
+- Added Bharat Mediratta's REPLAY v1.0 functionality to replay recorded
+  games or game segments.
+- Added Jimmy Huang's updates to xsg (based on the server-based game 
+  recorder, also by Bharat Mediratta) to allow interactive game recording.
+- Added MOO client clock (no, the clock doesn't reflect the time of a recording
+  during playback .. yet).
+
+
+UPDATES/CHANGES by Brian Paulsen (paulsb@fi.gs.com)
+
+FEATURES
+- added the ability to move players who are orbiting a planet
+- hitting 'S' while locked on a player allows you to have status bars
+  (like the client) that correspond to the player's damage/fuel/shields, etc.
+- messages appear in the same color as the color of the team that wrote it
+- planet army counts appear next to planet.
+- hitting 'w' while locked on a player brings up a war window
+  NOTE: there is a glitch - do not switch players while this war window
+	is up.  It can be very confusing.  If you hit 'save changes' after
+	switching players, it enforces the change onto the person you
+	switched to, NOT the original person that you selected.
+- hitting 'C' when in the message window allows you to counterfeit a
+	message.  Type 'C', then type who the message should be from
+	and then who you want it to go to.
+- hitting 'R' brings up a robot entry menu - you can use this menu to
+	make robots enter
+  NOTE: Because of this change, make sure that you change the ROBOT
+	declaration in defs.h to point to the right place!
+  BUGS: I didn't want to figure out how to get the robots to not leave
+	a defunct process lying around after they die.  When you exit
+	xsg, the defunct processes will go away
+	Also, you may have troubles with the robots depending on what
+	system you run on.  Since I'm running on a Sun OS, I don't
+	know what troubles you may or may not encounter if you are on
+	something different.

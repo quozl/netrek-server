@@ -1,0 +1,64 @@
+<?php
+$fn = 'Game Archive';
+include('header.inc');
+
+function games($path) {
+    $pipe = popen('find '.$path.' -name "INL_log.*"', 'r');
+    while ($file = chop(fgets($pipe, 128))) {
+	list(, $id) = explode('.', basename($file));
+	$games[] = (int) $id;
+    }
+    pclose($pipe);
+    arsort($games);
+    return $games;
+}
+
+function cell($id, $format, $title) {
+    echo '<td align=right>';
+    $file = sprintf($format, $id);
+    if (is_file($file)) {
+	$size = filesize($file); $unit = 'b';
+	if ($size > 1024) { $size /= 1024; $unit = 'Kb'; }
+	if ($size > 1024) { $size /= 1024; $unit = 'Mb'; }
+	if ($size > 1024) { $size /= 1024; $unit = 'Gb'; }
+	if ($size > 1024) { $size /= 1024; $unit = 'Tb'; }
+	$size = sprintf('%.0f', $size);
+	echo '<a href=file.phtml?id='.basename($file).'>'.
+	    $size.' '.$unit.'</a>';
+    } else {
+	echo '(missing)';
+    }
+    echo '</td>';
+}
+
+?>
+
+<center>
+<table border=1 bgcolor=#303020>
+
+<tr>
+  <th>Game<br>Date Time</th>
+  <th width="15%">PW<br>Statistics</th>
+  <th width="15%">LTD<br>Statistics</th>
+  <th width="15%">INL<br>Log</th>
+  <th width="15%">Cambot<br>Recording</th>
+</tr>
+
+<?php
+
+$path = '..';
+$games = games($path);
+reset($games);
+while (list(, $id) = each($games)) {
+    echo '<tr>';
+    echo '<td>'.date('Y-m-d H:i:s', $id).'</td>';
+    cell($id, $path.'/pwstats.%s.html', 'PW Statistics');
+    cell($id, $path.'/ltd_dump.txt.%s', 'LTD Statistics');
+    cell($id, $path.'/INL_log.%s', 'Log');
+    cell($id, $path.'/cambot.pkt.%s', 'Recording');
+    echo "</tr>\n";
+}
+echo "</table>\n</center>\n";
+
+include('footer.inc');
+?>

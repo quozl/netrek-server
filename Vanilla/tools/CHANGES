@@ -1,0 +1,159 @@
+Changes as of 10/30/91.
+
+New tools (cruftiness is high):
+
+- mess.c.  This was given to me by Scott Silvey.  It can dump any multiline
+  message from stdin or a file specified on the command line to any recipient.
+  Not sure if it's distributable.
+
+- pl3.c.  This tool tweaks ships in the game to achieve Top Gun effects.
+  Used in conjunction with the "topgun" shell script.  Very ugly.
+
+- stat.c.  A tool to show the status of wait queue every second.  Strangely
+  enough it's not possible to determine the exact queue size.  Usually I go
+  by ((wait == count) ? 0 : ans+1).
+
+- topgun.  A shell script that takes the number of seconds of Top Gun desired
+  as an argument.  Automatically shuffles the .sysdef files around (note: you
+  need to create a .sysdef.topgun in the lib directory):
+
+  TOURN=9
+  SHIPS=SC,BB,DD,AS,CA,SB
+  WEAPONS=PLASMA,TRACTOR
+  PLKILLS=0
+  SBRANK=0
+  PLANETS=00,10,20,30
+  CONFIRM=0
+  HIDDEN=1
+  MAXLOAD=100.0
+  TOPGUN=1
+
+- wander2.c, wander3.c.  External tools to move planets.  A version of
+  wander2 was incorporated into my daemonII.c.
+
+- setgalaxy.c.  General purpose galaxy changing tool.
+   usage:
+   setgalaxy l              restore planet locations
+   setgalaxy r              standard reset of galaxy
+   setgalaxy t              tourney reset of galaxy - equal agris
+   setgalaxy f              flatten all planets to 1 army
+   setgalaxy F              top out all planets at 30 armies
+   setgalaxy n <num>:<str>  rename planet <num> to <str>
+
+Modified tools:
+
+- players.c.  Has 3 modes instead of 2.
+   players              gives rank/name/login/display/total ratings/DI
+   players r            gives name/status*/type/bombing/planets/offense/defense
+   players d            gives name/type/kills/damage/shields/armies/fuel
+
+  *status = A/O/D/E for alive/outfitting/dead/exploding, followed by the
+  ghostbust count, in ticks (if it reaches 3600, six minutes of inactivity,
+  the slot is freed).
+
+- watchmes.c.  If given any argument, runs in filter mode -- this is
+  good for logging tourney action.  It will timestamp each message,
+  and only display ones of a hardcoded "interest" level, as defined in
+  struct.h:
+
+  #define MGENO  0x100		/* order these by importance (0x100 - 0x400) */
+  #define MCONQ  0x110
+  #define MTAKE  0x120
+  #define MDEST  0x130
+  #define MKILLA 0x200          /* killed with armies */
+  #define MBOMB  0x210
+  #define MKILLP 0x220          /* killed by a planet */
+  #define MKILL  0x230
+  #define MLEAVE 0x300
+  #define MJOIN  0x310
+  #define MGHOST 0x320
+  #define MCOUP1 0x330
+  #define MCOUP2 0x340
+
+- planets.c.  Displays surrender clock for debugging.
+
+[ Bronco Netrek Release 2/20/92 ]
+
+Changes as of 4/13/92.
+
+  Makefile
+  struct.h
+
+- As was described in ntserv/CHANGES, if you use the FULL_HOSTNAMES
+  compile option, you will have to recompile all of your tools with
+  the flag on.
+
+  xtkill.c
+
+- Documentation was missing.  xtkill currently has the following usage:
+
+    xtkill [0-9a-j] <mode><mode option>
+
+    where <mode> is one of :
+      e(ject from game)             (simulates self-destruct)
+      s(hip class change)[abcdosA]  (A = ATT)
+      t(eleport to quadrant)[frkoc] (c = center of galaxy)
+      S(uper)                       (big shields/max damage/max etmp)
+      T(eam change)[frko]           (no team == independent)
+      D(emote)                      (-1 to rank)
+      P(romote)                     (+1 to rank)
+      F(ree slot)                   (bypasses 6 minute ghostbuster timeout)
+      k(ills increment)             (+1 kill)
+      h(arm)                        (no shields, 50% damage)
+      a(rmies increment)            (+6 armies)
+      C(lock, surrender -- set it)  (to 6 minutes (debugging aid))
+      L(oss adjust, SB (-1))        (in case you toast an SB accidentally)
+      R(obot obliterate)            (like obliterate, but only for robots)
+      (no mode == obliterate)
+
+  Xsg has most of these options and a better interface.  But being able
+  to free a slot is useful when conducting a tourney -- in conjunction
+  with "players r" which displays the ghostbust counts, and sometimes
+  it is not convenient to set up an xhosted shell for xsg.
+
+  planets.c
+
+- Now displays core flags and planet (x,y) coordinates.
+
+  scores.c
+
+- The line that makes scores ignores players who are inactive for too long
+  was commented out (inadvertently) in the previous release.  It has been
+  put back in.
+
+  setgalaxy.c
+
+- On tourney resets, agri counts are no longer printed to stdout.
+  That was primarily for debugging.
+
+  stat.c
+
+- Also shows status->tourn (generally not useful).
+
+  watchmes.c
+
+- Hardcoded "interest" level was lowered to include bombing messages.
+  Helped to profile player activity during a tourney more accurately
+  (see earlier watchmes entry for more info).
+
+  New tool: loadchecker.c
+
+- A background tool that reports CPU usage (0% to 99%) to ALL at
+  regular intervals.  Works across daemon restarts (note -- a small
+  daemon mod is required; daemonII.c/freemem() should do a
+  status->gameup = 0).  Not of much general interest -- it requires
+  that /usr/ucb/vmstat exist and that vmstat's output match a certain
+  pattern.  See source file for more details.
+
+Changes as of 7/24/92:
+
+  New tool: mergescores.c
+
+- A tool that merges a foreign player database in the form of "scores
+  A" output into a local server.  Read README.mergescores before use.
+
+  xtkill.c
+
+- Updated to reflect DD engine cooling rate (now 7, was 6).
+
+[ Final Bronco Netrek Release 8/1/92 ]

@@ -1,0 +1,122 @@
+
+$Id: README.releasing,v 1.1 2005/03/21 05:23:33 jerub Exp $
+
+Release Procedure
+
+# assumes csh or tcsh
+# be in your local copy of the CVS repository
+cd Vanilla
+
+# set variables to ease the rest of this ... (sh or bash)
+VS=2.9pl8
+VL=v_2_9_8
+
+# make sure you have committed all changes
+cvs -z9 diff -u > tmp.tmp
+# review uncommitted changes
+more tmp.tmp
+# commit changes
+cvs -z9 commit
+
+# tag the release
+cvs -z9 tag $VL
+cvs -z9 tag -F v_release
+
+# export the tagged release to a new directory and tar
+cd ..
+export CVSROOT=:pserver:cameron@cvs.us.netrek.org:/home/netrek/cvsroot
+cvs -z9 export -d Vanilla-$VS -r $VL Vanilla
+# package res-rsa with .tar.gz as per Dave Ahn 28th June 2000
+cd Vanilla-$VS
+tar xzf ../Vanilla/res-rsa-2.9.2.tar.gz
+mv res-rsa-2.9.2/* res-rsa/
+rmdir res-rsa-2.9.2
+cd ..
+tar cf Vanilla-$VS.tar Vanilla-$VS
+gzip -9 Vanilla-$VS.tar
+
+# record md5sum of kit for publishing
+md5sum Vanilla-$VS.tar.gz > Vanilla-$VS.tar.gz.md5sum
+
+# test build kit
+cd Vanilla-$VS
+./configure --prefix=/tmp/$VS
+make
+
+# test install kit
+make install
+/tmp/$VS/netrekd
+
+# test client
+cow -h localhost
+
+# clean up
+/tmp/$VS/netrekd stop
+rm -rf /tmp/$VS
+cd ..
+rm -rf Vanilla-$VS
+
+# rpm packaging
+Vanilla/rpm/tar2rpm
+cp Vanilla/res-rsa-*.tar.gz /usr/src/redhat/SOURCES
+cd /usr/src/redhat/SPECS
+rpm -ba netrek.spec
+# test package install
+
+# send .tar.gz and .rpm to ftp sites
+ftp://ftp.netrek.org/pub/netrek/incoming/ (note 15 second login timer)
+ftp://ftp.real-time.com/pub/Incoming/
+	
+# notify mirror owners, include URL of incoming copy and md5sum.
+mailto:vanilla-list@us.netrek.org
+
+# build differences between this version and previous
+
+# update web page
+http://vanilla.us.netrek.org/index.html
+export CVSROOT=:pserver:cameron@cvs.us.netrek.org:/home/netrek/cvsroot
+cvs checkout web [or] cvs update
+# review differences and generate short change list in index.html
+cvs commit
+
+# await mirror completion
+# notify others
+mailto:vanilla-announce@us.netrek.org
+news:rec.games.netrek
+
+# update version number in files
+# patchlevel.h, version.h, rpm/netrek.spec, rpm/tar2rpm, README.releasing
+
+# sourceforge.net upload procedure (brief, yet to be retested)
+# - upload to ftp://upload.sourceforge.net/incoming/
+# - project files
+# - add release for Vanilla
+# - fill in form
+# - select file from incoming
+# Bob Tanner gets notified and builds RPMs
+
+Note from Dave Ahn ...
+
+Date: Mon, 22 Oct 2001 11:39:28 -0400
+To: vanilla-list@us.netrek.org
+From: Dave Ahn <ahn@vec.wfubmc.edu>
+Subject: Re: [Vanilla List] Re: [Vanilla Devel] vanilla package
+Errors-To: vanilla-list-admin@us.netrek.org
+  
+On Mon, Oct 22, 2001 at 09:04:01AM +1000, James Cameron wrote:
+> On Sun, Oct 21, 2001 at 04:16:33PM -0400, Dave Ahn wrote:
+> > James, are you bundling RES-RSA with Vanilla?
+> 
+> It appears so.  I just noticed.  The 2.9pl7.tar.gz has res-rsa files.
+> See after signature for the list.  Do you still need to tell 'em when
+> it was imported from Australia first?  ;-)
+  
+If the first documented release is in Australia, and I just mirror an      
+archive, then I don't need to do anything.  But ftp.netrek.org is the
+primary distribution site, so I need to let BXA know.  It's not a problem.
+I have a template I use, so I'll notify BXA before each Vanilla release
+I put on the ftp site.  You should probably add a notice to each Vanilla
+release announcement with something like "This package contains
+cryptoghic software.  Please be aware of the laws governing your country
+regarding the use of crytography."
+

@@ -1,0 +1,12 @@
+OOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOO
+
+This is the time access file.  For non-playable hours
+use a 'X'.  A 'C' is interpreted as a clue hour.  Anything
+else is interpreted as open.  The first line is Sunday.
+The last is Sat.

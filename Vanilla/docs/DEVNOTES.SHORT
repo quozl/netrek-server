@@ -1,0 +1,186 @@
+Compile all with -DSHORT_PACKETS.
+
+That's all.
+
+Bye
+	Heiko Wengler
+
+
+PS: This is a beta release.
+    2 things are missing.
+PLAYER, WARNING,TORP amd message is working... Test it out.
+
+Happy Easter Break!
+
+
+CHANGES:
+13.04.93:
+packets.h	changed comment on SP_S_PLANET, SHORTVERSION 
+		and comment to SP_S_PLAYER
+
+ntserv/socket.c	removed torpcount variable
+		changed sendVPlayers(), to get 6 bits for packet count.
+		changed sendClientPacket(): Logs only packets if server 
+		sends in short mode.
+
+		changed updateMessages(): moved the SHORT_PACKETS code before
+		the "strncpy(msg.mesg, cur->m_data, 80); ". Now the string is 
+		only copied one time.
+		
+		Removed old 'new' torp routine.
+
+client/socket.c	changed doRead(): extended SP_S_PLAYER
+		handleVPlayer(): same here.
+
+client/redraw.c	removed SHORT_PACKETS Code ( not necessary)
+
+16.04.93:
+ntserv/socket.c	rewrote updateMessages. ( Was really to clumsy.)	
+		LOGPACKETS loggs size only if in SHORT mode.
+		updateforce changed: plasmatorps are now handled like
+		normal torpinfo.
+		[ Sidenote about my implementation: I think i have some good 
+		ideas, but the overrall implementation is not really shining. 
+		My programming skills are not so good....]
+
+client/socket.c	changed the code a bit .look at the diffs.
+
+		I removed the address Header of Server messages.
+		Hope it works...
+
+		I have some suggestions/questions:
+		1.) I think updateAll is to big. ( now 600-700 bytes)
+		 Two solutions: a) Make a  new updateSmall (:-) in which
+		 only Planets/Plasmas and Torps are updated. ( I need 
+		 updateAll because of the planetinfo.)
+		b) Send only data from 'living' Players. This could 
+		   save 100-200 bytes.)
+
+		I wanna encode most daemonII.c messages like SP_S_WARNING.
+		to make that i want to enhance 
+struct message {
+    int m_no;
+    int m_flags;
+    int m_time;
+    int m_recpt;
+    char m_data[80];
+};
+with 
+struct message {
+    int m_no;
+    int m_flags;
+    int m_time;
+    int m_recpt;
+    char m_data[80];
+    data[8]; /* Here is the data to encode in SP_S_WARNING */
+};
+
+	What do you think of that idea?
+	( It's simple and should work, but i don't had the time to implement
+	  it. )
+	Have you an better idea?
+
+	Bye
+		Heiko Wengler
+
+19.04.93
+	Implemented on both sides that if player dets his own torps only
+        one CP_DET_MINE Packet is send . Server dets all torps by himself.
+
+20.04.93 Removed some bugs.
+
+22.04.93: added phasers to 'auto clear' in updateAll.
+	  added new updateAll ( with '-'). Need key for second new
+	  updateAll.
+
+23.04.93  cleaned up the code, updateSmall ('-') is working.
+	  changed newplanet Routine to Berkley style redraw.
+
+	  Can someome implement a second key for UpdateSmall+?
+          ( Do not know which key to choose.)
+	  And a different menu for the short code. ( Because ',' is for
+	  the pingwindow. And i think the SHORT switch should go into the
+	  UPD Menu. I need only the ON/off switch and threshold.
+	  Next week i have a testserver on fisher.psy.vu.nl. Then you can
+	  test it . The best to test the new system would be a inl server.
+  	  Then you can do a limited release of the client and play some 
+	  scrimmages with the new code. Where can i find the latest *stable*
+ 	  INL sourcen? 
+
+	Bye
+		Heiko Wengler
+
+28.04.93 implemented the TFREE idea. 
+
+		Heiko Wengler
+ 
+29.04.93	removed a TFREE bug. (introduced by simply copying sourcecode
+		without changing one line of code.)
+
+		H.W.
+
+3.05.93		patched in new Mesageflags into client. ( server NOT).
+		Daemon Messages done.
+
+12.05.93	Hope all is working.
+		Changed packets.h to INL ordering.
+		Added vari Warnings. ( with s_warning()).
+		Heiko Wengler 
+
+
+17.05.93	changed updateVPlayers ( added galactic map clipping)
+	changed updateMessages. ( All messages are sent with SP_S_MESSAGE )
+	changed parsequery ( hope it works)
+
+client:	changed handleVPLayers: a) if playernumber to high continue.
+	added clipping of galactic Map
+
+18.05.93	Ratings are now working.
+		IMPORTANT: I changed the SP_S_MESSAGE.
+		You cannot use the old packets.h file.
+
+		Hope it all works...
+
+				Heiko Wengler
+
+19.05.93
+		Next time you get an implementation overview.
+
+			HW
+
+21.05.93	Cleaned the tools up. Added in every pmesage() function
+		an DINVALID flag. 
+		Implemented threshold idea. compile in with
+		-DSHORT_THRESHOLD. Not defined because server is sluggy
+		with that function. Don't know why. The only added strain
+		is a test if a variable is set.
+		Changed updateVPlayers. If i send a playerpacket with 
+		galactic coordinates i include the direction now. 
+		That should be the last patch. ( Only thing i must find out is
+		why the threshold testing slows the server so much.)
+		Documentation next time.
+
+			HW
+
+9.06.93		Client/server fix from Tedd Hadley (Torps.)
+
+26.06.93	SP_S_YOU_SS is now sended with UDP.
+		( Hadley.)
+
+26.06.93	SP_S_YOU_SS is now sended with UDP.
+		( Hadley.)
+
+26.06.93	SP_S_YOU_SS is now sended with UDP.
+		( Hadley.)
+
+26.06.93	SP_S_YOU_SS is now sended with UDP.
+		( Hadley.)
+
+26.06.93	SP_S_YOU_SS is now sended with UDP.
+		( Hadley.)
+
+9.06.93		Client/server fix from Tedd Hadley (Torps.)
+
+30.08.93	FAT UDP is now working with S_P.
+ 
+                       Heiko Wengler

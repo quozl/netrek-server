@@ -1,0 +1,53 @@
+   * -DDS Daemon Synchronization
+
+      Normally, each ntserv process keeps its own timer and updates its client
+      when SIGALRM is received.  Each time the player dies, the timer is reset.
+      This means that there's no way to predict when a ntserv process will
+      update its client.  It could be at the same time the daemon is running
+      move() or just before, effectively giving the client information that
+      is almost immediately out of date, or it could fall in the interval after
+      the daemon completes move().  Likewise, there's no way to predict how
+      many ntserv processes are active simultaneously.
+
+      With daemon synchronization, the daemon signals the ntserv proceses
+      when it completes move().  This helps guarantee that the ntserv
+      processes are updating the client only after the daemon is finished
+      with that cycle and ensures that the clients get the most recent
+      changes immediately.  Since the ntserv processes usually run at
+      5 update per second, the daemon need only signal half the processes
+      on each update.
+
+      DS adds two new fields to the player structure:
+
+         int    p_process;
+         int    p_timerdelay;
+
+      The daemon signals a ntserv process by sending a SIGALRM to that
+      process id.  The process number also functions as a way to kill
+      a ntserv process if the daemon dies or if a player status goes to
+      PFREE (note: if status goes to PFREE and the ntserv process is not
+      killed, another person can join that slot creating the co-pilot problem).
+      The FREE command also kills the ntserv process, guaranteeing that the
+      slot is free and will remain free.
+
+      The only known drawback of this approach is that if the daemon slows
+      down greatly or stops (with the exception of PAUSE), client updates
+      decrease or stop.  This is normally only noticeable when the daemon
+      runs 'end_tourney'.
+
+      The '*' client command can be used on an individual basis to toggle
+      between daemon synchronization and using a process-local timer
+      (original method).
+
+      The gain of the approach is in eliminating most of the competition
+      between the daemon and the ntserv processes for the cpu and
+      shared-memory during the crucial daemon update cycle, ensuring that
+      all clients get the most up-to-date information possible for their
+      update time, and evening out server machine performance by interleaving
+      processes.
+
+      This method is being used on calvin.usc.edu (ack, bad example) and
+      vlsi.ics.uci.edu.
+
+
+-From Tedd Hadley's note in INL server

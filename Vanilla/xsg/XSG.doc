@@ -1,0 +1,319 @@
+XShowGalaxy v2.1
+
+ By Andy McFadden (fadden@uts.amdahl.com), 
+ Contributors:
+    Brian Paulsen (paulsb@fi.gs.com)
+    Bharat Mediratta (Bharat.Mediratta@Eng.Sun.Com)
+    Jimmy Huang (jimmyhua@usc.edu)
+    Tedd Hadley (hadley@uci.edu)
+
+
+WHAT IS XSHOWGALAXY?
+--------------------
+
+ This is an X version of the "showgalaxy" utility which comes with netrek.  
+ It can only be used by Netrek (Xtrek II) server operators, because it accesses 
+ the Netrek shared memory segment directly.
+
+ It has a vast number of improvements over the original "showgalaxy", including
+ graphics display, the ability to modify ships or planets, and game-record or
+ game-playback functionality.  
+
+FEATURES
+--------
+
+    - galactic and tactical displays on same screen
+    - more detail, since it's X instead of curses
+    - ability to lock onto a player or planet
+    - ability to move around the game board as if you were playing (at up to
+      warp 40 though)
+    - ability to change player status, including:
+      - player name (reset when they get killed)
+      - team (F/R/K/O/I)
+      - ship type (yes, instant refit on the fly, with shield/damage/fuel
+	scaled proportionately; robots will retain any special abilities, like
+	free torpedos and phasers)
+      - shield/damage/fuel; options are heal (cure all, including wtemp/etemp),
+	help (cure 10%), harm (damage 10%), hose (damage fully - barely
+	alive), and cool weapons (for SBs).
+      - number of kills (+/- 1)
+      - toggle shield status (kinda fun if timed correctly)
+      - knock out of orbit
+      - pacify (clear hostile and war)
+    - ability to nuke (as with xtkill) or eject (forced self-destruct)
+    - ability to modify planets, including:
+      - planet name
+      - ownership
+      - special features (fuel/repair/agri)
+      - number of armies (+/- 5, or Destroy)
+    - ability to move players and planets to an arbitrary location (this does
+      tend to freak people out though)
+    - visible tractor/pressor beams
+    - continuously updated player/planet display
+    - larger "all messages" display, with optional message beep when a
+      message sent to GOD is received
+    - mouse warp to message window
+    - the ability to send counterfeit messages.
+    - some of the Options from Netrek, including update frequency, choice of
+      planet bitmaps, view kill messages, show tactical planet names,
+      and show shields
+    - most of the items in the Options menu can be set in $HOME/.xsgrc
+      (including updates/second, show shields, what to show on the galactic
+      map, and whether or not to display xsg's "position")
+    - the ability to show torps and phasers on the galactic map as well as 
+      local display.
+    - army counts displayed next to each planet on the galactic map.
+    - standard netrek Info dialogs (both 'i' and 'I')
+    - optional support for Galaxy and AT&T ships and Iggy bitmaps
+    - ability to start server robots via robot-option menu ('R')
+    - the ability to save and replay games (see below)
+
+ It also has everything that showgalaxy had, including the ability to send
+ messages to players.
+
+ While you shouldn't be mucking around with people while they're playing a
+ serious game, it can prove invaluable when you want to test certain features
+ (you can damage robots, switch to an SB without having to play with .sysdef,
+ try fighting an SB Guardian, etc, etc.)  It's also possible to completely
+ re-sculpt the galaxy; you can rearrange all the planets, rename them, reassign
+ them fuel/repair/agri at will, etc.  Sort of a Netrek Galaxy Editor really.
+
+
+COMMANDS
+--------
+
+ Bttn 1 (left)	lock-on and center selected player or planet in local window.
+ Bttn 2 (mid)	Pop up modify menu for planet or player closest to mouse
+		cursor.
+ Bttn 3 (right)	Set course for panoramic view of the galaxy.
+
+ 0-9,),!,@,#,%	Set speed at which to pan around the galaxy.
+ O		Options menu
+ Q		Quit
+ V		Rotate bitmap display of local planets
+ B		Rotate bitmap dispaly of galactic planets
+ l		Lock on to player/planet (also button 1)
+ S		Show status window of a previously selected player
+ w		Show war window of a previously selected player
+ r		Relocate planet/player (hit once to select, again to place).
+ L		Toggle player displays
+ P		List planets
+ N		Planet names toggle
+ i		Info on player/planet
+ I		Extended info
+ h		Help window
+ m		Warp mouse to message window
+ R		Robot options window
+ space		Pop-down info and options windows
+
+PLAYBACK MODE COMMANDS
+----------------------
+
+ f               play game forward
+ b		play game backward
+ space    	toggle single-step mode
+ +		speed up playback
+ -		slow down playback
+ t		skip until t-mode
+ F              toggle fast forward (see 'frameskip' in CONFIGURATION FILE)
+
+OPTIONS MENU
+------------
+
+ This menu comes up when 'O' key is pressed.
+
+ (Field names given in all-caps are have different strings depending
+  on the player's team or ship)
+
+ Field			Type		Description
+ ========================================================================
+ tactical planet names  toggle		Show planet names on tactical map.
+ shields		toggle		Show shield icon.
+ MAP UDPATES		multi-string	How often to update galactic map.
+ help window		toggle		Show show help window
+ PLANET ICONS LOCAL	multi-string	What planet icons to use on local
+ 					map.
+ PLANET ICONS GALACTIC	multi-string	What planet icons to use on galactic
+ 					map.
+ UPDATE SPEED		multi-string	How often to update display
+ report kill messages	toggle		Show kill messages
+ beep on message to GOD toggle		Beep on a message to GOD.
+ God's name		string		Show and/or edit the name displayed
+ 					when you send messages.
+ show xsg position	toggle		Show xsg position cursor on local (X)
+ 					and galactic map ({}).
+ show clock		toggle		Show running clock at bottom of 
+ 					local map.
+ show torps & phasers
+ 	    on map	toggle		Show torps and phasers on galactic map
+ record game		toggle		Record game
+ RECORD SPEED		mult-string	Update speed at which to record game
+ 					NOTE: This value must be divisible
+ 					by the current update speed.
+ done			action		Pop-down menu
+ 
+SEND-MESSAGE WINDOW
+-------------------
+
+   "In times past, God spoke through the prophets"
+
+ Use 'C' to send a counterfeit message.  You will be prompted first for the
+ originator, to which you should respond with the player number.
+ The destination is specified as in normal message sending.
+
+PLAYER MODIFY MENU
+------------------
+
+ This menu comes up when the middle mouse button is clicked on a PLAYER.
+
+ (Field names given in all-caps are have different strings depending
+  on the player's team or ship)
+
+ Field		Type		Description
+ ========================================================================
+ "Player name"		string		Show and/or edit the player's name.
+ TEAM			multi-string	Show and or set the player's team.
+ SHIP   	        multi-string	Show and or set the player's ship type.
+ "Heal"			action		Make player's ship perfect condition.
+ "Help"			action		Do 10% repairs and add 10% fuel.
+ "Harm"			action		Exact opposite of "Help"
+ "Hose"			action		0% shields, 99% damage, 0% fuel.
+ "Cool weapons"		action		Set weapon temperature to 0.
+ "Kills +1"		action		Increment player kills.
+ "Kills -1"		action		Decrement player kills.
+ "Toggle shields"	action		Toggle shields up/down status.
+ "Nuke"			action		Destroy player
+ "EJECT PLAYER"		action		Destroy player and force to quit.
+ "Knock out of orbit"	action		Stop orbit.
+ "Make peaceful"	action		Force player at peace with all teams.
+ "GHOSTBUST"		action		Attempt to ghostbust player.  NOTE:
+					if player is currently active this
+					may not work.
+ "FREE SLOT"		action		Attempt to free player's slot. NOTE:
+					if player is currently active or
+					players ntserv process is running this
+					may not work.
+ "Done"			action		Pop-down menu.
+
+PLANET MODIFY MENU
+------------------
+
+ This menu comes up when the middle mouse button is clicked on a PLANET.
+
+ (Field names given in all-caps are have different strings depending
+  on the planet's team and features)
+
+ Field		Type		Description
+ ========================================================================
+ "Planet name"	string		Show and/or edit the planet name.  NOTE:
+				planet name updates don't get sent to the 
+				client by default server (although you can 
+				change that).  However, if you move the planet
+				just a little bit the name will get updated
+				in the clients.
+ TEAM		multi-string	Show and/or change the planet team.
+ FEATURES	multi-string	Show and/or change planet features such as
+				AGRI, FUEL, REPAIR, and combinations of above.
+ "Armies +5"	action		Add 5 armies
+ "Armies -5"	action		Subtract 5 armies
+ "Destroy"	action		Make neutral
+ "Done"		action		Pop-down menu.
+
+
+CONFIGURATION FILE
+------------------
+
+ A file named .xsgrc from the current or your home directory can be used to
+ initialize various options.  Besides the variables common to .xtrekrc, 
+ there is
+   
+   godsname:				default "GOD", change to anything
+					you like short of 32 characters.
+
+   msgbeep:	[on,off]		beep on message to god
+   showposn:	[on,off]		show xsg cursor on current position
+   mapfire:	[on,off]		show torps & phasers on galactic map.
+   updatespeed:	[0-3]			0 - 5 updates/sec
+					1 - 4 updates/sec
+					2 - 2 updates/sec
+					3 - 1 updates/sec
+   recordfile:  [file or directory name]
+   recordspeed:	[0-3]			0 - 5 updates/sec
+					1 - 4 updates/sec
+					2 - 2 updates/sec
+					3 - 1 updates/sec
+   
+   frameskip: [number]			number of frames to skip each update
+					while fast-forwarding (default 20).
+
+ See "sample.xsgrc" in this directory for more details.
+
+PLAYBACK FEATURES	(Bharat.Mediratta@Eng.Sun.Com)
+-----------------
+
+        Replay uses On The Fly Decompression (TM).  Therefore, 
+ do NOT try to uncompress the game file (called something like 'xsg.rf.ddd.Z' 
+ unless overridden with 'recordfile' in the xsgrc file.)  The recorder gets 
+ about 90% compression so a 1 hour game amounts to about 11Mb...compressed.  
+ Uncompress that and you're looking at a) a file that replay won't be able to
+ read anymore and b) a 110Mb file.
+
+	To play back a file, and thus enter xsg's replay-mode, you must 
+ pass it the filename on the command line:
+
+                xsg -f <file[.Z]>
+
+ The commands specific to the replay functionality of xsg are very simple.
+
+        f.......................Play the game forward
+        b.......................Play the game backward
+        <space>.................Toggle single-step mode
+        +.......................Speed up the game
+        -.......................Slow down the game
+        t.......................Skip until t-mode
+	X.......................Begin/end extraction
+
+ All other commands work except for those that modify ships or players
+ (obviously).
+
+
+XSG2.0 KNOWN BUGS/GLITCHES:
+---------------------------
+
+- When you change ship types, the shield/damage/fuel status bars are re-scaled,
+  but they aren't erased before they're redrawn.  This can leave a splotch on
+  the status display.  (Note this can also happen normally in the game if you
+  refit while partially damaged.)
+
+- Moving planets around causes the galactic map to get smeared (in the clients
+  only; xsg redraws the screen automatically).  Refreshing the screen should
+  remove the smear.
+
+- You can't move a player who is orbiting a planet.  On the other hand, if
+  you move a planet, all orbiting players move with it.  The "knock out of
+  orbit" item on the "modify player" menu should be used to move an orbiting
+  player.
+
+- Netrek uses a 40x40 grid to determine which planets need to be redrawn on
+  the galactic map.  If you put them too close together, the higher-numbered
+  planet may become erased from the galactic map when somebody flies over it.
+
+- Name changes to planets don't propagate to clients.  Only people who log in
+  after the change is made will see it.
+
+- The playerlist will show old data or possibly garbage as players are
+  entering.  This is best fixed by fixing grabslot() in ntserv/enter.c
+  to put "-" into p_name, p_login, and p_mapchars (two different places in
+  the routine).
+
+- There are conflicting definitions for Galaxy class cruisers (even the most
+  "current" definition of the sources I grabbed had different #of max armies
+  in netrek/getship.c and ntserv/getship.c).  When you change a ship type, xsg
+  will use whatever numbers are compiled into it.  If you have a different or
+  modified getship.c, you'll have to substitute it in.  You may also have to
+  substitute sysdefaults.c if your ship defs depend on "chaos" mode or some
+  other feature.
+
+  (While it's not true in all cases, you should be able to simply copy your
+  getship.c over the xsg copy.  If you want to use your sysdefaults.c, you
+  may need to add some definitions to data.h and data.c.)

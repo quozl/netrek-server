@@ -1,0 +1,193 @@
+
+$Id: PROJECTS,v 1.1 2005/03/21 05:23:33 jerub Exp $	
+
+List of things to do in the future
+
+	- 'transwarp 0 off' to prevent slot 0 from transwarping.  [Swasey]
+
+	- add lag statistics to LTD stats.  [Zach]
+
+	- tail waggle effect, necessary?
+	  [work done to fix, by quozl ... in test on continuum]
+
+	- transwarp to base at one update per second ... calculation
+	  of navigational lock is made at update rate not internal rate.
+	  note: Tom Holub would prefer that this fix not affect the
+	  known feature of maxwarp-with-no-fuel = cruising speed + .5
+	  - etemp.
+
+	- docs/tools.doc and tools/README say that trimscores argument
+          is a niceness value, but it is actually a harshness value.
+	  usage() in trimscores.c also doesn't match.
+
+	- end_tourney.pl, replace the final score indicator with more
+          meaningful information.  For example, the final planet count
+          and final continuous score as printed at the end of the INL log.
+          From: David Swasey <swasey@cs.cmu.edu>, 03 Apr 2002 16:56:58 -0500
+
+	- minor playing a man down fix, if t-mode and no steering or
+	  speed changes for ten minutes, free slot.
+
+	- vary observer update rate down when not in use, use lock on
+	  player or planet event to increase back.
+
+	- method for starbase to disable transwarp but leave docking
+	  enabled.  Dave Ahn to implement.
+
+	- configure checks for gmp more than once, it should check only
+	  once.  Perhaps it is configure for res-rsa duplicating effort?
+
+	- make in keycomp/ (and others) use object modules from ntserv,
+	  and so a parallel make fails on a multi-processor box.
+
+	- implement automake
+
+	- implement proper configure --prefix usage, so that we install
+	  in %{prefix}/games/netrek not in %{prefix}
+
+	- implement configure's other path options, so that read-write
+	  data will be in %{prefix}/var/somewhere
+
+	- web page interface to INL server, including privileged
+	  functions such as starting, stopping, or restarting the
+	  server, and non-privileged functions such as (a)
+	  preconfiguring defaults for the next INL game, including
+ 	  team names and game time, (b) list of recent games, latest
+	  first, with team names and final scores, (c) delivery of
+	  cambot recording within web browser, (d) feedback to server
+	  god.  [Cameron]
+
+	- send player IPs to metaserver for statistics generation [Uram]
+
+	- include server in spiffy download package [Nowakowski]
+
+	- update t-mode messages, they are outdated.
+
+	- there is no way to tell the difference between a busted client and
+	  the player simply walking off.
+
+	- need generic shared memory dump tool to assist diagnosis.
+
+	- revisit syntax of .metaservers file to aid understanding,
+
+	- compile with -Wall and fix the problems.
+	  [done ntserv, quozl@us.netrek.org]
+	  [big set of prototypes missing in tools/cambot.c, quozl]
+
+	- observers, allow them to have a ship of their own that is ineffective
+	  and invisible to others.
+
+	- special compile mode for lesser lights trying to build an INL server
+	  that avoids trying to compile xsg or pledit, and perhaps a few other
+	  things, suggested by Tom Holub [VANILLA-LIST:2566]
+
+	- add command to allow players to change their password.
+	  "password newpassword", followed by "confirm newpassword".
+	  [partially done]
+
+	- pledit should be able to edit entries in place online.
+
+	- god's text client, displays messages to god and all, and allows
+	  entry of replies from god, showgalaxy with more messages visible.
+
+	- From Dave Swasey: Writes to ERRORS should be timestamped.  At least
+	  timestamp daemon startup and death (exitDaemon, etc) messages.
+	  Timestamps would have helped me determine which messages in ERRORS
+	  matter.
+
+	- mark's changes, if p_y or p_x = 100000, ship oscillates
+	  [mark hasn't come back to me on that, it awaits him]
+
+	- add IP addresses, port numbers, and byte counters to
+	  struct.h for player so we can dump them in tools/players.c;
+	  and also to enhance "whois".
+
+	- accumulate byte counters server wide for bandwidth accounting.
+
+	- all the code in the robots/ directory really need some
+	  serious cleanup.  the whole thing is a mess.
+
+	- netrekd is now restartable without affecting play, but it would be
+	  suitably cool if daemon could also be restarted.  Could also do with
+	  a check for change to the shared memory size.
+
+	- connections made immediately after a genocide/conquer seem to stall
+	  for up to a minute, happens on continuum and has been confirmed by
+	  numerous players,
+
+	- proposed client metaserver window solicitation UDP protocol, to fill
+	  out a column of ping times to the server from the client,
+	
+	- slots that timeout during login or outfit (resurrect) should be moved
+	  back onto the wait queue (at end or start?) and their slot given to
+	  the current head of queue player.  May require client changes.
+	  [ref findslot() in cow, c/- carlos - quozl]
+
+	- observers do not see tractors and pressors ... fault of protocol,
+	  according to Trent Piepho (xyzzy@u.washington.edu)
+
+        - Observer system is screwed up.  Needs major re-write.  Items
+          of note:
+
+		Observer state is not consistent. Observer state is
+                held in p_status, which is overloaded with death,
+                life, free, robot states. Every once in a while,
+		p_status gets assigned something other than POBSERV.
+
+		stats collection drop-outs for observers, free slots
+                and robots not consistent. Stats for observers and
+                robots and free slots should not be collected, but for
+                some cases they are.
+
+                save() is still called for observers. it shouldn't
+
+                multiple observer state variables. ntserv keeps a
+                global Observer.  p_status in shmem is the other.
+
+          Propose removing POBSERV from p_status and Observer ntserv
+          global variable ad add p_type to player struct.  Avoids
+          overloading a variable.  Example states could be PTPLAYER,
+          PTOBSERVER, PTROBOT and PTPRACTICE.  Whenever a slot changes
+          modes, save the slot (if appropriate) and re-read stats from
+          .players anew as if a fresh login occured but without the
+          slot assignment (which would require a client upgrade).
+
+          Cleaning up the observer code is a prerequisite for
+          obs<->player switching and non-contiguous INL slot PROJECT
+          entries.  First crack at it assigned to Carlos V.
+
+INL robot issues following testing with Tom Holub
+
+	- port 2592 "sorry you can't play now" message needs to be nicer [low]
+	  [perhaps make them appear to be on an infinite queue and give them
+	  a motd that explains the situation]
+
+	- make GAMETIME response two lines if team name too long [low]
+
+	- observer can change teams?
+
+	- force known team name for REGISTER
+
+	- INL robot entry voted in from pickup, do not do odds/evens swapping,
+	  keep old teams if possible, the league does not need 0-7
+	  pre-allocation of slots to teams,
+
+
+INL robot problems reported by d4sand,
+
+	- no RESERVE command present,
+
+	- robot did not see genocide, (fix daemon to not reset galaxy
+	  on a genocide or conquer),  (possible fix, Villalpando 1999-jun)
+
+	- could not rejoin after genocide/conquer, (fix daemon to use
+	  non-final why-dead flag),  (possible fix, Villalpando 1999-jun)
+
+
+INL observations by quozl@us.netrek.org
+
+	- need a captain command to bring an obs in as a player, and
+	  vice versa
+
+	- sending PAUSE then CONTINUE as a captain causes a
+	  superfluous countdown which does nothing.

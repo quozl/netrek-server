@@ -1,0 +1,48 @@
+What you need to do in addition to INSTALL to get RSA working.  Thanks to
+recent changes in US export regulations, this process is now a lot easier.
+If you have previous versions of US/Euro RES-RSA, please upgrade now.
+
+June 27, 2000
+
+Summary
+-------
+
+	0)  install gmp from http://www.gnu.org/ [optional]
+	1)  fetch the res-rsa package,
+	2)  untar in res-rsa directory within Vanilla,
+	3)  follow INSTALL.
+
+Details
+-------
+
+[The MP/GMP stuff is optional.]
+
+Obtain gmp and install it on your system.  You will probably need the
+libmpbsd.a library, which is not built by default.  To build it in gmp,
+type "make mpbsd/libmpbsd.a", then copy it to /usr/lib or /usr/local/lib.
+
+Red Hat Linux RPMs of gmp that contain this library are available from
+ftp://ftp.real-time.com/pub/real-time/RPMS/i386/gmp-2.0.2-6.i386.rpm
+ftp://ftp.real-time.com/pub/real-time/RPMS/i386/gmp-devel-2.0.2-6.i386.rpm
+
+Download the latest RES-RSA module from either:
+	http://sourceforge.net/project/filelist.php?group_id=968
+	ftp://ftp.netrek.org/pub/netrek/rsa/
+
+The latest version should be 2.9.2 or higher.
+
+Non-US users may download RES-RSA.  All users must read README* and LICENSE*
+files bundled with RES-RSA before proceeding.
+
+Untar RES-RSA into the res-rsa/ directory within Vanilla.  Be sure to copy
+or move the files appropriately.  The procedure should be something like:
+	% cd Vanilla/
+	% mv res-rsa res-rsa.old
+	% gzip -cd res-rsa-2.9.2.tar.gz | tar xvf -
+	% mv res-rsa-2.9.2 res-rsa
+
+Now execute configure as per INSTALL.
+
+After building and installing, make sure you run updated at least once, to
+get the keys from the metaserver, then set CONFIRM=1 in .sysdef and
+start newstartd.

@@ -1,0 +1,465 @@
+$Id: README.LTD,v 1.1 2005/03/21 05:23:34 jerub Exp $
+
+Leonard/Tom/Dave (LTD) Extended Player Statistics
+Dave Ahn <ahn@users.sourceforge.net>
+
+[NOTE: This document is not quite up to date.]
+
+[NOTE: LTD's are in BETA testing stage; I do not recommend enabling it
+unless you know what you are doing!]
+
+LTD are the first name initials of Leonard Dickens, Tom Holub and Dave
+Ahn.  Leonard proposed most of these statistics, Tom gave the official
+INL stamp of approval, and I implemented them into the Vanilla server.
+
+The purpose of LTD stats is to provide server-side statistics in the
+Vanilla server that expand upon the old Passing Wind (PW) statistics
+supported by the INL 4.x servers.  The INLC has retired the INL 4.x
+servers, so all tournament games must now be played using the Vanilla
+server in INL robot mode.
+
+These statistics are extensive and are primarily useful for INL or
+clued game play.  Pickup servers don't need this kind of detail,
+especially with the trivial rating/ranking system in place now.  I
+think that more experimentation and validation are needed before
+introducing LTD to pickup, but server admins are welcome to try it.
+Be warned that LTD increases the player DB size by a factor of 13, so
+it BREAKS BACKWARDS COMPATIBILITY with existing player DB's.  DO NOT
+ENABLE LTD_STATS without first converting the old DB into a new DB
+(see below).
+
+Because the old stats don't map well to the LTD stats, they are simply
+added to the appropriate fields of the GA/ATT stat group.  I don't
+believe that the conversion will affect the ratings, but I have not
+tested this to be sure.
+
+LTD stats should not be enabled for hockey, basepractice or dogfight
+modes.  It is only useful in normal Bronco, Chaos and INL modes.
+
+LTDs are a per-ship statistics group.  In a normal Bronco game, there
+are 6 player ships: SC, DD, CA, BB, AS, SB.  So, each player has 6
+sets of LTD's that are updated independently of each other for these
+ships..  GA/AT are merged into one statistics group since neither are
+used in normal Bronco games.
+
+To get full use out of LTD_STATS, the clients and the network
+protocols would need to be changed.  I don't have the time to do this.
+As such, stat info sent to the clients are COMPAT mode stats that sum
+up the LTD stats into offense, defense, bombing and planet ratings.
+In other words, players generally won't be able to tell the difference
+whether LTD_STATS is enabled or not.
+
+There is a sorry version of the 'tools/ltd_dump' that needs work.
+Right now, it dumps out all the stats in the player DB in a verbose
+text form that is easy to parse by a perl script.
+
+Most stuff in the tools/ directory are sort of broken under LTD.  Most
+of them use the COMPAT functions convert LTD's to old-style ratings,
+but those that write out old-style stats (such as pledit) will not
+work.  Basically, I (or someone) will have to write a new pledit for
+the LTD's.  Instead of the ncurses based pledit, the player DB will
+have a new HTML front-end to view and edit player scores.  No, I have
+not written this yet.
+
+XSG is broken with LTD_STATS enabled.
+
+There is a lot of work left to be done.  I will update this file and
+the ChangeLog as more tasks are finished.
+
+Comments, problems, suggestions are welcome.
+
+Dave
+
+--------------------------------------------------------------------
+Converting an existing pickup server player DB to LTD_STATS mode
+
+WARNING: Do not do this unless you really want LTD_STATS.  This will
+increase the player DB size by a factor of 13, and most pickup players
+will not care about these detailed stats!  A test conversion of a
+530,192 byte .players file yielded a 6,963,868 byte .players.LTD file.
+
+I've hacked together a simple program to do a raw conversion from the
+old style player stats to LTD_STATS.  You can find this program in
+tools/ltd_convert.  Because this program is dangerous to play around
+with, it is not installed by default.
+
+The ltd_convert program will map almost all statistics to the GA/ATT
+ship class in LTD_STATS.  Since LTD_STATS do not keep track of
+non-T-mode stats, they are discarded.  Also, the SB stats are not
+transferred.  Player ranks ARE preserved.
+
+Here is the general procedure to convert your server from the old stat
+mode to LTD_STATS mode:
+
+1. You should already be running Vanilla Server 2.9pl6 or higher.  If
+not, upgrade before proceeding.
+
+2. Take down the Vanilla server, and make sure that daemonII, netrekd
+and all ntserv processes are dead.  Use 'ipcs' to verify that the
+shared memory segment is free.
+
+3. Make a backup copy of your entire netrek server directory including
+all runtime files and the complete source code with object files.
+
+4. Go to your existing source code directory and look at your config.h
+used to build your server:
+
+  If ROLLING_STATS is defined, STOP.  You cannot convert your player DB.
+
+  Do not change GENO_COUNT.  It doesn't matter whether it is defined
+  or undefined as long as it stays the same.
+
+  Look at LTD_STATS.  Change it so that it is defined.
+
+  Look at LTD_PER_RACE.  Do NOT define this!
+
+5. Go to the top level source code directory (Vanilla/) and type 'make
+clean' followed by 'make'.  If the configure script is automatically
+invoked, you may have to rerun configure with the appropriate args and
+rebuild everything.  Be sure to check config.h after configure is
+finished.
+
+6. Type 'make install' to install your server binaries.
+
+7. Copy the Vanilla/tools/ltd_convert program to your runtime tools/
+directory.
+
+8. Type "tools/ltd_convert .players .players.new" and check the outout
+for error messages.
+
+9. Type "tools/ltd_dump .players.new" and verify the output.
+
+10. Replace the old ".players" DB file with the ".players.new" file.
+Do not change the other game state files (such as .planets).
+
+11. Start the Vanilla server, login and check to make sure things are
+running OK.
+
+
+CAVEATS:
+
+You may notice some strange behavior with how the ratings are
+calculated.  For example, you don't get extra army credits for
+dooshing armies or extra planet credits for taking enemy core, so many
+players will see their ratings drop.  This is normal.  Right now the
+ranking and rating calculations don't include these "bonus" stats.
+This may change in the future, but you can modify the rating and
+ranking rules yourself without affecting the player DB.  Take a look
+at the ltd_can_rank() function in ntserv/ltd_stats.c.
+
+Old player stats are stored in the GA/ATT ship stats, and they are
+included in the ratings/ranking calculation.
+
+If you encounter any problems with LTD_STATS, please report them to
+vanilla-list@us.netrek.org.  The LTD_STATS mode has been used for INL
+games over the last year, so it is relatively bug free.  However,
+there may be some pickup related issues that I haven't seen yet.
+
+Dave
+
+--------------------------------------------------------------------
+
+Abbreviations and descriptions of the LTD extended statistics
+
+These numbers can be used to compute other interesting stats such
+as average phaser damage, kills per hour, kill/death ratio, etc.
+
+(kt)   [kills total]
+	Total ship kills, excluding kills from bombing or dooshing
+	enemy armies.
+
+(kmax) [kills max]
+	Max kills ever acquired, including kills from bombing or
+	dooshing and out of T-mode kills.
+
+(k1)   [kills first]
+	Number of first kills made.
+
+(k1p)  [kills first potential]
+	Number of first kills that could have been converted to a
+	carry.  If you get a first kill and make it to green alert
+	with a ship that is warp >=4 capable, you are credited.  If
+	you pick up armies with your first kill before reaching
+	potential carrier status, you are also credited.
+
+(k1c)  [kills first converted]
+	Number of first kills that actually were converted to a
+	carry.  Note that kills.first_converted <=
+	kills.first_potential <= kills.first.
+
+(k2)   [kills second]
+	Number of second kills ever made.
+
+(k2p)  [kills second potential]
+	Number of second kills that could have been converted to a
+	carry.  If you get a second kill and make it to green alert
+	with a ship that is warp >=4 capable, you are credited.  If
+	you pick up 3 or more armies (4 for AS) after your second
+	kill before reaching potential carrier status, you are
+	automatically credited.
+
+(k2c)  [kills second converted]
+	Number of second kills that actually were converted to a
+	carry.
+
+	- Example 1:
+	second 1:	you kill Fa, kills.first++
+	second 2:	you kill Fb, kills.second++
+	... you don't pick up armies and make it to green, w4+
+	second 6:	kills.first_potential++
+	second 7:	kills.second_potential++
+	second 8:	you pick up 1 army, kills.first_converted++
+	second 9:	you pick up 2nd army
+	second 10:	you pick up 3rd army, kills.second_converted++
+
+        - Example 2:
+	second 1:	you kill Fa, kills.first++
+	second 2:	you kill Fb, kills.second++
+	second 3:	you orbit Rom, green alert, w4+
+	second 4:	you pick up 1 army, kills.first_potential++,
+			kills.first_converted++
+	second 5:	you pick up 2nd army
+	second 6:	nothing happens
+	second 7:	kills.second_potential++
+	...
+	second 50:	you pick 3rd army, kills.second_converted++;
+
+(kbp)  [kills by phaser]
+	Number of kills where the killing blow was your phaser.
+
+(kbt)  [kills by torp]
+	Number of kills where the killing blow was your torp.
+
+(kbs)  [kills by smack]
+	Number of kills where the killing blow was your plasma.
+
+(dt)   [deaths total]
+	Total number of deaths.
+
+(dpc)  [deaths as potential carrier]
+	Number of deaths as a potential carrier (i.e.  you were
+	credited with first_potential++ and/or second_potential++ but
+	never converted those kills to carries.)
+
+(dcc)  [deaths as converted carrier]
+	Number of deaths as a converted carrier WITHOUT armies on board.
+
+(ddc)  [deaths as dooshed carrier]
+	Number of deaths WITH armies on board.
+
+(dbp)  [deaths by phaser]
+	Number of deaths from a phaser death blow.
+
+(dbt)  [deaths by torp]
+	Number of deaths from a torp death blow.
+
+(dbs)  [deaths by smack]
+	Number of deaths from a plasma death blow.
+
+(acc)  [actual carriers created]
+	Number of actual carriers created from your deaths.  You get
+	acc++ only if the enemy uses the kill acquired from your death
+	to pick up armies.  For example, if you gave a 2nd kill but
+	the carrier picks only one two armies (3 for AS), you don't
+	get acc++ until he picks up the 3rd army.  Enemy kills
+	acquired from bombing and dooshing are taken into account, so
+	if the CA carrier got 3.1 kills from the first ship and 1.1
+	kills from you, then he would need to pick up a 7th army in
+	his CA in order for you to get acc++.
+
+(ptt)  [planets taken total]
+	Total number of planets taken.
+
+(pdt)  [planets destroyed total]
+	Total number of planets destroyed.
+
+(bpt)  [bombed planets total]
+	Total number of planets bombed.  No credit for bombing the
+	same planet within 5 seconds.
+
+(bp8)  [bombed planets <=8]
+	Total number of planets with <= 8 armies bombed.  No credit
+	for bombing the same planet within 5 seconds.
+
+(bpc)  [bombed planets core]
+	Total number of core planets bombed.  No credit for bombing
+	the same planet within 5 seconds.
+
+(bat)  [bombed armies total]
+	Total number of armies bombed.
+
+(ba8)  [bombed_armies <= 8]
+	Number of armies bombed off of a planet that had <= 8 armies.
+
+(bac)  [bombed armies core]
+	Number of armies bombed off of a core planet.
+
+(oat)  [ogged armies total]
+	Number of enemy armies ogged.
+
+(odc)  [ogged dooshed carrier]
+	Number of enemy carriers with armies ogged.
+
+(occ)  [ogged converted carrier]
+	Number of enemy converted carriers ogged.  A converted carrier
+	is one that had picked up armies before but which you killed
+	while he was carrying no armies.  E.g., he dropped all his
+	armies before you killed him.
+
+(opc)  [ogged potential carrier]
+	Number of enemy potential carriers ogged.  A potential carrier
+	could have picked up armies but never did.
+
+(o>c)  [ogged bigger carrier]
+	Number of ogged potential, converted or dooshed carriers you
+	killed, where the carrier had a bigger ship than you.
+
+(o=c)  [ogged same carrier]
+	Number of ogged potential, converted or dooshed carriers you
+	killed, where the carrier had the same type of ship as you.
+
+(o<c)  [ogger smaller carrier]
+	Number of ogged potential, converted or dooshed carriers you
+	killed, where the carrier had a smaller ship than you.
+	
+(osba) [ogged sb armies]
+	Number of armies on board an enemy SB you ogged.  This stat
+	is updated seperately from (oat), armies you ogged on other
+	ships.
+
+(ofc)  [ogged friendly carrier]
+	Number of friendly carriers with armies you killed.
+
+(ofa)  [ogged friendly armies]
+	Number of friendly armies you killed.
+
+(at)   [armies carried total]
+	Total number of armies you picked up.  You cannot scum at++
+	by beaming up armies to/from the same planet/SB.
+
+(aa)   [armies used to attack]
+	Number of armies you successfully delivered to attack an enemy
+	planet.
+
+(ar)   [armies used to reinforce]
+	Number of armies you successfully delivered to reinforce a
+	friendly planet at <4 armies.
+
+(af)   [armies ferried]
+	Number of armies you successfully ferried to a friendly planet
+	or SB.  You cannot scum af++ by beaming up armies to/from the
+	same planet/SB.
+
+(ak)   [armies killed]
+	Number of armies killed, because you got dooshed.
+
+(ct)   [carries total]
+	Total number of carrying instances, i.e. picked up at least one
+	army.
+
+(cp)   [carries partial]
+	Number of carries where you partially delivered armies before
+	dying ++.
+
+(cc)   [carries completed]
+	Number of carries where you delivered all armies you were
+	carrying.
+
+(ca)   [carries to attack]
+	Number of carries where you delivered your armies to an enemy
+	planet.
+
+(cr)   [carries to reinforce]
+	Number of carries where you delivered your armies to reinforce
+	a friendly planet <4 armies.
+
+(cf)   [carries to ferry]
+	Number of carries where you ferried your armies to a friendly
+	planet >= 4 armies or SB.
+
+(tt)   [ticks total]
+	Total number of ticks you were alive.
+
+(tyel) [ticks in yellow]
+	Number of ticks you spent in yellow alert.
+
+(tred) [ticks in red]
+	Number of ticks you spent in red alert.  Ticks spent in green
+	alert can be calculated by (tt - tyel - tred).
+
+(tz0)  [ticks in zone 0]
+(tz1)  [ticks in zone 1]
+(tz2)  [ticks in zone 2]
+(tz3)  [ticks in zone 3]
+(tz4)  [ticks in zone 4]
+(tz5)  [ticks in zone 5]
+(tz6)  [ticks in zone 6]
+(tz7)  [ticks in zone 7]
+
+(tpc)  [ticks as potential carrier]
+	Number of ticks you spent as a potential carrier (i.e. you have
+	kills but don't carry armies).
+
+(tcc)  [ticks as carrier++]
+	Number of ticks you spent as a carrier with armies on board.
+
+(tr)   [ticks in repair]
+	Number of ticks you spent in repair mode.
+
+(dr)   [damage repaired]
+	Amount of damage you repaired to your shields or hull.
+
+(wpf)  [weap phaser fired]
+	Total number of phasers fired by you.
+
+(wph)  [weap phaser hit]
+	Number of phaser fires that actually hit something.
+
+(wpdi) [weap phaser damage inflicted]
+	Total number of phaser damage you inflicted.  Note that
+	average phaser damage should be (wpdi)/(wph).
+
+(wpdt) [weap phaser damage taken]
+	Total number of phaser damage you took.
+
+(wtf)  [weap torp fired]
+	Total number of torps fired by you.
+
+(wth)  [weap torp hit]
+	Total number of torps you fired which actually hit a ship
+	without being detted, selfdetted or hitting a wall.
+
+(wtd)  [weap torp detted]
+	Number of torps you fired which were detted by an enemy ship.
+
+(wts)  [weap torp self detted]
+	Number of torps you fired which you self-detted.
+
+(wtw)  [weap torp hit wall]
+	Number of torps you fired which hit the wall.
+
+(wtdi) [weap torp damage inflicted]
+	Total amount of damage you inflicted from torps you fired,
+	including explosion and det damage.
+
+(wtdt) [weap torp damage taken]
+	Total enemy torp damage you took.
+
+(wsf)  [weap smack fired]
+	Total number of plasma torpedoes you fired.
+
+(wsh)  [weap smack hit]
+	Number of plasmas you fired that hit its target.
+
+(wsp)  [weap smack phasered]
+	Number of plasmas you fired that were phasered down.
+
+(wsw)  [weap smack hit wall]
+	Number of plasmas you fired that hit the wall.
+
+(wsdi) [weap smack damage inflicted]
+	Total amount of plasma damage you inflicted.
+
+(wsdt) [weap smack damage taken]
+	Amount of plasma damage you took.
+

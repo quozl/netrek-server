@@ -1,0 +1,37 @@
+This is the Vanilla Netrek Server source kit.
+
+See INSTALL for how to install this server.
+See INSTALL.INL for instructions specific to INL server installation.
+
+Check out the vanilla development web-site at
+<http://vanilla.us.netrek.org/>
+
+The development team is at vanilla-list@us.netrek.org,
+send context diffs or subscribe for ongoing discussions.
+
+To subscribe, send an empty message to "vanilla-list-subscribe@us.netrek.org".
+No subject or body text required.
+
+Archives of the vanilla-list are available at <http://vanilla.us.netrek.org/list/>
+
+If you are interested in just the Vanilla Teams announcements you can subscribe
+to the announcement mailing list.
+
+To subscribe, send an empty message to "vanilla-announce-subscribe@us.netrek.org". 
+No subject or body text is required.
+
+Archives of the vanilla-list are available at <http://vanilla.us.netrek.org/announce/>
+
+Current source is in CVS repository, to obtain it ...
+
+cvs -d :pserver:netrek@cvs.us.netrek.org:/home/netrek/cvsroot login
+password: netrek
+cvs -d :pserver:netrek@cvs.us.netrek.org:/home/netrek/cvsroot checkout Vanilla
+
+To get all CVS commits emailed to you send an empty message to
+"vanilla-devel-subscribe@us.netrek.org".  No subject or body required.
+
+The complete CVS history from Feb 16th, 1999 onward is
+available at <http://vanilla.us.netrek.org/devel/>
+
+For version, see version.h and patchlevel.h, or make name and run it.

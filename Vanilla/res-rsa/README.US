@@ -1,0 +1,22 @@
+$Id: README.US,v 1.1 2005/03/21 05:23:44 jerub Exp $
+
+Additional comments for U.S. RES-RSA users.
+
+--
+
+The export of cryptographic software is regulated by the Bureau of
+Export Administration (BXA).  RES-RSA source code is posted to the
+Internet via FTP and SourceForge (http://sourceforge.net) under the
+export license exception clause.
+
+There is a prohibition on direct and knowing transfers to countries
+that the U.S. has under sanction (Iran, Cuba, Iraq, Libya, Syria,
+Sudan, North Korea).  You may not send this code directly to these
+places via e-mail or other modes of transfer without a license from
+the BXA.  Fortunately, posting RES-RSA on the Internet does not
+establish knowledge of such direct and unlawful export even if someone
+from the sanctioned countries happens to download the source code.
+However, IF YOU WISH TO EXPORT THIS SOFTWARE THROUGH DIRECT MEANS TO
+ANY COUNTRY, YOU SHOULD VERIFY THE LEGALITY BEFORE PROCEEDING.
+
+Dave Ahn

@@ -1,0 +1,9 @@
+<?php
+$fn = 'Player List';
+include('header.inc');
+echo '<center><table cellpadding=10 bgcolor=#c0c0a0><tr><td><pre>';
+$fp = fsockopen('localhost', 2591);
+fpassthru($fp);
+echo '</pre></td></tr></table></center>';
+include('footer.inc');
+?>

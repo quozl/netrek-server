@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# netrek      This shell script takes care of starting and stopping
+#             the netrek server.
+#
+# chkconfig: 2345 99 00
+# description: Netrek is a 16-player graphical real-time battle simulation \
+#              with a Star Trek theme. 
+# processname: 
+# config: 
+# pidfile:
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source Vanilla Development function library
+. /etc/rc.d/init.d/functions-games
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+# Check for netrek server binaries
+[ -f /usr/games/netrek/updated ] || exit 0
+[ -f /usr/bin/netrekd ] || exit 0
+
+# See how we were called.
+case "$1" in
+  start)
+	# Start the server.
+	echo -n "Starting netrek server: "
+	daemon_user games netrekd
+	echo 
+	touch /var/lock/subsys/netrek
+	;;
+  stop)
+	# Stop the server.
+	echo -n "Shutting down netrek server: "
+	killproc "netrekd"
+	echo
+	rm -f /var/lock/subsys/netrek
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  status)
+	status netrek
+	;;
+  *)
+	echo "Usage: netrek {start|stop|restart|status}"
+	exit 1
+esac
+
+exit 0

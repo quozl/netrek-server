@@ -1,0 +1,204 @@
+# Change CONFIG to the .mk file that matches your system
+
+CONFIG = system.mk
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+# Do Not Change anything below this line. It should be setup in config
+
+include ../$(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+# this is for revised ntserv/struct.h
+
+CFLAGS = $(EXTRAINCS) $(FLAGS) -I. -I${srcdir} -I../include -I${srcdir}/../include
+
+#LIBCURSES = -lcurses
+LIBS = $(EXTRALIBS)
+
+TOOLDIR= $(LIBDIR)/tools
+
+GETPATH = ../ntserv/getpath.o ../ntserv/data.o
+
+LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
+
+#     Memory Objects
+
+M_OBJS = ../ntserv/data.o ../ntserv/openmem.o ../ntserv/ltd_stats.o
+
+
+SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
+	${srcdir}/mergescores.c \
+	${srcdir}/newscores.c ${srcdir}/planets.c ${srcdir}/players.c \
+	${srcdir}/scores.c ${srcdir}/setgalaxy.c ${srcdir}/showgalaxy.c \
+	${srcdir}/stat.c ${srcdir}/trimscores.c ${srcdir}/watchmes.c \
+	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c ${srcdir}/nuke.c \
+	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c \
+	${srcdir}/../ntserv/distress.c ${srcdir}/../ntserv/getship.c \
+	${srcdir}/update.c ${srcdir}/../ntserv/openmem.c ${srcdir}/convert.c \
+	${srcdir}/conq_vert.c ${srcdir}/../ntserv/slotmaint.c $(RANDOMC) \
+	${srcdir}/sortdb.c ${srcdir}/../robots/roboshar.c \
+	${srcdir}/../ntserv/smessage.c ${srcdir}/ntpasswd.c \
+	${srcdir}/../ntserv/salt.c
+
+EXECS =	blotpassword loadchecker mess message newscores planets players \
+	scores \
+        setgalaxy showgalaxy stat trimscores watchmes xtkill \
+        mergescores keyman updated fun conq_vert convert sortdb cambot \
+        ntpasswd ltd_dump ltd_convert nuke trekon
+
+all: $(PMAKE) $(EXECS)
+
+clean: rmdependencies
+	rm -f *.o *.ln
+
+reallyclean: clean
+	rm -f $(EXECS) *~ #*#
+
+
+install: $(EXECS) 
+	-@if [ ! -d $(LIBDIR)/tools ]; then \
+          /bin/mkdir $(LIBDIR)/tools; \
+        fi
+	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(LIBDIR)/tools/updatekeys
+	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(LIBDIR)/tools/blotpassword
+	$(INSTALLPROG) $(INSTALLOPTS) loadchecker $(LIBDIR)/tools/loadchecker
+	$(INSTALLPROG) $(INSTALLOPTS) mess $(LIBDIR)/tools/mess
+	$(INSTALLPROG) $(INSTALLOPTS) message $(LIBDIR)/tools/message
+	$(INSTALLPROG) $(INSTALLOPTS) newscores $(LIBDIR)/tools/newscores
+	$(INSTALLPROG) $(INSTALLOPTS) planets $(LIBDIR)/tools/planets
+	$(INSTALLPROG) $(INSTALLOPTS) players $(LIBDIR)/tools/players
+	$(INSTALLPROG) $(INSTALLOPTS) nuke $(LIBDIR)/tools/nuke
+	$(INSTALLPROG) $(INSTALLOPTS) scores $(LIBDIR)/tools/scores
+	$(INSTALLPROG) $(INSTALLOPTS) setgalaxy $(LIBDIR)/tools/setgalaxy
+	$(INSTALLPROG) $(INSTALLOPTS) showgalaxy $(LIBDIR)/tools/showgalaxy
+	$(INSTALLPROG) $(INSTALLOPTS) stat $(LIBDIR)/tools/stat
+	$(INSTALLPROG) $(INSTALLOPTS) trimscores $(LIBDIR)/tools/trimscores
+	$(INSTALLPROG) $(INSTALLOPTS) watchmes $(LIBDIR)/tools/watchmes
+	$(INSTALLPROG) $(INSTALLOPTS) xtkill $(LIBDIR)/tools/xtkill
+	$(INSTALLPROG) $(INSTALLOPTS) mergescores $(LIBDIR)/tools/mergescores
+	$(INSTALLPROG) $(INSTALLOPTS) keyman $(LIBDIR)/tools/keyman
+	$(INSTALLPROG) $(INSTALLOPTS) fun $(LIBDIR)/tools/fun
+	$(INSTALLPROG) $(INSTALLOPTS) sortdb $(LIBDIR)/tools/sortdb
+	$(INSTALLPROG) $(INSTALLOPTS) ntpasswd $(LIBDIR)/tools/ntpasswd
+	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(LIBDIR)/tools/ltd_dump
+	$(INSTALLPROG) $(INSTALLOPTS) updated $(LIBDIR)/updated
+	$(INSTALLPROG) $(INSTALLOPTS) cambot $(LIBDIR)/cambot
+
+# cb_sock.o: packets.h ../ntserv/socket.c
+#	$(CC) -o ./cb_sock.o -g $(CFLAGS) -DCAMBOT -c ../ntserv/socket.c
+
+cambot: cambot.o $(M_OBJS) $(GETPATH)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o ../ntserv/genspkt.o ../ntserv/sysdefaults.o ../ntserv/getship.o ../ntserv/warning.o ../ntserv/smessage.o ../ntserv/distress.o ../ntserv/util.o $(M_OBJS) ../ntserv/getpath.o  $(RSA_LIB)
+
+sortdb: sortdb.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} sortdb.o
+
+ntpasswd: ntpasswd.o $(GETPATH) ../ntserv/salt.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(GETPATH) ../ntserv/salt.o $(LIBCRYPT)
+
+loadchecker: loadchecker.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} loadchecker.o $(M_OBJS) $(LIBS)
+
+mess: mess.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mess.o $(M_OBJS) $(LIBS)
+
+message: message.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} message.o $(M_OBJS) $(LIBS)
+
+mergescores: mergescores.o $(GETPATH)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mergescores.o $(GETPATH) $(LIBS)
+
+newscores: newscores.o $(GETPATH)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} newscores.o $(GETPATH) $(LIBS)
+
+planets: planets.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} planets.o $(M_OBJS) $(LIBS)
+
+players: players.o $(M_OBJS) $(RANDOMO)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} players.o $(M_OBJS) $(RANDOMO) $(LIBS)
+
+nuke: nuke.o $(M_OBJS) $(RANDOMO)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} nuke.o $(M_OBJS) $(RANDOMO) $(LIBS)
+
+# some weird problem with the MIPS RISC compiler for DECstations...
+# gcc seems to compile working executables (TC)
+#
+scores: scores.o $(GETPATH)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} scores.o $(GETPATH) $(LIBS) ../ntserv/ltd_stats.o
+#	gcc -o $@ $(CFLAGS) -g scores.o -L/usr/users/terence/lib
+#	cp scores /usr/users/terence/bin/trekscores
+
+setgalaxy: setgalaxy.o $(RANDOMO) $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgalaxy.o $(RANDOMO) $(M_OBJS) $(LIBS)
+
+showgalaxy: showgalaxy.o ../ntserv/distress.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} showgalaxy.o ../ntserv/distress.o $(M_OBJS) $(LIBS) $(LIBCURSES) $(LIBTERMCAP)
+
+stat: stat.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} stat.o $(M_OBJS) $(LIBS)
+
+blotpassword: blotpassword.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} blotpassword.o $(GETPATH) $(LIBS)
+
+trimscores: trimscores.o $(GETPATH)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} trimscores.o $(GETPATH) $(LIBS)
+
+watchmes: watchmes.o ../ntserv/distress.o $(M_OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} watchmes.o ../ntserv/distress.o $(M_OBJS) $(LIBS) -o $@
+
+xtkill: xtkill.o $(GETPATH) ../ntserv/getship.o ../ntserv/openmem.o ../ntserv/slotmaint.o ../ntserv/ltd_stats.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} xtkill.o ../ntserv/getship.o ../ntserv/openmem.o ../ntserv/slotmaint.o ../ntserv/ltd_stats.o $(GETPATH) $(LIBS)
+
+keyman: keyman.o $(GETPATH)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} keyman.o $(GETPATH) $(LIBS)
+
+fun: $(RANDOMO) fun.o $(M_OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} fun.o $(RANDOMO) $(M_OBJS) $(LIBS)
+
+convert: $(GETPATH) convert.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} convert.o $(GETPATH) $(LIBS)
+
+updated: update.o $(GETPATH)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o updated update.o ../ntserv/ltd_stats.o $(GETPATH) $(EXTRALIBS)
+
+ltd_dump: ltd_dump.o
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump ltd_dump.o ../ntserv/ltd_stats.o $(GETPATH)
+
+ltd_convert: ltd_convert.o
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o ../ntserv/ltd_stats.o $(GETPATH)
+
+conq_vert: conq_vert.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} conq_vert.o
+
+trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
+	${srcdir}/mktrekon $(LIBDIR)
+	chmod a+x trekon
+
+installtrekon: trekon
+	@if [ -f $(LIBDIR)/trekon ]; then touch $(LIBDIR)/trekon; \
+	 else cp trekon $(LIBDIR)/trekon; \
+	 fi
+	@if [ -f $(LIBDIR)/trekon.bitmap ]; then touch $(LIBDIR)/trekon.bitmap; \
+	 else cp ${srcdir}/trekon.bitmap $(LIBDIR)/trekon.bitmap; \
+	 fi
+	@if [ -f $(LIBDIR)/trekoff.bitmap ]; then touch $(LIBDIR)/trekoff.bitmap; \
+	 else cp ${srcdir}/trekoff.bitmap $(LIBDIR)/trekoff.bitmap; \
+	 fi
+
+lint: $(SRCS)
+	lint $(LINTFLAGS) -u $?
+	touch lint
+
+depend::
+	touch .depend
+	${CC} -M $(CFLAGS) $(SRCS) > .depend
+
+rmdependencies:
+	rm -f .depend
+
+sinclude .depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.

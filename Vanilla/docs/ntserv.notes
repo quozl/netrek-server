@@ -1,0 +1,42 @@
+ntserv
+
+  the server half of the socket protocol.  This code is called by 
+  the startup routines.  It can be started by hand as follows, though:
+
+  /* start a client, specify random socket # */
+  % netrek -s 2843 -h sequent.berkeley.edu
+  Waiting for connection (port 2843).
+
+  /* on server, enter */
+  % ntserv -s 2843 client.berkeley.edu
+
+  This should work.  
+
+  If your server is full of users, you can start ntserv with the optional
+  parameter -q 1 to allocate a player slot in the robot queue.
+
+  There is also an example .sysdef file, which is used to define some general
+  system defaults (such as which weapons are legal, which planets people appear
+  next to, how many players are needed for tournament mode, etc.).  
+
+  options include:
+
+  -s #			Specify socket number to connect through client through.
+  -d machine		Specify machine to connect to.
+  -q			Specify which queue to join.
+  -u			Get usage description.
+
+Installation:
+
+   All installation changes should be done in the /config dir. There shouldn't
+   be any need to set anything in this directory.     
+
+Known bug:
+    
+    This version of the code was written with a signal() handler which does
+    not reset the handler when a signal is received.  Specifically, the
+    SIGALRM signal is used for timing, and if the system you are compiling 
+    on resets the handler, then your daemon will crash with a message like
+    "Alarm Clock".  To fix it, you have to reset the signals in all of 
+    the handlers (if your system's signal() resets the handlers upon 
+    reception of a signal).

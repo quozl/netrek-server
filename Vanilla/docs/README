@@ -1,0 +1,183 @@
+
+** MAIN README FILE FOR SERVER **
+
+README of 24-Jul-1996
+
+If you have any comments or improvements you would like to offer then please
+email them to vanilla-l@us.netrek.org which is the distribution list for the
+server development team.  See the end of this document for how to send your
+changes back.
+
+NOTE!!! If you need to get RSA working then you will have to get the 
+res-rsa.tar.Z.crypt file.  This contains the RSA specific code.  It has to be
+encrypted because of US government legality over cryptography getting exported
+outside the US.  If you are from outside the US then there is a PGP equivalent.
+To get the crypt key please email vanilla-l@us.netrek.org or mcp@cs.umd.edu and
+say that you are a US or Canadian citizen and you will get the key.
+
+Do you really need to obtain and install the RSA component?
+Perhaps not; read on.
+
+If you are setting up a Netrek Server behind a firewall, such that nobody on
+the rest of the Internet will be able to play on the server, you do not need
+to bother with RSA client authentication.  The Netrek Server will work fine
+without it.
+
+Client authentication is only really required on the Internet, where you cannot
+track down and annoy people who try to create robot programs.  With the
+formalised network management of large companies, there is much cheaper
+protection.
+
+You don't need the crypt key for the RSA package if you are setting up a Netrek
+server within your organisation that will not be used by players outside your
+organisation.
+
+You may wish to investigate the PGP equivalent.
+
+
+README of July 30, 1992:
+
+Hello (again).  This is the final release of the Bronco Netrek Server.
+As before, the CHANGES files list all modifications made since the previous
+release.  The only new information is that my e-mail address will be
+<terence@janet.ucla.edu> after August, 1992.  Should be good for a couple
+years.
+
+"Exciting" new features:
+
+* Netrek hockey.  This is an external robot that works with no server mods.
+* Mergescores tool.  For combining the player databases of two servers, or
+  perhaps for combining the databases of INL tourneys, and other special 
+  games etc.
+* UDP client source.  Not the greatest, but the known bugs are fixed,
+  and the better X citizen patch has been applied.  Also has Hugh
+  Moore's independent team bitmaps.
+
+Notes for new server admins:  timecheck.c has hardcoded server hours.
+These need to be updated for your server.  Read the comments at the
+beginning of newstartd.c before using newstartd.  The top level
+directory structure should contain ntserv, tools, and startup.
+lockout() and isCensured() perform login lock out and message
+censure by user id.
+
+Notes for current bronco-based server admins: This release should be
+easy to merge in -- the diffs should not be significant.  Note that
+ntserv/Makefile and tools/Makefile have changed.
+
+Terence Chang
+<terence@ece.cmu.edu>
+
+README of Feb 20, 1992:
+
+Hello.  You are looking at the source tree for the bronco.ece.cmu.edu Netrek
+server archived on Feb 20, 1992.  These sources are based on the Netrek
+sources which resided at scam.berkeley.edu on Feb 7, 1991.  All
+modifications to these sources were made by Terence Chang
+<terence@ece.cmu.edu>.  These modifications are marked by /* TMC */ and are
+documented by the CHANGES files in each subdirectory.
+
+The original README files were written by Kevin Smith and Scott Silvey.  If
+you are looking for documentation on setting up a server, I suggest you look
+for hints archived at sites listed on the alt.games.xtrek FAQ.
+
+Also, there is no source for a client here.  If you need the client sources,
+I recommend using the client source archived at scam.berkeley.edu or
+alternative sources at other archive sites.
+
+Looking at copyright.h and copyright2.h, I feel obligated to say something
+about copyrights myself, but being kind of ignorant about such matters I am
+placing my modifications in the public domain.  I would appreciate a one line
+acknowledgement in the of any server that uses part or all of my sources.
+
+Terence Chang
+<terence@ece.cmu.edu>
+
+
+README of Sep 12, 1990:
+
+netrek - A distributed TCP/IP based xtrek with tons of features.
+
+    Original xtrek written by Chris Guthrie and Ed James.
+    This version written by Kevin Smith and Scott Silvey.
+
+Note:  Don't try to call "sequent.Berkeley.EDU" with this code.  It will
+  fail for reasons described in "Security:".
+
+    Overview:
+
+netrek is a socket based xtrek written for BSD Unix 4.3.  To run it on a 
+SYS V machine, you will have to deal with the standard incompatibility 
+problems like bcopy(), srandom(), <string.h>, etc..
+
+This release supports X10 and X11.  Details of this in the netrek directory.
+
+The overall scheme is that the user has a binary which understands his
+graphics needs.  It calls up the netrek server which (through inetd) starts
+up a process which talks to the client (details in startup/ and ntserv/).
+Then the user plays the game.
+
+    Security:
+
+There is a slight problem with security for this game.  If you install this
+program on your local system, and use the code exactly as presented here,
+there is nothing to prevent someone from making a binary which has some 
+built in robot-like features (automatically phaser anyone within a certain
+range, automatically fire lots of torps into any close enemies, etc.).  The
+TCP/IP protocol is designed to minimize the amount of cheating anyone
+can actually do, but a computer's ability to phaser and aim the torpedo
+cannon is better than a humans (in general).  
+
+On the other hand, this paradigm does present a really nice robot language.  
+You could perhaps have a contest to see who can design the best unassisted
+robot.  And since the client is written in C, you wouldn't have to learn
+a new language to write a robot (and there is a nice layer - socket.c - 
+between the local data structures, and the TCP/IP information sent back
+and forth).
+
+To provide some security for the binaries which your users may use, the
+file reserved.c was written.  It is identical in both ntserv/ and netrek/.
+It is a binary verification module which makes sure that the client
+can perform some deterministic encryption of 16 random bits of data.
+Change this algorithm, and then only your binaries will work with your 
+server (other binaries will fail the security test, and be kicked out 
+of the game!).
+
+    Features:
+
+Above and beyond the underlying design of this game, new features include:
+
+- Multiple ship types including starbases.
+- Plasma torpedoes - 'f' (must get 2 kills and refit to use).
+- Tons of options in terms of display setup (multiple message windows,
+    varies bitmaps for the planets, etc...)  Pop up an options window
+    and try some of them out - 'O'.
+- Players saved.  You now log into the game before playing.  Pick a name
+    and a password.  Some number of options are saved with the player 
+    (like his keymap), and lots of stats are kept about him.  If he plays
+    well enough, he might be promoted to an Admiral!  (Note: for any
+    stats capable of promoting s player to accumulate, the game must 
+    be in 'tournament' mode - 2 teams of 5 players each.  
+    P.S. DI stands for 'Destruction Inflicted')
+
+There a ton of features beyond these, including tractor and pressor 
+beams, robots which insult you, a configuration file to personalize the 
+game, and lots of neat stuff.  Try it out!
+
+
+Providing Patches (24-Jul-1996)
+
+If you want to make it even easier for your changes to be adopted by the server
+maintenance team, provide them as context diffs.  The easiest way to do this is
+to use the primary Makefile's "patches" target to make a set of patches.  Unpack
+the original distribution some place else, then configure it, then build the
+patches.  For example, assuming you are in the Server directory of your modified
+version of the server;
+
+	% setenv SOURCE `pwd`
+	% setenv PATCHDIR /tmp
+	% cd $PATCHDIR
+	% tar xf Serverx.yplz.tar
+	% configure
+	% cd $SOURCE
+	% make patches
+

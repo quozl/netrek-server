@@ -1,0 +1,96 @@
+<!doctype linuxdoc system>
+
+<article>
+
+<title> Metaserver HOWTO
+<author> by James Cameron
+<tt><htmlurl url="mailto:quozl@us.netrek.org" name="quozl@us.netrek.org"></tt>
+<date>$Revision: 1.1 $
+
+<abstract>
+This is the documentation for how to have a new server solicit the
+metaserver for players.
+</abstract>
+
+<toc>
+
+<sect>Quick Review
+<p>
+
+<itemize>
+<item> you set up a .metaservers file with the addresses of the metaservers that should be kept informed,
+<item> when new players arrive on your server, a packet is sent to the metaservers informing them of the current player count,
+<item> periodically, the metaservers are told about current status.
+</itemize>
+
+<sect>File Format
+<p>
+
+The format of the file is a series of space delimited fields interpreted
+using fscanf().  Very primitive.  The code looks for the file in the
+current working directory rather than LIBDIR.  This ought to be fixed.
+<p>
+The order and format of the fields is described in ntserv/solicit.c
+<p>
+<code>
+    /* data items derived from metaservers file */
+    char host[32];          /* address of metaserver (DNS)          */
+    int port;               /* port of metaserver                   */
+    int minimum;            /* minimum update time                  */
+    int maximum;            /* maximum update time                  */
+    char ours[32];          /* DNS address of server                */
+    char type[2];           /* server type code (B/P/C/H/?)         */
+    int pport;              /* server main player port (e.g. 2592)  */
+    int oport;              /* server observer player port          */
+    char comment[32];       /* comment string                       */
+</code>
+<p>
+The first address should be a numeric IP address in order to avoid DNS
+lookup delay on every new player or solicitation update.  Or place a
+host name in your /etc/hosts file that corresponds to the metaservers.
+
+<sect>Sample metaservers file
+<p>
+
+<code>
+metaserver.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
+metaserver2.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
+metaserver.eu.netrek.org 3521 60 900 this.host.name B 2592 2593 open
+
+</code>
+
+Replace "this.host.name" with the DNS host name that you want the
+metaservers to list the server under.  If you have a name within the
+netrek.org domain, use that.  If the metaserver already lists your
+server; use the name that the metaserver has for you.
+
+This will cause the metaservers to be updated with game status
+information every minute, subject to the limits in the code.
+
+Beware: informing the metaserver more frequently than the limits define
+will cause your server to be delisted from the metaserver automatically.
+This is handled by program code at the metaserver.
+
+<sect>Contacting the development team
+<p>
+
+<sect1>Mailing Lists
+<p>
+
+<itemize>
+<item><htmlurl url="http://vanilla.us.netrek.org/announce" name="vanilla-announce@us.netrek.org">
+<item><htmlurl url="http:///vanilla.us.netrek.org/list" name="vanilla-list@us.netrek.org">
+<item><htmlurl url="http://vanilla.us.netrek.org/devel" name="vanilla-devel@us.netrek.org">
+</itemize>
+
+<sect1>Web Site
+<p>
+
+<htmlurl url="http://vanilla.us.netrek.org" name="http://vanilla.real-time.com">
+
+<sect1>IRC
+<p>
+
+mpx.sydney.oz.org #netrek
+
+</article>

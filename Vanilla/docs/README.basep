@@ -1,0 +1,76 @@
+
+
+	The server has the base practice code compiled into it. However,
+to use it you will have to have the robots that aren't included in this
+code. You will have to get them from Tedd Hadley (hadley@uci.edu). Please
+don't bother him unless you are serious about setting up a base pratice
+server.
+
+Setting up BASE PRACTICE
+
+Getting the robot binary:
+   
+   Since the robot source code is quite a mess, I'll usually send a binary
+   on request (email hadley@uci.edu)
+  
+   A few robot binaries are also loacted at 
+	ftp://ftp.risc.uni-linz.ac.at/pub/netrek/bin.misc/
+    
+config.h:
+
+   #define BASEPRACTICE
+        
+   Note that the Vanilla Server version does not support practice stats,
+   therefore it is compatible with normal server play.
+
+./robots/basepdefs.h:
+      
+   Several #define symbols will need to be changed.  Those that don't
+   apply to your configuration can be set to "".
+
+   RCMD		-- this is used if the robots will be run on a machine
+		   other then the server.
+   OROBOT	-- the robot binary
+   NICE		-- the robots will be executed with this "nice" value
+   REMOTEHOST	-- remote host
+   LOGFILE	-- a directory name (not used normally)
+   COMFILE	-- commands file for robot oggers.  The default file is
+		   included in ./doc/robot/og
+   DOGFILE	-- commands file for robot dogfighter.  The default file is
+		   included in ./doc/robot/dog
+   BASEFILE	-- commands file for robot starbase.  The default file is
+		   included in ./doc/robot/base
+   DEFFILE	-- commands file for robot starbase defender.  The default 
+		   file does not exist (I guess it isn't needed).
+   RDOMAIN	-- a common string that will show up in the robot players'
+		   machine name.  This is used to determine if only robots
+		   remain in the game, in which case they'll be told to
+		   exit.
+
+
+.sysdef	changes
+   basepractice=1     will startup the basepractice code
+   robothost=hostname the remote host for starting the robots
+ 
+It automatically sets the following defines, if placed on the end:
+   chaos=1      	so there's no restriction on starbases
+   starbaserank=0	so you don't need rank
+   confirm=0 		so the ogg robots can get in.
+
+
+Trouble shooting:
+
+Some systems don't have localhost in the /etc/host.equiv
+file. You will notice that if you have a permission denied if you try
+	rlogin localhost
+Add the name of your host to robothost in .sysdef for a fix.
+
+Check also if xon is executable and the RCMD define
+points to it correctly.
+
+Some systems don't allow xon (rsh commands) under root. You may detect that if
+"rsh localhost" works, but "rsh localhost ls" gives you a permission denied.
+There is no need for running the server under root, even Linux doesn't
+need it anymore.
+
+

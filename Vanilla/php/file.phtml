@@ -1,0 +1,47 @@
+<?php
+$path = '..';
+
+# ignore silently if no arguments
+if ($id == '') exit;
+
+# untaint user input
+$base = basename($id);
+
+# derive the file name
+$file = $path.'/'.$base;
+
+# ignore silently if file does not exist
+if (!is_file($file)) exit;
+
+# grab the type prefix
+list($prefix) = explode('.', $base);
+
+# determine content-type
+$type = '';
+if ($prefix == 'pwstats') $type = 'text/html';
+if ($prefix == 'ltd_dump') $type = 'text/plain';
+if ($prefix == 'INL_log') $type = 'text/plain';
+if ($prefix == 'cambot') $type = 'application/octet-stream';
+
+# ignore anything we don't recognise
+if ($type == '') exit;
+
+# issue the content type header
+header('Content-Type: '.$type);
+
+# if it is HTML, include our header
+if ($type == 'text/html') {
+    $fn = 'File '.$base;
+    include('header.inc');
+    echo '<hr noshade>';
+}
+
+# send the file
+$fp = fopen($file, 'r');
+fpassthru($fp);
+
+# if it is HTML, include our footer
+if ($type == 'text/html') {
+    include('footer.inc');
+}
+?>

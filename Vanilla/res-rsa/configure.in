@@ -1,0 +1,166 @@
+dnl     This file is an input file used by the GNU "autoconf" program to
+dnl     generate the file "configure", which is run during Netrek installation
+dnl     to configure the system for the local environment.
+
+AC_INIT(rsa.h)
+AC_CONFIG_HEADER(config.h)
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_RANLIB
+
+AC_C_INLINE
+
+#
+# Check to see if GMP exists.
+#
+
+GMP_VER=0
+GMP_INC=""
+GMP_LIB=""
+GMP_DIR=""
+
+# First, parse any --with-gmp args.
+
+AC_ARG_WITH(gmp,
+  [  --with-gmp[=DIR]        enable gmp support [DIR=yes, no, or gmp dir]]
+  [                          (e.g. ../gmp-1.3.2, /usr/gnu /usr/local/gnu)],
+  [
+    case "$withval" in
+      no)
+        GMP_VER=-1
+        ;;
+      yes)
+        ;;
+      *)
+        GMP_DIR="$withval"
+        ;;
+    esac
+  ]
+)
+
+# Paths to search for GMP header and library files.  List only the parent
+# directory of the include/ and lib/ dirs, e.g. "/usr/gnu" instead of
+# both "/usr/gnu/include" and "/usr/gnu/lib"
+
+GMP_PATH="$srcdir/gmp $srcdir/gmp-1.3.2 $srcdir/gmp-2.0.2 $srcdir/../gmp \
+          $srcdir/../gmp-1.3.2 $srcdir/../gmp-2.0.2 /usr/gnu /usr/local \
+          /usr/unsupported /usr/local/gnu"
+
+# If GMP is not disabled...
+
+if test $GMP_VER != -1; then
+
+  # If GMP directory was specified, do some smart checking
+  if test "$GMP_DIR" != ""; then
+
+    # prefix the search path with the provided path
+    GMP_PATH="$GMP_DIR $GMP_PATH"
+
+    # search for the header file
+    AC_MSG_CHECKING(for local gmp.h)
+
+    for path in $GMP_PATH; do
+      if test -r $path/gmp.h; then
+        GMP_VER=1
+        GMP_INC="-I$path"
+        break
+      fi
+      if test -r $path/include/gmp.h; then
+        GMP_VER=1
+        GMP_INC="-I$path/include"
+        break
+      fi
+    done
+
+    if test $GMP_VER = 1; then
+      AC_MSG_RESULT(found in $GMP_INC)
+    else
+      AC_MSG_RESULT(not found)
+    fi
+
+    # search for the library file only if header was found
+    if test $GMP_VER = 1; then
+
+      GMP_VER=0
+
+      AC_MSG_CHECKING(for local libgmp.a)
+
+      for path in $GMP_PATH; do
+        if test -r $path/libgmp.a; then
+          GMP_VER=1
+          GMP_LIB="-L$path"
+          break
+        fi
+        if test -r $path/lib/libgmp.a; then
+          GMP_VER=1
+          GMP_LIB="-L$path/lib"
+          break
+        fi
+      done
+      if test $GMP_VER = 1; then
+        AC_MSG_RESULT(found in $GMP_LIB)
+      else
+        AC_MSG_RESULT(not found)
+      fi
+
+      # Check for GMP2
+      if test $GMP_VER = 1; then
+        LDOLD="$LDFLAGS"
+        LDFLAGS="$GMP_LIB -lgmp"
+        AC_CHECK_LIB(gmp, mpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+        LDFLAGS="$LDOLD"
+      fi
+
+    fi
+
+  fi
+
+  # If no GMP found yet, search the default system locations for it
+  # We want any local copy of GMP to override the system GMP
+
+  if test $GMP_VER = 0; then
+
+    AC_CHECK_HEADER(gmp.h, AC_DEFINE(HAVE_GMP_H) GMP_VER=1)
+
+    if test $GMP_VER = 1; then
+      AC_CHECK_LIB(gmp, mpz_init, AC_DEFINE(HAVE_LIB_GMP), GMP_VER=0)
+    fi
+
+    # Check for GMP2
+    if test $GMP_VER = 1; then
+      AC_CHECK_LIB(gmp, mpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+    fi
+
+  fi
+
+fi
+
+
+case $GMP_VER in
+  -1)
+    echo GMP support is disabled, non-GMP version of librsa will be built.
+    ;;
+   0)
+    echo GMP not found, non-GMP version of librsa will be built.
+    GMP_TARGETS="nogmp"
+    ;;
+   1)
+    echo GMP 1.x found, building librsa.a, librsa-gmp.a, mkkey.
+    GMP_TARGETS="librsa-gmp.a mkkey"
+    ;;
+   2)
+    echo GMP 2.x found, building librsa.a, librsa-gmp.a, mkkey.
+    GMP_TARGETS="librsa-gmp.a mkkey"
+    ;;
+   *)
+    echo Unknown GMP configuration.
+    ;;
+esac
+
+AC_SUBST(GMP_INC)
+AC_SUBST(GMP_LIB)
+AC_SUBST(GMP_TARGETS)
+
+AC_OUTPUT(Makefile)
+

@@ -1,0 +1,21 @@
+Ignoring Messages
+-----------------
+Any player can now ignore any other player.  There are three types of
+messages, which can be called "All", "Team", and "Indiv".
+
+To toggle "ignore" status for a player, send that player a message of the
+form
+
+:[a][t][i]
+
+E.g.:
+
+ K0->R1 :i       to ignore messages of the form R1->K0
+ K0->R1 :a       to ignore messages of the form R1->ALL
+ K0->R1 :t       to ignore messages of the form R1->KLI
+ K0->R1 :ita     to toggle everything
+ K0->R1 :        to see the current "ignore" status
+
+That player will not receive the message.  Instead you will receive a 
+message telling you what the "ignore" status for that player has been 
+change to.  When that player quits you will stop ignoring that slot.

@@ -1,0 +1,363 @@
+Puck, the Netrek Hockey Robot, Documentation
+
+Who:  Initially by Terence Chang
+      Then by Brick Verser
+      Now by Michael Kantner
+      With input and help from many others
+
+What: A hockey robot for netrek guzzler/bronco servers.  Made
+      popular at hockey.ksu.edu.  
+
+To build:  cd ntserv; make puck
+To run:    puck &
+To exit:   kill -2 "process id"
+
+Customization:  The game can be modified through a few defaults in
+puckdefs.h.  Here is a list.
+
+#define        for INHL   for good game  comment
+---------------------------------------------------------------------
+SOCCER_SHOOT   disable    disable        from old code, not used
+HAVE_GOALIE    disable    disable        no one seems to like this
+WALL_BOUNCE    disable    enable         improves game
+GOAL_CLEAR     disable    enable         improves game
+NEWGAME_RESET  enable     enable         makes stats nicer
+NO_BRUTALITY   disable    who cares      more like real hockey
+ALLOW_EJECT    disable    enable         allows ejecting twinks
+SHORT_GAME     enable     who cares      disable is like NHL hockey
+ANNOUNCER      disable    enable         help people on B/W terminals
+OFFSIDE        disable    disable        does NOT work well yet
+
+
+To receive the most recent version of the code, contact Michael
+Kantner at kantner@hot.caltech.edu.  Also, please send any comments
+or bug reports there, too.
+
+
+/******
+ *
+ * Change Log
+ *
+ ******/
+
+
+Known Features/Problems (not necessarily bugs)
+
+a)  It is possible (but rare) that you can deflect your own shot
+    while dribbling.  Haven't checked into this yet, but the code
+    is the same as the original from hockey.ksu.edu
+
+b)  Resurrection occasionally acts weird.  I have never seen it,
+    but one person has commented on it.
+
+------
+Upcoming Potential Events
+
+a)  New reset idea:  The current stuff works fine.  It discourages
+    random killing.  Lot's of other suggestions...
+
+b)  New goalie ideas:  Someone suggested that the goalie should
+    always reappear in front of the net, but otherwise be a
+    normal ship.  Any other ideas?
+
+------
+Version 2.01Bpl0, November 8, 1993 ***Beta Release Version***
+
+1)  Appropriate stuff was taken from rmoveII.c to allow it to run
+    with the -DS stuff.  Will still work without -DS
+
+2)  Stats Message:  It no longer lists blank lines for the
+    space filling robots.
+
+3)  Offsides code:  It has been started and is fully functional,
+    but not much fun to play with.  It will be improved in future
+    releases.  I do NOT recommentd using it.
+    Enable via #define OFFSIDE
+
+4)  Player Eject by voting:  Works great but is a potential
+    memory hog.  Discussed topic with BAV, no decision yet.
+    Enable via #define ALLOW_EJECT
+
+5)  Clock does not tick while puck is not in play:  That is, time
+    does not tick during faceoff.  Currently, 35 seconds is lost
+    every time a goal is scored.  This will cause a 15 goal game to
+    last about 8 minutes longer.
+    Disable via #define SHORT_GAME (i.e clock always ticks)
+
+6)  Loquaciouns Announcer:  Announces each time puck possession changes.
+    Enable via #define ANNOUNCER
+
+7)  Restructured the control flow of the game.  Is now in a more
+    "logical" pattern, and returns from the routine ASAP.  This
+    requires less if checking later through the code.  Also added
+    more comments to the code.
+
+8)  The track typedef has changed dramatically.  Read the code if
+    you are truly interested.  New fields were added.
+
+9)  Voting now requires 50% + 1 player to pass a motion.
+
+------
+Version 2.00, October 1, 1993
+
+1)  Can't fly through goal or out of bounds:  You can't leave the
+    rink unintentionally.  If you hit the side walls or goal, you
+    stop moving in that direction, however, it doesn't slow your
+    speed.  i.e.  Fly warp 12 into the side, you still use warp 12
+    fuel and change angle at the warp 12 rate.  These are #IFDEF's
+    Enable via #define WALL_BOUNCE
+    Enable vie #deinfe GOAL_CLEAR
+
+    Known feature:  if orbitting a goal planet, you can enter
+    the goal area.  If you want into the goal, you must go slow...
+
+2)  Sitout code:  send "sitout" to puck, and you are teleported out
+    of the rink.  In addition, fuel goes to zero and hull to 5.  
+    This prevents people from taking advantage of the code.  Ori's
+    go to right side, Kli's to the left.  Very useful with a) above.
+    Can skate back onto rink at any time.  Messages are sent 
+    announcing the sitout and return.  If someone manages to kill 
+    you while sitting out (improbable with a above) you reappear
+    where you died, still sitting out.  Always enabled.
+
+    Known feature:  Players sitting out can sit near the side line 
+    and lob torps.
+
+3)  Version announcement:  send "version" to puck and he tells you
+    what puck is running.
+
+4)  NEWGAME reset:  Upon a successful NEWGAME vote, all stats are
+    reset.  This is very useful for INHL games.  This is an #IFDEF
+    Enable via #define NEWGAME_RESET
+
+5)  Kinder, gentler hockey:  After a goal, everyone is made peaceful.
+    This ends the annoying wars in the 5 seconds after goal before
+    faceoff.  This is an #IFDEF (that I keep turned off.)  It falls
+    into more like life category.
+    Enable via #define NO_BRUTALITY
+
+------
+Version 1.00, September 20, 1993
+
+1)  It will NOT work with old servers (non-guzzler), or at least I
+    I won't guarantee it.
+
+2)  It is now 3 files.  puckdefs.h was added for things that are 
+    needed in both puck and puckmove, such as the rink layout.
+
+3)  Messages now use variable argument lists and the smessage.c
+    It is trivial to follow the new syntax
+
+4)  Puck exits gracefully with a "kill -2"  Upon exiting, it now
+    frees the slots it held (potential minor bug here if someone
+    is joining at puck is exiting) and sends a message that 
+    hockey is over.
+
+5)  The variable rmove per/sec (define PERSEC) is located in 
+    puckdefs.h and sets the timer in puck.c (added by MK) and
+    all the appropriate values in puckmove.c (BAV)  
+
+6)  Goalie ships are enabled via a define in puckdefs.h.  In 
+    addition, the "free repair bug" has been fixed (from Jamie)
+    Upon ungoalie, you now have 50% damage, 50% fuel, and 50% shields.
+    Enabled via #define HAVE_GOALIE
+
+7)  do_war is now executed immediately after config so that the
+    planets are immediately at 2 armies and slots are held.  More of
+    a technicality than anything else.
+
+8)  some other cosmetic changes probably occured, and they should be
+    documented in the code.
+
+I tried to credit everyone with their contributions whenever possible.
+I'm sure I forgot some.  
+
+------
+Version 0.9999999
+
+1)  started with puck code as running on hockey.ksu.edu, as was 
+    maintained by Bric Verser
+
+
+/******
+ *
+ * Old Documentation Follows
+ *
+ ******/
+
+Puck.  Beta release v0.3.  Written 7/6/92 by Terence Chang.
+
+Changes from v0.2
+-----------------
+Shot speed upped to 40.  Tractor ranges proportional to standard
+ranges per class -- Puck's shield goes up/down as it enters/leaves
+tractor range of nearest player, if within "shot range".  Puck can be
+intercepted at 1/3 of shot speed (and will stop moving), and deflected
+at speeds above that (deflect == new random direction).  Intercepts
+and deflects only require that the Puck notice possession.
+
+Puck takes a length argument (-l<number of 3-period games to play>).
+Puck stores the galaxy status on startup and restores the old galaxy
+status (locations, ownership, armies, everything) on shutdown.  Puck
+also restores all ships back to normal characteristics.
+
+Puck tracks ships' locations and attempts to relocate reentering ships
+where they died (with a random forward/backward offset).  This is
+generally confusing... may want to disable this.
+
+Puck tracks goals and assists per player, and reports them to players
+who send "stat" to Puck.
+
+After a goal is scored, only offsides players get teleported onsides.
+
+Puck does some random game commentary, based on who is in possession
+and where the puck is.
+
+Sending the message 'help' to ALL produces a clarification from Puck.
+
+Changes from v0.1
+-----------------
+Puck will turn into a pretty starbase explosion upon entering a goal,
+instead of simply disappearing.
+
+Puck keeps track of the last two players on each team that had "possession"
+of the puck (was nearest and was pressoring/tractoring).  The last player to
+touch the puck on the scoring team is credited with the goal.  The next to
+last player is credited with an assist.
+
+Puck checks for messages sent to it.  Upon sending a message containing
+"help" to Puck, it replies with the rules.
+
+[ This may be distributed freely and improved upon.  It was coded
+  for use the Bronco Netrek server code, but should work with any flavor
+  of server.  Recent Bronco code may be gotten by anonymous FTP from
+  gs69.sp.cs.cmu.edu. ]
+
+Installation
+------------
+Along with this Readme are the files puck.c and puckmove.c.  These are
+analogous to robotII.c and rmove.c, so you need to add these lines to
+ntserv/Makefile and then do "make puck":
+
+P_OBJS =        data.o \
+                detonate.o \
+                enter.o \
+                getship.o \
+                interface.o \
+                orbit.o \
+                phaser.o \
+                puck.o \
+                puckmove.o \
+                sintab.o \
+                startdaemon.o \
+		sysdefaults.o \
+                torp.o \
+                util.o
+
+puck: $(P_OBJS)
+	cc $(CFLAGS) -o puck $(P_OBJS) $(LIBS)
+	chmod 4751 puck
+
+Usage
+-----
+Just execute "puck" from the command line.  It has one option
+(-l<number of periods>).  You may want to tailor .sysdef to your taste
+(e.g., set TOURNPLAYERS=9, possibly disallow SBs).
+
+Rules
+-----
+This is Netrek hockey.  "puck" adds an indestructible, lightweight,
+weaponless, independent, peaceful robot that serves as a hockey puck.
+Kli and Ori players attempt to move the puck into the opposing goal
+using tractors/pressors and by "shooting" the puck.  No Feds or Roms
+may enter the game.
+
+The galaxy is rearranged into a hockey rink as follows:
+
+                              
+           --Ear              K-And   K-Cyg   K-Pol             --Rom
+                              K-Sco           K-Lyr
+           --Rig                                                --Eri
+
+           --Can                                                --Ald
+                      --Lal           K-Kli          --Cas
+           --Bet                                                --Reg
+
+           --Org                                                --Cap
+                      --Pro     --Pli      --El      --Mir
+           --Den                                                --Tau
+
+           --Cet      --Urs           O-Ori          --Her      --Dra
+
+           --Alt                                                --Sir
+
+           --Veg                                                --Ind
+                              O-Spi           O-Cas
+           --Alp              O-Pol   O-Arc   O-Ant             --Hyd
+
+
+The goals are at the top and bottom of the rink.  Orions and Klingons
+appear on their respective blue lines (1/3 up from their own goal).
+The red line is at the center of the galaxy.  All planets within the
+rink are fuel/repair.  There is no carrying of armies allowed.  Klis
+are always hostile to Oris and vice versa.  
+
+Players may shoot the puck.  They can do so if they are closest to the
+puck and they are close enough (Puck will raise his shields if this is
+so).  By pressoring, the puck acquires a velocity of warp 40
+(SHOTSPEED) in the direction the shooter's ship is pointing in.  Puck
+velocity will decay nonlinearly (full range is barely from red line to
+the goal).
+
+Puck can be intercepted.  If tractored/pressored while moving at low
+speed (currently SHOTSPEED/3), Puck stops moving.  If tractored/
+pressored at speeds above that, Puck changes direction randomly.
+Note:  Puck can only check every 0.5 sec for shots/intercepts/deflects.
+
+Puck bounces off the sides of the rink (players may move freely within
+the entire galaxy) and bounces off the sides and backs of the goals.
+At faceoff time any offsides players are placed back onsides (during
+faceoff countdown, all ships are peaceful and tractors have virtually
+zero strength).
+
+Any other robots in the game will be nuked by Puck.  All ships have
+scaled down tractor range/strength based on ship class.  All ships
+have essentially no etmp.
+
+Puck will keep score, keep time, track goals and assists (last
+teammate to hand off puck to scorer), and announce who shoots along
+with other random game commentary.
+
+Terminating Puck
+----------------
+To restore the server to its normal state, kill the puck process (not
+kill -9).  Restore .sysdef.
+
+Possible extensions
+-------------------
+So far this has been a one week hack.  Possible additional features:
+
+- Keep stats for each period.
+- Allow SB goalies but constrain their movement to a zone near the
+  goal.
+- Make the shot velocity/dir based more on the physics of the situation.
+- Give the puck momentum not just with shots, but all tractor/pressor
+  contact as well.
+- (Complicated) Without t-mode, teams cannot be forced to be balanced,
+  but having t-mode on would mess up global and player stats.
+  Swapping in a hockey-specific .global and .players would be ideal.
+- Maintain some stats.  Replace "t-mode planets" with goals and
+  "t-mode armies" with assists, for example.
+- Determine which shots were directed towards a goal from within
+  range, and keep count of shots on goal.
+- (Silly) Turn the Puck into a Zamboni between periods and have it
+  sweep up and down the rink.
+- (Complicated) Make cross-ogging (cross-checking) illegal.  Penalize
+  players who kill an enemy that does not have control of the puck.
+- (Complicated) Enforce icing and offsides.
+- Experiment with non-uniform shot speeds.
+- Calibrate the ships so they don't run out of fuel as fast?  Maybe
+  make torps very cheap to fire?
+- Make shooting easier.  Presently requires the shooter to slow down
+  to low warp.
+

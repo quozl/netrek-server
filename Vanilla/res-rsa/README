@@ -1,0 +1,110 @@
+$Id: README,v 1.1 2005/03/21 05:23:44 jerub Exp $
+
+--
+
+README file for Netrek RES-RSA
+
+Module:		RES-RSA
+Version:	2.9.2
+Release Date:	Mon Mar 13 18:29:16 EST 2000
+CVS Tag:	res-rsa_2_9_2_release
+URL:		http://sourceforge.net/project/?group_id=968
+URL:		ftp://ftp.netrek.org/pub/netrek/rsa/
+
+Note:		This release has no new functionality over 2.9.1.
+Note:		New changes deal only with documentation.  There
+Note:		is no reason to upgrade to 2.9.2 if you are already
+Note:		using 2.9.1.
+
+--
+
+
+1. What is Netrek RES-RSA?
+
+RES-RSA is an implementation of the RSA public key cipher.  It is used
+for authentication purposes to validate Netrek clients that connect to
+RSA-enabled servers.  Without RES-RSA, it would be easy for anyone to
+download the client source code and add "borgish" features (such as
+auto-phasers, leading-torps and visible cloakers) to cheat at the
+game.  With RES-RSA, this kind of cheating becomes very difficult, but
+not impossible.
+
+
+2. Who wrote RES-RSA?
+
+Ray Jones is the original author of most of the code.  Sam Shen is the
+original author of mkkey.  Other contributors include Nick Trown, Alec
+Habig, Kurt Siegl, Dave Ahn, Bob Tanner and probably another dozen or
+so people.
+
+
+3. Where can I download RES-RSA?
+
+RES-RSA development is located under the Netrek project at SourceForge
+(http://sourceforge.net).  Please visit the site for information on
+RES-RSA and the Netrek project.
+
+The source code is available at the following sites:
+	ftp://ftp.netrek.org/pub/netrek/rsa/
+	http://sourceforge.net/project/?group_id=968
+
+
+4. Do I need to download RES-RSA?
+
+Most people don't need to.  If you're interested in playing Netrek,
+then you can download a precompiled RSA-enabled, "blessed" client
+binary from http://www.netrek.org/software.html and not worry about
+RES-RSA.  If you're interested in creating a "blessed" client, then
+you will need both the client source code and the RES-RSA source code.
+If you're interested in running an RSA-enabled server, you will also
+need RES-RSA.
+
+
+5. How do I install and/or use RES-RSA?
+
+Detailed instructions are available in the INSTALL file.
+
+
+6. I'm having problems with RES-RSA.  Where can I get help?
+
+If you discover a bug, please submit a bug report through SourceForge.
+If you fix a bug, please submit a patch through SourceForge.  If you
+have compile or usage problems, please submit a support request
+through SourceForge or contact the development team at:
+	vanilla-list@us.netrek.org.
+
+You can locate Netrek at SourceForge at:
+	http://sourceforge.net/project/?group_id=968
+
+
+7. Isn't RSA patented?
+
+The RSA algorithm is patented in the United States.  Ray Jones
+received special permission from RSA Labs to use the RSA algorithm for
+Netrek and to distribute the source code and compiled binaries for
+non-commercial purposes.  Dave Ahn verified this permission again with
+RSA Labs in 1999.  U.S. users of the RES-RSA package must agree to the
+RSAREF licensing terms (see the LICENSE.US file).  The RSAREF license
+does not apply to non-U.S. users.
+
+Outside of the United States, the legality of the use of RES-RSA
+depends upon local, state and national laws governing those users.  But
+in general, most users in the western hemisphere are free to use and
+distribute RES-RSA.
+
+
+8. What about U.S. export regulations?
+
+Up until January 14, 2000, it was nearly impossible to export any kind
+of cryptographic software.  The distribution of RES-RSA was strictly
+controlled according to guidelines set forth by the Bureau of Export
+Administration (BXA).  In fact, prior to March 13, 2000, there was a
+European version of RES-RSA that was identical in functionality to the
+U.S. RES-RSA.  Fortunately, the regulations changed.  RES-RSA now
+qualifies as "open source" software that falls under the license
+exception.  Under this exception, royalty-free cryptographic software
+source code may be exported without a BXA export license so long as
+certain conditions are met.  Dave Ahn has confirmed RES-RSA's license
+exception with BXA.
+
+Dave Ahn

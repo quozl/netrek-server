@@ -1,0 +1,33 @@
+#!/bin/bash
+
+LIBDIR=@libdir@
+
+if [ ! -x $LIBDIR/tools/sequencer ]; then
+  echo "Cannot execute sequencer"
+  exit 1
+fi
+
+if [ ! -r $LIBDIR/tools/no_geno_timer.txt ]; then
+  echo "Cannot read no_geno_timer.txt"
+  exit 1
+fi
+
+$LIBDIR/tools/sequencer < $LIBDIR/tools/no_geno_timer.txt
+if [ $? -ne 0 ]; then
+  echo "Sequencer failed"
+  exit 1
+fi
+
+if [ ! -r $LIBDIR/.sysdef.no_geno_timer ]; then
+  echo "Cannot read .sysdef.no_geno_timer"
+  exit 1
+fi
+
+cp $LIBDIR/.sysdef.no_geno_timer $LIBDIR/.sysdef
+if [ $? -ne 0 ]; then
+  echo "Failed to copy .sysdef.no_geno_timer to .sysdef"
+  exit 1
+fi
+
+exit 0
+

@@ -1,0 +1,75 @@
+mergescores.c, written 7/24/92 by Terence Chang
+
+Differences between this version and 7/16/92 version:
+
+ - Duplicate players whose passwords match are folded together.  Kills,
+   etc. are summed.  New max kills, SB max kills determined.
+
+ - This thing runs slower now, since it has to read the local player
+   database into memory, and linearly search for each foreign name.
+   The older version only read in the local names and sorted them
+   before searching.
+
+ - There is a hardcoded limit of 10,000 local players.  Change if you
+   have more players than this (not likely if the database is scrubbed
+   with trimscores periodically, bronco has ~2500).
+
+             ============================================
+             INSTRUCTIONS  *  READ THOROUGHLY BEFORE USE!
+             ============================================
+
+Installation:
+-------------
+Place this source file in your tools directory as "mergescores.c".
+Add the following entry to the Makefile (identical to entry for
+newscores.c except for "merge" instead of "new"):
+
+mergescores: mergescores.c struct.h defs.h
+	$(CC) -o $@ $(CFLAGS) $(FLAGS) mergescores.c $(LIBS)
+
+Then compile.
+
+Usage:
+------
+This program has a usage similar to newscores.  Like newscores, it
+relies on defs.h for the pathnames of the local .global and local
+.players files.  Like newscores, it writes to the .players file.  No
+other processes may access .players while mergescores is running.
+MAKE SURE THAT THE DAEMON IS NOT RUNNING, NOR STARTD/NEWSTARTD/ETC.
+
+Usage is:
+
+	mergescores < scoredb
+
+or:
+
+	mergescores < scoredb > scoredb.dup
+
+where scoredb is the "scores A" output from the foreign database.
+
+mergescores will append foreign players not in the local database to
+the local database after normalizing them.  mergescores will print a
+"scores A"-like, normalized listing of foreign players whose names
+already exist in the local database to stdout.  Diagnostic messages
+will go to stderr.
+
+Normalization is defined as adjusting the stats.{ st_tkills,
+st_tlosses, st_tplanets, st_armsbomb } of a foreign player such that
+the rating on the local server matches the rating on the foreign
+server, thus preserving total ratings, rank, hours and DI.
+
+Normalization is accomplished by computing the necessary adjustment
+(based on the local .global file and the foreign .global info in the
+scoredb file) for each player's t-mode stat (say, st_tkills), and
+transfering the kills from/to the non-t-mode stat (st_kills), while
+keeping all stats nonnegative.  Thus total kills (as seen in the
+shift-L and shift-I windows) will appear to be preserved.
+
+Duplicate characters must be processed manually.  There are 3
+possibilities -- duplicates can be merged, the local can supercede the
+foreign, or the foreign can supercede the local.
+
+Caveats
+-------
+This program was written for one-time use by a small number of server
+admins.  It has been tested with limited amounts of data.

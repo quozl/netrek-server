@@ -1,0 +1,58 @@
+o The Newbie Server was created to give new players a place to play.
+  Before, their only choices were playing on an empty server or
+  playing on a "normal" pickup server and facing ejection from irate
+  clues.
+
+o It's main function technically is to keep the server full with
+  robots.  When humans join, robots are ejected to make room for them.
+  The default is to keep the server full with at least 15
+  players/robots; this number is configurable in newbiedefs.h.  The
+  source for the robots is in the robotd/ directory.
+
+o Setting up a newbie server requires some manual configuration.  Make
+  the following edits before compiling (don't include the comments
+  beginning with "//"):
+
+
+configure.h.in:
+--
+#undef VOTING // Don't allow ejection of newbies.  No need for any voting.
+
+robots/newbiedefs.h:
+--
+If you are going to run the bots on the same machine as the server
+this file should be fine as is.  If not then have a look at
+README.basep and basepdefs.h and edit this file accordingly.  Don't
+bother running the bots on another server until proven that your
+server can't handle it.  You can also reduce the number of robots the
+server keeps running via MIN_NUM_PLAYERS.
+
+If the gethostname() call in newbie.c returns the wrong thing then
+define TREKSERVER to something appropiate.  Shouldn't be necessary
+unless you are multihoming.
+
+robotd/robot.c:
+--
+_state.human = 3;  // Make robots easy to kill.  Change from default of 0.
+
+
+o Compile and install the server according to the instructions in the
+  INSTALL file.
+
+o Edit .sysdef and set NEWBIE=1.
+
+TODO: Automate the following:
+
+o Run "make" under robotd/
+
+o Make an "og" directory under your server directory.  This is where
+  the robot executable will go.
+
+  Example:  mkdir /your_server_installation/og
+
+o Copy the "robot" executable under robotd to the "og" directory.
+
+  Example:  cp robotd/robot /your_server_installation/og
+
+Start your server as normal.  After the first player joins, the server
+should start filling up with robots.

@@ -1,0 +1,56 @@
+
+COMPILING
+   
+   'make convert'
+
+USE
+   
+   If the server is compiled with AUTOMOTD, the makemotd program is run
+   automatically every 12 hours.  As the server administrator you only
+   need to edit the *.MASTER files.  
+   * motd_logo.MASTER you should probably change once to add your name and 
+     optional logo.
+   * motd_local.MASTER should be updated whenever you want to add a new entry 
+     to the motd.
+   * info.MASTER should be updated once in a while to make sure new servers
+     and ftp sites are added.
+
+FILES
+   
+   basepractice.motd    -- motd instructions for basepractice
+			   (copy this to motd_local.MASTER is you use 
+			    basepractice).
+   convert.c		-- simple translator for 60x10 graphics charcters
+   motd_logo.MASTER	-- logo (design yourself -- sample UCI logo given)
+   motd_local.MASTER	-- server-specific motd
+   info.MASTER		-- help, hints, ftp & server information.
+   top50		-- show top 50 scores by rank and hours.
+   top50.basepractice	-- special base playing promotion scheme
+			   (rename this 'top50' if you use basepractice)
+   makemotd		-- shell script to make the motd.
+
+SPECIAL CHARACTERS
+
+   Certain characters in the 6x10 font actually display graphics characters.
+   Since they are difficult to enter with a standard text editor, the 'convert'
+   program is provided which translates special characters to the corresponding
+   graphics character.  A description of the special characters follows.  
+   Special characters can be escaped by preceeding with '\'.
+
+    -           -- horizontal bar
+    _           -- lower horizontal bar
+    &           -- lowest horizontal bar
+    *           -- higher horizontal bar
+    =           -- highest horizontal bar
+    |           -- vertical bar
+    $           -- upper-left corner
+    `           -- upper-right corner
+    <           -- lower-left corner
+    >           -- lower-right corner
+    +           -- crossbar
+    %           -- 'T' connection
+    (           -- 'T' connection rotated left 45 degrees
+    )           -- 'T' connection rotated right 45 degrees
+    ^           -- 'T' connection upside-down
+    ~           -- diamond
+    #           -- block

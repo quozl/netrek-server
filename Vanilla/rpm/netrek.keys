@@ -1,0 +1,1021 @@
+###############################################################################
+# RSA key list (for server administrators only; you don't need this to play)
+# Last update: Tue May 18 10:50 PDT 1999
+#
+# Contact metaserver@us.netrek.org for information and
+# administrative requests (e.g., if you want to have a key added, e-mail
+# it to clientkeys@clientkeys.netrek.org ).
+#
+# When submitting keys, don't forget to include (1) if it's reserved.c
+# blessed, and (2) if it'll be available for FTP, specify the site.
+#
+# You need a program to convert from this format to the binary format used
+# be the server itself; look for keycomp.tar.Z on pittslug.sug.org.  Please
+# use the newer key generation tools that create keys in this format.
+#
+################################################################################
+#
+#	Bronco Clients	- ick
+#
+#key.bronco.amiga:   :ct=Bronco Client:   :cr=jesup@cbmvax.commodore.com:\
+#   :cd=Jan 1993:   :ar=Amiga: :cl=inl,standard,standard2:\
+#   :cm=reserved.c blessed. Located at pittslug.sug.org:\
+#   :gk=439759b5b1b8e119ad4606690d8b1db658bd77184fcb97761b2e6ecd28746e19:\
+#   :pk=15f608e383ef317666943c9997ad288fb57885d7147ec59163d3054a929a9210:
+#
+#
+#	Moo Clients
+#
+#key.moo.386osf1.2:   :ct=Moo Client:   :cr=rwd@osf.org:\
+#   :cd=May 1993:   :ar=386 - 486 / OSF1.2: :cl=inl,standard:\
+#   :cm=:\
+#   :gk=49aecbfb3e4ef710beafe283caa5d342ff7e82b8ff95167fcc516771ebfc2b2f:\
+#   :pk=0ff74737329310a62fd10d2c950928a84412b01fab8209204dfa706c3f516109:
+#
+# key.moo.cmu.3100:   :ct=Moo Client:   :cr=george@ece.cmu.edu:\
+#   :cd=December 1992:   :ar=DS3100+DS5000 / Ultrix4.2: :cl=inl,standard:\
+#   :cm=reserved.c blessed. Located at ftp.ece.cmu.edu:\
+#   :gk=8b631e0e60829ce1e3567f51266a9e9f7f11ba99c05a887fc6dee54fdf38fe44:\
+#   :pk=3532da7c076326bd84dc24668682034369af56dbfea4463bef95a31620607007:
+#
+#key.moo.isae.3100:   :ct=Moo Client:   :cr=george@ece.cmu.edu:\
+#   :cd=December 1992:   :ar=DS3100+DS5000 / Ultrix4.2: :cl=inl,standard:\
+#   :cm=reserved.c blessed. Located at ftp.ece.cmu.edu:\
+#   :gk=4761cf31eeedb5565be077e731348d29393f8e2bbd791446ab7745fdb4262b1a:\
+#   :pk=d324f39ea520cdadf7599f71e8d248a87e28c93dc9a7c9bf4b1739562f2e1e17:
+#
+#	MacTrek Display Bridge Clients
+#
+#key.ndb.dec:ct=ndb1.0:cr=jiangwu@postgres.berkeley.edu:\
+#   :cd=March 1994:ar=DS3100+DS5000/Ultrix4.2:cl=inl,standard,thd:\
+#   :cm=Used by Netrek Display Client such as MacNetrek and Winetrek:\
+#   :gk=65b96b2ba0ee002407cab3cb4dc24625816d4dfe726007662ade58fe21f8530c:\
+#   :pk=6bc90934de5dee04993d56cd1b81bd26672cc9aa1b02e68d155c171e42aad104:
+#
+#key.ndb.sun4:ct=ndb1.0:cr=jiangwu@postgres.berkeley.edu:\
+#   :cd=March 1994:ar=Sun Sparc/SunOS 4.1:cl=inl,standard,thd:\
+#   :cm=Used by Netrek Display Client such as MacNetrek and Winetrek:\
+#   :gk=0ff70530cacca445eda8a99a29f4711155492772f5edaff94b2caf77b76ecaa9:\
+#   :pk=9d770e295fc4ce0d9f45751f4f4730b6c331672814c7740311da691858a1e52c:
+#
+#ndb-rkoo-hp700:ct=ndb1.0:cr=rkoo@sr.hp.com:\
+#   :cd=June 1994:ar=hp700 series: :cl=inl,standard,standard2:\
+#   :cm=none:\
+#   :gk=5d9d2dd93c30e53973fd2e0493afc929956e2cb9f6b93cff7b707b6c85fa4556:\
+#   :pk=09823d35e950cdc84f02264f6ddfc48d0e877e20de3f5a3d2ab62411ea7e694a:
+#
+#ndb-drs-3b2:ct=ndb1.0:cr=drs@okcforum.osrhe.edu:\
+#   :cd=September 1994:ar=3B2 SysVR3.2: :cl=inl,standard2:\
+#   :cm=reserved.c blessed:\
+#   :gk=d3f7101e693090d62760a6d3502c4ce9bcae3892d01d254621c1de139c294c99:\
+#   :pk=b3bca29155ca11953c1a655613dd38deb214d411778256022ee8b00159f54d90:
+#
+##############################################################################
+#
+#  NEW AND IMPROVED RSA2.0 KEYS.
+#
+#	BRM3.0 Clients
+#
+key.brmh2.sun4:ct=BRM-Hadley:cr=hadley@uci.edu:\
+   :cd=September 1994:ar=Sun4 / SunOS 4.1.2:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=636a5977da5ce59948885d1003e983deabf405ed0cb952a5b42930523909f901:\
+   :pk=0dfc24f1d19398586dafa37e985163290eb01f139c03f90affc5d458a7f6b800:
+#
+key.brmh2.solaris:ct=BRM-Hadley:cr=hadley@uci.edu:\
+   :cd=September 1994:ar=Sun4 / Solaris:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=b5ead6d248df9bde86a5434b04ed254b896d4055108dc34cae1556dbb26fb373:\
+   :pk=d35cd1760283d49bddc14ba390f9481c94ce8b68b3b896c15008dabe629e0624:
+#
+key.brmh2.sun3:ct=BRM-Hadley:cr=hadley@uci.edu:\
+   :cd=September 1994:ar=Sun3 / SunOS 4.1.2:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=5df360d337d83b22ecff02604350ccb069316be702d561e8b4aea55a97579201:\
+   :pk=8718581554530a53f96a1ccf0ec20f9efec34df4fca6bc200f89bf8ed2a68800:
+#
+key.brmh2.hp700:ct=BRM-Hadley:cr=hadley@uci.edu:\
+   :cd=September 1994:ar=HP700 / HP-UX:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=dbec5a63c5118eb0d16b80b646a043053b09f923de1347d8cc84f94fbfd387bb:\
+   :pk=2930d5b20ad68e8be6364e7ec1bb540fa924c1e5bd03d2f295a19df54a511f90:
+#
+key.brmh2.dec:ct=BRM-Hadley:cr=hadley@uci.edu:\
+   :cd=September 1994:ar=DEC / ULTRIX:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=57f73eb4fc31e9f659aaaace894fd6a0fc6669c862815988be3261efcfd1110a:\
+   :pk=8f7f4018193561d2f9497a911b5ce71d2ce16ca0bb63942eb7dd102ed3c18300:
+# keep
+key.brmh2.linux:ct=BRM-Hadley:cr=hadley@uci.edu,rwst44+@pitt.edu:\
+   :cd=September 1994:ar=x86/linux:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=ef5dee63d00d4b69a3bd8a09ae2bf570870200f27853a4a4e9c00c063c6077bb:\
+   :pk=31cdad80215d377788ee3ccd2b4f3f72a33e67c9c7c09072403493ea846c4b97:
+#
+key.brmh2.sgi:ct=BRM-Hadley:cr=nelson@metashop.com:\
+   :cd=September 1994:ar=SGI / 4.0.5:cl=inl,standard2:\
+   :cm=New-style key.:\
+   :gk=a37f06cbd6d3dae90715f45619a2240089534aa711fbe4a245008c7288288601:\
+   :pk=89e0c4e8b3b17c4b184a18752642f8314e90cd22b4c72cceff5f6b67617c3301:
+# keep
+key.brmh2.alpha:ct=BRM-Hadley:cr=hadley@uci.edu / lendl@cosy.sbg.ac.at:\
+   :cd=October 1994:ar=DEC-ALPHA / OSF1:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=a3274ce20ab303878ed089f9e40d7e1e231fb5492ee3ad5a7a15cf679fd54b07:\
+   :pk=8bee21b8bb2e9141dc3b87543e8cba000810c07731711b57cfdbd026950ca304:
+# keep
+key.brmh2.AIX:ct=BRM-Hadley:cr=froth@tiny.mcs.usu.edu:\
+   :cd=March 1995:ar=RS6000 / AIX 3.2.5:cl=inl,standard2:\
+   :cm=I like beer.:\
+   :gk=2bd4e64bfefdce9c82b3236611ccd9ee3ff49fc8b8a537250d447d201b08d41c:\
+   :pk=3dd9c2dae9960a39bb1da5b05da0ea6c44758dd5399fa4a73c75d0ecf11a610c:
+#
+key.brmh2.irix:ct=BRM-Hadley:cr=ztfeng@princeton.edu:\
+   :cd=April 1995:ar=SGI Irix 5.2:cl=inl,standard2:\
+   :cm=No reserved.c:\
+   :gk=6180ad3f66e84b9bce3f884ac9e0b2b455b98da9bbb1937365ffb2efcc104b67:\
+   :pk=8309b958c3ae2700dd2f96d5dec79676ec1dc340094ad306c3eedef751a89d09:
+#
+key.brmh2.freebsd:ct=BRM-Hadley:cr=hadley@uci.edu:\
+   :cd=February 1996:ar=FreeBSD 2.1:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=f9073ec190ed8903ab30ee1347d67ca3dc171195ed59e45203423964f29a0b18:\
+   :pk=c1eeff2300aba1948e12172ebb1997d2a8f718a7eec41efa1489a2d8b892a717:
+#
+key.brmh2.hp800:ct=BRM-Hadley:cr=lab@mtek.chalmers.se:\
+   :cd=March 1996:ar=HP9000/800 HP-UX:cl=inl,standard2:\
+   :cm=No FTP site:\
+   :gk=a7f45a95c7bd3c38ffc6e94d5529c47b9cf04f57ba600a3b83a7100304a941c5:\
+   :pk=277ee21fc9ca7add64cb6b558ae0106f6f66348c8d33e136444f681f82b2bd75:
+#
+key.brmh2.elflinux:ct=BRM-Hadley:cr=jfulmer@blanket.com:\
+   :cd=May 1996:ar=x86/linux ELF: cl=inl,standard2:\
+   :cm=BRMH 2.2pl2, May 1996:\
+   :gk=f1b8e34dbe206a76cb23208a46468ee7bf7dc7098ba26df6c103118db8e59635:\
+   :pk=73a295a20b3bda52ebca634f10156ad08e34739de0935db423798ff827a55b1a:
+# keep
+mklinux-ppc:ct=BRM-Hadley:cr=tom@csua.berkeley.edu:\
+   :cd=June 1996:ar=PowerMac / MkLinux:cl=inl,standard2:\
+   :cm=No small-screen support:\
+   :gk=59c48596b9e6ea0914dcdd8a1584384e8ce06c670ac2f331ecb93346bd2ffccd:\
+   :pk=d34425aac2ab524c0fae43ec74ea63ad81eae09195ddaf83260ab0c7dea30b70:
+#
+key.brmh2.solaris:ct=BRM-Hadley:cr=d3marten@dtek.chalmers.se:\
+   :cd=August 1996:ar=Sun4 / Solaris:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=43f8a3ac1a46bce3658178884e0b57c6b44750cf4075ecf1e8d7d2da70198d27:\
+   :pk=fbcb5f307e149446f7619f3c0ebe70acc02679a6e5b585d69ccff3f0483f2203:
+#
+key.brmh2.solaris-x86:ct=BRM-Hadley:cr=julian@fsdirect.com:\
+   :cd=October 1996:ar=x86 / Solaris 2.5:cl=inl,standard2:\
+   :cm=At cad.ics.uci.edu-/pub/netrek:\
+   :gk=f5255474217ae3405cda18146c2e63445ceb623983131c93a8cb84f89e634d7a:\
+   :pk=9b297a45d851ce6c235a3a22ce3856f61c1752c8a53403f331ad7641f65f250a:
+#
+key.brmh2.2p3.linux:ct=BRM-Hadley:cr=dpinkney@cs.uml.edu:\
+   :cd=October 1996:ar=x86/Linux: :cl=inl,standard2:\
+   :cm=Found at ftp://cad.ics.uci.edu/pub/netrek/:\
+   :gk=8bc277ba2bfad665dee6e1b087c9de3789528989f395467c2bc53ae539c4b3c7:\
+   :pk=b10ccae65f1f888674cd4aa4aedd3132a5820524ed6af1fed387cbb49e7afb8e:
+#
+#
+#	BRMH 2.3 clients
+#
+#
+key.brmh2.3.linux:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=x86/Linux:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=45bd552fa6e832e4b620ea18fee87774581d185f34adb5c5a68c2c9fd0ec4d22:\
+   :pk=bfe34aafc93742eca03c1c7f4878606ac259e84605855608b8edf1124d847a13:
+#
+key.brmh2.3.freebsd:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=x86/FreeBSD:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=8bdd811e5d0aafa44040f1ab976edd32cdd2d69cc3b12d4fcc5e3e6ca7363ccd:\
+   :pk=3b691916839ed855bc86efec73729952fa80c73acc1bd10d7f3e1d5beb96b865:
+#
+key.brmh2.3.osf1:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=DEC-ALPHA / OSF1 V4.0:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=0bc1de3b0f68403e3d6ede410da2d807104bb31dbee91fd702f111376f5a8d60:\
+   :pk=d10e3499f0a4874cf46e041c4987ae6394b0b0e2cf2f847400e76372b08fac4f:
+#
+key.brmh2.3.irix:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=SGI/Irix 5:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=6ff1740dd36ec5fcd3ac52b70f0cc29ceb90e44636ac4f5801b8a75b0e898d03:\
+   :pk=bb2f55fe74f25f76f3f218eddd8f4b5a8b7529fce8be5c09bc5169d606496402:
+#
+key.brmh2.3.sunos:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=SunOS / 4.1:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=c39d8eeeab9f7c4a50b20c92823b87c641e1cdf6d6a7665cfb335a3b3a59450f:\
+   :pk=cfb943475ed9b9e139408cbae12ba1b53e4ae70900faa1f3d13b5fac63651c05:
+#
+key.brmh2.3.solaris:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=Sun / Solaris:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=bbc528b45dd69cda29ff720307555e0fa0584289145a91cb5bcbfd8e2141cd12:\
+   :pk=cde618d68c5d99f75c7c70f34b56b7aef403caa8e793d57dd89b97de88436c00:
+#
+key.brmh2.3.hpux:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=HP700 / HP-UX:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=794568aeefb4b0a33ed62302320e3dcce22bc4022dd8825dd16ecfcd5b833484:\
+   :pk=53088930212770c45435f782b63e577bd2e589f2074f2a25642b49f79f484d29:
+#
+key.brmh2.3.ultrix:ct=BRMH-2.3:cr=dpinkney@cs.uml.edu:\
+   :cd=August 1997:ar=DEC Ultrix:cl=inl,standard2:\
+   :cm=ftp://ftp.us.netrek.org/pub/games/netrek/clients/brmh/BRMH.html:\
+   :gk=e5f94a432441dd1a13af6c77c138eb924b35c40651cc3efbcdb169f215b4c455:\
+   :pk=cfd608b82253450213b2261040b5edc1154836eae6b2b70147bc1079edde2f2d:j
+#
+#	COW Clients
+# keep
+key.cow.ultrix:ct=Client Of Win:cr=ahabig@bigbang.astro.indiana.edu:\
+   :cd=August 1995:ar=ultrix / decmips:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=158572b0b0b1077736fdf7cdc7dfbb5cc23566520c9960830f34968ae2dbcdad:\
+   :pk=050975650fb1a1dc5df386c701fd5c21e81867ed932d0979ef2257f55c6c82a6:
+#
+key.cow.linux.a.out:ct=Client Of Win:cr=kell0186@gold.tc.umn.edu:\
+   :cd=April 1994:ar=x86/linux a.out:cl=inl,standard2:\
+   :cm=RSA blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=1be93ea1be6b934cec9683cc889c1683d9fe3c27ae58aff3541f32160bd0f7cd:\
+   :pk=512067cf6d5ac8584e86aa3b49c61a6eef71fce7ed93f1af4dfcbebda26bc2b4:
+#
+key.cow.linux.ELF:ct=Client Of Win:cr=kell0186@gold.tc.umn.edu:\
+   :cd=August 1995:ar=linux ELF/POSIX / XFree 3.1.1:cl=inl,standard2:\
+   :cm=RSA 2 blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=23d879e0e437d49c00bc7ea5a6d36181fa3783c5360b880be03d33e5fd9ae240:\
+   :pk=557cf48fb0ba561f9d5232a51e267405ebfddec9c2df75fe8163edfe9a687425:
+#
+key.cow.sgi:ct=Client Of Win:cr=siegl@risc.uni-linz.ac.at:\
+   :cd=April 1994:ar=SGI/Irix 5: :cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=5f9a3b2b82c0fd3c0a4201509d6a57a1a41149c565257cc01879246459439407:\
+   :pk=15fbefa9704a22c47f31435b341e79a1042329f84096e21007506b71638f1c07:
+#
+key.cow.ptx:ct=Client Of Win:cr=siegl@risc.uni-linz.ac.at:\
+   :cd=April 1994:ar=Sequent / dynix/ptx:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=1bc1f6fc7724b8e30bd463f783d4af38fffd2c71e022b8712cdd3359a0c4858c:\
+   :pk=7f76d6105e906a493c35193695e4440378a05bd2d0bbfccfaf1a37549ddcc828:
+# keep
+key.cow.RS6K:ct=Client Of Win:cr=ahabig@riscgs1.lngs.infn.it:\
+   :cd=May 1994:ar=RS6K / AIX 3.2:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=c5c27ac0c9c4d34078f0039805ca33d098808fb5da401df75e913900aed0096d:\
+   :pk=23517bd4fb60284cb1619be577aab90fa1e0894ae92368aefe51887e15a84b12:
+#
+key.cow.sun4:ct=Client Of Win:cr=J.K.Soutter1@lut.ac.uk:\
+   :cd=August 1995:ar=sun4 / SunOS 4.1.3:cl=inl,standard2:\
+   :cm=reserved.c blessed.  Located at bigbang.astro.indiana.edu:\
+   :gk=f160d3667a18a4512b5819ce20a0cc24b23ce995a2bc9d64a10ef881b53ebbee:\
+   :pk=2b4561d576edbde953ffd2966d4a7ec0d9d96cd4cf9bafa11bafd9b529b0a156:
+#
+key.cow.hp300:ct=Client Of Win:cr=amohr@isdl.ee.washington.edu:\
+   :cd=April 1994:ar=HP 300-400 / hpux-8.0:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=238a9ab0be489cf44947825e52b5daff647a0276a93dedfdc56714d8ffe0f233:\
+   :pk=7bf18e0541b6929fb26c3d84a233329b345600eeecf3c2e96f4499d386da4a0c:
+#
+key.cow.linux.small-screen:ct=Client Of Win:cr=sowings@soda.berkeley.edu:\
+   :cd=April 1994:ar=ix86/Linux/Small Screen: :cl=inl,standard2:\
+   :cm=For small screens:\
+   :gk=cdb4ce8703adf8468c87fa5f4380f6adf7d0220179f3bcc17df829ada995d42b:\
+   :pk=b70bafeb4310b0e327c0b03e4d5c23e48104689ba4fe61a6bcabe3ff6667070c:
+#
+key.cow.FreeBSD:ct=Client Of Win:cr=stone@cosy.sbg.ac.at:\
+   :cd=June 1994:ar=FreeBSD / static:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=9d71a159e7e4a1639d1c1c424e9ae1f4e76e7594c25ccb2a82a29c6a760f0279:\
+   :pk=558d6b6296655a64d737ed56a3dde494b81295ba495c834926f47bfa617e5e24:
+#
+key.cow.FreeBSD:ct=Client Of Win:cr=handy@physics.montana.edu:\
+   :cd=August 1996:ar=FreeBSD / 2.2-Current:cl=inl,standard2:\
+   :cm=RSA blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=d9b1930d464318ec7d58fe16d3c247d8663d9c2e3c415a5cc687358673387429:\
+   :pk=c3610bb5d59adf2e95df0178f00372de999691785f86d47688491b2f4728961b:
+# keep
+key.cow.hpux:ct=Client Of Win:cr=ahabig@bigbang.astro.indiana.edu:\
+   :cd=July 1994:ar=HPUX / HPUX 9.01:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=cddf54a6648be045563ee76717f9dd8f901a146a5924484a2224ac67d54d0a08:\
+   :pk=93a9fb13816089b771ef3140bebdcdcfff3f8ba57d6cdc27eddc1c34b9ff4803:
+# keep
+key.cow.i386:ct=Client Of Win:cr=bsp@veritas.com:\
+   :cd=September 1994:ar=i386 / SVR4.2 MP:cl=inl,standard2:\
+   :cm=RSA and reserved.c blessed.  Available on request.:\
+   :gk=7da47d03012d3e94d8eb06a4f53b4193c9bfa33c513a9c1f37e723c789e0728a:\
+   :pk=b59c8736e01187cd81bf6a06fd1142fa6af2aa1f413653a24ded1e7f5e2f2d32:
+#
+key.cow.DGUX:ct=Client Of Win:cr=fisher@dns.sprintcorp.com:\
+   :cd=October 1994:ar=DGUX / DGUX  5.4R3.00 AViiON mc88100:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=b1e0598e9d8f7f71a369e3cbd0de5593296ba98126effbd2d1c87a7da91b356c:\
+   :pk=85ffb36f2e1b0c36ee0ea27bf4b6af418073563c5a83a3175c89efec5ec53310:
+#
+key.cow.next:ct=Client Of Win:cr=kent@cs.mcgill.ca:\
+   :cd=October 1994:ar=next / NEXTSTEP 2.1:cl=inl,standard2:\
+   :cm=Located at ftp.cs.mcgill.ca:/pub/netrek:\
+   :gk=d1f859f20bb076460622aa32c550a69af3341d12532e7e22a340b2c22e3dfc58:\
+   :pk=f713ad39679fd8f82ffb39c1af4a8531fba6b504dec82e7459c9164bbdceb309:
+#
+key.cow.SCO_ODT_3.0:ct=Client Of Win:cr=fsg@alumnet.com:\
+    :cd=November 1994:ar=SCO-ODT-3.0-FDIV-586:cl=inl,standard2:\
+    :cm=reserved.c blessed.  Contact author for copy.:\
+    :gk=fff46c521df1358c69abcd5f58556277ad22d9c9181d5dcc79851fb3a24c6413:\
+    :pk=ed8c336fb8321dc3a355ecfc9a2f637f0254b7c12f607c3ac5a2f0e1c7fd6711:
+#
+COW-RSA-Key-solaris:ct=Client Of Win:cr=gendrich@egr.msu.edu:\
+   :cd=December 1994:ar=Sun-4/Solaris-2.3:cl=inl,standard2:\
+   :cm=COW for Slowaris, available at bigbang.astro.indiana.edu:\
+   :gk=cde3a09747214dc8f9c21568fb77aa3340ac7e3e3c21976c55321ddf214fc877:\
+   :pk=6741f1c14018e67066f161d76819c1f81a496e317ceff2d050b5faebfa4a6b2d:
+#
+key.cow.i386:ct=Client Of Win:cr=charmer@fugazi.punchdown.org:\
+   :cd=December 1994:ar=i386 / ATT SVR4.0:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at ftp.punchdown.org:\
+   :gk=0db73603aa61db277e8954792b463b4e3d382b086e43b64626db284e6851250c:\
+   :pk=fb1d76330ef4bd302871dfee7578fec32d707879953cf67af6136dba7171c601:
+#
+key.cow.sgi-IRIX4:ct=Client Of Win:cr=parkersc@u.washington.edu:\
+   :cd=December 1994:ar=sgi-IRIX4:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=9b0e5f0232226c5110b7ed4616a356e0d4488d5127cba539953dd9de48de6314:\
+   :pk=91b24a885c59be98e28834c701aba780f1a849e529b2be0477d2637071aba705:
+#
+key.cow.next68k:ct=Client Of Win:cr=mcn@EnGarde.com:\
+   :cd=February 1995:ar=next68k / NeXTStep 3.x:cl=inl,standard2:\
+   :cm=reserved.c blessed.:\
+   :gk=db164443d5a4c8a4c0d0ef73a0116373b40856f6fc19321112698ae26d92ad0a:\
+   :pk=c5c88d4ce72dc76eb94bb1fe8e8ccef3b671be2f0fc56fdbd221ae812dfc4f04:
+#
+key.cow.DEC_Alpha:ct=Client Of Win:cr=lendl@cosy.sbg.ac.at:\
+   :cd=December 1994:ar=DEC_Alpha / OSF1 3.0:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=7ba2d1dff5f504dcb832a691a70ff2f99b31ca060d1e648d47a3372bb887c137:\
+   :pk=7195c2b60c3252af55f796682c8ea39f38f387104240667be0dff2f243c2181e:
+#
+COW-RSA-Key-mips-sgi-irix5.3:ct=Client Of Win:cr=gendrich@egr.msu.edu:\
+   :cd=April 1995:ar=sgi/IRIX-5.3:cl=inl,standard2:\
+   :cm=COW for MIPS/ SGI/ IRIX-5.3, available at bigbang.astro.indiana.edu:\
+   :gk=29a41a44b556443b29bfb86f740101b28c0f1b7f70314066a0889631f7f52526:\
+   :pk=7bb26e9c4bcd787077a4c85966c52a92ffc316aa3714f97b3847be26336a890a:
+#
+COW-RSA-Key-mips-sgi-irix6.0:ct=Client Of Win:cr=gendrich@egr.msu.edu:\
+   :cd=April 1995:ar=sgi/IRIX-6.0.1:cl=inl,standard2:\
+   :cm=COW for MIPS/ SGI/ IRIX-6.0.1, available at bigbang.astro.indiana.edu:\
+   :gk=e3d2fc2a99c910d1b2ab5d9c141b27ed86da740d0a798abe79bf2df79c157806:\
+   :pk=15b6f2ec49705f0053fe5293efa8ff8ffcbd4a0e92c64fcd69dbda2d17ec9801:
+# keep
+key.cow.alpha_osf1:ct=Client Of Win:cr=ahabig@bigbang.astro.indiana.edu:\
+   :cd=July 1995:ar=Alpha OSF1 / v3.2:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=9f5ef08d4c061815a562ccddc505ca9031f6a6cf9b6ebb510d6710f715030175:\
+   :pk=1330f3f0736f39473d56496efbef5066d3cb5a052b514bb43df0363e711bcc0d:
+#
+key.cow.ptx:ct=Client Of Win:cr=patman@sequent.com:\
+   :cd=October 1995:ar=Sequent/ptx 4.0:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=bfd70f5bcc0216d1dde8b756a00988629e6738fdbfecd89c81dcb8a64fb63404:\
+   :pk=0764b8f17612c148a1b916f9281a0094834855e3dfb83b43e575bd6cb4775a03:
+#
+key.cow.bsdi2:ct=Client Of Win:cr=cks@hawkwind.utcs.utoronto.ca:\
+   :cd=November 1995:ar=BSD/OS 2.0.1 / shared libs:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu. :\
+   :gk=9facf702728f54fc4fa1694beb8ab4094b986675135742c2bca017648fe73051:\
+   :pk=45b5ac4ca2bda7bd288a2c68dfdc2e076e267e2e5e5fa665a1df444356851315:
+#
+key.cow.linux-elf:ct=Client Of Win:cr=marcnarc@zoo.net:\
+   :cd=November 1995:ar=Linux ELF/ 16-bit:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at ftp.zoo.net /pub/linux/. :\
+   :gk=33bc472c468c099cdc01700c913146085ab756c3cefd2801c1267cfd67092033:\
+   :pk=190281a23bd6747fca94a9bb28d8b9c631eef124317819814be87b6a4b034a1e:
+#
+key.cow.win32.gk:ct=Client Of Win:cr=greynite@vnet.net:\
+   :cd=August 1996:ar=Intel/Win32:cl=inl,standard2:\
+   :cm=Win32 Version Of Cow:\
+   :gk=3bf6e6b225cd0498800a43522cf1a024168f5c80371dfa99b52a160970e86012:\
+   :pk=43317fa43a6c1c08f005deefbf665e58ee395ce0189b7cd45a59f3c94ae3f70c:
+#
+key.cow.netbsd:ct=Client Of Win:cr=fox@cs.mcgill.ca:\
+   :cd=March 1996:ar=NetBSD / 1.1:cl=inl,standard2:\
+   :cm=Bless this. Located at ftp.cs.mcgill.ca:\
+   :gk=39e12a8654bf932feeace30a322acd4123d77c98f3e0260a669b7e7bc9f78c67:\
+   :pk=4ba2f86852efe0027125897163212f517d6613d1fa8fc1775a2abad87f85ef64:
+#
+key.cow.osfmach3_ppc:ct=Client Of Win:cr=doosh@best.com:\
+   :cd=June 1996:ar=PowerMac / MkLinux:cl=inl,standard2:\
+   :cm=Includes small-screen support:\
+   :gk=4d65f5bf7eeaefe905c2edf7005e75aff9e0904633f06e53450eb6127788f118:\
+   :pk=db4eb6519c98ed82791cc105445699da7d75bb0753c0486612d9a68ba608460b:
+#
+key.cow.hp800:ct=Client Of Win:cr=lab@mtek.chalmers.se:\
+   :cd=August 1996:ar=hp800 / hpux9:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=6d8b55feb574ea08c75770e6fdd9c3c9d49f9d214a73dde6493a447919f7b924:\
+   :pk=55d33dbaaec90b6a2f3765971a6d3146e1dca701204a319529f3e3b28381d715:
+#
+key.cow.FreeBSD:ct=Client Of Win:cr=handy@physics.montana.edu:\
+   :cd=August 1996:ar=FreeBSD / 2.2-Current:cl=inl,standard2:\
+   :cm=RSA blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=d9b1930d464318ec7d58fe16d3c247d8663d9c2e3c415a5cc687358673387429:\
+   :pk=c3610bb5d59adf2e95df0178f00372de999691785f86d47688491b2f4728961b:
+#
+key.cow.os2:ct=Client Of Win:cr=hsuc@enteract.com:\
+   :cd=April 1997:ar=OS/2:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=a34981f54b6cc621653eecc31fe93bbf5a8656ac0ad7e4e66231b5cb1b752e3f:\
+   :pk=5d60b488aaa83b817625769814918a3283c7ead073ccb247c600cb9c85435906:
+#
+key.cow.MkLinux-PPC:ct=Client Of Win:cr=James.Ashton@anu.edu.au:\
+   :cd=June 1997:ar=MkLinux for the Power Macintosh:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=9d381ae70a12037d4e303e34abbb199d65151734504d94c169e9e6cd6ee3942c:\
+   :pk=41f71ac1df3aeced7fcb6fc179a0179d98082b0f7291b36ddfbf1786d5293f18:
+#
+key.cow.NetBSD:ct=Client Of Win:cr=sdfranks@mit.edu:\
+   :cd=September 1997:ar=NetBSD 1.2:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=591aafbabce071486deee9ebe4d835f69441be302c2a4881ab06f45374df4556:\
+   :pk=cdb726e0ddf8ebf2e9c4962239be13829bcc51f22cf275818fdbc05f50500f36:
+#
+#
+# COW2 Stable Clients
+#
+key.cow.sgi.stable:ct=Client Of Win:cr=siegl@risc.uni-linz.ac.at:\
+   :cd=June 1997:ar=SGI/Irix - stable:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=e97aab69bbae9d640ed0cbf2ce5be726dcab9b76ca6af9065d554b1f199f1e48:\
+   :pk=61ffeac28b12cf215208bc8bf2b1b315c30f8f40f330cc4f98a74cad051e4a0b:
+#
+key.cow.linux_ix86:ct=Client Of Win:cr=siegl@risc.uni-linz.ac.at:\
+   :cd=June 1997:ar=linux_ix86 ELF - stable:cl=inl,standard2:\
+   :cm=RSA blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=8965f83ca1df3f36ef93784094af8c7f5aa479bc7bd1b6b024ac93d8a94e8a47:\
+   :pk=6be5e98060c7c79fdc19fb5675ddafbb751ec44360cdd7157a38944331081111:
+#
+#
+# COW3 Clients
+#
+key.cow.win32intel:ct=Client Of Win:cr=drg@htbfh.mv.com:\
+   :cd=October 1998:ar=win32intel / Windows 95/NT:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at http://cow.netrek.org/:\
+   :gk=8309c404bc85eb2cd91cead61f77d955c59125a64d3b6fae192e60d0e3996458:\
+   :pk=7bd68b4c4c7d72745a41113afc28d592cf6fa24524ab50889de5e465a8124c4a:
+#
+key.cow3.win32.gk:ct=Client Of Win v3:cr=greynite@cmpu.net:\
+   :cd=May 1997:ar=Intel/Win32:cl=inl,standard2:\
+   :cm=COW v3.x Intel/Win32:\
+   :gk=654831cf02bd1737a5ddb5b3f8b7c45fd5ce7f4078540e6785df79d893c15d03:\
+   :pk=75d88b31d19ea4a0495a501ea180b8d12b8cbbf58dd3fa8fb0ca4478cc8b6102:
+#
+key.cow3.linux:ct=Client Of Win v3:cr=idsfa@earthling.net:\
+   :cd=March 1998:ar=Zen Penguin Linux:cl=inl,standard2:\
+   :cm=RSA 2 blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=ad5eb31513dea5a132331993097a9e978aefba27b2b7924c15b2fa7ae0c5936a:\
+   :pk=45af9b0bac5549496eef9c556082a8d77e0c3f25cad82fda9760b7139d5e631c:   
+#
+key.cow.alpha_osf1:ct=Client Of Win v3:cr=ahabig@bigbang.astro.indiana.edu:\
+   :cd=March 1998:ar=alpha_osf1 / v3.2:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=2bb3a986efee3fedb85e5f782e1807cd0ce7419c1af88fbcc99b676b6e94e031:\
+   :pk=9318362f17be4ad988b33f48ed9882453f37982fcecdb2e62707e9fb51a29a20:     
+#
+key.cow.hpux:ct=Client Of Win v3:cr=ahabig@bigbang.astro.indiana.edu:\
+   :cd=March 1998:ar=hpux / HPUX 9.05:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=45c4b283c1070bf99e687959061cfff3a8f738f69b7a62fab63e8f676e614e0b:\
+   :pk=45bc9544286881842149dda474284f1d7b0e8d05b8fba22b60c7dc4af9c16302:    
+#
+key.cow.RS6K:ct=Client Of Win v3:cr=ahabig@riscgs1.lngs.infn.it:\
+   :cd=March 1998:ar=RS6K / AIX 4.0:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu.indiana.edu:\
+   :gk=8b4ea3b8293900e3cf029a32dfe17c73f04cc2649fd77939c8d26a77a04fa30d:\
+   :pk=63a38f7b8bed0168cbdfed2380866cdf498611864e84a2e397203e218b236f0b:    
+#
+key.cow.sgi:ct=Client Of Win v3:cr=007@netrek.org:\
+   :cd=March 1998:ar=SGI/IriX:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at http://cow.netrek.org/:\
+   :gk=93f28221bc9e61585d258534cfa8e764b8aeb82594ad9d4af05123b583b61133:\
+   :pk=3bd56f9366b7c83e0bc681d9bd361c77cb3dc218d9a5867e22da9d9ec2e78626:   
+#
+key.cow.Intel_Win32:ct=Client Of Win v3:cr=rsharpe@ncsa.uiuc.edu:\
+   :cd=March 1998:ar=Intel/Win32:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at http://cow.netrek.org/:\
+   :gk=45af01b9285455f1e12f869a11fd04cca2285f8d031b4ed35e9fb6b507443115:\
+   :pk=fb1dff6e41c09d908eff45e5e91f1a6f7a8f8a9e461478f74f4e1dd6b57ce70f:    
+#
+key.cow.3.linux_libc5:ct=Client Of Win:cr=007@netrek.org:\
+   :cd=March 1998:ar=Linux libc 5.x / Color Release:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at http://cow.netrek.org/:\
+   :gk=61f182431a28b3aaabf945c1108c5571963221580b1a15a528f6dd2ac8804647:\
+   :pk=21ba366bc9ed5b9b2579005fad85aade2f2a8bf5158bebf08cafc8a710969641:
+#
+key.cow.Solaris:ct=Client Of Win:cr=koconnor@acsu.buffalo.edu:\
+   :cd=April 1998:ar=Solaris / SunOS 5.5.1:cl=inl,standard2:\
+   :cm=COW for Solaris!:\
+   :gk=033abae47efe839966dbe28a5c8f74c436cb0f4bf02a1631d3928113c0f1067b:\
+   :pk=f30449d9915b03f6be40aa5634e1b20c26d0344f9eb6c6858f807aebbb585f6a:
+#
+key.cow.linux_libc5:ct=Client Of Win:cr=007@netrek.org:\
+   :cd=March 1998:ar=Linux libc 5.x / Stable Release:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located at http://cow.netrek.org/:\
+   :gk=f3274e17fbf2bac8ba31820223336946b81df25ac6e6500de6a677b19b5acd04:\
+   :pk=9528271baffcc45df9afeaec392f5258418cdcbf3fc94e023480ec44f6b21d04:
+#
+key.cow.FreeBSD:ct=Client Of Win:cr=nicblais@videotron.ca:\
+   :cd=May 1999:ar=FreeBSD 3.1 / ELF:cl=inl,standard2:\
+   :cm=For FreeBSD 3.1-RELEASE and up, by Nicolas Blais:\
+   :gk=59bba7d6d80cbffe86fe7a9aaf3c2986509c3e6d394f140a9093b454bff69b0c:\
+   :pk=995e270abd33421d385945c113b7614cdfd8ae00ad53616fe9e3d50e1462140a:
+#
+key.cow3pl1.Solaris251:ct=Client Of Win v3:cr=Carlos Villalpando <unbelver@earthlink.net>:\ 
+   :cd=May 1999:ar=Solaris251 / Cow 3.0pl1:cl=inl,standard2:\
+   :cm=reserved.c blessed. :\
+   :gk=cf5cce688a5d9b001ae5706020b2d85fda6ffe2cc2b41f67fbe18541c9391a0a:\
+   :pk=3b1bd4b559d3177813221dd2c3ef897d188ca9e2fb75e16e4e8e8fca48939506:
+#
+key.cow.gnu_win32:ct=Client Of Win:cr=007@netrek.org:\
+   :cd=June 1999:ar=gnu_win32 / Cygnus GNU Win32 key:cl=inl,standard2:\
+   :cm=reserved.c blessed. Located via http at cow.netrek.org:\
+   :gk=594900fc0739d2727c37d39269d500af1613a01fd18e84b5586b83d8ca63242f:\
+   :pk=09c384c3cc527ca0d45b37bb204588bed6186d4a98d00c7037b6ddd7eb4f6011:
+#
+#       COW-lite Clients
+#
+COW-lite RSA Key v1.20:ct=COW-lite:cr=powell@csl.ncsa.uiuc.edu:\
+   cd=March 1994:ar=sgi/5.x: :cl=standard2,inl:\
+   :cm=COW-lite v1.20 light version of COW client. Key made by RSA 2.0:\
+   :gk=9d6fa6381d3af3929238f263f77b9d84925d5df1d08dec667e4978b9bd7ab007:\
+   :pk=598f6926ede8dca50fa553119c386b1ad9b1b7d80403aa2982e3383dd6208400:
+#
+COW-lite RSA Key v1.20:ct=COW-lite:cr=powell@csl.ncsa.uiuc.edu:\
+   :cd=March 1994:ar=sun4/4.1.x: :cl=standard2,inl:\
+   :cm=COW-lite v1.20 light version of COW client. Key made by RSA 2.0:\
+   :gk=1b771475f8a7cdb99a2d65ad3a22c09c55e72fcc7933ca9d9760eef70c352616:\
+   :pk=3ff20628d5ae139d5e3f22aeb8c92b72a4763c8875a0b775a7d1b13bc63ef603:
+#
+COW-lite-RSA-Key-hpux:ct=COW-lite:cr=trown@ecst.csuchico.edu:\
+   :cd=March 1994:ar=hp700 / hpux 9.0: :cl=standard2,inl:\
+   :cm=COW-lite v1.20 light version of COW client. Key made by RSA 2.0:\
+   :gk=f5f8cb6156f810aeea29de1525e1e003d3b16ee700d25c39583019b069b9d617:\
+   :pk=8f1df6380adf1d7876edde6b7f802ec6f0c5cc33fa26f77ae77dddf2594fe505:
+#
+COW-lite-RSA-Key-aix:ct=COW-lite:cr=shl0@Lehigh.edu:\
+   :cd=April 1994:ar=rs6000/aix3.2.5: :cl=standard2,inl:\
+   :cm=COW-lite v1.20 light version of COW client. Key made by RSA 2.0:\
+   :gk=614cace95f95f523deb9965953ccf3db87669eddd39024a391a1f5954f5a2404:\
+   :pk=6d5c7f946a7c0c8aa806fc842164e838451ec1c868d9bbd74d264f271af3e302:
+#
+key.cowlite.linux:ct=COW-lite:cr=kell0186@gold.tc.umn.edu:\
+   :cd=April 1994:ar=linux / XFree v2.0: :cl=inl,standard2:\
+   :cm=RSA blessed. Located at soils.agron.iastate.edu:\
+   :gk=1be8ce4be84e840199f7e137d951ab5a5b4a67c88befb88af7ac47ef4bfd8886:\
+   :pk=e9c8d4da6396c71dd199a8cfef620c7f955722e11c190b41cecc56616f62aa74:
+#
+COW-lite-RSA-Key-alpha:ct=COW-lite:cr=sheldon@visi.com:\
+   :cd=April 1994:ar=AXP3000/OSF1-v1.3: :cl=inl,standard2:\
+   :cm=Available at soils.agron.iastate.edu:\
+   :gk=fd2fef5ece4302a461b6f412cef8d15c9494852ffa9fbf2f9dbc1947046a9471:\
+   :pk=617c3bbeaacb24165379259565c77dfe9404efdf905e7b226d039156a40ad429:
+#
+COW-lite-RSA-Key-ultrix:ct=COW-lite:cr=sheldon@visi.com:\
+   :cd=April 1994:ar=DEC/Ultrix: :cl=inl,standard2:\
+   :cm=Available at soils.agron.iastate.edu:\
+   :gk=95734b9cf7fe556f43f8d7436158fd32a0416f28d9f44ce26cb34185258c90bb:\
+   :pk=375ea990ba22b2469a4d3131fb96b4660b168829aae96085c990d2ed3a5444b2:
+#
+COW-lite-RSA-Key-scoodt3:ct=COW-lite:cr=sheldon@visi.com:\
+   :cd=April 1994:ar=SCO/OpenDesktop-v3.0: :cl=inl,standard2:\
+   :cm=Available at soils.agron.iastate.edu:\
+   :gk=af5a1679ed41366dc9d667bddf64f6c49069ed88b364c2d25ffa1bc1098ff14c:\
+   :pk=0ba1f75bc546c15c0a501b2e9005ca8dcfead942e80c4c1f871e722f6725570c:
+#
+COW-lite-RSA-Key-solaris:ct=COW-lite:cr=gendrich@egr.msu.edu:\
+   :cd=May 1994:ar=Sun-4/Solaris-2.3: :cl=inl,standard2:\
+   :cm=COW-lite for Slowaris, available at soils.agron.iastate.edu:\
+   :gk=a1096d96e495c646298737b1ce92eff26da04af44db427b4e14958774e3ced3d:\
+   :pk=8592acecfcd09b36b7b449810ab4c0ebdef6a1627000cbfdd066a107fcf1c523:
+#
+key.cowlite.win32:ct=COW-lite:cr=shekter@hookup.net:\
+   :cd=August 1994:ar=PC / Win32: :cl=inl,standard2:\
+   :cm=also reserved.c blessed:\
+   :gk=1da2de49000817cf4e33dafd464d958ad2dc21edcf4c4c64d449003cca18b93a:\
+   :pk=4925354aa6f942e966705e1ed5a64643275f2787b4e73f11ed5de7632d27302b:
+#
+COW-lite-RSA-Key-linux:ct=COW-lite:cr=sheldon@visi.com:\
+   :cd=September 1994:ar=486/Linux/Slackware-v2.0:cl=inl,standard2:\
+   :cm=Available at soils.agron.iastate.edu:\
+   :gk=3fb9765d002b68ab85571c859bf1384b80db8f859240249c9c708f39b83eee2f:\
+   :pk=db9cd60e6dfc1b864438544bf1a7d8143c7619f64c73e184cbe0d99c91419620:
+# keep
+COW-lite-RSA-Key-Amiga-NetBSD:ct=COW-lite:cr=ogre@netcom.com:\
+   :cd=September 1994:ar=Amiga/NetBSD: :cl=standard2,inl:\
+   :cm=COW-lite v1.20 light version of COW client. Key made by RSA 2.0:\
+   :gk=a7653e63d032010ba2434ce474789e2d97258ab51d763488e7c54f3d09068368:\
+   :pk=63b7c6e5ec2a8904d4a7ef39fa62a56b3a6901ba998d069b4812e7255b7b1516:
+# keep
+COW-lite RSA key/Sun-3:ct=COW-lite:cr=amb@unipress.com / amb@cs.columbia.edu:\
+   :cd=September 1994:ar=Sun-3 / SunOS: :cl=inl,standard2:\
+   :cm=COW-lite v1.20 light version of COW client. Key made by RSA 2.0:\
+   :gk=05f284834a9a66d4a987ea5b66ec435ce8f15cb06f6eae36a4d5b812ce689802:\
+   :pk=0fa744fd3691cbb00bfc01eec4553620e6bbbaa646e35c938338667db79b0900:
+#
+key.cowlite.freebsd:ct=COW-lite:cr=handy@condor.oscs.montana.edu:\
+   :cd=November 1994:ar=FreeBSD 1.1.5.1 + XFree 3.1:cl=inl,standard2:\
+   :cm=RSA blessed.  Located at soils.agron.iastate.edu:\
+   :gk=178de0a2b9474ba47acaac6a05cf09ec52a17d0608b73b9cc4d9ab1089519e27:\
+   :pk=97ec6476a1edb296d442155f31b4688c3b4ae1b83a6bec2aaf10c7c18533df05:
+#
+COW-lite-RSA-Key-unixware:ct=COW-lite:cr=bsp@veritas.com:\
+   :cd=July 1995:ar=Intel/UnixWare 2:cl=inl,standard2:\
+   :cm=RSA and reserved.c blessed.  Available on request.:\
+   :gk=d589272f43a51ba9f988d6ae20294d2788e6c4f2b0049350654e40e2a638b505:\
+   :pk=bb5fab3b068cf4d1c41da91486885aa085dca529dc7b80dc3d8fcba05c9c3e02:
+#
+COW-lite-RSA-Key-sgi:ct=COW-lite:cr=scoop@arakis.ucdavis.edu:\
+   :cd=September 1996:ar=SGI:cl=inl,standard2:\
+   :cm=testing:\
+   :gk=19c78fa8350149dfde3e8f3591989bb2814034988b9bcbcccfe32ff9efcf7d41:\
+   :pk=395f6ecc514f718fb396e72f26b3cb1540692d938f0f514aaae36659b9c29306:
+#
+#	Paradise Clients
+# 
+paradise2.3.jrumsey.amiga:ct=paradise 2.3:cr=jrumsey@cs.ucr.edu:\
+   :cd=April 1994:ar=Amiga Client: :cl=inl,paradise2:\
+   :cm=Created with new_mkkey:\
+   :gk=f5be6a57110dfee4e994a28d284ce63508a0d446c418461e9363b611c7089b03:\
+   :pk=f99c53227d9796f53898b7adf2663d64ccf4b761d4c0c4664849f5568a137a00:
+#
+paradise2.3.ogre.macintosh:ct=paradise 2.3:cr=ogre@atomic.com:\
+   :cd=April 1996:ar=Macintosh: :cl=paradise2,inl:\
+   :cm=Paradise clients. new-style key.:\
+   :gk=478f966de5f5f60a2c9624d027090f6d43f91b6a359578788e0c0190bb501006:\
+   :pk=2fdea3b28c2c16552a1978ccf4809f9b54557e36a94e0a929135dc16bde03d04:
+#
+paradise.barrett.powermac-mklinux:ct=paradise 2.3:cr=barrett@netins.net:\
+   :cd=June 1996:ar=Linux / Mac PowerPC: cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=3166476fc131f1ea44d6867af7d197d624ca2235f86e26be8910b997672a2b81:\
+   :pk=efa58abca32654d17e22c64e7d23e4ecab489c8fc40452f01e03e949bc1c7a5a:
+#
+paradise.kehoe.apollo:ct=paradise 2.4:cr=hakehoe@norand.com:\
+   :cd=July 1996:ar=Apollo/DomainOS: cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=39ceb4d6089a3dcc487aeaefec68c3b96b9dbfc9b27a71c5f961ec1f23ad0292:\
+   :pk=25621db0ce9467d96a30c1d0ccdf339b1981d1a7708febe24bfdfaa49f2cd243:
+#
+paradise.kehoe.hp700:ct=paradise 2.4:cr=hakehoe@norand.com:\
+   :cd=July 1996:ar=HP 9K s700,800/HPUX:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=57ac4db7980647cd84378134530a2061f4447f6c295fce95ec6a19ce9cb93608:\
+   :pk=05975e8028d4eef5b1b11cb591667fa6937a68ad067cddeaab5b0e2514334f01:
+#
+paradise.netrek.unixware:ct=paradise 2.4:cr=garyp@dgii.com:\
+   :cd=July 1996:ar=Unixware 2.x: cl=inl,paradise2:\
+   :cm=Suitable for standard server use:\
+   :gk=030c3591761e76d9655fe31cd16e0385742e9f2680dd33560732b6e3fff4a90c:\
+   :pk=af322a28cf6b20e4efa0b5d85ad23e55badd84c72f92fde78c62e0236a5e9007:
+#
+paradise.thoth.sunos4:ct=paradise 2.4:cr=thoth@purplefrog.com:\
+   :cd=July 1996:ar=sparc/SunOS 4.1.3:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=9165ec90296bf7d682daab7967ce12e5779ef8aa6e48926ccc6ee04c884d8617:\
+   :pk=cd865297ebd450311b02124f6f30803aa1f44f219f9ab48a569cd92e1e74aa0b:
+#
+paradise.thoth.linux-R5:ct=paradise 2.4:cr=thoth@purplefrog.com:\
+   :cd=July 1996:ar=Linux ELF / X11R5:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=777e6c98ce254dadf8e11bfe3071f890a5dcdd580bef8dfa63c9715ecf741804:\
+   :pk=9720c77528af72d4c314b04bcda09826e70354e22748a6853aa60d508b521d01:
+#
+paradise.glamm.IRIX5:ct=paradise 2.4:cr=glamm@mountains.ee.umn.edu:\
+   :cd=July 1996:ar=SGI/IRIX 5.x:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=134a449e9e7c06ee8ea6fea64ae40e252067b9ad876a58bf8ff1928ccf92c40b:\
+   :pk=1915f4108d59f9d67adaad7019da9e6f93bc97840f26375793990333d084640b:
+#
+paradise.glamm.Solaris:ct=paradise 2.4:cr=glamm@mountains.ee.umn.edu:\
+   :cd=July 1996:ar=Sparc/Solaris 2.x:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=a779f3fbc954b40657297ee9240ddd98047f381ab2c301ee099d4cad68cac688:\
+   :pk=fd3f68ede67bc22cff4a75588535e6c7187d89c6fe5aacf97eb52cbc8681b732:
+#
+paradise.glamm.AIX:ct=paradise 2.4:cr=glamm@mountains.ee.umn.edu:\
+   :cd=July 1996:ar=RS/6000/AIX 4.x:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=6b496d465a9df72f25f4c0f02af53297fc30626473d4c61d766870757667ff62:\
+   :pk=55683f756815b0e8f8363e6ce3f8b847554bd22a7f1e99a05dffceaa0a301358:
+#
+paradise.mmead.FreeBSD:ct=paradise 2.4:cr=mmead@PNetrek.ORG:\
+   :cd=July 1996:ar=i386/FreeBSD 2.1.0:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=9d2b22f66aee05e4792680f3468101c4cf1e3f10687917bcbfe7b8aae07cd80c:\
+   :pk=f1fa8a3d3a616b4dde85372bd7bee5c4c051e6066ce05a1a7ca76aafc7473b01:
+#
+paradise.mmead.OSF1:ct=paradise 2.4:cr=mmead@PNetrek.ORG:\
+   :cd=July 1996:ar=Alpha AXP/OSF1:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=c9c0b8f632ccf76fcacb5dd47de34df162ff99ca49b15436c336d3e6f636d203:\
+   :pk=6f0c295bafb707ee638fb77a0a11aaa9f854705b471aae234ed69d40a4317002:
+#
+paradise.mmead.NetBSD:ct=paradise 2.4:cr=mmead@PNetrek.ORG:\
+   :cd=July 1996:ar=i386/NetBSD 1.2:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=0560e4f99490efb6c15e6d9d89c445b3980c12647181cc1c84f82bf81ccc2f0d:\
+   :pk=5bf196e32c4175369f8820f946333aa36eba3d81ddf7f665bc503e256dabd909:
+#
+paradise.glamm.LinuxR6:ct=paradise 2.4:cr=glamm@mountains.ee.umn.edu:\
+   :cd=July 1996:ar=i386/Linux-ELF/R6:cl=inl,paradise2:\
+   :cm=suitable for use on standard servers:\
+   :gk=ef14242e73016bd17dc9409bc05fe8107f875895218c7aab8b3491dc3941c55f:\
+   :pk=0bfd72ef081bc43fa38b889de3d4751369acb2b99a52a81aee77820cf6792107:
+#
+paradise.mmead.BSDOS:ct=paradise 2.4:cr=mmead@PNetrek.ORG:\
+   :cd=July 1996:ar=i386/BSD/OS 2.0:cl=paradise2,inl:\
+   :cm=suitable for use on standard servers:\
+   :gk=3b572151376cfc8bf7edb450ecc01eeeab1cf98db11509f5ec1233378556647d:\
+   :pk=3dbd081772eb635960cd23dc423aee4e42f788531c0c4cec1913a8286b1bdc3c:
+#
+paradise.ari.openbsd-sparc:ct=paradise 2.4:cr=ari@calliope.nix.neosoft.com:\
+   :cd=April 1998:ar=OpenBSD/SPARC:cl=paradise2,inl:\
+   :cm=ALPHA(patch 1)-send bug reports to ari@calliope.nix.neosoft.com:\
+   :gk=9f3401b26b9796175322ffac4eeee4eb7dcb0d3e315976f6cef2ec461bbef725:\
+   :pk=1b54d70bac23d5838666cb9a8d273cc2c7bdf106dbebdafe5f2919699fc2ec15:
+#
+OpenBSD-sparc-paradise-2.4:ct=Paradise 2.4:cr=Ari Johnson <ari_j@hotmail.com>:\ 
+   :cd=January 1999:ar=sparc/OpenBSD:\
+   :cm=:\
+   :gk=33dc5e852188d22fcb95a08cec5bce3caec432a662785bf82f7d9aad3a27da2d:\
+   :pk=87cd0be1dbc407872f62bba4ffd8c1ca8affd8dbf2e40d494ff65e2c22f1a522:
+#
+paradise.jkauffman.x86-sol7:ct=Paradise 2.4 Patch 1b:cr=John Kauffman <jkauffm@hellfire.dusers.drexel.edu>:\
+   :cd=January 1999:ar=x86/Sol7:\
+   :cm=Standard Client:\
+   :gk=110e2d748f552c135f6c9262ec901bc2653a05de4d0d9b630eb0d8cac6ceda4b:\
+   :pk=e111dfe6b1a01db9c96a8e716dd79958d8a1b77cab91a191769059020991161a:
+#
+paradise.freebsd.i386:ct=paradise 2.4p1C:cr=edorman@paradise.netrek.org:\
+   :cd=January 1999:ar=FreeBSD-2.2.5/i386:cl=paradise2,inl:\
+   :cm=For use on standard servers:\
+   :gk=45fc72e8ca4129e239abb9643a7402ab6e9a71e1d2dfe3ab90f4e0a2991ed841:\
+   :pk=03d99e98b5e81d23ebefab17171655e0383b85fd72cf25189e46e5b51244363b:
+#
+linux_paradise:ct=paradise-2.4:cr=little_buddha@bigfoot.com:\
+   :cd=April 1999:ar=i586/linux-glibc-6:\
+   :cm=New Linux Netrek Paradise client:\
+   :gk=2f8b610947f860605b9e85df63a62958a63344f4bd024154d40fac990c32e827:\
+   :pk=c10a73aa10264da1ce2027a071ccf350203d5b263fcc78aa65d2046fa72a1824:
+#
+#
+#
+#	Ted Turner Client
+#
+TedTurner-ahn-ibm-aix4:ct=Ted Turner 1.2:cr=Dave Ahn <ahn@vec.bgsm.edu>:\
+   :cd=June 1997:ar=IBM/AIX 4.x:cl=paradise2,inl:\
+   :cm=256 color Paradise client:\
+   :gk=1b5b6e8bffa091485da5880e4264fd18f156fcad9fcc9ef53b952ef7e855f859:\
+   :pk=d35049ddcf5bbb8aa1e20378d6332915ec3ff63730c9e9a1b1923b2e73357c10:
+#
+TedTurner-ahn-ix86-linux:ct=TedTurner 1.2:cr=Dave Ahn <ahn@vec.bgsm.edu>:\
+   :cd=March 1997:ar=ix86/Linux 2.x:cl=paradise2,inl:\
+   :cm=256 color Paradise client:\
+   :gk=9df04c17bdb8b7edd822c1c92a2369beb07ef10249d74e09ece099ebcbce3d31:\
+   :pk=8b2d8f1fe01f83921c1ade98f87927a079d4c21cd5a2a3ba1159ec3dec90af2e:
+#
+TedTurner-ahn-sparc-sunos4:ct=TedTurner 1.2:cr=Dave Ahn <ahn@vec.bgsm.edu>:\
+   :cd=March 1997:ar=Sparc/SunOS 4.x:cl=paradise2,inl:\
+   :cm=256 color Paradise client:\
+   :gk=ad2b6743351efcee54594f853c7eae30c6b39f57d92c6dd311cf55d46054fe48:\
+   :pk=7bee4e7f5bb772a6594a75ec6c949bc9c52979e8427c5a3d1e11cb0a37cd8f2e:
+#
+TedTurner-beta-os:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Beta/OS:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=116e96935efb89ec49470eb6ce137064a23082021e89e56bf761579a8aa84c06:\
+   :pk=f3b40c5141cb516ea0ffd3f3ac71cbd358310905ba59dd4eb846385bdad37f01: 
+#
+TedTurner-intel-freebsd2:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Intel/FreeBSD 2.2.x:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org; this client was built by Dima Ruban <dima@best.net>:\
+   :gk=1f53bc3114fd3c72b802915f5a6de5f70714ad6185c392287a252316285d323c:\
+   :pk=adfbc32ad08f5ad2e74313b023904274ffdf7baf0c107027d15abbf89548eb1f: 
+#
+TedTurner-intel-freebsd3:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Intel/FreeBSD 3.x:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=df6dbe024cf20370bb8bd57dcabaa598f3092a70d03f6c10b4ecff1515be3547:\
+   :pk=7b8ba76820613e203c05bd58355e6faf835b2d6c143769377810501bde39c123: 
+#
+TedTurner-intel-linux:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Intel/Linux:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=6f38db37694935dd7d3dfa92a456b9214b8e04ec1799f4c6c312010cad4b30ec:\
+   :pk=1d2fa048b36ee7f9ef94c13292f507a068aeceeef4c75ad4fc86a18f9baf3617: 
+#
+TedTurner-intel-sunos5:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Intel/Solaris 2.5:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=13069395cf1539e34f2aba693e5a3515d0f7b2b1a2f43b55834e5661c821ab34:\
+   :pk=cb8d00de55a332a4ac00fede73f2c35ba87ee5a21ec36760cbe6327f08358221: 
+#
+TedTurner-intel-win32:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Intel/Win32:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=7923a045fa2b9e95dc9078feaf8c5eaa031167e07b34f07593bcbec8cd97f01d:\
+   :pk=a5428ac4722df8b36b93f776c616e34f846db58d4edc036025d21fe511c8ed15: 
+#
+TedTurner-sgi-irix32:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=SGI/IRIX 6.x:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=d98a6e18dbafdfed414cc7d17a7dbb939a7ab6e4d13317a6b5d9d5b99fde02ae:\
+   :pk=219f5650b7869b6a4c3b403ce0561f3f8f4975eb2f012cb623766d436d289c1a: 
+#
+TedTurner-sgi-irix64:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=SGI/IRIX64 6.5:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=51a35e3ca2d03ef3f5be4441e4b82c060747ca2a194d0153a128315a4896fb00:\
+   :pk=af8f80649a9cfc0d164f6bffc76c96b564bef323c46b232c096151b796fa5000: 
+#
+TedTurner-sparc-sunos4:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Sparc/SunOS 4.x:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=351f7b400dbae925b1abca684467e9dd936c1cdeebecdb4b0e2908854913d108:\
+   :pk=1b569b19350bb31c6c8494cb6f2ef28cb0a54ce14bfa014d4a4edfea02332103: 
+#
+TedTurner-sparc-sunos5:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Sparc/Solaris 2.5:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org:\
+   :gk=737fd43f34cf47c7ec2fb763f747bd90c8922d20c71f92e8fd33934ca72d9fcd:\
+   :pk=6b5961b5c88d067e7242782648b2430dece719e480d6be6e50fc6ae9ff94976c: 
+#
+TedTurner-alpha-freebsd3:ct=Paradise/TedTurner 1.3:cr=Dave Ahn <ahn@vec.wfubmc.edu>:\
+   :cd=January 1999:ar=Alpha/FreeBSD 3.x:cl=paradise2,inl:\
+   :cm=Full color Paradise client, available from ftp.netrek.org; this client was built by Dima Ruban <dima@best.net>:\
+   :gk=338b46bdd8f1464887d71fa1ead8c2525458d7b2a6c3a7e4704c25200b600e01:\
+   :pk=0307a8741fd1c0376a17d852eba9ea6b73f086fe814bb1a71cd95c49b304fb00:
+#
+#
+#
+#	Swine Client
+#
+key.swine.sun4:ct=SWINE:cr=rmarosko@tmc.edu:\
+   :cd=January 1995:ar=Sun4: :cl=inl,standard2:\
+   :cm=SWINE_1.3_beta_client:\
+   :gk=df5b326b1873ddb6f13d2748cc37371058d11aaaa15cc553c662281e5102e73d:\
+   :pk=3bda8f7eb2f0b7d1da4dcd3e0185e52750bf2f4df9583048c02cce619538ec31:
+#
+#
+#
+#
+#
+Netrek2000-RSA-Key-Win32:ct=Netrek2000:cr=sheldon@visi.com:\
+   :cd=February 1998:ar=Win32:cl=inl,standard2:\
+   :cm=Netrek 2000 for Windows 95/NT:\
+   :gk=d1941cb585567242a8001f61c2d51cf5236b0e5a6ffb7eb0d5fc64b7cd3ce006:\
+   :pk=f7058d3a9aa6e242b75f00d4c4975509143b09fccc8d3ae63bb535cec3a52805: 
+#
+#	Test Clients
+#
+#
+#key.cow.sun4:ct=Client Of Win:cr=jw53+@andrew.cmu.edu:\
+#   :cd=May 1994:ar=sun4 / Test Client:cl=test:\
+#   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+#   :gk=c1d929ca946f7e68b25baa8590c52295e5f01be97bb7817906b689094525bd79:\
+#   :pk=89af6ae62453ad9385f78ec9880ce41566d7f8156a223c78cc5d1746887fbb0e:
+#
+#key.brmh.svr4esmp:ct=BRM-Hadley:cr=bsp@veritas.com:\
+#   :cd=March 1994:ar=386/SVR42: :cl=test:\
+#   :cm=Not publically available:\
+#   :gk=d5b188bb3fd8d37b1b1cbcec008efd3caab3952495e324c89754f765ed12899c:\
+#   :pk=0ba3851abe8a078ded7831d6df5ff64ad8f660be6789bdb25b8a98244a5e1a55:
+#
+#key.gilean.sgi_indigo:ct=Client Of Win - Fantasy Zone:cr=aw20@unix.york.ac.uk:\
+#   :cd=August 1994:ar=sgi_indigo / Gilean server specific:cl=gilean:\
+#   :cm=reserved.c blessed. Located at ftp.solace.mh.se:\
+#   :gk=c3bf832856cefbdafeda04caa1b594e9ae11b2e2a748a4d0ad2050619c643311:\
+#   :pk=4d32e5b140a8e3c3a3008fdb79dcdce050f8e4c9ef6b8b615e7799885281600d:
+#
+#ndb.linux:ct=ndb1.0:cr=bmullane@pluto.njcc.com:\
+#   :cd=August 1994:ar=386 / Linux: :cl=test:\
+#   :cm=reserved.c blessed:\
+#   :gk=fda53134a1b33c430f2e2494138cce2b0e157b144f494617c8b697c613e50104:\
+#   :pk=6f4fa452f914cb606f765996ffdfb886b8049e58282122b3b385aff211b71302:
+#
+#key.mackey:ct=Bronco Client:cr=askwersk@MIT.EDU:\
+#   :cd=April 1995:ar=Mac OS/PPC:cl=test:\
+#   :cm=this is a comment:\
+#   :gk=770bfa0bc86e21f5d6c586c50dd9209c39576e2c402d520a0c679197e5342294:\
+#   :pk=714a3731ec2c4e97b0f29eaa0acf92904c94a716b063a402f3973ed21e13a57e:
+#
+key.paragon.AIX:ct=Paragon:cr=froth@tiny.mcs.usu.edu:\
+   :cd=December 1996:ar=RS6000 / AIX 4.1:cl=test:\
+   :cm=Paragon - learn more at http://www.mcs.usu.edu/~froth/paragon:\
+   :gk=f526cc380edee53760797aad1baad187be7255ee75301970f2f9b8fd4dfc523a:\
+   :pk=c7d3073da164d181b7e2d23affc7c401ad693de96cfa1d071f5c19447f69e111:
+#
+key.paragon.SOL:ct=Paragon:cr=froth@tiny.mcs.usu.edu:\
+   :cd=December 1996:ar=Sparc / Solaris 2.x:cl=test:\
+   :cm=Paragon - learn more at http://www.mcs.usu.edu/~froth/paragon:\
+   :gk=0d4e833ee4605824479dc4a0622d42364a60367a608204454e4909264d2cfc47:\
+   :pk=2f8c44d297cfb02c1e83db2ff1b6951ceaec038a523f51baedb899f606967c20:
+#
+paradise.edorman.IRIX6:ct=paradise 2.4 patch1:cr=edorman@paradise.netrek.org:\
+   :cd=February 1998:ar=SGI/IRIX 6.2:cl=test:\
+   :cm=ALPHA-send bug reports to edorman@paradise.netrek.org:\
+   :gk=9dfda5910f0e7a3ac60c69bc6616c2fa7539bf29d2480f52a1f0d761b93a8e13:\
+   :pk=f740020dd8320d5244b718744fe607f98916758770b0a8735eb6b01c41e1b601:       
+#
+#       TrekHopd Clients
+#
+COWl-Sun-Relayer:ct=COW-lite:cr=jdi@eng.sun.com:\
+   :cd=April 1994:ar=SPARC / Sun Relay: :cl=inl,standard2,thd:\
+   :cm=reserved.c blessed. Only used inside Sun WAN (couldn't use hopd).:\
+   :gk=45f3098c5f10ce6cc5bf81af8cdd7963279d267aea95e2ed5c14426523459182:\
+   :pk=7bc848a6a134460656a62a2a6f1fb9a51b9b56c0c079f44d9994b2ca1a15603f:
+#
+COW-lite-RSA-Key-sun4:ct=COW-lite:cr=caa@unify.com:\
+   :cd=April 1994:ar=sun4/sunos.4.1.3/thd Unify: :cl=inl,standard2,thd:\
+   :cm=trekhopd client:\
+   :gk=09b0f414b5134108469b9cdc323a9cb6a9657d6b6a8d2e8e73ce9b942d586c6f:\
+   :pk=a96d3bbacc69496d0bc4bb67eb5a5aa7ae267713173738a5e69d90bbfd5cd057:
+#
+key.cow.sun.unix:ct=Client Of Win:cr=padwad@psd.gs.com:\
+   :cd=July 1994:ar=sun4/firewall :cl=inl,standard2,thd:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=6f8c4de5dabf25cf23ecf3731fe9a1f5f9d110b710223809fc7369b63c98621d:\
+   :pk=674aa561c2580d034f57240c30d3f10fc82b5c3f30eaa4535fa36fed06178908:
+#
+key.cow.aixsocks:ct=Client Of Win:cr=smolin@vesta.physics.ucla.edu:\
+   :cd=November 1994:ar=aix rs6000 / socks :cl=inl,standard2,thd:\
+   :cm=RSA:\
+   :gk=8be6c6de2ede74d29d40ca0eecb44d3115bc13a47cdd13489009db5f2caafd5a:\
+   :pk=519280e3915cd28b0b7885327924942eff40edc13d2d88110e446b4fa43dfe1f:
+#
+key.cow.sun4:ct=Client Of Win:cr=clark_hobbie@stortek.com:\
+   :cd=December 1994:ar=sun4 / SunOS 4.1.3:cl=inl,standard2,thd:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=d10f78be3e92ae6bfc4da68f05917457870326c240b656b1c6c02a64fb14c30a:\
+   :pk=1d4840634cb1b51cfd236c0aeeb35ea5d92a7d795bc8ab5a95684afe3789b60a:
+#
+key.cow.sun4:ct=Client Of Win:cr=clark_hobbie@stortek.com:\
+   :cd=December 1994:ar=sun4/thd Stortek:cl=inl,standard2,thd:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=d10f78be3e92ae6bfc4da68f05917457870326c240b656b1c6c02a64fb14c30a:\
+   :pk=1d4840634cb1b51cfd236c0aeeb35ea5d92a7d795bc8ab5a95684afe3789b60a:
+#
+paradise2.3.gerling.sun4SOCKS:ct=paradise 2.3:cr=gerling@ctron.com:\
+   :cd=June 1995:ar=SunOS 4.1.3 / Socks:cl=paradise2,thd:\
+   :cm=SOCKS compliant paradise client:\
+   :gk=53b611e06b09dc5f5f1ea1ffa27c50a6a29eea9c404509d3e86012f93e1b2131:\
+   :pk=c32dd5ef1454c93d4314e84a3a5e45a2197b73994699588fa628aaaa5dd16a24:
+#
+COW-lite-RSA-thd-hpux:ct=SWINE:cr=DaveHempstead:\
+   :cd=April 1995:ar=hpux / thd HP: :cl=inl,standard2,thd:\
+   :cm=uses thd:\
+   :gk=c9a533a3a875ab30f427a31f0270111c40a7dd2983f4ea32269c56921e9f8e2f:\
+   :pk=43322e2e39c7330708e64ca18b32d742ed268db729434264dd12e4d6ffe47f24:
+#
+key.cow.isst:ct=Client Of Win:cr=vleugels@do.isst.fhg.de:\
+   :cd=September 1995:ar=unix / thd isst:cl=inl,standard2,thd:\
+   :cm=trekhopd, reserved.c blessed. :\
+   :gk=35121304aad9168be79b141b401c10631f03ad7f3e0017883266655520b7c183:\
+   :pk=a77833f14bee880ea72c0e55100552081ac02681ebad368e1f0ddd2c4a68b86a:
+#
+key.brmh.isst:ct=BRMH2.2:cr=vleugels@do.isst.fhg.de:\
+   :cd=September 1996:ar=sparc/sunos413:cl=inl,standard2,thd:\
+   :cm=BRMH client used with the trekhopd firewall bridge:\
+   :gk=274165f3ddb93cd77c8ecefe72734d2e780f05928141c423b9aff0b29b52431f:\
+   :pk=e91e3d6c17f1d1df9f2b63e97741852c3e5c9a225017fc5c4617a6a7cfab310f:
+#
+key.cow.sgi:ct=Client Of Win:cr=krol@nlr.nl:\
+   :cd=January 1996:ar=sgi / thd nlr:cl=inl,standard2,thd:\
+   :cm=reserved.c blessed. Located at bigbang.astro.indiana.edu:\
+   :gk=0d699cf95931a127cf80cc83209c69d9cd0fcd891bea53df04b4f182ed57f07b:\
+   :pk=c1739443fe8d8b86caddc44a328a74eb06910731d4df8196343323668a9ebc37:
+#
+key.landant:ct=Client Of Win:cr=nbt@landacorp.com:\
+   :cd=January 1997:ar=NT / thd Landacorp:cl=inl,standard2,thd:\
+   :cm= The clue-stack of .coms:\
+   :gk=ddaa50d0e8dafe14dd7747055ad1bee34d4485c814fc96e5c21f102e3f2e181b:\
+   :pk=436c82386f17214c175c12103716ba5e763e387bc08e061cb74ef3d8836d5b0f:
+#
+SolaceTHD:ct=BRMH:cr=ant@solace.mh.se:\
+   :cd=October 1997:ar=Solaris2.5:cl=inl,standard2,thd:\
+   :cm=Solace TrekHopD Client Key, Sundsvall, Sweden:\
+   :gk=f7a1740736267ac14a133563dfe080175daa9aad74b975047bec25694fd46b20:\
+   :pk=c3915350005759ed5f831e63a5358547de04282c187d8874b0457ea979b88b0d:
+#
+#JAVATrek keys
+#
+key.JTrek:ct=JTrek 0.94beta:cr=robertt@starwave.com:\
+   :cd=November 1998:ar=Java 1.1:cl=standard2:\
+   :cm=http://www.starwave.com/people/robertt/JTrek:\
+   :gk=899c6d33741e2cdcfc49c9da47afac007122a6575c7ce9191282ed8895efc30a:\
+   :pk=c5333ca798c9a6944d3343e60ecd5bc904cc5b33bf67842332247b116932eb07:
+#
+#
+# --- end of list ---

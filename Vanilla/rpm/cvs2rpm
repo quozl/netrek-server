@@ -1,0 +1,111 @@
+#!/bin/bash
+#
+# Getting files into the RPM hierarchy getting you down? This script will
+# help make like easier. But use tar2rpm if all you have is the tar.gz,
+# otherwise you'll have to wait for this script to fetch from CVS.
+#
+# Make sure you check and set your VS and VL variable to get this to work.
+#
+# $Id: cvs2rpm,v 1.1 2005/03/21 05:23:46 jerub Exp $
+#
+
+# Change these if necessary!
+VS=2.9pl6
+VL=v_2_9_6
+
+RPM_SOURCE_DIR=/usr/src/redhat/SOURCES
+RPM_SPEC_DIR=/usr/src/redhat/SPECS
+
+IFS=:
+
+# Search for cvs in your PATH
+for bin in $PATH; do
+  if [ -x $bin/cvs ]; then
+    cvs=$bin/cvs
+  fi
+done
+
+if [ -z $cvs ]; then
+  echo "Error. Cannot find cvs, is it in your path? Aborting."
+  exit 1
+fi
+
+# Search for tar in your PATH
+for bin in $PATH; do
+  if [ -x $bin/tar ]; then
+    tar=$bin/tar
+  fi
+done
+
+if [ -z $tar ]; then
+  echo "Error. Gotta find tar, is it in your path? Aborting."
+  exit 1
+fi
+
+# Search for gzip in your PATH
+for bin in $PATH; do
+  if [ -x $bin/gzip ]; then
+    gzip=$bin/gzip
+  fi
+done
+
+if [ -z $gzip ]; then
+  echo "Error. Gotta have gzip installed. Aborting."
+  exit 1
+fi
+
+# check we can write to source tree
+if [ ! -d $RPM_SOURCE_DIR -o ! -w $RPM_SOURCE_DIR ]; then
+  echo "Error. $RPM_SOURCE_DIR is not a directory or I cannot write to it. Aborting"
+  exit 1
+fi
+
+# Create a distribtions, tar and bzip2 it
+echo "Creating distribution. This could take a couple of minutes."
+$cvs -z9 export -d Vanilla-$VS -D today Vanilla > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Error. CVS export failed. Aborting."
+  exit 1
+fi
+
+$tar -cf Vanilla-$VS.tar Vanilla-$VS > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Error. tar failed. Aborting."
+  exit 1
+fi
+
+$gzip -9v Vanilla-$VS.tar > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Error. gzip failed. Aborting."
+  exit 1
+fi
+
+echo "Distribution created. Moving files into rpm hierarchy."
+
+mv Vanilla-$VS.tar.gz $RPM_SOURCE_DIR
+if [ $? -ne 0 ]; then
+  echo "Cannot move server source to $RPM_SOURCE_DIR. Aborting."
+  exit 1
+fi
+
+for i in init logrotate crontab functions keys png gnome; do
+  cp netrek.$i $RPM_SOURCE_DIR
+  if [ $? -ne 0 ]; then
+    echo "Cannot cp netrek.$ to $RPM_SOURCE_DIR. Aborting."
+    exit 1
+  fi
+done
+
+cp netrek.spec $RPM_SPEC_DIR
+if [ $? -ne 0 ]; then
+  echo "Cannot copy spec file to $RPM_SOURCE_DIR. Aborting."
+  exit 1
+fi
+
+
+echo "Cleaning up."
+rm -rf  Vanilla-$VS
+
+echo "To build an RPM, do the following:"
+echo "cd $RPM_SPEC_DIR"
+echo "rpm -ba netrek.spec"

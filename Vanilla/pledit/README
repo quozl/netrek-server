@@ -1,0 +1,132 @@
+Netrek .players database editor (pledit)
+v1.02 by Andy McFadden
+Last updated: 25-Aug-92
+
+
+This is a curses-based editor for the .players database.  It will also
+coordinate tournament statistic changes with the .global file.
+
+DISCLAIMER: This was hacked up in my spare time.  It is NOT intended to be
+extremely robust or a stellar example of good programming practices.  There
+are bits and pieces of code and static data which don't actually do anything,
+but there's no need to remove them so I haven't bothered...
+
+DISCLAIMER II: This is v1.0.  It may have bugs.  Keep backups of your
+database (.players and .global) files!  I tested it with a 12000+ entry
+player file (that's about 2.6MB), and it worked fine, so I don't anticipate
+any major disasters.
+
+
+usage: pledit [.players] [.global]
+
+
+System requirements: this is a server admin tool.  If you don't have a
+server, this won't help you.  You need a terminal for which "standout" mode
+has meaning (xterms and VT-xxx will work), or you won't be able to see the
+cursor.
+
+This is curses-based, but there are different varieties of curses.  If you
+have a version with some of the more interesting commands (touchline(),
+keypad(), box(w, 0, 0)), then you should #define ENHANCED_CURSES in
+pledit.h.  Otherwise your screen updates may not be as efficient or as
+pretty.  Some systems also lack vfprintf(); just #define "NO_VFPRINTF".
+Also, one system I tried this on (Ultrix) was convinced that the screen was
+65 lines high, and there was nothing I could do to convince it otherwise.
+Apparently the screen size is hard-wired into the terminal emulation, and
+"xterm" was forced to 65, and "vt100" was forced to 24.  Be aware of this
+so you don't get totally confused.
+
+BTW, don't forget that scores files are NOT portable.  You need to do a
+"scores A > foo" and then "newscores < foo" on the remote system.  Even if
+the byte ordering is correct, the floating point representation probably
+isn't.
+
+
+
+MAIN SCREEN:
+
+Use the cursor keys to move the cursor up/down by a line or a page.  You can
+configure the cursor keys from the 'K' menu; the default is vi keys (so k/j
+to move up/down, ^B/^F to move a page, etc).  Right now I know about emacs
+keys, VT-100 keys, and NCD xterm keys.  The definitions themselves are shown
+in the 'K' menu; they correspond to whatever key is appropriate (arrow keys,
+PGUP/PGDN, etc).  You can add your own definitions if you can figure out
+how.
+
+Searches are done with the SEARCH key, which is also configurable.  On most
+setups it's '/', but VT-100 has a "Find" key.  For emacs I had to use ^R
+(reverse search), since ^S would send XOFF (I could use "raw" mode, but I'd
+rather not block keyboard signals).  Of course, ^R is the screen refresh on
+some terminals, but since I explicitly handle ^L it shouldn't be a problem.
+If it is, go into input.c and reenable it, and do something creative with the
+emacs keys.
+
+Currently, searches are exact-match only.  I really didn't feel like dealing
+with the (hideous and probably non-portable) regexp library.  This may change
+in the future.
+
+You can mark a player as deleted by pressing 'd', and undelete him by
+pressing 'u'.  This doesn't actually do anything - no file access is done
+until you tell it to.  It simply marks the player for removal.  Once you
+leave pledit and come back, the player will be gone forever.  If you "oops",
+copy the tilde file back.
+
+You can edit a player by pressing 'e'.  This brings up the edit screen,
+explained below.  You can add a player with the 'a' key; this creates a new
+entry with default values and immediately goes into edit mode.  Note that the
+initial password will be invalid; thus you must change the password or the
+player will be unusable.  (I would consider this more of a feature than a
+bug.)
+
+Saving a file is done with the 'w' key.  You will be prompted before any
+action is taken.  If you decide to write the contents of .players and
+.global, the existing files will be moved to ".players~" and ".global~", and
+new files with the original names will be created.
+
+
+
+EDIT SCREEN:
+
+You can reset the player's keymap to default by hitting 'r'.  Pressing 'a' or
+the space bar will return you to the main menu without saving any changes.
+Pressing 'q' will save any changes you have made, then return to the player
+list.
+
+Pressing 'e' puts you into edit mode.  You can move between fields with TAB
+and Back-TAB (which are whatever is appropriate for your keyboard; for vi I
+have chosen TAB (^I) and delete-word (^W).  You can also just hit RETURN.
+Pressing the ESCAPE key (which may or may not be the ESC key; again, consult
+the 'K' menu for details) will quit edit mode, with your changes intact.  You
+can also get out by tabbing past the last field.
+
+To change a field, just start typing.  The highlighted field will show what
+you are typing (even if you're changing the password; more on that later).
+The backspace/delete key will work.  If you backspace past the beginning of
+the field or hit ESCAPE, the original contents of the field will be
+restored.  You can have the new entry saved by pressing return, TAB, or
+Back-TAB.  You will not be allowed to enter control characters into the
+fields, primarily because they screw up the screen.
+
+Some fields are more useful than others.  The password field will accept
+plain text, and display it as such.  When you leave edit mode, a new password
+will be computed.  Note that if you change the first two characters of a
+player name, you MUST change the password (however, pledit doesn't enforce
+this...  it's useful to "suspend" a player by changing the first character of
+his pseudonym to 'x').  The flags and last_login fields are treated as simple
+integers; if you can't figure out what to do with them, don't worry about
+it.  Yes, it would be neat to expand them, but why bother?
+
+If you change tournament statistics, you are given the option of updating the
+global statistics accordingly.  So if a T-mode scum went up a couple of ranks
+by taking undefended planets, you can reduce his numbers and have the global
+stats automatically reduced by an appropriate amount.  This way the
+artificially inflated T-mode stats will be deflated appropriately.
+
+
+
+I think that's all I wanted to say.  Most of this is intuitively obvious.
+There's some tuneable parameters in "pledit.h" which you may want to look at.
+
+
+That's all, folks...
+

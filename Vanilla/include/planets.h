@@ -1,0 +1,63 @@
+    
+/* planets.h 
+ */
+#include "copyright.h"
+/*
+
+struct planet {
+    int pl_no;
+    int pl_status;
+    int pl_owner;
+    int pl_x;
+    int pl_y;
+    char pl_name[NAME_LEN];
+    pl_namelen
+    int pl_armies;
+}
+*/
+
+#define START_ARMIES	17	
+
+struct planet pdata[MAXPLANETS] = {
+   {  0, FED|PLHOME|PLCORE|PLREPAIR|PLFUEL, FED, 20000, 80000, "Earth", 5, START_ARMIES, FED },
+    {  1, FED, FED, 10000, 60000, "Rigel", 5, START_ARMIES, FED },
+    {  2, FED, FED, 25000, 60000, "Canopus", 7, START_ARMIES, FED },
+    {  3, FED, FED, 44000, 81000, "Beta Crucis", 11, START_ARMIES, FED },
+    {  4, FED, FED, 39000, 55000, "Organia", 7, START_ARMIES, FED },
+    {  5, FED|PLCORE, FED, 30000, 90000, "Deneb", 5, START_ARMIES, FED },
+    {  6, FED, FED, 45000, 66000, "Ceti Alpha V", 12, START_ARMIES, FED },
+    {  7, FED|PLCORE, FED, 11000, 75000, "Altair", 6, START_ARMIES, FED },
+    {  8, FED|PLCORE, FED, 8000, 93000, "Vega", 4, START_ARMIES, FED },
+    {  9, FED, FED, 32000, 74000, "Alpha Centauri", 14, START_ARMIES, FED },
+    { 10, ROM|PLHOME|PLCORE|PLREPAIR|PLFUEL, ROM, 20000, 20000, "Romulus", 7, START_ARMIES, ROM },
+    { 11, ROM, ROM, 45000, 7000, "Eridani", 7, START_ARMIES, ROM },
+    { 12, ROM|PLCORE, ROM, 4000, 12000, "Aldeberan", 9, START_ARMIES, ROM },
+    { 13, ROM, ROM, 42000, 44000, "Regulus", 7, START_ARMIES, ROM },
+    { 14, ROM, ROM, 13000, 45000, "Capella", 7, START_ARMIES, ROM },
+    { 15, ROM|PLCORE, ROM, 28000, 8000, "Tauri", 5, START_ARMIES, ROM },
+    { 16, ROM|PLCORE, ROM, 28000, 23000, "Draconis", 8, START_ARMIES, ROM },
+    { 17, ROM, ROM, 40000, 25000, "Sirius", 6, START_ARMIES, ROM },
+    { 18, ROM, ROM, 25000, 44000, "Indi", 4, START_ARMIES, ROM },
+    { 19, ROM, ROM, 8000, 29000, "Hydrae", 6, START_ARMIES, ROM },
+    { 20, KLI|PLHOME|PLCORE|PLREPAIR|PLFUEL, KLI, 80000, 20000, "Klingus", 7, START_ARMIES, KLI },
+    { 21, KLI, KLI, 70000, 40000, "Pliedes V", 9, START_ARMIES, KLI },
+    { 22, KLI, KLI, 60000, 10000, "Andromeda", 9, START_ARMIES, KLI },
+    { 23, KLI, KLI, 56400, 38200, "Lalande", 7, START_ARMIES, KLI },
+    { 24, KLI|PLCORE, KLI, 91120, 9320, "Praxis", 6, START_ARMIES, KLI },
+    { 25, KLI, KLI, 89960, 31760, "Lyrae", 5, START_ARMIES, KLI },
+    { 26, KLI|PLCORE, KLI, 70720, 26320, "Scorpii", 7, START_ARMIES, KLI },
+    { 27, KLI, KLI, 83600, 45400, "Mira", 4, START_ARMIES, KLI },
+    { 28, KLI, KLI, 54600, 22600, "Cygni", 5, START_ARMIES, KLI },
+    { 29, KLI|PLCORE, KLI, 73080, 6640, "Achernar", 8, START_ARMIES, KLI },
+    { 30, ORI|PLHOME|PLCORE|PLREPAIR|PLFUEL, ORI, 80000, 80000, "Orion", 5, START_ARMIES, ORI },
+    { 31, ORI, ORI, 91200, 56600, "Cassiopia", 9, START_ARMIES, ORI },
+    { 32, ORI, ORI, 70800, 54200, "El Nath", 7, START_ARMIES, ORI },
+    { 33, ORI, ORI, 57400, 62600, "Spica", 5, START_ARMIES, ORI },
+    { 34, ORI|PLCORE, ORI, 72720, 70880, "Procyon", 7, START_ARMIES, ORI },
+    { 35, ORI, ORI, 61400, 77000, "Polaris", 7, START_ARMIES, ORI },
+    { 36, ORI, ORI, 55600, 89000, "Arcturus", 8, START_ARMIES, ORI },
+    { 37, ORI|PLCORE, ORI, 91000, 94000, "Ursae Majoris", 13, START_ARMIES, ORI },
+    { 38, ORI, ORI, 70000, 93000, "Herculis", 8, START_ARMIES, ORI },
+    { 39, ORI|PLCORE, ORI, 86920, 68920, "Antares", 7, START_ARMIES, ORI }
+};
+

@@ -1,0 +1,25 @@
+(Superseded by INSTALL in root directory.)
+
+Here is a _brief_ outline of the steps needed to get the
+server running. Thanks to Micheal Kantner.
+
+
+The steps are really as easy as the following:
+1)  Ftp everything you need (server, res-rsa, xsg)
+2)  decrypt (rsa-only) and uncompress/gunzip everthing.
+3)  Make two directories (you probably already have one of them)
+     netrekroot   (you probably have this one)
+     netrekroot/serverdir
+4)  %cd netrekroot; tar -xf res-rsa
+    %cd netrekroot/serverdir; tar -xf server; tar -xf xsg
+5)  %cd netrekroot/serverdir/res-rsa 
+    %ln -s ../../res-rsa/rsa_util.c .      
+6)  %cd netrekroot/serverdir/configure;  configure
+7)  edit netrekroot/serverdir/config/system.mk  and change only 
+    three lines at most:  XTREKDIR, LIBDIR, XTREKOWNER
+8)  %cd netrekroot/serverdir
+    %make depend
+    %make install
+9)  copy over motd's, player databases, .banned, and .bypass
+    if you have them
+

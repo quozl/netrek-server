@@ -1,0 +1,31 @@
+/var/log/netrek/god.LOG {
+  monthly
+  create 0644 games games
+}
+
+/var/log/netrek/logfile {
+  monthly
+  create 0644 games games
+}
+
+/var/log/netrek/mesg.LOG {
+  monthly
+  create 0644 games games
+}
+
+/var/log/netrek/newstartd.LOG {
+  monthly
+  create 0644 games games
+}
+
+/var/log/netrek/updated.LOG {
+  monthly
+  create 0644 games games
+}
+
+/var/log/netrek/errors.LOG {
+  monthly
+  create 0644 games games
+}
+
+

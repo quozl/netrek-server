@@ -1,0 +1,186 @@
+#	$Id: Makefile.in,v 1.1 2005/03/21 05:23:33 jerub Exp $	
+#
+#	Installers, you should not need to edit this file.
+#	Everything should be setup in the configuration script.
+#
+
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+CONFIG = system.mk
+
+include $(CONFIG)
+
+.PHONY: rmdependencies clean reallyclean install installbin server utils startup rsa_utils do_xsg do_pledit do_robots do_gum
+
+all: null $(PMAKE) server utils startup rsa_utils do_xsg do_pledit do_robots do_robotd @GUM@
+
+depend: system.mk
+	cd ntserv;    $(MAKE) depend
+	cd robots;    $(MAKE) depend
+	cd newstartd; $(MAKE) depend
+	cd tools;     $(MAKE) depend
+	cd pledit;    $(MAKE) depend
+	cd keycomp;   $(MAKE) depend
+	cd sequencer; $(MAKE) depend
+	cd xsg;       $(MAKE) depend
+	cd pledit;    $(MAKE) depend
+	-@if [ -f res-rsa/Makefile ]; then \
+		(cd res-rsa; $(MAKE) depend) \
+	fi
+
+null: 
+	touch null
+	$(MAKE) depend
+
+system.mk: ${srcdir}/system.mk.in ${srcdir}/include/config.h.in ${srcdir}/configure
+	if [ -f config.status ]; then \
+		./config.status; \
+	else \
+		${srcdir}/configure -v; \
+	fi
+
+config.h: system.mk
+	touch config.h
+
+# make the server binaries and such
+server: null rsalib
+	cd ntserv; $(MAKE)
+
+do_robots:
+	cd robots; $(MAKE)
+
+do_robotd: 
+	cd robotd; $(MAKE)
+
+do_gum: 
+	cd gum; $(MAKE)
+
+do_xsg:
+	cd xsg; $(MAKE);
+
+do_pledit:
+	cd pledit; $(MAKE) 
+
+rsalib:	
+	-@if [ -f res-rsa/Makefile ]; then \
+		(cd res-rsa; $(MAKE) librsa.a) \
+	fi
+
+utils: rsalib
+	cd tools; $(MAKE) 
+	cd sequencer; $(MAKE)
+
+rsa_utils: 
+	cd keycomp; $(MAKE)
+
+startup: 
+	cd newstartd; $(MAKE)
+
+cflags.h: Makefile $(CONFIG)
+	cd ntserv;  $(MAKE) cflags
+
+lint:
+	cd ntserv;  $(MAKE) lint
+	cd robots;  $(MAKE) lint
+	cd keycomp; $(MAKE) lint
+	cd tools;   $(MAKE) lint
+
+clean:
+	cd ntserv;    $(MAKE) clean
+	cd robots;    $(MAKE) clean
+	cd robotd;    $(MAKE) clean
+	if [ x@GUM@ = xdo_gum ]; then \
+		cd gum;       $(MAKE) clean; \
+	fi
+	cd newstartd; $(MAKE) clean
+	cd tools;     $(MAKE) clean
+	cd pledit;    $(MAKE) clean
+	cd sequencer; $(MAKE) clean
+	cd keycomp;   $(MAKE) clean
+	cd xsg;       $(MAKE) clean
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
+	fi
+	rm -f make.out name.o name cflags.h *~ null #*#
+
+reallyclean:
+	cd ntserv;    $(MAKE) reallyclean
+	cd robots;    $(MAKE) reallyclean
+	cd robotd;    $(MAKE) reallyclean
+	if [ x@GUM@ = xdo_gum ]; then \
+		cd gum;       $(MAKE) distclean; \
+	fi
+	cd newstartd; $(MAKE) reallyclean
+	cd tools;     $(MAKE) reallyclean
+	cd pledit;    $(MAKE) reallyclean
+	cd sequencer; $(MAKE) reallyclean
+	cd keycomp;   $(MAKE) reallyclean
+	cd xsg;       $(MAKE) reallyclean
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
+		$(MAKE) reallyclean; \
+	fi
+	rm -f make.out cflags.h config.cache config.log tools/trekon *~ null #*#
+
+distclean: clean reallyclean rmdependencies
+
+installbin: all
+	cd ntserv;    $(MAKE) install
+	cd robots;    $(MAKE) install
+	cd robotd;    $(MAKE) install
+	if [ x@GUM@ = xdo_gum ]; then \
+		cd gum;       $(MAKE) install; \
+	fi
+	cd newstartd; $(MAKE) install
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install; \
+	fi
+	cd tools;     $(MAKE) install
+	cd keycomp;   $(MAKE) install
+	cd pledit;    $(MAKE) install
+	cd sequencer; $(MAKE) install
+	cd xsg;       $(MAKE) install
+
+install: installbin 
+	cd docs;   $(MAKE) install
+	cd tools;  $(MAKE) installtrekon
+	-cd tools; ./convert
+	@echo
+	@echo "Vanilla Netrek Server installation is completed."
+	@echo "To start your Netrek server, type $(LIBDIR)/netrekd"
+	@echo "Then start a Netrek client with '-h localhost'"
+
+name: ${srcdir}/name.c ${srcdir}/version.h ${srcdir}/patchlevel.h
+	$(CC) $(CFLAGS) ${LDFLAGS} -DMVERS -o name ${srcdir}/name.c
+
+solarispatches: name rmdependencies
+	cd $(PATCHDIR)/Server; $(MAKE) name
+	cd $(SOURCE)
+	./patches
+
+# for people on dynix, parallel compiling:
+# /bin/make BINDIR="$(BINDIR)"parallel
+#parallel: & pntserv startup xsg
+# commented out because of all the whining from Ultrix and other people
+# whose make BINDIR="$(BINDIR)"BINDIR="$(BINDIR)"barfs on it.  All I can say is: compile gnumake.
+
+
+# more fun parallel compiling
+pntserv:
+	cd ntserv; /bin/make BINDIR="$(BINDIR)"BINDIR="$(BINDIR)"-P10 CC="$(CC)" EXTRALIBS="$(EXTRALIBS)" \
+	    EXTRACFLAGS="$(EXTRACFLAGS)" XTREKDIR="$(XTREKDIR)" parallel
+
+rmdependencies:
+	cd ntserv;    $(MAKE) rmdependencies
+	cd robots;    $(MAKE) rmdependencies
+	cd newstartd; $(MAKE) rmdependencies
+	cd tools;     $(MAKE) rmdependencies
+	cd pledit;    $(MAKE) rmdependencies
+	cd keycomp;   $(MAKE) rmdependencies
+	cd sequencer; $(MAKE) rmdependencies
+	cd xsg;       $(MAKE) rmdependencies
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "      cd res-rsa; make rmdependencies"; \
+		$(MAKE) rmdependencies; \
+	fi

@@ -1,0 +1,53 @@
+# Change CONFIG to be the .mk file that matches your system in config
+
+CONFIG = ../system.mk
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+# Do not change anything below this line. They should be setup in config.
+
+include $(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+N_SRC = ${srcdir}/newstartd.c ${srcdir}/newaccess.c ${srcdir}/subnet.c
+N_OBJS = newstartd.o newaccess.o subnet.o
+
+LIBS = $(EXTRALIBS)
+
+GETPATH_SRC = ${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c
+GETPATH = ../ntserv/getpath.o ../ntserv/data.o
+
+CFLAGS = $(FLAGS) $(EXTRAFLAGS) $(PORT) -I. -I${srcdir} -I../include -I${srcdir}/../include
+
+all: newstartd
+
+newstartd: $(N_OBJS) $(GETPATH)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(N_OBJS) $(GETPATH) $(LIBS)
+
+clean: rmdependencies
+	/bin/rm -f *.o make.out core
+
+reallyclean:  clean 
+	rm -f newstartd *~ #*#
+
+uninstall:
+	-cd $(LIBDIR); rm -f newstartd
+
+install: newstartd
+	-@if [ ! -d $(LIBDIR) ]; then \
+          /bin/mkdir $(LIBDIR); \
+        fi
+	$(INSTALLPROG) $(INSTALLOPTS) newstartd $(LIBDIR)/newstartd
+	(cd $(LIBDIR); /bin/rm -f netrekd; /bin/ln -sf newstartd netrekd)
+
+depend: 
+	${CC} -M  $(CFLAGS) $(N_SRC) $(GETPATH_SRC) > .depend
+
+rmdependencies:
+	rm -f .depend
+
+sinclude .depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -1,0 +1,62 @@
+#
+# Sample .xsgrc
+# (put this in $HOME/.xsgrc)
+#
+
+# your name here (or something meglomaniac like LORD-GOD-ALMIGHTY)
+godsname:	GOD
+
+color.red:	orange
+
+#
+# Boolean parameters
+#
+
+showshields:		on
+reportkills:		on
+msgbeep:		on
+showposn:		on
+mapfire:		on
+clock:			on
+
+#
+# Record options (to playback use xsg -f <record file>)
+# If recordfile ends with a '/' then a record file of the form xsg.rf.<pid>
+# will be placed in that directory.  Otherwise it's interpreted as a file
+# name.
+recordfile:		./
+# Record speeds are:
+# 0 - 5 frames/second
+# 1 - 4 frames/second
+# 2 - 2 frames/second
+# 3 - 1 frame /second
+# BUT the update/second rate must be divisible by the frame/second rate,
+# i.e. 0 (5 u/s) and 3 (1 f/s), 1 (4 u/s) and 2 (2 f/s), etc..
+recordspeed:		3
+
+# Number of frames to skip each time while fast forwarding.
+frameskip:		20
+
+# Number of frames to allocate in rewind buffer
+allocframes:           200
+
+#
+# Multi-option parameters
+#
+
+# For local/galactic map, 0 is "show owner", 1 is "show resources" and 2 is
+# "show nothing".
+showlocal:		1
+showgalactic:		1
+
+# For map mode, 0 is "don't update", 1 is "update rarely", and 2 is "update
+# frequently".
+mapmode:		2
+
+# Update speeds are:
+# 0 - 5 updates/second
+# 1 - 4 updates/second
+# 2 - 2 updates/second
+# 3 - 1 update /second
+updatespeed:		0
+

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Netrek Server
+Comment=Netrek Server
+Exec=netrekcfg
+Terminal=0
+Type=Application

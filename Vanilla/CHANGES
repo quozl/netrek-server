@@ -1,0 +1,622 @@
+Changes File, see tail for latest.
+
+pl3 - pl4 : Tue Jul 13 15:42:29 PDT 1993
+
+	Fixed daemon and gcc problem with writeable strings. - Mark Levine.
+	Many many SYSV changes and mods for sequent machines - Kurt Siegl.
+	rsa-server.c added to the standard distribution.    - Nick Trown
+
+pl4 - pl5 : Mon Jul 19 12:47:13 PDT 1993
+	improved the update daemon and fixed small errors.  - Nick Trown
+
+pl5 - pl6 : Wed Jul 21 11:24:04 PDT 1993
+	added more config files based on INL config files. Supported
+	  systems now include: hpux, sun, ultrix, aix, sgi,
+	  and ptx.					    - Nick Trown
+	Fixed makefiles to support parallel makes.	    - Kurt Siegl.
+	small enhancements to updated.			    - Nick Trown
+	added sysdef for t-mode scumming checking.	    - Nick Trown
+	"make install" now makes a startup script for you.  - Nick Trown
+
+pl6 - pl7 : Tue Jul 27 12:46:34 PDT 1993
+	fixed timecheck/closed checking.		    - Nick Trown
+	Misc. changes to the makefile.			    - Nick Trown
+	small changes in RESTRICT_BOMBING and daemonII robot
+	  calling handling.				    - Nick Trown
+	Added more support for xsg.	  		    - Nick Trown
+pl7 - pl8 : Thu Jul 29 16:12:49 PDT 1993
+	added comments and more options to .features file.  - Nick Trown
+	Added NEWSHIP define to select between normal ships
+	  and riovista style ships. (Battleship's phasers
+	  don't cost as much, assault's torpcost doesn't
+	  cost as much, higher wpntemp for SBs)		    - Nick Trown / jmn
+	Now supports Linux.				    - Kurt Siegl.
+	Added Daemon Sychronization.			    - Tedd Hadley / NBT
+pl8 - 2.01pl0 : Wed Aug 18 21:54:34 PDT 1993
+	More fixes for robots when all players leave the
+	   game 					   - Mark Levine.
+	Made the Makefiles smarter. Now checks for Makefile
+	   in res-rsa since PGP doesn't come with one. Also
+	   checks to see if LIBDIR exists.		   - Nick Trown
+	Fixed many many links for defs.h, data.h, data.c, 
+	   and getpath.c				   - Nick Trown
+	The tools are now installed in LIBDIR/tools (if
+	   you're upgrading from an older version then you
+	   should rm LIBDIR/*). 			   - Nick Trown
+	More Linux support of SLS 1.2 and 1.3		   - Kurt Siegl.
+	Defines are removed from the .mk files. A new file
+	   in config called config.h has all the defines
+	   and also machine dependent include file
+	   checking.					   - Kurt Siegl.
+	Server messages and warnings use varargs now to
+	   reduce the amount of temporary buffers and use
+	   of sprintf.					   - Nick Trown
+	Fixed small bug with CHAIN_REACTION taking away
+	   your kills when TEAM kill happens.		   - Nick Trown
+	New Getentry team selection function that should
+	   be better and faster than the old one. It
+	   allows for more choice in team selection and
+	   is less rigid than the old one.		   - Mark Levine.
+	Added support for the .clue-bypass. It uses the 
+	   same format and the bypass file. What happened
+	   to it? 					   - Nick Trown
+	Added support for NTSERV in makescript.		   - Dave Gosselin
+	Added new CHAIN_REACTION code from INL server.     - Tedd Hadley / NBT
+	Fixed small date problem with updated		   - Brian O'Neill
+	Added !confirm to features.c. This sends a string 
+	   to only a client that is older than the version 
+	   specified.					   - Nick Trown
+	Fixed conquer message flags.			   - Nick Trown
+	Short Packets have been updated to pl14.	   - Hadley, Heiko, nbt	
+	Added support for 64 bit machines (alpha)	   - nbt, Pagnucco
+	Got rid of hard-coded message sizes		   - Nick Trown
+	Made features.c smarter				   - Nick Trown
+	Added variable distress code			   - jmn, jn, nbt
+	Added Max pop code for non-tmode		   - Nick Trown
+	Added SB kills/hours to scores.c		   - Alec Habig
+	Added pledit.					   - Habig, nbt
+	Updated to new puck code (from ksu)		   - Kantner
+2.01pl0 - 2.01pl1 : Mon Sep 27 18:19:21 PDT 1993
+	Ultrix fixes					   - Habig
+	Makescript fixes				   - Habig , nbt
+	distress.c (RCD) fixes				   - nbt, nelson, jmn
+	class field added to rsa_keycomp		   - Hadley
+2.01pl2 - 2.01pl2 : Mon Oct  4 13:06:50 PDT 1993
+	More ultrix / alpha fixes			   - O-Neil, Habig
+	distress.c (RCD) non-rcd client fix		   - nbt
+	Cleaner Makefiles				   - Habig, nbt
+	configure script				   - Siegl
+2.01pl2 - 2.01pl3 : Thu Oct 14 16:20:19 PDT 1993
+	Short Packet fixes for watchmes, showgalaxy, xsg   - Habig
+	More code cleanup				   - nbt
+	Distress.c changes				   - jmn, Nelson, nbt
+	Autoconf changes				   - Siegl
+	Transwarp option added				   - Habig
+2.01pl3 - 2.01pl4 :
+	Ran server through lint				   - nbt
+	5x bonus for last planet army bombed define	   - Habig
+	SGI Patches					   - Siegl, Pregler
+	More ship customization defines			   - Habig
+	Fixed ntserv spinning bugs			   - nbt
+	Made gwrite more robust to errors		   - nbt
+	Updated ping.c code				   - nbt, Hadley
+	Fixed loadcheck code				   - Pregler
+	Added class exclude to rsa_keycomp		   - nbt
+	Fixed unwarring bombing so you can bomb enemy
+	   planets in 3rd space				   - Habig	
+	Fixed war status bug for feds			   - nbt
+	Added date to t-mode scum checking		   - Habig	
+	Added initial army limit for planets
+	   (sysdef START_ARMIES)			   - Habig
+	Fixed watchmes and showgalaxy for RCDs		   - Habig
+	Added Error file control (sysdef ERROR_LEVEL)      - nbt
+	Added base practice code			   - Siegl
+	Updated hockey code				   - Kantner
+2.01pl4 - 2.01pl5:
+	Fixed uint, ushort, uchar type defines		   - nbt
+	Fixed start_server script			   - nbt
+	made transwarping not allowed during red alert	   - Habig
+	Fixed 64bit problem with pledit			   - O-Neil
+	Fixed features bug				   - nbt
+	Fixed metaserver player listing			   - nbt
+2.01pl5 - 2.02:
+	Fixed Makefile for pledit			   - Habig
+	Added planet credit for throwing a coup		   - Habig
+	Added NEW_CREDIT define. 1/3 credit for neuting,   - Habig
+	    2/3 for destroying
+	Added FASTER_SB_MAXUPDATES which allows SBs 	   - Habig, Sheldon
+	    10 ups/sec.					   
+	minor sgi, linux and ptx config fixes.		   - Siegl
+	Basepractice server controllable via .sysdef	   - Siegl
+	Fixed FLAT_BONUS define. It  was not adjusting the - Habig
+	    global armies bombed correctly.
+	Added Basepractice support to updated		   - Siegl
+	SB stats only updated in tmode			   - Habig
+	Send someone a ^ for SB stats			   - Habig
+	Fixes to pledit, main and ntserv Makefiles	   - Habig
+	SBHOURS .feature added - add a SBHOURS line to 	   - Habig
+	    the COW entry in .feature
+	update.c made a "-t" file due to misordered 	   - Habig
+	    parameters to keycomp call
+	Included Dogfighting "mars" robot		   - Nelson, nbt
+	Made new command interface			   - nbt
+	Fixed conquer/genocide bug			   - Habig
+	make xtkill use correct paths			   - Habig
+	Don't allow ship out of transwarp until 12.5% left - Habig
+	SCO patches					   - Sheldon
+	Vector torps from Calvin			   - Sheldon
+	Fixed wander code				   - Sheldon
+	Added code to redefine ship stats from .sysdef	   - Sheldon
+	SB contruction time is not reset out of tmode	   - Habig
+	Puck, Mars, and pickup use new command interface   - nbt
+	Fixed .bypass.					   - Habig
+	Added more functionality to scores tool.	   - Habig
+	Fixed repair flag while etemped bug.		   - Habig
+	Fixed topgun and angels problem			   - Siegl
+2.2 - 2.2pl1:
+	Fixed getship sysdefaults			   - Sheldon
+	Made changes to eject/command.c			   - nbt
+	   1) Eject messages sent to player only
+	   2) Whole team has to agree to eject player 
+	   3) ALLOW_EJECT turned off by default
+	Made message array larger.			   - nbt
+	Fixed SB refitting docking permissions		   - Habig
+	Fixed SB refitting while a player is t-warping     - Habig
+	Fixed newscore problem				   - Habig
+	Makefile bugfixes (for robots)			   - Habig
+	Added links for strdup.c			   - Habig, nbt
+	Added TIME command				   - Habig
+	Added QUEUE command				   - nbt
+2.2 - 2.5:
+	Included INL's Observer code 			   - nbt
+	Made Split queue.				   - Siegl
+	Started INL robot				   - nbt
+	Fixed watchmes to use MAXMESSAGE		   - Kantner
+	Fixed robots to use MAXMESSAGE			   - Kantner
+	Made transwarp only work in green alert		   - Habig
+	Added multi-line macro ignore.			   - nbt
+	Added lost planet packet fix.			   - Hadley
+	Fixed Xsg for sysdefaults and MAXMESSAGE	   - Habig
+	Fixed short packet bug for "sending variable and
+	   short packets." message.			   - Heiko
+	Made dog-fighting robot save stats.		   - Nelson
+	Merged players_d into newstartd.		   - nbt
+	Added openmem.c file to get rid of redundancies.   - Kantner
+2.5 - 2.5pl1:
+	Fixed mess tool message insertion.		   - nbt
+	Added genocide counter option.			   - Habig
+	Added features packet code.			   - Hadley, Rumsey	
+	Added additional cloak detection.		   - Rumsey
+	Fixed split-queue wait queue problem.		   - nbt
+	Various basep & robot improvements.		   - Siegl
+	Fixed potential course bug.			   - Siegl
+	make players_d use openmem.c.			   - nbt
+	Added independent-planet update fix		   - Hadley
+	Added short-packets precision loss fixes.	   - Hadley
+	Made keycomp produce nicer motd key listings	   - Hadley
+	Made cluecheck verify when turned on by .time	   - nbt
+	Added support for features port 3531 to updated.   - nbt
+2.5pl1 - 2.5pl2:
+	misc. Makefile cleanups				   - nbt
+	Dynix patches					   - Mehlhaff
+	death detection (still in test stage)		   - nbt
+2.5pl2 - 25.pl3:
+	Added touching enemy planet bonus to FLAT_BONUS	   - Habig
+	Fix SB updates after it dies.			   - Habig
+2.5pl3 - 2.5pl4:
+	Added ship info packets for different ship stats   - Habig
+	Made changes to creditting system		   - Habig
+	Improved voting					   - Kantner
+	Improved robots (commands, functionality)	   - Siegl
+	Improved INL robot commands			   - Siegl
+	Added gametime to INL robot			   - nbt
+	Fixed pickside in INL robot			   - nbt
+	Changed teleport delay to smaller value for mars   - ctso
+	Added scout round, matchnum reset, reset 
+	   toolate2join					   - ctso
+
+2.5pl4 - 2.6pl0:
+	Added BALANCE and TRIPLE votes			   - Cameron
+	Merged COW and VANILLA configuration		   - Siegl
+	Replaced wait queue logic			   - Kantner
+	Votes & commands abbreviation removed		   - Kantner
+	Changes to PUCK					   - Kantner
+	Common Robot Code				   - Kantner
+	Fixes to build on DEC OSF/1 AXP			   - Ollis
+	Can't tractor off planet bug			   - McFadden
+	Fixes to XSG					   - Pregler
+	Moved bounce commands out of socket.c		   - Trown
+	Keycomp fix					   - Hadley
+	Solaris aix fixes				   - Trown
+	New flags for updated				   - Trown
+	Touch .bypass in makefile                    	   - Trown
+	Game pausing changes				   - Kantner
+	Place MESSAGES_ALL_TIME in config.h.in		   - Habig
+	Distribution symbolic link fixups		   - Kantner
+	INL robot timing fix (PERSEC)			   - Cameron
+	Tail wagging fix (midflight wobble)		   - Cameron
+
+2.6pl0 - 2.6pl1:
+	Fixed lack of queue source in manifest             - Cameron
+	Merged XSG into source tree                        - Cameron
+        Misc small release fixes                           - Cameron
+
+2.6pl1 - 2.6pl2:
+	Configure fixes					   - Siegl
+	BALANCE and TRIPLE messaging fixes		   - Cameron
+	No more abbreviated command messages               - Kantner
+	Fixes to README to remove references to playerd    - Trown
+	Pollux & Castor become Praxis & Achernar	   - Habig (NBR)
+	Changed keycomp/struct.h to a symbolic link	   - Cameron
+	HOMEWQ -> QU_HOME etc in inl.c, inldefs.h          - Kantner
+	Gameup constants renamed in struct.h               - Kantner
+	Avoid BALANCE in INL robot			   - Cameron
+	Avoid typedef enum diagnostics (pledit.h)          - Barnes
+	Fix watchmes.c corruption of shared memory msgs    - Siegl
+	Fix SIGTERM handling in ntserv			   - Kantner
+
+2.6pl2 - 2.6pl3:
+	Robot patches					   - Siegl
+	Trivial data.c other1 patch                        - Habig
+	Fixed planet wandering				   - Kantner
+	Fixed wait queue bug				   - Kantner
+	Fixed xtkill slot free logic to use slotmaint.c	   - Habig
+	Linux fixes: Mars signals, zombies and performance - Siegl
+	Autostart and terminate of robots		   - Siegl
+	Mars not resetting stats, bad sizeof()		   - Forsman
+	Fixed xsg slot free logic to use slotmaint.c       - Habig
+	Remove obsolete co-pilot bug fixes		   - Kantner
+	Minor code cleanup: daemonII.c and openmem.c	   - Kantner
+	Added Geno count logic to scores.c		   - Habig
+	Reset surrender and SB rebuild timeouts setgalaxy  - Habig
+	Fixed runaway observer ntserv (redraw.c)	   - Kantner
+	Minor code cleanup: tournamentMode()		   - Kantner
+	Minor nint() fixes for hpux			   - Trown
+	Minor docs/tools.doc nit			   - Ellis
+	Autoconfig upgrade to release 2.x		   - Siegl
+	Add external rint replacement function		   - Siegl
+	Planet orbit bug (ex tractor/orbit fix) fixed      - Habig
+	Puck changes that allow inhl port usage            - Kantner
+
+2.6pl3 - 2.6pl4:
+	Replaced docs/Makefile					- Habig
+	Removed include of sys/shm.h from daemonII.c		- Kantner
+	Include references for GENO_COUNT behaviour		- Habig
+	Add high clue checking; skill questions			- Siegl
+	Symbolic link for robots/data.c missing                 - Pirnie
+	Add repeat clue checking based on team message usage	- Habig
+	Fixes to newstartd for Linux                            - Pirnie
+	Avoid symbolic links for "make patches"			- Cameron
+	Remove docs/makescript from manifest			- Cameron
+	Document usage output from ntserv			- Cameron
+	Added touch .nocount to docs/Makefile			- Cameron
+
+2.6pl4 - 2.7pl0:
+	Added keycomp/rint.c to manifest, was missing		- Pirnie   01
+	Robot messaging patches					- Kantner  02
+	Repeat clue check only if wait queue			- Habig    03
+	Replaced orbit.c					- Leonard  04
+	Fixed atof() for MAXLOAD in ntserv/sysdefaults.c	- Pirnie   05
+	Practice robot random ship type				- Pirnie   06
+	Replaced phaser.c					- Leonard  07
+	Replaced detonate.c					- Leonard  08
+	Added Galaxy ship class					- Pirnie   09
+	Added cluerank to .sysdef				- Pirnie   09
+	Changed HOSEFUSE to 30 minutes				- Pirnie   09
+	Changed terminators to Galaxy class			- Pirnie   09
+	Added support for random practice robot class		- Pirnie   09
+	Added master motd's to install				- Pirnie   09
+	Make keycomp/defs.h symbolic link			- Habig    10
+	Make keycomp/data.h and getpath.c symbolic links	- Trown    11
+	Avoid observer induced t-mode				- Habig    12
+	Remove duplicate numShips() code			- Habig    13
+	Minor starbase docking patch (not short packets)	- Dickens  14
+	Added observer logon message				- Sudish   15
+	Fix crash on observer messaging self			- Habig    16
+	Make robots/util.c symbolic link			- Habig    17
+	Restrict observer team changing				- Kantner  18
+	Fix queue player query commands				- Kantner  19
+	Remove NEWMASK define references			- Kantner  20
+	Update tools/stat for new information available		- Kantner  21
+	Document default .ports file changes			- Kantner  22
+	Also touch .banned and .bypass during virgin install	- Kantner  23
+	Robot patches for observers				- Kantner  24
+	
+	(2.7pl0 was pre-released at this state on 17th June 1995)
+
+	Further restrict observer team selection		- Kantner  25
+	Major torpedo unity patches                             - Leonard  26
+	Solaris compile fixes (bcmp->MCMP et al)		- Lindqvist27
+	War settings and player name optimisation		- Leonard  28
+	Fix to random robot class				- Pirnie   29
+	Phaser.c patches					- Leonard  30
+
+	(2.7pl0 was formally released for beta testing on 22nd June 1995)
+
+2.7pl0 - 2.7pl1:
+	Remove duplicate CLUERANK from sample_sysdef		- Habig    01
+	Minor defs.h and struct.h patch				- Habig    02
+	Add high cluecheck to .sysdef				- Siegl    03
+	Make p_lastseenby a signed char				- Siegl    04
+	Change to phaser.c for legibility of code		- Leonard  05
+	Minor edits to compile on OSF V3.0			- Habig    06
+	Phaser fix Alphas, nint(sqrt((double)range_sq))		- Leonard  07
+	Minor docs patch CHECK_MESG in CUSTOMIZATION		- Campbell 08
+	More CHAOS modifications				- Pirnie   09
+	Allow multiple practice robots to be called in		- Cameron  10
+	Change practice robots to ignore each other		- Cameron  11
+	Reset updates per second on refit out of base		- Habig    12
+	Include extern struct plasmatorps in data.h		- Kantner  13
+	Messages to God modifications				- Kantner  14
+	Minor changes to xsg signals				- Kantner  15
+
+	(2.7pl1 was released 12-Oct-1995)
+
+2.7pl1 - 2.7pl2:
+	Allow xsg to use web downloaded recordings		- Cameron  01
+	Global double changes (must use "make install"!)	- Trown    02
+	Minor makefile buglet (touch .clue-bypass)		- Habig    03
+	Observer voting patch (they may not vote)		- Habig    04
+	Clue ejection (text on stdout, no observer army drop)   - Habig    05
+	Allow CHAIN_REACTION for sgi and Solaris		- Siegl    06
+	Fixes for compilation on AIX				- Wengler  07
+		(note: some text of mail not understood)
+	Dogfight robot fixes					- Ellis    08
+
+	(Change numbers now refer to VANILLA-L message numbers)
+	Observers should not be clue checked			- Habig	    4
+	Change "queue" to "pqueue" for Solaris			- O'Conner 16
+		(note: patch incomplete, name changed to pqueue)
+	INL statistics with event logging			- Siegl    19
+	Fix 180 degree phaser bug				- O'Conner 22
+	Restore nasty ping message hack				- Trown    25
+		(note: patch was reversed)
+	Multiple changes					- Trown    30
+	Eek on mzero in freeslot()				- Trown    38
+	Add sortdb tool						- Trown    39
+		(note: ref to se.name should be se[num_players].name)
+	Hockey robot slot count fix                             - Glamm    46
+	Memory leak fix for update.c				- Kantner  48
+	
+	(2.7pl2 was released 09-Jan-1996)
+
+2.7pl2 - 2.7pl3:
+	Update bigbang ships define in docs/sample_sysdef	- Habig    51
+	Ejection message to stdout fix				- Habig    61
+	Observer clue check causes accvio or alpha loop		- Habig    66
+	ntserv/defs.h NODET (char) cast				- Heiko    84
+	Updates to docs/sample_features				- Habig    89
+	Daemon Synchronisation #ifdef Removal			- Kantner  163-7
+	Linux (Posix) setjmp fixes				- Siegl    234
+	Include Digital Game Sequencer				- Cameron
+
+	(2.7pl3 was released 25-Jul-1996)
+
+2.7pl3 - 2.7pl4:
+
+    [VANILLA-L:252] Re: Why make install builds xsg?
+    	Alec Habig
+    	Not applied, couldn't figure it out.
+    
+    Re: [VANILLA-L:270] Server 2.7pl3 Released
+    	Sven Neuhaus
+    	Not applied, couldn't figure it out.
+
+    [VANILLA-L:272] typo in 2.7pl3
+        Sven Neuhaus
+        Applied.
+        
+    [VANILLA-L:289] Cloaking fixes
+    	Brian Paulsen via Alex Habig
+    	Applied.
+
+    [VANILLA-L:298] Vector torp code fix
+        Brian Paulsen
+        Applied.
+
+    [VANILLA-L:301] Fixes to watchmes.c
+    	Brian Paulsen
+    	Applied.
+    
+    [VANILLA-L:304] guest observers and counting bugs
+    	Alec Habig
+    	Applied.
+    
+    rec.games.netrek "Server question..." lindner.844700879@babylon4
+        David Lindner
+        Applied.
+    
+    [VANILLA-L:319] pwstats.pl Perl script
+    	Kurt Siegl
+    	Applied.
+    
+    [VANILLA-L:318] PWstats (Server diffs)
+    	Kurt Siegl
+    	Applied.
+    
+    [VANILLA-L:328] Problems with newstartd under IRIX (solved!)
+    	Rob Lindenbusch
+    	Not applied, nowhere to put it?
+    
+    rec.games.netrek "Re: Plasma damage?" 57tqcf$q11@nntp5.u.washington.edu
+        Dean Yasuda via Alec Habig
+        Not applied, untested
+    
+	(2.7pl4 was released improperly 10-Apr-1997)
+
+2.7pl4 - 2.7pl5:
+
+	Date: Fri, 4 Apr 1997 23:19:34 -0800 (PST)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:465] INL Robot server mods - part 2
+
+	Date: Fri, 4 Apr 1997 23:38:56 -0800 (PST)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:466] INL Robot server mods - part 1
+
+	Date: Sat, 5 Apr 1997 01:36:16 -0800 (PST)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:467] INL Robot patches
+
+	Date: Tue, 8 Apr 1997 23:59:55 -0700 (PDT)
+	From: habig@mochi.icrr.u-tokyo.ac.jp (Alec Habig)
+	Subject: [VANILLA-L:470] tmode and surrender setting bug fix
+
+	Date: Sat, 12 Apr 1997 17:14:36 -0700 (PDT)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:492] Re: Kevin & Kurt's changes to robots/inl.c
+
+	Date: Sun, 13 Apr 1997 12:17:27 -0700 (PDT)
+	From: Kurt Siegl <007@freemail.at>
+	Subject: [VANILLA-L:494] Log file base pwstats
+
+2.7pl5 - 2.7pl6:
+
+	Date: Tue, 15 Apr 1997 22:28:32 -0700 (PDT)
+	From: RHS Linux User <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:499] Assorted bug fixes.
+
+	Date: Wed, 16 Apr 1997 23:14:16 -0700 (PDT)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:502] Fix to mess.c
+
+	Date: Thu, 17 Apr 1997 18:45:23 -0700 (PDT)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:505] Re: Fix to mess.c
+
+2.7pl6 - 2.7pl7:
+
+	Date: Mon, 21 Apr 1997 17:01:31 -0700 (PDT)
+	From: Bob Tanner <tanner@real-time.com>
+	Subject: [VANILLA-L:541] 2.7pl6 diffs for Solaris 2.5.1
+
+	Date: Tue, 22 Apr 1997 01:27:51 -0700 (PDT)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:544] Re: Just announcing them
+
+	Date: Wed, 23 Apr 1997 23:40:15 -0700 (PDT)
+	From: James Cameron <cameron@ogg.stl.dec.com>
+	Subject: [VANILLA-L:546] Patch to allow BALANCE in INL pre-game
+
+	From: Michael Kantner <kantner@cds.caltech.edu>
+	Date: Tue, 6 May 1997 15:17:29 -0700 (PDT)
+	Subject: tools/ patches
+
+	From: Michael Kantner <kantner@cds.caltech.edu>
+	Date: Tue, 6 May 1997 15:17:44 -0700 (PDT)
+	Subject: ntserv/ patches
+
+2.7pl6 - 2.7pl7:
+
+        Date: Mon, 21 Apr 1997 17:01:31 -0700 (PDT)
+        From: Bob Tanner <tanner@real-time.com>
+        Subject: [VANILLA-L:541] 2.7pl6 diffs for Solaris 2.5.1
+        http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00081.html
+
+        Date: Tue, 22 Apr 1997 01:27:51 -0700 (PDT)
+        From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+        Subject: [VANILLA-L:544] Re: Just announcing them
+        http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00084.html
+
+        Date: Wed, 23 Apr 1997 23:40:15 -0700 (PDT)
+        From: James Cameron <cameron@ogg.stl.dec.com>
+        Subject: [VANILLA-L:546] Patch to allow BALANCE in INL pre-game
+        http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00086.html
+
+        Date: Thu, 1 May 1997 00:41:18 -0700 (PDT)
+        From: cameron@ripper.stl.dec.com (James Cameron)
+        Subject: [VANILLA-L:573] Proposed xsg modifications for 2.7pl7
+        http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00113.html
+
+        Date: Tue, 6 May 1997 15:17:29 -0700 (PDT)
+        From: Michael Kantner <kantner@cds.caltech.edu>
+        Subject: tools/ patches
+
+        Date: Tue, 6 May 1997 15:17:44 -0700 (PDT)
+        From: Michael Kantner <kantner@cds.caltech.edu>
+        Subject: ntserv/ patches
+
+	Date: Wed, 7 May 1997 10:42:59 -0700 (PDT)
+	From: Kurt Siegl <Kurt.Siegl@risc.uni-linz.ac.at>
+	Subject: [VANILLA-L:598] pwstats.pl fixes
+	http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00138.html
+
+	Date: Wed, 14 May 1997 09:49:03 -0700 (PDT)
+	From: Michael Kantner <kantner@cds.caltech.edu>
+	Subject: [VANILLA-L:604] Patches for puck and a .sysdef addition.
+	http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00144.html
+
+	Date: Wed, 14 May 1997 09:49:44 -0700 (PDT)
+	From: Michael Kantner <kantner@cds.caltech.edu>
+	Subject: [VANILLA-L:605] Minor puck patches for robots/ directory
+	http://www.vec.bgsm.edu/~ahn/netrek/vanilla-l/msg00145.html
+
+2.7pl7 - 2.8pl0:
+
+	Date: Thu, 3 Jul 1997 21:27:12 -0700 (PDT)
+	From: "Kevin O'Connor" <joeocon@worldnet.att.net>
+	Subject: [VANILLA-L:629] Minor INL robot upgrade
+	
+	Date: Mon, 1 Dec 1997 23:56:23 -0600
+	From: Bob Tanner <tanner@real-time.com>
+	Subject: [VANILLA-L:722] Eject/Eject patch
+
+	Date: Thu, 05 Feb 1998 23:33:31 -0500
+	From: "Kevin O'Connor" <koconnor@acsu.buffalo.edu>
+	Subject: [VANILLA-L:787] socket.c
+	
+	Date: Thu, 05 Feb 1998 23:36:34 -0500
+	From: "Kevin O'Connor" <koconnor@acsu.buffalo.edu>
+	Subject: [VANILLA-L:788] genspkt.c
+	
+	Date: Fri, 6 Feb 1998 00:14:36 -0500 (EST)
+	From: koconnor@acsu.buffalo.edu
+	Subject: [VANILLA-L:789] Cambot patch
+
+	Date: Thu, 26 Feb 1998 17:29:31 -0500 (EST)
+	From: koconnor@acsu.buffalo.edu
+	Subject: [VANILLA-L:804] Change to default sysdef file( removal of auto-doosher )
+
+        Date: Thu, 26 Mar 1998 14:05:41 +1100
+        From: James Cameron <cameron@stl.dec.com>
+	Subject: [VANILLA-L:820] Metaserver Solicitation Daemon Crash
+
+	Date: Wed, 15 Apr 1998 09:10:30 -0400 (EDT)
+	From: Jeffrey Nowakowski <jeffno@ccs.neu.edu>
+	Subject: [VANILLA-L:838] Vicious eject bug fix
+
+	Date: Tue, 21 Apr 1998 12:04:21 +1000
+	From: James Cameron <cameron@stl.dec.com>
+	Subject: [VANILLA-L:847] Overheat state propogated to refitted ships
+
+	(2.8pl0 released 23-Apr-1998)
+
+2.8pl0 - 2.8pl1:
+
+	Date: Fri, 18 Sep 1998 05:12:09 -0400 (EDT)
+	From: Jeffrey Nowakowski <jeffno@ccs.neu.edu>
+	Subject: [VANILLA-L:1067] Patch: Reset galaxy and INL robot
+
+	Date: Mon, 21 Sep 1998 17:47:07 -0400 (EDT)
+	From: Jeffrey Nowakowski <jeffno@ccs.neu.edu>
+	Subject: [VANILLA-L:1069] Patch: .global, convert.c
+
+	Date: Mon, 28 Sep 1998 02:29:11 -0400 (EDT)
+	From: Jeffrey Nowakowski <jeffno@ccs.neu.edu>
+	Subject: [VANILLA-L:1087] Re: [VANILLA-L:1086] Problem with 2.8pl0
+
+2.8pl1
+
+	Source has been moved to CVS on cvs.us.netrek.org.
+	We are not yet sure how to handle this change log.
+
+	14th November 1998
+	cameron@stl.dec.com
+	Removal of setjmp/longjmp from ntserv.
+
+	16th November 1998
+	cameron@stl.dec.com
+	Edit voting status messages to indicate who we are waiting on.
+
+        NOTE: FURTHER CHANGES ARE TRACKED IN THE FILE ChangeLog
+

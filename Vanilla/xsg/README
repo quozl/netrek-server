@@ -1,0 +1,63 @@
+
+XShowGalaxy v2.1
+
+ By Andy McFadden (fadden@uts.amdahl.com), 
+ Contributors:
+    Brian Paulsen (paulsb@fi.gs.com)
+    Bharat Mediratta (Bharat.Mediratta@Eng.Sun.Com)
+    Jimmy Huang (jimmyhua@usc.edu)
+    Tedd Hadley (hadley@uci.edu)
+    ... and others.
+
+
+WHAT IS XSHOWGALAXY?
+
+ This is essentially an X version of the "showgalaxy" utility which comes with
+ netrek.  It can only be used by Netrek (Xtrek II) server operators, because
+ it accesses the Netrek shared memory segment directly.
+
+
+CHANGES, DOCUMENTATION
+
+   CHANGES	-- changes 
+   README	-- this file
+   XSG.doc	-- documention
+
+INSTALLATION
+
+ 1) There is no struct.h or defs.h included with the distribution.  Instead 
+    you are expected to make a symbolic link to struct.h and defs.h in your
+    particular server distribution. i.e: 'ln -s ../ntserv/struct.h' if the 
+    ntserv code is located one directory over.  
+
+    NOTE: Don't forget to add any special preprocesser symbols used in your 
+    server Makefile to DEFINES in the xsg Imakefile.  If your distribution
+    is similar to the INL server, you might be able to make use of
+    Makefile.INL.
+
+ 2) Check and/or update the defaults for these defines in xsg_defs.h:  
+
+   NICE	 	-- for recording, the program name that sets lower priority 
+		   on compression process.
+   COMPRESS	-- compress program (if you have gzip -f, it is recommended)
+   UNCOMPRESS	-- location of uncompress ("" gunzip -f "")
+
+ 3) Edit Makefile, changing these symbols if needed
+
+   CC			-- C compiler
+   CDEBUGFLAGS		-- debug flags
+   EXTRA_LIBRARIES	-- any extra libraries given
+   DEFINES  		-- any special definitions
+
+   If the struct.h you linked in step 1 requires special preprocesser 
+   symbols, add them to DEFINES.
+
+ 4) xmkmf ; make depend ; make
+
+   (If you have any problems with the Imakefile, try using Makefile.INL)
+
+PROBLEMS/BUG REPORTS
+
+   Email to hadley@uci.edu.  Gripe to r.g.n only as a last resort :)
+
+   Tedd Hadley

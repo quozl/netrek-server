@@ -1,0 +1,22 @@
+
+	I want to thank the people of the server mailing list for all
+there help with the code.
+
+    Mark Levine     - 	For his work on the new getentry code.
+    Kurt Siegl      -   For his work on Linux port, SYSV dependenices, and
+			  the config.h format which elminates much of the
+			  ugliness of all the defines in the code. Oh, and
+			  also for pointing out all the stupid things I do. :)
+    Micheal Kantner -  For finding all the small things that I overlook while
+			  looking at the big picture.
+    Brian O'Neill   -  For his help in debugging the code and putting it to
+			  the test at uml.
+    Dave Gossilen   -  For starting this insane thing in the first place by
+			  releasing Ver. 1. Also for the getpath.c and NTSERV
+			  variable stuff.
+
+
+-Nick Trown
+	
+
+	

@@ -1,0 +1,64 @@
+  Note:  These files use defs.h and struct.h from the ntserv code.
+
+General user tools:
+
+  scores - Display all users, and their scores.  With no parameters this does
+	   something completely useless.  "scores a" is what is usually 
+	   desired, as this will list players by ranking, etc...  It only
+	   takes one optional parameter, is not robust, and is sortof a 
+	   hack to view the players database.  But it works.  "scores s" will
+	   display the best starbases (1 hr. min), and "scores O [num]" will 
+	   display the players who have not played for the last 30 days,
+	   (or optionally num days if num is specified).
+
+  players - List players in game.  If "players d" is specified, different
+	    (not legal) information is provided (like number of armies, 
+	    damage, etc.)
+
+
+Super-user tools:
+
+  watchmes - continuously display the messages sent in the game.  This is 
+	     kinda fun, but generally useless.
+  newscores - takes the output of "scores A", and regenerates 
+	      the .player database.  This is useful for modifying the database.
+	      You can take the output of scores A, and modify whatever you
+	      need to (delete a player not being played, reset some stats,
+	      whatever.), and then run newscores < filename, and the database
+	      will be updated appropriately.  Use cation.  newscores is not
+	      very robust, and writes over old .player database.  Should
+	      back it up first "just in case"
+  resetplanets - reset galaxy to default planet setup.
+  message - Allows you to type in any message, and have it sent to any player,
+	    team, or to all.
+            This would be *bad* to let people do in general, because it
+	    allows you to forge messages.
+  xtkill - Nuke a player.  Fun, and occasionally useful when someone needs
+	   a serious slap on the hands.  The player is *not* kicked out of 
+	   the game, just nuked.
+  planets - List all planets with some general info about them.
+  trimscores - takes the output of "scores A", and trims away players which
+	       no longer seem to be active.  You may specify 1 numerical
+	       argument, which represents how "harsh" the program should be
+	       when deciding which characters to throw away.  The default is
+	       10.  Output is a list of deleted characters.
+  showgalaxy - a curses (termcap) tool to watch the galaxy.  Good for checking
+	       in on the game over a modem.  Commands are 'm' for message,
+	       'z' for zoom (followed by player number), 'P' for planet
+	       list, 'L' for player list, and 'f' for full screen view.
+	       Command line option -d## says how many tenths of a second
+	       between frames (default is 10 -- 1 frame per second).
+
+   NOTE:  Do not pipe the output of "scorea A" to newscores or trimscores
+     directly.  Since newscores and trimscores both rewrite the .players file,
+     they will interfere with "scores" reading of the file, and data will be
+     lost.
+
+Installation:
+
+    To install this stuff:
+
+    Modify the Makefile to copy players and scores into some generally
+    accessible location, like /usr/games.  The other tools should be
+    left in an inaccessible place.
+

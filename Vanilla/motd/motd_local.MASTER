@@ -1,0 +1,57 @@
+
+
+------------------------------[  Bronco Vanilla  ]------------------------------
+HP9000/300s / HPUX 8.0             HP9000/700s / HPUX 8.0             
+Sun4 / SunOS 4.1.1                 Sun3 / SunOS                       
+DS3100+DS5000 / Ultrix4.2          NeXT / NS3.0                       
+Amdahl / UTS 2.1                   SGI 4.0.5 and 3.2.2                
+VAX / Ultrix                       rt-aos                             
+Amiga                              IBM RS6000 / IBM AIX 3.2           
+------------------------------[  Berkeley Client ]------------------------------
+HP9000/300s / BSD - reno           HP9000/700s / HPUX 8.0             
+HP9000/300s / HPUX 8.0             HP/Apollo 3500/4500                
+Sun4 / SunOS 4.1.1                 Sun 4 (Amdahl-only)                
+Sun3 / SunOS                       DS3100+DS5000 / Ultrix4.2          
+NeXT / NS3.0                       Amdahl / UTS 2.1 / Trekhopd        
+Sequents                           MIPS R4000s / RICOS 4.X / BSD      
+386-486 / 386BSD / Xfree           IBM RS6000 / AIX 3.2               
+Sun4 / SunOS 4.1.3 / Sound         Sony 1750(M68K) / BSD              
+HP/Apollo 3500/4500                AViiON / DGux 5.4.2                
+MIPS R3000 /RISCOS4.52 /BSD/Ping   
+------------------------------[  Moo Client      ]------------------------------
+Sun 4 / SunOS 4.1.1 / Relayer      DS3100+DS5000 / Ultrix4.2 /IAS     
+DS3100+DS5000 / Ultrix4.2 /CMU     Sun4 / SunOS 4.1.1                 
+386/486 / OSF1.2                   
+
+
+
+
+
+
+
+------------------------------[  BerkRick Moo    ]------------------------------
+DS3100+DS5000 / Ultrix4.2          HP9000/700s / HPUX 8.0             
+Sun4 / SunOS 4.1.1                 IBM RS6000 / AIX 3.2               
+Linux - i386                       Sun 4 / SunOS 4.1.1 / hopd TAMU    
+HP9000/300s / BSD4.3 - reno        Sun LX / Solaris 2.1               
+Sun3 / SunOS                       AViiON / New Key                   
+Sun4 / SunOS 4.1.3 / hopd MIT      Sun3 / SunOS 4.1.1 / hopd MIT      
+386/486 SCO Unix                   
+------------------------------[  Hadley Client   ]------------------------------
+Sun4/SunOS4.1.3                    HP9000/700 HPUX8.0                 
+AViiON / DGux 5.4.2                
+------------------------------[  Paradise Client (1.996ufl) ]-------------------
+Sun4 / SunOS 4.1.1                 DS3100+DS5000 / Ultrix4.2          
+IBM RS6000 / AIX 3.2               Sun3 / SunOS                       
+HP9000/300s / HPUX 7.x             
+------------------------------[  MacTrek Client  ]------------------------------
+DEC3100 / Ultrix4.2 /MACTREK       
+
+
+
+
+
+
+
+
+

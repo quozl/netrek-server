@@ -1,0 +1,150 @@
+
+$Id: README.developers,v 1.1 2005/03/21 05:23:33 jerub Exp $
+
+README for developers
+
+Refer to BUGS for a list of defects
+Refer to PROJECTS for a list of future changes
+
+Commenting Policy
+
+	Commit messages, ChangeLog, and source comments are for
+	different audiences.
+
+	Commit messages are for storage in CVS and distribution to the
+	mailing list.  They are used for code review by the other
+	developers.  Once generated in CVS, nobody reads them unless
+	they have to review a change again.  This is where you would
+	put design discussion.
+
+	ChangeLog goes to the end user of the code, the server admins,
+	and to the release engineer who uses it to form a short list
+	of new features and changes for the web page.  This would
+	often be briefer than the CVS commit message, but remember it
+	is included in the code review process anyway, so there is a
+	bit of overlap.  ChangeLog is CVS controlled.
+
+	Source comments are for the next person trying to understand
+	the code.
+
+
+New Developer Familiarisation Documentation
+by Jeffrey Nowakowski, 27th March 2000
+with edits by James Cameron, 10th October 2002
+with edits by Zachary Uram, 25th October 2002
+
+Server Processes
+
+    netrekd 
+
+       (aka newstartd) Listens for incoming clients that want to
+       connect to the server.  Reads the .ports file which tells it
+       what programs to run when a client connects.  Normally, it forks
+       an ntserv process for each client, but it also handles other things
+       such as the player list for the metaserver.
+
+    ntserv
+
+	Communicates with the client.  It will start as a daemon process 
+        if shared memory doesn't exist, or if there are no free shared memory segments..  Each player has their own associated ntserv process.
+
+    daemon
+
+	This process maintains the game state.  It can start robots such as hockey if
+        .sysdef option is set.  It sends data to the metaserver if the
+        .metaservers file is configured properly.
+
+Shared Memory
+
+    Contains the game state.  This is updated by both ntserv and the
+    daemon.  It isn't touched by newstartd, all queueing is handled by
+    ntserv.  Use 'ipcs' command to see if the shared memory segment is present in the operating system.
+
+Globals
+
+    data.c/h: Holds global data.  Lotsa crap.  These are variables
+    shared within a program, not between processes.
+
+Queues
+
+    Implemented using struct queue, managed by queue.c
+
+Robots
+
+    Started through .sysdef when the server starts, through a player
+    vote, practice request, or out-of-t take.  Either daemon or ntserv
+    will start them.
+
+    If through .sysdef, the daemon forks the robot when daemon is
+    started.
+
+    If through a vote, the robot is forked at the time of the vote.
+
+    Both the daemon and the robot run at the same time.  The daemon
+    handles the general game engine (moving players, firing weapons,
+    etc).  The robot then handles extra things like keeping track of
+    the game clock, or modifies the behavior of the game by messing
+    with the shared memory (like in hockey).
+
+Configuring the server
+
+    Game speed, useful to change for testing
+
+	UPDATE in .sysdef
+	REALITY in .sysdef
+
+    .sysdef
+
+        Read on server startup.  readsysdefaults() in
+        ntserv/daemonII.c, ntserv/main.c
+
+    .features
+
+    config.h.in
+
+	#defines
+
+    ntserv/defs.h
+
+	#defines
+
+    keycomp/defs.h
+
+	Same as ntserv/defs.h, but SURREND=5 instead of 4?  Should be
+	link to ntserv instead?  What is kecomp/ used for?
+
+    getship.c
+
+	Contains ship stats.  How does SHIP in .sysdefs affect?
+
+Messages
+
+    see also command_questions.txt [?? - james]
+
+    messages are handled by ntserv.  daemon doesn't touch them.
+    robots need to handle messages to check commands (using
+    gencmds.c).
+
+    socket.c, parseIgnore(): takes care of :D (ignore doosh mess), :M
+    (ignore multi-line macro, pig call (5 spaces sent to yerself), and
+    :[ita] messages (ignore player).
+
+
+Sample Scenario
+
+    Short packets?
+    TCP/IP
+    UDP
+
+    Player A shoots a torp: Packet arrives, handled by ntserv, which
+    allocates a torp struct entry, daemon moves torp coordinates at
+    game reality update rate, ntserv's deliver torp update packets to
+    all players who can 'see' the torp.
+
+Debugging/Error Messages
+
+    ERRORS (why no date?), stdout/err for different processes.  ERRORS
+    not usable in all processes?  ERROR() doesn't seem to work in
+    robots (puck, basep, etc); perror() does though.
+
+--

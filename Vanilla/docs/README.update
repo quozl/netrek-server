@@ -1,0 +1,32 @@
+
+	The update daemon provides a quick and easy manner for server admins
+to keep an up to date listing of the RSA .reserved file. This is the first
+release of the daemon and I'm sure there are a few things that could be
+improved but I have been running it for a couple of weeks without any trouble.
+
+	The daemon does a number of things for you. The scenario is as follows:
+
+		1. daemon wakes up once a day.
+
+		2. It then calls the metaserver port 3530 which is the keycomp
+		   listing of the keys.
+
+		3. It gets the list and then forks and execs rsa_keycomp with
+		   the -c option to make the new .reserved and report on any
+		   new keys produced. Note: You can still use the exclude
+		   files and such described in the keycomp README. The ouput
+		   for the daemon/rsa_keycomp will be appended to what you
+		   made ERROR_FILE in defs.h in ntserv.
+
+		4. It now starts making a new motd. It will grab the 
+		   motd_logo.MASTER, append the key list, and then the other
+		   info on the end (motd_local.MASTER). Then it will make a
+		   new best players list and put this on the end.  Note: The
+		   files motd_logo.MASTER, and lotd_local.MASTER are converted
+		   from ascii to 6x10 font which has more characters. Look at
+		   README.motd for a description of these.
+
+		5. Goes back to sleep.
+
+
+-Nick

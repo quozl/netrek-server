@@ -1,0 +1,24 @@
+COMPILING
+   
+   -DCHECKMESG enables checks for message logging
+   In defs.h, 
+
+   #define MESGLOG	"mesg.LOG"	for logall
+   #define GODLOG	"god.LOG"	for loggod
+
+CONFIG OPTIONS
+
+   logall=<1/0>			log all player generated messages
+   loggod=<1/0>			log messages to GOD, or preceeded by GOD:
+
+DESCRIPTION
+   
+   If logall is set, all messages sent by players are logged.
+   This option must be set before the daemon is started.  The daemon
+   starts a seperate program ('logmes') if this option is given.
+
+   If loggod is set, only messages preceeded by "GOD:" ("god:") are logged.
+
+   The log files store each message in the following format:
+
+   <date> <player number>(<player login address>) <message>

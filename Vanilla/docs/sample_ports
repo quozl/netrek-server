@@ -1,0 +1,43 @@
+#	$Id: sample_ports,v 1.1 2005/03/21 05:23:34 jerub Exp $	
+# 
+# This is .ports, and it is parsed by newstartd on startup to determine which
+# TCP/IP port numbers to listen on for connections, and what to do about
+# connections that arrive.  Sending a SIGHUP to newstartd will force a reload.
+#
+# Specifying the port alone will cause newstartd to listen on all interfaces.
+# Specifying IP:port instead will listen only on the specified IP, so that
+# you can use the same port for different servers on different IPs of one
+# server.
+#
+# Normal player connections (also used by metaserver), to default queue
+2592 ntserv "ntserv"
+#
+# Player list (also used by metaserver), to be telnet'd to
+2591 tools/players "players" m
+#
+# Observer player connections
+2593 ntserv "ntservobs" -q 6
+#
+# Scores dump.  (Disable for large player databases, it is a CPU hog).
+#2590 tools/scores "scores" a
+#
+# Special ports of your choice so that you as server owner can still get in.
+# Normally disabled, do you really want the public on your queue?
+# This one is a regular port
+#2594 ntserv "God" -q 7
+# This one is a God Observer port
+#2595 ntserv "GodObs" -q 8 
+#
+# Statistics on connections to newstartd itself.
+2596 special "statistics"
+#
+# The "standard" INL ports, enabled because the INL robot will open these
+# queues and close the main queue if it is voted in or configured in .sysdef
+# INL server owners may wish to remove 2592, 2591, 2593, if a pickup server
+# is operating on the same machine.
+4566 ntserv "home" -q 2
+4577 ntserv "away" -q 3
+4000 ntserv "homeobs" -q 4
+5000 ntserv "awayobs" -q 5
+# Sample virtual-hosting configuration to only listen on 127.0.0.1
+#127.0.0.1:2592 ntserv "ntserv"
