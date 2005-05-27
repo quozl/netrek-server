@@ -238,6 +238,7 @@ static void usage(void)
     printf("   setgalaxy F (num)        top out all planets at (num) armies\n");
     printf("   setgalaxy n <num>:<str>  rename planet <num> to <str>\n");
     printf("   setgalaxy C              triple planet mayhem\n");
+    printf("   setgalaxy Z              close up shop for maintenance\n");
     exit(0);
 }
 
