@@ -1,4 +1,4 @@
-/* $Id: proto.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
+/* $Id: proto.h,v 1.3 2005/06/15 22:55:25 quozl Exp $
  *
  * Function prototypes for externally accessed functions.
  */
@@ -223,6 +223,7 @@ int realNumShips(int owner);
 void setEnemy(int myteam, struct player *me);
 #endif /* LTD_STATS */
 int find_slot_by_host(char *host, int j);
+int mprintf(char *format, ...);
 
 /* warning.c */
 void new_warning(int index, const char *fmt, ...);
