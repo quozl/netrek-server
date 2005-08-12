@@ -1020,7 +1020,8 @@ do_free(char *comm, struct message *mess)
   /* save some SB armies, but don't save normal ship armies so that
      captains can't free-scum.  -da */
 
-  if ((j->p_ship.s_type == STARBASE) && (j->p_armies > 0)) {
+  if ((j->p_ship.s_type == STARBASE) && (j->p_armies > 0)
+      && (!(j->p_flags & PFOBSERV))) {
     int i, k;
 
     k=10*(remap[j->p_team]-1);
