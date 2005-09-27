@@ -1,4 +1,4 @@
-#	$Id: sample_ports,v 1.1 2005/03/21 05:23:34 jerub Exp $	
+#	$Id: sample_ports,v 1.2 2005/09/27 10:31:49 quozl Exp $	
 # 
 # This is .ports, and it is parsed by newstartd on startup to determine which
 # TCP/IP port numbers to listen on for connections, and what to do about
@@ -39,5 +39,12 @@
 4577 ntserv "away" -q 3
 4000 ntserv "homeobs" -q 4
 5000 ntserv "awayobs" -q 5
+#
 # Sample virtual-hosting configuration to only listen on 127.0.0.1
 #127.0.0.1:2592 ntserv "ntserv"
+#
+# Newbie player connections (also used by metaserver), to newbie queue
+#2592 ntserv "ntserv" -q 9
+#
+# Newbie robot connections
+#3592 ntserv "ntserv" -q 10

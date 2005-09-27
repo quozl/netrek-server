@@ -158,10 +158,10 @@ main(argc, argv)
 #endif
 
     status->gameup |= GU_NEWBIE;
-    queues[QU_NEWBIE_PLR].q_flags |= QU_REPORT;
-    queues[QU_NEWBIE_OBS].q_flags |= QU_REPORT;
-    queues[QU_PICKUP].q_flags ^= QU_REPORT;
-    queues[QU_PICKUP_OBS].q_flags ^= QU_REPORT;
+    queues[QU_NEWBIE_PLR].q_flags |= (QU_REPORT | QU_OPEN);
+    queues[QU_NEWBIE_OBS].q_flags |= (QU_REPORT | QU_OPEN);
+    queues[QU_PICKUP].q_flags &= ~(QU_REPORT | QU_OPEN);
+    queues[QU_PICKUP_OBS].q_flags &= ~(QU_REPORT | QU_OPEN);
 
     /* Robot is signalled by the Daemon */
     ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
@@ -218,16 +218,18 @@ void checkmess(int unused)
     }
 
     /* Stop or start a robot. */
+
+    if ((ticks % ROBOEXITWAIT) == 0)
+    {
+        if ((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots) {
+                 stop_a_robot();
+	}
+    }
     if ((ticks % ROBOCHECK) == 0) {
         int next_team;
-        int np = num_players(&next_team);
+        num_players(&next_team);
 
-         if (!(ticks % ROBOEXITWAIT))
-		{
-             if ((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) >= queues[QU_PICKUP].max_slots)
-                 stop_a_robot();
-		}
-        else if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))
+        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))
         {
             if (next_team == FED)
                 start_a_robot("-Tf");
@@ -479,10 +481,10 @@ static void cleanup(int unused)
 
     obliterate(1,KPROVIDENCE);
     status->gameup &= ~GU_NEWBIE;
-    queues[QU_NEWBIE_PLR].q_flags ^= QU_REPORT;
-    queues[QU_NEWBIE_OBS].q_flags ^= QU_REPORT;
-    queues[QU_PICKUP].q_flags |= QU_REPORT;
-    queues[QU_PICKUP_OBS].q_flags |= QU_REPORT;
+    queues[QU_NEWBIE_PLR].q_flags &= ~(QU_REPORT | QU_OPEN);
+    queues[QU_NEWBIE_OBS].q_flags &= ~(QU_REPORT | QU_OPEN);
+    queues[QU_PICKUP].q_flags |= (QU_REPORT | QU_OPEN);
+    queues[QU_PICKUP_OBS].q_flags |= (QU_REPORT | QU_OPEN);
     exitRobot();
 }
 

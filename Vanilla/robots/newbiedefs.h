@@ -36,7 +36,7 @@
 #define MIN_NUM_PLAYERS	16 /* How many players to maintain. */
 #define MAX_HUMANS 8 /* Max number of humans to let in. */
 
-#define PORT 2592
+#define PORT 3592
 
 #define HOWOFTEN 1                       /*Robot moves every HOWOFTEN cycles*/
 #define PERSEC (1000000/UPDATE/HOWOFTEN) /* # of robo calls per second*/
