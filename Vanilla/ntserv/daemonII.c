@@ -4083,6 +4083,7 @@ static void surrenderMessage(int loser)
     time_t curtime;
 
     conqfile=fopen(ConqFile, "a");
+    if (conqfile == NULL) conqfile = stderr;
 
 /* TC 10/90 */
     time(&curtime);
@@ -4105,7 +4106,7 @@ static void surrenderMessage(int loser)
     pmessage(0, MALL | MGENO, " ",
         "***********************************************************");*/
     fprintf(conqfile, "\n");
-    fclose(conqfile);
+    if (conqfile != stderr) fclose(conqfile);
 }
 
 static void genocideMessage(int loser, int winner)
@@ -4115,6 +4116,7 @@ static void genocideMessage(int loser, int winner)
     time_t curtime;
 
     conqfile=fopen(ConqFile, "a");
+    if (conqfile == NULL) conqfile = stderr;
 
 /* TC 10/90 */
     time(&curtime);
@@ -4140,7 +4142,7 @@ static void genocideMessage(int loser, int winner)
     pmessage(0, MALL | MGENO, " ","%s",
         "***********************************************************");
     fprintf(conqfile, "\n");
-    fclose(conqfile);
+    if (conqfile != stderr) fclose(conqfile);
 }
 
 static void conquerMessage(int winner)
@@ -4150,6 +4152,7 @@ static void conquerMessage(int winner)
     time_t curtime;
 
     conqfile=fopen(ConqFile, "a");
+    if (conqfile == NULL) conqfile = stderr;
 
 /* TC 10/90 */
     time(&curtime);
@@ -4169,7 +4172,7 @@ static void conquerMessage(int winner)
     pmessage(0, MALL | MCONQ, " ","%s",
         "***********************************************************");
     fprintf(conqfile, "\n");
-    fclose(conqfile);
+    if (conqfile != stderr) fclose(conqfile);
 }
 
 typedef struct playerlist {

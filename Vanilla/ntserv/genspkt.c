@@ -1548,6 +1548,30 @@ void updateMessages(void)
 		    }
                 }
 	    }
+#ifdef CONTINUUM_MUTE_COMMANDS
+	    /* observer muting commands, available to players */
+	    if (send_msg) {
+		char *cchar = &cur->m_data[10];
+		if (!strcasecmp(cchar, "mute on")) {
+		    if (me->p_status == POBSERV) {
+			if (!mute) {
+			    bounce(cur->m_from, "Mute enabled.");
+			    mute = TRUE;
+			}
+			send_msg = FALSE;
+		    }
+		} else 
+		if (!strcasecmp(cchar, "mute off")) {
+		    if (me->p_status == POBSERV) {
+			if (mute) {
+			    bounce(cur->m_from, "Mute disabled.");
+			    mute = FALSE;
+			}
+			send_msg = FALSE;
+		    }
+		}
+	    }
+#endif
 	    if (send_msg)
 		updtMessage(&msg, cur);
 	}

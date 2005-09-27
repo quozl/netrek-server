@@ -1,4 +1,4 @@
-/* $Id: data.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
+/* $Id: data.h,v 1.3 2005/09/27 12:26:37 quozl Exp $
  */
 
 #ifndef _h_data
@@ -340,5 +340,10 @@ extern char Cambot_out[FNAMESIZE];
 
 /*this is also defined in ../robotd/data.h*/
 #define PRE_T_ROBOT_LOGIN "Pre_T_Robot!"
+
+extern int mute;
+extern int remoteaddr;		/* inet address in net format */
+extern int whitelisted;
+extern int blacklisted;
 
 #endif /* _h_data */

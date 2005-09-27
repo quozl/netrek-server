@@ -9,6 +9,75 @@ Tue Sep 27 19:58:25 2005  James Cameron  <quozl@us.netrek.org>
 	patch provided by Benjamin Southall <applemansigloo@hotmail.com>
 	and reworked by James Cameron.
 
+Fri Aug 12 14:23:17 2005  James Cameron  <quozl@us.netrek.org>
+
+	* robots/inlcomm.c (do_free): bug fix, if an observer who's locked
+	onto a starbase is freed, then a number of armies equal to the
+	number of armies on the base is placed on the base's homeworld.
+	Patch provided by pissedoffguest@yahoo.com.
+
+Tue Jul 26 21:45:27 2005  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c (surrenderMessage): if conqfile not writable,
+	redirect to stderr.
+
+Thu Jun 16 08:54:11 2005  James Cameron  <quozl@us.netrek.org>
+
+	* include/proto.h (mprintf): add proto for robotd/util.c function
+	to fix compilation error on Fedora Core 3.
+
+Wed Mar  9 09:41:49 2005  James Cameron  <quozl@us.netrek.org>
+
+	* main.c, genspkt.c: remove "mute on" command and make "mute off"
+	public knowledge in an announcement to observers.
+	
+	* socket.c (handleMessageReq): throttle observer messages
+	to once every 30s.
+
+Wed Jan 26 21:22:07 2005  James Cameron  <quozl@us.netrek.org>
+
+	* genspkt.c: recognise player command "mute on" and "mute off".
+	
+	* socket.c: move remoteaddr to global scope so that it can be used
+	in bounceWhois().
+	
+	* tools/admin/ban: implement banning by writing to .banned and the
+	file used by netrekd.
+
+	TODO: bring tools/admin scripts into repository.
+	
+	* ntscmds.c (do_admin): accept admin password from any whitelisted
+	slot, or if the player name is Quozl.
+
+	TODO: future expansion planned to an ip admin list in place of
+	this use of whitelist, a character-name admin list, or to rank
+	specific access.
+	
+	* ntscmds.c (bounceWhois): when replying to a whois (@), do not
+	reveal hostname or IP address if the slot is whitelisted.
+	
+	* socket.c (handleMessageReq): implement observer muting if mute
+	flag is set.
+
+	TODO: future expansion to allow extreme low rate of observer
+	speech only.
+	
+	* main.c: for non-whitelisted observers, mark them as mute, and
+	inform them that they are unable to speak.
+
+	* main.c: hide addresses of whitelisted players.
+
+	* main.c: recognise comindico.com.au as whitelisted.
+
+	TODO: future expansion planned to a list or database.
+
+	* data.h, data.c: add mute, remoteaddr, and whitelisted.
+
+Mon Jan 10 21:23:00 2005  James Cameron  <quozl@us.netrek.org>
+	
+	* db.c: fix to pad offset if file has grown accidentally by some
+	amount that isn't a multiple of an entry size.
+
 Tue Feb 16 22:32:11 2004  James Cameron  <quozl@us.netrek.org>
 
 	* include/config.h.in, include/proto.h, ntserv/main.c,
@@ -1534,4 +1603,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.3 2005/09/27 10:31:49 quozl Exp $
+	$Id: ChangeLog,v 1.4 2005/09/27 12:26:37 quozl Exp $

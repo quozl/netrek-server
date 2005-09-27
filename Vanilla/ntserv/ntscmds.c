@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.2 2005/03/21 10:17:17 quozl Exp $
+/* $Id: ntscmds.c,v 1.3 2005/09/27 12:26:37 quozl Exp $
  */
 
 /*
@@ -572,8 +572,13 @@ int bouncePingStats(int from)
 
 int bounceWhois(int from)
 {
+  if (whitelisted) {
+    bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
+  } else {
     bounce(from, "%s is %s (%s@%s)", me->p_mapchars, me->p_name, me->p_login, me->p_full_hostname);
-    return 1;
+    bounce(from, "%s at %s (ip)", me->p_mapchars, inet_ntoa(remoteaddr));
+  }
+  return 1;
 }
 
 
@@ -1304,6 +1309,8 @@ void do_transwarp(char *comm, struct message *mess)
   else pmessage(whofrom, MINDIV, addr, usage);
 }
 
+static int authorised = 0;
+
 void do_admin(char *comm, struct message *mess)
 {
   int who = mess->m_from;
@@ -1314,10 +1321,31 @@ void do_admin(char *comm, struct message *mess)
   int slot;
   struct player *them = NULL;
 
-  /* if player not on god queue, say no luck and exit */
-  if (p->w_queue != QU_GOD_OBS && p->w_queue != QU_GOD) {
-    pmessage(who, MINDIV, addr, "Sorry, no.", p->w_queue);
-    return;
+#ifdef CONTINUUM_COMINDICO
+  /* 2005-01-26 temporary password access to admin for me */
+  if (!authorised) {
+    if (whitelisted) {
+      if (!strcasecmp(comm, "ADMIN password duafpouwaimahghedahaengoosoh")) {
+	authorised = 1;
+	pmessage(who, MINDIV, addr, "admin: authorised");
+	return;
+      }
+    }
+  }
+
+  /* 2005-01-26 temporary player name specific access to admin for me */
+  if (!authorised) {
+    if (!strcmp(p->p_name, "Quozl")) {
+      authorised = 1;
+    }
+  }
+#endif
+
+  if (!authorised) {
+    if (p->w_queue != QU_GOD_OBS && p->w_queue != QU_GOD) {
+      pmessage(who, MINDIV, addr, "Sorry, no.", p->w_queue);
+      return;
+    }
   }
 
   /* admin quit n - simulate quit */
@@ -1355,7 +1383,9 @@ void do_admin(char *comm, struct message *mess)
     }
   }
 
-  if (!strcmp(one, "quit")) {
+  if (!strcmp(one, "mute")) {
+    pmessage(who, MINDIV, addr, "admin: erm, send 'em a \"mute on\"");
+  } else if (!strcmp(one, "quit")) {
     if (them == NULL) return;
     sprintf(command, "tools/admin/quit %s %c", p->p_full_hostname, them->p_mapchars[1]);
     system(command);
@@ -1365,17 +1395,22 @@ void do_admin(char *comm, struct message *mess)
     sprintf(command, "tools/admin/kill %s %c", p->p_full_hostname, them->p_mapchars[1]);
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s killed.", two);
+  } else if (!strcmp(one, "free")) {
+    if (them == NULL) return;
+    sprintf(command, "tools/admin/free %s %c", p->p_full_hostname, them->p_mapchars[1]);
+    system(command);
+    pmessage(who, MINDIV, addr, "admin: player %s free-ed.", two);
   } else if (!strcmp(one, "ban")) {
     if (them == NULL) return;
     sprintf(command, "tools/admin/ban %s %s", p->p_full_hostname, them->p_full_hostname);
     system(command);
-    pmessage(who, MINDIV, addr, "admin: ban for player %s requested.", two);
+    pmessage(who, MINDIV, addr, "admin: player %s banned.", two);
   } else if (!strcmp(one, "reset")) {
     sprintf(command, "tools/admin/reset %s", p->p_full_hostname);
     system(command);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
   } else {
-    pmessage(who, MINDIV, addr, "admin: what? kill/quit/ban/reset, lowercase");
+    pmessage(who, MINDIV, addr, "admin: what? kill/quit/ban/free/reset, lowercase");
   }
 }
 

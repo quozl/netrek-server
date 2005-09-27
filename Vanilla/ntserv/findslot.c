@@ -59,6 +59,12 @@ int findslot(int w_queue, char *host)
     /* pre-queue if client from same ip address is already playing */
     if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
       for (;;) {
+#ifdef CONTINUUM
+	/* dogmeat's obstrek server */
+	if (!strcmp(host, "c-24-4-208-59.client.comcast.net")) break;
+	/* roland's workplace */
+	if (!strcmp(host, "ip57.bb168.pacific.net.hk")) break;
+#endif
 	if (absent(w_queue, host)) break;
 	if (rep++ % 10 == 1) { sendQueuePacket((short) MAXPLAYER); }
 	if (isClientDead()) { fflush(stderr); exit(0); }

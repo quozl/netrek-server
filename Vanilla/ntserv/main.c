@@ -290,6 +290,18 @@ int main(int argc, char **argv)
     strcpy(me->p_login, "anonymous");
 #endif
 
+#ifdef CONTINUUM_COMINDICO
+    /* 2005-01-26 temporary address hiding for me */
+    if (strstr(me->p_full_hostname, "comindico.com.au")) {
+      whitelisted = 1;
+    }
+#endif
+
+    if (whitelisted) {
+      strcpy(me->p_full_hostname, "hidden");
+      strcpy(me->p_monitor, "hidden");
+    }
+
 #ifdef PING     /* 0 might just be legit for a local player */
     me->p_avrt = -1;
     me->p_stdv = -1;
@@ -376,6 +388,14 @@ int main(int argc, char **argv)
         new_warning(UNDEF,"Lock onto a teammate or planet to see the action.");
         pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
 		 "Lock onto a teammate or planet to see the action.");
+#ifdef CONTINUUM_MUTING
+	/* 2005-01-26 temporary default observer muting, for all but me */
+	if (!whitelisted) {
+	  mute = 1;
+	  pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
+		   "Policy: observers may not speak.");
+	}
+#endif
       }
     else
 #endif

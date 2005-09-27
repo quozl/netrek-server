@@ -1,4 +1,4 @@
-/* $Id: data.c,v 1.2 2005/03/21 10:17:17 quozl Exp $
+/* $Id: data.c,v 1.3 2005/09/27 12:26:37 quozl Exp $
  */
 
 #include "copyright.h"
@@ -405,3 +405,7 @@ int F_self_8flags   = 0;
 int F_19flags       = 0;	/* pack 19 flags into spare bytes */
 int F_show_all_tractors = 0;
 int sent_ship[NUM_TYPES];
+int mute = 0;
+int remoteaddr = -1;		/* inet address in net format */
+int whitelisted = 0;
+int blacklisted = 0;

@@ -1,4 +1,4 @@
-/* $Id: socket.c,v 1.2 2005/03/21 10:17:17 quozl Exp $
+/* $Id: socket.c,v 1.3 2005/09/27 12:26:37 quozl Exp $
  */
 
 /*
@@ -134,8 +134,6 @@ static int parseIgnore(struct mesg_cpacket *packet);
 static int check_mesgs(struct mesg_cpacket  *packet);
 static void check_clue(struct mesg_cpacket  *packet);
 
-static int remoteaddr= -1;		/* inet address in net format */
-
 struct packet_handler {
     int size;
     void (*handler)();
@@ -229,7 +227,7 @@ int packetsReceived[NUM_PACKETS+1] = { 0 };
 int packetsSent[NUM_SIZES+1] = { 0 };
 
 #define BUFSIZE 16738
-#define UDPBUFSIZE 960			/* (tweakable; should be under 1300) */
+#define UDPBUFSIZE 768			/* (tweakable; should be under 1300) */
 static char buf[BUFSIZE];		/* Socket buffer */
 static char udpbuf[UDPBUFSIZE];		/* UDP socket buffer */
 static char *bufptr=buf;
@@ -1510,6 +1508,15 @@ static void handleMessageReq(struct mesg_cpacket *packet)
     time_t thistime;
     int group=0;
 
+#ifdef OBSERVER_MUTING
+    if (me->p_status == POBSERV) {
+	if (mute) {
+	    new_warning(86,"Be quiet");
+	    return;
+	}
+    }
+#endif
+
     /* Some random code to make sure the player doesn't get carried away 
      *  about the number of messages he sends.  After all, he could try to 
      *  jam peoples communications if we let him.
@@ -1525,12 +1532,14 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 	balance+=3;
 	if (status->tourn)
 	    balance+=3;
-	if (balance > time(NULL) + 60) {
-	    balance=time(NULL)+60;
-	}
 	return;
     }
     balance+=3;
+#ifdef CONTINUUM
+    if (me->p_status == POBSERV) {
+	if (!whitelisted) balance+=20;
+    }
+#endif
     packet->mesg[MSG_LEN - 11]='\0';	/* 11 = 10(why?) - 1 for 0 placement */
     sprintf(addrbuf, " %c%c->", teamlet[me->p_team], shipnos[me->p_no]);
     if (parseIgnore(packet)) return; /* moved this up 4/6/92 TC */
