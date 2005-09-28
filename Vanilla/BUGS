@@ -1,5 +1,5 @@
 
-$Id: BUGS,v 1.1 2005/03/21 05:23:33 jerub Exp $
+$Id: BUGS,v 1.2 2005/09/28 12:14:04 quozl Exp $
 
 List of things that are defects
 
@@ -62,7 +62,4 @@ List of things that are defects
 	- starbase etemp bug, still shows up, engine cooling rate reduced,
 	  warp 2 gives stable etemp, under those conditions it should drop
 	  slowly at warp 2,
-
-	- "make rmdependencies" breaks because res-rsa does not have such a
-	  target.  Should it?
 

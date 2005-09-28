@@ -91,21 +91,6 @@
 #define TARG_CLOAK	0x4	/* Include cloaked ships in search */
 #define TARG_SELF	0x8
 
-/* Data files to make the game play across daemon restarts. */
-
-
-#define GLOBAL          "/ch/ue/hadley/alternate/net/ntserv/.global"
-#define SCORES          "/ch/ue/hadley/alternate/net/ntserv/.scores"
-#define PLFILE          "/ch/ue/hadley/alternate/net/ntserv/.planets"
-#define MOTD            "/ch/ue/hadley/alternate/net/ntserv/.motd"
-#define DAEMON          "/ch/ue/hadley/alternate/net/ntserv/daemonII"
-#define ROBOT           "/ch/ue/hadley/alternate/net/ntserv/robotII"
-#define LOGFILENAME     "/ch/ue/hadley/alternate/net/ntserv/logfile"
-#define PLAYERFILE      "/ch/ue/hadley/alternate/net/ntserv/.players"
-#define CONQFILE        "/ch/ue/hadley/alternate/net/ntserv/.conquer"
-#define SYSDEF_FILE     "/ch/ue/hadley/alternate/net/ntserv/.sysdef"
-
-
 
 /* Other stuff that Ed added */
 

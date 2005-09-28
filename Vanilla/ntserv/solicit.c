@@ -135,7 +135,7 @@ void solicit(int force)
     for (i=0; i<MAXMETASERVERS; i++) metaservers[i].sock = -1;
     
     /* open the metaserver list file */
-    file = fopen(".metaservers", "r"); /* ??? LIBDIR prefix? */
+    file = fopen(SYSCONFDIR"/.metaservers", "r");
     if (file == NULL) {
       initialised++;
       return;

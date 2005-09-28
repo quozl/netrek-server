@@ -290,13 +290,13 @@ int main(int argc, char **argv)
 
 	    if ((sock = open_port(METASERVER,port,1))>0) {
 
-		sprintf(buf,"%s/%s",LIBDIR,CAPFILE);
+		sprintf(buf,"%s/%s",LOCALSTATEDIR,CAPFILE);
 		backup(buf);
 		if  ((keyfile=fopen(buf,"w+")) == NULL) {
 		    ERROR(1,("Cannot open %s for output\n",buf));
 		} else {
 		    succeed=TRUE;
-		    sprintf(buf,"%s/%s",LIBDIR,LOCALKEYS);
+		    sprintf(buf,"%s/%s",LOCALSTATEDIR,LOCALKEYS);
 		    if ((keylocal=fopen(buf,"r")) != NULL) {
 			int c;
 			while ((c = getc(keylocal)) != EOF)
@@ -331,8 +331,8 @@ int main(int argc, char **argv)
 #endif
 	            if (!(fork())) {
 		        sprintf(buf,"%s/%s",LIBDIR,KEYCOMP);
-			sprintf(buf1,"%s/%s",LIBDIR,MOTDLIST);
-			sprintf(buf2,"%s/%s",LIBDIR,CAPFILE);
+			sprintf(buf1,"%s/%s",LOCALSTATEDIR,MOTDLIST);
+			sprintf(buf2,"%s/%s",LOCALSTATEDIR,CAPFILE);
 #ifdef DEBUG
 			printf("Exec'ing %s\n",buf);
 #endif
@@ -608,10 +608,10 @@ void makemotd(char *motd_name, char *logo)
     strcat(motd_file,motd_name);
     backup(motd_file);	
 
-    convert(logo,motd_file,LIBDIR);
-    sprintf(buf,"%s/%s",LIBDIR,MOTDLIST);
+    convert(logo,motd_file,LOCALSTATEDIR);
+    sprintf(buf,"%s/%s",LOCALSTATEDIR,MOTDLIST);
     append(buf,motd_file);
-    convert(INFO,motd_file,LIBDIR);
+    convert(INFO,motd_file,LOCALSTATEDIR);
 
     gmtsecs = time(NULL);
     today = localtime(&gmtsecs); 

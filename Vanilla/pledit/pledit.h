@@ -9,9 +9,9 @@
 /* how many seconds to look at a popup (add more for slow terminals) */
 #define POP_DELAY	2
 
-/* default .players and .global files (from ntserv/defs.h) */
-#define PLAYERFILE	"./.players"
-#define GLOBAL		"./.global"
+/* default players and global files (from ntserv/defs.h) */
+#define PLAYERFILE	LOCALSTATEDIR"/players"
+#define GLOBAL		LOCALSTATEDIR"/global"
 
 /* main window */
 extern WINDOW *mainw;

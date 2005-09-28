@@ -23,12 +23,21 @@ else
 fi
  
 if test "$code" = server; then
-  if test "$prefix" = NONE; then
-    prefix="/usr/local/games/netrek"
-  fi
-  echo installation path is $prefix
-  AC_SUBST(prefix)
-  AC_DEFINE_UNQUOTED(LIBDIR,"$prefix")
+
+# TODO: handle --prefix alone, as we did before.
+#  echo ""
+#  echo "... prefix $prefix"
+#  echo "... bindir $bindir"
+#  echo "... libdir $libdir"
+#  echo "... sysconfdir $sysconfdir"
+#  echo "... localstatedir $localstatedir"
+#  echo "... exec_prefix $exec_prefix"
+#  echo ""
+#	exit 0
+  AC_DEFINE_UNQUOTED(BINDIR,"$bindir")
+  AC_DEFINE_UNQUOTED(LIBDIR,"$libdir")
+  AC_DEFINE_UNQUOTED(SYSCONFDIR,"$sysconfdir")
+  AC_DEFINE_UNQUOTED(LOCALSTATEDIR,"$localstatedir")
   AC_SUBST(LOGNAME)
 
   AC_ARG_WITH(inl, [  --with-inl              INL Mode ], INL=1, INL=0)

@@ -28,7 +28,7 @@ int main(void)
     char command[256];
     struct stat gl_stat;
 
-    sprintf(Global,"%s/%s",LIBDIR, N_GLOBAL);
+    sprintf(Global,"%s/%s",LOCALSTATEDIR, N_GLOBAL);
     printf("Checking %s file for conversion\n",Global);
     glfd = open(Global, O_RDWR, 0744);
     if (glfd < 0) {
@@ -51,8 +51,8 @@ int main(void)
         }
     }
 
-    sprintf(command,"cp %s %s/.GLOBAL.BAK",Global,LIBDIR);
-    printf("Copying current .global to %s/.GLOBAL.BAK\n",LIBDIR);
+    sprintf(command,"cp %s %s/.GLOBAL.BAK",Global,LOCALSTATEDIR);
+    printf("Copying current .global to %s/.GLOBAL.BAK\n",LOCALSTATEDIR);
     system(command);
 
     status.active = old_stats.active;

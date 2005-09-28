@@ -4,10 +4,10 @@
 # prepare the RPM environment for building the package.
 #
 # Make sure you check and set your VS variable to get this to work.
-# $Id: tar2rpm,v 1.1 2005/03/21 05:23:46 jerub Exp $
+# $Id: tar2rpm,v 1.2 2005/09/28 12:14:06 quozl Exp $
 #
 
-VS=2.9pl8
+VS=2.10pl0
 RPM_SOURCE_DIR=/usr/src/redhat/SOURCES
 RPM_SPEC_DIR=/usr/src/redhat/SPECS
 IFS=:

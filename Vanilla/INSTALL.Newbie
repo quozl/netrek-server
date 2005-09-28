@@ -1,7 +1,10 @@
-- install as described in INSTALL,
-- change .sysdef to include NEWBIE=1,
+#	$Id: INSTALL.Newbie,v 1.2 2005/09/28 12:14:04 quozl Exp $	
+Instructions for installing the Vanilla Netrek Server as a Newbie Server
+
+- install as described in INSTALL
+- change .sysdef to include NEWBIE=1
 - change .ports (see docs/sample_ports)
-  - port 3592, enable with -q 10 for the practice robots,
-  - port 2592, use as normal but with -q 9,
-- consider blocking port 3592 inbound connections from offsite,
-- restart netrekd with SIGHUP.
+  - port 3592, enable with -q 10 for the practice robots
+  - port 2592, use as normal but with -q 9
+- consider blocking port 3592 inbound connections from offsite
+- restart netrekd with SIGHUP

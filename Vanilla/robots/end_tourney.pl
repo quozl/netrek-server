@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# $Id: end_tourney.pl,v 1.1 2005/03/21 05:23:46 jerub Exp $
+# $Id: end_tourney.pl,v 1.2 2005/09/28 12:14:05 quozl Exp $
 # 
 # end_tourney.pl
 #
@@ -73,7 +73,7 @@ if ( $id ) {
     $cambotfile = "cambot.pkt";
 }
 
-system("./tools/ltd_dump .players." . $id . " > $inputfile");
+system("./tools/ltd_dump players." . $id . " > $inputfile");
 
 open (INPUT,"$inputfile");
 open (OUTPUT,">$outputfile");

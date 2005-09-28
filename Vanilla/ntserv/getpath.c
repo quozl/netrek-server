@@ -12,83 +12,77 @@
 
 void getpath()
 {
-   char path[256];
-#ifdef CHECK_ENV
-   char *env_path;
+#define MAXPATH 256
+   char libdir[MAXPATH], sysconfdir[MAXPATH], localstatedir[MAXPATH];
 
-   if ((env_path = (char *)(getenv(ENV_NAME))) != NULL) sprintf(path,"%s",env_path);
-   else
-#endif
-   sprintf(path,"%s",LIBDIR);
+   snprintf(libdir, MAXPATH-1, "%s", LIBDIR);
+   snprintf(sysconfdir, MAXPATH-1, "%s", SYSCONFDIR);
+   snprintf(localstatedir, MAXPATH-1, "%s", LOCALSTATEDIR);
 
-#ifdef GPPRINT
-   printf("Using %s as the path to system files.\n",path);
-#endif
-
-   sprintf(Global,"%s/%s",path,N_GLOBAL);
-   sprintf(Scores,"%s/%s",path,N_SCORES);
-   sprintf(PlFile,"%s/%s",path,N_PLFILE);
-   sprintf(Motd_Path,"%s/",path);
-   sprintf(Daemon,"%s/%s",path,N_DAEMON);
-   sprintf(Robot,"%s/%s",path,N_ROBOT);
-   sprintf(LogFileName,"%s/%s",path,N_LOGFILENAME);
-   sprintf(PlayerFile,"%s/%s",path,N_PLAYERFILE);
-   sprintf(PlayerIndexFile,"%s/%s",path,N_PLAYERINDEXFILE);
-   sprintf(ConqFile,"%s/%s",path,N_CONQFILE);
-   sprintf(SysDef_File,"%s/%s",path,N_SYSDEF_FILE);
-   sprintf(Time_File,"%s/%s",path,N_TIME_FILE);
-   sprintf(Clue_Bypass,"%s/%s",path,N_CLUE_BYPASS);
-   sprintf(Banned_File,"%s/%s",path,N_BANNED_FILE);
-   sprintf(Scum_File,"%s/%s",path,N_SCUM_FILE);
-   sprintf(Error_File,"%s/%s",path,N_ERROR_FILE);
-   sprintf(Bypass_File,"%s/%s",path,N_BYPASS_FILE);
+   sprintf(Global,"%s/%s",localstatedir,N_GLOBAL);
+   sprintf(Scores,"%s/%s",localstatedir,N_SCORES);
+   sprintf(PlFile,"%s/%s",localstatedir,N_PLFILE);
+   sprintf(Motd_Path,"%s/",sysconfdir);
+   sprintf(Daemon,"%s/%s",libdir,N_DAEMON);
+   sprintf(Robot,"%s/%s",libdir,N_ROBOT);
+   sprintf(LogFileName,"%s/%s",localstatedir,N_LOGFILENAME);
+   sprintf(PlayerFile,"%s/%s",localstatedir,N_PLAYERFILE);
+   sprintf(PlayerIndexFile,"%s/%s",localstatedir,N_PLAYERINDEXFILE);
+   sprintf(ConqFile,"%s/%s",localstatedir,N_CONQFILE);
+   sprintf(SysDef_File,"%s/%s",sysconfdir,N_SYSDEF_FILE);
+   sprintf(Time_File,"%s/%s",sysconfdir,N_TIME_FILE);
+   sprintf(Clue_Bypass,"%s/%s",sysconfdir,N_CLUE_BYPASS);
+   sprintf(Banned_File,"%s/%s",sysconfdir,N_BANNED_FILE);
+   sprintf(Scum_File,"%s/%s",localstatedir,N_SCUM_FILE);
+   sprintf(Error_File,"%s/%s",localstatedir,N_ERROR_FILE);
+   sprintf(Bypass_File,"%s/%s",sysconfdir,N_BYPASS_FILE);
 
 #ifdef RSA
-   sprintf(RSA_Key_File,"%s/%s",path,N_RSA_KEY_FILE);
+   sprintf(RSA_Key_File,"%s/%s",sysconfdir,N_RSA_KEY_FILE);
 #endif
 
 #ifdef AUTOMOTD
-   sprintf(MakeMotd,"%s/motd/%s",path,N_MAKEMOTD);
+   sprintf(MakeMotd,"%s/motd/%s",localstatedir,N_MAKEMOTD);
 #endif
 
 #ifdef CHECKMESG
-   sprintf(MesgLog,"%s/%s",path,N_MESGLOG);
-   sprintf(GodLog,"%s/%s",path,N_GODLOG);
+   sprintf(MesgLog,"%s/%s",localstatedir,N_MESGLOG);
+   sprintf(GodLog,"%s/%s",localstatedir,N_GODLOG);
 #endif
 
 #ifdef FEATURES
-   sprintf(Feature_File,"%s/%s",path,N_FEATURE_FILE);
+   sprintf(Feature_File,"%s/%s",sysconfdir,N_FEATURE_FILE);
 #endif
 
 #ifdef ONCHECK
-   sprintf(On_File,"%s/%s",path,N_ON_FILE);
+   sprintf(On_File,"%s/%s",sysconfdir,N_ON_FILE);
 #endif
 
 #ifdef BASEPRACTICE
-   sprintf(Basep,"%s/%s",path,N_BASEP);
+   sprintf(Basep,"%s/%s",libdir,N_BASEP);
 #endif
 
 #ifdef NEWBIESERVER
-   sprintf(Newbie,"%s/%s",path,N_NEWBIE);
+   sprintf(Newbie,"%s/%s",libdir,N_NEWBIE);
 #endif
 
 #ifdef PRETSERVER
-   sprintf(PreT,"%s/%s",path,N_PRET);
+   sprintf(PreT,"%s/%s",libdir,N_PRET);
 #endif
 
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
-   sprintf(Robodir,"%s/%s",path,N_ROBODIR);
+   sprintf(Robodir,"%s/%s",libdir,N_ROBODIR);
 #endif
 
 #ifdef DOGFIGHT
-   sprintf(Mars,"%s/%s",path,N_MARS);
+   sprintf(Mars,"%s/%s",libdir,N_MARS);
 #endif
-   sprintf(Puck,"%s/%s",path,N_PUCK);
-   sprintf(Inl,"%s/%s",path,N_INL);
-   sprintf(Access_File,"%s/%s",path,N_ACCESS_FILE);
-   sprintf(NoCount_File,"%s/%s",path,N_NOCOUNT_FILE);
-   sprintf(Prog,"%s/%s",path,N_PROG);
-   sprintf(LogFile,"%s/%s",path,N_LOGFILE);
-   sprintf(Cambot,"%s/%s",path,N_CAMBOT);
-   sprintf(Cambot_out,"%s/%s",path,N_CAMBOT_OUT);
+   sprintf(Puck,"%s/%s",libdir,N_PUCK);
+   sprintf(Inl,"%s/%s",libdir,N_INL);
+   sprintf(Access_File,"%s/%s",sysconfdir,N_ACCESS_FILE);
+   sprintf(NoCount_File,"%s/%s",sysconfdir,N_NOCOUNT_FILE);
+   sprintf(Prog,"%s/%s",libdir,N_PROG);
+   sprintf(LogFile,"%s/%s",localstatedir,N_LOGFILE);
+   sprintf(Cambot,"%s/%s",libdir,N_CAMBOT);
+   sprintf(Cambot_out,"%s/%s",localstatedir,N_CAMBOT_OUT);
 }

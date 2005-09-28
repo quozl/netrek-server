@@ -1183,7 +1183,7 @@ on_listener_start_clicked              (GtkButton       *button,
 {
   FILE *file;
   pid_t pid;
-  char *program = LIBDIR"/netrekd";
+  char *program = BINDIR"/netrekd";
 
   file = fopen(N_NETREKDPID, "r");
   if (file != NULL) {
@@ -1221,7 +1221,7 @@ on_listener_start_clicked              (GtkButton       *button,
     message ("gum netrekd access", buffer);
   } else {
     if (fork() == 0) {
-      (void) chdir (LIBDIR);
+      (void) chdir (BINDIR);
       (void) execlp (program, "netrekd", NULL);
       exit(0);
     }
@@ -1349,7 +1349,7 @@ on_metaserver_reload_clicked           (GtkButton       *button,
   if (clist == NULL) return;
   metaserver_selected_row = -1;
 
-  file = fopen(LIBDIR"/.metaservers", "r");
+  file = fopen(SYSCONFDIR"/.metaservers", "r");
   if (file == NULL) {
     gtk_clist_freeze (clist);
     gtk_clist_clear (clist);
@@ -1495,7 +1495,7 @@ main (int argc, char *argv[])
   setlabels ();
   on_listener_port_reload_clicked (NULL, NULL);
   on_metaserver_reload_clicked (NULL, NULL);
-  strcpy (filename, LIBDIR"/.sysdef");
+  strcpy (filename, SYSCONFDIR"/.sysdef");
   on_Reload_activate (NULL, NULL);
 
   while ( gtk_events_pending() ) {

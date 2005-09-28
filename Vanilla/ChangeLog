@@ -1,3 +1,30 @@
+Wed Sep 28 21:21:40 2005  James Cameron  <quozl@us.netrek.org>
+
+	* patchlevel.h, version.h, rpm/netrek.spec: prepare for 2.10pl0
+	release.
+
+Wed Sep 28 21:17:07 2005  James Cameron  <quozl@us.netrek.org>
+
+	* res-rsa/Makefile.in: add rmdependencies rule.
+	
+	* ntserv/getpath.c, Makefile.in, configure.in, system.mk.in,
+	gum/signals.c, config.h.in, robots/mars.c, tools/convert.c:
+	attempt to comply with LSB by placing configuration files in /etc,
+	local state in /var, and programs in /usr/lib.  netrekd lives in
+	/usr/games, but is a link to /usr/lib.
+
+	* */Makefile.in, include/defs.h, pledit/edit.c, pledit/pledit.h,
+	robots/end_tourney.pl, tools/fun.c: changed dot files to non-dot
+	files.
+	
+	* debian, Makefile.in: packaging for Debian style distributions.
+
+	* Makefile.in (install): removed tools/convert as it is no longer
+	required.
+	
+	* ntserv/solicit.c (solicit): use SYSCONFDIR to find .metaservers
+	file.
+
 Tue Sep 27 19:58:25 2005  James Cameron  <quozl@us.netrek.org>
 
 	* robots/newbie.c, docs/sample_ports, robots/newbiedefs.h (PORT):
@@ -1603,4 +1630,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.4 2005/09/27 12:26:37 quozl Exp $
+	$Id: ChangeLog,v 1.5 2005/09/28 12:14:04 quozl Exp $

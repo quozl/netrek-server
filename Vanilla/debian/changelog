@@ -1,0 +1,9 @@
+netrek-server-vanilla (2.10.0-0) unstable; urgency=low
+
+  * first attempt
+
+ -- James Cameron <quozl@us.netrek.org>  Sat, 10 Sep 2005 12:24:49 +1000
+
+Local variables:
+mode: debian-changelog
+End:

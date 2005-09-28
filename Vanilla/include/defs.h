@@ -1,4 +1,4 @@
-/* $Id: defs.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
+/* $Id: defs.h,v 1.3 2005/09/28 12:14:05 quozl Exp $
  */
 
 #ifndef _h_defs
@@ -198,26 +198,26 @@ because they have initialisation of variables dependent on UPDATE. */
 
 /* Data files to make the game play across daemon restarts. */
 
-#define N_GLOBAL	".global"
-#define N_SCORES	".scores"
-#define N_PLFILE	".planets"
-#define N_MOTD		".motd"
-#define N_MOTD_CLUE	".motd_clue"
+#define N_GLOBAL	"global"
+#define N_SCORES	"scores"
+#define N_PLFILE	"planets"
+#define N_MOTD		"motd"
+#define N_MOTD_CLUE	"motd_clue"
 #define N_DAEMON	"daemonII"
 #define N_ROBOT		"robotII"
 #define N_LOGFILENAME	"logfile"
-#define N_PLAYERFILE	".players"
-#define N_PLAYERINDEXFILE	".players.index"
-#define N_CONQFILE	".conquer"
-#define N_SYSDEF_FILE	".sysdef"
-#define N_TIME_FILE	".time"
-#define N_CLUE_BYPASS	".clue-bypass"
-#define N_BANNED_FILE	".banned"
+#define N_PLAYERFILE	"players"
+#define N_PLAYERINDEXFILE	"players.index"
+#define N_CONQFILE	"conquer"
+#define N_SYSDEF_FILE	"sysdef"
+#define N_TIME_FILE	"time"
+#define N_CLUE_BYPASS	"clue-bypass"
+#define N_BANNED_FILE	"banned"
 #define N_SCUM_FILE	"god.LOG"
 #define N_ERROR_FILE	"ERRORS"
-#define N_BYPASS_FILE	".bypass"
+#define N_BYPASS_FILE	"bypass"
 #ifdef RSA
-#define N_RSA_KEY_FILE	".reserved"
+#define N_RSA_KEY_FILE	"reserved"
 #endif
 #ifdef AUTOMOTD
 #define N_MAKEMOTD	"/makemotd"
@@ -228,15 +228,15 @@ because they have initialisation of variables dependent on UPDATE. */
 #endif
 
 #ifdef FEATURES
-#define N_FEATURE_FILE	".features"
+#define N_FEATURE_FILE	"features"
 #endif
 
 #ifdef ONCHECK
 #define N_ON_FILE	"on"
 #endif
 
-#define N_ACCESS_FILE	".access"
-#define N_NOCOUNT_FILE	".nocount"
+#define N_ACCESS_FILE	"access"
+#define N_NOCOUNT_FILE	"nocount"
 #define N_PROG		"ntserv"
 #define N_LOGFILE	"log"
 
@@ -245,7 +245,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #ifdef BASEPRACTICE
 #define N_BASEP		"basep"
 #define BASEP_ROBOT	1
-#define N_MOTD_BASEP	".motd_basep"
+#define N_MOTD_BASEP	"motd_basep"
 #endif
 
 #ifdef NEWBIESERVER
@@ -276,8 +276,8 @@ because they have initialisation of variables dependent on UPDATE. */
 #define N_CAMBOT	"cambot"
 #define N_CAMBOT_OUT	"cambot.pkt"
 
-#define N_NETREKDPID    LIBDIR"/.netrekd.pid"
-#define N_PORTS         LIBDIR"/.ports"
+#define N_NETREKDPID    LOCALSTATEDIR"/netrekd.pid"
+#define N_PORTS         SYSCONFDIR"/ports"
 
 /* Other stuff that Ed added */
 

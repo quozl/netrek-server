@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.3 2005/09/27 12:26:37 quozl Exp $
+$Id: README.releasing,v 1.4 2005/09/28 12:14:04 quozl Exp $
 
 Release Procedure
 
@@ -10,6 +10,9 @@ cd Vanilla
 # set variables to ease the rest of this ... (sh or bash)
 VS=2.10pl0
 VL=v_2_10_0
+
+# check version numbers in files
+# patchlevel.h, version.h, rpm/netrek.spec, rpm/tar2rpm, README.releasing
 
 # make sure you have committed all changes
 cvs -z9 diff -u > tmp.tmp

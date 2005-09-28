@@ -45,8 +45,8 @@ WINDOW *glw;			/* window with global data in it */
  */
 static char *pl_filename;	/* player file filename */
 static char *gl_filename;	/* global file filename */
-static int pl_saved;		/* has the .players file been saved? */
-static int gl_saved;		/* has the .global file been saved? */
+static int pl_saved;		/* has the players file been saved? */
+static int gl_saved;		/* has the global file been saved? */
 static int num_players;		/* #of players in the database */
 static int num_ent;		/* amount of space in players array */
 static int top_player;		/* #of player at top of screen */
@@ -197,7 +197,7 @@ read_files()
 	fatal(0, "no entries in player database");
 
     if (read(gl_fd, &gl, sizeof(struct status)) != sizeof(struct status))
-	fatal(errno, "unable to read .global file");
+	fatal(errno, "unable to read global file");
 
     close(pl_fd);
     close(gl_fd);
@@ -230,7 +230,7 @@ int exit_prompt;
     if (exit_prompt) {
 	mvwprintw(w, 2, 2, "Save changes before leaving (y/n)? ");
     } else {
-	mvwprintw(w, 2, 2, "Write .players and .global (y/n)? ");
+	mvwprintw(w, 2, 2, "Write players and global (y/n)? ");
     }
 
     wrefresh(w);
@@ -974,7 +974,7 @@ char *pfilename, *gfilename;
     /* draw the screen, set up windows, etc */
     init_screen();
 
-    /* read the .players and .global files in */
+    /* read the players and global files in */
     read_files();
 
     /* go to the main input loop */

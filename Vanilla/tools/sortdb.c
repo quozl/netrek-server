@@ -15,6 +15,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "config.h"
 
 
 #define ENT_QUANTUM	512
@@ -22,7 +23,7 @@
 struct statentry *se = NULL;
 
 int num_players = 0;
-char pl_filename[] = {".players"};
+char pl_filename[] = {LOCALSTATEDIR"/players"};
 int tilde = 0;
 time_t 	currenttime;
 

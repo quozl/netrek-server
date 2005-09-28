@@ -557,7 +557,11 @@ only if you have no intention of retaining stats on the server for pickup */
 #endif
 
 #ifdef SERVER
+/* paths substituted by configure, see AC_DEFINE_UNQUOTED in configure.in */
 #define LIBDIR "/usr/local/games/netrek"
+#define BINDIR "/usr/local/games/netrek"
+#define SYSCONFDIR "/usr/local/games/netrek"
+#define LOCALSTATEDIR "/usr/local/games/netrek"
 
 /* System dependend programs */
 #define UPTIME "/usr/ucb/uptime"

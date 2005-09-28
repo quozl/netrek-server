@@ -40,11 +40,11 @@ char buf[MSG_LEN + 20];
 #define COS(x) ((x) >= 0.0 ? Cosine[(int)(x)] : Cosine[(int)(-(x))])
 #define SIN(x) ((x) >= 0.0 ? Sine[(int)(x)] : -Sine[(int)(-(x))])
 
-#define SYSDEF_SAVE_FILENAME LIBDIR"/.sysdef.topgunrestore"
-#define SAVE_SYSDEF_CMD "cp "LIBDIR"/.sysdef "LIBDIR"/.sysdef.topgunrestore"
-#define TOPGUN_SYSDEF_CMD1 "cp "LIBDIR"/.sysdef.topgun "LIBDIR"/.sysdef.temp"
-#define TOPGUN_SYSDEF_CMD2 "mv "LIBDIR"/.sysdef.temp "LIBDIR"/.sysdef"
-#define RESTORE_SYSDEF_CMD "mv "LIBDIR"/.sysdef.topgunrestore "LIBDIR"/.sysdef"
+#define SYSDEF_SAVE_FILENAME LOCALSTATEDIR"/.sysdef.topgunrestore"
+#define SAVE_SYSDEF_CMD "cp "LOCALSTATEDIR"/.sysdef "LOCALSTATEDIR"/.sysdef.topgunrestore"
+#define TOPGUN_SYSDEF_CMD1 "cp "LOCALSTATEDIR"/.sysdef.topgun "LOCALSTATEDIR"/.sysdef.temp"
+#define TOPGUN_SYSDEF_CMD2 "mv "LOCALSTATEDIR"/.sysdef.temp "LOCALSTATEDIR"/.sysdef"
+#define RESTORE_SYSDEF_CMD "mv "LOCALSTATEDIR"/.sysdef.topgunrestore "LOCALSTATEDIR"/.sysdef"
 
 #define PUPDATE 0
 #define PUPDATE_SEC 1

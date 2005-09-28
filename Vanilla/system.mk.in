@@ -8,7 +8,12 @@
 #	   XTREKOWNER - Owner of the game
 
 XTREKDIR = @srcdir@
-LIBDIR = @prefix@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+LIBDIR = @libdir@
+BINDIR = @bindir@
+SYSCONFDIR = @sysconfdir@
+LOCALSTATEDIR = @localstatedir@
 XTREKOWNER = @LOGNAME@
 
 PORT = -DPORT=2592

@@ -104,13 +104,11 @@ uninstall:
 #c.o.parallel: & $(R_OBJS) $(D_OBJS) nuke.c xtkill.c
 
 install: ntserv daemonII 
-	-@if [ ! -d $(LIBDIR) ]; then \
-	  $(INSTALL) -d $(DESTDIR)$(LIBDIR); \
-	fi
+	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
 	$(INSTALLPROG) $(INSTALLOPTS) daemonII $(DESTDIR)$(LIBDIR)/daemonII
-	touch $(DESTDIR)$(LIBDIR)/.planets
-	chmod 600 $(DESTDIR)$(LIBDIR)/.planets
+	touch $(DESTDIR)$(LOCALSTATEDIR)/planets
+	chmod 600 $(DESTDIR)$(LOCALSTATEDIR)/planets
 
 installbin: install
 	echo "target installbin deprecated, assumed install"

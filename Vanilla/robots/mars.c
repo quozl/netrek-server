@@ -105,7 +105,7 @@ char **argv;
     openmem(1);
     readsysdefaults();
 
-    sprintf(DogStats,"%s/%s\0",LIBDIR,DOG_STATS);
+    sprintf(DogStats,"%s/%s\0",LOCALSTATEDIR,DOG_STATS);
 	
     if ( (pno = pickslot(QU_ROBOT)) < 0) exit(0);
     me = &players[pno];
@@ -194,7 +194,7 @@ config()
 
 #define IND 0
 
-    sprintf(TournMap_File,"%s/%s\0",LIBDIR,TOURNMAP);
+    sprintf(TournMap_File,"%s/%s\0",SYSCONFDIR,TOURNMAP);
 
     f = fopen(TournMap_File,"r");
     if (f == NULL) {

@@ -1,8 +1,12 @@
-#	$Id: Makefile.in,v 1.2 2005/03/21 10:17:15 quozl Exp $	
+#	$Id: Makefile.in,v 1.3 2005/09/28 12:14:04 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
 #
+
+PACKAGE=netrek-server-vanilla
+VERSION=`head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\)`
+ARCHIVE=~/public_html/external/mine/netrek
 
 VPATH = @srcdir@
 srcdir = @srcdir@
@@ -142,13 +146,13 @@ installbin: all
 	cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
 	cd xsg;       $(MAKE) install DESTDIR=$(DESTDIR)
 
-install: installbin 
+install: installbin
+	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(BINDIR) $(DESTDIR)$(SYSCONFDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	cd docs;   $(MAKE) install DESTDIR=$(DESTDIR)
 	cd tools;  $(MAKE) installtrekon DESTDIR=$(DESTDIR)
-	-cd tools; ./convert
 	@echo
 	@echo "Vanilla Netrek Server installation is completed."
-	@echo "To start your Netrek server, type $(LIBDIR)/netrekd"
+	@echo "To start your Netrek server, type $(BINDIR)/netrekd"
 	@echo "Then start a Netrek client with '-h localhost'"
 
 name: ${srcdir}/name.c ${srcdir}/version.h ${srcdir}/patchlevel.h
@@ -184,3 +188,16 @@ rmdependencies:
 		cd res-rsa; echo "      cd res-rsa; make rmdependencies"; \
 		$(MAKE) rmdependencies; \
 	fi
+
+
+package:
+	fakeroot dpkg-buildpackage -us -uc
+
+upload:
+	mv ../$(PACKAGE)_$(VERSION)*{.dsc,.changes,.tar.gz,.deb} $(ARCHIVE)
+
+update:
+	(cd $(ARCHIVE);make)
+
+release: package upload update
+

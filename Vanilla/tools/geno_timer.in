@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LIBDIR=@libdir@
+LOCALSTATEDIR=@localstatedir@
 
 if [ ! -x $LIBDIR/tools/sequencer ]; then
   echo "Cannot execute sequencer"
@@ -18,14 +19,14 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-if [ ! -r $LIBDIR/.sysdef.geno_timer ]; then
-  echo "Cannot read .sysdef.geno_timer"
+if [ ! -r $LOCALSTATEDIR/sysdef.geno_timer ]; then
+  echo "Cannot read sysdef.geno_timer"
   exit 1
 fi
 
-cp $LIBDIR/.sysdef.geno_timer $LIBDIR/.sysdef
+cp $LOCALSTATEDIR/sysdef.geno_timer $LOCALSTATEDIR/sysdef
 if [ $? -ne 0 ]; then
-  echo "Failed to copy .sysdef.geno_timer to .sysdef"
+  echo "Failed to copy sysdef.geno_timer to sysdef"
   exit 1
 fi
 

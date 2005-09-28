@@ -1,2 +1,3 @@
+- split into multiple directories per LSB, avoid dot files [cameron]
 - newbie robot entry queue fix [cameron/southall]
 - INL free army clone bugfix [pog]

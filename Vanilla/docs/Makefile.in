@@ -23,43 +23,43 @@ DOCS = ${srcdir}/sample_features ${srcdir}/sample_motdclue \
 	${srcdir}/sample_reserved ${srcdir}/sample_tourn.map
 
 install: $(DOCS)
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.features ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_features	$(DESTDIR)$(LIBDIR)/.features ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/features ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_features	$(DESTDIR)$(SYSCONFDIR)/features ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.motd_clue ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(DESTDIR)$(LIBDIR)/.motd_clue ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/motd_clue ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(DESTDIR)$(SYSCONFDIR)/motd_clue ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/motd_clue_logo.MASTER ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(DESTDIR)$(LIBDIR)/motd_clue_logo.MASTER ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/motd_clue_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdclue	$(DESTDIR)$(SYSCONFDIR)/motd_clue_logo.MASTER ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/motd_basep_logo.MASTER ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(DESTDIR)$(LIBDIR)/motd_basep_logo.MASTER ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/motd_basep_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(DESTDIR)$(SYSCONFDIR)/motd_basep_logo.MASTER ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.sysdef ]; then \
-		$(INSTALLDATA) sample_sysdef	$(DESTDIR)$(LIBDIR)/.sysdef ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/sysdef ]; then \
+		$(INSTALLDATA) sample_sysdef	$(DESTDIR)$(SYSCONFDIR)/sysdef ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.motd ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motd	$(DESTDIR)$(LIBDIR)/.motd ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/motd ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motd	$(DESTDIR)$(SYSCONFDIR)/motd ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/motd_logo.MASTER ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motd	$(DESTDIR)$(LIBDIR)/motd_logo.MASTER ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/motd_logo.MASTER ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motd	$(DESTDIR)$(SYSCONFDIR)/motd_logo.MASTER ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.ports ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_ports	$(DESTDIR)$(LIBDIR)/.ports ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/ports ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_ports	$(DESTDIR)$(SYSCONFDIR)/ports ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.time ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_time	$(DESTDIR)$(LIBDIR)/.time ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/time ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_time	$(DESTDIR)$(SYSCONFDIR)/time ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.motd_basep ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(DESTDIR)$(LIBDIR)/.motd_basep ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/motd_basep ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_motdbasep	$(DESTDIR)$(SYSCONFDIR)/motd_basep ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.reserved ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_reserved	$(DESTDIR)$(LIBDIR)/.reserved ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/reserved ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_reserved	$(DESTDIR)$(SYSCONFDIR)/reserved ; \
 	fi
-	if [ ! -f $(DESTDIR)$(LIBDIR)/.tourn.map ]; then \
-		$(INSTALLDATA) ${srcdir}/sample_tourn.map	$(DESTDIR)$(LIBDIR)/.tourn.map ; \
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/tourn.map ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_tourn.map	$(DESTDIR)$(SYSCONFDIR)/tourn.map ; \
 	fi
-	touch $(DESTDIR)$(LIBDIR)/.nocount
-	touch $(DESTDIR)$(LIBDIR)/.banned
-	touch $(DESTDIR)$(LIBDIR)/.bypass
-	touch $(DESTDIR)$(LIBDIR)/.clue-bypass
+	touch $(DESTDIR)$(SYSCONFDIR)/nocount
+	touch $(DESTDIR)$(SYSCONFDIR)/banned
+	touch $(DESTDIR)$(SYSCONFDIR)/bypass
+	touch $(DESTDIR)$(SYSCONFDIR)/clue-bypass
