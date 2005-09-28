@@ -26,37 +26,21 @@ void getpath()
 #endif
 
    sprintf(Global,"%s/%s",path,N_GLOBAL);
-
    sprintf(Scores,"%s/%s",path,N_SCORES);
-
    sprintf(PlFile,"%s/%s",path,N_PLFILE);
-
    sprintf(Motd_Path,"%s/",path);
-
    sprintf(Daemon,"%s/%s",path,N_DAEMON);
-
    sprintf(Robot,"%s/%s",path,N_ROBOT);
-
    sprintf(LogFileName,"%s/%s",path,N_LOGFILENAME);
-
    sprintf(PlayerFile,"%s/%s",path,N_PLAYERFILE);
-
    sprintf(PlayerIndexFile,"%s/%s",path,N_PLAYERINDEXFILE);
-
    sprintf(ConqFile,"%s/%s",path,N_CONQFILE);
-
    sprintf(SysDef_File,"%s/%s",path,N_SYSDEF_FILE);
-
    sprintf(Time_File,"%s/%s",path,N_TIME_FILE);
-
    sprintf(Clue_Bypass,"%s/%s",path,N_CLUE_BYPASS);
-
    sprintf(Banned_File,"%s/%s",path,N_BANNED_FILE);
-
    sprintf(Scum_File,"%s/%s",path,N_SCUM_FILE);
-
    sprintf(Error_File,"%s/%s",path,N_ERROR_FILE);
-
    sprintf(Bypass_File,"%s/%s",path,N_BYPASS_FILE);
 
 #ifdef RSA
@@ -100,14 +84,11 @@ void getpath()
    sprintf(Mars,"%s/%s",path,N_MARS);
 #endif
    sprintf(Puck,"%s/%s",path,N_PUCK);
-
    sprintf(Inl,"%s/%s",path,N_INL);
-
    sprintf(Access_File,"%s/%s",path,N_ACCESS_FILE);
    sprintf(NoCount_File,"%s/%s",path,N_NOCOUNT_FILE);
    sprintf(Prog,"%s/%s",path,N_PROG);
    sprintf(LogFile,"%s/%s",path,N_LOGFILE);
-
    sprintf(Cambot,"%s/%s",path,N_CAMBOT);
    sprintf(Cambot_out,"%s/%s",path,N_CAMBOT_OUT);
 }
