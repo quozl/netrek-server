@@ -15,8 +15,8 @@
 #include <time.h>
 #include "defs.h"
 #include INC_FCNTL
-#include "data.h"
 #include "struct.h"
+#include "data.h"
 
 #include "proto.h"
 

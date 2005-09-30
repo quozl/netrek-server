@@ -1,3 +1,25 @@
+Fri Sep 30 15:40:41 2005  James Cameron  <quozl@us.netrek.org>
+
+	* xsg/x11window.c: remove malloc prototype inb favour of stdlib.h
+
+Fri Sep 30 15:33:06 2005  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/reserved.c, ntserv/timecheck.c, ntserv/getpath.c,
+	tools/blotpassword.c, tools/newscores.c, tools/trimscores.c,
+	tools/keyman.c, tools/fun.c, newstartd/newstartd.c,
+	newstartd/newaccess.c, pledit/main.c: add missing struct.h
+	reference or change the order so as to fix compiler error on GCC
+	4.0.1
+
+Fri Sep 30 15:26:36 2005  James Cameron  <quozl@us.netrek.org>
+
+	* debian/control (Build-Depends): add missing libgdbm-dev build
+	dependency.
+
+Fri Sep 30 15:12:00 2005  James Cameron  <quozl@us.netrek.org>
+
+	* netrek-server-vanilla-2.10.0 released
+
 Fri Sep 30 14:17:52 2005  James Cameron  <quozl@us.netrek.org>
 
 	* Makefile.in: add dist rule, add maintainer-clean, remove name,
@@ -1636,4 +1658,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.6 2005/09/30 04:26:15 quozl Exp $
+	$Id: ChangeLog,v 1.7 2005/09/30 05:46:19 quozl Exp $

@@ -11,6 +11,7 @@ NOTE: If running an older version of DECwindows you may need this.
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "Wlib.h"
 #include "defs.h"		/* TSH */
 #include "xsg_defs.h"
@@ -133,7 +134,6 @@ struct fontInfo fonts[FONTS];
 
 struct window *newWindow();
 struct window *findWindow();
-char *malloc();
 short *x11tox10bits();
 
 struct window myroot;

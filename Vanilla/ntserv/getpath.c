@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "defs.h"
+#include "struct.h"
 #include "data.h"
 
 void getpath()

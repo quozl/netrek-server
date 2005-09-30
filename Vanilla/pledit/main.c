@@ -25,6 +25,7 @@ int main(void) {
 #include <curses.h>
 #include "pledit.h"
 #include "defs.h"
+#include "struct.h"
 #include "data.h"
 
 void usage(char *argv0)

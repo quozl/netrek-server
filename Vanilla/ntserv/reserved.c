@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "packets.h"
+#include "struct.h"
 #include "data.h"
 
 void makeReservedPacket(struct reserved_spacket *packet)

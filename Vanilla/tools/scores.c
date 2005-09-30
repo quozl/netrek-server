@@ -8,8 +8,8 @@
 #include <time.h>
 #include "defs.h"
 #include INC_FCNTL
-#include "data.h"
 #include "struct.h"
+#include "data.h"
 
 /* There is a time bias towards people with at least 4 hours of play... */
 #define TIMEBIAS 4

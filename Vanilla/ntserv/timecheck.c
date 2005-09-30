@@ -3,8 +3,8 @@
 #include <sys/stat.h>
 #include <time.h>
 #include "defs.h"
-#include "data.h"
 #include "struct.h"
+#include "data.h"
 
 extern int clue;
 

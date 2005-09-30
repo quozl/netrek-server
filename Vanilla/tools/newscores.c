@@ -14,8 +14,8 @@
 #include <pwd.h>
 #include "defs.h"
 #include INC_FCNTL
-#include "data.h"
 #include "struct.h"
+#include "data.h"
 
 #ifdef LTD_STATS
 

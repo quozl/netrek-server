@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.5 2005/09/30 04:26:15 quozl Exp $
+$Id: README.releasing,v 1.6 2005/09/30 05:46:19 quozl Exp $
 
 Release Procedure
 
@@ -34,6 +34,9 @@ make dist
 md5sum $PN-$VS.tar.gz > $PN-$VS.tar.gz.md5sum
 
 # test build kit
+cp $PN-$VS.tar.gz /tmp
+cd /tmp
+tar xfz $PN-$VS.tar.gz 
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make

@@ -14,8 +14,8 @@
 #include "defs.h"
 #include INC_STRINGS
 #include INC_FCNTL
-#include "data.h"
 #include "struct.h"
+#include "data.h"
 
 #define CATALOG        "catalog"
 

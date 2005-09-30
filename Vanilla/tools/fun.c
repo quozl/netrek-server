@@ -19,8 +19,8 @@
 #include <ctype.h>
 #include "defs.h"
 #include INC_STRINGS
-#include "data.h"
 #include "struct.h"
+#include "data.h"
 
 extern int openmem(int);
 
