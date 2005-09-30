@@ -13,6 +13,7 @@
 #include "data.h"
 #include "robot.h"
 
+mprintf(char *format, ...);
 
 #define ADDRLEN		10
 

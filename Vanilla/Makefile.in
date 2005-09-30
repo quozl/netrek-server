@@ -1,11 +1,11 @@
-#	$Id: Makefile.in,v 1.5 2005/09/30 04:26:15 quozl Exp $	
+#	$Id: Makefile.in,v 1.6 2005/09/30 05:57:43 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.10.0
+VERSION=2.10.1
 
 VPATH = @srcdir@
 srcdir = @srcdir@

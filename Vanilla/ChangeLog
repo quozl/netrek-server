@@ -1,3 +1,7 @@
+Fri Sep 30 15:56:42 2005  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/util.c: miscellaneous other GCC 4.0.1 fixes.
+
 Fri Sep 30 15:49:14 2005  James Cameron  <quozl@us.netrek.org>
 
 	* xsg/defaults.c (strdup): fix for GCC 3.4.3.
@@ -5,16 +9,16 @@ Fri Sep 30 15:49:14 2005  James Cameron  <quozl@us.netrek.org>
 
 Fri Sep 30 15:40:41 2005  James Cameron  <quozl@us.netrek.org>
 
-	* xsg/x11window.c: remove malloc prototype inb favour of stdlib.h
+	* xsg/x11window.c: remove malloc prototype in favour of stdlib.h
 
 Fri Sep 30 15:33:06 2005  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/reserved.c, ntserv/timecheck.c, ntserv/getpath.c,
 	tools/blotpassword.c, tools/newscores.c, tools/trimscores.c,
 	tools/keyman.c, tools/fun.c, newstartd/newstartd.c,
-	newstartd/newaccess.c, pledit/main.c: add missing struct.h
-	reference or change the order so as to fix compiler error on GCC
-	4.0.1
+	newstartd/newaccess.c, pledit/main.c, pledit/input.c: add missing
+	struct.h reference or change the order so as to fix compiler error
+	on GCC 4.0.1
 
 Fri Sep 30 15:26:36 2005  James Cameron  <quozl@us.netrek.org>
 
@@ -1663,4 +1667,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.8 2005/09/30 05:52:13 quozl Exp $
+	$Id: ChangeLog,v 1.9 2005/09/30 05:57:43 quozl Exp $

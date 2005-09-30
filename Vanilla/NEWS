@@ -1,3 +1,9 @@
+2.10.1: unreleased
+
+- add missing build dependency on debian package [cameron]
+- fix compilation on GCC 4.0.1 [cameron]
+- fix compilation on GCC 3.4.3 [thorne]
+
 2.10.0: released 2005-09-30
 
 - GNU standards for Makefile [cameron]

@@ -13,6 +13,7 @@
 #include <curses.h>
 #include "pledit.h"
 #include "defs.h"
+#include "struct.h"
 #include "data.h"
 
 /*
