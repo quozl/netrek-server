@@ -1,4 +1,4 @@
-2.10.0: unreleased
+2.10.0: released 2005-09-30
 
 - GNU standards for Makefile [cameron]
 - change version number format from 2.9pl8 to 2.10.0 [cameron]
