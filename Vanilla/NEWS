@@ -1,5 +1,31 @@
+2.10.0: unreleased
 
+- GNU standards for Makefile [cameron]
 - change version number format from 2.9pl8 to 2.10.0 [cameron]
+- find .metaservers file in SYSCONFDIR not default directory [cameron]
 - split into multiple directories per LSB, avoid dot files [cameron]
+- compilation fixes for Debian Sarge and Fedora Core 3 [cameron]
+- varargs to stdargs conversion [rekless]
+
 - newbie robot entry queue fix [cameron/southall]
-- INL free army clone bugfix [pog]
+- fix INL free army clone bug [pog]
+- fix crash on conq, if conqfile not writeable, redirect to stderr [cameron]
+- fix database corruption caused by system shutdown during kill [cameron]
+- fix practice robots not firing at enemy [piepho]
+- fix visible tractors for observers [pirogov]
+- fix slot t avoidance check [larimda]
+
+- observer muting support [cameron]
+- observer message throttling [cameron]
+- admin command (free and ban while god observing) [cameron]
+- began support for whitelisting [cameron]
+- began support for user registration [cameron]
+- hide hostname for whitelisted slots [cameron]
+- NO_DUPLICATE_HOSTS feature to reduce scumming and DoS [cameron]
+- NO_HOSTNAMES feature to reduce player to player DoS [cameron]
+- player database index and access timing [cameron]
+- galactic collapse mode for setgalaxy [cameron]
+- avoid slot t [cameron]
+- run puck before player and faceoff, ex psychosis [villapando]
+
+2.9pl8: released 2002-12-06
