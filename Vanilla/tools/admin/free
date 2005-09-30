@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "`date` $1 $0 $2 $3" >> admin.log
+tools/xtkill $2 F
