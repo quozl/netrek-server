@@ -62,7 +62,7 @@ char *deffile;		/* As opposed to defile? */
 }
 
 char *strdup(str)
-char *str;
+const char *str;
 {
     char *s;
 
