@@ -1,0 +1,3 @@
+#!/bin/sh
+
+chown -R games:games /var/lib/netrek-server-vanilla

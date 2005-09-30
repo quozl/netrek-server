@@ -1,0 +1,42 @@
+#!/bin/sh
+
+PATH=$PATH:/usr/games:/usr/lib/netrek-server-vanilla
+DAEMON=/usr/games/netrekd
+PIDFILE=/var/lib/netrek-server-vanilla/netrekd.pid
+
+case "$1" in
+  start)
+    su -c "PATH=\${PATH}:/usr/games netrekd" games&
+    ;;
+  stop)
+    killall -INT netrekd
+    ;;
+  reload)
+    killall -HUP netrekd
+    ;;
+  force-reload|restart)
+    echo "Restarting Netrek Server"
+    sh $0 stop
+    sh $0 start
+    ;;
+  status)
+    if [ ! -r $PIDFILE ]; then
+      exit 3
+    fi
+    PID=`cat $PIDFILE`
+    EXE=/proc/$PID/exe
+    if [ -x "$EXE" ] && 
+                [ "`ls -l \"$EXE\" | cut -d'>' -f2,2 | cut -d' ' -f2,2`" = \
+                "$DAEMON" ]; then
+      exit 0
+    elif [ -r $PIDFILE ]; then
+      exit 1
+    else
+      exit 3
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|force-reload|reload}"
+    exit 1
+    ;;
+esac

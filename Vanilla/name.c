@@ -1,4 +1,4 @@
-#define MVERS
+#define MVERS 1
 #include "version.h"
 #include "patchlevel.h"
 
@@ -12,4 +12,3 @@ main()
   printf("\n");
   exit(0);
 }
-

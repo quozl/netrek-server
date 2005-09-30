@@ -3,6 +3,7 @@ dnl	generate the file "configure", which is run during Netrek installation
 dnl	to configure the system for the local environment.
 AC_INIT(name.c)
 AC_CONFIG_HEADER(include/config.h)
+AC_PREFIX_DEFAULT("/usr/local/games/netrek-server-vanilla")
 
 #----------------------------------------------------
 #	For which code are we checking? (server, cow)
@@ -23,21 +24,31 @@ else
 fi
  
 if test "$code" = server; then
-
-# TODO: handle --prefix alone, as we did before.
-#  echo ""
-#  echo "... prefix $prefix"
-#  echo "... bindir $bindir"
-#  echo "... libdir $libdir"
-#  echo "... sysconfdir $sysconfdir"
-#  echo "... localstatedir $localstatedir"
-#  echo "... exec_prefix $exec_prefix"
-#  echo ""
-#	exit 0
-  AC_DEFINE_UNQUOTED(BINDIR,"$bindir")
-  AC_DEFINE_UNQUOTED(LIBDIR,"$libdir")
-  AC_DEFINE_UNQUOTED(SYSCONFDIR,"$sysconfdir")
-  AC_DEFINE_UNQUOTED(LOCALSTATEDIR,"$localstatedir")
+  # default the prefix
+  if test "x$prefix" = "xNONE"; then
+    prefix=${ac_default_prefix}
+  fi
+  # expand the other directories
+  if test "x${exec_prefix}" = 'xNONE'; then
+   exec_prefix=${prefix}
+  fi
+  if test "x${bindir}" = 'x${exec_prefix}/bin'; then
+    bindir=${exec_prefix}/bin
+  fi
+  if test "x${libdir}" = 'x${exec_prefix}/lib'; then
+    libdir=${exec_prefix}/lib
+  fi
+  if test "x${sysconfdir}" = 'x${prefix}/etc'; then
+    sysconfdir=${prefix}/etc
+  fi
+  if test "x${localstatedir}" = 'x${prefix}/var'; then
+    localstatedir=${prefix}/var
+  fi
+  # place the important ones for use by the C code
+  AC_DEFINE_UNQUOTED(BINDIR,"${bindir}")
+  AC_DEFINE_UNQUOTED(LIBDIR,"${libdir}")
+  AC_DEFINE_UNQUOTED(SYSCONFDIR,"${sysconfdir}")
+  AC_DEFINE_UNQUOTED(LOCALSTATEDIR,"${localstatedir}")
   AC_SUBST(LOGNAME)
 
   AC_ARG_WITH(inl, [  --with-inl              INL Mode ], INL=1, INL=0)
@@ -504,3 +515,10 @@ if test "x$GUM" = xdo_gum; then
 	AC_OUTPUT_SUBDIRS(gum)
 fi
 
+echo ""
+echo "Directories"
+echo "    Binaries (external use) : $bindir"
+echo "    Binaries (internal use) : $libdir"
+echo "    Configuration files     : $sysconfdir"
+echo "    Local state files       : $localstatedir"
+echo ""

@@ -1,4 +1,4 @@
-#	$Id: Makefile.in,v 1.3 2005/09/28 12:14:04 quozl Exp $	
+#	$Id: Makefile.in,v 1.4 2005/09/30 03:10:56 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
@@ -155,13 +155,8 @@ install: installbin
 	@echo "To start your Netrek server, type $(BINDIR)/netrekd"
 	@echo "Then start a Netrek client with '-h localhost'"
 
-name: ${srcdir}/name.c ${srcdir}/version.h ${srcdir}/patchlevel.h
-	$(CC) $(CFLAGS) ${LDFLAGS} -DMVERS -o name ${srcdir}/name.c
-
-solarispatches: name rmdependencies
-	cd $(PATCHDIR)/Server; $(MAKE) name
-	cd $(SOURCE)
-	./patches
+name: ${srcdir}/name.c ${srcdir}/include/version.h ${srcdir}/include/patchlevel.h
+	$(CC) $(CFLAGS) ${LDFLAGS} -I include -o name ${srcdir}/name.c
 
 # for people on dynix, parallel compiling:
 # /bin/make BINDIR="$(BINDIR)"parallel
@@ -189,6 +184,8 @@ rmdependencies:
 		$(MAKE) rmdependencies; \
 	fi
 
+dist:
+	echo "make dist not supported, .tar.gz is built from CVS, see README.releasing"
 
 package:
 	fakeroot dpkg-buildpackage -us -uc
