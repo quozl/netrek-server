@@ -1,12 +1,11 @@
-#	$Id: Makefile.in,v 1.4 2005/09/30 03:10:56 quozl Exp $	
+#	$Id: Makefile.in,v 1.5 2005/09/30 04:26:15 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=`head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\)`
-ARCHIVE=~/public_html/external/mine/netrek
+VERSION=2.10.0
 
 VPATH = @srcdir@
 srcdir = @srcdir@
@@ -106,7 +105,7 @@ clean:
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
 	fi
-	rm -f make.out name.o name cflags.h *~ null #*#
+	rm -f make.out cflags.h *~ null #*#
 
 reallyclean:
 	cd ntserv;    $(MAKE) reallyclean
@@ -128,6 +127,12 @@ reallyclean:
 	rm -f make.out cflags.h config.cache config.log tools/trekon *~ null #*#
 
 distclean: clean reallyclean rmdependencies
+
+maintainer-clean: distclean
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
+	rm -f Makefile */Makefile
+	rm -rf */.depend
 
 installbin: all
 	cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
@@ -155,21 +160,6 @@ install: installbin
 	@echo "To start your Netrek server, type $(BINDIR)/netrekd"
 	@echo "Then start a Netrek client with '-h localhost'"
 
-name: ${srcdir}/name.c ${srcdir}/include/version.h ${srcdir}/include/patchlevel.h
-	$(CC) $(CFLAGS) ${LDFLAGS} -I include -o name ${srcdir}/name.c
-
-# for people on dynix, parallel compiling:
-# /bin/make BINDIR="$(BINDIR)"parallel
-#parallel: & pntserv startup xsg
-# commented out because of all the whining from Ultrix and other people
-# whose make BINDIR="$(BINDIR)"BINDIR="$(BINDIR)"barfs on it.  All I can say is: compile gnumake.
-
-
-# more fun parallel compiling
-pntserv:
-	cd ntserv; /bin/make BINDIR="$(BINDIR)"BINDIR="$(BINDIR)"-P10 CC="$(CC)" EXTRALIBS="$(EXTRALIBS)" \
-	    EXTRACFLAGS="$(EXTRACFLAGS)" XTREKDIR="$(XTREKDIR)" parallel
-
 rmdependencies:
 	cd ntserv;    $(MAKE) rmdependencies
 	cd robots;    $(MAKE) rmdependencies
@@ -184,17 +174,49 @@ rmdependencies:
 		$(MAKE) rmdependencies; \
 	fi
 
+NAME=$(PACKAGE)-$(VERSION)
 dist:
-	echo "make dist not supported, .tar.gz is built from CVS, see README.releasing"
+	mkdir $(NAME)
+        # what has changed
+	cp -p ChangeLog NEWS $(NAME)/
+        # what needs to change
+	cp -p BUGS PROJECTS $(NAME)/
+        # top level documentation
+	cp -p INSTALL INSTALL.INL INSTALL.Newbie INSTALL.RSA README \
+	README.developers README.releasing CHANGES EXAMPLE $(NAME)/
+        # configuration
+	cp -p configure.in Makefile.in system.mk.in configure install-sh \
+	name.c $(NAME)/
+        # subdirectories
+	cp -rp docs gum include keycomp motd newstartd ntserv php \
+	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
+	rm -rf $(NAME)/*/CVS
+        # packaging subdirectories (debian)
+	mkdir $(NAME)/debian $(NAME)/rpm
+	cp -p debian/README.Debian debian/changelog debian/control \
+	debian/copyright debian/init debian/postinst debian/rules \
+	$(NAME)/debian
+        # packaging subdirectories (rpm)
+	cp -rp rpm $(NAME)/
+        # build
+	GZIP=--best tar cfz $(NAME).tar.gz $(NAME)
+	rm -rf $(NAME)
+
+#
+# Maintainer's Debian packaging section
+#
+DEBIAN_VERSION=`head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\)`
+DEBIAN_PACKAGE=`head -1 debian/changelog|cut -f1 -d\ `
+DEBIAN_ARCHIVE=~/public_html/external/mine/netrek
 
 package:
 	fakeroot dpkg-buildpackage -us -uc
 
 upload:
-	mv ../$(PACKAGE)_$(VERSION)*{.dsc,.changes,.tar.gz,.deb} $(ARCHIVE)
+	mv ../$(DEBIAN_PACKAGE)_$(DEBIAN_VERSION)*{.dsc,.changes,.tar.gz,.deb} $(ARCHIVE)
 
 update:
-	(cd $(ARCHIVE);make)
+	(cd $(DEBIAN_ARCHIVE);make)
 
 release: package upload update
 

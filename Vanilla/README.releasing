@@ -1,20 +1,20 @@
 
-$Id: README.releasing,v 1.4 2005/09/28 12:14:04 quozl Exp $
+$Id: README.releasing,v 1.5 2005/09/30 04:26:15 quozl Exp $
 
 Release Procedure
 
-# assumes csh or tcsh
-# be in your local copy of the CVS repository
+# be in local copy of the CVS repository
 cd Vanilla
 
-# set variables to ease the rest of this ... (sh or bash)
-VS=2.10pl0
-VL=v_2_10_0
-
 # check version numbers in files
-# patchlevel.h, version.h, rpm/netrek.spec, rpm/tar2rpm, README.releasing
+# Makefile.in, debian/changelog, rpm/netrek.spec, rpm/tar2rpm, README.releasing
 
-# make sure you have committed all changes
+# set variables
+VS=2.10.0
+VL=v_2_10_0
+PN=netrek-server-vanilla
+
+# make sure all changes committed
 cvs -z9 diff -u > tmp.tmp
 # review uncommitted changes
 more tmp.tmp
@@ -25,49 +25,42 @@ cvs -z9 commit
 cvs -z9 tag $VL
 cvs -z9 tag -F v_release
 
-# export the tagged release to a new directory and tar
-cd ..
-export CVSROOT=:pserver:cameron@cvs.us.netrek.org:/home/netrek/cvsroot
-cvs -z9 export -d Vanilla-$VS -r $VL Vanilla
-# package res-rsa with .tar.gz as per Dave Ahn 28th June 2000
-cd Vanilla-$VS
-tar xzf ../Vanilla/res-rsa-2.9.2.tar.gz
-mv res-rsa-2.9.2/* res-rsa/
-rmdir res-rsa-2.9.2
-cd ..
-tar cf Vanilla-$VS.tar Vanilla-$VS
-gzip -9 Vanilla-$VS.tar
+# build the distribution file
+make maintainer-clean
+./configure
+make dist
 
 # record md5sum of kit for publishing
-md5sum Vanilla-$VS.tar.gz > Vanilla-$VS.tar.gz.md5sum
+md5sum $PN-$VS.tar.gz > $PN-$VS.tar.gz.md5sum
 
 # test build kit
-cd Vanilla-$VS
+cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make
 
 # test install kit
 make install
-/tmp/$VS/netrekd
+/tmp/$VS/bin/netrekd
 
 # test client
-cow -h localhost
+cow -h 127.0.0.1
 
 # clean up
-/tmp/$VS/netrekd stop
-rm -rf /tmp/$VS
-cd ..
-rm -rf Vanilla-$VS
+/tmp/$VS/bin/netrekd stop
+rm -rf /tmp/$VS /tmp/$PN-$VS
+
+# debian packaging
+make package
 
 # rpm packaging
-Vanilla/rpm/tar2rpm
-cp Vanilla/res-rsa-*.tar.gz /usr/src/redhat/SOURCES
+$PN/rpm/tar2rpm
+cp $PN/res-rsa-*.tar.gz /usr/src/redhat/SOURCES
 cd /usr/src/redhat/SPECS
 rpm -ba netrek.spec
 # test package install
 
 # sign package
-gpg --detach-sign -a Vanilla-$VS.tar.gz
+gpg --detach-sign -a $PN-$VS.tar.gz
 
 # send .tar.gz and .rpm to ftp sites
 ftp://ftp.netrek.org/pub/netrek/incoming/ (note 15 second login timer)
@@ -94,7 +87,7 @@ mailto:vanilla-announce@us.netrek.org
 news:rec.games.netrek
 
 # update version number in files
-# patchlevel.h, version.h, rpm/netrek.spec, rpm/tar2rpm, README.releasing
+# Makefile.in, debian/changelog, rpm/netrek.spec, rpm/tar2rpm, README.releasing
 
 # sourceforge.net upload procedure (brief, yet to be retested)
 # - upload to ftp://upload.sourceforge.net/incoming/

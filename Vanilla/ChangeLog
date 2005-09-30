@@ -1,8 +1,14 @@
-Wed Sep 28 21:21:40 2005  James Cameron  <quozl@us.netrek.org>
+Fri Sep 30 14:17:52 2005  James Cameron  <quozl@us.netrek.org>
 
-	* patchlevel.h, version.h, rpm/netrek.spec: prepare for 2.10pl0
-	release.
+	* Makefile.in: add dist rule, add maintainer-clean, remove name,
+	determine version from Makefile.in rather than version.h and
+	patchlevel.h
 
+	* newstartd/newstartd.c, name.c: change to x.y.z version
+	numbering, for 2.10.0 release.
+
+	* patchlevel.h, version.h, rpm/netrek.spec: increment version.
+	
 Wed Sep 28 21:17:07 2005  James Cameron  <quozl@us.netrek.org>
 
 	* res-rsa/Makefile.in: add rmdependencies rule.
@@ -1630,4 +1636,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.5 2005/09/28 12:14:04 quozl Exp $
+	$Id: ChangeLog,v 1.6 2005/09/30 04:26:15 quozl Exp $

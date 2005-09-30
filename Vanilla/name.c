@@ -6,7 +6,7 @@ main()
 {
   int i = 0;
 
-  printf("%spl%d",mvers,PATCHLEVEL);
+  printf("%s.%d",mvers,PATCHLEVEL);
   while (patchname[i] != NULL)
     printf("+%s", patchname[i++]);
   printf("\n");

@@ -1,3 +1,5 @@
+
+- change version number format from 2.9pl8 to 2.10.0 [cameron]
 - split into multiple directories per LSB, avoid dot files [cameron]
 - newbie robot entry queue fix [cameron/southall]
 - INL free army clone bugfix [pog]
