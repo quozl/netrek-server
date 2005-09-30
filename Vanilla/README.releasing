@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.6 2005/09/30 05:46:19 quozl Exp $
+$Id: README.releasing,v 1.7 2005/09/30 09:23:33 quozl Exp $
 
 Release Procedure
 
@@ -10,8 +10,8 @@ cd Vanilla
 # Makefile.in, debian/changelog, rpm/netrek.spec, rpm/tar2rpm, README.releasing
 
 # set variables
-VS=2.10.0
-VL=v_2_10_0
+VS=2.10.1
+VL=v_2_10_1
 PN=netrek-server-vanilla
 
 # make sure all changes committed

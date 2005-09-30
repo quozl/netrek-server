@@ -1,4 +1,4 @@
-#	$Id: Makefile.in,v 1.6 2005/09/30 05:57:43 quozl Exp $	
+#	$Id: Makefile.in,v 1.7 2005/09/30 09:23:32 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
@@ -190,7 +190,7 @@ dist:
         # subdirectories
 	cp -rp docs gum include keycomp motd newstartd ntserv php \
 	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
-	rm -rf $(NAME)/*/CVS
+	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
 	cp -p debian/README.Debian debian/changelog debian/control \
@@ -213,7 +213,7 @@ package:
 	fakeroot dpkg-buildpackage -us -uc
 
 upload:
-	mv ../$(DEBIAN_PACKAGE)_$(DEBIAN_VERSION)*{.dsc,.changes,.tar.gz,.deb} $(ARCHIVE)
+	mv ../$(DEBIAN_PACKAGE)_$(DEBIAN_VERSION)*{.dsc,.changes,.tar.gz,.deb} $(DEBIAN_ARCHIVE)
 
 update:
 	(cd $(DEBIAN_ARCHIVE);make)
