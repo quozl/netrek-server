@@ -13,7 +13,7 @@
 #include "data.h"
 #include "solicit.h"
 
-/* our copy of .metaservers file */
+/* our copy of metaservers file */
 static struct metaserver metaservers[MAXMETASERVERS];
 
 /* initialisation done flag */
@@ -66,7 +66,7 @@ static int udp_attach(struct metaserver *m)
     /* then name */
     if ((hp = gethostbyname(ours)) == NULL) {
       /* bad hostname or unable to get ip address */
-      ERROR(1,("Bad host name field in .metaservers file.\n"));
+      ERROR(1,("Bad host name field in metaservers file.\n"));
       return 0;
     } else {
       memcpy(&(m->address.sin_addr.s_addr), hp->h_addr, 4);
@@ -135,7 +135,8 @@ void solicit(int force)
     for (i=0; i<MAXMETASERVERS; i++) metaservers[i].sock = -1;
     
     /* open the metaserver list file */
-    file = fopen(SYSCONFDIR"/.metaservers", "r");
+    file = fopen(SYSCONFDIR"/metaservers", "r");
+    if (file == NULL) file = fopen(SYSCONFDIR"/.metaservers", "r");
     if (file == NULL) {
       initialised++;
       return;
@@ -144,7 +145,7 @@ void solicit(int force)
     /* read the metaserver list file */
     for (i=0; i<MAXMETASERVERS; i++) {
       struct metaserver *m = &metaservers[i];
-      char buffer[256];         /* where to hold the .metaservers line */
+      char buffer[256];         /* where to hold the metaservers line */
       char *line;		/* return from fgets() */
       char *token;		/* current line token */
       

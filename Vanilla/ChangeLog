@@ -1,3 +1,9 @@
+Tue Dec 20 10:01:27 2005  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/solicit.c (solicit): change file name from .metaservers
+	to metaservers, but allow old name to continue to exist as a
+	fallback.
+
 Fri Sep 30 15:56:42 2005  James Cameron  <quozl@us.netrek.org>
 
 	* robotd/util.c: miscellaneous other GCC 4.0.1 fixes.
@@ -1667,4 +1673,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.9 2005/09/30 05:57:43 quozl Exp $
+	$Id: ChangeLog,v 1.10 2005/12/19 23:03:39 quozl Exp $

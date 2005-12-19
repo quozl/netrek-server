@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.7 2005/09/30 09:23:33 quozl Exp $
+$Id: README.releasing,v 1.8 2005/12/19 23:03:39 quozl Exp $
 
 Release Procedure
 
@@ -51,9 +51,14 @@ cow -h 127.0.0.1
 # clean up
 /tmp/$VS/bin/netrekd stop
 rm -rf /tmp/$VS /tmp/$PN-$VS
+cd
 
 # debian packaging
-make package
+cd /tmp
+tar xfz $PN-$VS.tar.gz 
+cd $PN-$VS
+./configure --prefix=/tmp/$VS
+make release
 
 # rpm packaging
 $PN/rpm/tar2rpm
