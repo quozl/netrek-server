@@ -1,37 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <sys/file.h>
-#include <math.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "ltd_stats.h"
 
-int mode=0;
-
 extern int openmem(int);
 
+int mode=0;
 static char *ships[] = {"SC", "DD", "CA", "BB", "AS", "SB"};
-
 static char *statnames[] = {"F", "O", "A", "E", "D"};
+static int out = 1;        /* stdout for non-socket connections */
 
+/* forward function declarations */
+static void udp();
 static void output(const char *fmt, ...);
 static char *name_fix(const char *name);
 static char *str(int n, char *s);
-
-static int out = 1;        /* stdout for non-socket connections */
 
 int main(int argc, char **argv)
 {
@@ -46,6 +35,8 @@ int main(int argc, char **argv)
 	mode= *(argv[1]);
 	out = 0;
     }
+
+    if (mode == 'u') { udp(); exit(0); }
 
     if (!openmem(-1)) {
 	output("\nNo one playing.\n");
@@ -117,13 +108,14 @@ int main(int argc, char **argv)
                    ltd_bombing_rating(&(players[i])),
                    ltd_planet_rating(&(players[i])),
                    ltd_offense_rating(&(players[i])),
-                   ltd_defense_rating(&(players[i])));
+                   ltd_defense_rating(&(players[i]))
 #else
 		   bombingRating(players+i),
 		   planetRating(players+i),
 		   offenseRating(players+i),
-		   defenseRating(players+i));
+		   defenseRating(players+i)
 #endif
+		   );
 	    break;
 	  case 'm':
             fixed_name = name_fix(players[i].p_name);
@@ -176,7 +168,7 @@ int main(int argc, char **argv)
 	    break;
 	}
     }
-    if (mode == 'v') return 0;  /* dump queue hosts someday */
+    if (mode == 'v') return 0;  /* TODO: dump queue hosts someday */
 
     output("<>=======================================================================<>\n");
     output("  Feds: %d   Roms: %d   Kli: %d   Ori: %d\n", 
@@ -191,6 +183,60 @@ int main(int argc, char **argv)
     return 0;		/* satisfy lint */
 }
 
+/* player count on a queue */
+static int pc(int queue) {
+  int j, n = 0;
+  for (j=queues[QU_PICKUP].low_slot;j < queues[QU_PICKUP].high_slot;j++)
+    if (players[j].p_status != PFREE) n++;
+  return n;
+}
+
+/* queue length */
+static int ql(int queue) {
+  return queues[queue].count;
+}
+
+/* respond to udp multicast request from clients on a LAN */
+static void udp()
+{
+  char buf[2];
+  struct sockaddr addr;
+  int len = sizeof(addr);
+  int sock = 0;
+  int stat = recvfrom(sock, buf, 1, MSG_TRUNC, &addr, &len);
+  if (stat < 0 && errno == ENOTSOCK)
+    fprintf(stderr, "players: must be called by netrekd with UDP file descriptor setup\n");
+  if (stat < 0) { perror("players: recvfrom"); return; }
+  if (stat == 0) return;
+  
+  /* if it isn't a standard query, ignore */
+  if (buf[0] != '?') return;
+  
+  /* compose a reply packet */
+  char packet[128];
+  
+  /* if server isn't running, send simple reply */
+  if (!openmem(-1)) {
+    // s,type,port,players,queue[,port,players,queue]
+    sprintf(packet, "s,B,1,2592,%d,%d\n", 0, 0);
+  } else {
+    if (status->gameup & GU_INROBOT) {
+      int q = QU_PICKUP;
+      // s,type,port,players,queue[,port,players,queue]
+      sprintf(packet, "s,B,1,2592,%d,%d\n", pc(q), ql(q));
+    } else {
+      int q1 = QU_HOME;
+      int q2 = QU_AWAY;
+      // s,type,port,players,queue[,port,players,queue]
+      sprintf(packet, "s,B,2,4566,%d,%d,4577,%d,%d\n", 
+	      pc(q1), ql(q1), pc(q2), ql(q2));
+    }
+  }
+  
+  /* send the reply */
+  stat = sendto(sock, packet, strlen(packet), 0, &addr, len);
+  if (stat < 0) { perror("players: sendto"); return; }
+}
 
 static char *name_fix(const char *name)
 {

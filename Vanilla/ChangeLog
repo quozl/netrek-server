@@ -1,3 +1,20 @@
+Mon Jan  2 17:16:09 2006  James Cameron  <quozl@us.netrek.org>
+
+	* docs/sample_ports: added port 3521u for multicast server requests.
+
+	* newstartd/newstartd.c: added support for multicast server
+	requests.  Added 'u' suffix to port number in ports file that
+	treats the port as a datagram socket.
+
+	* tools/players.c: add 'u' option to handle multicast server
+	requests.
+
+Mon Jan  2 16:50:18 2006  James Cameron  <quozl@us.netrek.org>
+
+	* newstartd/newstartd.c (reaper_{un}block): fix leak of active
+	process count, was caused by race condition between fork() and
+	SIGCHLD handler.  Added SIGCHLD blocking to solve.
+
 Tue Dec 20 10:01:27 2005  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/solicit.c (solicit): change file name from .metaservers
@@ -1673,4 +1690,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.10 2005/12/19 23:03:39 quozl Exp $
+	$Id: ChangeLog,v 1.11 2006/01/02 08:07:05 quozl Exp $

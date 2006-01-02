@@ -1,4 +1,4 @@
-#	$Id: sample_ports,v 1.2 2005/09/27 10:31:49 quozl Exp $	
+#	$Id: sample_ports,v 1.3 2006/01/02 08:07:05 quozl Exp $	
 # 
 # This is .ports, and it is parsed by newstartd on startup to determine which
 # TCP/IP port numbers to listen on for connections, and what to do about
@@ -14,6 +14,9 @@
 #
 # Player list (also used by metaserver), to be telnet'd to
 2591 tools/players "players" m
+#
+# UDP Multicast server discovery, for local area network play
+3521u tools/players "players" u
 #
 # Observer player connections
 2593 ntserv "ntservobs" -q 6
