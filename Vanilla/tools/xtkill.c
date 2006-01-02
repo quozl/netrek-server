@@ -20,6 +20,30 @@ static void _pmessage(char *str, int recip, int group);
 
 static char *names[] = { "Neutral", "Fed", "Rom", "", "Kli", "", "", "", "Ori"};
 
+static void refit(struct player *me, int type)
+{
+  int i;
+
+  getship(&(me->p_ship), type);
+
+  /* enable docking */
+  if (type == STARBASE) me->p_flags |= PFDOCKOK;
+
+  /* restrict speed to new class */
+  if (me->p_desspeed > me->p_ship.s_maxspeed)
+    me->p_desspeed = me->p_ship.s_maxspeed;
+
+  /* bump all docked ships */
+  for (i=0; i<NUMPORTS; i++) 
+    if (me->p_port[i] != VACANT) {
+      players[me->p_port[i]].p_flags &= ~PFDOCK;
+      me->p_docked--;
+      me->p_port[i] = VACANT;	
+      me->p_flags |= PFDOCKOK;
+    }
+
+}
+
 int main(int argc, char **argv)
 {
   int player;
@@ -134,12 +158,12 @@ int main(int argc, char **argv)
       break;
     case 's': /* ship type change */
       switch (argv[2][1]) {
-      case 'a': getship(&players[player].p_ship, ASSAULT); break;
-      case 'b': getship(&players[player].p_ship, BATTLESHIP); break;
-      case 'c': getship(&players[player].p_ship, CRUISER); break;
-      case 'd': getship(&players[player].p_ship, DESTROYER); break;
-      case 's': getship(&players[player].p_ship, SCOUT); break;
-      case 'o': getship(&players[player].p_ship, STARBASE); break;
+      case 'a': refit(&players[player], ASSAULT); break;
+      case 'b': refit(&players[player], BATTLESHIP); break;
+      case 'c': refit(&players[player], CRUISER); break;
+      case 'd': refit(&players[player], DESTROYER); break;
+      case 's': refit(&players[player], SCOUT); break;
+      case 'o': refit(&players[player], STARBASE); break;
       case 'A': 
 	getship(&players[player].p_ship, ATT); 
 	players[player].p_ship.s_width = 20;
