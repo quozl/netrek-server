@@ -50,7 +50,7 @@ static int udp_attach(struct metaserver *m)
   }
   
   /* bind the local socket */
-  /* bind to interface attatched to this.host.name */
+  /* bind to interface attached to this.host.name */
 
   /* first check if perhaps it is a fake INL server address */
   if ((tolower(m->type[0]) == 'i') &&
@@ -320,10 +320,11 @@ void solicit(int force)
 	/* ignore free slots */
         if (players[j].p_status == PFREE ||
 #ifdef LTD_STATS
-            ltd_ticks(&(players[j]), LTD_TOTAL) == 0)
+            ltd_ticks(&(players[j]), LTD_TOTAL) == 0
 #else
-            players[j].p_stats.st_tticks == 0)
+            players[j].p_stats.st_tticks == 0
 #endif
+	    )
 	  continue;
         fixed_name = name_fix(players[j].p_name);  /*get rid of non-printables*/
         fixed_login = name_fix(players[j].p_login);
