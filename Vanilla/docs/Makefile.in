@@ -59,6 +59,9 @@ install: $(DOCS)
 	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/tourn.map ]; then \
 		$(INSTALLDATA) ${srcdir}/sample_tourn.map	$(DESTDIR)$(SYSCONFDIR)/tourn.map ; \
 	fi
+	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/comment ]; then \
+		$(INSTALLDATA) ${srcdir}/sample_comment		$(DESTDIR)$(SYSCONFDIR)/comment ; \
+	fi
 	touch $(DESTDIR)$(SYSCONFDIR)/nocount
 	touch $(DESTDIR)$(SYSCONFDIR)/banned
 	touch $(DESTDIR)$(SYSCONFDIR)/bypass
