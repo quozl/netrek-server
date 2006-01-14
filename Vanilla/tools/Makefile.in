@@ -35,7 +35,8 @@ SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/newscores.c ${srcdir}/planets.c ${srcdir}/players.c \
 	${srcdir}/scores.c ${srcdir}/setgalaxy.c ${srcdir}/showgalaxy.c \
 	${srcdir}/stat.c ${srcdir}/trimscores.c ${srcdir}/watchmes.c \
-	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c ${srcdir}/nuke.c \
+	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c \
+	${srcdir}/nuke.c ${srcdir}/metaget.c \
 	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c \
 	${srcdir}/../ntserv/distress.c ${srcdir}/../ntserv/getship.c \
 	${srcdir}/update.c ${srcdir}/../ntserv/openmem.c ${srcdir}/convert.c \
@@ -48,7 +49,7 @@ EXECS =	blotpassword loadchecker mess message newscores planets players \
 	scores \
         setgalaxy showgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
-        ntpasswd ltd_dump ltd_convert nuke trekon
+        ntpasswd ltd_dump ltd_convert nuke trekon metaget
 
 all: $(PMAKE) $(EXECS)
 
@@ -87,6 +88,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(DESTDIR)$(LIBDIR)/tools/ltd_dump
 	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
 	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
+	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/metaget
 
 # cb_sock.o: packets.h ../ntserv/socket.c
 #	$(CC) -o ./cb_sock.o -g $(CFLAGS) -DCAMBOT -c ../ntserv/socket.c
@@ -177,6 +179,8 @@ conq_vert: conq_vert.o
 trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
 	${srcdir}/mktrekon $(LIBDIR)
 	chmod a+x trekon
+
+metaget: metaget.c
 
 installtrekon: trekon
 	@if [ -f $(DESTDIR)$(LIBDIR)/trekon ]; then touch $(DESTDIR)$(LIBDIR)/trekon; \
