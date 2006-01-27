@@ -1,6 +1,6 @@
-$Id: metaservers-HowTo,v 1.3 2005/06/16 23:06:57 quozl Exp $
+$Id: metaservers-HowTo,v 1.4 2006/01/27 00:26:39 quozl Exp $
 
-Date: Wed, 15 April 1998 09:06:09 +0000
+Date: Wed, 15 April 1998 09:06:09 +0000 (edited since)
 From: James Cameron <cameron@stl.dec.com>
 Subject: Metaservers File Format
 
@@ -9,7 +9,7 @@ metaserver for players.
 
 It works like this;
 
-	- you set up a .metaservers file with the addresses of the
+	- you set up a metaservers file with the addresses of the
 	  metaservers that should be kept informed,
 	
 	- when new players arrive on your server, a packet is sent to
@@ -19,7 +19,7 @@ It works like this;
 
 The format of the file is a series of space delimited fields interpreted
 using fscanf().  Very primitive.  The code looks for the file in the
-current working directory rather than LIBDIR.  This ought to be fixed.
+configuration directory SYSCONFDIR.  The file name is metaservers.
 
 The order and format of the fields is described in ntserv/solicit.c
 
