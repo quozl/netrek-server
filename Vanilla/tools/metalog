@@ -1,0 +1,49 @@
+#!/bin/sh
+# script to poll metaserver periodically and record data
+
+# path to installation
+prefix=/home/james/upstream/vanilla/Vanilla
+# TODO: make a way for scripts to learn prefix from configure
+
+# path to internal binaries
+libdir=${prefix}
+
+# path to local state data
+localstatedir=${prefix}/tools
+
+# path to cache of metaserver information
+tree=${localstatedir}/metadb
+mkdir -p ${tree}
+
+# timestamp for this query
+ts=`date +%s`
+
+# query metaserver and make output safe, pipe to subshell
+${libdir}/tools/metaget | \
+tr --delete '\\\"' | \
+(
+    # read the version and server count header
+    IFS=, read -r version count
+    tp=0
+    tq=0
+
+    # read each server line and store in cache
+    while IFS=, read -r host port status age players queue type; do
+      tag=`echo "$host:$port"|md5sum`
+      tag=${tag/  -/}
+      dir=$tree/$tag
+      mkdir -p $dir
+      echo "$host" > $dir/host
+      echo "$port" > $dir/port
+      echo "$status" > $dir/status
+      echo "$age" > $dir/age
+      echo "$players" > $dir/players
+      echo "$queue" > $dir/queue
+      echo "$type" > $dir/type
+      
+      echo "$ts $status $age $players $queue">> $dir/log
+      let "tp += players"
+      let "tq += queue"
+    done
+    echo "$ts $count $tp $tq" >> $tree/log
+)
