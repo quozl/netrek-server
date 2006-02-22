@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.10 2006/02/22 09:48:30 quozl Exp $
+$Id: README.releasing,v 1.11 2006/02/22 09:50:04 quozl Exp $
 
 Release Procedure
 
@@ -27,10 +27,10 @@ cvs diff -u > tmp
 # review uncommitted changes
 more tmp
 # commit changes
-cvs commit
+cvs commit -m "prerelease $VS"
 
 # tag the release
-cvs tag $VL
+cvs tag -F $VL
 cvs tag -F v_release
 
 # build the distribution file
