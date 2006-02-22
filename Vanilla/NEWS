@@ -1,3 +1,11 @@
+- add reload option to netrekd for use by init.d scripts [cameron]
+- add tool for dumping metaserver state [cameron]
+- remove robots from metaserver report [cameron]
+- fix refit to enable docking and restrict speed [shadow hunter]
+- add multicast server discovery [cameron]
+- fix leak of active process count in newstartd [cameron]
+- change file .metaservers to metaservers [cameron]
+
 2.10.1: released 2005-09-30
 
 - add missing build dependency on debian package [cameron]

@@ -1,7 +1,7 @@
 Summary: Netrek Software Suite
 Name: netrek
-Version: 2.10pl0
-Release: 1
+Version: 2.10.2
+Release: 0
 Copyright: Undetermined
 Packager: Vanilla Server Development Team
 URL: http://vanilla.us.netrek.org/

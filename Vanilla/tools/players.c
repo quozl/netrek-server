@@ -183,6 +183,21 @@ int main(int argc, char **argv)
     return 0;		/* satisfy lint */
 }
 
+/* server comment */
+static char *comment() {
+#define MAXPATH 256
+  char name[MAXPATH];
+  snprintf(name, MAXPATH, "%s/%s", SYSCONFDIR, "comment");
+  FILE *file = fopen(name, "r");
+  if (file == NULL) return "";
+  static char text[80];
+  char *res = fgets(text, 80, file);
+  fclose(file);
+  if (res == NULL) return "";
+  res[strlen(res)-1] = '\0';
+  return res;
+}
+
 /* player count on a queue */
 static int pc(int queue) {
   int j, n = 0;
@@ -215,21 +230,19 @@ static void udp()
   /* compose a reply packet */
   char packet[128];
   
+  /* s,type,comment,ports,port,players,queue[,port,players,queue] */
   /* if server isn't running, send simple reply */
   if (!openmem(-1)) {
-    // s,type,port,players,queue[,port,players,queue]
-    sprintf(packet, "s,B,1,2592,%d,%d\n", 0, 0);
+    sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment(), 0, 0);
   } else {
     if (status->gameup & GU_INROBOT) {
-      int q = QU_PICKUP;
-      // s,type,port,players,queue[,port,players,queue]
-      sprintf(packet, "s,B,1,2592,%d,%d\n", pc(q), ql(q));
-    } else {
       int q1 = QU_HOME;
       int q2 = QU_AWAY;
-      // s,type,port,players,queue[,port,players,queue]
-      sprintf(packet, "s,B,2,4566,%d,%d,4577,%d,%d\n", 
-	      pc(q1), ql(q1), pc(q2), ql(q2));
+      sprintf(packet, "s,B,%s,2,4566,%d,%d,4577,%d,%d\n", 
+	      comment(), pc(q1), ql(q1), pc(q2), ql(q2));
+    } else {
+      int q = QU_PICKUP;
+      sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment(), pc(q), ql(q));
     }
   }
   

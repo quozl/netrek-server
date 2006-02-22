@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 # Sample debian/rules that uses debhelper.
-# $Id: rules,v 1.1 2005/09/28 12:14:05 quozl Exp $
+# $Id: rules,v 1.2 2006/02/22 09:18:30 quozl Exp $
 # This file is public domain software, originally written by Joey Hess. 
 
 # Uncomment this to turn on verbose mode.
@@ -34,12 +34,15 @@ install: build
 	dh_installdirs
 
 # Add here commands to install the package into debian/<packagename>
-	export CC="ccache gcc-2.95"; $(MAKE) DESTDIR=`pwd`/debian/`dh_listpackages`/ install
+	$(MAKE) DESTDIR=`pwd`/debian/`dh_listpackages`/ install
 #	mkdir -p `pwd`/debian/`dh_listpackages`/
 
 # init.d script
 	mkdir -p `pwd`/debian/`dh_listpackages`/etc/init.d
 	cp `pwd`/debian/init `pwd`/debian/`dh_listpackages`/etc/init.d/netrek-server-vanilla
+# documentation
+	mkdir -p `pwd`/debian/`dh_listpackages`/usr/share/doc/netrek-server-vanilla
+	cp ChangeLog NEWS README README.developers PROJECTS INSTALL* `pwd`/debian/`dh_listpackages`/usr/share/doc/netrek-server-vanilla/
 
 # Build architecture-independent files here.
 binary-indep: build install

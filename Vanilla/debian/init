@@ -6,16 +6,16 @@ PIDFILE=/var/lib/netrek-server-vanilla/netrekd.pid
 
 case "$1" in
   start)
-    su -c "PATH=\${PATH}:/usr/games netrekd" games&
+    su -c "PATH=\${PATH}:/usr/games netrekd start" games
     ;;
   stop)
-    killall -INT netrekd
+    su -c "PATH=\${PATH}:/usr/games netrekd stop" games
     ;;
   reload)
-    killall -HUP netrekd
+    su -c "PATH=\${PATH}:/usr/games netrekd reload" games
     ;;
   force-reload|restart)
-    echo "Restarting Netrek Server"
+    echo "Restarting Netrek Listener"
     sh $0 stop
     sh $0 start
     ;;

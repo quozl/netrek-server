@@ -1,25 +1,33 @@
 
-$Id: README.releasing,v 1.8 2005/12/19 23:03:39 quozl Exp $
+$Id: README.releasing,v 1.9 2006/02/22 09:18:30 quozl Exp $
 
 Release Procedure
 
 # be in local copy of the CVS repository
 cd Vanilla
 
-# check version numbers in files
-# Makefile.in, debian/changelog, rpm/netrek.spec, rpm/tar2rpm, README.releasing
-
 # set variables
-VS=2.10.1
-VL=v_2_10_1
+VS=2.10.2
+VL=v_2_10_2
 PN=netrek-server-vanilla
 
+# check version numbers in files
+# include/version.h
+# include/patchlevel.h
+# Makefile.in
+# debian/changelog
+# rpm/netrek.spec
+# README.releasing
+
+# crosscheck updates in CVS against ChangeLog
+# crosscheck updates in ChangeLog against NEWS
+
 # make sure all changes committed
-cvs -z9 diff -u > tmp.tmp
+cvs diff -u > tmp
 # review uncommitted changes
-more tmp.tmp
+more tmp
 # commit changes
-cvs -z9 commit
+cvs commit
 
 # tag the release
 cvs -z9 tag $VL

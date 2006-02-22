@@ -578,8 +578,8 @@ void do_refit(int type)
 		players[me->p_port[i]].p_flags &= ~PFDOCK;
 		me->p_docked--;
 		me->p_port[i] = VACANT;	
-		me->p_flags |= PFDOCKOK;
 	   }
+	me->p_flags |= PFDOCKOK;
     }	
 
     

@@ -1,3 +1,9 @@
+netrek-server-vanilla (2.10.2-0) unstable; urgency=low
+
+  * release planned
+
+ -- James Cameron <quozl@us.netrek.org>  Wed, 22 Feb 2006 19:04:20 +1100
+
 netrek-server-vanilla (2.10.1-0) unstable; urgency=low
 
   * gcc fixes and build depends

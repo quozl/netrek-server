@@ -1,3 +1,27 @@
+Wed Feb 22 20:08:03 2006  James Cameron  <quozl@us.netrek.org>
+
+	* debian/init, newstartd/newstartd.c (main): add reload option.
+
+Fri Jan 27 11:27:31 2006  James Cameron  <quozl@us.netrek.org>
+
+	* docs/metaservers-HowTo: correct location of metaservers file,
+	reported by MNSain on #netrek channel.
+
+Sat Jan 14 11:46:46 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/metaget.c: add tool to query metaserver and dump to
+	stdout.
+
+Tue Jan  3 15:42:25 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/solicit.c: exclude known robots from metaserver report.
+
+Tue Jan  3 07:07:38 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/xtkill.c: fix refit to enable docking and restrict speed
+	to ship class.  Reported by: Shadow.Hunter@netrek.org in April
+	2004.
+
 Mon Jan  2 17:16:09 2006  James Cameron  <quozl@us.netrek.org>
 
 	* docs/sample_ports: added port 3521u for multicast server requests.
@@ -20,6 +44,10 @@ Tue Dec 20 10:01:27 2005  James Cameron  <quozl@us.netrek.org>
 	* ntserv/solicit.c (solicit): change file name from .metaservers
 	to metaservers, but allow old name to continue to exist as a
 	fallback.
+
+Fri Sep 30 19:25:42 2005  James Cameron  <quozl@us.netrek.org>
+
+	* netrek-server-vanilla-2.10.1 released
 
 Fri Sep 30 15:56:42 2005  James Cameron  <quozl@us.netrek.org>
 
@@ -1690,4 +1718,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.11 2006/01/02 08:07:05 quozl Exp $
+	$Id: ChangeLog,v 1.12 2006/02/22 09:18:30 quozl Exp $

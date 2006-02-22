@@ -88,7 +88,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(DESTDIR)$(LIBDIR)/tools/ltd_dump
 	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
 	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
-	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/metaget
+	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/tools/metaget
 
 # cb_sock.o: packets.h ../ntserv/socket.c
 #	$(CC) -o ./cb_sock.o -g $(CFLAGS) -DCAMBOT -c ../ntserv/socket.c
@@ -176,11 +176,12 @@ ltd_convert: ltd_convert.o
 conq_vert: conq_vert.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} conq_vert.o
 
+metaget: metaget.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o
+
 trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
 	${srcdir}/mktrekon $(LIBDIR)
 	chmod a+x trekon
-
-metaget: metaget.c
 
 installtrekon: trekon
 	@if [ -f $(DESTDIR)$(LIBDIR)/trekon ]; then touch $(DESTDIR)$(LIBDIR)/trekon; \

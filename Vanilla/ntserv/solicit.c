@@ -266,7 +266,7 @@ void solicit(int force)
       
       for (j = queues[queue].low_slot; j < queues[queue].high_slot; j++)
       {
-	if (players[j].p_status == PFREE)
+	if (players[j].p_status == PFREE || strstr(players[j].p_login, "robot"))
 	  nfree++;
 	else
 	  nplayers++;

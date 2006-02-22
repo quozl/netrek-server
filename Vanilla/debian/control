@@ -3,11 +3,11 @@ Maintainer: James Cameron <quozl@us.netrek.org>
 Section: unknown
 Priority: optional
 Standards-Version: 3.1.1
-Build-Depends: debhelper, ccache, libgdbm-dev, libncurses5-dev, libglib1.2-dev, libx11-dev
+Build-Depends: debhelper, ccache, libgdbm-dev, libncurses5-dev, libx11-dev, libxt-dev, libglib1.2-dev
 
 Package: netrek-server-vanilla
 Architecture: any
-Depends: libgmp3
+Depends: 
 Description: Netrek Server, Vanilla
  The Netrek server, packaged by the upstream team.
  http://playnetrek.org/

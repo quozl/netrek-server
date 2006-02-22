@@ -411,7 +411,7 @@ AC_CACHE_CHECK(for signals style,vanilla_cv_signals_type,
 AC_TRY_RUN([
 #include <signal.h>
 #include <sys/time.h>
-test(){ }
+test(int x){ }
 int main(){
 int c;
 static struct itimerval udt;
