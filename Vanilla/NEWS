@@ -1,5 +1,9 @@
+2.10.2: released 2006-02-22
+
+- add documentation to debian packaging [cameron]
+- fix signal function in configure test [anonymous]
 - add reload option to netrekd for use by init.d scripts [cameron]
-- add tool for dumping metaserver state [cameron]
+- add tool for dumping metaserver or multicast server state [cameron]
 - remove robots from metaserver report [cameron]
 - fix refit to enable docking and restrict speed [shadow hunter]
 - add multicast server discovery [cameron]

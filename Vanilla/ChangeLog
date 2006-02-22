@@ -1,6 +1,20 @@
+Wed Feb 22 20:44:13 2006  James Cameron  <quozl@us.netrek.org>
+
+	* netrek-server-vanilla-2.10.2 released
+
+Wed Feb 22 20:38:33 2006  James Cameron  <quozl@us.netrek.org>
+
+	* debian/rules: include documentation files in /usr/share/doc.
+
+Wed Feb 22 20:37:21 2006  James Cameron  <quozl@us.netrek.org>
+
+	* configure.in (vanilla_cv_signals_type): add argument for signal
+	function.
+
 Wed Feb 22 20:08:03 2006  James Cameron  <quozl@us.netrek.org>
 
-	* debian/init, newstartd/newstartd.c (main): add reload option.
+	* debian/init, newstartd/newstartd.c (main): add reload option,
+	avoid spraying stuff to stderr after returning from init script.
 
 Fri Jan 27 11:27:31 2006  James Cameron  <quozl@us.netrek.org>
 
@@ -9,8 +23,9 @@ Fri Jan 27 11:27:31 2006  James Cameron  <quozl@us.netrek.org>
 
 Sat Jan 14 11:46:46 2006  James Cameron  <quozl@us.netrek.org>
 
-	* tools/metaget.c: add tool to query metaserver and dump to
-	stdout.
+	* tools/Makefile.in, tools/metaget.c: add tool to query metaserver
+	and dump to stdout.  Can also be used to query localhost or
+	224.0.0.1 to obtain a multicast server response.
 
 Tue Jan  3 15:42:25 2006  James Cameron  <quozl@us.netrek.org>
 
@@ -24,14 +39,18 @@ Tue Jan  3 07:07:38 2006  James Cameron  <quozl@us.netrek.org>
 
 Mon Jan  2 17:16:09 2006  James Cameron  <quozl@us.netrek.org>
 
-	* docs/sample_ports: added port 3521u for multicast server requests.
+	* docs/Makefile.in, docs/sample_comment: add new file for
+	multicast server comment.
+	
+	* docs/sample_ports: added port 3521u for multicast server
+	requests.
 
 	* newstartd/newstartd.c: added support for multicast server
 	requests.  Added 'u' suffix to port number in ports file that
 	treats the port as a datagram socket.
 
 	* tools/players.c: add 'u' option to handle multicast server
-	requests.
+	requests.  Remove superfluous #include.
 
 Mon Jan  2 16:50:18 2006  James Cameron  <quozl@us.netrek.org>
 
@@ -1718,4 +1737,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.12 2006/02/22 09:18:30 quozl Exp $
+	$Id: ChangeLog,v 1.13 2006/02/22 09:48:30 quozl Exp $

@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.9 2006/02/22 09:18:30 quozl Exp $
+$Id: README.releasing,v 1.10 2006/02/22 09:48:30 quozl Exp $
 
 Release Procedure
 
@@ -30,8 +30,8 @@ more tmp
 cvs commit
 
 # tag the release
-cvs -z9 tag $VL
-cvs -z9 tag -F v_release
+cvs tag $VL
+cvs tag -F v_release
 
 # build the distribution file
 make maintainer-clean
