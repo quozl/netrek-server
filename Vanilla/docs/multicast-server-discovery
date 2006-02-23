@@ -1,0 +1,164 @@
+Multicast Server Discovery
+by James Cameron <quozl@us.netrek.org>
+
+
+The multicast server discovery feature was added to the Vanilla server
+in 2.10.2 and the COW client in 3.2.0 and allows clients to discover
+nearby servers.
+
+The information here is subject to change, see the source code for the
+current behaviour.
+
+
+Protocol
+--------
+
+Server discovery is done using a multicast UDP query on port 3521, and
+is an extension to the metaserver query and response protocol.
+Multicast UDP is done by sending a packet to the IP address 224.0.0.1.
+
+The sequence of events is:
+
+1.  the metaserver listens for client queries.
+
+2.  the server listens for client queries.
+
+3.  each client sends a metaserver query, to the listed metaservers
+    and also to nearby servers using multicast.
+
+4.  the metaservers receive the query and send back a packet (or
+    series of packets) listing the servers that it knows.  The reply
+    is directly to the client, and the client merges replies from all
+    metaservers.
+
+5.  the server receives the query and sends back a packet about itself.
+    The reply is directly to the client.
+
+6.  the client lists all the servers and the local servers on the
+    metaserver window.  This is done slightly asynchronously, so that
+    the window will show information as it becomes available.
+
+7.  if the user presses the refresh button, steps 3 to 6 repeat.
+
+8.  if the user selects a server, play begins in the usual fashion as
+    if the user had typed "netrek -h server".
+
+
+Packet Format
+-------------
+
+The query packet is a single question mark.  This is the same as that
+sent by the client to a metaserver.
+
+The reply packet from a server is a series of comma separated text
+fields, as follows:
+
+- s, the literal lowercase "s" character, marking this as a server
+  reply (as opposed to a metaserver reply),
+
+- type, the type of server, such as "B" for Bronco, same meaning as
+  the metaserver reply,
+
+- comment, the text from the server's comment file, which is to be
+  shown on the metaserver window,
+
+- ports, the integer number of ports to follow in the message, (each
+  port takes three fields),
+
+- port, the port number to contact the server on to play, (the IP
+  address is assumed to be the address from which this reply came),
+
+- players, the number of players currently playing who joined on this
+  port,
+
+- queue, the number of players waiting on the queue connected to this
+  port.
+
+Example: s,B,Test Server,1,2592,0,0 indicates an empty test server.
+
+
+Other Uses
+----------
+
+There are some other uses for the same feature, such as:
+
+- listing specific servers in the client's metaserver list can allow
+  the client to query these servers without involving the metaserver.
+
+- the test tool metaget can be used in scripts to query the
+  metaserver, a specific server, or all nearby servers.
+
+
+Configuring Server
+------------------
+
+1.  add the 3521u line to ports, as per the sample_ports file, (this
+    is done automatically for new servers),
+
+2.  add the file comment in SYSCONFDIR, with a description of your
+    server, (this is done automatically for new servers, but the
+    default name is "Unnamed Vanilla Server",
+
+3.  restart netrekd,
+
+4.  test with "metaget localhost",
+
+5.  test with "metaget 224.0.0.1".
+
+
+Configuring Client
+------------------
+
+No configuration is necessary.  When the "-m" (metaserver) option is
+used, which is the default if no server name is given, the client will
+query the metaservers and use multicast discovery.
+
+
+Implementation
+--------------
+
+The netrekd process receives the UDP query packets.  See
+newstartd/newstartd.c for the UDP port support.
+
+The netrekd process forks the players program to handle queries.  See
+tools/players for the UDP response handler, triggered by the "u"
+command line option.
+
+The metaget program demonstrates a way to make a query and receive the
+response, emitted to stdout.  It isn't used in a running server unless
+a server owner chooses to use it somehow.  See tools/metaget for the
+test query program.
+
+See parsemeta.c in the client source for additional details on making
+the query and procesisng the responses.
+
+
+Verification
+------------
+
+netrekd adds a line to server log file "log" for each query.
+
+Use "tcpdump -n -s 0 -X udp port 3521" to watch for multicast and
+metaserver query and response packets.  For example:
+
+16:51:49.857757 IP 10.0.0.1.40401 > 224.0.0.1.3521: UDP, length 1
+        0x0000:  4500 001d 0000 4000 0111 8fce 0a00 0001  E.....@.........
+        0x0010:  e000 0001 9dd1 0dc1 0009 2b47 3f00 0000  ..........+G?...
+        0x0020:  0000 0000 0000 0000 0000 0000 0000       ..............
+
+16:51:49.859960 IP 10.0.0.3.3521 > 10.0.0.1.40401: UDP, length 38
+        0x0000:  4500 0042 000a 4000 4011 269e 0a00 0003  E..B..@.@.&.....
+        0x0010:  0a00 0001 0dc1 9dd1 002e 17a9 732c 422c  ............s,B,
+        0x0020:  556e 6e61 6d65 6420 5661 6e69 6c6c 6120  Unnamed.Vanilla.
+        0x0030:  5365 7276 6572 2c31 2c32 3539 322c 302c  Server,1,2592,0,
+        0x0040:  300a                                     0.
+
+
+Known Bugs
+----------
+
+- doesn't properly handle observer ports for INL servers, but does
+  handle the two queues for player ports,
+
+
+--
