@@ -1,7 +1,10 @@
 
-$Id: BUGS,v 1.2 2005/09/28 12:14:04 quozl Exp $
+$Id: BUGS,v 1.3 2006/04/05 04:42:40 quozl Exp $
 
 List of things that are defects
+
+	- Player "^%^" took a planet and it said "Planet taken by ^"
+	  reported by zu22 (Zach Uram) on 2006-04-05
 
 	- god observer should see all teams messages.
 
