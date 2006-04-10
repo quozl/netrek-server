@@ -1,4 +1,4 @@
-/* $Id: socket.c,v 1.3 2005/09/27 12:26:37 quozl Exp $
+/* $Id: socket.c,v 1.4 2006/04/10 04:24:51 quozl Exp $
  */
 
 /*
@@ -384,8 +384,8 @@ int connectToClient(char *machine, int port)
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
 
-    if (remoteaddr!=-1) {
-	addr.sin_addr.s_addr=remoteaddr;
+    if (remoteaddr != -1) {
+	addr.sin_addr.s_addr = remoteaddr;
     } else if ((addr.sin_addr.s_addr = inet_addr(machine)) == -1) {
 	if ((hp = gethostbyname(machine)) == NULL) {
 	    ERROR(1,("%s: gethostbyname() failed, %s\n", whoami(), 
@@ -396,7 +396,7 @@ int connectToClient(char *machine, int port)
 	    addr.sin_addr.s_addr = *(U_LONG *) hp->h_addr;
 	}
     }
-    remoteaddr=addr.sin_addr.s_addr;
+    remoteaddr = addr.sin_addr.s_addr;
 
     /* 18th Feb 1999, cameron@stl.dec.com, suspect this is where the large
        delay is for a ghostbusted slot, assuming usual PPP dial-in user, this
@@ -488,15 +488,11 @@ int connectToClient(char *machine, int port)
 void checkSocket(void)
 {
     struct sockaddr_in sin;
-    int length;
-
-    length=sizeof(sin);
-    if (getpeername(sock, (struct sockaddr *) &sin, &length) < 0) {
-	/* A bad thing. */
+    int len = sizeof(sin);
+    if (getpeername(sock, (struct sockaddr *) &sin, &len) < 0) {
 	return;
     }
-
-    remoteaddr=sin.sin_addr.s_addr;
+    remoteaddr = sin.sin_addr.s_addr;
 }
 
 void initClientData(void)

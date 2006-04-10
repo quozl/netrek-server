@@ -1,3 +1,17 @@
+Sun Apr  9 21:01:24 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c (bounceWhois): use p_ip instead of remoteaddr.
+	* ntserv/main.c (main): set p_ip from remoteaddr.
+	* include/struct.h (struct player): add p_ip for IP address.
+
+Sun Apr  9 20:04:03 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/players.c (main): if run from a tty, use stdout.
+
+Sat Mar  4 15:12:10 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/xtkill.c: remove warning messages from team change.
+
 Wed Feb 22 20:44:13 2006  James Cameron  <quozl@us.netrek.org>
 
 	* netrek-server-vanilla-2.10.2 released
@@ -1737,4 +1751,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.13 2006/02/22 09:48:30 quozl Exp $
+	$Id: ChangeLog,v 1.14 2006/04/10 04:24:50 quozl Exp $

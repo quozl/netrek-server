@@ -15,7 +15,7 @@ gum_SOURCES = \
 
 gum_LDADD = @GTK_LIBS@ ../ntserv/data.o 
 
-CFLAGS = @CFLAGS@ -DPACKAGE_DATA_DIR=\"@prefix@\"
+AM_CFLAGS = @AM_CFLAGS@ -DPACKAGE_DATA_DIR=\"@prefix@\"
 
 install-data-local:
 	test -d ${srcdir}/pixmaps \

@@ -1,7 +1,59 @@
 
-$Id: PROJECTS,v 1.3 2005/06/16 00:16:21 quozl Exp $	
+$Id: PROJECTS,v 1.4 2006/04/10 04:24:50 quozl Exp $	
 
 List of things to do in the future
+
+	- vote per IP address only, not per slot
+
+	- ban for an hour after eject, or while the players that voted still
+	  have the same slot (ban based on an a mask of slots that voted for
+	  eject)
+
+quozl's working notes ... {
+
+expiry by time
+	check list, remove based on time (time_t)
+expiry by departure
+	check list, remove if any voters have gone (MAXPLAYER x p_no, p_pos)
+connect
+	do expiry
+	pass if observer
+	check list of temporary bans, by ip address (p_monitor?)
+login
+	do expiry
+	pass if guest
+	pass if observer (but set :ita for all)
+	check list of temporary bans, by p_name
+refit mask wait
+	do not offer a team they have been banned from?
+queue wait
+	do not accept a slot if they are banned from that team
+eject vote
+	do expiry
+	insert entry into list
+		(time_t, p_name, p_monitor, n_voted MAXPLAYER(p_no, p_pos))
+	if they are not banned from the other team, offer them a ship there
+data
+	MAXPERSISTENTBANS (time_t, p_name, p_monitor, MAXPLAYER(p_no, p_updates, p_team, p_pos))
+
+BFGOD
+BFTEAM
+struct ban {
+    u_int b_flags;
+    time_t b_when;
+    char p_name[NAME_LEN];
+    char p_ip[NAME_LEN];
+    struct ban_matrix {
+        int p_no;
+        int p_updates;
+        short p_team;
+        pid_t p_process;
+    } b_matrix[MAXPLAYER];
+} bans[MAXBANS];
+
+} quozl's working notes
+
+	- prevent eject in initial two-minutes of ship time, if ship active,
 
 	- RSS feed for genos, so that people can subscribe and be told when the
 	  galactic is recently reset.  Jerub expressed an interest in doing it.
@@ -46,9 +98,6 @@ List of things to do in the future
 	- vary observer update rate down when not in use, use lock on
 	  player or planet event to increase back.
 
-	- method for starbase to disable transwarp but leave docking
-	  enabled.  Dave Ahn to implement.
-
 	- configure checks for gmp more than once, it should check only
 	  once.  Perhaps it is configure for res-rsa duplicating effort?
 
@@ -56,12 +105,6 @@ List of things to do in the future
 	  and so a parallel make fails on a multi-processor box.
 
 	- implement automake
-
-	- implement proper configure --prefix usage, so that we install
-	  in %{prefix}/games/netrek not in %{prefix}
-
-	- implement configure's other path options, so that read-write
-	  data will be in %{prefix}/var/somewhere
 
 	- web page interface to INL server, including privileged
 	  functions such as starting, stopping, or restarting the
@@ -95,10 +138,6 @@ List of things to do in the future
 	- special compile mode for lesser lights trying to build an INL server
 	  that avoids trying to compile xsg or pledit, and perhaps a few other
 	  things, suggested by Tom Holub [VANILLA-LIST:2566]
-
-	- add command to allow players to change their password.
-	  "password newpassword", followed by "confirm newpassword".
-	  [partially done]
 
 	- pledit should be able to edit entries in place online.
 

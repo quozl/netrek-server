@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.3 2005/09/27 12:26:37 quozl Exp $
+/* $Id: ntscmds.c,v 1.4 2006/04/10 04:24:51 quozl Exp $
  */
 
 /*
@@ -576,7 +576,7 @@ int bounceWhois(int from)
     bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
   } else {
     bounce(from, "%s is %s (%s@%s)", me->p_mapchars, me->p_name, me->p_login, me->p_full_hostname);
-    bounce(from, "%s at %s (ip)", me->p_mapchars, inet_ntoa(remoteaddr));
+    bounce(from, "%s at %s (ip)", me->p_mapchars, me->p_ip);
   }
   return 1;
 }

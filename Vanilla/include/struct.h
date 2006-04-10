@@ -174,7 +174,7 @@ struct status {
 #endif
 
 struct team {
-    int s_turns;	/* turns till another starbase is legal */
+    int s_turns;		/* turns till another starbase is legal */
     int s_surrender;		/* minutes until this team surrenders */
     int s_plcount;		/* how many planets this team owns */
 };
@@ -324,6 +324,7 @@ struct player {
     u_int p_flags;	        /* Player flags */
     char p_name[NAME_LEN];      /* Player handle, i.e. "Wreck" */
     char p_login[NAME_LEN];     /* Login name of player's account */
+    char p_ip[NAME_LEN];	/* IP address of client in text */
     char p_monitor[NAME_LEN];	/* Monitor being played on */
     char p_longname[NAME_LEN+6];/* Name plus (mapchars); i.e.  "Wreck (R0)" */
     char p_mapchars[3];		/* Cache for map window image, i.e. "R0" */

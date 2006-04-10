@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/types.h>
+#include <arpa/inet.h>
 #include "defs.h"
 #include INC_STRINGS
 #include INC_UNISTD
@@ -263,6 +264,10 @@ int main(int argc, char **argv)
 	int i;
 	for (i = 0; i < MAXPLAYER; i++) ignored[i] = 0;
     }
+
+    /* store client IP address from socket peer obtained by checkSocket() */
+    if (remoteaddr != -1)
+      strcpy(me->p_ip, inet_ntoa(remoteaddr));
 
 #ifdef REVERSED_HOSTNAMES
     if (strlen(host) >= NAME_LEN) {

@@ -352,11 +352,15 @@
 
 				/* EJECT_ONLY_IF_QUEUE - refuses to eject
 							 unless queue != 0 */
+
+				/* EJECT_PERSISTENCY - does not let player back
+				in if same character name or same ip address */
 #ifdef VOTING
 #undef ALLOW_EJECT
 #ifdef ALLOW_EJECT
 #define VICIOUS_EJECT
 #define EJECT_ONLY_IF_QUEUE
+#define EJECT_PERSISTENCY
 #endif
 #endif
 

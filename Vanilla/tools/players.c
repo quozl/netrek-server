@@ -11,10 +11,10 @@
 
 extern int openmem(int);
 
-int mode=0;
+int mode = 0;
 static char *ships[] = {"SC", "DD", "CA", "BB", "AS", "SB"};
 static char *statnames[] = {"F", "O", "A", "E", "D"};
-static int out = 1;        /* stdout for non-socket connections */
+static int fd = 1;        /* stdout for non-socket connections */
 
 /* forward function declarations */
 static void udp();
@@ -32,8 +32,9 @@ int main(int argc, char **argv)
     char *fixed_name;
  
     if (argc>1) {
-	mode= *(argv[1]);
-	out = 0;
+	mode = *(argv[1]);
+	/* if stdin is not a tty, assume it is a socket */
+	if (!isatty(0)) fd = 0;
     }
 
     if (mode == 'u') { udp(); exit(0); }
@@ -313,17 +314,16 @@ static char *str(int n, char *s)
 
 static void output(const char *fmt, ...)
 {
-   va_list args;
-   va_start(args, fmt);
+  va_list args;
+  va_start(args, fmt);
 
-   if(out == 1){
-      vfprintf(stdout, fmt, args);
-   }
-   else {
-      char      buf[512];
-      vsprintf(buf, fmt, args);
-      write(out, buf, strlen(buf));
-   }
-   va_end(args);
+  if (fd == 1) {
+    vfprintf(stdout, fmt, args);
+  } else {
+    char      buf[512];
+    vsnprintf(buf, 511, fmt, args);
+    write(fd, buf, strlen(buf));
+  }
+  va_end(args);
 }
 

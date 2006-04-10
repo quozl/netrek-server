@@ -110,10 +110,6 @@ int main(int argc, char **argv)
       players[player].p_hostile &= ~team;
       players[player].p_swar &= ~team;
       players[player].p_war &= ~team;
-      sprintf(buf, "GOD->ALL  Change:  %2s is now a %s.",
-	      players[player].p_mapchars,
-	      names[team]);
-      _pmessage(buf, 0, MALL);
       sprintf(players[player].p_mapchars, "%c%c", 
 	      teamlet[players[player].p_team], shipnos[player]);
       sprintf(players[player].p_longname, "%s (%s)", 
@@ -200,10 +196,10 @@ int main(int argc, char **argv)
       players[player].p_swar = 0;
       players[player].p_war = 0;
       players[player].p_team = 0;	/* indep */
-      players[player].p_ship.s_type = STARBASE;
+      players[player].p_ship.s_type = SCOUT;
       players[player].p_ship.s_mass = 200;
       players[player].p_ship.s_repair = 30000;
-      players[player].p_ship.s_maxspeed = 0;
+      break;
     case 'S':		/* super ship */
       players[player].p_ship.s_maxshield = 750;
       players[player].p_shield = 750;
@@ -217,9 +213,6 @@ int main(int argc, char **argv)
 	players[player].p_stats.st_rank++;
 
       --players[player].p_stats.st_rank;
-      sprintf(buf, "GOD->ALL  %2s was (temporarily) demoted for rank normalization purposes.",
-	      players[player].p_mapchars);
-      _pmessage(buf, 0, MALL);
       break;
     case 'P':		/* promote, but not beyond admiral */
       if( players[player].p_stats.st_rank < (NUMRANKS - 1) ) 
@@ -241,7 +234,42 @@ int main(int argc, char **argv)
       players[player].p_shield = 0;
       players[player].p_damage = players[player].p_ship.s_maxdamage/2;
       break;
-    case 'u':
+    case 'H':           /* hack */
+      {
+      struct player *me = &players[player];
+      /* make independent and hostile to only prior team */
+      int team = players[player].p_team;
+      players[player].p_hostile = team;
+      players[player].p_swar = team;
+      players[player].p_war = team;
+      players[player].p_team = 0;
+      sprintf(players[player].p_mapchars, "%c%c", 
+	      teamlet[players[player].p_team], shipnos[player]);
+      sprintf(players[player].p_longname, "%s (%s)", 
+	      players[player].p_name, players[player].p_mapchars);
+      /* cripple */
+      players[player].p_shield = 0;
+      players[player].p_damage = players[player].p_ship.s_maxdamage/2;
+      /* raise shields */
+      players[player].p_flags |= PFSHIELD;
+      players[player].p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+      /* break tractors and decloak */
+      me->p_flags &= ~(PFTRACT | PFPRESS);
+      me->p_flags &= ~PFCLOAK;
+      /* set speed 0 */
+      me->p_desspeed = 0;
+      if (me->p_flags & PFDOCK) {
+	players[me->p_docked].p_docked--;
+	players[me->p_docked].p_port[me->p_port[0]] = VACANT;
+      }
+      me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFDOCK | PFBEAMUP | PFBEAMDOWN);
+      /* make unable to act */
+      players[player].p_flags |= PFTWARP;
+      /* show as puck */
+      players[player].p_ship.s_type = SCOUT;
+      }
+      break;
+    case 'u':           /* raise shields */
       players[player].p_flags |= PFSHIELD;
       players[player].p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
       break;
@@ -305,6 +333,7 @@ static void Usage(void)
       (no mode == obliterate)\n\
       s(hip class change)[abcdosA]  (A = ATT)\n\
       t(eleport to quadrant)[frkoc] (c = center of galaxy)\n\
+      p(uck)                        (harmless little thing)\n\
       S(uper)                       (big shields/max damage/max etmp)\n\
       T(eam change)[frko]           (no team == independent)\n\
       D(emote)                      (-1 to rank)\n\
