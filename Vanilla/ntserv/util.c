@@ -3,20 +3,9 @@
  */
 #include "copyright.h"
 #include "config.h"
-
-#include <stdio.h>
-#include INC_MATH
-#include <signal.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include "defs.h"
-#include INC_STRINGS
-#include INC_UNISTD
 #include "struct.h"
 #include "data.h"
-
-
 
 /*
 ** Provide the angular distance between two angles.
