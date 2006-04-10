@@ -267,7 +267,7 @@ int main(int argc, char **argv)
 
     /* store client IP address from socket peer obtained by checkSocket() */
     if (remoteaddr != -1)
-      strcpy(me->p_ip, inet_ntoa(remoteaddr));
+      strcpy(me->p_ip, inet_ntoa(*(struct in_addr *)&remoteaddr));
 
 #ifdef REVERSED_HOSTNAMES
     if (strlen(host) >= NAME_LEN) {
