@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.5 2006/04/10 10:56:32 quozl Exp $
+/* $Id: ntscmds.c,v 1.6 2006/04/10 11:57:00 quozl Exp $
  */
 
 /*
@@ -189,52 +189,55 @@ static struct command_handler_2 nts_commands[] =
 	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
 	"Eject a player               e.g. 'EJECT 0 IDLE'", 
 	do_player_eject,				/* EJECT */
-	2, 0, 120, 600},
+	2, PV_EJECT, 120, 600},
 #endif
 #if defined(TRIPLE_PLANET_MAYHEM)
     { "TRIPLE",
         C_VC_ALL | C_GLOG | C_PR_INPICKUP,
         "Start triple planet mayhem by vote",
         do_triple_planet_mayhem,
-	2, 22, 0},
+	2, PV_OTHER, 0},
     { "BALANCE",
         C_VC_ALL | C_GLOG | C_PR_INPICKUP,
         "Request team randomise & balance",
         do_balance,
-        4, 23, 0 },
+        4, PV_OTHER+1, 0 },
 #endif
 #if defined(AUTO_INL)
   { "INL",
 	C_VC_ALL | C_GLOG | C_PR_INPICKUP,
 	"Start game under INL rules.",
 	do_start_inl,
-	1, 20, 0 },
+	1, PV_OTHER+2, 0 },
 #endif
 #if defined(AUTO_PRACTICE)
   { "PRACTICE",
 	C_VC_ALL | C_PR_INPICKUP,
 	"Start basepractice by majority vote.",
 	do_start_basep,
-	1, 20, 0 },
+	1, PV_OTHER+3, 0 },
 #endif
 #if defined(AUTO_HOCKEY)
   { "HOCKEY",
 	C_VC_ALL | C_GLOG | C_PR_INPICKUP,
 	"Start hockey by majority vote.",
 	do_start_puck,
-	1, 20, 0 },
+	1, PV_OTHER+4, 0 },
 #endif
 #if defined(AUTO_DOGFIGHT)
   { "DOGFIGHT",
 	C_VC_ALL | C_GLOG | C_PR_INPICKUP,
 	"Start dogfight tournament by majority vote.",
 	do_start_mars,
-	1, 20, 0 },
+	1, PV_OTHER+5, 0 },
 #endif
 #endif /* VOTING */
 
+    /* crosscheck, last voting array element used (PV_OTHER+n) must
+       not exceed PV_TOTAL, see include/defs.h */
+
     { NULL }
-    };
+};
 
 int check_command(struct message *mess)
 {
@@ -308,9 +311,9 @@ void eject_player(int who)
 void do_start_basep(void)
 {
   if (vfork() == 0) {
-      (void) SIGNAL(SIGALRM,SIG_DFL);
-      execl(Basep, "basep", 0);
-      perror(Basep);
+    (void) SIGNAL(SIGALRM,SIG_DFL);
+    execl(Basep, "basep", 0);
+    perror(Basep);
   }
 }
 #endif

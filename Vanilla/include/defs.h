@@ -1,4 +1,4 @@
-/* $Id: defs.h,v 1.4 2006/04/10 10:56:31 quozl Exp $
+/* $Id: defs.h,v 1.5 2006/04/10 11:57:00 quozl Exp $
  */
 
 #ifndef _h_defs
@@ -64,7 +64,11 @@
                                    the rest obs slots */
 
 #ifdef VOTING
-#define PV_TOTAL        MAXPLAYER   /* total number of votable slots */
+#define PV_EXTRA 8			/* # of non-eject vote types      */
+#define PV_TOTAL MAXPLAYER+PV_EXTRA	/* total number of voting slots   */
+#define PV_EJECT 0			/* array base for eject votes     */
+#define PV_OTHER MAXPLAYER		/* array base for non-eject votes */
+/* see ntserv/ntscmds.c for array */
 #endif
 
 #if defined(NEWBIESERVER) || defined(PRETSERVER)
