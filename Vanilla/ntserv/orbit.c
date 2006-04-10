@@ -29,27 +29,10 @@
 #define TRUE 1
 #endif
 
-/*
- * If there are bugs in this docking code and/or possibly other places
- * in the code, then conceivably a base my have p_docked < 4 while
- * all ports are non-VACANT.  That is inconsistent, and this code
- * will check for that eventuality on the fly.
- */
-#if 1
-#define RETURN_IF_VACANT(base, port)
-#else
-#define RETURN_IF_VACANT(base, port) \
-        if (base->p_port[port] != VACANT) { \
-	  ERROR(1, ("Starbase %d has no ports vacant but p_docked==%d\n", \
-		    base->p_id, base->p_docked)); \
-	  return FALSE; \
-	}
-#endif
-
 void de_lock(struct player *me)
 {
   me->p_flags   &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
- #ifdef SB_TRANSWARP
+#ifdef SB_TRANSWARP
   if (me->p_flags & PFTWARP){
     me->p_flags &= ~PFTWARP;
     me->p_flags |= PFREFITTING;
@@ -64,14 +47,14 @@ void de_lock(struct player *me)
  * (If one or more of these is not true, various nasty things happen.)
  */ 
 
-#define DOCK_NO_BASE 0
-#define DOCK_FAILURE 1
-#define DOCK_SUCCESS 2
+#define DOCK_NO_BASE 0 /* no base is close enough */
+#define DOCK_FAILURE 1 /* dock failed due to some condition */
+#define DOCK_SUCCESS 2 /* dock was successful */
 
 static int dock(struct player *base)
 {
   LONG dx, dy;
-  int port_id;
+  int bay_no;
   u_char dir_from_base;
 
   /*
@@ -124,90 +107,28 @@ static int dock(struct player *base)
   }
   
   /*
-   * Make sure the base's docking ports are not already full: */
-  if (base->p_docked >= NUMPORTS) {
+   * Make sure the base's docking bays are not already full: */
+  bay_no = bay_closest(base, dx, dy);
+  if (bay_no == -1) {
     if (send_short)
       swarning(SBDOCKDENIED_TEXT, base->p_no, 0);
     else
-      new_warning(UNDEF, "Starbase %s: Permission to dock denied, all ports currently occupied.", base->p_name);
+      new_warning(UNDEF, "Starbase %s: Permission to dock denied, all bays currently occupied.", base->p_name);
     de_lock(me);
     return DOCK_FAILURE;
   }
 
   /*
-   * Dock on closest port.
-   * A starbase's ports are     3    0
-   * numbered as in this          ()
-   * picture:                   2    1                       */
-  if (dx > 0) {
-    /* We are to the left of the base: */
-    if (dy > 0) {
-      /* Above and to left of base: */
-      if (base->p_port[3] == VACANT)
-	port_id = 3;
-      else if (base->p_port[2] == VACANT)
-	port_id = 2;
-      else if (base->p_port[0] == VACANT) 
-	port_id = 0;
-      else {
-	RETURN_IF_VACANT(base, 1);
-	port_id = 1;
-      }
-    } else {
-      /* Below and to left of base: */
-      if (base->p_port[2] == VACANT)
-	port_id = 2;
-      else if (base->p_port[3] == VACANT)
-	port_id = 3;
-      else if (base->p_port[1] == VACANT) 
-	port_id = 1;
-      else {
-	RETURN_IF_VACANT(base, 0);
-	port_id = 0;
-      }
-    }
-  } else {
-    /* We are to the right of the base: */
-    if (dy > 0) {
-      /* Above and to right of base: */
-      if (base->p_port[0] == VACANT)
-	port_id = 0;
-      else if (base->p_port[1] == VACANT)
-	port_id = 1;
-      else if (base->p_port[3] == VACANT) 
-	port_id = 3;
-      else {
-	RETURN_IF_VACANT(base, 2);
-	port_id = 2;
-      }
-    } else {
-      /* Below and to right of base: */
-      if (base->p_port[1] == VACANT)
-	port_id = 1;
-      else if (base->p_port[2] == VACANT)
-	port_id = 2;
-      else if (base->p_port[0] == VACANT) 
-	port_id = 0;
-      else {
-	RETURN_IF_VACANT(base, 3);
-	port_id = 3;
-      }
-    }
-  }
-
-  /*
    * Adjust player structures of myself and the base. */
-  dir_from_base = ((port_id * 90 + 45) * 256) / 360;
-  me->p_flags   &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
-  me->p_flags   |= PFDOCK;
-  me->p_dir      = 64 + dir_from_base;
-  me->p_desdir   = me->p_dir;
-  me->p_x        = base->p_x + DOCKDIST * Cos[dir_from_base];
-  me->p_y        = base->p_y + DOCKDIST * Sin[dir_from_base];
-  me->p_speed    = 0;
-  me->p_desspeed = 0;
-  me->p_docked   = base->p_no;
-  me->p_port[0]  = port_id;
+  dir_from_base   = ((bay_no * 90 + 45) * 256) / 360;
+  me->p_flags    &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
+  me->p_flags    |= PFDOCK;
+  me->p_dir       = 64 + dir_from_base;
+  me->p_desdir    = me->p_dir;
+  me->p_x         = base->p_x + DOCKDIST * Cos[dir_from_base];
+  me->p_y         = base->p_y + DOCKDIST * Sin[dir_from_base];
+  me->p_speed     = 0;
+  me->p_desspeed  = 0;
 #ifdef SB_TRANSWARP
   if (me->p_flags & PFTWARP){
     me->p_flags &= ~PFTWARP;
@@ -216,15 +137,14 @@ static int dock(struct player *base)
   }
 #endif
 
-  base->p_docked++;
-  base->p_port[port_id] = me->p_no;
+  bay_claim(base, me, bay_no);
 
   /*
    * Notify player of success. */
   if (send_short)
-    swarning(ONEARG_TEXT, 2, port_id);
+    swarning(ONEARG_TEXT, 2, bay_no);
   else
-    new_warning(UNDEF,"Helmsman:  Docking manuever completed Captain.  All moorings secured at port %d.", port_id);
+    new_warning(UNDEF,"Helmsman:  Docking manuever completed Captain.  All moorings secured at bay %d.", bay_no);
   return DOCK_SUCCESS;
 }
 

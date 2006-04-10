@@ -1,3 +1,32 @@
+Mon Apr 10 20:41:52 2006  James Cameron  <quozl@us.netrek.org>
+
+	* struct.h: deprecate p_docked and p_ports in favour of
+	p_dock_with, p_dock_bay, and p_bays, removing overloaded use.
+	
+	* proto.h, bay.c: add functions for starbase bay
+	maintenance and crosscheck.
+
+	* daemon.c: adopt new starbase bay maintenance, calculate etemp
+	based on number of bays in use rather than using a separate
+	counter, change some army count checks to prevent abuse.
+
+	* enter.c, interface.c, orbit.c, redraw.c, socket.c: adopt new
+	starbase bay maintenance.
+
+	* ntscmds.c: release starbase bay on eject ... vicious eject
+	prevents the explosion from running through the daemon logic,
+	resulting in inconsistency.  Reported by: William Balcerski
+
+	* xtkill.c: release starbase bay on intervention.
+
+Mon Apr 10 20:40:32 2006  James Cameron  <quozl@us.netrek.org>
+
+	* util.c: remove unnecessary includes.
+
+Mon Apr 10 20:38:15 2006  James Cameron  <quozl@us.netrek.org>
+
+	* main.c: fix compilation error on initialisation of p_ip.
+	
 Mon Apr 10 20:12:19 2006  James Cameron  <quozl@us.netrek.org>
 
 	* robots/inl.c (checkmess): fix compilation warning by renaming
@@ -1756,4 +1785,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.15 2006/04/10 10:30:44 quozl Exp $
+	$Id: ChangeLog,v 1.16 2006/04/10 10:56:30 quozl Exp $

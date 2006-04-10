@@ -370,9 +370,14 @@ struct player {
     short p_planets;		/* planets taken this game */
     short p_armsbomb;		/* armies bombed this game */
     int p_ghostbuster;
-    int p_docked;		/* If starbase, # docked to, else pno base host */
-    int p_port[4];		/* If starbase, pno of ship docked to that port,
-				   else p_port[0] = port # docked to on host.   */
+
+    /* for starbases, if PFDOCKOK set */
+    int p_bays[NUMBAYS];        /* p_no of each docked ship, or VACANT */
+
+    /* for ships other than starbases, if p_flags PFDOCK set */
+    int p_dock_with;	        /* p_no of starbase we are docked with */
+    int p_dock_bay;	        /* bay of starbase we are docked with */
+
     short p_tractor;		/* What player is in tractor lock */
     int p_pos;			/* My position in the player file */
     int w_queue;		/* Waitqueue of my team */

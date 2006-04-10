@@ -29,21 +29,15 @@ void set_speed(int speed)
 	speed=0;
     }
     me->p_desspeed = speed;
-    if (me->p_flags & PFDOCK) {
-	players[me->p_docked].p_docked--;
-	players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-    }
-    me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFDOCK | PFBEAMUP | PFBEAMDOWN);
+    bay_release(me);
+    me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
 }
 
 void set_course(u_char dir)
 {
     me->p_desdir = dir;
-    if (me->p_flags & PFDOCK) {
-	players[me->p_docked].p_docked--;
-	players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-    }
-    me->p_flags &= ~(PFBOMB | PFORBIT | PFDOCK | PFBEAMUP | PFBEAMDOWN);
+    bay_release(me);
+    me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
 }
 
 void shield_up(void)
@@ -156,7 +150,7 @@ void beam_up(void)
 	    return;
 	}
     } else if (me->p_flags & PFDOCK) {
-	if (me->p_team != players[me->p_docked].p_team) {
+	if (me->p_team != players[me->p_dock_with].p_team) {
             new_warning(46,"Comm Officer: We're not authorized to beam foriegn troops on board!");
 	    return;
 	}
@@ -185,7 +179,7 @@ void beam_down(void)
 #endif
 
     if (me->p_flags & PFDOCK) {
-        if (me->p_team != players[me->p_docked].p_team) {
+        if (me->p_team != players[me->p_dock_with].p_team) {
             new_warning(48,"Comm Officer: Starbase refuses permission to beam our troops over.");
 	    return;
         }
@@ -312,16 +306,10 @@ void tractor_player(int player)
     if (hypot((double) me->p_x-victim->p_x,
 	    (double) me->p_y-victim->p_y) < 
 	    ((double) TRACTDIST) * me->p_ship.s_tractrng) {
-	if (victim->p_flags & PFDOCK) {
-	    players[victim->p_docked].p_port[victim->p_port[0]] = VACANT;
-	    players[victim->p_docked].p_docked--;
-	}
-	if (me->p_flags & PFDOCK) {
-	    players[me->p_docked].p_docked--;
-	    players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-	}
-	victim->p_flags &= ~(PFORBIT | PFDOCK);
-	me->p_flags &= ~(PFORBIT | PFDOCK);
+	bay_release(victim);
+	bay_release(me);
+	victim->p_flags &= ~PFORBIT;
+	me->p_flags &= ~PFORBIT;
 	me->p_tractor = player;
 	me->p_flags |= PFTRACT;
     } else {			/* out of range */
@@ -357,14 +345,8 @@ void pressor_player(int player)
     if (hypot((double) me->p_x-victim->p_x,
 	      (double) me->p_y-victim->p_y) < 
 	((double) TRACTDIST) * me->p_ship.s_tractrng) {
-	if (victim->p_flags & PFDOCK) {
-	    players[victim->p_docked].p_port[victim->p_port[0]] = VACANT;
-	    players[victim->p_docked].p_docked--;
-	}
-	if (me->p_flags & PFDOCK) {
-	    players[me->p_docked].p_docked--;
-	    players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-	}
+	bay_release(victim);
+	bay_release(me);
 	victim->p_flags &= ~(PFORBIT | PFDOCK);
 	me->p_flags &= ~(PFORBIT | PFDOCK);
 	me->p_tractor = target;
@@ -408,21 +390,18 @@ void declare_war(int mask)
 	sendwarn("Orions", mask & ORI, ORI);
     }
     if (me->p_flags & PFDOCK) {
-	if (players[me->p_docked].p_team & mask) {
-	    players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-	    players[me->p_docked].p_docked--;
-	    me->p_flags &= ~PFDOCK;
+	if (players[me->p_dock_with].p_team & mask) {
+	    /* release ship from starbase that is now hostile */
+	    bay_release(me);
 	}
-    } else if (me->p_ship.s_type == STARBASE) {
-	if (me->p_docked > 0) {
-	    for(i=0; i<NUMPORTS; i++) {
-		if (me->p_port[i] == VACANT)   /* isae -- Ted's fix */
-                  continue;
-		if (mask & players[me->p_port[i]].p_team) {
-		    players[me->p_port[i]].p_flags &= ~PFDOCK;
-		    me->p_docked--;
-		    me->p_port[i] = VACANT;
-		}
+    }
+    if (me->p_ship.s_type == STARBASE) {
+        for(i=0; i<NUMBAYS; i++) {
+	    if (me->p_bays[i] == VACANT)
+                continue;
+	    if (mask & players[me->p_bays[i]].p_team) {
+	        /* release docked ships that are now hostile */
+	        bay_release(&players[me->p_bays[i]]);
 	    }
 	}
     }
@@ -486,7 +465,7 @@ void do_refit(int type)
             new_warning(52,"Can only refit to starbase on your home planet.");
 	    return;
 	}
-	if (players[me->p_docked].p_team != me->p_team) {
+	if (players[me->p_dock_with].p_team != me->p_team) {
             new_warning(53,"You must dock YOUR starbase to apply for command reassignment!");
 	    return;
 	}
@@ -573,12 +552,7 @@ void do_refit(int type)
 	/* Reset kills to 0.0 */
 	me->p_kills=0;
 	/* bump all docked ships */
-	for (i=0; i<NUMPORTS; i++) 
-	   if (me->p_port[i] != VACANT) {
-		players[me->p_port[i]].p_flags &= ~PFDOCK;
-		me->p_docked--;
-		me->p_port[i] = VACANT;	
-	   }
+	bay_release_all(me);
 	me->p_flags |= PFDOCKOK;
     }	
 
@@ -622,8 +596,7 @@ void do_refit(int type)
     me->p_etime = 0;
     me->p_ship.s_type = type;
     if (type == STARBASE) {
-	me->p_docked = 0;
-	for (i=0; i<4; i++) me->p_port[i] = VACANT;
+	bay_init(me);
 	me->p_flags |= PFDOCKOK;
     }
 

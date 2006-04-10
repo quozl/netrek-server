@@ -176,12 +176,10 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     me->p_lastseenby = VACANT;
     me->p_kills = 0.0;
     me->p_armies = 0;
-    me->p_docked = 0;
-    me->p_port[0] = VACANT;
-    me->p_port[1] = VACANT;
-    me->p_port[2] = VACANT;
-    me->p_port[3] = VACANT;
-/*    if (!keeppeace) me->p_hostile = (FED|ROM|KLI|ORI);*/
+    bay_init(me);
+    me->p_dock_with = 0;
+    me->p_dock_bay = 0;
+/*  if (!keeppeace) me->p_hostile = (FED|ROM|KLI|ORI); */
     if( !(me->p_flags & PFROBOT) && (me->p_team == NOBODY) ) {
       me->p_hostile = NOBODY;
       me->p_war = NOBODY;

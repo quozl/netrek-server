@@ -213,14 +213,12 @@ static void check_observs(void)
 #define NOOBSMASK	(PFSELFDEST|PFPLOCK|PFPLLOCK|PFOBSERV)
 	  me->p_flags = (pl->p_flags & ~NOOBSMASK) | (me->p_flags & NOOBSMASK);
 	  
-	  /* always cloaked, state of person watched will be obvious */
-	  /* me->p_flags |= PFCLOAK; */
 	  me->p_dir = pl->p_dir;
 	  me->p_tractor = pl->p_tractor;
-	  me->p_docked = pl->p_docked;
+	  me->p_dock_with = pl->p_dock_with;
+	  me->p_dock_bay = pl->p_dock_bay;
 	  me->p_planet = pl->p_planet;
 	  me->p_speed = pl->p_speed;
-	  /* me->p_kills = pl->p_kills;  Very bad: will confuse enemies */
 	}
 	return;
     }  /* end if I am locked onto a player */
@@ -439,10 +437,11 @@ static void auto_features(void)
 		      planets[me->p_planet].pl_armies);
 	    
 	} else if (me->p_flags & PFDOCK) {
-	    if (players[me->p_docked].p_armies == 0) {
+	    struct player *base = bay_owner(me);
+	    if (base->p_armies <= 0) {
 		txt = "Too few armies to beam up";
 		me->p_flags &= ~PFBEAMUP;
-	    } else if (me->p_armies == troop_capacity) {
+	    } else if (me->p_armies >= troop_capacity) {
 		txt = "No more room on board for armies";
 		me->p_flags &= ~PFBEAMUP;
 	    } else {
@@ -452,8 +451,8 @@ static void auto_features(void)
 			txt,
 			me->p_armies,
 			troop_capacity,
-			players[me->p_docked].p_name,
-			players[me->p_docked].p_armies);
+			base->p_name,
+			base->p_armies);
 	}
     }
 
@@ -475,13 +474,13 @@ static void auto_features(void)
 		      planets[me->p_planet].pl_armies);
 
 	} else if (me->p_flags & PFDOCK) {
-	    if (me->p_armies == 0) {
+	    struct player *base = bay_owner(me);
+	    if (me->p_armies <= 0) {
 		txt = "No more armies to beam down";
 		me->p_flags &= ~PFBEAMDOWN;
-	    } else if (players[me->p_docked].p_armies ==
-		players[me->p_docked].p_ship.s_maxarmies) {
-	      txt = "All troop bunkers are full";
-	      me->p_flags &= ~PFBEAMDOWN;
+	    } else if (base->p_armies >= base->p_ship.s_maxarmies) {
+	        txt = "All troop bunkers are full";
+	        me->p_flags &= ~PFBEAMDOWN;
 	    } else {
 	        txt = "Transfering ground units";
 	    }
@@ -489,8 +488,8 @@ static void auto_features(void)
 			txt,
 			me->p_armies,
 			troop_capacity,
-			players[me->p_docked].p_name,
-			players[me->p_docked].p_armies);
+			base->p_name,
+			base->p_armies);
 	}
     }
 

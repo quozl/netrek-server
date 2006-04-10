@@ -22,14 +22,14 @@ R_OBJS =    cluecheck.o coup.o data.o db.o death.o detonate.o enter.o \
 	    startrobot.o  sysdefaults.o  timecheck.o  torp.o  util.o  \
 	    warning.o ping.o $(RANDOMO) getpath.o $(STRDUPO) features.o \
 	    distress.o transwarp.o gencmds.o ntscmds.o openmem.o feature.o \
-	    queue.o slotmaint.o rsa_key.o ltd_stats.o
+	    queue.o slotmaint.o rsa_key.o ltd_stats.o bay.o
 
 
 #	daemonII object files
 
 D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  data.o  slotmaint.o \
 	    util.o  $(RANDOMO) getpath.o getship.o smessage.o  queue.o \
-	    wander2.o openmem.o solicit.o ltd_stats.o
+	    wander2.o openmem.o solicit.o ltd_stats.o bay.o
 
 #	Src files
 
@@ -48,7 +48,8 @@ R_FILES =   ${srcdir}/cluecheck.c ${srcdir}/coup.c ${srcdir}/data.c \
             ${srcdir}/features.c ${srcdir}/distress.c ${srcdir}/transwarp.c \
             ${srcdir}/gencmds.c ${srcdir}/ntscmds.c ${srcdir}/openmem.c \
             ${srcdir}/feature.c ${srcdir}/queue.c ${srcdir}/slotmaint.c \
-            ${srcdir}/wander2.c ${srcdir}/sysdefaults.c ${srcdir}/rsa_key.c
+            ${srcdir}/wander2.c ${srcdir}/sysdefaults.c ${srcdir}/rsa_key.c \
+            ${srcdir}/bay.c
 
 SRC = 	    $(R_FILES)  data.h  defs.h planets.h  struct.h \
 	    packets.h  copyright.h

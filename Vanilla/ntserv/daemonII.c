@@ -927,13 +927,9 @@ static void udplayers(void)
                     j->p_explode = 600/PLAYERFUSE; /* set ghost buster */
                 }
 
-                /* At this point, docked ships become removed. */
-                if (j->p_flags & PFDOCK) {
-                    players[j->p_docked].p_docked--;
-                    players[j->p_docked].p_port[j->p_port[0]] = VACANT;
-                    j->p_flags &= ~PFDOCK;
-                } 
+                bay_release(j);
                 if (j->p_ship.s_type == STARBASE) {
+                    bay_release_all(j);
                     if (((j->p_whydead == KSHIP) || 
                             (j->p_whydead == KTORP) ||
                             (j->p_whydead == KPHASER) || 
@@ -942,16 +938,9 @@ static void udplayers(void)
                             (j->p_whydead == KGENOCIDE)) && (status->tourn))
                     teams[j->p_team].s_turns=BUILD_SB_TIME; /* in defs.h */
                         /* 30 minute reconstruction period for new starbase */
-                    for (k=0; k<NUMPORTS; k++) 
-                        if(j->p_port[k] != VACANT) {
-                            players[j->p_port[k]].p_flags &= ~PFDOCK;
-                            j->p_port[k] = VACANT;
-                        }
-                    j->p_docked = 0;
                 }
                 /* And he is ejected from orbit. */
-                if (j->p_flags & PFORBIT)
-                  j->p_flags &= ~PFORBIT;
+                j->p_flags &= ~PFORBIT;
 
                 /* Fall through to alive so explosions move */
                         
@@ -1016,10 +1005,13 @@ static void udplayers(void)
 
                         /* Charge SB's for mass of docked vessels ... */
                         if (j->p_ship.s_type == STARBASE) {
-                            for (k=0; k<NUMPORTS; k++) 
-                                if(j->p_port[k] != VACANT) 
-                                    j->p_fuel -= players[j->p_port[k]].p_ship.s_warpcost * j->p_speed;
-                                    j->p_etemp += .7*(j->p_speed * j->p_docked);
+			    int bays = 0;
+                            for (k=0; k<NUMBAYS; k++)
+                                if(j->p_bays[k] != VACANT) {
+                                    j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
+				    bays++;
+                                }
+			    j->p_etemp += .7*(j->p_speed * bays);
                         }
                     }
 #ifdef SB_TRANSWARP
@@ -1328,11 +1320,11 @@ static void udplayers(void)
                   j->p_fuel += 6 * j->p_ship.s_recharge;
                 } else if ((j->p_flags & PFDOCK) && 
                            (j->p_fuel < j->p_ship.s_maxfuel) &&
-                           (players[j->p_docked].p_fuel > SBFUELMIN)) {
+                           (players[j->p_dock_with].p_fuel > SBFUELMIN)) {
                   int fc = MIN(10*j->p_ship.s_recharge,
                                j->p_ship.s_maxfuel - j->p_fuel);
                   j->p_fuel += fc;
-                  players[j->p_docked].p_fuel -= fc;
+                  players[j->p_dock_with].p_fuel -= fc;
                 }
 #else
                 /* Add fuel */
@@ -1341,9 +1333,9 @@ static void udplayers(void)
                     (!(planets[j->p_planet].pl_owner & j->p_war))) {
                   j->p_fuel += 8 * j->p_ship.s_recharge;
                 } else if ((j->p_flags & PFDOCK) && (j->p_fuel < j->p_ship.s_maxfuel)) {
-                  if (players[j->p_docked].p_fuel > SBFUELMIN) {
+                  if (players[j->p_dock_with].p_fuel > SBFUELMIN) {
                     j->p_fuel += 12*j->p_ship.s_recharge;
-                    players[j->p_docked].p_fuel -= 12*j->p_ship.s_recharge;
+                    players[j->p_dock_with].p_fuel -= 12*j->p_ship.s_recharge;
                   }
                 } else
                   j->p_fuel += 2 * j->p_ship.s_recharge;
@@ -1418,8 +1410,8 @@ static void udplayers(void)
 
                 /* Move Player in dock */
                 if (j->p_flags & PFDOCK) {
-                    j->p_x = players[j->p_docked].p_x + DOCKDIST*Cos[(j->p_port[0]*90+45)*255/360];
-                    j->p_y = players[j->p_docked].p_y + DOCKDIST*Sin[(j->p_port[0]*90+45)*255/360];
+                    j->p_x = players[j->p_dock_with].p_x + DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
+                    j->p_y = players[j->p_dock_with].p_y + DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
                 }
 
                 /* Set player's alert status */
@@ -2939,9 +2931,9 @@ static void beam(void)
                 if (l->pl_armies < 5)
                     continue;
             if (j->p_flags & PFDOCK)
-                if (players[j->p_docked].p_armies == 0)
+                if (players[j->p_dock_with].p_armies < 1)
                     continue;
-            if (j->p_armies == j->p_ship.s_maxarmies)
+            if (j->p_armies >= j->p_ship.s_maxarmies)
                 continue;
             /* XXX */
             if (j->p_ship.s_type == ASSAULT) {
@@ -2969,13 +2961,13 @@ static void beam(void)
                 }
 #endif
 	    } else if (j->p_flags & PFDOCK) {
-                players[j->p_docked].p_armies--;
-		army_track(AMT_TRANSUP, j, &players[j->p_docked], 1);
+                struct player *base = bay_owner(j);
+                base->p_armies--;
+		army_track(AMT_TRANSUP, j, base, 1);
 
 #ifdef LTD_STATS
-                /* j = player, j->pdocked = friendly SB */
                 if (status->tourn) {
-                    ltd_update_armies_carried(j, &players[j->p_docked]);
+                    ltd_update_armies_carried(j, base);
                 }
 #endif
  
@@ -3242,18 +3234,18 @@ static void beam(void)
 
                 }
             } else if (j->p_flags & PFDOCK) {
-                if (players[j->p_docked].p_team != j->p_team)
+                struct player *base = bay_owner(j);
+                if (base->p_team != j->p_team)
                     continue;
-		if (players[j->p_docked].p_armies
-		    == players[j->p_docked].p_ship.s_maxarmies) {
+		if (base->p_armies >= base->p_ship.s_maxarmies) {
                     continue;
                 } else {
-		    army_track(AMT_TRANSDOWN, j, &players[j->p_docked], 1);
+		    army_track(AMT_TRANSDOWN, j, base, 1);
                     j->p_armies--;
-                    players[j->p_docked].p_armies ++;
+                    base->p_armies ++;
 #ifdef LTD_STATS
                     if (status->tourn) {
-                        ltd_update_armies_ferried(j, &players[j->p_docked]);
+                        ltd_update_armies_ferried(j, base);
                     }
 #endif /* LTD_STATS */
                         

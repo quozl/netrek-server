@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.4 2006/04/10 04:24:51 quozl Exp $
+/* $Id: ntscmds.c,v 1.5 2006/04/10 10:56:32 quozl Exp $
  */
 
 /*
@@ -297,8 +297,10 @@ void eject_player(int who)
   j->p_ship.s_type = STARBASE;
   j->p_whydead=KQUIT;
   j->p_explode=10;
+  /* note VICIOUS_EJECT prevents animation of ship explosion */
   j->p_status=PEXPLODE;
   j->p_whodead=me->p_no;
+  bay_release(j);
 }
 #endif /* ALLOW_EJECT */
 

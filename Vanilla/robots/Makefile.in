@@ -30,7 +30,8 @@ C_OBJS = ../ntserv/data.o detonate.o  enter.o ../ntserv/getship.o interface.o \
 	../ntserv/orbit.o ../ntserv/phaser.o ../ntserv/sintab.o \
 	../ntserv/openmem.o  sysdefaults.o ../ntserv/torp.o  \
 	../ntserv/util.o $(RANDOMO) ../ntserv/getpath.o ../ntserv/smessage.o \
-	roboshar.o ../ntserv/slotmaint.o ../ntserv/distress.o ../ntserv/ltd_stats.o
+	roboshar.o ../ntserv/slotmaint.o ../ntserv/distress.o \
+	../ntserv/ltd_stats.o ../ntserv/bay.o 
 
 #	Puck Objects
 

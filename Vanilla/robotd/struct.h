@@ -199,9 +199,6 @@ struct player {
     short p_planets;		/* planets taken this game */
     short p_armsbomb;		/* armies bombed this game */
     int p_ghostbuster;
-    int p_docked;		/* If starbase, # docked to, else pno base host */
-    int p_port[4];		/* If starbase, pno of ship docked to that port,
-				   else p_port[0] = port # docked to on host.   */
     short p_tractor;		/* What player is in tractor lock */
     int p_pos;			/* My position in the player file */
 };

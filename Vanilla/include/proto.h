@@ -1,10 +1,19 @@
-/* $Id: proto.h,v 1.3 2005/06/15 22:55:25 quozl Exp $
+/* $Id: proto.h,v 1.4 2006/04/10 10:56:31 quozl Exp $
  *
  * Function prototypes for externally accessed functions.
  */
 
 #ifndef __INCLUDED_proto_h__
 #define __INCLUDED_proto_h__
+
+/* bay.c */
+void bay_consistency_check(struct player *base);
+struct player *bay_owner(struct player *me);
+void bay_claim(struct player *base, struct player *me, int bay_no);
+void bay_release(struct player *me);
+void bay_release_all(struct player *base);
+void bay_init(struct player *me);
+int bay_closest(struct player *base, LONG dx, LONG dy);
 
 /* cluecheck.c */
 void clue_check(void);

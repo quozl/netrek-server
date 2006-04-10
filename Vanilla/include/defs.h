@@ -1,4 +1,4 @@
-/* $Id: defs.h,v 1.3 2005/09/28 12:14:05 quozl Exp $
+/* $Id: defs.h,v 1.4 2006/04/10 10:56:31 quozl Exp $
  */
 
 #ifndef _h_defs
@@ -134,7 +134,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #define DOCKDIST 600
 #define DOCKSPEED 2     /* If base is moving, there will be some
 			   finesse involved to dock */
-#define NUMPORTS 4
+#define NUMBAYS 4	/* number of docking bays a starbase has */
 #define SBFUELMIN 10000   /* If starbase's fuel is less than this, it will not
 			   refuel docked vessels */
 #define TRACTDIST   6000 /* maximum effective tractor beam range */

@@ -40,7 +40,6 @@
 #define DOCKDIST 600
 #define DOCKSPEED 2     /* If base is moving, there will be some
 			   finesse involved to dock */
-#define NUMPORTS 4
 #define SBFUELMIN 10000   /* If starbase's fuel is less than this, it will not
 			   refuel docked vessels */
 #define TRACTDIST   6000 /* maximum effective tractor beam range */

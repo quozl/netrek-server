@@ -34,14 +34,8 @@ static void refit(struct player *me, int type)
     me->p_desspeed = me->p_ship.s_maxspeed;
 
   /* bump all docked ships */
-  for (i=0; i<NUMPORTS; i++) 
-    if (me->p_port[i] != VACANT) {
-      players[me->p_port[i]].p_flags &= ~PFDOCK;
-      me->p_docked--;
-      me->p_port[i] = VACANT;	
-      me->p_flags |= PFDOCKOK;
-    }
-
+  bay_release_all(me);
+  me->p_flags |= PFDOCKOK;
 }
 
 int main(int argc, char **argv)
@@ -258,11 +252,8 @@ int main(int argc, char **argv)
       me->p_flags &= ~PFCLOAK;
       /* set speed 0 */
       me->p_desspeed = 0;
-      if (me->p_flags & PFDOCK) {
-	players[me->p_docked].p_docked--;
-	players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-      }
-      me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFDOCK | PFBEAMUP | PFBEAMDOWN);
+      bay_release(me);
+      me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
       /* make unable to act */
       players[player].p_flags |= PFTWARP;
       /* show as puck */

@@ -1,4 +1,4 @@
-/* $Id: socket.c,v 1.4 2006/04/10 04:24:51 quozl Exp $
+/* $Id: socket.c,v 1.5 2006/04/10 10:56:33 quozl Exp $
  */
 
 /*
@@ -1213,12 +1213,8 @@ static void handleOrbitReq(struct orbit_cpacket *packet)
     if (packet->state) {
 	orbit();
     } else {
+	bay_release(me);
 	me->p_flags &= ~PFORBIT;
-	if (me->p_flags & PFDOCK) {
-	    players[me->p_docked].p_docked--;
-	    players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-	    me->p_flags &= ~PFDOCK;
-	}
     }
 }
 
@@ -1402,21 +1398,15 @@ static void handleTractorReq(struct tractor_cpacket *packet)
 	return;
     }
     if (target<0 || target>=MAXPLAYER || target==me->p_no) return;
-    player= &players[target];
+    player = &players[target];
     if (player->p_flags & PFCLOAK) return;
     if (hypot((double) me->p_x-player->p_x,
 	      (double) me->p_y-player->p_y) < 
 	((double) TRACTDIST) * me->p_ship.s_tractrng) {
-	if (player->p_flags & PFDOCK) {
-	    players[player->p_docked].p_port[player->p_port[0]] = VACANT;
-	    players[player->p_docked].p_docked--;
-	}
-	if (me->p_flags & PFDOCK) {
-	    players[me->p_docked].p_docked--;
-	    players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-	}
-	player->p_flags &= ~(PFORBIT | PFDOCK);
-	me->p_flags &= ~(PFORBIT | PFDOCK);
+	bay_release(player);
+	bay_release(me);
+	player->p_flags &= ~PFORBIT;
+	me->p_flags &= ~PFORBIT;
 	me->p_tractor = target;
 	me->p_flags |= PFTRACT;
     } else {
@@ -1448,16 +1438,10 @@ static void handleRepressReq(struct repress_cpacket *packet)
     if (hypot((double) me->p_x-player->p_x,
 	      (double) me->p_y-player->p_y) < 
 	((double) TRACTDIST) * me->p_ship.s_tractrng) {
-	if (player->p_flags & PFDOCK) {
-	    players[player->p_docked].p_port[player->p_port[0]] = VACANT;
-	    players[player->p_docked].p_docked--;
-	}
-	if (me->p_flags & PFDOCK) {
-	    players[me->p_docked].p_docked--;
-	    players[me->p_docked].p_port[me->p_port[0]] = VACANT;
-	}
-	player->p_flags &= ~(PFORBIT | PFDOCK);
-	me->p_flags &= ~(PFORBIT | PFDOCK);
+	bay_release(player);
+	bay_release(me);
+	player->p_flags &= ~PFORBIT;
+	me->p_flags &= ~PFORBIT;
 	me->p_tractor = target;
 	me->p_flags |= (PFTRACT | PFPRESS);
     } else {
@@ -1736,16 +1720,12 @@ static void handleDockingReq(struct dockperm_cpacket *packet)
     int i;
 
     if (me->p_ship.s_type == STARBASE) {
-	me->p_docked = 0;
-	for (i=0; i<NUMPORTS; i++) {
-	    if (me->p_port[i] != VACANT)
-		players[me->p_port[i]].p_flags &= ~PFDOCK;
-	    me->p_port[i] = VACANT;  
-	}
-	if (packet->state) 
-	    me->p_flags |= PFDOCKOK;
-	else
-	    me->p_flags &= ~PFDOCKOK;
+        if (packet->state) {
+            me->p_flags |= PFDOCKOK;
+        } else {
+            me->p_flags &= ~PFDOCKOK;
+            bay_release_all(me);
+        }
     }
 }
 
