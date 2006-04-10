@@ -1,7 +1,7 @@
-/* 	$Id: inl.c,v 1.1 2005/03/21 05:23:46 jerub Exp $	 */
+/* 	$Id: inl.c,v 1.2 2006/04/10 10:30:44 quozl Exp $	 */
 
 #ifndef lint
-static char vcid[] = "$Id: inl.c,v 1.1 2005/03/21 05:23:46 jerub Exp $";
+static char vcid[] = "$Id: inl.c,v 1.2 2006/04/10 10:30:44 quozl Exp $";
 #endif /* lint */
 
 /*
@@ -512,7 +512,7 @@ all_alert(int stat)
   return 1;
 }
 
-log(m)
+logmessage(m)
      struct message *m;
 {
   time_t curtime;
@@ -584,12 +584,12 @@ checkmess()
       HandleGenDistr(msg.m_data,msg.m_from,msg.m_recpt,&dist);
       size = makedistress(&dist,buf,distmacro[dist.distype].macro);
       strncpy(msg.m_data,buf,size+1);
-      log(&(msg));
+      logmessage(&(msg));
     } else {
-      log(&(messages[oldmctl]));
+      logmessage(&(messages[oldmctl]));
     }
 #else
-    log(&(messages[oldmctl]));
+    logmessage(&(messages[oldmctl]));
 #endif
   }
 }
@@ -1197,7 +1197,7 @@ init_server()
   /* Fix planets */
   oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
   MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
-#endif nodef
+#endif
 
   /* Dont change the pickup queues around - just close them. */
 #ifdef nodef
@@ -1287,7 +1287,7 @@ cleanup()
 #ifdef nodef
   /* restore galaxy */
   MCOPY(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
-#endif nodef
+#endif
 
   /* Dont mess with the queue information - it is set correctly in queue.c */
 #ifdef nodef
@@ -1451,7 +1451,7 @@ start_tourney()
   inl_planets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
   /*	MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS); */
   MCOPY(planets, inl_planets, sizeof(struct planet) * MAXPLANETS);
-#endif nodef
+#endif
 
   inl_stat.flags |= S_TOURNEY;
   inl_stat.flags &= ~(S_PREGAME | S_COUNTDOWN | S_CONFINE);

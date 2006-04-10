@@ -1,3 +1,8 @@
+Mon Apr 10 20:12:19 2006  James Cameron  <quozl@us.netrek.org>
+
+	* robots/inl.c (checkmess): fix compilation warning by renaming
+	log function to logmessage.
+
 Sun Apr  9 21:01:24 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/ntscmds.c (bounceWhois): use p_ip instead of remoteaddr.
@@ -1751,4 +1756,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.14 2006/04/10 04:24:50 quozl Exp $
+	$Id: ChangeLog,v 1.15 2006/04/10 10:30:44 quozl Exp $
