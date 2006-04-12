@@ -1,13 +1,14 @@
 
-$Id: PROJECTS,v 1.4 2006/04/10 04:24:50 quozl Exp $	
+$Id: PROJECTS,v 1.5 2006/04/12 11:57:34 quozl Exp $	
 
 List of things to do in the future
 
 	- vote per IP address only, not per slot
 
-	- ban for an hour after eject, or while the players that voted still
-	  have the same slot (ban based on an a mask of slots that voted for
-	  eject)
+	- separate ban and eject votes, ban to include effect of
+	  eject, ban for an hour, or while the players that voted
+	  still have the same slot (ban based on an a mask of slots
+	  that voted for it)
 
 quozl's working notes ... {
 
