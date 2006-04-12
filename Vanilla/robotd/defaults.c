@@ -4,6 +4,9 @@
  */
 #include "copyright2.h"
 #include <stdio.h>
+#ifdef __FreeBSD__
+#include <string.h>
+#endif
 
 struct stringlist {
     char *string;
@@ -13,8 +16,10 @@ struct stringlist {
 
 struct stringlist *defaults=NULL;
 
+#ifndef __FreeBSD__
 char *getenv();
 char *strdup();
+#endif
 
 initDefaults(deffile)
 char *deffile;		/* As opposed to defile? */
@@ -61,6 +66,7 @@ char *deffile;		/* As opposed to defile? */
     fclose(fp);
 }
 
+#ifndef __FreeBSD__
 char *strdup(str)
 char *str;
 {
@@ -70,6 +76,7 @@ char *str;
     strcpy(s,str);
     return(s);
 }
+#endif
 
 char *getdefault(str)
 char *str;

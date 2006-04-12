@@ -1,3 +1,5 @@
+- compilation fix for FreeBSD [O'Conner]
+
 2.10.2: released 2006-02-22
 
 - add documentation to debian packaging [cameron]

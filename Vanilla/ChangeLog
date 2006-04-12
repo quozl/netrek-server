@@ -1,3 +1,7 @@
+Wed Apr 12 21:54:43 2006  Daniel O'Connor  <doconnor@gsoft.com.au>
+
+	* robotd/defaults.c: compilation fix for FreeBSD.
+
 Mon Apr 10 21:31:33 2006  James Cameron  <quozl@us.netrek.org>
 
 	* defs.h, ntscmds.c (nts_commands): reallocate voting array sizes.
@@ -1790,4 +1794,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.17 2006/04/10 11:57:00 quozl Exp $
+	$Id: ChangeLog,v 1.18 2006/04/12 11:57:00 quozl Exp $
