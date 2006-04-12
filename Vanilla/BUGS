@@ -1,10 +1,11 @@
 
-$Id: BUGS,v 1.3 2006/04/05 04:42:40 quozl Exp $
+$Id: BUGS,v 1.4 2006/04/12 12:58:11 modemhero Exp $
 
 List of things that are defects
 
 	- Player "^%^" took a planet and it said "Planet taken by ^"
-	  reported by zu22 (Zach Uram) on 2006-04-05
+	  reported by zu22 (Zach Uram) on 2006-04-05.  This is also
+	  a client issue.
 
 	- god observer should see all teams messages.
 
@@ -61,8 +62,3 @@ List of things that are defects
 	- change metaserver solicitation to process multiple IP addresses from
 	  each DNS host name given, just like new COW metaserver code.
 	  [coding in progress by cameron@stl.dec.com]
-	  
-	- starbase etemp bug, still shows up, engine cooling rate reduced,
-	  warp 2 gives stable etemp, under those conditions it should drop
-	  slowly at warp 2,
-

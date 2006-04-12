@@ -1,5 +1,5 @@
 
-$Id: PROJECTS,v 1.5 2006/04/12 11:57:34 quozl Exp $	
+$Id: PROJECTS,v 1.6 2006/04/12 12:58:11 modemhero Exp $	
 
 List of things to do in the future
 
@@ -60,7 +60,7 @@ struct ban {
 	  galactic is recently reset.  Jerub expressed an interest in doing it.
 
 	- If you are observing a friendly player who is t-warping, you
-	  can lock on to other players/planets, but will not swap to
+	  can lock on to other players, but you will not swap to
 	  their viewpoint.  Only when twarping is over, you can swap
 	  again [Shadow.Hunter@netrek.org]
 
@@ -177,9 +177,6 @@ struct ban {
 	  back onto the wait queue (at end or start?) and their slot given to
 	  the current head of queue player.  May require client changes.
 	  [ref findslot() in cow, c/- carlos - quozl]
-
-	- observers do not see tractors and pressors ... fault of protocol,
-	  according to Trent Piepho (xyzzy@u.washington.edu)
 
         - Observer system is screwed up.  Needs major re-write.  Items
           of note:
