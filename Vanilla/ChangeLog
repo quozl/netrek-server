@@ -1,3 +1,13 @@
+Wed Apr 12 22:53:17 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c (move): place political messages in separate
+	functions to simplify tournament mode check logic.
+
+	* ntserv/daemonII.c (check_scummers): use only IP address, not DNS
+	host name, nor username, in determining what constitutes a t-mode
+	scumming situation, and return the result of the check.  Simplify
+	logic to ease comprehension.
+
 Wed Apr 12 21:54:43 2006  Daniel O'Connor  <doconnor@gsoft.com.au>
 
 	* robotd/defaults.c: compilation fix for FreeBSD.
@@ -1794,4 +1804,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.18 2006/04/12 11:57:00 quozl Exp $
+	$Id: ChangeLog,v 1.19 2006/04/12 12:59:24 quozl Exp $

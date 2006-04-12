@@ -67,7 +67,7 @@ union semun {
 /* file scope prototypes */
 static void check_load(void);
 static int tournamentMode(void);
-static void check_scummers(void);
+static int check_scummers(void);
 static void move(int ignored);
 static void udplayersight(void);
 static void udplayers(void);
@@ -394,7 +394,7 @@ static int tournamentMode(void)
    Nick Trown   12/19/92
 */
 
-static void check_scummers(void)
+static int check_scummers(void)
 {
     int i, j;
     int num;
@@ -405,42 +405,39 @@ static void check_scummers(void)
     char *jptr, *iptr;
 
     for (i=0; i<MAXPLAYER; i++) {
+      struct player *me = &players[i];
       num=0;
-      if ((players[i].p_flags & PFROBOT))
+      if (me->p_status == PFREE)
+	   continue;
+      if (me->p_flags & PFROBOT)
            continue;
+#ifdef OBSERVERS
+      if (me->p_status == POBSERV)
+	   continue;
+#endif
 #ifdef LTD_STATS
-      if (!(players[i].p_status == PFREE ||
-            ltd_ticks(&(players[i]), LTD_TOTAL) == 0))
+      if (ltd_ticks(me, LTD_TOTAL) != 0)
 #else
-      if (!(players[i].p_status == PFREE ||
-            players[i].p_stats.st_tticks == 0))
+      if (me->p_stats.st_tticks != 0)
 #endif
       {
         for (j=i+1; j<MAXPLAYER; j++) {
-#ifdef LTD_STATS
-          if (!(players[j].p_status == PFREE ||
-                ltd_ticks(&(players[j]), LTD_TOTAL) == 0)) {
-#else
-          if (!(players[j].p_status == PFREE ||
-                players[j].p_stats.st_tticks == 0)) {
-#endif
+          struct player *them = &players[j];
+          if (them->p_status == PFREE)
+		  continue;
+	  if (them->p_flags & PFROBOT)
+		  continue;
 #ifdef OBSERVERS
-	      if (players[j].p_status == POBSERV)
+	  if (them->p_status == POBSERV)
 		  continue;
 #endif
-
-	      if ((players[j].p_flags & PFROBOT))
-		  continue;
-            
-#ifndef FULL_HOSTNAMES
-            jptr = &players[j].p_monitor[strlen(players[j].p_monitor)-5];
-            iptr = &players[i].p_monitor[strlen(players[i].p_monitor)-5];
+#ifdef LTD_STATS
+          if (ltd_ticks(them, LTD_TOTAL) != 0)
 #else
-            jptr = &players[j].p_full_hostname[strlen(players[j].p_full_hostname)-5];
-            iptr = &players[i].p_full_hostname[strlen(players[i].p_full_hostname)-5];
+          if (them->p_stats.st_tticks != 0)
 #endif
-            if (strcmp(players[i].p_login,players[j].p_login)==0 && 
-               (strcmp(jptr,iptr)==0)) {
+	  {
+            if (strcmp(me->p_ip, them->p_ip) == 0) {
                 who=j;
                 num++;
             }
@@ -453,7 +450,7 @@ static void check_scummers(void)
             pmessage(0,MALL,"GOD->ALL", "*****************************************");
             if ((fp = fopen (Scum_File,"a"))==NULL) {
                 ERROR(1,("Unable to open scum file.\n"));
-                return;
+                return 1;
             }
             fprintf(fp,"POSSIBLE T-MODE SCUMMERS FOUND!!! (slots %d and %d) ",i,who);
             gmtsecs = time(NULL);
@@ -483,12 +480,73 @@ static void check_scummers(void)
                 }
             }
             fclose(fp);
-            return;
+            return 1;
         }
       }
     }
+    return 0;
 }
 
+
+static void political_begin(int message)
+{
+	switch (message) {
+	case 0:
+                pmessage(0, MALL, "GOD->ALL","A dark mood settles upon the galaxy");
+                break;
+	case 1:
+                pmessage(0, MALL, "GOD->ALL","Political pressure to expand is rising");
+                break;
+	case 2:
+                pmessage(0, MALL, "GOD->ALL","Border disputes break out as political tensions increase!");
+                break;
+	case 3:
+                pmessage(0, MALL, "GOD->ALL","Galactic superpowers seek to colonize new territory!");
+                break;
+	case 4:
+                pmessage(0, MALL, "GOD->ALL","'Manifest Destiny' becomes motive in galactic superpower conflict!");
+                break;
+	case 5:
+                pmessage(0, MALL, "GOD->ALL","Diplomat insults foriegn emperor's mother and fighting breaks out!");
+                break;
+	case 6:
+                pmessage(0, MALL, "GOD->ALL","Dan Quayle declares self as galactic emperor and chaos breaks out!");
+                break;
+	default:
+                pmessage(0, MALL, "GOD->ALL","Peace parties have been demobilized, and fighting ensues.");
+                break;
+	}
+}
+
+static void political_end(int message)
+{
+	switch (message) {
+	case 0:
+                pmessage(0, MALL, "GOD->ALL","A new day dawns as the oppressive mood lifts");
+                break;
+	case 1:
+                pmessage(0, MALL, "GOD->ALL","The expansionist pressure subsides");
+                break;
+	case 2:
+                pmessage(0, MALL, "GOD->ALL","Temporary agreement is reached in local border disputes.");
+                break;
+	case 3:
+                pmessage(0, MALL, "GOD->ALL","Galactic governments reduce colonization efforts.");
+                break;
+	case 4:
+                pmessage(0, MALL, "GOD->ALL","'Manifest Destiny is no longer a fad.' says influential philosopher.");
+                break;
+	case 5:
+                pmessage(0, MALL, "GOD->ALL","Diplomat apologizes to foreign emperor's mother and invasion is stopped!");
+                break;
+	case 6:
+                pmessage(0, MALL, "GOD->ALL","Dan Quayle is locked up and order returns to the galaxy!");
+                break;
+	default:
+                pmessage(0, MALL, "GOD->ALL","The peace party has reformed, and is rallying for peace");
+                break;
+	}
+}
 
 static void move(int ignored)
 {
@@ -564,32 +622,8 @@ static void move(int ignored)
         if (!oldtourn) {
             if (check_scum)     
                 check_scummers();               /* NBT */
-            switch(oldmessage=(random() % 8)) {
-            case 0:
-                pmessage(0, MALL, "GOD->ALL","A dark mood settles upon the galaxy");
-                break;
-            case 1:
-                pmessage(0, MALL, "GOD->ALL","Political pressure to expand is rising");
-                break;
-            case 2:
-                pmessage(0, MALL, "GOD->ALL","Border disputes break out as political tensions increase!");
-                break;
-            case 3:
-                pmessage(0, MALL, "GOD->ALL","Galactic superpowers seek to colonize new territory!");
-                break;
-            case 4:
-                pmessage(0, MALL, "GOD->ALL","'Manifest Destiny' becomes motive in galactic superpower conflict!");
-                break;
-            case 5:
-                pmessage(0, MALL, "GOD->ALL","Diplomat insults foriegn emperor's mother and fighting breaks out!");
-                break;
-            case 6:
-                pmessage(0, MALL, "GOD->ALL","Dan Quayle declares self as galactic emperor and chaos breaks out!");
-                break;
-            default:
-                pmessage(0, MALL, "GOD->ALL","Peace parties have been demobilized, and fighting ensues.");
-                break;
-            }
+            oldmessage=(random() % 8);
+	    political_begin(oldmessage);
         }
         oldtourn=1;
         status->tourn=1;
@@ -598,32 +632,7 @@ static void move(int ignored)
     } else {
         if (oldtourn) {
             tourntimestamp = ticks; /* record end of Tmode 8/2/91 TC */
-            switch(oldmessage) {
-            case 0:
-                pmessage(0, MALL, "GOD->ALL","A new day dawns as the oppressive mood lifts");
-                break;
-            case 1:
-                pmessage(0, MALL, "GOD->ALL","The expansionist pressure subsides");
-                break;
-            case 2:
-                pmessage(0, MALL, "GOD->ALL","Temporary agreement is reached in local border disputes.");
-                break;
-            case 3:
-                pmessage(0, MALL, "GOD->ALL","Galactic governments reduce colonization efforts.");
-                break;
-            case 4:
-                pmessage(0, MALL, "GOD->ALL","'Manifest Destiny is no longer a fad.' says influential philosopher.");
-                break;
-            case 5:
-                pmessage(0, MALL, "GOD->ALL","Diplomat apologizes to foreign emperor's mother and invasion is stopped!");
-                break;
-            case 6:
-                pmessage(0, MALL, "GOD->ALL","Dan Quayle is locked up and order returns to the galaxy!");
-                break;
-            default:
-                pmessage(0, MALL, "GOD->ALL","The peace party has reformed, and is rallying for peace");
-                break;
-            }
+	    political_end(oldmessage);
         }
         oldtourn=0;
         status->tourn=0;
