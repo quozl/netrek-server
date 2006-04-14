@@ -3,6 +3,10 @@ Wed Apr 12  Bill Balcerski  <williamb@its.caltech.edu>
         * BUGS, PROJECTS: Removal of bugs that no longer exist, and
         features that have been added.
 
+        * ntserv/daemonII.c, redraw.c: truncate kills to the 2nd decimal
+          place for army capacity check - clients only receive two
+          decimal places in the kill packet.
+
 Wed Apr 12 22:53:17 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/daemonII.c (move): place political messages in separate
@@ -1809,4 +1813,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.20 2006/04/12 13:24:03 modemhero Exp $
+	$Id: ChangeLog,v 1.21 2006/04/14 10:19:17 modemhero Exp $

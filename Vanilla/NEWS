@@ -1,3 +1,4 @@
+- fix client/server error over army capacity of AS in certain cases [balcerski]
 - use IP addresses only for t-mode scum test [Cameron]
 - compilation fix for FreeBSD [O'Conner]
 

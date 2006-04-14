@@ -412,7 +412,7 @@ static void auto_features(void)
 #endif
     pl = me;	/* Not observer, just use my kills */
 
-    troop_capacity = pl->p_kills * (myship->s_type == ASSAULT?3:2);
+    troop_capacity = (int)((float)((int)(pl->p_kills*100)/100.0) * (myship->s_type == ASSAULT?3:2));
     if (myship->s_type == STARBASE || troop_capacity > myship->s_maxarmies)
     	troop_capacity = myship->s_maxarmies;
 
