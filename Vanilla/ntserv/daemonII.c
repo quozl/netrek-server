@@ -2948,7 +2948,7 @@ static void beam(void)
                 if (j->p_armies >= (int)((float)((int)(j->p_kills*100)/100.0) * 3.0))
                     continue;
             } else if (j->p_ship.s_type != STARBASE)
-                if (j->p_armies >= (int)((float)(int)(j->p_kills*100)/100.0) * 2.0))
+                if (j->p_armies >= (int)((float)((int)(j->p_kills*100)/100.0) * 2.0))
                     continue;
             if (j->p_flags & PFORBIT) {
                 if (j->p_team != l->pl_owner)
