@@ -1,0 +1,4 @@
+
+To build this project using darwinports, use the following ./configure line:
+
+./configure --with-gmp-incdir=/opt/local/include --with-gmp-libdir=/opt/local/lib
