@@ -1,15 +1,20 @@
-Fri Apr 14 Bill Balcerski  <williamb@its.caltech.edu
+Fri Apr 14 22:21:22 2006  James Cameron  <quozl@us.netrek.org>
 
-        * Typo fix in daemonII.c
+	* ntserv/daemonII.c (move): prevent tournament mode from starting
+	if there are scummers.  New tournament state machine.
 
-Wed Apr 12  Bill Balcerski  <williamb@its.caltech.edu>
+Fri Apr 14 12:10:57 2006  Bill Balcerski  <williamb@its.caltech.edu>
 
-        * BUGS, PROJECTS: Removal of bugs that no longer exist, and
-        features that have been added.
+	* ntserv/daemonII.c: typo fix
 
-        * ntserv/daemonII.c, redraw.c: truncate kills to the 2nd decimal
-          place for army capacity check - clients only receive two
-          decimal places in the kill packet.
+Wed Apr 12 10:19:17 2006  Bill Balcerski  <williamb@its.caltech.edu>
+
+	* BUGS, PROJECTS: removal of bugs that no longer exist, and
+	features that have been added.
+
+	* ntserv/daemonII.c, redraw.c: truncate kills to the 2nd decimal
+	place for army capacity check - clients only receive two decimal
+	places in the kill packet.
 
 Wed Apr 12 22:53:17 2006  James Cameron  <quozl@us.netrek.org>
 
@@ -1817,4 +1822,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.22 2006/04/15 12:10:57 modemhero Exp $
+	$Id: ChangeLog,v 1.23 2006/04/21 11:38:57 quozl Exp $
