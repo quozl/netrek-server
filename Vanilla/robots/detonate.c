@@ -1,3 +1,5 @@
+/* apparently obsolete, use ntserv/detonate.c */
+
 /*
  * detonate.c
  */
@@ -5,7 +7,6 @@
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/ipc.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -15,8 +16,7 @@
             (((a)->p_team == (b)->p_team) && !((a)->p_flags & PFPRACTR))
 
 
-void
-detothers ()
+void detothers ()
 {
   int dx, dy;
   struct player *j;

@@ -1,4 +1,4 @@
-/* $Id: proto.h,v 1.4 2006/04/10 10:56:31 quozl Exp $
+/* $Id: proto.h,v 1.5 2006/04/22 11:31:53 quozl Exp $
  *
  * Function prototypes for externally accessed functions.
  */
@@ -92,6 +92,12 @@ void getpath(void);
 /* getship.c */
 void getshipdefaults(void);
 void getship(struct ship *shipp, int s_type);
+
+/* glog.c */
+void glog_close(void);
+int glog_open();
+void glog_printf(const char *fmt, ...);
+void glog_flush();
 
 /* input.c */
 void input(void);

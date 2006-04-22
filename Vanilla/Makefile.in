@@ -1,4 +1,4 @@
-#	$Id: Makefile.in,v 1.9 2006/04/22 02:16:44 quozl Exp $	
+#	$Id: Makefile.in,v 1.10 2006/04/22 11:31:52 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
@@ -14,9 +14,17 @@ CONFIG = system.mk
 
 include $(CONFIG)
 
-.PHONY: rmdependencies clean reallyclean install installbin server utils startup rsa_utils do_xsg do_pledit do_robots do_gum
+.PHONY: rmdependencies clean reallyclean install installbin \
+	do_library do_server do_listener do_robots do_robotd \
+	do_utilities do_rsa_utilities do_xsg do_pledit do_gum
 
-all: null $(PMAKE) server utils startup rsa_utils do_xsg do_pledit do_robots do_robotd @GUM@
+all: null $(PMAKE) \
+	do_library do_server do_listener do_robots do_robotd \
+	do_utilities do_rsa_utilities do_xsg do_pledit @GUM@
+
+minimal: null $(PMAKE) \
+	do_library do_server do_listener do_robots do_robotd \
+	do_utilities do_rsa_utilities 
 
 depend: system.mk
 	cd ntserv;    $(MAKE) depend
@@ -46,38 +54,40 @@ system.mk: ${srcdir}/system.mk.in ${srcdir}/include/config.h.in ${srcdir}/config
 config.h: system.mk
 	touch config.h
 
-# make the server binaries and such
-server: null rsalib
+do_library: null
+	cd ntserv; $(MAKE) libnetrek.a
+
+do_server: null do_rsa_library
 	cd ntserv; $(MAKE)
 
-do_robots:
+do_robots: do_library
 	cd robots; $(MAKE)
 
 do_robotd: 
 	cd robotd; $(MAKE)
 
-do_gum: 
+do_gum: do_library
 	cd gum; $(MAKE)
 
-do_xsg:
+do_xsg: do_library
 	cd xsg; $(MAKE);
 
-do_pledit:
+do_pledit: do_library
 	cd pledit; $(MAKE) 
 
-rsalib:	
+do_rsa_library:	
 	-@if [ -f res-rsa/Makefile ]; then \
 		(cd res-rsa; $(MAKE) librsa.a) \
 	fi
 
-utils: rsalib
+do_utilities: do_rsa_library do_library
 	cd tools; $(MAKE) 
 	cd sequencer; $(MAKE)
 
-rsa_utils: 
+do_rsa_utilities: do_library
 	cd keycomp; $(MAKE)
 
-startup: 
+do_listener: do_library
 	cd newstartd; $(MAKE)
 
 cflags.h: Makefile $(CONFIG)

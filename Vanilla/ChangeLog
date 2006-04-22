@@ -1,3 +1,26 @@
+Sat Apr 22 19:01:51 2006  James Cameron  <quozl@us.netrek.org>
+
+	* xsg/Makefile.in: remove use of data.c in favour of already
+	existing localdata.c
+
+	* Makefile.in (minimal): add new rule for build with minimal
+	dependencies, so as to get a server running quickly.  Rename
+	component targets to make it clearer to new users.
+
+	* */Makefile.in: create libnetrek to hold common code in ntserv,
+	remove excess compiler include directives.
+	
+	* ntserv/enter.c, ntserv/interface.c, robots/roboshar.c: remove
+	robot specific compilation of some ntserv source in favour of a
+	null callback entry point.
+
+	* glog.c, socket.c, commands.c, gencmds.c: factorise god log
+	access, due to valgrind detected file descriptor left open after
+	exit.
+
+	* ntserv/socket.c (clientVersion): remove superfluous NULL
+	termination of string returned by strdup().
+
 Sat Apr 22 12:07:50 2006  James Cameron  <quozl@us.netrek.org>
 
 	* Makefile.in (dist): avoid certain CVS files.
@@ -1837,4 +1860,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.24 2006/04/22 02:16:42 quozl Exp $
+	$Id: ChangeLog,v 1.25 2006/04/22 11:31:52 quozl Exp $

@@ -14,33 +14,30 @@ INSTALLDATA = @INSTALL_DATA@
 
 # this is for revised ntserv/struct.h
 
-CFLAGS = $(EXTRAINCS) $(FLAGS) -I. -I${srcdir} -I../include -I${srcdir}/../include
+CFLAGS = $(EXTRAINCS) $(FLAGS) -I../include
 
 LIBS = $(EXTRALIBS)
 
-TOOLDIR= $(LIBDIR)/tools
+TOOLDIR = $(LIBDIR)/tools
 
 LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
 
 #	Common Objects
 
-C_OBJS = ../ntserv/data.o  ../ntserv/openmem.o  ../ntserv/smessage.o \
-        roboshar.o ../ntserv/slotmaint.o 
+C_OBJS = roboshar.o ../ntserv/libnetrek.a
 
 #	Sequencer Objects
 
-S_OBJS = sequencer.o  commands_sequencer.o $(C_OBJS) ../ntserv/ltd_stats.o
+S_OBJS = sequencer.o commands_sequencer.o $(C_OBJS) ../ntserv/libnetrek.a
 
-SRCS = ${srcdir}/roboshar.c ${srcdir}/sequencer.c ${srcdir}/../ntserv/commands.c \
-	${srcdir}/../ntserv/data.c ${srcdir}/../ntserv/openmem.c \
-	${srcdir}/../ntserv/smessage.c ${srcdir}/../ntserv/slotmaint.c
+SRCS = ${srcdir}/roboshar.c ${srcdir}/sequencer.c
 
 EXECS =	sequencer 
 
 all: $(PMAKE) $(EXECS)
 
 sequencer: $(PMAKE) $(S_OBJS)
-	$(CC) $(CFLAGS)  ${LDFLAGS} -o sequencer $(S_OBJS) $(EXTRALIBS)
+	$(CC) $(CFLAGS)  ${LDFLAGS} -o sequencer $(S_OBJS) $(LIBS)
 
 commands_sequencer.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 	$(CC) $(CFLAGS) $(DEP) -DSEQUENCER -c ${srcdir}/../ntserv/commands.c -o commands_sequencer.o

@@ -44,9 +44,7 @@ static void sendConfigMsg(void);
 static void printStats(void);
 static int checkbanned(char *login, char *host);
 
-
-int ignored[MAXPLAYER];	/* change 7/24/91 TC */
-
+extern int ignored[MAXPLAYER];
 int indie = 0;			/* always be indie 8/28/91 TC */
 int living = 1;			/* our ship is living, reset by death */
 
@@ -232,6 +230,7 @@ int main(int argc, char **argv)
     else
 	STRNCPY(login, "Bozo", NAME_LEN);
     login[NAME_LEN - 1] = '\0';
+    endpwent();
 
     strcpy(pseudo, "Guest");
 

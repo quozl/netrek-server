@@ -1080,7 +1080,6 @@ int do_generic_vote(char *comm, int who)
     char *current;
     int pcount=0;  /* Total players in game */
     int vcount=0;  /* Number who've voted recently */
-    FILE *glog;
     int mflag = 0;
     int sendto = 0;
 
@@ -1094,22 +1093,19 @@ int do_generic_vote(char *comm, int who)
 #endif
 
     if ( votes[num].tag & VC_GLOG ){
-      if (!(glog = fopen(GodLog,"a")) )       /* Log votes for God to see */
-        perror(GodLog);
-      else {
+      if (glog_open() == 0) {	/* Log votes for God to see */
         time_t    t = time(NULL);
         char      tbuf[40];
         struct tm *tmv = localtime(&t);
       
 #ifdef STRFTIME
-      sprintf(tbuf, "%02d/%02d %d/%d", tmv->tm_hour,tmv->tm_min,
-              tmv->tm_mday,tmv->tm_mon);
+	sprintf(tbuf, "%02d/%02d %d/%d", tmv->tm_hour,tmv->tm_min,
+		tmv->tm_mday,tmv->tm_mon);
 #else
 	strftime(tbuf, 39, "%R %D", tmv);
 #endif
-        fprintf(glog, "VOTE: %s %s@%s \"%s\"\n", tbuf, players[who].p_login, 
-		players[who].p_monitor, comm);
- 	fclose(glog);
+        glog_printf("VOTE: %s %s@%s \"%s\"\n", tbuf, players[who].p_login, 
+		    players[who].p_ip, comm);
       }
     }
 
@@ -1184,11 +1180,8 @@ int do_generic_vote(char *comm, int who)
       pmessage(sendto, mflag, addr_mess(sendto,mflag), 
              "The motion %s passes", current);
       if ( votes[num].tag & VC_GLOG ){
-        if (!(glog = fopen(GodLog,"a")) )       /* Log pass for God to see */
-          perror(GodLog);
-        else {
- 	  fprintf(glog, "VOTE: The motion %s passes\n", current);
-	  fclose(glog);
+        if (glog_open() == 0) {	/* Log pass for God to see */
+ 	  glog_printf("VOTE: The motion %s passes\n", current);
 	}
       }
       

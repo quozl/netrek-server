@@ -12,18 +12,13 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-SRCS	= ${srcdir}/main.c ${srcdir}/edit.c ${srcdir}/input.c \
-	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c \
-	${srcdir}/../ntserv/salt.c
-OBJS	= main.o edit.o input.o ../ntserv/getpath.o ../ntserv/data.o \
-	  ../ntserv/salt.o
+SRCS	= ${srcdir}/main.c ${srcdir}/edit.c ${srcdir}/input.c
+OBJS	= main.o edit.o input.o ../ntserv/libnetrek.a
 HDRS	= ${srcdir}/pledit.h
-# LIBCURSES = -lcurses
 LIBS	= $(LIBCURSES) $(LIBTERMCAP) $(LIBCRYPT) $(EXTRALIBS)
 PROGRAM	= pledit
 
-# NBR server cflags
-CFLAGS = $(FLAGS) $(EXTRAFLAGS) -I. -I${srcdir} -I../include -I${srcdir}/../include
+CFLAGS = $(FLAGS) $(EXTRAFLAGS) -I. -I../include
 
 all:	$(PROGRAM)
 
@@ -34,7 +29,7 @@ reallyclean: clean
 	rm -f pledit #* *~
 
 clean: rmdependencies
-	-rm -f $(OBJS)
+	-rm -f *.o
 
 clobber: clean
 	-rm -f $(PROGRAM)

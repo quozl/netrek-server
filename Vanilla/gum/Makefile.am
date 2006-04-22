@@ -13,7 +13,7 @@ gum_SOURCES = \
 	signals.c signals.h \
 	id.c xmalloc.c
 
-gum_LDADD = @GTK_LIBS@ ../ntserv/data.o 
+gum_LDADD = @GTK_LIBS@ ../ntserv/libnetrek.a
 
 AM_CFLAGS = @AM_CFLAGS@ -DPACKAGE_DATA_DIR=\"@prefix@\"
 

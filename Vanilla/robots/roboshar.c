@@ -157,3 +157,13 @@ u_char getcourse2(int x1, int y1, int x2, int y2)
     return((u_char) nint((atan2((double) (x2 - x1),
         (double) (y1 - y2)) / M_PI * 128.)));
 }
+
+/*
+ * Null client packet sending function for ntserv specific code in
+ * enter.c and interface.c so that we can avoid compiling it in the
+ * robots directory, and use libnetrek instead.
+ */
+void sendClientPacket(void *ignored)
+{
+  return;
+}

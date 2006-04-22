@@ -49,7 +49,6 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
 {
   int i, len;
   char *comm;
-  FILE *glog;
 
   if (!(mess->m_flags & MINDIV)) return 0;	/* double-check */
 
@@ -89,10 +88,7 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
       /* Record vote in GodLog if C_GLOG is set */
       if (cmds[i].tag & C_GLOG )
       {
-	if (!(glog = fopen(GodLog,"a")) )       /* Log votes for God to see */
-	  perror(GodLog);
-	else
-	{
+	if (glog_open() == 0) {	/* Log votes for God to see */
 	  time_t    t = time(NULL);
 	  char      tbuf[40];
 	  struct tm *tmv = localtime(&t);
@@ -103,10 +99,9 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
 #else
 	  strftime(tbuf, 39, "%R %D", tmv);
 #endif
-	  fprintf(glog, "VOTE: %s %s@%s \"%s\"\n", tbuf,
+	  glog_printf("VOTE: %s %s@%s \"%s\"\n", tbuf,
 		  players[mess->m_from].p_login, 
 		  players[mess->m_from].p_monitor, comm);
-	  fclose(glog);
 	}
       } /* !C_GLOG */
 
@@ -117,12 +112,8 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
 	{
 	  if ( cmds[i].tag & C_GLOG ) {
 
-	    if (!(glog = fopen(GodLog,"a")) )       /* Log pass for God to see */
-	      perror(GodLog);
-	    else
-	    {
-	      fprintf(glog, "VOTE: The motion %s passes\n", comm);
-	      fclose(glog);
+	    if (glog_open() == 0) {	/* Log pass for God to see */
+	      glog_printf("VOTE: The motion %s passes\n", comm);
 	    }
           }
 	}

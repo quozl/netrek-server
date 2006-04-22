@@ -1,10 +1,6 @@
-# Change CONFIG to the .mk file that matches your system
-
 CONFIG = system.mk
 VPATH = @srcdir@
 srcdir = @srcdir@
-
-# Do Not Change anything below this line. It should be setup in config
 
 include ../$(CONFIG)
 
@@ -12,92 +8,54 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-# this is for revised ntserv/struct.h
-
-CFLAGS = $(EXTRAINCS) $(FLAGS) -DROBOT -I. -I${srcdir} -I../include -I${srcdir}/../include
+CFLAGS = $(EXTRAINCS) $(FLAGS) -DROBOT -I. -I../include
 
 LIBS = $(EXTRALIBS)
 
 TOOLDIR= $(LIBDIR)/tools
 
-GETPATH = getpath.o ../ntserv/data.o
-
 LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
 
-#	Common Objects
+C_OBJS = $(RANDOMO) roboshar.o ../ntserv/libnetrek.a
 
-C_OBJS = ../ntserv/data.o detonate.o  enter.o ../ntserv/getship.o interface.o \
-	../ntserv/orbit.o ../ntserv/phaser.o ../ntserv/sintab.o \
-	../ntserv/openmem.o  sysdefaults.o ../ntserv/torp.o  \
-	../ntserv/util.o $(RANDOMO) ../ntserv/getpath.o ../ntserv/smessage.o \
-	roboshar.o ../ntserv/slotmaint.o ../ntserv/distress.o \
-	../ntserv/ltd_stats.o ../ntserv/bay.o 
-
-#	Puck Objects
-
-PUCK_OBJS = puck.o  puckmove.o commands_puck.o $(C_OBJS)
-
-#	Mars (dogfighter) Objects
-
-M_OBJS = mars.o marsmove.o commands_mars.o $(C_OBJS)
-
-#	Robot Objects
-
-R_OBJS = robotII.o rmove.o commands.o $(C_OBJS)
-
-#       basepractice object files
-
-B_OBJS = basep.o commands_basep.o $(C_OBJS)  
-
-#       newbie server object files
-
-N_OBJS = newbie.o commands_newbie.o $(C_OBJS)
-
-#       pre-T server object files
-
-P_OBJS = pret.o commands_pret.o $(C_OBJS)
-
-#	INL Objects
-
-I_OBJS = inl.o inlcomm.o inlcmds.o gencmds.o $(C_OBJS)
-
-
-SRCS = ${srcdir}/puck.c ${srcdir}/puckmove.c ${srcdir}/mars.c \
-	${srcdir}/marsmove.c ${srcdir}/robotII.c ${srcdir}/rmove.c \
-	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c \
-	${srcdir}/detonate.c  ${srcdir}/../ntserv/enter.c \
-	${srcdir}/../ntserv/getship.c  ${srcdir}/../ntserv/interface.c \
-	${srcdir}/../ntserv/orbit.c  ${srcdir}/../ntserv/phaser.c \
-	${srcdir}/../ntserv/sintab.c ${srcdir}/../ntserv/openmem.c \
-	${srcdir}/../ntserv/sysdefaults.c ${srcdir}/../ntserv/torp.c \
-	${srcdir}/../ntserv/util.c $(RANDOMC) ${srcdir}/../ntserv/commands.c \
-	${srcdir}/../ntserv/smessage.c ${srcdir}/basep.c  ${srcdir}/../ntserv/wander2.c \
-	${srcdir}/newbie.c ${srcdir}/inl.c ${srcdir}/inlcomm.c \
-	${srcdir}/../ntserv/slotmaint.c ${srcdir}/inlcmds.c \
-	${srcdir}/../ntserv/gencmds.c ${srcdir}/pret.c
+SRCS = ${srcdir}/puck.c ${srcdir}/puckmove.c \
+	${srcdir}/mars.c ${srcdir}/marsmove.c \
+	${srcdir}/robotII.c ${srcdir}/rmove.c \
+	$(RANDOMC) ${srcdir}/../ntserv/commands.c \
+	${srcdir}/basep.c \
+	${srcdir}/newbie.c \
+	${srcdir}/inl.c ${srcdir}/inlcomm.c ${srcdir}/inlcmds.c \
+	${srcdir}/pret.c
 
 EXECS =	puck mars robotII basep newbie inl pret
 
 all: $(PMAKE) $(EXECS)
 
+PUCK_OBJS = puck.o puckmove.o commands_puck.o $(C_OBJS)
 puck: $(PMAKE) $(PUCK_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o puck $(PUCK_OBJS) $(EXTRALIBS)
 
+M_OBJS = mars.o marsmove.o commands_mars.o $(C_OBJS)
 mars: $(PMAKE) $(M_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o mars $(M_OBJS) $(EXTRALIBS)
 
+R_OBJS = robotII.o rmove.o commands.o $(C_OBJS)
 robotII: $(PMAKE) $(R_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o robotII  $(R_OBJS) $(EXTRALIBS)
 
+B_OBJS = basep.o commands_basep.o $(C_OBJS)  
 basep: $(PMAKE) $(B_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o basep $(B_OBJS) $(EXTRALIBS)
 
+N_OBJS = newbie.o commands_newbie.o $(C_OBJS)
 newbie: $(PMAKE) $(N_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o newbie $(N_OBJS) $(EXTRALIBS)
 
+P_OBJS = pret.o commands_pret.o $(C_OBJS)
 pret: $(PMAKE) $(P_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o pret $(P_OBJS) $(EXTRALIBS)
 
+I_OBJS = inl.o inlcomm.o inlcmds.o $(C_OBJS)
 inl: $(PMAKE) $(I_OBJS)
 	$(CC) $(CFLAGS)  ${LDFLAGS} -o inl $(I_OBJS) $(EXTRALIBS)
 
@@ -106,18 +64,6 @@ commands_mars.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 
 commands_puck.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 	$(CC) $(CFLAGS) $(DEP) -DPUCK -c ${srcdir}/../ntserv/commands.c -o commands_puck.o
-
-gencmds.o: $(PMAKE) ${srcdir}/../ntserv/gencmds.c
-	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/../ntserv/gencmds.c
-
-sysdefaults.o: $(PMAKE) ${srcdir}/../ntserv/sysdefaults.c
-	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/../ntserv/sysdefaults.c
-
-interface.o: $(PMAKE) ${srcdir}/../ntserv/interface.c
-	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/../ntserv/interface.c
-
-enter.o: $(PMAKE) ${srcdir}/../ntserv/enter.c
-	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/../ntserv/enter.c
 
 commands.o: $(PMAKE) ${srcdir}/../ntserv/commands.c
 	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/../ntserv/commands.c -o commands.o
@@ -148,9 +94,6 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) inl $(DESTDIR)$(LIBDIR)/inl
 	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/end_tourney.pl $(DESTDIR)$(LIBDIR)/end_tourney.pl
 	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/auto-archive.pl $(DESTDIR)$(LIBDIR)/auto-archive.pl
-
-updated: update.o ../ntserv/data.o getpath.o
-	$(CC) $(CFLAGS) -o updated  update.o data.o getpath.o $(EXTRALIBS)
 
 lint: $(SRCS)
 	lint $(LINTFLAGS) -u $?

@@ -1,5 +1,3 @@
-#	Change CONFIG to your .mk file
-
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -11,25 +9,41 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-#	Do not edit below here. Everything should be setup in config
+#	libnetrek object files
+
+L_OBJS = bay.o \
+	coup.o \
+	data.o db.o detonate.o distress.o \
+	enter.o \
+	feature.o features.o \
+	gencmds.o genspkt.o getpath.o getship.o glog.o \
+	interface.o \
+	ltd_stats.o \
+	openmem.o orbit.o \
+	phaser.o ping.o plasma.o \
+	rsa_key.o reserved.o \
+	salt.o slotmaint.o sintab.o smessage.o socket.o startrobot.o sysdefaults.o \
+	torp.o transwarp.o \
+	util.o \
+	warning.o
 
 #	ntserv object files
 
-R_OBJS =    cluecheck.o coup.o data.o db.o death.o detonate.o enter.o \
-	    findslot.o  getentry.o  getname.o  salt.o getship.o  input.o \
+R_OBJS =    cluecheck.o coup.o db.o death.o detonate.o enter.o \
+	    findslot.o  getentry.o  getname.o  getship.o  input.o \
 	    interface.o  main.o  orbit.o  phaser.o  plasma.o  redraw.o \
 	    reserved.o  sintab.o  socket.o  genspkt.o  smessage.o  \
 	    startrobot.o  sysdefaults.o  timecheck.o  torp.o  util.o  \
-	    warning.o ping.o $(RANDOMO) getpath.o $(STRDUPO) features.o \
+	    warning.o ping.o $(RANDOMO) $(STRDUPO) features.o \
 	    distress.o transwarp.o gencmds.o ntscmds.o openmem.o feature.o \
-	    queue.o slotmaint.o rsa_key.o ltd_stats.o bay.o
+	    queue.o slotmaint.o rsa_key.o ltd_stats.o libnetrek.a
 
 
 #	daemonII object files
 
-D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  data.o  slotmaint.o \
-	    util.o  $(RANDOMO) getpath.o getship.o smessage.o  queue.o \
-	    wander2.o openmem.o solicit.o ltd_stats.o bay.o
+D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  slotmaint.o \
+	    util.o  $(RANDOMO) getship.o smessage.o  queue.o \
+	    wander2.o openmem.o solicit.o ltd_stats.o libnetrek.a
 
 #	Src files
 
@@ -48,15 +62,14 @@ R_FILES =   ${srcdir}/cluecheck.c ${srcdir}/coup.c ${srcdir}/data.c \
             ${srcdir}/features.c ${srcdir}/distress.c ${srcdir}/transwarp.c \
             ${srcdir}/gencmds.c ${srcdir}/ntscmds.c ${srcdir}/openmem.c \
             ${srcdir}/feature.c ${srcdir}/queue.c ${srcdir}/slotmaint.c \
-            ${srcdir}/wander2.c ${srcdir}/sysdefaults.c ${srcdir}/rsa_key.c \
-            ${srcdir}/bay.c
+            ${srcdir}/wander2.c ${srcdir}/sysdefaults.c ${srcdir}/rsa_key.c
 
 SRC = 	    $(R_FILES)  data.h  defs.h planets.h  struct.h \
 	    packets.h  copyright.h
 
 LIBS = $(RSA_LIB) $(EXTRALIBS)
 
-INCS = $(RSA_INCS) $(EXTRAINCS) -I. -I${srcdir} -I../include -I${srcdir}/../include
+INCS = $(RSA_INCS) $(EXTRAINCS) -I../include
 
 CFLAGS = $(FLAGS) $(INCS)
 
@@ -70,6 +83,13 @@ ntserv: $(PMAKE) $(R_OBJS)
 
 daemonII: $(PMAKE) $(D_OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o daemonII $(D_OBJS) $(EXTRALIBS)
+
+libnetrek.a: $(L_OBJS)
+	ar cru $@ $(L_OBJS)
+	ranlib $@
+
+libnetrek.so: $(L_OBJS)
+	gcc -shared -Wl,-soname,$@ -o $@ $(L_OBJS) -lc
 
 commands.o: $(PMAKE) ${srcdir}/commands.c
 	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/commands.c
@@ -88,11 +108,10 @@ lintall: $(SRC)
 	ling $(LINTFLAGS) $(SRC)
 
 clean: rmdependencies
-	/bin/rm -f *.o *.ln make.out core
+	/bin/rm -f *.a *.o *.ln make.out core
 
 reallyclean:  clean
 	rm -f ntserv daemonII .motd *~ #*#
-
 
 uninstall:
 	-cd $(XTREKDIR); rm -f daemonII .motd .sysdef; rm -rf slots

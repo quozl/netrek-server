@@ -1,4 +1,4 @@
-/* $Id: socket.c,v 1.6 2006/04/22 02:16:46 quozl Exp $
+/* $Id: socket.c,v 1.7 2006/04/22 11:31:53 quozl Exp $
  */
 
 /*
@@ -300,7 +300,7 @@ FAT_LIST fatlist[MAX_FAT_LIST], tmplist[MAX_FAT_LIST];
 #define MAX_NONFAT	10		/* if we have this much left, stop */
 
 #ifdef CHECKMESG
-static FILE	*mlog, *glog;
+static FILE	*mlog;
 #endif
 
 /*int           send_short        = 0;*/ /* is now in data.c , because of robotII.c */
@@ -507,10 +507,7 @@ void initClientData(void)
 	if (!mlog) mlog = fopen(MesgLog, "a");
 	if (!mlog) perror(MesgLog);
     }
-    if (loggod) {
-	if (!glog) glog = fopen(GodLog,"a");
-	if (!glog) perror(GodLog);
-    }
+    if (loggod) glog_open();
 #endif
 
     clientDead=0;
@@ -627,10 +624,7 @@ void updateClient(void)
 	if(!mlog) mlog = fopen(MesgLog, "a");
 	if(!mlog) perror(MesgLog);
     }
-    if(loggod){
-	if(!glog) glog = fopen(GodLog, "a");
-	if(!glog) perror(GodLog);
-    }
+    if (loggod) glog_open();
 #endif
 
     if(commMode == COMM_UDP) addSequenceFlags(udpbuf);
@@ -1844,8 +1838,8 @@ static int clientVersion(struct mesg_spacket *packet)
     if (packet->mesg[0] != '@')
 	return FALSE;
 
+    /* FIXME: never freed */
     version = (char *)strdup(INDEX(packet->mesg,'@')+1);
-    version[strlen(version)] = '\0';
     return TRUE;
 }
 
@@ -2841,12 +2835,9 @@ static int check_mesgs(struct mesg_cpacket  *packet)
 		      (packet->group & MGOD))){
 	    static int counter = 0;
 
-	    if(!glog) {
-		ERROR(1,( "ntserv: ERROR, null glog file descriptor\n"));
-		return 0;
-	    }
-	    fprintf(glog, "%s\n", buf);
-	    fflush(glog);
+	    if(glog_open() != 0) return;
+	    glog_printf("%s\n", buf);
+	    glog_flush();
 	    counter++;
 
 	    /* response */

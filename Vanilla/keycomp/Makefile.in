@@ -14,10 +14,10 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-SRCS = ${srcdir}/rsa_keycomp.c ${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c ${srcdir}/rsa_key2cap.c $(RANDOMC)
-OBJS = rsa_keycomp.o ../ntserv/getpath.o ../ntserv/data.o $(STRDUPO) $(RANDOMO)
+SRCS = ${srcdir}/rsa_keycomp.c ${srcdir}/rsa_key2cap.c $(RANDOMC)
+OBJS = rsa_keycomp.o $(STRDUPO) $(RANDOMO) ../ntserv/libnetrek.a
 
-CFLAGS = $(MOREDEFS) $(FLAGS) -I../include -I${srcdir}/../include -I. -I${srcdir}
+CFLAGS = $(MOREDEFS) $(FLAGS) -I../include
 
 LINTFLAGS = -habxc $(MOREDEFS) $(FLAGS)
 

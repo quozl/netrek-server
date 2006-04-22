@@ -1,4 +1,4 @@
-/* $Id: data.c,v 1.3 2005/09/27 12:26:37 quozl Exp $
+/* $Id: data.c,v 1.4 2006/04/22 11:31:53 quozl Exp $
  */
 
 #include "copyright.h"
@@ -26,11 +26,7 @@ struct queuewait *waiting;
 
 int	oldalert = PFGREEN;	/* Avoid changing more than we have to */
 
-#ifdef XSG
-int     remap[16] = { 0, 1, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0 };
-#else
 int 	remap[9] = { 0, 1, 2, -1, 3, -1, -1, -1, 4 };
-#endif
 int	reality = 10;		/* reality updates per second */
 int	minskip = 10;		/* maximum client updates per second */
 int	defskip = 5;		/* default client updates per second */
@@ -409,3 +405,4 @@ int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 int whitelisted = 0;
 int blacklisted = 0;
+int ignored[MAXPLAYER];

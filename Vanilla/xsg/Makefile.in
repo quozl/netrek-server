@@ -18,42 +18,37 @@ HEADERS =		Wlib.h bitmaps.h copyright.h copyright2.h data.h \
 			defs.h oldbitmaps.h patchlevel.h struct.h version.h \
 			localdata.h
 
-SRCS =	${srcdir}/colors.c ${srcdir}/../ntserv/data.c ${srcdir}/defaults.c \
-	${srcdir}/dmessage.c ${srcdir}/../ntserv/getship.c \
+SRCS =	${srcdir}/colors.c ${srcdir}/defaults.c \
+	${srcdir}/dmessage.c \
 	${srcdir}/inform.c ${srcdir}/input.c ${srcdir}/main.c \
 	${srcdir}/modify.c ${srcdir}/newwin.c ${srcdir}/option.c \
 	${srcdir}/planetlist.c ${srcdir}/planets.c ${srcdir}/playerlist.c \
 	${srcdir}/redraw.c ${srcdir}/robotwin.c ${srcdir}/shmem.c \
 	${srcdir}/sintab.c ${srcdir}/smessage.c ${srcdir}/stats.c \
 	${srcdir}/util.c ${srcdir}/war.c ${srcdir}/warning.c \
-	${srcdir}/x11window.c ${srcdir}/localdata.c \
-	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/distress.c \
-	${srcdir}/../ntserv/slotmaint.c ${srcdir}/../ntserv/ltd_stats.c
+	${srcdir}/x11window.c ${srcdir}/localdata.c
 
-OBJS =	colors.o data.o defaults.o dmessage.o ../ntserv/getship.o inform.o \
-	input.o main.o modify.o newwin.o option.o planetlist.o planets.o \
-	playerlist.o redraw.o robotwin.o shmem.o sintab.o smessage.o stats.o \
-	util.o war.o warning.o x11window.o localdata.o ../ntserv/getpath.o \
-	../ntserv/distress.o ../ntserv/slotmaint.o ../ntserv/ltd_stats.o
+OBJS = colors.o defaults.o dmessage.o inform.o input.o localdata.o \
+	main.o modify.o newwin.o option.o planetlist.o planets.o playerlist.o \
+	redraw.o robotwin.o shmem.o sintab.o smessage.o stats.o util.o war.o \
+	warning.o x11window.o ../ntserv/libnetrek.a
 
 LIBS = $(X11LIB) $(EXTRALIBS)
-INCS = $(EXTRAINCS) $(X11INCLUDE)
+INCS = $(EXTRAINCS)
 
-CFLAGS = $(EXTRACFLAGS) $(FLAGS) ${INCS} -I. -I${srcdir} -I../include -I${srcdir}/../include
+CFLAGS = $(EXTRACFLAGS) $(FLAGS) ${INCS} -I../include
 
 all: xsg
 
 xsg: $(OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(OBJS) $(LIBS)
 
-# data.c has an ifdef XSG in it, it must be recompiled here.
-
-data.o:	${srcdir}/../ntserv/data.c
-	$(CC) $(CFLAGS) -c ${srcdir}/../ntserv/data.c
+x11window.o: x11window.c
+	$(CC) $(CFLAGS) $(X11INCLUDE) -c -o $@ $<
 
 clean:
 	/bin/rm -f *.o make.out core
-        
+
 reallyclean:  clean 
 	/bin/rm -f xsg #* *~
 

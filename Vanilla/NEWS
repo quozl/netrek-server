@@ -1,3 +1,6 @@
+- move common code into a libnetrek [Cameron]
+- lesser lights minimal compilation target [Cameron]
+- factorise god log access functions [Cameron]
 - fix valgrind detected heap leaks [Cameron]
 - compilation fixes for GCC 4.0.3 [Cameron]
 - remove some crud from tar.gz [Cameron]

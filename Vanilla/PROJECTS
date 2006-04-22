@@ -1,5 +1,5 @@
 
-$Id: PROJECTS,v 1.7 2006/04/22 02:16:45 quozl Exp $	
+$Id: PROJECTS,v 1.8 2006/04/22 11:31:52 quozl Exp $	
 
 List of things to do in the future
 
@@ -139,10 +139,6 @@ struct ban {
 
 	- observers, allow them to have a ship of their own that is ineffective
 	  and invisible to others.
-
-	- special compile mode for lesser lights trying to build an INL server
-	  that avoids trying to compile xsg or pledit, and perhaps a few other
-	  things, suggested by Tom Holub [VANILLA-LIST:2566]
 
 	- pledit should be able to edit entries in place online.
 

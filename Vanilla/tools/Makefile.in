@@ -12,19 +12,15 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-# this is for revised ntserv/struct.h
+CFLAGS = $(EXTRAINCS) $(FLAGS) -I../include
 
-CFLAGS = $(EXTRAINCS) $(FLAGS) -I. -I${srcdir} -I../include -I${srcdir}/../include
-
-#LIBCURSES = -lcurses
 LIBS = $(EXTRALIBS)
 
 TOOLDIR= $(LIBDIR)/tools
 
 LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
 
-OBJS_SHM = ../ntserv/data.o ../ntserv/openmem.o ../ntserv/ltd_stats.o
-OBJS_PATH = ../ntserv/getpath.o ../ntserv/data.o
+OBJS = ../ntserv/libnetrek.a
 
 SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/mergescores.c \
@@ -33,13 +29,10 @@ SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/stat.c ${srcdir}/trimscores.c ${srcdir}/watchmes.c \
 	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c \
 	${srcdir}/nuke.c ${srcdir}/metaget.c \
-	${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c \
-	${srcdir}/../ntserv/distress.c ${srcdir}/../ntserv/getship.c \
-	${srcdir}/update.c ${srcdir}/../ntserv/openmem.c ${srcdir}/convert.c \
-	${srcdir}/conq_vert.c ${srcdir}/../ntserv/slotmaint.c $(RANDOMC) \
-	${srcdir}/sortdb.c ${srcdir}/../robots/roboshar.c \
-	${srcdir}/../ntserv/smessage.c ${srcdir}/ntpasswd.c \
-	${srcdir}/../ntserv/salt.c ${srcdir}/../ntserv/bay.c 
+	${srcdir}/update.c ${srcdir}/convert.c \
+	${srcdir}/conq_vert.c $(RANDOMC) \
+	${srcdir}/sortdb.c \
+	${srcdir}/ntpasswd.c
 
 EXECS =	blotpassword loadchecker mess message newscores planets players \
 	scores \
@@ -86,83 +79,80 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
 	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/tools/metaget
 
-# cb_sock.o: packets.h ../ntserv/socket.c
-#	$(CC) -o ./cb_sock.o -g $(CFLAGS) -DCAMBOT -c ../ntserv/socket.c
-
-cambot: cambot.o $(OBJS_SHM) $(OBJS_PATH)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o ../ntserv/genspkt.o ../ntserv/sysdefaults.o ../ntserv/getship.o ../ntserv/warning.o ../ntserv/smessage.o ../ntserv/distress.o ../ntserv/util.o $(OBJS_SHM) ../ntserv/getpath.o  $(RSA_LIB)
+cambot: cambot.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)
 
 sortdb: sortdb.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} sortdb.o
 
-ntpasswd: ntpasswd.o $(OBJS_PATH) ../ntserv/salt.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(OBJS_PATH) ../ntserv/salt.o $(LIBCRYPT)
+ntpasswd: ntpasswd.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(OBJS) $(LIBCRYPT)
 
-loadchecker: loadchecker.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} loadchecker.o $(OBJS_SHM) $(LIBS)
+loadchecker: loadchecker.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} loadchecker.o $(OBJS) $(LIBS)
 
-mess: mess.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mess.o $(OBJS_SHM) $(LIBS)
+mess: mess.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mess.o $(OBJS) $(LIBS)
 
-message: message.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} message.o $(OBJS_SHM) $(LIBS)
+message: message.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} message.o $(OBJS) $(LIBS)
 
-mergescores: mergescores.o $(OBJS_PATH)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mergescores.o $(OBJS_PATH) $(LIBS)
+mergescores: mergescores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mergescores.o $(OBJS) $(LIBS)
 
-newscores: newscores.o $(OBJS_PATH)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} newscores.o $(OBJS_PATH) $(LIBS)
+newscores: newscores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} newscores.o $(OBJS) $(LIBS)
 
-planets: planets.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} planets.o $(OBJS_SHM) $(LIBS)
+planets: planets.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} planets.o $(OBJS) $(LIBS)
 
-players: players.o $(OBJS_SHM) $(RANDOMO)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} players.o $(OBJS_SHM) $(RANDOMO) $(LIBS)
+players: players.o $(OBJS) $(RANDOMO)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} players.o $(OBJS) $(RANDOMO) $(LIBS)
 
-nuke: nuke.o $(OBJS_SHM) $(RANDOMO)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} nuke.o $(OBJS_SHM) $(RANDOMO) $(LIBS)
+nuke: nuke.o $(OBJS) $(RANDOMO)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} nuke.o $(OBJS) $(RANDOMO) $(LIBS)
 
-scores: scores.o $(OBJS_PATH)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} scores.o $(OBJS_PATH) $(LIBS) ../ntserv/ltd_stats.o
+scores: scores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} scores.o $(OBJS) $(LIBS)
 
-setgalaxy: setgalaxy.o $(RANDOMO) $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgalaxy.o $(RANDOMO) $(OBJS_SHM) $(LIBS)
+setgalaxy: setgalaxy.o $(RANDOMO) $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgalaxy.o $(RANDOMO) $(OBJS) $(LIBS)
 
-showgalaxy: showgalaxy.o ../ntserv/distress.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} showgalaxy.o ../ntserv/distress.o $(OBJS_SHM) $(LIBS) $(LIBCURSES) $(LIBTERMCAP)
+showgalaxy: showgalaxy.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} showgalaxy.o $(OBJS) $(LIBS) $(LIBCURSES) $(LIBTERMCAP)
 
-stat: stat.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} stat.o $(OBJS_SHM) $(LIBS)
+stat: stat.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} stat.o $(OBJS) $(LIBS)
 
 blotpassword: blotpassword.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} blotpassword.o $(OBJS_PATH) $(LIBS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} blotpassword.o $(OBJS) $(LIBS)
 
-trimscores: trimscores.o $(OBJS_PATH)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} trimscores.o $(OBJS_PATH) $(LIBS)
+trimscores: trimscores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} trimscores.o $(OBJS) $(LIBS)
 
-watchmes: watchmes.o ../ntserv/distress.o $(OBJS_SHM)
-	$(CC) $(CFLAGS) ${LDFLAGS} watchmes.o ../ntserv/distress.o $(OBJS_SHM) $(LIBS) -o $@
+watchmes: watchmes.o $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} watchmes.o $(OBJS) $(LIBS) -o $@
 
-xtkill: xtkill.o $(OBJS_SHM) $(OBJS_PATH) ../ntserv/getship.o ../ntserv/slotmaint.o ../ntserv/ltd_stats.o ../ntserv/bay.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} xtkill.o ../ntserv/getship.o ../ntserv/openmem.o ../ntserv/slotmaint.o ../ntserv/ltd_stats.o ../ntserv/bay.o $(OBJS_PATH) $(LIBS)
+xtkill: xtkill.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} xtkill.o $(OBJS) $(LIBS)
 
-keyman: keyman.o $(OBJS_PATH)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} keyman.o $(OBJS_PATH) $(LIBS)
+keyman: keyman.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} keyman.o $(OBJS) $(LIBS)
 
-fun: $(RANDOMO) fun.o $(OBJS_SHM)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} fun.o $(RANDOMO) $(OBJS_SHM) $(LIBS)
+fun: $(RANDOMO) fun.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} fun.o $(RANDOMO) $(OBJS) $(LIBS)
 
-convert: $(OBJS_PATH) convert.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} convert.o $(OBJS_PATH) $(LIBS)
+convert: $(OBJS) convert.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} convert.o $(OBJS) $(LIBS)
 
-updated: update.o $(OBJS_PATH)
-	$(CC) $(CFLAGS) ${LDFLAGS} -o updated update.o ../ntserv/ltd_stats.o $(OBJS_PATH) $(EXTRALIBS)
+updated: update.o $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o updated update.o $(OBJS) $(EXTRALIBS)
 
 ltd_dump: ltd_dump.o
-	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump ltd_dump.o ../ntserv/ltd_stats.o $(OBJS_PATH)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump ltd_dump.o $(OBJS)
 
 ltd_convert: ltd_convert.o
-	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o ../ntserv/ltd_stats.o $(OBJS_PATH)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o $(OBJS)
 
 conq_vert: conq_vert.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} conq_vert.o
