@@ -1,5 +1,5 @@
 /*
-    $Id: metaget.c,v 1.1 2006/01/14 00:48:08 quozl Exp $
+    $Id: metaget.c,v 1.2 2006/04/22 02:16:47 quozl Exp $
 
     metaget, query metaserver
     Copyright (C) 2005 James Cameron <quozl@us.netrek.org>
@@ -21,11 +21,12 @@
 */
 
 #ifndef lint
-static char vcid[] = "$Id: metaget.c,v 1.1 2006/01/14 00:48:08 quozl Exp $";
+static char vcid[] = "$Id: metaget.c,v 1.2 2006/04/22 02:16:47 quozl Exp $";
 #endif /* lint */
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>

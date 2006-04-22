@@ -97,7 +97,7 @@ update_planets()
       printf("total independents: %d\n", pls->num_indsp);
       printf("total unknowns: %d\n", pls->num_unknownsp);
       printf("total war planets: %d\n", pls->num_warteamsp);
-#endif nodef
+#endif
 }
 
 _plcmp(el1, el2)

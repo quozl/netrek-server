@@ -81,7 +81,7 @@ struct ship {
     short s_type;
     int s_torpspeed;
 };
-#endif nodef
+#endif /* nodef */
 struct ship {
     int s_turns;
     short s_accs;

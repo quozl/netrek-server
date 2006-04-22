@@ -1,4 +1,8 @@
-- fix client/server error over army capacity of AS in certain cases [balcerski]
+- fix valgrind detected heap leaks [Cameron]
+- compilation fixes for GCC 4.0.3 [Cameron]
+- remove some crud from tar.gz [Cameron]
+- add coding STYLE file [Cameron]
+- fix client/server error over army capacity of AS in certain cases [Balcerski]
 - use IP addresses only for t-mode scum test [Cameron]
 - compilation fix for FreeBSD [O'Conner]
 

@@ -1,3 +1,18 @@
+Sat Apr 22 12:07:50 2006  James Cameron  <quozl@us.netrek.org>
+
+	* Makefile.in (dist): avoid certain CVS files.
+
+Sat Apr 22 11:47:55 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/feature.c, ntserv/wander2.c (pfree): fix two small
+	valgrind leaks.
+
+	* */*.c, */*.h: fix compilation warnings on GCC 4.0.3.
+
+Sat Apr 22 10:37:51 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/watchmes.c (logmessage): avoid built-in function name.
+
 Fri Apr 14 22:21:22 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/daemonII.c (move): prevent tournament mode from starting
@@ -1822,4 +1837,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.23 2006/04/21 11:38:57 quozl Exp $
+	$Id: ChangeLog,v 1.24 2006/04/22 02:16:42 quozl Exp $

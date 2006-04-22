@@ -174,7 +174,7 @@ init_torps()
 	    continue;
 	 else if(tdi < 8)	/* torp heading our way */
 	    _state.recharge_danger = 1;
-#endif tmpNODEF
+#endif
 	 /* Experimental */
 	 if(tdi < 8 && tdist < 7000)
 	    _state.recharge_danger = 1;
@@ -185,7 +185,7 @@ init_torps()
 #ifdef nodef
 	 tx += rint(_avsdelay * tdx);
 	 ty += rint(_avsdelay * tdy);
-#endif nodef
+#endif
 
 	 tp->tp_dist 	= tdist;
 	 tp->tp_x 	= tx;
@@ -357,7 +357,7 @@ compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
 #ifdef nodef
       !(_state.assault && _state.assault_planet == _state.hplanet) &&
 	 (_state.planet != _state.hplanet)
-#endif nodef
+#endif
 
 	 unsigned char	deg;
 	 int		dist = _state.hpldist;
@@ -649,7 +649,7 @@ update_torps(avdir_r, dir, speed, mintime_r, damage_r, lvorbit)
 	 tp->tp_ndir = tp->tp_dir;
       }
    }
-#endif nodef
+#endif
 
    for(i=0; i< _state.maxfuse; i++){
       
@@ -705,7 +705,7 @@ update_torps(avdir_r, dir, speed, mintime_r, damage_r, lvorbit)
 	       expdist = EXPDIST + (tp->tp_dist*EXPDIST)/_state.seek_const 
 		  + 500;
 	 }
-#endif nodef
+#endif
 
 	 if(ABS(dx) < expdist && ABS(dy) < expdist) {
 	    int	torp_d;
@@ -907,7 +907,7 @@ getorbit_ppos(cx,cy, rx, ry)
    if(_state.planet && (&planets[me->p_planet] != _state.planet)){
       printf("error in getorbit_ppos: wrong planet.\n");
    }
-#endif nodef
+#endif
 
    px = planets[me->p_planet].pl_x;
    py = planets[me->p_planet].pl_y;
@@ -1321,7 +1321,7 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
                         mindamage = INT_MAX,
 #ifdef nodef
                         begin_time = mtime(0), 
-#endif nodef
+#endif
 			speed, crs, chklower=1, damage;
    int                  avdir;
    int			plhit = 0;
@@ -1360,7 +1360,7 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
       if(DEBUG & DEBUG_HITS){
          printf("returning no hits at %d\n", hittime);
       }
-#endif nodef
+#endif
       Xplhit = 0;
       return 0;
    }
@@ -1369,7 +1369,7 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
    /* experiment */
    if(me->p_speed == 0)
       return nh;
-#endif nodef
+#endif
    
    if(d_speed < 2){
       speed = 2;
@@ -1405,7 +1405,7 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
             if(DEBUG & DEBUG_HITS){
                printf("returning no hits at %d\n", hittime);
             }
-#endif nodef
+#endif
 	    Xplhit = 0;
             return 0;
          }
@@ -1461,7 +1461,7 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
 #ifdef nodef    /* need more variables */
          if(minhittime < 3 && _state.det_torps < 3)     /* experiment */
             req_detonate("");
-#endif nodef
+#endif
 
 	 Xplhit = plhit;
          return minhits;
@@ -1477,7 +1477,7 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
          }
          return minhits;
       }
-#endif nodef
+#endif
    }
    /* NOTREACHED */
 }

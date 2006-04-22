@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #ifdef RSA
+#include <stdlib.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/file.h>

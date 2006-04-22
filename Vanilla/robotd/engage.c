@@ -632,7 +632,7 @@ alter_course_distance(e, e_dist, crs)
       case STARBASE:
 	 break;
    }
-#endif nodef
+#endif
    
    if(e_dist < hispr){
       if(DEBUG & DEBUG_ENGAGE){
@@ -773,7 +773,7 @@ edge_course(j, edist, crs)
       /* right edge */
       *crs = get_course(
       /* HERE */
-#endif nodef
+#endif
 }
 
 /* based on get_torp_course */

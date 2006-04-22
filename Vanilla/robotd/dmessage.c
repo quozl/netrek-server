@@ -1113,7 +1113,7 @@ R_ProcMessage(message, flags, from, to, std)
 	 udpaction(UDP_UPDATE_ALL);
 	 response("Sending udp update-all req");
       }
-#endif ATM
+#endif
 #ifdef SHORT_PACKETS
       else if(strncmp(m, "shortp", 6)==0){
 	 if(recv_short)
@@ -1752,7 +1752,7 @@ udpaction(com)
         fprintf(stderr, "unknown UDP command\n");
     }
 }
-#endif ATM
+#endif
 
 setlog(dir)
    

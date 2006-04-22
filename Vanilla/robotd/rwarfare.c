@@ -40,7 +40,7 @@ phaser_attack_robot(e, j, edist)
 #ifdef nodef
    if(dist > 5000)
       dist = 5000;
-#endif nodef
+#endif
    
    if(edist < dist){
       
@@ -221,7 +221,7 @@ attack_robot(e, j, edist)
 	 _timers.robot_attack ++;
       return;
    }
-#endif nodef
+#endif
 
    _timers.robot_attack = 0;
    mprintf("unknown phase. %d\n", _timers.robot_attack);

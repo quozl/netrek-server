@@ -1,4 +1,4 @@
-/* $Id: socket.c,v 1.5 2006/04/10 10:56:33 quozl Exp $
+/* $Id: socket.c,v 1.6 2006/04/22 02:16:46 quozl Exp $
  */
 
 /*
@@ -13,6 +13,7 @@
  */
 #include "copyright2.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -364,7 +365,8 @@ void setNoDelay(int fd)
 
 int connectToClient(char *machine, int port)
 {
-    int ns, stat, derrno, derrnol;
+    int ns, stat, derrno;
+    socklen_t derrnol;
     struct sockaddr_in addr;
     struct hostent *hp;
     struct timeval timeout;
@@ -488,7 +490,7 @@ int connectToClient(char *machine, int port)
 void checkSocket(void)
 {
     struct sockaddr_in sin;
-    int len = sizeof(sin);
+    socklen_t len = sizeof(sin);
     if (getpeername(sock, (struct sockaddr *) &sin, &len) < 0) {
 	return;
     }
@@ -961,7 +963,7 @@ static int doRead(int asock)
     int temp;
 #ifdef UDP_PORTSWAP
     struct sockaddr_in moo;
-    int s;
+    socklen_t moolen;
 #endif
 
 #ifdef PING             /* need the socket in the ping handler routine */
@@ -978,10 +980,10 @@ static int doRead(int asock)
      */
 
     if (portswapflags == (PORTSWAP_UDPRECEIVED | PORTSWAP_ENABLED)) {
-        s = sizeof(moo);
+        moolen = sizeof(moo);
         UDPDIAG(("portswap hack entered\n"));
         if (0 > recvfrom(asock, buf, BUFSIZ*2, MSG_PEEK,
-                         (struct sockaddr *)&moo, &s)) {
+                         (struct sockaddr *)&moo, &moolen)) {
 	    ERROR(1,("%s: portswap recvfrom() failed, %s\n",
 		     whoami(), strerror(errno)));
         }
@@ -2255,7 +2257,7 @@ send:
 static int connUdpConn(void)
 {
     struct sockaddr_in addr;
-    int len;
+    socklen_t addrlen;
 
     if (udpSock > 0) {
 	ERROR(2,( "ntserv: tried to open udpSock twice\n"));
@@ -2273,8 +2275,8 @@ static int connUdpConn(void)
 
 #ifdef UDP_FIX 			/* 15/6/93 SK UDP connection time out fix */
     /* Bind to interface used by the TCP socket 10/13/99 TAP */
-    len = sizeof(addr);
-    if (getsockname(sock, (struct sockaddr *)&addr, &len) < 0) {
+    addrlen = sizeof(addr);
+    if (getsockname(sock, (struct sockaddr *)&addr, &addrlen) < 0) {
 	perror("netrek: unable to getsockname(TCP)");
 	UDPDIAG(("Can't get our own socket; using default interface\n"));
 	addr.sin_family = AF_INET;
@@ -2292,8 +2294,8 @@ static int connUdpConn(void)
     }
 
     /* determine what our port is */
-    len = sizeof(addr);
-    if (getsockname(udpSock, (struct sockaddr *)&addr, &len) < 0) {
+    addrlen = sizeof(addr);
+    if (getsockname(udpSock, (struct sockaddr *)&addr, &addrlen) < 0) {
 	perror("netrek: unable to getsockname(UDP)");
 	UDPDIAG(("Can't get our own socket; connection failed\n"));
 	close(udpSock);
@@ -2345,8 +2347,8 @@ static int connUdpConn(void)
 	     me->p_name, udpClientPort, remoteaddr));
 
     /* determine what our port is */
-    len = sizeof(addr);
-    if (getsockname(udpSock, (struct sockaddr *) &addr, &len) < 0) {
+    addrlen = sizeof(addr);
+    if (getsockname(udpSock, (struct sockaddr *) &addr, &addrlen) < 0) {
 	perror("netrek: unable to getsockname(UDP)");
 	UDPDIAG(("Can't get our own socket; connection failed\n"));
 	close(udpSock);
@@ -2384,17 +2386,17 @@ int closeUdpConn(void)
 static void printUdpInfo(void)
 {
     struct sockaddr_in addr;
-    int len;
+    socklen_t addrlen;
 
-    len = sizeof(addr);
-    if (getsockname(udpSock, (struct sockaddr *) &addr, &len) < 0) {
+    addrlen = sizeof(addr);
+    if (getsockname(udpSock, (struct sockaddr *) &addr, &addrlen) < 0) {
 	perror("printUdpInfo: getsockname");
 	return;
     }
     UDPDIAG(("LOCAL: addr=0x%x, family=%d, port=%d\n", addr.sin_addr.s_addr,
 	     addr.sin_family, ntohs(addr.sin_port)));
 
-    if (getpeername(udpSock, (struct sockaddr *) &addr, &len) < 0) {
+    if (getpeername(udpSock, (struct sockaddr *) &addr, &addrlen) < 0) {
 	perror("printUdpInfo: getpeername");
 	return;
     }

@@ -7,6 +7,7 @@
  */
 #include "copyright2.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -41,20 +42,21 @@ char *serverName;
 {
     struct rsa_key key;
     struct sockaddr_in saddr;
+    socklen_t addrlen;
     u_char temp[KEY_SIZE], *data;
 #ifdef SHOW_RSA
     char format[MSG_LEN];
 #endif
     int fd;
     FILE *logfile;
-    int done, found, curtime, len;
+    int done, found, curtime;
     int foo;
     int total;
 
 /*    SIGNAL(SIGALRM, SIG_IGN);*/
 
-    len = sizeof(saddr);
-    if (getsockname(sock, &saddr, &len) < 0) {
+    addrlen = sizeof(saddr);
+    if (getsockname(sock, (struct sockaddr *) &saddr, &addrlen) < 0) {
         perror("getsockname(sock)");
         exit(1);
     }

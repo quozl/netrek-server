@@ -9,9 +9,9 @@
 #include <sys/types.h>
 #ifdef hpux
 #include <time.h>
-#else hpux
+#else
 #include <sys/time.h>
-#endif hpux
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

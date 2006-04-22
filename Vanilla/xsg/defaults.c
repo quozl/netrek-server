@@ -4,6 +4,7 @@
  */
 #include "copyright2.h"
 #include <stdio.h>
+#include <string.h>
 
 struct stringlist {
     char *string;
@@ -14,7 +15,6 @@ struct stringlist {
 struct stringlist *defaults=NULL;
 
 char *getenv();
-char *strdup();
 
 initDefaults(deffile)
 char *deffile;		/* As opposed to defile? */
@@ -59,16 +59,6 @@ char *deffile;		/* As opposed to defile? */
 	}
     }
     fclose(fp);
-}
-
-char *strdup(str)
-const char *str;
-{
-    char *s;
-
-    s=(char *) malloc(strlen(str)+1);
-    strcpy(s,str);
-    return(s);
 }
 
 char *getdefault(str)

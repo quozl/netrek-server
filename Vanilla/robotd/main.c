@@ -4,6 +4,8 @@
 #include "copyright.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -26,7 +28,7 @@
 #define TIMEOUT1		50
 #define TIMEOUT2		50
 
-char	revision[] = "$Revision: 1.2 $";
+char	revision[] = "$Revision: 1.3 $";
 
 static   int    first = 1;
 jmp_buf         env;
@@ -255,7 +257,7 @@ main(argc, argv)
 	    argv++;
 	    argc--;
 	    break;
-#endif nodef
+#endif
 	 case 'q':
 	    noargs ++;
 	    break;

@@ -1,11 +1,11 @@
-#	$Id: Makefile.in,v 1.8 2006/02/22 09:18:30 quozl Exp $	
+#	$Id: Makefile.in,v 1.9 2006/04/22 02:16:44 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.10.2
+VERSION=2.10.3
 
 VPATH = @srcdir@
 srcdir = @srcdir@
@@ -190,7 +190,6 @@ dist:
         # subdirectories
 	cp -rp docs gum include keycomp motd newstartd ntserv php \
 	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
-	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
 	cp -p debian/README.Debian debian/changelog debian/control \
@@ -198,6 +197,10 @@ dist:
 	$(NAME)/debian
         # packaging subdirectories (rpm)
 	cp -rp rpm $(NAME)/
+        # strip out surplus
+	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS 
+	rm -rf $(NAME)/.cvsignore $(NAME)/*/.cvsignore
+	rm -rf $(NAME)/*/.deps $(NAME)/*~ $(NAME)/*/*~
         # build
 	GZIP=--best tar cfz $(NAME).tar.gz $(NAME)
 	rm -rf $(NAME)

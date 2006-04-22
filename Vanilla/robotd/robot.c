@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <strings.h>
 #include <limits.h>
 #include <math.h>
 #include <sys/time.h>
@@ -543,12 +545,12 @@ s_defense()
 #ifdef nodef
    if(_state.torp_danger || _state.recharge_danger)
       check_me_explode();
-#endif nodef
+#endif
 
 #ifdef nodef
    if(me->p_ship.s_type != STARBASE && !starbase(e))
       check_pressor(e);
-#endif nodef
+#endif
 
    num_hits = compute_course(mycrs, &newc, myspeed, &speed, &hittime, &lvorbit);
    handle_disvars(e, &myspeed);
@@ -623,7 +625,7 @@ check_dethis(num_hits, hittime)
    else if(me->p_speed == 0 && num_hits > 1 && _state.det_torps < 4 
       && MYFUEL() > 25)
       req_detonate("");
-#endif nodef
+#endif
 #ifdef nodef
    /* debug */
    if(num_hits > 0 && me->p_speed > 6){
@@ -631,7 +633,7 @@ check_dethis(num_hits, hittime)
 	 _state.det_damage, 50*num_hits);
       printf("my damage + detdamage = %d\n", MYDAMAGE() + _state.det_damage);
    }
-#endif nodef
+#endif
    if(_state.det_torps == 0) return;
 
    if(!_state.det_const){
@@ -683,7 +685,7 @@ s_recharge()
 #ifdef nodef
    if((me->p_flags & PFORBIT) && _state.assault && !_state.planet)
       pl = _state.assault_planet;
-#endif nodef
+#endif
 
    if(pl && !(me->p_flags & PFORBIT)){
       disengage_c(_state.diswhy, _state.planet, "planet but no orbit");
@@ -1421,7 +1423,7 @@ req_set_course(c)
 	 if(RANDOM()%4 < _state.human) 
 	    return 0;
 
-#endif nodef
+#endif
 	 if(_udcounter - tfired < _state.human){
 	    if(angdist(c, tfire_dir) > 20+ (RANDOM()%20))
 	       return 0;
@@ -1488,7 +1490,7 @@ req_torp(crs)
 	 if(angdist(crs, turned_dir) > 40)
 	    return 0;
       }
-#endif nodef
+#endif
    }
 
    /*
@@ -1576,7 +1578,7 @@ req_phaser(crs, f)
 		  if(angdist(crs, turned_dir) > 40)
 		     return 0;
 	       }
-#endif nodef
+#endif
 	       if(_udcounter - tfired < 5 || (me->p_ship.s_type != STARBASE 
 		  && _udcounter - pfired < 11 + (RANDOM()%10)))
 		  return 0;

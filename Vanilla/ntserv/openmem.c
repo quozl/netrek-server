@@ -1,11 +1,12 @@
 /*
- * $Id: openmem.c,v 1.1 2005/03/21 05:23:44 jerub Exp $
+ * $Id: openmem.c,v 1.2 2006/04/22 02:16:46 quozl Exp $
  */
 #include "copyright.h"
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <errno.h>
@@ -117,7 +118,7 @@ int openmem(int trystart)
     if (sharedMemory == (struct memory *) -1) {
 	printf("Error number: %d\n",errno);
 	perror("shared memory");
-	exit (1);
+	exit(1);
     }
     setup_memory(sharedMemory);
 

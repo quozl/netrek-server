@@ -1,7 +1,7 @@
-/* 	$Id: inl.c,v 1.2 2006/04/10 10:30:44 quozl Exp $	 */
+/* 	$Id: inl.c,v 1.3 2006/04/22 02:16:46 quozl Exp $	 */
 
 #ifndef lint
-static char vcid[] = "$Id: inl.c,v 1.2 2006/04/10 10:30:44 quozl Exp $";
+static char vcid[] = "$Id: inl.c,v 1.3 2006/04/22 02:16:46 quozl Exp $";
 #endif /* lint */
 
 /*
@@ -26,6 +26,8 @@ static char vcid[] = "$Id: inl.c,v 1.2 2006/04/10 10:30:44 quozl Exp $";
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <math.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

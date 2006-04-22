@@ -67,6 +67,11 @@ static int feature_cmp(char *f, char *s);
 static int                    num_features;
 static struct feature_spacket *features;
 
+static void freeFeatures(void)
+{
+  free(features);
+}
+
 /*
  * Called once to read in feature strings
  */
@@ -97,6 +102,7 @@ void readFeatures(void)
       num_features = 0;
       return;
    }
+   atexit(freeFeatures);
 
    f = fopen(Feature_File, "r");
    i=0;

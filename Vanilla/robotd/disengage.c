@@ -42,7 +42,7 @@ disengage()
 	 /* first try at using friends */
 #ifdef nodef
 	 || (_state.closest_f && _state.closest_f->dist < 7000)
-#endif nodef
+#endif
 	 )
 	 req_cloak_off("disengage: enemy farther than 10000");
       
@@ -50,7 +50,7 @@ disengage()
       /* last ditch */
       if((me->p_ship.s_type != SCOUT) && MYFUEL() < 10)
 	 req_cloak_off("disengage: fuel < 10");
-#endif nodef
+#endif
    }
       
 
@@ -335,7 +335,7 @@ goto_planet(pl)
    crs = get_pl_course(pl, &speed, &cloak);
 #ifdef nodef
    crs = get_wrapcourse(pl->pl_x, pl->pl_y);
-#endif nodef
+#endif
 
    if(_state.recharge_danger || (e && e->dist < 8000) || 
       (e && e ->dist < 10000 && edang(e, 40))){

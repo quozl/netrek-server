@@ -36,7 +36,7 @@ static char *ship_classes[] = {
 	"Ship class: Galaxy (GA)",
 #endif
 #ifdef ATT
-	"Ship class: AT&T (??)",
+	"Ship class: AT&T",
 #endif
 	""};
 

@@ -77,12 +77,12 @@ pwarfare(type, e, j, edist)
 	 }
       }
    }
-#endif nodef
+#endif
 
 #ifdef nodef
    if(j->p_flags & PFCLOAK)
       printf("%s: speed: %d, dir %d\n", j->p_name, j->p_speed, j->p_dir);
-#endif nodef
+#endif
 
    if(e->invisible)
       return;
@@ -250,7 +250,7 @@ ptorp_attack(e, j, edist)
       else if((me->p_flags & PFPRESS) && (me->p_tractor != j->p_no)){
 	    req_tractor_off();
       }
-#endif nodef
+#endif
       _special_tr = 1;
    }
 
@@ -289,7 +289,7 @@ ptorp_attack(e, j, edist)
 	 }
 #ifdef nodef
 	 urnd = (8*edist)/7500 + 2;
-#endif nodef
+#endif
 	 if(j->p_flags & PFORBIT){
 	    get_torp_course(j, &tcrs, me->p_x, me->p_y);
 	    if(!_state.defend || angdist(tcrs, dcrs) > 32)
@@ -364,7 +364,7 @@ ptorp_attack(e, j, edist)
 	    req_torp(tcrs);
       }
       return;
-#endif nodef
+#endif
 
       if(_state.protect && (j->p_flags & PFORBIT) && !(j->p_flags & PFCLOAK) &&
 	 (j->p_planet == _state.protect_planet->pl_no) && edist < 9000){
@@ -417,7 +417,7 @@ ptorp_attack(e, j, edist)
       printf("damage: %d\n", 100-PL_DAMAGE(e) + PL_SHIELD(e));
       printf("td: %d\n", SH_TORPDAMAGE(me));
       printf("dist: %d\n", e->dist);
-#endif nodef
+#endif
       
 
       if(_state.defend){
@@ -754,7 +754,7 @@ pphaser_attack(e, j, edist)
 	       if(DEBUG & DEBUG_WARFARE){
 		  printf("hitme = %d\n", e->phit_me);
 	       }
-#endif nodef
+#endif
 	       if(e->phit_me > 0)
 		  e->phit_me --;
 	    }

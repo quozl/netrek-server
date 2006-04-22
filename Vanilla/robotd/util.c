@@ -13,11 +13,22 @@
 #include "data.h"
 #include "robot.h"
 
-mprintf(char *format, ...);
-
 #define ADDRLEN		10
 
 struct distress *loaddistress(enum dist_type i);
+
+mprintf(char *format, ...)
+{
+   va_list	ap;
+
+   if(!read_stdin)
+      return;
+   
+   va_start(ap, format);
+   (void)vprintf(format, ap);
+   fflush(stdout);
+   va_end(ap);
+}
 
 /*
 ** Provide the angular distance between two angles.
@@ -71,7 +82,7 @@ int (*funct)();
     vec.sv_handler = funct;
     sigvector(sig, &vec, (struct sigvec *) 0);
 }
-#endif hpux
+#endif
 
 warning(s, o)
 
@@ -430,19 +441,6 @@ nint(x)
    return (int)rint(x);
 }
 #endif
-
-mprintf(char *format, ...)
-{
-   va_list	ap;
-
-   if(!read_stdin)
-      return;
-   
-   va_start(ap, format);
-   (void)vprintf(format, ap);
-   fflush(stdout);
-   va_end(ap);
-}
 
 
 mfprintf(char *format, ...)

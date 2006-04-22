@@ -7,12 +7,14 @@
 #include <stdio.h>
 
 #ifdef RSA
+#include <stdlib.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h> /* ultrix insists on types.h before stst.h */
 #include <time.h>
 #include <sys/file.h>
 #include "defs.h"
+#include <string.h>
 #include INC_STRINGS
 #include INC_FCNTL
 #include "struct.h"

@@ -82,7 +82,7 @@ decide()
 	 return;
       else
 	 check_refit();
-#endif nodef
+#endif
 	 return;
    }
    
@@ -296,7 +296,7 @@ check_bombdamage(pl)
       if(MYDAMAGE() > 25 || MYFUEL() < 60)
 	 disengage_c(EDAMAGE, NULL);
    }
-#endif nodef
+#endif
 
    if(MYDAMAGE() > 75)
       disengage_c(EDAMAGE, NULL, "dam > 75");
@@ -574,7 +574,7 @@ check_bomb(ship)
 #ifdef nodef
    /* tmp */
    return 0;
-#endif nodef
+#endif
 
    if(pls->total_wextra_armies == 0) return 0;
 

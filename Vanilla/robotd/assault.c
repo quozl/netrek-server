@@ -143,7 +143,7 @@ assault_planet()
 #ifdef nodef
    if(!do_cloak(0))
       req_cloak_off();
-#endif nodef
+#endif
    if(e && e->p && isAlive(e->p)){
       if(e->dist < 10000)
 	 req_cloak_on();
@@ -163,7 +163,7 @@ assault_planet()
 	 return;
       }
    }
-#endif nodef
+#endif
 
    if(me->p_armies == 0){
       req_shields_up();

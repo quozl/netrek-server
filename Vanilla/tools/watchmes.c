@@ -18,7 +18,7 @@
 #include "proto.h"
 
 static void spew_mess(struct message *mess);
-static void log(struct message *m);
+static void logmessage(struct message *m);
 
 int main(int argc, char **argv)
 {
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	    oldmctl++;
 	    if (oldmctl==MAXMESSAGE) oldmctl=0;
 	    if (filter)
-		log(&(messages[oldmctl]));
+		logmessage(&(messages[oldmctl]));
 	    else {
                 MCOPY(&messages[oldmctl],&msg,sizeof(struct message));
 #ifdef RCD
@@ -127,7 +127,7 @@ static void spew_mess(struct message *mess)                /* ATH 10/8/93 */
 }
 
 
-static void log(struct message *m)
+static void logmessage(struct message *m)
 {
     time_t curtime;
     struct tm *tmstruct;

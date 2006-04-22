@@ -1,7 +1,11 @@
 
-$Id: PROJECTS,v 1.6 2006/04/12 12:58:11 modemhero Exp $	
+$Id: PROJECTS,v 1.7 2006/04/22 02:16:45 quozl Exp $	
 
 List of things to do in the future
+
+	- metaserver begins to list robots on a server after the
+	  server has stopped sending player count updates by perhaps
+	  the TCP query from the server is mistaken.
 
 	- vote per IP address only, not per slot
 

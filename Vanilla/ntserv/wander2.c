@@ -14,6 +14,12 @@ static const double increment = 0.016;
 static const double incrementrecip = 62.5;
 static float *Cosine, *Sine;
 
+static void pfree(void)
+{
+  free(Cosine);
+  free(Sine);
+}
+
 /* call only once */
 void pinit(void)
 {
@@ -25,7 +31,11 @@ void pinit(void)
     pre = 3.5/increment;
 
     Cosine = (float*) calloc(sizeof(float), pre);
+    if (Cosine == NULL) abort();
     Sine = (float*) calloc(sizeof(float), pre);
+    if (Sine == NULL) abort();
+    atexit(pfree);
+
     for (i = 0; i < pre; i++) {
 	Cosine[i] = cos((double)i*increment);
 	Sine[i] = sin((double)i*increment);

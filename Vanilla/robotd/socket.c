@@ -8,6 +8,8 @@
 #include "copyright2.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -37,7 +39,7 @@
 
 #define DEBUG_SOCKET(p)		printf("%s at %d\n", p, mtime(1)-_read_time);
 static int	_read_time;
-#endif DEBUG_SCK
+#endif
 
 static int	rsock_failed;
 static int	debug;
@@ -56,11 +58,10 @@ int handleHostile(), handleStats(), handlePlyrLogin();
 int handleReserved();
 int handleScan(), handleUdpReply(), handleSequence();
 int handleMasterComm();
-extern int exit();
 #ifdef ATM
 int handleUdpReply(), handleSequence();
 int handleScan();
-#endif ATM
+#endif /* ATM */
 
 #ifdef PING
 int	handlePing();	/* ping.c */
@@ -98,32 +99,32 @@ struct packet_handler handlers[] = {
 #ifdef SCANNERS
     { sizeof(struct scan_spacket), handleScan },	    /* SP_SCAN */
 #else
-    { 0, exit},
+    { 0, NULL },
 #endif
-    { sizeof(struct udp_reply_spacket), handleUdpReply },  /* SP_UDP_STAT */
+    { sizeof(struct udp_reply_spacket), handleUdpReply },   /* SP_UDP_STAT */
     { sizeof(struct sequence_spacket), handleSequence },    /* SP_SEQUENCE */
     { sizeof(struct sc_sequence_spacket), handleSequence }, /* SP_SC_SEQUENCE */
-#endif ATM
-#ifdef RSA
-    { sizeof(struct rsa_key_spacket), handleRSAKey },     /* SP_RSA_KEY */
-#else
-    { 0, exit}, /* #31, and exit won't really be called */
 #endif
-    { 0, exit},                                             /* 32 */
-    { 0, exit},                                             /* 33 */
-    { 0, exit},                                             /* 34 */
-    { 0, exit},                                             /* 35 */
-    { 0, exit},                                             /* 36 */
-    { 0, exit},                                             /* 37 */
-    { 0, exit},                                             /* 38 */
-    { 0, exit},                                             /* 39 */
-    { 0, exit},                                             /* 40 */
-    { 0, exit},                                             /* 41 */
-    { 0, exit},                                             /* 42 */
-    { 0, exit},                                             /* 43 */
-    { 0, exit},                                             /* 44 */
+#ifdef RSA
+    { sizeof(struct rsa_key_spacket), handleRSAKey },       /* SP_RSA_KEY */
+#else
+    { 0, NULL }, /* #31 */
+#endif
+    { 0, NULL },                                            /* 32 */
+    { 0, NULL },                                            /* 33 */
+    { 0, NULL },                                            /* 34 */
+    { 0, NULL },                                            /* 35 */
+    { 0, NULL },                                            /* 36 */
+    { 0, NULL },                                            /* 37 */
+    { 0, NULL },                                            /* 38 */
+    { 0, NULL },                                            /* 39 */
+    { 0, NULL },                                            /* 40 */
+    { 0, NULL },                                            /* 41 */
+    { 0, NULL },                                            /* 42 */
+    { 0, NULL },                                            /* 43 */
+    { 0, NULL },                                            /* 44 */
 #ifdef PING
-    { 0, exit},                                             /* 45 */
+    { 0, NULL },                                            /* 45 */
     { sizeof(struct ping_spacket),       handlePing },      /* SP_PING */
 #endif
     { sizeof(struct mastercomm_spacket), handleMasterComm },/* SP_MASTER_COMM */
@@ -173,7 +174,7 @@ int sizes[] = {
 #endif
     sizeof(struct udp_req_cpacket),             /* CP_UDP_REQ */
     sizeof(struct sequence_cpacket),            /* CP_SEQUENCE */
-#endif ATM
+#endif
 #ifdef RSA
     sizeof(struct rsa_key_cpacket),           /* CP_RSA_KEY */
 #else
@@ -291,7 +292,7 @@ checkForce()
     FCHECK_TRACT(PFTRACT, fTractor, CP_TRACTOR);
     FCHECK_TRACT(PFPRESS, fRepress, CP_REPRESS);
 }
-#endif ATM
+#endif /* ATM */
 
 connectToServer(port)
 int port;
@@ -299,7 +300,7 @@ int port;
     int s;
     struct sockaddr_in addr;
     struct sockaddr_in naddr;
-    int len;
+    socklen_t addrlen;
     fd_set	readfds;
     struct timeval timeout;
     struct hostent	*hp;
@@ -325,11 +326,11 @@ int port;
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port);
 
-    if (bind(s, &addr, sizeof(addr)) < 0) {
+    if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 	sleep(10);
-	if (bind(s, &addr, sizeof(addr)) < 0) {
+	if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 	    sleep(10);
-	    if (bind(s, &addr, sizeof(addr)) < 0) {
+	    if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 		printf("I can't bind to port!\n");
 		exit(3);
 	    }
@@ -338,7 +339,7 @@ int port;
 
     listen(s,1);
 
-    len=sizeof(naddr);
+    addrlen=sizeof(naddr);
 
 tryagain:
     timeout.tv_sec=240;	/* four minutes */
@@ -350,7 +351,7 @@ tryagain:
 	exit(0);
     }
 
-    sock=accept(s,&naddr,&len);
+    sock=accept(s,(struct sockaddr *)&naddr,&addrlen);
 
     if (sock==-1) {
 	extern int errno;
@@ -368,8 +369,8 @@ tryagain:
      * caller is, and set "serverName" and "serveraddr" appropriately.
      * (ATM)
      */
-    len = sizeof(struct sockaddr_in);
-    if (getpeername(sock, (struct sockaddr *) &addr, &len) < 0) {
+    addrlen = sizeof(struct sockaddr_in);
+    if (getpeername(sock, (struct sockaddr *) &addr, &addrlen) < 0) {
         perror("unable to get peername");
         serverName = "nowhere";
     } else {
@@ -435,10 +436,10 @@ int port;
         }
     }
 
-    if (connect(ns, &addr, sizeof(addr)) < 0) {
+    if (connect(ns, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 #ifdef nodef
         printf("rwatch: I cannot connect through port %d\n", port);
-#endif nodef
+#endif
         close(ns);
         return 0;
     }
@@ -501,7 +502,7 @@ char *server;
       printf("SO_SNDBUF: %d\n", optval);
       printf("optlen: %d\n", optlen);
    }
-#endif nodef
+#endif
 
 
     addr.sin_family = AF_INET;
@@ -518,9 +519,9 @@ char *server;
 
 #ifdef ATM
     serveraddr = addr.sin_addr.s_addr;
-#endif ATM
+#endif
 
-    if (connect(s, &addr, sizeof(addr)) < 0) {
+    if (connect(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 	printf("Server not listening!\n");
 	exit(0);
     }
@@ -547,7 +548,7 @@ socketPause()
 #ifdef ATM
     if(udpSock >= 0)
        FD_SET(udpSock, &readfds);
-#endif ATM
+#endif
     select(32,&readfds,0,0,&timeout);
 }
 
@@ -654,7 +655,7 @@ int asock;
                     addr.sin_addr.s_addr = serveraddr;
                     addr.sin_port = htons(udpServerPort);
                     addr.sin_family = AF_INET;
-                    if (connect(udpSock, &addr, sizeof(addr)) < 0) {
+                    if (connect(udpSock, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
                         perror("connect");
                         UDPDIAG(("Unable to reconnect\n"));
                         /* and fall through to disconnect */
@@ -776,7 +777,7 @@ readFromServer()
     if (select(32,&readfds,0,0,&timeout) != 0) {
 #ifdef DEBUG_SCK
 	_read_time = mtime(1);
-#endif DEBUG_SCK
+#endif
 	/* Read info from the xtrek server */
 
 	if(FD_ISSET(sock, &readfds){
@@ -877,7 +878,7 @@ readFromServer()
     }
     return 0;
 }
-#endif ATM
+#endif
 
 handleTorp(packet)
 struct torp_spacket *packet;
@@ -889,7 +890,7 @@ struct torp_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleTorp");
-#endif DEBUG_SCK
+#endif
 
     thetorp= &torps[ntohs(packet->tnum)];
 
@@ -1004,7 +1005,7 @@ handleSTorp(sbuf)
 	       torps_time[j->p_no]);
 	    torps_time[j->p_no] = mtime(1);
 	 }
-#endif TORP_TIME
+#endif
 	 p->fuel -= SH_TORPCOST(j);
 	 if(p->fuel < 0) p->fuel = 0;
 	 if(j == me){
@@ -1045,11 +1046,11 @@ struct torp_info_spacket *packet;
 
 #ifdef TORP_TIME
     static int torps_time[MAXPLAYER];
-#endif TORP_TIME
+#endif
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleTorpInfo");
-#endif DEBUG_SCK
+#endif
 
     thetorp= &torps[ntohs(packet->tnum)];
 
@@ -1057,7 +1058,7 @@ struct torp_info_spacket *packet;
     if(packet->status == TEXPLODE && thetorp->t_status == TFREE){
       return;
    }
-#endif ATM
+#endif
 
     p = &_state.players[thetorp->t_owner];
     j = &players[thetorp->t_owner];
@@ -1078,7 +1079,7 @@ struct torp_info_spacket *packet;
 	    torps_time[j->p_no]);
 	 torps_time[j->p_no] = mtime(1);
       }
-#endif TORP_TIME
+#endif
       p->fuel -= SH_TORPCOST(j);
       p->wpntemp += SH_TORPCOST(j)/10 - 10;
       if(p->fuel < 0) p->fuel = 0;
@@ -1114,7 +1115,7 @@ struct torp_info_spacket *packet;
       j->p_ntorp--;
       /* torp damage handled in dodge.c */
     }
-#endif nodef
+#endif
 }
 
 handleStatus(packet)
@@ -1122,7 +1123,7 @@ struct status_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleStatus");
-#endif DEBUG_SCK
+#endif
     if(ignoreTMode) {
       status->tourn=1;
     } else {
@@ -1141,7 +1142,7 @@ struct you_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleSelf");
-#endif DEBUG_SCK
+#endif
     me= &players[packet->pnum];
     me_p = &_state.players[packet->pnum];
     myship = &(me->p_ship);
@@ -1164,7 +1165,7 @@ tors */
 #ifdef nodef    /* tmp */
     else
         me->p_tractor = -1;
-#endif nodef
+#endif
 #endif
 }
 
@@ -1207,7 +1208,7 @@ struct player_spacket *packet;
 
 #ifdef DEBUG_SCK
    DEBUG_SOCKET("handlePlayer");
-#endif DEBUG_SCK
+#endif
    pl= &players[packet->pnum];
    p = &_state.players[packet->pnum];
    if(_state.borg_detect){
@@ -1243,7 +1244,7 @@ struct player_spacket *packet;
 
 #ifdef TMP
    pl->p_updates = ntohl(packet->updates);
-#endif TMP
+#endif
    redrawPlayer[packet->pnum]=1;
 }
 
@@ -1314,13 +1315,13 @@ struct warning_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleWarning");
-#endif DEBUG_SCK
+#endif
     warning(packet->mesg, 0);
 
 #ifdef nodef
     if(strncmp(packet->mesg, "Phasers", 7) == 0)
       _state.lastphaserreq = 0;
-#endif nodef
+#endif
 }
 
 sendShortPacket(type, state)
@@ -1373,7 +1374,7 @@ char type, state;
             }
         }
     }
-#endif ATM
+#endif
 }
 
 #ifdef ATM
@@ -1456,7 +1457,7 @@ send_udp:
             packets_sent ++;
 #endif
             V_UDPDIAG(("Sent %d on UDP port\n", packet->type));
-            if (gwrite(udpSock, packet, size) != size) {
+            if (gwrite(udpSock, (char *) packet, size) != size) {
                 UDPDIAG(("gwrite on UDP failed.  Closing UDP connection\n"));
                 warning("UDP link severed");
                 /*serverDead=1;*/
@@ -1477,7 +1478,7 @@ send_udp:
         }
     }
 }
-#endif ATM
+#endif
 
 handlePlanet(packet)
 struct planet_spacket *packet;
@@ -1486,7 +1487,7 @@ struct planet_spacket *packet;
 
 #ifdef DEBUG_SCK
    DEBUG_SOCKET("handlePlanet");
-#endif DEBUG_SCK
+#endif
 
    plan= &planets[packet->pnum];
 
@@ -1540,7 +1541,7 @@ struct phaser_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePhaser");
-#endif DEBUG_SCK
+#endif
 }
 
 handleMessage(packet)
@@ -1548,7 +1549,7 @@ struct mesg_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleMessage");
-#endif DEBUG_SCK
+#endif
     if (packet->m_from >= MAXPLAYER) packet->m_from=255;
     dmessage(packet->mesg, packet->m_flags, packet->m_from, packet->m_recpt);
 }
@@ -1558,7 +1559,7 @@ struct queue_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleQueue");
-#endif DEBUG_SCK
+#endif
     queuePos = ntohs(packet->pos);
 }
 
@@ -1579,7 +1580,7 @@ struct pickok_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePickok");
-#endif DEBUG_SCK
+#endif
     pickOk=packet->state;
     mprintf("got pickOk = %d\n", pickOk);
 }
@@ -1606,7 +1607,7 @@ struct login_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleLogin");
-#endif DEBUG_SCK
+#endif
     loginAccept=packet->accept;
     if (packet->accept) {
 	bcopy(packet->keymap, mystats->st_keymap, 96);
@@ -1636,7 +1637,7 @@ char pnum;
         fTractor = pnum | 0x40;
     else
         fTractor = 0;
-#endif ATM
+#endif
 
 }
 
@@ -1656,7 +1657,7 @@ char pnum;
         fRepress = pnum | 0x40;
     else
         fRepress = 0;
-#endif ATM
+#endif
 
 }
 
@@ -1679,14 +1680,14 @@ struct plasma_info_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePlasmaInfo");
-#endif DEBUG_SCK
+#endif
    thetorp= &plasmatorps[ntohs(packet->pnum)];
 
 #ifdef ATM
    if(packet->status == PTEXPLODE && thetorp->pt_status == PTFREE){
       return;
    }
-#endif ATM
+#endif
 
    p = &_state.players[thetorp->pt_owner];
    j = &players[thetorp->pt_owner];
@@ -1721,7 +1722,7 @@ struct plasma_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePlasma");
-#endif DEBUG_SCK
+#endif
     thetorp= &plasmatorps[ntohs(packet->pnum)];
 
     /* plasmas seek */
@@ -1742,7 +1743,7 @@ struct flags_spacket *packet;
    unsigned int		pflags;
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleFlags");
-#endif DEBUG_SCK
+#endif
 
    j = &players[packet->pnum];
     redrawPlayer[packet->pnum]=1;
@@ -1772,7 +1773,7 @@ M - visible tractors */
 #ifdef nodef
     else
         players[packet->pnum].p_tractor = -1;
-#endif nodef
+#endif
 #endif
 
 }
@@ -1782,7 +1783,7 @@ struct kills_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleKills");
-#endif DEBUG_SCK
+#endif
     players[packet->pnum].p_kills=ntohl(packet->kills)/100.0;
     updatePlayer[packet->pnum]=1;
 }
@@ -1792,7 +1793,7 @@ struct pstatus_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePStatus");
-#endif DEBUG_SCK
+#endif
     if (packet->status==PEXPLODE) {
 	/*
 	printf("%s exploding.\n", players[packet->pnum].p_name);
@@ -1808,7 +1809,7 @@ struct pstatus_spacket *packet;
     if (packet->status==PDEAD) {
       mprintf("%s dead.\n", players[packet->pnum].p_name);
     }
-#endif nodef
+#endif
 
     players[packet->pnum].p_status=packet->status;
     redrawPlayer[packet->pnum]=1;
@@ -1820,10 +1821,10 @@ struct motd_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleMotd");
-#endif DEBUG_SCK
+#endif
 #ifdef nodef
     newMotdLine(packet->line);
-#endif nodef
+#endif
 }
 
 sendMessage(mes, group, indiv)
@@ -1844,7 +1845,7 @@ struct mask_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleMask");
-#endif DEBUG_SCK
+#endif
     tournMask=packet->mask;
 }
 
@@ -1879,7 +1880,7 @@ int old;
     sockPack.version=(char) SOCKVERSION;
 #ifdef ATM
     sockPack.udp_version=(char) UDPVERSION;
-#endif ATM
+#endif
     sendServerPacket(&sockPack);
     /* Did we get new socket # sent? */
     if (serverDead) return;
@@ -1891,7 +1892,7 @@ struct badversion_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleBadVersion");
-#endif DEBUG_SCK
+#endif
     switch(packet->why) {
     case 0:
 	printf("Sorry, this is an invalid client version.\n");
@@ -1922,7 +1923,7 @@ register int bytes;
 	        perror("write");
                 printUdpInfo();
             }
-#endif ATM
+#endif
             return(-1);
 	}
         bytes -= n;
@@ -1938,7 +1939,7 @@ struct hostile_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleHostile");
-#endif DEBUG_SCK
+#endif
     updatePlayer[packet->pnum]=1;
     pl= &players[packet->pnum];
     pl->p_swar=packet->war;
@@ -1953,7 +1954,7 @@ struct plyr_login_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePlyrLogin");
-#endif DEBUG_SCK
+#endif
     updatePlayer[packet->pnum]=1;
     pl= &players[packet->pnum];
 
@@ -1983,7 +1984,7 @@ struct stats_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleStats");
-#endif DEBUG_SCK
+#endif
     updatePlayer[packet->pnum]=1;
     pl= &players[packet->pnum];
     pl->p_stats.st_tkills=ntohl(packet->tkills);
@@ -2009,7 +2010,7 @@ struct plyr_info_spacket *packet;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePlyrInfo");
-#endif DEBUG_SCK
+#endif
     updatePlayer[packet->pnum]=1;
     pl= &players[packet->pnum];
     getship(&pl->p_ship, packet->shiptype);
@@ -2023,7 +2024,7 @@ struct plyr_info_spacket *packet;
 	calibrate_stats();
 	redrawTstats();
     }
-#endif nodef
+#endif
     redrawPlayer[packet->pnum]=1;
 }
 
@@ -2126,7 +2127,7 @@ static int plc;
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePlanetLoc");
-#endif DEBUG_SCK
+#endif
     pl= &planets[packet->pnum];
     pl->pl_x=ntohl(packet->x);
     pl->pl_y=ntohl(packet->y);
@@ -2145,11 +2146,11 @@ struct reserved_spacket *packet;
    /* TMP */
 #ifdef nodef
    testcl(packet, &response);
-#endif nodef
+#endif
 
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleReserved");
-#endif DEBUG_SCK
+#endif
     if(_state.do_reserved)
        encryptReservedPacket(packet, &response, serverName, me->p_no);
     sendServerPacket(&response);
@@ -2175,7 +2176,7 @@ updateR(j)
    packet.wtemp		= j->p_wtemp;
    packet.whydead	= j->p_whydead;
    packet.whodead	= j->p_whodead;
-#endif nodef
+#endif
 
    /* XXX */
 #ifdef VIS_TRACTOR
@@ -2195,7 +2196,7 @@ sendRPacket(p, s)
    int			s;
 {
    if(rsock != -1)
-      gwrite(rsock, p, s);
+      gwrite(rsock, (char *) p, s);
 }
 
 #ifdef SCANNERS
@@ -2414,7 +2415,7 @@ openUdpConn()
     }
 #ifdef nodef
     set_udp_opts(udpSock);
-#endif nodef
+#endif
 
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_family = AF_INET;
@@ -2433,7 +2434,7 @@ openUdpConn()
         }
 #endif
         addr.sin_port = htons(udpLocalPort);
-        if (bind(udpSock, &addr, sizeof(addr)) >= 0)
+        if (bind(udpSock, (struct sockaddr *) &addr, sizeof(addr)) >= 0)
             break;
     }
     if (attempts == MAX_PORT_RETRY) {
@@ -2489,7 +2490,8 @@ recvUdpConn()
     struct timeval      to;
     struct sockaddr_in  from;
     struct sockaddr_in  addr;
-    int fromlen, res;
+    socklen_t		fromlen;
+    int res;
 
     bzero(&from, sizeof(from));         /* don't get garbage if really broken */
 
@@ -2517,7 +2519,7 @@ select_again:;
         }
     }
 
-    if (recvfrom(udpSock, _buf, BUFSIZ, 0, &from, &fromlen) < 0) {
+    if (recvfrom(udpSock, _buf, BUFSIZ, 0, (struct sockaddr *) &from, &fromlen) < 0) {
         perror("recvfrom");
         UDPDIAG(("recvfrom failed, aborting UDP attempt"));
         return (-1);
@@ -2540,7 +2542,7 @@ select_again:;
     }
 #endif
 
-    if (connect(udpSock, &from, sizeof(from)) < 0) {
+    if (connect(udpSock, (struct sockaddr *) &from, sizeof(from)) < 0) {
         perror("netrek: unable to connect UDP socket after recvfrom()");
         close(udpSock);
         udpSock = -1;
@@ -2568,17 +2570,17 @@ closeUdpConn()
 printUdpInfo()
 {
     struct sockaddr_in addr;
-    int len;
+    socklen_t len;
 
     len = sizeof(addr);
-    if (getsockname(udpSock, &addr, &len) < 0) {
+    if (getsockname(udpSock, (struct sockaddr *) &addr, &len) < 0) {
 /*      perror("printUdpInfo: getsockname");*/
         return;
     }
     UDPDIAG(("LOCAL: addr=0x%x, family=%d, port=%d\n", addr.sin_addr.s_addr,
         addr.sin_family, ntohs(addr.sin_port)));
 
-    if (getpeername(udpSock, &addr, &len) < 0) {
+    if (getpeername(udpSock, (struct sockaddr *) &addr, &len) < 0) {
 /*      perror("printUdpInfo: getpeername");*/
         return;
     }
@@ -2649,7 +2651,7 @@ struct sequence_spacket *packet;
         recent_count = recent_dropped = 0;
     }
 }
-#endif ATM
+#endif
 
 
 handleMasterComm(packet)

@@ -44,7 +44,7 @@ ogg()
       _oggdist = e->hispr-2000;
    else
       _oggdist = 4000;	/* experiment */
-#endif nodef
+#endif
 
    if((MYFUEL() < 10 || MYDAMAGE() > 50) && e->dist > 7000){
       if(DEBUG & DEBUG_OGG)

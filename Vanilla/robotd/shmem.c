@@ -1,5 +1,6 @@
 #include "copyright.h"
 #include <stdio.h>
+#include <strings.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>

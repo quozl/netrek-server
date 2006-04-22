@@ -40,7 +40,7 @@ warfare(type)
       dgo = 0;
       return;
    }
-#endif nodef
+#endif
 
    if(!isAlive(me))
       return;
@@ -316,7 +316,7 @@ planet_from_ppos(j)
    printf("%s not orbiting anything.\n", j->p_name);
    */
    return -1;
-#endif NO_PFORBIT
+#endif
    
    for(i=0, pl=planets; i < MAXPLANETS; i++, pl++){
       if(ABS(pl->pl_x - j->p_x) < 5000 && ABS(pl->pl_y - j->p_y) < 5000)
@@ -350,5 +350,5 @@ phaser_condition(e, edist)
       return 0;
    }
    return 1;
-#endif nodef
+#endif
 }

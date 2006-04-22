@@ -9,9 +9,9 @@
 #include <sys/types.h>
 #ifdef hpux
 #include <time.h>
-#else hpux
+#else
 #include <sys/time.h>
-#endif hpux
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -39,7 +39,7 @@ death()
     udt.it_value.tv_usec = 0;
     setitimer(ITIMER_REAL, &udt, 0);
     signal(SIGALRM, SIG_DFL);
-#endif nodef
+#endif
 
     switch (me->p_whydead) {
     case KQUIT:

@@ -152,4 +152,4 @@ borg_detect()
 	    }
 	 }
       }
-#endif nodef
+#endif

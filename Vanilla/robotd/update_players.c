@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <limits.h>
 #include <math.h>
 #include <sys/types.h>
@@ -215,7 +216,7 @@ update_players()
 #ifdef nodef
       if(DEBUG & DEBUG_ENEMY)
 	 print_player(p);
-#endif nodef
+#endif
 
       p->p_x = j->p_x;	/* last x */
       p->p_y = j->p_y;	/* last y */
@@ -249,7 +250,7 @@ update_players()
       _state.p_subspeed, _state.p_subdir,
       _state.sp_subspeed - _state.p_subspeed,
       _state.sp_subdir - _state.p_subspeed);
-#endif nodef
+#endif
 
    /* update my information */
    _state.last_x	= me->p_x;
@@ -333,7 +334,7 @@ orbit_check(p, j)
 	 }
       }
    }
-#endif nodef
+#endif
 
    if(j->p_flags & PFORBIT){
       j->p_planet = planet_from_ppos(j);
@@ -347,7 +348,7 @@ orbit_check(p, j)
 	    printf("%s orbiting %s\n", j->p_name, 
 	       planets[j->p_planet].pl_name);
 	 }
-#endif nodef
+#endif
       }
       else
 	 p->pl_armies = 0;
@@ -433,7 +434,7 @@ army_check2(p, j)
 	    pl->pl_name);
 	 printf("%s(%d) has %d armies.\n",
 	    j->p_name, j->p_no, p->armies);
-#endif nodef
+#endif
       }
       else{
 	 p->armies += (pa - pl->pl_armies);
@@ -444,7 +445,7 @@ army_check2(p, j)
 	    pl->pl_name);
 	 printf("%s(%d) has %d armies.\n",
 	    j->p_name, j->p_no, p->armies);
-#endif nodef
+#endif
       }
    }
    else{
@@ -459,7 +460,7 @@ army_check2(p, j)
 	    pl->pl_name);
 	 printf("%s(%d) has %d armies.\n",
 	    j->p_name, j->p_no, p->armies);
-#endif nodef
+#endif
       }
    }
    if(p->armies < 0) p->armies = 0;
@@ -1229,7 +1230,7 @@ update_player_density()
 	    else if(p->p == me && dist < 6000){
 	       printf("dens: NOT attacking %s\n", en->p_mapchars);
 	    }
-#endif nodef
+#endif
 	 }
       }
    }
@@ -1256,7 +1257,7 @@ update_player_density()
       }
       printf("\n");
    }
-#endif nodef
+#endif
 }
 
 calc_attackdiff()
@@ -1308,7 +1309,7 @@ calc_attackdiff()
 #ifdef nodef
    /* tmp */
    printf("att %d, def %d\n", at, df);
-#endif nodef
+#endif
 }
 
 /* SSS: speed critical */
@@ -1366,7 +1367,7 @@ Player *getany()
 #ifdef nodef
 	 printf("choosing invisible player with hp %s (%d,%d)\n",
 	    hp->pl_name, hp->pl_x, hp->pl_y);
-#endif nodef
+#endif
 	 p->invisible = 0;	/* xx */
       }
       return p;
@@ -1396,7 +1397,7 @@ Player *getabase()
 #ifdef nodef
 	 printf("choosing invisible player with hp %s (%d,%d)\n",
 	    hp->pl_name, hp->pl_x, hp->pl_y);
-#endif nodef
+#endif
 	 p->invisible = 0;	/* xx */
       }
    }

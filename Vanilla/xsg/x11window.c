@@ -316,17 +316,17 @@ GetColors()
 	    }
 	    if (i==W_Red) {
 		colortable[i].pixmap=XCreatePixmapFromBitmapData(W_Display,
-		    W_Root, striped, TILESIDE, TILESIDE,
+		    W_Root, (char *) striped, TILESIDE, TILESIDE,
 		    white, black,
 		    DefaultDepth(W_Display, W_Screen));
 	    } else if (i==W_Yellow) {
 		colortable[i].pixmap=XCreatePixmapFromBitmapData(W_Display,
-		    W_Root, gray, TILESIDE, TILESIDE,
+		    W_Root, (char *) gray, TILESIDE, TILESIDE,
 		    white, black,
 		    DefaultDepth(W_Display, W_Screen));
 	    } else {
 		colortable[i].pixmap=XCreatePixmapFromBitmapData(W_Display,
-		    W_Root, solid, TILESIDE, TILESIDE, 
+		    W_Root, (char *) solid, TILESIDE, TILESIDE, 
 		    colortable[i].pixelValue,
 		    colortable[i].pixelValue, 
 		    DefaultDepth(W_Display, W_Screen));
@@ -353,7 +353,7 @@ GetColors()
           XAllocColor(W_Display, W_Colormap, &foo);
           colortable[i].pixelValue = foo.pixel;
           colortable[i].pixmap = XCreatePixmapFromBitmapData(W_Display,
-          W_Root, solid, TILESIDE, TILESIDE, foo.pixel, foo.pixel, 
+          W_Root, (char *) solid, TILESIDE, TILESIDE, foo.pixel, foo.pixel, 
           DefaultDepth(W_Display, W_Screen));
         }
     }  else {
@@ -415,7 +415,7 @@ GetColors()
 	    XStoreColor(W_Display, W_Colormap, &foo);
 	    colortable[i].pixelValue = foo.pixel;
 	    colortable[i].pixmap = XCreatePixmapFromBitmapData(W_Display,
-		W_Root, solid, TILESIDE, TILESIDE, foo.pixel, foo.pixel,
+		W_Root, (char *) solid, TILESIDE, TILESIDE, foo.pixel, foo.pixel,
 		DefaultDepth(W_Display, W_Screen));
 	}
     }

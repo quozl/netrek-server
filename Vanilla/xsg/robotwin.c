@@ -4,6 +4,7 @@
 #include "copyright.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/wait.h>

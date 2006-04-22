@@ -10,9 +10,9 @@
 #include <sys/types.h>
 #ifdef hpux
 #include <time.h>
-#else hpux
+#else
 #include <sys/time.h>
-#endif hpux
+#endif
 #include <signal.h>
 #include <errno.h>
 #include "defs.h"
@@ -46,7 +46,7 @@ input()
    udt.it_value.tv_usec = 100000;
    setitimer(ITIMER_REAL, &udt, 0);
    signal(SIGALRM, setflag);
-#endif nodef
+#endif
 
    while (1) {
 
@@ -62,7 +62,7 @@ input()
 	 commSwitchTimeout = 0;
 	 if (udpSock >= 0)
 	    closeUdpConn();
-#endif ATM
+#endif
 
 	 connectToServer(nextSocket);
 	 printf("Yea!  We've been resurrected!\n");

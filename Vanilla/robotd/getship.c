@@ -295,7 +295,7 @@ int s_type;
 	    shipp->s_height = 20;
 	    shipp->s_type = ATT;
 	    break;
-#endif nodef
+#endif
 	default:
 	    shipp->s_turns = 170000;
 	    shipp->s_accint = 150;
@@ -614,7 +614,7 @@ int s_type;
 	    shipp->s_height = 20;
 	    shipp->s_type = ATT;
 	    break;
-#endif nodef
+#endif
 	default:
 	    shipp->s_turns = 170000;
 	    shipp->s_accint = 150;

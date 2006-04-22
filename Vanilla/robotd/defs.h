@@ -227,7 +227,7 @@ char *getdefault();
 /* client version of UDPDIAG */
 #define UDPDIAG(x)      { if (udpDebug) { printf("UDP: "); printf x; }}
 #define V_UDPDIAG(x)    /*UDPDIAG(x)*/
-#endif ATM
+#endif
 
 #define RANDOM()	rand()
 #define SRANDOM(x)	srand(x)

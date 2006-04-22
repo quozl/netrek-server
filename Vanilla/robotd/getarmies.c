@@ -236,7 +236,7 @@ struct planet *find_army_planet(pl)
 #ifdef nodef
       if(k == pl)
 	 continue;
-#endif nodef
+#endif
       if(k->pl_armies < 5)
 	 continue;
 
@@ -244,13 +244,13 @@ struct planet *find_army_planet(pl)
       p = get_nearest_to_pl_dist(k, &hdist);
       if(p && (hdist < 6000 || (hdist < 15000 && edang(p, 64))))
 	 continue;
-#endif nodef
+#endif
 
 #ifdef nodef
       dx = k->pl_x - me->p_x;
       dy = k->pl_y - me->p_y;
       pdist = (int)ihypot(dx,dy);
-#endif nodef
+#endif
       pdist = k->pl_mydist;
 
       if(pdist < mdist){

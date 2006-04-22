@@ -67,7 +67,7 @@ union semun {
 /* file scope prototypes */
 static void check_load(void);
 static int tournamentMode(void);
-static int check_scummers(void);
+static int check_scummers(int);
 static void move(int ignored);
 static void udplayersight(void);
 static void udplayers(void);
@@ -394,7 +394,7 @@ static int tournamentMode(void)
    Nick Trown   12/19/92
 */
 
-static int check_scummers(void)
+static int check_scummers(int verbose)
 {
     int i, j;
     int num;
@@ -443,7 +443,8 @@ static int check_scummers(void)
             }
           }
         }
-        if (num>1){
+        if (num>(check_scum-1)){
+            if (!verbose) return 1;
             pmessage(0,MALL,"GOD->ALL", "*****************************************");
             pmessage(0,MALL,"GOD->ALL","Possible t-mode scummers have been found.");
             pmessage(0,MALL,"GOD->ALL","They have been noted for god to review.");
@@ -553,6 +554,13 @@ static void move(int ignored)
     static int oldtourn=0;
     static int oldmessage;
     int old_robot;
+    static enum ts {
+	    TS_PICKUP, 
+	    TS_SCUMMERS,
+	    TS_BEGIN,
+	    TS_TOURNAMENT,
+	    TS_END
+    } ts = TS_PICKUP;
 
     /* Don't tell us it's time for another move in the middle of a move. */
     (void) SIGNAL(SIGALRM, SIG_IGN);
@@ -618,24 +626,49 @@ static void move(int ignored)
         pmessage(0, MALL, "GOD->ALL","Loading new server configuration.");
     }
 
-    if (tournamentMode()) {
-        if (!oldtourn) {
-            if (check_scum)     
-                check_scummers();               /* NBT */
-            oldmessage=(random() % 8);
+    switch (ts) {
+    case TS_PICKUP:
+	    status->tourn = 0;
+	    if (tournamentMode()) {
+		    ts = TS_BEGIN;
+		    if (check_scum && check_scummers(1))
+			    ts = TS_SCUMMERS;
+	    }
+	    break;
+
+    case TS_SCUMMERS:
+	    status->tourn = 0;
+	    if (!tournamentMode()) {
+		    ts = TS_PICKUP;
+	    } else {
+		    if (!check_scum) {
+			    ts = TS_BEGIN;
+			    break;
+		    }
+		    if (!check_scummers(0))
+			    ts = TS_BEGIN;
+	    }
+	    break;
+
+    case TS_BEGIN:
+	    oldmessage = (random() % 8);
 	    political_begin(oldmessage);
-        }
-        oldtourn=1;
-        status->tourn=1;
-        status->time++;
-        tourntimestamp = ticks;
-    } else {
-        if (oldtourn) {
+	    ts = TS_TOURNAMENT;
+            /* break; */
+
+    case TS_TOURNAMENT:
+            status->tourn = 1;
+            status->time++;
+            tourntimestamp = ticks;
+            if (tournamentMode()) break;
+            ts = TS_END;
+            /* break; */
+
+    case TS_END:
             tourntimestamp = ticks; /* record end of Tmode 8/2/91 TC */
-	    political_end(oldmessage);
-        }
-        oldtourn=0;
-        status->tourn=0;
+            political_end(oldmessage);
+            ts = TS_PICKUP;
+            break;
     }
 
 #ifdef PUCK_FIRST

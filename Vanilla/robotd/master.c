@@ -63,7 +63,7 @@ connect_master(m)
       }
    }
 
-   if(connect(ms, &addr, sizeof(addr)) < 0){
+   if(connect(ms, (struct sockaddr *) &addr, sizeof(addr)) < 0){
       perror("connect");
       close(ms);
       return 0;

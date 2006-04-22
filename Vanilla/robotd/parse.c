@@ -77,7 +77,7 @@ proc_distress_call(p, m)
 #ifdef nodef
    printf("new info gives dam %d, shield %d, armies %d\n",
       PL_DAMAGE(p), PL_SHIELD(p), p->armies);
-#endif nodef
+#endif
    
    /* decide on escort */
 

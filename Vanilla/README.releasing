@@ -1,5 +1,5 @@
 
-$Id: README.releasing,v 1.12 2006/03/01 22:26:48 quozl Exp $
+$Id: README.releasing,v 1.13 2006/04/22 02:16:45 quozl Exp $
 
 Release Procedure
 
@@ -7,8 +7,8 @@ Release Procedure
 cd Vanilla
 
 # set variables
-VS=2.10.2
-VL=v_2_10_2
+VS=2.10.3
+VL=v_2_10_3
 PN=netrek-server-vanilla
 
 # check version numbers in files
@@ -29,6 +29,9 @@ more tmp
 # commit changes
 cvs commit -m "prerelease $VS"
 
+# reduce source tree to only CVS files, or fix .cvsignore
+cvs update > tmp
+
 # tag the release
 cvs tag -F $VL
 cvs tag -F v_release
@@ -48,6 +51,7 @@ tar xfz $PN-$VS.tar.gz
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make
+# FUTURE, test that the tree is returned to pristine condition by distclean
 
 # test install kit
 make install

@@ -102,7 +102,7 @@ int     udpDebug=0;                     /* UDP: debugging info on/off */
 int     udpClientSend=1;                /* UDP: send our packets using UDP? */
 int     udpClientRecv=1;                /* UDP: receive with fat UDP */
 int     udpSequenceChk=1;               /* UDP: check sequence numbers */
-#endif ATM
+#endif
 
 #ifdef SHORT_PACKETS
 int	recv_short = 0;

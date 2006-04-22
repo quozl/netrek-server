@@ -113,7 +113,7 @@ extern int udpDebug;            /* UDP */
 extern int udpClientSend;       /* UDP */
 extern int udpClientRecv;       /* UDP */
 extern int udpSequenceChk;      /* UDP */
-#endif ATM
+#endif
 
 #ifdef SHORT_PACKETS
 extern int recv_short;
