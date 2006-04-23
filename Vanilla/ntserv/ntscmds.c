@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.6 2006/04/10 11:57:00 quozl Exp $
+/* $Id: ntscmds.c,v 1.7 2006/04/23 10:39:10 quozl Exp $
  */
 
 /*
@@ -47,8 +47,6 @@ void do_start_mars(void);
 #endif
 
 #if defined (TRIPLE_PLANET_MAYHEM)
-char *teamNames[9] = {" ", "Federation", "Romulans", " ", "Klingons",
-                      " ", " ", " ", "Orions"};
 void do_balance(void);
 void do_triple_planet_mayhem(void);
 #endif
@@ -608,8 +606,6 @@ void do_genos_query(char *comm, struct message *mess, int who)
 /* ARGSUSED */
 void do_time_msg(char *comm, struct message *mess)
 {
-  char *teamNames[9] = {" ", "Federation", "Romulans", " ", "Klingons", 
-			  " ", " ", " ", "Orions"};
   int who;
   int t;
   char *addr;
@@ -622,7 +618,7 @@ void do_time_msg(char *comm, struct message *mess)
   if (t>MAXTEAM) {
     pmessage(who, MINDIV, addr, "No one is considering surrender now.  Go take some planets.");
   } else {
-    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", teamNames[t],teams[t].s_surrender);
+    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].s_surrender);
   }
 }
 
@@ -730,7 +726,7 @@ static void moveallmsg(int p_no, int ours, int theirs, int p_value)
        "Balance: %16s (slot %c, rating %.2f) is to join the %s",
        k->p_name, shipnos[p_no], 
        (float) ( p_value / 100.0 ),
-       teamNames[ours] );
+       team_name(ours));
 
     /* annoying compiler warning */
     if (theirs) ;
@@ -748,15 +744,15 @@ static void move(int p_no, int ours, int theirs)
     
   if ( k->p_team != ours ) {
     pmessage(k->p_no, MINDIV, addr_mess(k->p_no,MINDIV),
-	     "%s: please SWAP SIDES to the --> %s <--", k->p_name, teamNames[ours] );
+	     "%s: please SWAP SIDES to the --> %s <--", k->p_name, team_name(ours));
   }
   else {
     pmessage(k->p_no, MINDIV, addr_mess(k->p_no,MINDIV),
-	     "%s: please remain with the --> %s <--", k->p_name, teamNames[ours] );
+	     "%s: please remain with the --> %s <--", k->p_name, team_name(ours));
   }
   
   printf("Balance: %16s (%s) is to join the %s\n", 
-	 k->p_name, k->p_mapchars, teamNames[ours]);
+	 k->p_name, k->p_mapchars, team_name(ours));
   
   /* cope with a balance during INL pre-game, if we don't shift players who
      are on the QU_HOME or QU_AWAY queues then the queue masks will force
@@ -1044,8 +1040,8 @@ void do_balance(void)
     {
         pmessage ( 0, MALL, addr_mess(0, MALL),
             "No balance performed, this is the best: %-3s %.2f, %-3s %.2f",
-            teamNames[one], (float) ( best.one / 100.0 ),
-            teamNames[two], (float) ( best.two / 100.0 ) );
+            team_name(one), (float) ( best.one / 100.0 ),
+            team_name(two), (float) ( best.two / 100.0 ) );
     }
     
 }

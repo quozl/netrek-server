@@ -1,4 +1,4 @@
-/* $Id: proto.h,v 1.5 2006/04/22 11:31:53 quozl Exp $
+/* $Id: proto.h,v 1.6 2006/04/23 10:39:10 quozl Exp $
  *
  * Function prototypes for externally accessed functions.
  */
@@ -149,6 +149,7 @@ int removemem(void);
 
 /* orbit.c */
 void orbit(void);
+void orbit_release_by_planet(struct planet *pl);
 
 /* phaser.c */
 void phaser(u_char course);
@@ -239,6 +240,10 @@ void setEnemy(int myteam, struct player *me);
 #endif /* LTD_STATS */
 int find_slot_by_host(char *host, int j);
 int mprintf(char *format, ...);
+char *team_name(int team);
+char *team_verb(int team);
+char *team_code(int team);
+int team_find(char *name);
 
 /* warning.c */
 void new_warning(int index, const char *fmt, ...);

@@ -121,7 +121,6 @@ static void fork_robot(int robot);
 static void doResources(void);
 /* static void doRotateGalaxy(void); */
 static void signal_servers(void);
-/* static void message_flag(struct message *cur, char *address); */
 
 /* external scope prototypes */
 extern void pinit(void);
@@ -138,10 +137,6 @@ static struct sembuf pucksem_op[1];
 static int debug = 0;
 static int ticks = 0;
 static int tourntimestamp = 0; /* ticks since last Tmode 8/2/91 TC */
-
-char *teamNames[9] = {" ", "Federation", "Romulans", " ", "Klingons", 
-                      " ", " ", " ", "Orions"};
-char *teamVerbage[9] = {" ", "has", "have", " ", "have", " ", " ", " ", "have"};
 
 static int tcount[MAXTEAM + 1];
 u_char getbearing();
@@ -2516,7 +2511,7 @@ static void udsurrend(void)
 
             pmessage(0, MALL, " ", " ");
             pmessage(0, MALL, "GOD->ALL", "The %s %s surrendered.",
-                teamNames[t], teamVerbage[t]);
+                team_name(t), team_verb(t));
             pmessage(0, MALL, " ", " ");
             surrenderMessage(t);
             
@@ -2563,7 +2558,7 @@ static void udsurrend(void)
             if ((teams[t].s_surrender % 5) == 0) {
                 pmessage(0, MALL, " ", " ");
                 pmessage(0, MALL, "GOD->ALL", "The %s %s %d minutes remaining.",
-                        teamNames[t], teamVerbage[t],
+                        team_name(t), team_verb(t),
                         teams[t].s_surrender);
 
                 pmessage(0, MALL, "GOD->ALL", "%d planets will sustain the empire.  %d suspends countdown.",
@@ -3639,7 +3634,7 @@ static void checkgen(int loser, struct player *winner)
         pmessage(0, MALL, " ", " ");
         pmessage(0, MALL, "GOD->ALL",
                 "The %s %s %d minutes before the empire collapses.",
-                teamNames[loser], teamVerbage[loser],
+                team_name(loser), team_verb(loser),
                 binconfirm ? SURRLENGTH : SURRLENGTH*2/3);
         pmessage(0, MALL, "GOD->ALL",
                 "%d planets are needed to sustain the empire.",
@@ -3766,7 +3761,7 @@ static int checkwin(struct player *winner)
         pmessage(0, MALL, " ", " ");
         pmessage(0, MALL, "GOD->ALL",
                 "The %s %s prevented collapse of the empire.",
-                teamNames[winner->p_team], teamVerbage[winner->p_team]);
+                team_name(winner->p_team), team_verb(winner->p_team));
         pmessage(0, MALL, " ", " ");
         teams[winner->p_team].s_surrender = 0; /* stop the clock */
     }
@@ -4124,20 +4119,10 @@ static void surrenderMessage(int loser)
     strcat(buf, ctime(&curtime));
     fprintf(conqfile,"  %s\n",buf);
 
-    sprintf(buf, "The %s %s surrendered.", teamNames[loser],
-        teamVerbage[loser]);
+    sprintf(buf, "The %s %s surrendered.", team_name(loser),
+        team_verb(loser));
         
     fprintf(conqfile, "  %s\n", buf);
-/*    sprintf(buf, "The %s:", teamNames[winner]);
-    pmessage(0, MALL | MGENO, " ",buf);
-    fprintf(conqfile, "  %s\n", buf);
-    displayBest(conqfile, winner, KGENOCIDE);*/
-/*    sprintf(buf, "The %s:", teamNames[loser]);
-    pmessage(0, MALL | MGENO, " ",buf);
-    fprintf(conqfile, "  %s\n", buf);
-    displayBest(conqfile, loser, KGENOCIDE);
-    pmessage(0, MALL | MGENO, " ",
-        "***********************************************************");*/
     fprintf(conqfile, "\n");
     if (conqfile != stderr) fclose(conqfile);
 }
@@ -4159,16 +4144,16 @@ static void genocideMessage(int loser, int winner)
 
     pmessage(0, MALL | MGENO, " ","%s",
         "***********************************************************");
-    sprintf(buf, "The %s %s been genocided by the %s.", teamNames[loser],
-        teamVerbage[loser], teamNames[winner]);
+    sprintf(buf, "The %s %s been genocided by the %s.", team_name(loser),
+        team_verb(loser), team_name(winner));
     pmessage(0, MALL | MGENO, " ","%s",buf);
         
     fprintf(conqfile, "  %s\n", buf);
-    sprintf(buf, "The %s:", teamNames[winner]);
+    sprintf(buf, "The %s:", team_name(winner));
     pmessage(0, MALL | MGENO, " ","%s",buf);
     fprintf(conqfile, "  %s\n", buf);
     displayBest(conqfile, winner, KGENOCIDE);
-    sprintf(buf, "The %s:", teamNames[loser]);
+    sprintf(buf, "The %s:", team_name(loser));
     pmessage(0, MALL | MGENO, " ","%s",buf);
     fprintf(conqfile, "  %s\n", buf);
     displayBest(conqfile, loser, KGENOCIDE);
@@ -4195,10 +4180,10 @@ static void conquerMessage(int winner)
 
     pmessage(0, MALL | MCONQ, " ","%s",
         "***********************************************************");
-    sprintf(buf, "The galaxy has been conquered by the %s:", teamNames[winner]);
+    sprintf(buf, "The galaxy has been conquered by the %s:", team_name(winner));
     pmessage(0, MALL | MCONQ, " ","%s",buf);
     fprintf(conqfile, "  %s\n", buf);
-    sprintf(buf, "The %s:", teamNames[winner]);
+    sprintf(buf, "The %s:", team_name(winner));
     pmessage(0, MALL | MCONQ, " ","%s",buf);
     fprintf(conqfile, "  %s\n", buf);
     displayBest(conqfile, winner, KWINNER);

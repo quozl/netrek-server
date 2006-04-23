@@ -77,8 +77,6 @@ int do_start_mars();
 #endif
 
 #if defined (TRIPLE_PLANET_MAYHEM)
-char *teamNames[9] = {" ", "Federation", "Romulans", " ", "Klingons",
-                      " ", " ", " ", "Orions"};
 int do_balance();
 int do_triple_planet_mayhem();
 #endif
@@ -622,7 +620,7 @@ static void moveallmsg ( int p_no, int ours, int theirs )
     struct player *k = &players[p_no];
     pmessage(0, MALL, "GOD->ALL",
        "Balance: %16s (%c%c) is to join the %s",
-       k->p_name, teamlet[k->p_team], shipnos[p_no], teamNames[ours] );
+       k->p_name, teamlet[k->p_team], shipnos[p_no], team_name(ours));
 }
 
 /*
@@ -638,15 +636,15 @@ move(int p_no, int ours, int theirs)
   
   if ( k->p_team != ours ) {
     pmessage(k->p_no, MINDIV, addr_mess(k->p_no,MINDIV),
-	     "%s: please SWAP SIDES to the %s", k->p_name, teamNames[ours] );
+	     "%s: please SWAP SIDES to the %s", k->p_name, team_name(ours));
   }
   else {
     pmessage(k->p_no, MINDIV, addr_mess(k->p_no,MINDIV),
-	     "%s: please remain with the %s", k->p_name, teamNames[ours] );
+	     "%s: please remain with the %s", k->p_name, team_name(ours));
   }
   
   printf("Balance: %16s (%s) is to join the %s\n", 
-	 k->p_name, k->p_mapchars, teamNames[ours]);
+	 k->p_name, k->p_mapchars, team_name(ours));
   
   /* cope with a balance during INL pre-game, if we don't shift players who
      are on the QU_HOME or QU_AWAY queues then the queue masks will force
@@ -912,12 +910,12 @@ int do_balance(void)
     /* advise all of resultant team mix difference */
     pmessage ( 0, MALL, "GOD->ALL",
         "The %s total rating will be %.2f",
-        teamNames[one],
+        team_name(one),
         (float) ( best.one / 100.0 ) );
 
     pmessage ( 0, MALL, "GOD->ALL",
         "The %s total rating will be %.2f",
-        teamNames[two],
+        team_name(two),
         (float) ( best.two / 100.0 ) );
 
     return 0;
@@ -1262,13 +1260,11 @@ char *addr_mess(who,type)
 int who,type;
 {
     static char addrbuf[10];
-    char* team_names[MAXTEAM+1] = { "", "FED", "ROM", "", "KLI",
-                                 "", "", "", "ORI" };
 
     if (type == MALL) 
       sprintf(addrbuf,"%s->ALL", myname);
     else if (type == MTEAM)
-      sprintf(addrbuf,"%s->%3s", myname, team_names[who]);
+      sprintf(addrbuf,"%s->%3s", myname, team_code(who));
     else /* Assume MINDIV */
       sprintf(addrbuf, "%s->%2s", myname, players[who].p_mapchars);
 
@@ -1618,8 +1614,6 @@ do_time_msg(comm,mess)
 char *comm;
 struct message *mess;
 {
-  char *teamNames[9] = {" ", "Federation", "Romulans", " ", "Klingons", 
-			  " ", " ", " ", "Orions"};
   int who;
   int t;
   char *addr;
@@ -1632,7 +1626,7 @@ struct message *mess;
   if (t>MAXTEAM) {
     pmessage(who, MINDIV, addr, "No one is considering surrender now.  Go take some planets.");
   } else {
-    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", teamNames[t],teams[t].s_surrender);
+    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].s_surrender);
   }
 }
 

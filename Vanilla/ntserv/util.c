@@ -126,3 +126,44 @@ int find_slot_by_host(char *host, int j)
 #endif
   return -1;
 }
+
+char *team_name(int team) {
+  char *array[MAXTEAM+1] = { "0", "Federation", "Romulans", "3", "Klingons", 
+			     "5", "6", "7", "Orions" };
+  return array[team];
+}
+
+char *team_verb(int team) {
+  char *array[MAXTEAM+1] = { "0", "has", "have", "3", "have",
+			     "5", "6", "7", "have" };
+  return array[team];
+}
+
+char *team_code(int team) {
+  char *array[MAXTEAM+1] = { "0", "FED", "ROM", "3", "KLI",
+			     "5", "6", "7", "ORI" };
+  return array[team];
+}
+
+int team_find(char *name)
+{
+  if (!strncasecmp(name,team_name(FED),strlen(name))) return FED;
+  if (!strncasecmp(name,team_name(ROM),strlen(name))) return ROM;
+  if (!strncasecmp(name,team_name(KLI),strlen(name))) return KLI;
+  if (!strncasecmp(name,team_name(ORI),strlen(name))) return ORI;
+  return 0;
+}
+
+void orbit_release_by_planet(struct planet *pl) {
+  int i;
+  for (i=0; i<MAXPLAYER; i++) {
+    struct player *me = &players[i];
+    if (me->p_status & PFREE) continue;
+    if (me->p_flags & PFOBSERV) continue;
+    if (me->p_flags & PFORBIT) {
+      if (me->p_planet == pl->pl_no) {
+	me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+      }
+    }
+  }
+}

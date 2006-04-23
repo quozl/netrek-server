@@ -33,9 +33,6 @@ int debug=0;
 
 char *roboname = "Kathy";
 
-static char *teamNames[9] = {" ", "Federation", "Romulans", " ", "Klingons",
-                              " ", " ", " ", "Orions"};
-
 #define NUMADJ 12
 static char    *adj_s[NUMADJ] = {
     "VICIOUS", "RUTHLESS", "IRONFISTED", "RELENTLESS",
@@ -675,7 +672,7 @@ static void checkPreTVictory() {
     if(o>=13) winner = ORI;
 
     if(winner > 0) {
-        messAll(255,roboname,"The %s have won this round of pre-T entertainment!", teamNames[winner]);
+        messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
         obliterate(1,KPROVIDENCE, 0);
         resetPlanets();
     }
