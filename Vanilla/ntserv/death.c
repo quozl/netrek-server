@@ -42,9 +42,14 @@ void death(void)
     case TOURNEND:
     case TOURNSTART:
 	break;
+    case KWINNER:
+        if ((queues[QU_PICKUP].q_flags & QU_OPEN) &&
+	    (queues[QU_PICKUP].count > 0)){
+	  mustexit = 1;
+	}
+	break;
     case KQUIT:
     case KDAEMON:
-    case KWINNER:
     case KOVER:
     case KBADBIN:
 	mustexit = 1;

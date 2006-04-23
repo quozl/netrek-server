@@ -97,6 +97,7 @@ struct status {
 #define pre_t_mode ((status->gameup) & GU_PRET)
 #define GU_BOT_IN_GAME 128
 #define bot_in_game ((status->gameup) & GU_BOT_IN_GAME)
+#define GU_GLOAT_CONQUER 256
 
 /* values of p_status */
 #define PFREE 		   0x0000
@@ -177,6 +178,7 @@ struct team {
     int s_turns;		/* turns till another starbase is legal */
     int s_surrender;		/* minutes until this team surrenders */
     int s_plcount;		/* how many planets this team owns */
+    /* FIXME: global change s_ prefix to te_ prefix */
 };
 
 struct ship {

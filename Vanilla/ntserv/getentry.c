@@ -144,6 +144,7 @@ void getEntry(int *team, int *stype)
 		(me->p_team != ALLTEAM) && 
 		(switching != teamPick) && 
 		(me->p_whydead != KGENOCIDE) && 
+		(me->p_whydead != KWINNER) && 
 		(me->p_whydead != KPROVIDENCE) ) {
 		    switching = teamPick;
                     new_warning(10,"Please confirm change of teams.  Select the new team again.");
@@ -277,7 +278,7 @@ static int tournamentMask(int team, int w_queue)
     /* Is the server closed, or did the daemond die. */
     if ((!time_access()) || !(status->gameup & GU_GAMEOK)) return 0;
     /* You must leave */
-    if (mustexit) return (0);
+    if (mustexit) return 0;
     /* Special modes */
     if (chaos || topgun) return (allteams);
     /* Only continue if the queue has mask restrictions */

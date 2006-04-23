@@ -1,3 +1,6 @@
+- change to conquest sequence to add a parade [Cameron]
+- fix unrealistic robot boredom timer [Cameron]
+- add galaxy configuration tool, setplanet [Cameron]
 - move common code into a libnetrek [Cameron]
 - lesser lights minimal compilation target [Cameron]
 - factorise god log access functions [Cameron]

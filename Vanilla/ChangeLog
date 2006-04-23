@@ -1,3 +1,17 @@
+Sun Apr 23 23:20:15 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/daemonII.c (checkwin): change to conquest sequence,
+	instead of merely blowing everybody up, pause the game for a few
+	seconds, during which cloakers are decloaked, weapons don't fire,
+	ships are placed in a circular parade formation around the final
+	planet, and then blown up.  Also, if there is no queue, do not
+	force the players to exit their client.
+
+	* include/struct.h: add new gameup flag.
+	* ntserv/death.c: allow winners to stay on if no queue.
+	* ntserv/detonate.c, ntserv/phaser.c, ntserv/torp.c: no firing.
+	* ntserv/getentry.c: allow winners to change teams.
+
 Sun Apr 23 22:46:42 2006  James Cameron  <quozl@us.netrek.org>
 
 	* robots/rmove.c (BOREDOM_TIME): fix unrealistic boredom timer for
@@ -1882,4 +1896,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.30 2006/04/23 12:47:45 quozl Exp $
+	$Id: ChangeLog,v 1.31 2006/04/23 13:30:39 quozl Exp $
