@@ -1,4 +1,4 @@
-/* setgalaxy.c -- new tool, supercedes resetplanets
+/* setgalaxy.c
 
    usage:
    setgalaxy l              restore planet locations
@@ -12,28 +12,12 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <sys/file.h>
-#include <math.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
 #include "defs.h"
-#include INC_STRINGS
 #include "struct.h"
 #include "planets.h"
 #include "data.h"
+#include "proto.h"
 
-extern int openmem(int);
-
-static void usage(void);
 static void CoolServerIdea(void);
 static void CloseUpShop(void);
 static void doINLResources(void);
@@ -42,6 +26,19 @@ static void doResources(void);
 static int agricount[4] = { 0, 0, 0, 0};
 #define AGRI_LIMIT	3
 
+static void usage(void)
+{
+    printf("   usage:\n");
+    printf("   setgalaxy l              restore planet locations\n");
+    printf("   setgalaxy r (num)        standard reset of galaxy\n");
+    printf("   setgalaxy t (num)        tourney reset of galaxy - equal agris\n");
+    printf("   setgalaxy f              flatten all planets to 1 army\n");
+    printf("   setgalaxy F (num)        top out all planets at (num) armies\n");
+    printf("   setgalaxy n <num>:<str>  rename planet <num> to <str>\n");
+    printf("   setgalaxy C              triple planet mayhem\n");
+    printf("   setgalaxy Z              close up shop for maintenance\n");
+}
+
 int main(int argc, char **argv)
 {
     int i;
@@ -49,7 +46,7 @@ int main(int argc, char **argv)
 
     srandom(getpid());
     openmem(0);
-    if (argc == 1) usage();
+    if (argc == 1) { usage(); return 1; }
 
     if (argc == 3) {
       if ((*argv[1] == 'F') || (*argv[1] == 'r') || (*argv[1] == 't')) 
@@ -64,23 +61,25 @@ int main(int argc, char **argv)
 		strcpy(planets[num].pl_name, name);
 		planets[num].pl_namelen = strlen(name);
 		planets[num].pl_flags |= PLREDRAW;
-	    }
-	    else
+	    } else {
 		printf("Planet number must be in range (0-39).\n");
-	    exit(0);
+		return 1;
+	    }
+	    return 0;
+	} else {
+	  usage(); return 1;
 	}
-	else usage();
       }
     }
  
     if (*argv[1] == 'C') {
         CoolServerIdea();
-        exit(0);
+        return 0;
     }
 
     if (*argv[1] == 'Z') {
         CloseUpShop();
-        exit(0);
+        return 0;
     }
 
     if (*argv[1] == 'l') {
@@ -89,7 +88,7 @@ int main(int argc, char **argv)
 	    planets[i].pl_y = pdata[i].pl_y;
 	}
 	printf("Restored locations.\n");
-	exit(0);
+	return 0;
     }
 
     if (*argv[1] == 'f') { /* flatten planets */
@@ -97,26 +96,32 @@ int main(int argc, char **argv)
 	    planets[i].pl_armies = 1;
 	}
 	printf("All planets set to 1 army.\n");
+	return 0;
     }
-    else if (*argv[1] == 'F') { /* top out planets */
+
+    if (*argv[1] == 'F') { /* top out planets */
 	for (i = 0; i < 40; i++) {
 	    planets[i].pl_armies = top_armies;
 	}
 	printf("All planets set to %d armies.\n",top_armies);
+	return 0;
     }
-    else if (*argv[1] == 't') { /* tourney reset resources, owners */
+
+    if (*argv[1] == 't') { /* tourney reset resources, owners */
 	MCOPY(pdata, planets, sizeof(pdata));
 	for (i = 0; i < 40; i++) {
 	    planets[i].pl_armies = top_armies;
 	}
 	doINLResources();
-    /* reset the SB construction and surrender countdown immediately */
+	/* reset the SB construction and surrender countdown immediately */
 	for (i = 0; i <= MAXTEAM; i++) {
 	  teams[i].s_turns = 0;
 	  teams[i].s_surrender = 0;
 	}
+	return 0;
     }
-    else if (*argv[1] == 'r') { /* reset resources, owners */
+
+    if (*argv[1] == 'r') { /* reset resources, owners */
 	MCOPY(pdata, planets, sizeof(pdata));
 	for (i = 0; i < 40; i++) {
 	    planets[i].pl_armies = top_armies;
@@ -124,14 +129,16 @@ int main(int argc, char **argv)
 	doResources();
 	printf("Agri counts: %d/%d/%d/%d.\n", agricount[0],
 	       agricount[1], agricount[2], agricount[3]);
-    /* reset the SB construction and surrender countdown immediately */
+	/* reset the SB construction and surrender countdown immediately */
 	for (i = 0; i <= MAXTEAM; i++) {
 	  teams[i].s_turns = 0;
 	  teams[i].s_surrender = 0;
 	}
+	return 0;
     }
-    else usage();
-    return 1;		/* satisfy lint */
+
+    usage();
+    return 1;
 }
 
 /* the four close planets to the home planet */
@@ -225,21 +232,6 @@ static void doResources(void)
            (agricount[1] > AGRI_LIMIT) ||
            (agricount[2] > AGRI_LIMIT) ||
            (agricount[3] > AGRI_LIMIT));
-}
-
-
-static void usage(void)
-{
-    printf("   usage:\n");
-    printf("   setgalaxy l              restore planet locations\n");
-    printf("   setgalaxy r (num)        standard reset of galaxy\n");
-    printf("   setgalaxy t (num)        tourney reset of galaxy - equal agris\n");
-    printf("   setgalaxy f              flatten all planets to 1 army\n");
-    printf("   setgalaxy F (num)        top out all planets at (num) armies\n");
-    printf("   setgalaxy n <num>:<str>  rename planet <num> to <str>\n");
-    printf("   setgalaxy C              triple planet mayhem\n");
-    printf("   setgalaxy Z              close up shop for maintenance\n");
-    exit(0);
 }
 
 static void CoolServerIdea(void)
