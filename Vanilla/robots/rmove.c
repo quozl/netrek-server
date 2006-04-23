@@ -13,10 +13,7 @@
 #define SIZEOF(s)		(sizeof (s) / sizeof (*(s)))
 #define AVOID_TIME		4
 #define AVOID_CLICKS		200
-
-#define BOREDOM_TIME		1200 /* 10 minutes since last torp fired =>
-					become hostile to all 4/13/92 TC */
-
+#define BOREDOM_TIME		300
 #define NORMALIZE(d) 		(((d) + 256) % 256)
 
 #define E_INTRUDER	0x01

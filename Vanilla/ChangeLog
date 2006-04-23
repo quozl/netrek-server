@@ -1,3 +1,8 @@
+Sun Apr 23 22:46:42 2006  James Cameron  <quozl@us.netrek.org>
+
+	* robots/rmove.c (BOREDOM_TIME): fix unrealistic boredom timer for
+	practice robots.
+
 Sun Apr 23 21:24:07 2006  James Cameron  <quozl@us.netrek.org>
 
 	* tools/xtkill.c: move usage to top, remove excess includes.
@@ -1877,4 +1882,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.29 2006/04/23 11:24:53 quozl Exp $
+	$Id: ChangeLog,v 1.30 2006/04/23 12:47:45 quozl Exp $
