@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <signal.h>
-#include <setjmp.h>
-#include <sys/file.h>
-#include <math.h>
-#include <sys/ipc.h>
-#include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -19,6 +10,32 @@ static void Usage(void);
 static void _pmessage(char *str, int recip, int group);
 
 static char *names[] = { "Neutral", "Fed", "Rom", "", "Kli", "", "", "", "Ori"};
+
+static void Usage(void)
+{
+  printf("\
+    xtkill [0-9a-z] <mode><mode option>\n\
+\n\
+    where <mode> is one of :\n\
+      F(ree slot)                   (bypasses 6 minute ghostbuster timeout)\n\
+      e(ject from game)             (simulates self-destruct)\n\
+      (no mode == obliterate)\n\
+      s(hip class change)[abcdosA]  (A = ATT)\n\
+      t(eleport to quadrant)[frkoc] (c = center of galaxy)\n\
+      p(uck)                        (harmless little thing)\n\
+      S(uper)                       (big shields/max damage/max etmp)\n\
+      T(eam change)[frko]           (no team == independent)\n\
+      D(emote)                      (-1 to rank)\n\
+      P(romote)                     (+1 to rank)\n\
+      k(ills increment)             (+1 kill)\n\
+      h(arm)                        (no shields, 50%% damage)\n\
+      a(rmies increment)[n]         (+6 armies, or set to n)\n\
+      C(lock, surrender -- set it)  (to 6 minutes (debugging aid))\n\
+      L(oss adjust, SB (-1))        (in case you toast an SB accidentally)\n\
+      R(obot obliterate)            (like obliterate, but only for robots)\n\
+");
+  exit(1);
+}
 
 static void refit(struct player *me, int type)
 {
@@ -313,28 +330,3 @@ static void _pmessage(char *str, int recip, int group)
   cur->m_flags |= MVALID;
 }
 
-static void Usage(void)
-{
-  printf("\
-    xtkill [0-9a-z] <mode><mode option>\n\
-\n\
-    where <mode> is one of :\n\
-      F(ree slot)                   (bypasses 6 minute ghostbuster timeout)\n\
-      e(ject from game)             (simulates self-destruct)\n\
-      (no mode == obliterate)\n\
-      s(hip class change)[abcdosA]  (A = ATT)\n\
-      t(eleport to quadrant)[frkoc] (c = center of galaxy)\n\
-      p(uck)                        (harmless little thing)\n\
-      S(uper)                       (big shields/max damage/max etmp)\n\
-      T(eam change)[frko]           (no team == independent)\n\
-      D(emote)                      (-1 to rank)\n\
-      P(romote)                     (+1 to rank)\n\
-      k(ills increment)             (+1 kill)\n\
-      h(arm)                        (no shields, 50%% damage)\n\
-      a(rmies increment)[n]         (+6 armies, or set to n)\n\
-      C(lock, surrender -- set it)  (to 6 minutes (debugging aid))\n\
-      L(oss adjust, SB (-1))        (in case you toast an SB accidentally)\n\
-      R(obot obliterate)            (like obliterate, but only for robots)\n\
-");
-  exit(1);
-}
