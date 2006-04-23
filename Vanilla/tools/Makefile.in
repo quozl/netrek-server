@@ -32,13 +32,13 @@ SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/update.c ${srcdir}/convert.c \
 	${srcdir}/conq_vert.c $(RANDOMC) \
 	${srcdir}/sortdb.c \
-	${srcdir}/ntpasswd.c
+	${srcdir}/ntpasswd.c ${srcdir}/setplanet.c 
 
 EXECS =	blotpassword loadchecker mess message newscores planets players \
 	scores \
         setgalaxy showgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
-        ntpasswd ltd_dump ltd_convert nuke trekon metaget
+        ntpasswd ltd_dump ltd_convert nuke trekon metaget setplanet
 
 all: $(PMAKE) $(EXECS)
 
@@ -78,6 +78,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
 	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
 	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/tools/metaget
+	$(INSTALLPROG) $(INSTALLOPTS) setplanet $(DESTDIR)$(LIBDIR)/tools/metaget
 
 cambot: cambot.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)
@@ -159,6 +160,9 @@ conq_vert: conq_vert.o
 
 metaget: metaget.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o
+
+setplanet: setplanet.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setplanet.o $(OBJS)
 
 trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
 	${srcdir}/mktrekon $(LIBDIR)

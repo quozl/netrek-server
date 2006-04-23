@@ -1,3 +1,7 @@
+Sun Apr 23 21:22:04 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/Makefile.in, tools/setplanet.c: new CLI planet interface.
+
 Sun Apr 23 21:18:08 2006  James Cameron  <quozl@us.netrek.org>
 
 	* tools/setgalaxy.c: reduce includes to minimum required, fix
@@ -1869,4 +1873,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.27 2006/04/23 11:21:01 quozl Exp $
+	$Id: ChangeLog,v 1.28 2006/04/23 11:22:53 quozl Exp $
