@@ -53,7 +53,7 @@ void ntorp(u_char course, int attributes)
   static LONG last_torp_fired_update = 0;
   struct torp *k;
 
-  if (status->gameup & GU_GLOAT_CONQUER) return;
+  if (status->gameup & GU_CONQUER) return;
 
   /*
    * Prevent player from firing more than one torp per update.  */

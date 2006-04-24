@@ -97,7 +97,7 @@ struct status {
 #define pre_t_mode ((status->gameup) & GU_PRET)
 #define GU_BOT_IN_GAME 128
 #define bot_in_game ((status->gameup) & GU_BOT_IN_GAME)
-#define GU_GLOAT_CONQUER 256
+#define GU_CONQUER 256			/* conquest parade in progress	*/
 
 /* values of p_status */
 #define PFREE 		   0x0000

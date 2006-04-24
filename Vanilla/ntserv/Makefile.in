@@ -43,7 +43,8 @@ R_OBJS =    cluecheck.o coup.o db.o death.o detonate.o enter.o \
 
 D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  slotmaint.o \
 	    util.o  $(RANDOMO) getship.o smessage.o  queue.o \
-	    wander2.o openmem.o solicit.o ltd_stats.o libnetrek.a
+	    wander2.o openmem.o solicit.o ltd_stats.o conquer.o \
+	    libnetrek.a
 
 #	Src files
 

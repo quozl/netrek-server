@@ -29,7 +29,7 @@ void phaser(u_char course)
   U_LONG range_sq, this_range_sq;
   struct phaser *mine = &phasers[me->p_no];
 
-  if (status->gameup & GU_GLOAT_CONQUER) return;
+  if (status->gameup & GU_CONQUER) return;
 
   if (mine->ph_status != PHFREE) {
     new_warning(32, "Phasers have not recharged.");

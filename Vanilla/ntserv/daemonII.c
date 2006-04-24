@@ -101,7 +101,6 @@ static void blowup(struct player *sh);
 static void exitDaemon(int sig);
 static void save_planets(void);
 static void checkgen(int loser, struct player *winner);
-static void gloat_conquer_timer();
 static int checkwin(struct player *winner);
 static void ghostmess(struct player *victim);
 static void saveplayer(struct player *victim);
@@ -119,7 +118,7 @@ static void genocideMessage(int loser, int winner);
 static void conquerMessage(int winner);
 static void displayBest(FILE *conqfile, int team, int type);
 static void fork_robot(int robot);
-static void doResources(void);
+void doResources(void);
 /* static void doRotateGalaxy(void); */
 static void signal_servers(void);
 
@@ -569,7 +568,7 @@ static void move(int ignored)
     if (status->gameup & GU_PAUSED){ /* Game is paused */
       if (fuse(PLAYERFUSE))
         udplayerpause();
-      if (status->gameup & GU_GLOAT_CONQUER) gloat_conquer_timer();
+      if (status->gameup & GU_CONQUER) conquer_update();
       signal_servers();
       (void) SIGNAL(SIGALRM, move);
       return;
@@ -3710,106 +3709,6 @@ static void checkgen(int loser, struct player *winner)
     /* constants (now in defs.h).  30-60 min for a coup.  4/15/92 TC */
 }
 
-#define GLOAT_TIMER_BEGIN 100
-#define GLOAT_TIMER_DECLOAK 90
-#define GLOAT_TIMER_PARADE 40
-#define GLOAT_TIMER_GOODBYE 10
-
-int gloat_player;
-int gloat_planet;
-int gloat_timer;
-
-static void gloat_conquer_decloak()
-{
-	int h;
-	struct player *j;
-
-	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
-		if (j->p_flags & PFCLOAK) {
-			j->p_flags &= ~PFCLOAK;
-			// players[i].p_cloakphase--;
-		}
-	}
-}
-
-static void gloat_conquer_parade()
-{
-	int i, h;
-	struct player *j;
-
-	for (i = 0, h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
-		if (j->p_no == gloat_player) continue;
-		i++;
-	}
-	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
-		if (j->p_no == gloat_player) continue;
-		j->p_dir = h*256/i;
-		j->p_desdir = j->p_dir;
-		j->p_x = planets[gloat_planet].pl_x + (ORBDIST * 5)
-                        * Cos[(u_char) (j->p_dir - (u_char) 64)];
-		j->p_y = planets[gloat_planet].pl_y + (ORBDIST * 5)
-                        * Sin[(u_char) (j->p_dir - (u_char) 64)];
-	}
-}
-
-static void gloat_conquer_kill()
-{
-	int h;
-	struct player *j;
-
-	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
-#ifdef NEWBIESERVER
-                /* Don't kill newbie robot. */
-                if (status->gameup & GU_NEWBIE && j->p_flags & PFROBOT) continue;
-#endif
-#ifdef PRETSERVER
-                /* Don't kill pre-T robot. */
-                if (status->gameup & GU_PRET && j->p_flags & PFROBOT) continue;
-#endif
-                j->p_status = PEXPLODE;
-                j->p_whydead = KWINNER;
-                j->p_whodead = gloat_player;
-                if (j->p_ship.s_type == STARBASE)
-			j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-                else
-			j->p_explode = 10/PLAYERFUSE;
-                j->p_ntorp = 0;
-                j->p_nplasmatorp = 0;
-	}
-}
-
-static void gloat_conquer_reset()
-{
-	int i;
-
-	doResources();
-	ERROR(2,("Resetting galaxy after Conquer.\n"));
-	for (i = 0; i <= MAXTEAM; i++) {
-                teams[i].s_turns = 0;
-                teams[i].s_surrender = 0;
-	}
-}
-
-static void gloat_conquer_timer()
-{
-	gloat_timer--;
-	if (gloat_timer == GLOAT_TIMER_DECLOAK)
-		gloat_conquer_decloak();
-	if (gloat_timer == GLOAT_TIMER_PARADE)
-		gloat_conquer_parade();
-	if (gloat_timer == GLOAT_TIMER_GOODBYE)
-		pmessage(0, MALL, "GOD->ALL", "Goodbye.");
-	if (gloat_timer > 0) return;
-	
-	status->gameup &= ~(GU_PAUSED|GU_GLOAT_CONQUER);
-	gloat_conquer_kill();
-	gloat_conquer_reset();
-}
-
 /* This function is called when a planet has been taken over.
    It checks all the planets to see if the victory conditions
    are right.  If so, it blows everyone out of the game and
@@ -3869,10 +3768,7 @@ static int checkwin(struct player *winner)
     for (i = 0; i < 4; i++) {
         if (team[1<<i] >= VICTORY) {
             conquerMessage(winner->p_team);
-	    status->gameup |= GU_GLOAT_CONQUER|GU_PAUSED;
-	    gloat_player = winner->p_no;
-	    gloat_planet = winner->p_planet;
-	    gloat_timer = GLOAT_TIMER_BEGIN;
+	    conquer_begin(winner);
 	    return 1;
         }
     }
@@ -4393,7 +4289,7 @@ static int front_planets[4][5] =
  { 31, 32, 33, 35, 36,},
 };
 
-static void doResources(void)
+void doResources(void)
 {
   int i, j, k, which;
   MCOPY(pdata, planets, sizeof(pdata));
@@ -4447,7 +4343,7 @@ static void doResources(void)
   }
 }
 #else
-static void doResources(void)
+void doResources(void)
 {
     int i;
     int agricount[4];

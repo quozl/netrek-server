@@ -20,7 +20,7 @@ void detothers(void)
   struct player *j;
   struct torp *t;
 
-  if (status->gameup & GU_GLOAT_CONQUER) return;
+  if (status->gameup & GU_CONQUER) return;
 
   if (me->p_fuel < myship->s_detcost) {
     new_warning(UNDEF, "Not enough fuel to detonate");
