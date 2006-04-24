@@ -1,5 +1,5 @@
 /*
- * $Id: openmem.c,v 1.2 2006/04/22 02:16:46 quozl Exp $
+ * $Id: openmem.c,v 1.3 2006/04/24 12:35:17 quozl Exp $
  */
 #include "copyright.h"
 
@@ -79,6 +79,7 @@ static void setup_memory(struct memory *sharedMemory)
     shipvals = sharedMemory->shipvals;
     queues = sharedMemory->queues;
     waiting = sharedMemory->waiting;
+    bans = sharedMemory->bans;
 }
 
 /*ARGSUSED*/

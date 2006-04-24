@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.7 2006/04/23 10:39:10 quozl Exp $
+/* $Id: ntscmds.c,v 1.8 2006/04/24 12:35:17 quozl Exp $
  */
 
 /*
@@ -28,6 +28,10 @@
 
 #if defined (ALLOW_EJECT)
 void do_player_eject(int who, int player, int mflags, int sendto);
+#endif
+
+#if defined (ALLOW_BAN)
+void do_player_ban(int who, int player, int mflags, int sendto);
 #endif
 
 #if defined (AUTO_INL)
@@ -70,6 +74,9 @@ void do_genos_query(char *comm, struct message *mess, int who);
 #endif
 #if defined (ALLOW_EJECT)
 void eject_player(int who);
+#endif
+#if defined (ALLOW_BAN)
+void ban_player(int who);
 #endif
 void do_client_query(char *comm, struct message *mess, int who);
 void do_ping_query(char *comm, struct message *mess, int who);
@@ -189,6 +196,13 @@ static struct command_handler_2 nts_commands[] =
 	do_player_eject,				/* EJECT */
 	2, PV_EJECT, 120, 600},
 #endif
+#if defined(ALLOW_BAN)
+    { "BAN",
+	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
+	"Eject and ban a player       e.g. 'BAN 0'", 
+	do_player_ban,					/* BAN */
+	2, PV_BAN, 120, 600},
+#endif
 #if defined(TRIPLE_PLANET_MAYHEM)
     { "TRIPLE",
         C_VC_ALL | C_GLOG | C_PR_INPICKUP,
@@ -272,9 +286,24 @@ void do_player_eject(int who, int player, int mflags, int sendto)
     }
 
     pmessage(0, MALL, addr_mess(who,MALL), 
-	" %2s has been ejected by their team", j->p_mapchars);
+	"%2s has been ejected by their team", j->p_mapchars);
 
     eject_player(j->p_no);
+}
+
+void eject_player(int who)
+{
+  struct player *j;
+
+  j = &players[who];
+  j->p_ship.s_type = STARBASE;
+  j->p_whydead=KQUIT;
+  j->p_explode=10;
+  /* note VICIOUS_EJECT prevents animation of ship explosion */
+  j->p_status=PEXPLODE;
+  j->p_whodead=me->p_no;
+  bay_release(j);
+
 #if defined(VICIOUS_EJECT)
                                       /* Eject AND free the slot. I am sick
                                          of the idiots who login and just
@@ -288,22 +317,57 @@ void do_player_eject(int who, int player, int mflags, int sendto)
       freeslot(j);
     }
 #endif
-}
 
-void eject_player(int who)
-{
-  struct player* j;
-
-  j = &players[who];
-  j->p_ship.s_type = STARBASE;
-  j->p_whydead=KQUIT;
-  j->p_explode=10;
-  /* note VICIOUS_EJECT prevents animation of ship explosion */
-  j->p_status=PEXPLODE;
-  j->p_whodead=me->p_no;
-  bay_release(j);
 }
 #endif /* ALLOW_EJECT */
+
+#if defined (ALLOW_BAN)
+void do_player_ban(int who, int player, int mflags, int sendto)
+{
+    struct player *j;
+    char *reason = NULL;
+
+    j = &players[player];
+
+    if (j->p_status == PFREE) {
+      reason = "You may not ban a free slot.";
+    } else if (j->p_flags & PFROBOT) {
+      reason = "You may not ban a robot.";
+    } else if (j->p_team != players[who].p_team) {
+      reason = "You may not ban players of the other team.";
+    }
+
+    if (reason != NULL) {
+      pmessage(players[who].p_team, MTEAM, 
+	       addr_mess(players[who].p_team,MTEAM), 
+	       reason);
+      return;
+    }
+
+    pmessage(0, MALL, addr_mess(who,MALL), 
+	"%2s has been temporarily banned by their team", j->p_mapchars);
+
+    eject_player(j->p_no);
+    ban_player(j->p_no);
+}
+
+void ban_player(int who)
+{
+  int i;
+  struct player *j = &players[who];
+  for (i=0; i<MAXBANS; i++) {
+    struct ban *b = &bans[i];
+    if (b->b_expire == 0) {
+      strcpy(b->b_ip, j->p_ip);
+      b->b_expire = 100;
+      ERROR(2,( "ban of %s was voted\n", b->b_ip));
+      return;
+    }
+  }
+  pmessage(0, MALL, addr_mess(who,MALL), 
+	   " temporary ban list is full, ban ineffective");
+}
+#endif /* ALLOW_BAN */
 
 #if defined(AUTO_PRACTICE)
 void do_start_basep(void)

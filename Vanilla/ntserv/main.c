@@ -42,7 +42,8 @@ static void printUsage(char *prog);
 static void sendMotd(void);
 static void sendConfigMsg(void);
 static void printStats(void);
-static int checkbanned(char *login, char *host);
+static int check_temporary_bans(char *ip);
+static int check_permanent_bans(char *login, char *host);
 
 extern int ignored[MAXPLAYER];
 int indie = 0;			/* always be indie 8/28/91 TC */
@@ -406,25 +407,34 @@ int main(int argc, char **argv)
     me->p_status = PALIVE;			/* Put player in game */
     me->p_ghostbuster = 0;
 
-    if (!bypassed)
-    if (checkbanned(login, host) == TRUE) {
-      FILE        *logfile;
-      time_t curtime;
-
-      pmessage(0, MALL, "GOD->ALL","%s (%s@%s) is banned from the game.",
-              me->p_name, me->p_login, host);
-      new_warning(UNDEF,"You are banned from the game.");
-      me->p_explode=100;
-      me->p_status=PEXPLODE;
-      me->p_whydead=KQUIT;   /* make him self destruct */
-      me->p_whodead=0;
-      logfile=fopen(LogFileName, "a");
-      if (logfile) {
-        curtime=time(NULL);
-        fprintf(logfile, "Banned and exiting: %s (%s@%s), (%c), %s",
-              me->p_name,  me->p_login, host, shipnos[me->p_no], ctime(&curtime)
-);
-        fclose(logfile);
+    if (!bypassed) {
+      char *reason = NULL;
+      if (check_permanent_bans(login, host) == TRUE) {
+	reason = "banned by the administrator";
+      } else if (check_permanent_bans(login, me->p_ip) == TRUE) {
+	reason = "banned by the administrator";
+      } else if (check_temporary_bans(me->p_ip) == TRUE) {
+	reason = "banned by the players";
+      }
+      if (reason != NULL) {
+	FILE *logfile;
+	time_t curtime;
+	
+	pmessage(0, MALL, "GOD->ALL","%s (%s@%s) is %s.",
+		 me->p_name, me->p_login, me->p_ip, reason);
+	new_warning(UNDEF,"You are banned from the game.");
+	me->p_explode=100;
+	me->p_status=PEXPLODE;
+	me->p_whydead=KQUIT;   /* make him self destruct */
+	me->p_whodead=0;
+	logfile=fopen(LogFileName, "a");
+	if (logfile) {
+	  curtime=time(NULL);
+	  fprintf(logfile, "Banned and exiting: %s (%s@%s), (%c), %s",
+		  me->p_name,  me->p_login, host, shipnos[me->p_no], ctime(&curtime)
+		  );
+	  fclose(logfile);
+	}
       }
     }
 
@@ -813,12 +823,34 @@ static void printStats(void)
     fclose(logfile);
 }
 
-static int checkbanned(char *login, char *host)
+/* check temporary bans voted */
+static int check_temporary_bans(char *ip)
+{
+  int i;
+  for(i=0; i<MAXBANS; i++) {
+    struct ban *b = &bans[i];
+    if (b->b_expire) {
+      if (!strcmp(b->b_ip, ip)) {
+	ERROR(2,( "ban of %s has been probed\n", b->b_ip));
+	b->b_expire += 10;
+	return TRUE;
+      }
+      b->b_expire--;
+      if (!b->b_expire) {
+	ERROR(2,( "ban of %s has expired\n", b->b_ip));
+      }
+    }
+  }
+  return FALSE;
+}
+
+/* check permanent bans in file */
+static int check_permanent_bans(char *login, char *host)
 {
   FILE  *bannedfile;
   char  log_buf[64], host_buf[64], line_buf[160];
   char  *position;
-  int           num1;
+  int   num1;
   int   Hits=0;                 /* Hits==2 means we're banned */
 
   if ((bannedfile = fopen(Banned_File, "r")) == NULL) {

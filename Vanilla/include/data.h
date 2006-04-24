@@ -1,4 +1,4 @@
-/* $Id: data.h,v 1.3 2005/09/27 12:26:37 quozl Exp $
+/* $Id: data.h,v 1.4 2006/04/24 12:35:17 quozl Exp $
  */
 
 #ifndef _h_data
@@ -68,6 +68,7 @@ extern struct team *teams;
 extern struct ship *shipvals;
 extern struct pqueue *queues;
 extern struct queuewait *waiting;
+extern struct ban *bans;
 
 extern int	oldalert;
 extern int	remap[];

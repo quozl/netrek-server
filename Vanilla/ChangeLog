@@ -1,3 +1,20 @@
+Mon Apr 24 22:30:47 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/ntscmds.c: add a vote to temporarily ban, which requires
+	100 non-banned logins before the temporary ban expires.  If the
+	banned IP address tries in the meanwhile, the countdown is
+	manipulated upwards.
+
+	* include/config.h.in: add a vote to temporarily ban, and disable
+	VICIOUS_EJECT now that a ban vote is available.
+
+	* include/struct.h: add a structure for temporary bans, which
+	expire according to the number of login attempts that are not
+	banned.
+
+	* ntserv/main.c (main): split permanent bans from temporary bans,
+	rename the functions, and give different responses in messages.
+	
 Mon Apr 24 19:59:29 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/conquer.c: move conquest animation sequence to separate
@@ -1901,4 +1918,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.32 2006/04/24 10:12:17 quozl Exp $
+	$Id: ChangeLog,v 1.33 2006/04/24 12:35:17 quozl Exp $

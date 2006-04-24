@@ -1,4 +1,4 @@
-/* $Id: data.c,v 1.4 2006/04/22 11:31:53 quozl Exp $
+/* $Id: data.c,v 1.5 2006/04/24 12:35:17 quozl Exp $
  */
 
 #include "copyright.h"
@@ -23,6 +23,7 @@ struct team *teams;
 struct ship *shipvals;
 struct pqueue *queues;
 struct queuewait *waiting;
+struct ban *bans;
 
 int	oldalert = PFGREEN;	/* Avoid changing more than we have to */
 

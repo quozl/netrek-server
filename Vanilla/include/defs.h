@@ -1,4 +1,4 @@
-/* $Id: defs.h,v 1.5 2006/04/10 11:57:00 quozl Exp $
+/* $Id: defs.h,v 1.6 2006/04/24 12:35:17 quozl Exp $
  */
 
 #ifndef _h_defs
@@ -17,6 +17,7 @@
 #define FNAMESIZE	256
 
 #define MAXHOSTNAMESIZE	64	/* maximum host name size in characters	*/
+#define MAXBANS 32
 
 #define NODET (char)(-1) /* isae - chain reaction case */
 
@@ -65,9 +66,10 @@
 
 #ifdef VOTING
 #define PV_EXTRA 8			/* # of non-eject vote types      */
-#define PV_TOTAL MAXPLAYER+PV_EXTRA	/* total number of voting slots   */
-#define PV_EJECT 0			/* array base for eject votes     */
-#define PV_OTHER MAXPLAYER		/* array base for non-eject votes */
+#define PV_TOTAL MAXPLAYER*2+PV_EXTRA	/* total number of voting slots   */
+#define PV_EJECT 0*MAXPLAYER		/* array base for eject votes     */
+#define PV_BAN   1*MAXPLAYER		/* array base for eject votes     */
+#define PV_OTHER 2*MAXPLAYER		/* array base for non-eject votes */
 /* see ntserv/ntscmds.c for array */
 #endif
 

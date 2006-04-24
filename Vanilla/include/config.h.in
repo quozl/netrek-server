@@ -347,20 +347,23 @@
                                 /* ALLOW_EJECT     - define to allow players to
                                                      eject others */
                                 
-                                /* VICIOUS_EJECT   - free's the players slot
-                                		     after ejection */
+                                /* ALLOW_BAN       - define to allow players to
+                                                     eject and ban others */
+                                
+				/* VICIOUS_EJECT   - free's the players slot
+						     after ejection,
+						     causes some clients to 
+						     hang */
 
 				/* EJECT_ONLY_IF_QUEUE - refuses to eject
 							 unless queue != 0 */
 
-				/* EJECT_PERSISTENCY - does not let player back
-				in if same character name or same ip address */
 #ifdef VOTING
-#undef ALLOW_EJECT
+#define ALLOW_EJECT
 #ifdef ALLOW_EJECT
-#define VICIOUS_EJECT
-#define EJECT_ONLY_IF_QUEUE
-#define EJECT_PERSISTENCY
+#define ALLOW_BAN
+#undef VICIOUS_EJECT
+#undef EJECT_ONLY_IF_QUEUE
 #endif
 #endif
 

@@ -586,6 +586,11 @@ struct rank {
     char *name;
 };
 
+struct ban {
+    int b_expire;		/* joins to see before expiry	*/
+    char b_ip[NAME_LEN];	/* ip address banned		*/
+};
+
 struct memory {
     struct player	players[MAXPLAYER];
     struct torp		torps[MAXPLAYER * (MAXTORP + MAXPLASMA)];
@@ -598,7 +603,9 @@ struct memory {
     struct ship		shipvals[NUM_TYPES];
     struct pqueue       queues[MAXQUEUE];
     struct queuewait    waiting[MAXWAITING];
+    struct ban          bans[MAXBANS];
 };
+/* note: adding to struct memory requires changes to openmem.c */
 
 #ifdef RSA
 struct rsa_key {
@@ -716,3 +723,10 @@ struct vote_handler {
 #endif
 
 #endif /* __INCLUDED_struct_h__ */
+
+/*  Hey Emacs!
+ * Local Variables:
+ * c-basic-offset:4
+ * indent-tabs-mode:"t"
+ * End:
+ */
