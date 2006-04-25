@@ -1,7 +1,7 @@
-/* 	$Id: newaccess.c,v 1.1 2005/03/21 05:23:43 jerub Exp $	 */
+/* 	$Id: newaccess.c,v 1.3 2006/04/22 02:16:46 quozl Exp $	 */
 
 #ifdef lint
-static char vcid[] = "$Id: newaccess.c,v 1.1 2005/03/21 05:23:43 jerub Exp $";
+static char vcid[] = "$Id: newaccess.c,v 1.3 2006/04/22 02:16:46 quozl Exp $";
 #endif /* lint */
 
 #include <stdio.h>
@@ -18,6 +18,7 @@ static char vcid[] = "$Id: newaccess.c,v 1.1 2005/03/21 05:23:43 jerub Exp $";
 
 #include "defs.h"
 #include INC_STRINGS
+#include "struct.h"
 #include "data.h"
 
 /*#define	SUBNET*/
@@ -54,10 +55,11 @@ int host_access(char *host)
     int			canplay;
     int			ncanplay;
     int			netmatch;
-    int			count, sockt, length;
+    int			count, sockt;
     unsigned LONG	net_addr;
     struct netent	*np;
-    struct sockaddr_in sin;
+    struct sockaddr_in	addr;
+    socklen_t		addrlen;
     struct hostent	*hp;
     FILE		*acs_fp;
 #ifdef SUBNET
@@ -89,13 +91,13 @@ int host_access(char *host)
 #endif
 
     sockt = fileno(stdin);
-    length = sizeof (struct sockaddr_in);
+    addrlen = sizeof (struct sockaddr_in);
     
 #ifdef DEBUG
     return 1;
 #endif
     
-    if (getpeername(sockt, (struct sockaddr *) &sin, &length) < 0) {
+    if (getpeername(sockt, (struct sockaddr *) &addr, &addrlen) < 0) {
 	if (isatty(sockt)) {
 #ifdef LOG
 	    (void) strcpy(peerhostname, "stdin");
@@ -110,12 +112,12 @@ int host_access(char *host)
 	return (canplay);
     }
     
-    hp = gethostbyaddr((char *) &sin.sin_addr.s_addr, sizeof(U_LONG),
+    hp = gethostbyaddr((char *) &addr.sin_addr.s_addr, sizeof(U_LONG),
 		       AF_INET);
     if (hp != NULL)
 	(void) strcpy(host_name, hp->h_name);
     else
-	(void) strcpy(host_name, inet_ntoa(sin.sin_addr));
+	(void) strcpy(host_name, inet_ntoa(addr.sin_addr));
     
 #ifdef LOG
 #ifdef notdef
@@ -127,7 +129,7 @@ int host_access(char *host)
     if (host) {
 	hp = gethostbyname(host);
 	if (hp) {
-	    MCOPY(hp->h_addr, &sin.sin_addr, sizeof (hp->h_length));
+	    MCOPY(hp->h_addr, &addr.sin_addr, sizeof (hp->h_length));
 	    (void) strcpy(host_name, host);
 	}
     }
@@ -137,11 +139,11 @@ int host_access(char *host)
 	    *cp = tolower(*cp);
     
     /*
-     * At this point, sin.sin_addr.s_addr is the address of
+     * At this point, addr.sin_addr.s_addr is the address of
      * the host in network order.
      */
     
-    net_addr = inet_netof(sin.sin_addr);	/* net_addr in host order */
+    net_addr = inet_netof(addr.sin_addr);	/* net_addr in host order */
     
     np = getnetbyaddr(net_addr, AF_INET);
     if (np != NULL)
@@ -150,7 +152,7 @@ int host_access(char *host)
 	(void) strcpy(net_name,inet_ntoa(*(struct in_addr *)&net_addr));
     
 #ifdef SUBNET
-    snet_addr = inet_snetof(sin.sin_addr.s_addr);
+    snet_addr = inet_snetof(addr.sin_addr.s_addr);
     if (snet_addr == 0)
 	snet_name[0] = '\0';
     else {

@@ -13,19 +13,16 @@ INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
 N_SRC = ${srcdir}/newstartd.c ${srcdir}/newaccess.c ${srcdir}/subnet.c
-N_OBJS = newstartd.o newaccess.o subnet.o
+N_OBJS = newstartd.o newaccess.o subnet.o ../ntserv/libnetrek.a
 
 LIBS = $(EXTRALIBS)
 
-GETPATH_SRC = ${srcdir}/../ntserv/getpath.c ${srcdir}/../ntserv/data.c
-GETPATH = ../ntserv/getpath.o ../ntserv/data.o
-
-CFLAGS = $(FLAGS) $(EXTRAFLAGS) $(PORT) -I. -I${srcdir} -I../include -I${srcdir}/../include
+CFLAGS = $(FLAGS) $(EXTRAFLAGS) $(PORT) -I../include
 
 all: newstartd
 
-newstartd: $(N_OBJS) $(GETPATH)
-	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(N_OBJS) $(GETPATH) $(LIBS)
+newstartd: $(N_OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(N_OBJS) $(LIBS)
 
 clean: rmdependencies
 	/bin/rm -f *.o make.out core
@@ -37,14 +34,13 @@ uninstall:
 	-cd $(LIBDIR); rm -f newstartd
 
 install: newstartd
-	-@if [ ! -d $(LIBDIR) ]; then \
-          /bin/mkdir $(LIBDIR); \
-        fi
-	$(INSTALLPROG) $(INSTALLOPTS) newstartd $(LIBDIR)/newstartd
-	(cd $(LIBDIR); /bin/rm -f netrekd; /bin/ln -sf newstartd netrekd)
+	mkdir -p $(DESTDIR)$(LIBDIR)
+	$(INSTALLPROG) $(INSTALLOPTS) newstartd $(DESTDIR)$(LIBDIR)/newstartd
+	mkdir -p $(DESTDIR)$(BINDIR)
+	ln -sf $(LIBDIR)/newstartd $(DESTDIR)$(BINDIR)/netrekd
 
 depend: 
-	${CC} -M  $(CFLAGS) $(N_SRC) $(GETPATH_SRC) > .depend
+	${CC} -M  $(CFLAGS) $(N_SRC) > .depend
 
 rmdependencies:
 	rm -f .depend

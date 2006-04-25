@@ -1,7 +1,7 @@
-/* 	$Id: newstartd.c,v 1.1 2005/03/21 05:23:43 jerub Exp $	 */
+/* 	$Id: newstartd.c,v 1.8 2006/04/22 02:16:46 quozl Exp $	 */
 
 #ifndef lint
-static char vcid[] = "$Id: newstartd.c,v 1.1 2005/03/21 05:23:43 jerub Exp $";
+static char vcid[] = "$Id: newstartd.c,v 1.8 2006/04/22 02:16:46 quozl Exp $";
 #endif /* lint */
 
 /*
@@ -14,7 +14,7 @@ static char vcid[] = "$Id: newstartd.c,v 1.1 2005/03/21 05:23:43 jerub Exp $";
  *   so that's where multiple logins should be denied.
  *
  *   To bypass this check, create the file defined by NoCount_File in
- *   newaccess.c.  Usually .nocount in LIBDIR.  Set by default normally.
+ *   newaccess.c.  Usually .nocount in SYSCONFDIR.  Set by default normally.
  *
  *   4/13/92
  *
@@ -52,6 +52,7 @@ static char vcid[] = "$Id: newstartd.c,v 1.1 2005/03/21 05:23:43 jerub Exp $";
 #include "defs.h"
 #include INC_STRINGS
 #include INC_FCNTL
+#include "struct.h"
 #include "data.h"
 #include "proto.h"
 #define MVERS
@@ -61,11 +62,13 @@ static char vcid[] = "$Id: newstartd.c,v 1.1 2005/03/21 05:23:43 jerub Exp $";
 int restart;		/* global flag, set by SIGHUP, cleared by read	*/
 int debug = 0;		/* programmers' debugging flag			*/
 
-int get_connection(int);
+int get_connection();
 int read_portfile(char *);
 void deny(void);
-void statistics (int, int);
+void statistics (int);
 void process(int);
+void reaper_block();
+void reaper_unblock();
 void reaper(int);
 void hangup(int);
 void putpid(void);
@@ -88,8 +91,10 @@ static int active;			/* number of processes running	*/
 
 static
 struct progrecord {			/* array of data read from file	*/
+  int type;				/* SOCK_STREAM, or SOCK_DGRAM	*/  
   unsigned short port;			/* port number to listen on	*/
   int sock;				/* socket created on port or -1	*/
+  pid_t child;				/* for UDP, active child	*/
   int nargs;				/* number of arguments to prog	*/
   char prog[512];			/* program to start on connect	*/
   char progname[512];			/* more stuff for exec()	*/
@@ -98,8 +103,10 @@ struct progrecord {			/* array of data read from file	*/
   int accepts;				/* count of accept() calls	*/
   int denials;				/* count of deny() calls	*/
   int forks;				/* count of fork() calls	*/
-  unsigned long addr;		/* address to bind() to		*/
+  unsigned long addr;			/* address to bind() to		*/
 } prog[MAXPROG];
+
+static int num_progs = 0;
 
 extern char peerhostname[];		/* defined in newaccess.c	*/
 int fd;					/* log file file descriptor	*/
@@ -141,7 +148,6 @@ int main (int argc, char *argv[])
 {
   char *portfile = N_PORTS;
   int port_idx = -1;
-  int num_progs = 0;
   int i;
   pid_t pid;
   FILE *file;
@@ -178,11 +184,24 @@ int main (int argc, char *argv[])
 	  fprintf (stderr, "netrekd: stopped pid %d\n", pid);
 	  exit (0);
 	}
-	fprintf (stderr, "netrekd: cannot stop, pid %d\n, may be already stopped", pid);
+	fprintf (stderr, "netrekd: cannot stop, pid %d\n, may be already stopped\n", pid);
 	perror ("kill");
 	exit (1);
       }
       fprintf (stderr, "netrekd: cannot stop, no %s file\n", N_NETREKDPID);
+      exit (1);
+    }
+    if (!strcmp (argv[1], "reload")) {
+      if (file != NULL) {
+	if (kill (pid, SIGHUP) == 0) {
+	  fprintf (stderr, "netrekd: sent SIGHUP to pid %d\n", pid);
+	  exit (0);
+	}
+	fprintf (stderr, "netrekd: cannot reload, pid %d not present\n", pid);
+	perror ("kill");
+	exit (1);
+      }
+      fprintf (stderr, "netrekd: cannot reload, no %s file\n", N_NETREKDPID);
       exit (1);
     }
   }
@@ -242,28 +261,32 @@ int main (int argc, char *argv[])
   }
 
   /* fork this as a daemon */
-  pid = fork();
-  if (pid != 0) {
-    if (pid < 0) { 
-      perror("fork"); 
-      exit(1); 
+  if (!debug) {
+    pid = fork();
+    if (pid != 0) {
+      if (pid < 0) { 
+	perror("fork"); 
+	exit(1); 
+      }
+      fprintf (stderr, "netrekd: Vanilla Netrek Listener %s.%d started, pid %d,\n"
+	       "netrekd: logging to %s\n", 
+	       mvers, PATCHLEVEL, pid, LogFile );
+      exit(0);
     }
-    fprintf (stderr, "netrekd: Vanilla Netrek Listener %spl%d started, pid %d,\n"
-	     "netrekd: logging to %s\n", 
-	     mvers, PATCHLEVEL, pid, LogFile );
-    exit(0);
+    
+    /* detach from terminal */
+    DETACH;
   }
-
-  /* detach from terminal */
-  DETACH
-
+  
   /* do not propogate the log to forked processes */
   fcntl(fd, F_SETFD, FD_CLOEXEC);
 
   /* close our standard file descriptors and attach them to the log */
-  (void) dup2 (fd, 0);
-  (void) dup2 (fd, 1);
-  (void) dup2 (fd, 2);
+  if (!debug) {
+    (void) dup2 (fd, 0);
+    (void) dup2 (fd, 1);
+    (void) dup2 (fd, 2);
+  }
 
   /* set the standard streams to be line buffered (ANSI C3.159-1989) */
   setvbuf (stderr, NULL, _IOLBF, 0);
@@ -284,7 +307,7 @@ int main (int argc, char *argv[])
       pid_t pid;
 
       /* wait for one connection */
-      port_idx = get_connection (num_progs);
+      port_idx = get_connection ();
       if (port_idx < 0) continue;
       prog[port_idx].accepts++;
 
@@ -306,15 +329,17 @@ int main (int argc, char *argv[])
 
       /* check for internals */
       if (prog[port_idx].internal) {
-	statistics (port_idx, num_progs);
+	statistics (port_idx);
 	continue;
       }
 
+      reaper_block();
       /* fork to execute the program specified by .ports file */
       pid = fork ();
       if (pid == -1) {
 	perror("fork");
 	close (0);
+	reaper_unblock();
 	continue;
       }
 
@@ -323,11 +348,17 @@ int main (int argc, char *argv[])
 	exit (0);
       }
 
+      /* record the pid of any UDP clients created */
+      if (prog[port_idx].type == SOCK_DGRAM) {
+	prog[port_idx].child = pid;
+      }
+
       prog[port_idx].forks++;
       active++;
 
       if (debug) fprintf (stderr, "active++: %d: pid %d port %d\n", active,
 			  pid, prog[port_idx].port);
+      reaper_unblock();
 
       /* main program continues after fork, close socket to client */
       close (0);
@@ -346,10 +377,11 @@ int main (int argc, char *argv[])
   }
 }
 
-int get_connection (int num_progs)
+int get_connection()
 {
   struct sockaddr_in addr;
   struct sockaddr_in naddr;
+  socklen_t addrlen;
   fd_set accept_fds;
   int len, i, st, newsock;
   
@@ -362,23 +394,23 @@ int get_connection (int num_progs)
     sock = prog[i].sock;
     if (sock < 0) {
 
-      fprintf (stderr, "netrekd: port %d, %s, ", prog[i].port, prog[i].prog);
-      if ((sock = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
-	perror ("socket");
-	sleep (1);
+      fprintf(stderr, "netrekd: port %d, %s, ", prog[i].port, prog[i].prog);
+      if ((sock = socket(AF_INET, prog[i].type, 0)) < 0) {
+	perror("socket");
+	sleep(1);
 	return -1;
       }
 
       /* we can't cope with having socket zero for a listening socket */
       if (sock == 0) {
-	if (debug) fprintf (stderr, "gack: don't want socket zero\n");
-        if ((sock = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
-	  perror ("socket");
-	  sleep (1);
-	  close (0);
+	if (debug) fprintf(stderr, "gack: don't want socket zero\n");
+        if ((sock = socket(AF_INET, prog[i].type, 0)) < 0) {
+	  perror("socket");
+	  sleep(1);
+	  close(0);
 	  return -1;
 	}
-	close (0);
+	close(0);
       }
       
       /* set the listening socket to close on exec so that children
@@ -386,9 +418,9 @@ int get_connection (int num_progs)
 	 restarting netrekd. */
       
       if (fcntl(sock, F_SETFD, FD_CLOEXEC) < 0) {
-	perror ("fcntl F_SETFD FD_CLOEXEC");
-	close (sock);
-	sleep (1);
+	perror("fcntl F_SETFD FD_CLOEXEC");
+	close(sock);
+	sleep(1);
 	return -1;
       }
 
@@ -396,37 +428,39 @@ int get_connection (int num_progs)
 	 so that we don't have to pay the CLOSE_WAIT penalty if we need
 	 to close and re-open the socket on restart. */
 
-      if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
-		      (char *) &foo, sizeof (int)) < 0) {
-	perror ("setsockopt SOL_SOCKET SO_REUSEADDR");
-	close (sock);
-	sleep (1);
+      if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
+		     (char *) &foo, sizeof(int)) < 0) {
+	perror("setsockopt SOL_SOCKET SO_REUSEADDR");
+	close(sock);
+	sleep(1);
 	return -1;
       }
       
       addr.sin_family = AF_INET;
       addr.sin_addr.s_addr = prog[i].addr;
-      addr.sin_port = htons (prog[i].port);
+      addr.sin_port = htons(prog[i].port);
       
-      if (bind (sock, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-	perror ("bind");
-	close (sock);
-	sleep (1);
+      if (bind(sock, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+	perror("bind");
+	close(sock);
+	sleep(1);
 	continue;
       }
 
-      if (listen (sock, 1) < 0) {
-	perror ("listen");
-	close (sock);
-	sleep (1);
-	continue;
+      if (prog[i].type == SOCK_STREAM) {
+	if (listen(sock, 1) < 0) {
+	  perror("listen");
+	  close(sock);
+	  sleep(1);
+	  continue;
+	}
       }
 
       prog[i].sock = sock;
-      fprintf (stderr, "listening fd %d, to do \"%s\" %s %s %s %s\n",
-	       prog[i].sock, prog[i].progname, prog[i].arg[0],
-	       prog[i].arg[1], prog[i].arg[2], prog[i].arg[3]);
-      fflush (stderr);
+      fprintf(stderr, "listening fd %d, to do \"%s\" %s %s %s %s\n",
+	      prog[i].sock, prog[i].progname, prog[i].arg[0],
+	      prog[i].arg[1], prog[i].arg[2], prog[i].arg[3]);
+      fflush(stderr);
     }
   }
 
@@ -435,11 +469,15 @@ int get_connection (int num_progs)
   for (;;) { 				/* wait for a connection */
     st = 0;
 
-    FD_ZERO (&accept_fds);		/* clear the file descriptor mask */
+    FD_ZERO(&accept_fds);		/* clear the file descriptor mask */
     for (i = 0; i < num_progs; i++) {	/* set bits in mask for each sock */
       sock = prog[i].sock;
       if (sock < 0) continue;
-      FD_SET (sock, &accept_fds);
+      if (prog[i].type == SOCK_STREAM)
+	FD_SET(sock, &accept_fds);
+      if (prog[i].type == SOCK_DGRAM)
+	if (prog[i].child == 0)
+	  FD_SET(sock, &accept_fds);
       st++;
     }
 
@@ -451,7 +489,7 @@ int get_connection (int num_progs)
     }
     
     /* block until select() indicates accept() will complete */
-    st = select (32, &accept_fds, 0, 0, 0);
+    st = select(32, &accept_fds, 0, 0, 0);
     if (st > 0) break;
     if (restart) return -1;
     if (errno == EINTR) continue;
@@ -463,30 +501,34 @@ int get_connection (int num_progs)
   for (i = 0; i < num_progs; i++) {
     sock = prog[i].sock;
     if (sock < 0) continue;
-    if (FD_ISSET (sock, &accept_fds)) break;
+    if (FD_ISSET(sock, &accept_fds)) break;
   }
 
   /* none of the sockets showed activity? erk */
   if (i >= num_progs) return -1;
 
-  len = sizeof(naddr);
-    
-  for (;;) {
-    newsock = accept (sock, (struct sockaddr*)&naddr, &len);
-    if (newsock >= 0) break;
-    if (errno == EINTR) continue;
-    fprintf (stderr, "netrekd: port %d, %s, ", prog[i].port, prog[i].prog);
-    perror ("accept");
-    sleep (1);
-    return -1;
-  }
+  addrlen = sizeof(naddr);
 
-  if (newsock != 0) {
-    if (dup2 (newsock, 0) == -1) {
-/* on solaris it has been seen that fd 0 is one of our listening sockets! */
-      perror ("dup2");
+  if (prog[i].type == SOCK_STREAM) {
+    /* accept stream connections as new socket */
+    for (;;) {
+      newsock = accept(sock, (struct sockaddr *) &naddr, &addrlen);
+      if (newsock >= 0) break;
+      if (errno == EINTR) continue;
+      fprintf(stderr, "netrekd: port %d, %s, ", prog[i].port, prog[i].prog);
+      perror("accept");
+      sleep(1);
+      return -1;
     }
-    close (newsock);
+    if (newsock != 0) {
+      if (dup2(newsock, 0) == -1) {
+	perror("dup2");
+      }
+      close(newsock);
+    }
+  } else {
+    /* datagrams will be read by child on duplicated socket */
+    dup2(sock, 0);
   }
   return i;
 }
@@ -515,7 +557,7 @@ void deny(void)
   sleep (2);
 }
 
-void statistics (int port_idx, int num_progs)
+void statistics (int port_idx)
 {
   FILE *client;
   int i;
@@ -526,6 +568,7 @@ void statistics (int port_idx, int num_progs)
     client = fdopen (0, "w");
     if (client != NULL) {
       if (!strcmp (peerhostname, "localhost")) {
+	/* TODO: above check vulnerable to DNS attack, minor impact */
 	fprintf (client, "port\taccepts\tdenials\tforks\n" );
 	for (i=0; i<num_progs; i++) {
 	  fprintf (client,
@@ -609,6 +652,26 @@ void hangup (int sig)
   if (sig) return;
 }
 
+void reaper_block()
+{
+  sigset_t set;
+  sigemptyset(&set);
+  sigaddset(&set, SIGCHLD);
+  if (sigprocmask(SIG_BLOCK, &set, NULL) < 0) {
+    perror("sigprocmask: SIG_BLOCK SIGCHLD");
+  }
+}
+
+void reaper_unblock()
+{
+  sigset_t set;
+  sigemptyset(&set);
+  sigaddset(&set, SIGCHLD);
+  if (sigprocmask(SIG_UNBLOCK, &set, NULL) < 0) {
+    perror("sigprocmask: SIG_BLOCK SIGCHLD");
+  }
+}
+
 /* accept termination of any child processes */
 void reaper (int sig)
 {
@@ -621,13 +684,19 @@ void reaper (int sig)
       active--;
       if (debug) fprintf (stderr, "active--: %d: pid %d terminated\n", 
 			  active, pid);
+      int i;
+      for (i=0; i<num_progs; i++) {
+	if (prog[i].child == pid) {
+	  if (debug) fprintf(stderr, "reaper: prog[%d].child was %d, clearing\n", i, prog[i].child);
+	  prog[i].child = 0;
+	}
+      }
+    } else {
+      break;
     }
-    else
-        break;
   }
 
 #ifdef REAPER_HANDLER
-  /* forgot to add this.  -da */
   handle_reaper();
 #else
   HANDLE_SIG (SIGCHLD, reaper);
@@ -657,27 +726,26 @@ int read_portfile (char *portfile)
   fi = fopen (portfile, "r");
   if (fi) {
     while (fgets (buf, BUFSIZ, fi)) {
-	if (buf[0] == '#')
-		continue;
+      if (buf[0] == '#')
+	continue;
       if ((n = sscanf (buf, "%s %s \"%[^\"]\" %s %s %s %s",
-               addrbuf,
+		       addrbuf,
 		       prog[i].prog,
 		       prog[i].progname,
 		       prog[i].arg[0],
 		       prog[i].arg[1],
 		       prog[i].arg[2],
 		       prog[i].arg[3])) >= 3) {
-	if (!(port = strchr(addrbuf, ':')))
-	{
-		prog[i].addr = INADDR_ANY;
-		prog[i].port = atoi(addrbuf);
+	/* port, host:port, portu, host:portu */
+	if (!(port = strchr(addrbuf, ':'))) {
+	  prog[i].addr = INADDR_ANY;
+	  port = addrbuf;
+	} else {
+	  *port++ = '\0';
+	  prog[i].addr = inet_addr(addrbuf);
 	}
-	else
-	{
-		*port++ = '\0';
-		prog[i].addr = inet_addr(addrbuf);
-		prog[i].port = atoi(port);
-	};
+	prog[i].port = atoi(port);
+	prog[i].type = strchr(port, 'u') == NULL ? SOCK_STREAM : SOCK_DGRAM;
 	prog[i].nargs = n-3;
 	prog[i].sock = -1;
 	prog[i].internal = (!strcmp (prog[i].prog, "special"));

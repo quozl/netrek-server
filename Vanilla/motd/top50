@@ -1,0 +1,23 @@
+#!/bin/csh -f
+
+set PWD=`pwd`
+if ( `basename $PWD` != motd) then
+        cd motd
+endif
+
+cd ..
+
+/bin/echo
+/bin/echo
+/bin/echo  "        TOP 50 PLAYERS AT `hostname` BY RANK as of " `date '+%m/%d/%y'`
+/bin/echo
+/usr/local/bin/trekscores > tmp
+awk  '{ print $0 ; if($1 =="50") exit}' tmp
+
+/bin/echo
+/bin/echo
+/bin/echo  "        TOP 50 PLAYERS AT `hostname` BY HOURS as of " `date '+%m/%d/%y'`
+/bin/echo
+/usr/local/bin/trekscores h > tmp
+awk  '{ print $0 ; if($1 =="50") exit}' tmp
+rm tmp
