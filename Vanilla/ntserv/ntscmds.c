@@ -26,13 +26,8 @@
 
 #define C_PR_INPICKUP    C_PR_1
 
-#if defined (ALLOW_EJECT)
 void do_player_eject(int who, int player, int mflags, int sendto);
-#endif
-
-#if defined (ALLOW_BAN)
 void do_player_ban(int who, int player, int mflags, int sendto);
-#endif
 
 #if defined (AUTO_INL)
 void do_start_inl(void);
@@ -72,12 +67,8 @@ void do_nowobble(char *comm, struct message *mess);
 #ifdef GENO_COUNT
 void do_genos_query(char *comm, struct message *mess, int who);
 #endif
-#if defined (ALLOW_EJECT)
 void eject_player(int who);
-#endif
-#if defined (ALLOW_BAN)
 void ban_player(int who);
-#endif
 void do_client_query(char *comm, struct message *mess, int who);
 void do_ping_query(char *comm, struct message *mess, int who);
 void do_stats_query(char *comm, struct message *mess, int who);
@@ -183,26 +174,18 @@ static struct command_handler_2 nts_commands[] =
 		"Show player's genocides      e.g. 'GENOS 0'",
 		do_genos_query },                       /* GENOS */
 #endif
-#ifdef VOTING
-
     { "The following votes can be used:  (M=Majority, T=Team vote)",
       C_DESC  | C_PR_INPICKUP},
-    { "Ejection Votes are recorded for the god to review.",
-      C_DESC  | C_PR_INPICKUP},
-#if defined(ALLOW_EJECT)
     { "EJECT",
 	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
 	"Eject a player               e.g. 'EJECT 0 IDLE'", 
 	do_player_eject,				/* EJECT */
 	2, PV_EJECT, 120, 600},
-#endif
-#if defined(ALLOW_BAN)
     { "BAN",
 	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
 	"Eject and ban a player       e.g. 'BAN 0'", 
 	do_player_ban,					/* BAN */
 	2, PV_BAN, 120, 600},
-#endif
 #if defined(TRIPLE_PLANET_MAYHEM)
     { "TRIPLE",
         C_VC_ALL | C_GLOG | C_PR_INPICKUP,
@@ -243,7 +226,6 @@ static struct command_handler_2 nts_commands[] =
 	do_start_mars,
 	1, PV_OTHER+5, 0 },
 #endif
-#endif /* VOTING */
 
     /* crosscheck, last voting array element used (PV_OTHER+n) must
        not exceed PV_TOTAL, see include/defs.h */
@@ -257,7 +239,6 @@ int check_command(struct message *mess)
 			 (status->gameup & GU_INROBOT) ? 0 : C_PR_INPICKUP);
 }
 
-#if defined (ALLOW_EJECT)
 void do_player_eject(int who, int player, int mflags, int sendto)
 {
     register struct player *j;
@@ -265,17 +246,18 @@ void do_player_eject(int who, int player, int mflags, int sendto)
 
     j = &players[player];
 
-    if (j->p_status == PFREE) {
+    if (!eject_vote_enable) {
+      reason = "Eject voting disabled in server configuration.";
+    } else if (j->p_status == PFREE) {
       reason = "You may not eject a free slot.";
     } else if (j->p_flags & PFROBOT) {
       reason = "You may not eject a robot.";
     } else if (j->p_team != players[who].p_team) {
       reason = "You may not eject players of the other team.";
-#ifdef EJECT_ONLY_IF_QUEUE
-    } else if ((queues[QU_PICKUP].q_flags & QU_OPEN) &&
-	      (queues[QU_PICKUP].count == 0)){
+    } else if (eject_vote_only_if_queue && 
+	       (queues[QU_PICKUP].q_flags & QU_OPEN) &&
+	       (queues[QU_PICKUP].count == 0)){
       reason = "You may not eject if there is no queue.";
-#endif
     }
 
     if (reason != NULL) {
@@ -299,12 +281,12 @@ void eject_player(int who)
   j->p_ship.s_type = STARBASE;
   j->p_whydead=KQUIT;
   j->p_explode=10;
-  /* note VICIOUS_EJECT prevents animation of ship explosion */
+  /* note vicious eject prevents animation of ship explosion */
   j->p_status=PEXPLODE;
   j->p_whodead=me->p_no;
   bay_release(j);
 
-#if defined(VICIOUS_EJECT)
+  if (eject_vote_vicious) {
                                       /* Eject AND free the slot. I am sick
                                          of the idiots who login and just
                                          make the game less playable. And
@@ -316,12 +298,9 @@ void eject_player(int who)
     } else {
       freeslot(j);
     }
-#endif
-
+  }
 }
-#endif /* ALLOW_EJECT */
 
-#if defined (ALLOW_BAN)
 void do_player_ban(int who, int player, int mflags, int sendto)
 {
     struct player *j;
@@ -329,7 +308,9 @@ void do_player_ban(int who, int player, int mflags, int sendto)
 
     j = &players[player];
 
-    if (j->p_status == PFREE) {
+    if (!ban_vote_enable) {
+      reason = "Ban voting disabled in server configuration.";
+    } else if (j->p_status == PFREE) {
       reason = "You may not ban a free slot.";
     } else if (j->p_flags & PFROBOT) {
       reason = "You may not ban a robot.";
@@ -359,7 +340,7 @@ void ban_player(int who)
     struct ban *b = &bans[i];
     if (b->b_expire == 0) {
       strcpy(b->b_ip, j->p_ip);
-      b->b_expire = 100;
+      b->b_expire = ban_vote_length;
       ERROR(2,( "ban of %s was voted\n", b->b_ip));
       return;
     }
@@ -367,7 +348,6 @@ void ban_player(int who)
   pmessage(0, MALL, addr_mess(who,MALL), 
 	   " temporary ban list is full, ban ineffective");
 }
-#endif /* ALLOW_BAN */
 
 #if defined(AUTO_PRACTICE)
 void do_start_basep(void)

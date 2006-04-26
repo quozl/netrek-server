@@ -1,3 +1,4 @@
+- convert voting, ejecting and banning to site policy in sysdef [Cameron]
 - add vote to temporarily ban a player [Cameron]
 - change to conquest sequence to add a parade [Cameron]
 - fix unrealistic robot boredom timer [Cameron]

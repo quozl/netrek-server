@@ -407,3 +407,11 @@ int remoteaddr = -1;		/* inet address in net format */
 int whitelisted = 0;
 int blacklisted = 0;
 int ignored[MAXPLAYER];
+
+int voting=0;
+int ban_vote_enable=0;
+int ban_vote_length=10;
+int ban_vote_offset=0;
+int eject_vote_enable=0;
+int eject_vote_only_if_queue=0;
+int eject_vote_vicious=0;

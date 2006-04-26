@@ -196,6 +196,20 @@ struct sysdef_keywords {
     "No bombing out of t-mode"				},
   { "NO_UNWARRING_BOMBING",	SYSDEF_INT,	&no_unwarring_bombing,
     "No 3rd space bombing"				},
+  { "VOTING",		SYSDEF_INT,	&voting,
+    "Enable voting"			},
+  { "BAN_VOTE_ENABLE",	SYSDEF_INT,	&ban_vote_enable,
+    "Enable vote for temporary ban"			},
+  { "BAN_VOTE_LENGTH",	SYSDEF_INT,	&ban_vote_length,
+    "Length of ban in number of non-banned logins"	},
+  { "BAN_VOTE_OFFSET",	SYSDEF_INT,	&ban_vote_offset,
+    "Offset to change ban length by on each retry during ban period"	},
+  { "EJECT_VOTE_ENABLE",	SYSDEF_INT,	&eject_vote_enable,
+    "Enable vote for ejection"				},
+  { "EJECT_VOTE_ONLY_IF_QUEUE",	SYSDEF_INT,	&eject_vote_only_if_queue,
+    "Only allow ejection if there is a queue of players"	},
+  { "EJECT_VOTE_VICIOUS",	SYSDEF_INT,	&eject_vote_vicious,
+    "Kill ntserv process to eject, causes some client problems"	},
   { "",			SYSDEF_END,	NULL		}
 };
 

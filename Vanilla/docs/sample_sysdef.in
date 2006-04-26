@@ -5,6 +5,35 @@
 #	Edit this file to meet your requirements, or use the program gum to
 #	view and update it graphically.
 #
+#	Enable voting by players
+VOTING=0
+#
+#	Enable vote for temporary ban
+#	(requires VOTING=1)
+BAN_VOTE_ENABLE=0
+#
+#	Length of ban in number of non-banned logins
+#	(requires BAN_VOTE_ENABLE=1)
+BAN_VOTE_LENGTH=10
+#
+#	Offset to change ban length by on each retry during ban period
+#	(positive values penalise people who return before their ban is up,
+#	and negative values adjust their ban length down)
+#	(requires BAN_VOTE_ENABLE=1)
+BAN_VOTE_OFFSET=0
+#
+#	Enable vote for ejection
+#	(requires VOTING=1)
+EJECT_VOTE_ENABLE=0
+#
+#	Only allow ejection if there is a queue of players
+#	(requires EJECT_VOTE_ENABLE=1)
+EJECT_VOTE_ONLY_IF_QUEUE=0
+#
+#	Kill ntserv process to eject, causes some client problems
+#	(requires EJECT_VOTE_ENABLE=1)
+EJECT_VOTE_VICIOUS=0
+#
 #	Maximum client update rate per second
 MAXUPDATE=10
 #

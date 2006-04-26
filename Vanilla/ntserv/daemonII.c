@@ -188,9 +188,7 @@ int main(int argc, char **argv)
 #endif
         players[i].p_no=i;
 	players[i].p_timerdelay = defskip;
-#ifdef VOTING
         MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
-#endif
     }
 
 #ifdef NEUTRAL

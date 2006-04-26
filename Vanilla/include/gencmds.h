@@ -22,11 +22,9 @@
 #define C_PR_5          0x4000
 #define C_PR_6          0x8000
 
-#ifdef VOTING
 #define C_VC_ALL        0x0020   /* Command only passes with Majority concensus */
 #define C_VC_TEAM       0x0040   /* Command passes with agreement from Team */
 /*#define C_VC_PLAYER     0x0080 */  /* Each player can be voted on, like eject */
-#endif /* VOTING */
 
 /* Integrate Voting commands and generic commands into the same
    structure.  The two only differ slightly */

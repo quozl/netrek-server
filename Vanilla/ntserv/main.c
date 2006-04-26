@@ -832,7 +832,7 @@ static int check_temporary_bans(char *ip)
     if (b->b_expire) {
       if (!strcmp(b->b_ip, ip)) {
 	ERROR(2,( "ban of %s has been probed\n", b->b_ip));
-	b->b_expire += 10;
+	b->b_expire += ban_vote_offset;
 	return TRUE;
       }
       b->b_expire--;

@@ -1,3 +1,12 @@
+Wed Apr 26 19:37:40 2006  James Cameron  <quozl@us.netrek.org>
+
+	* *.h, *.c: make voting a site policy, by moving the configuration
+	settings from config.h.in to etc/sysdef.
+
+Wed Apr 26 18:34:58 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/sysdefaults.c: trim includes to minimum.
+
 Mon Apr 24 22:30:47 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/ntscmds.c: add a vote to temporarily ban, which requires

@@ -105,24 +105,16 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
 	}
       } /* !C_GLOG */
 
-#ifdef VOTING
-      if (cmds[i].tag & (C_VC_ALL | C_VC_TEAM))
-      {
-	if (do_vote(comm, mess, cmds, i))
-	{
+      if ((voting) && (cmds[i].tag & (C_VC_ALL | C_VC_TEAM))) {
+	if (do_vote(comm, mess, cmds, i)) {
 	  if ( cmds[i].tag & C_GLOG ) {
-
 	    if (glog_open() == 0) {	/* Log pass for God to see */
 	      glog_printf("VOTE: The motion %s passes\n", comm);
 	    }
           }
 	}
-      }
-      else
-#endif
-      {
-	if (cmds[i].tag & C_PLAYER)
-	{
+      } else {
+	if (cmds[i].tag & C_PLAYER) {
 	  int who;
 
 	  /* This is really not that useful - If the calling
@@ -131,13 +123,11 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
 	  who = getplayer(mess->m_from, comm);
 	  if (who >= 0)
 	    (*cmds[i].handler)(comm, mess, who, cmds, i, prereqs);
-	  else
-	  {
+	  else {
 	    free(comm);
 	    return 0;
 	  }
-	}
-	else
+	} else
 	  (*cmds[i].handler)(comm, mess, cmds, i, prereqs);
       }
       free(comm);
@@ -179,7 +169,6 @@ int getplayer(int from, char *line)
   return what;
 }
 
-#ifdef VOTING
 int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
             int num)
 {
@@ -316,7 +305,6 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
     return 0;
   }
 }
-#endif /* VOTING */
 
 /* ARGSUSED */
 int do_help(char *comm, struct message *mess, struct command_handler_2 *cmds,
@@ -344,8 +332,7 @@ int do_help(char *comm, struct message *mess, struct command_handler_2 *cmds,
 	   (its description has a value of NULL, not "")
 	   Use this hack to make a command hidden */
 	continue;
-#ifdef VOTING
-      else if (cmds[i].tag & (C_VC_TEAM | C_VC_ALL))
+      else if ((voting)&&(cmds[i].tag & (C_VC_TEAM | C_VC_ALL)))
       {
 	char ch;
 
@@ -358,7 +345,6 @@ int do_help(char *comm, struct message *mess, struct command_handler_2 *cmds,
 	pmessage(who,MINDIV,addr, "|%10s - %c: %s",
 		 cmds[i].command, ch, cmds[i].desc);
       }
-#endif /* VOTING */
       else
 	pmessage(who,MINDIV,addr, "|%10s - %s",
 		 cmds[i].command, cmds[i].desc);

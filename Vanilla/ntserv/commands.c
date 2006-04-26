@@ -50,13 +50,10 @@
 int do_help();
 char *check_possible(char *line, char *command);
 int getplayer(int from, char *line);
-
-#ifdef VOTING
 int do_generic_vote(char *comm, int who);
 int do_start_robot();
-#endif
 
-#if defined (ALLOW_EJECT) && !defined(INL)
+#if !defined(INL)
 int do_player_eject();
 #endif
 
@@ -378,8 +375,6 @@ struct command_handler commands[] = {
 
 
 
-#ifdef VOTING
-
 /*********** VOTING LIST ***********
       Note: The vote list *must* must be in upper case.
 
@@ -399,7 +394,7 @@ struct command_handler commands[] = {
 
 struct vote_handler votes[] = {
     { NULL, 0, 0, 0, NULL, 0, NULL},         			/* record 0 */
-#if defined(ALLOW_EJECT) && !defined(INL)
+#if !defined(INL)
     { "EJECT",  
 	VC_TEAM | VC_GLOG | VC_PLAYER,
 	2,
@@ -492,8 +487,6 @@ struct vote_handler votes[] = {
 
 #define NUM_VOTES (sizeof(votes) / sizeof(votes[0]) )
 
-#endif /* VOTING */
-
 
 /*	Using just strstr is not enough to ensure uniqueness. There are 
 	commands such as STATS and SBSTATS that could be matched in two
@@ -564,9 +557,8 @@ int check_command(mess)
         }
     }
     i = 0;
-#ifdef VOTING
-    i = do_generic_vote(upper,mess->m_from);	/* maybe it's a vote? */
-#endif
+    if (voting)
+      i = do_generic_vote(upper,mess->m_from);	/* maybe it's a vote? */
     free (upper);
     return (i);
 }
@@ -1003,7 +995,7 @@ int do_triple_planet_mayhem(void)
 #endif /* TRIPLE_PLANET_MAYHEM */
 
 
-#if defined (ALLOW_EJECT)
+#if !defined(INL)
 int do_player_eject(int who, int player, int mflags, int sendto)
 {
     register struct player *j;
@@ -1052,9 +1044,7 @@ eject_player(int who)
   j->p_status=PEXPLODE;
   j->p_whodead=me->p_no;
 }
-#endif /* ALLOW_EJECT */
-
-#ifdef VOTING
+#endif
 
 check_listing(comm)
 char *comm;
@@ -1206,7 +1196,6 @@ int do_generic_vote(char *comm, int who)
     }
     return 1;
 }
-#endif /* VOTING */
 
 #if defined(AUTO_PRACTICE) && !defined(BASEP)
 int do_start_basep(who, mflags, sendto)
@@ -1332,8 +1321,7 @@ struct message *mess;
 	}
     }
     
-#ifdef VOTING
-    if (NUM_VOTES > 1) {
+    if (voting && (NUM_VOTES > 1)) {
 	char ch;
         pmessage(who,MINDIV,addr,
 		"The following votes can be used:  (M=Majority, T=Team vote)");
@@ -1347,7 +1335,6 @@ struct message *mess;
 		votes[i].type, ch, votes[i].desc);
 	}
     }
-#endif
 }
 
 #ifndef INL

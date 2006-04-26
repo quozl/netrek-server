@@ -190,13 +190,11 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
       me->p_war = me->p_hostile;
     }
 
-#ifdef VOTING
     /* reset eject voting to avoid inheriting this slot's last occupant's */
     /* escaped fate just in case the last vote comes through after the    */
     /* old guy quit and the new guy joined  -Villalpando req. by Cameron  */
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) 
       j->voting[me->p_no] = -1;
-#endif
 
     /* join message stuff */
     sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);

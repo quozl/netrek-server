@@ -64,14 +64,12 @@
                                    by default have 16 player slots and make
                                    the rest obs slots */
 
-#ifdef VOTING
 #define PV_EXTRA 8			/* # of non-eject vote types      */
 #define PV_TOTAL MAXPLAYER*2+PV_EXTRA	/* total number of voting slots   */
 #define PV_EJECT 0*MAXPLAYER		/* array base for eject votes     */
 #define PV_BAN   1*MAXPLAYER		/* array base for eject votes     */
 #define PV_OTHER 2*MAXPLAYER		/* array base for non-eject votes */
-/* see ntserv/ntscmds.c for array */
-#endif
+/* see ntserv/ntscmds.c for voting array */
 
 #if defined(NEWBIESERVER) || defined(PRETSERVER)
 #define MAXQUEUE 13	/* Number of different  waitqueues */

@@ -399,9 +399,7 @@ struct player {
     int p_df;			/* defense (0 unknown, 1 worst, 100 best) */
     int p_tg;			/* target+1 */
 #endif
-#ifdef VOTING
     time_t voting[PV_TOTAL];	/* voting array */
-#endif
     int p_candock;              /* is this player allowed to dock onto SB */
     int p_transwarp;		/* flags base must have to allow transwarp */
 };
@@ -703,7 +701,6 @@ struct command_handler {
     int (*handler)();
 };
 
-#ifdef VOTING
 struct vote_handler {
     char *type;
     int tag;
@@ -718,9 +715,6 @@ struct vote_handler {
 #define VC_TEAM    0x0002   /* Team Vote     */
 #define VC_GLOG    0x0010   /* Write Votes to God Log */
 #define VC_PLAYER  0x0020   /* Each player can be voted on, like eject */
-
-
-#endif
 
 #endif /* __INCLUDED_struct_h__ */
 

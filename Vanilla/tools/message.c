@@ -1,15 +1,5 @@
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <sys/file.h>
-#include <math.h>
-#include <sys/ipc.h>
-#include <errno.h>
-#include <pwd.h>
 #include <string.h>
-#include <ctype.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

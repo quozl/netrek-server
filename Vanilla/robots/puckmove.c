@@ -1185,12 +1185,7 @@ void do_faceoff(void)
     for (i = 0, j = &players[i]; 
 	i < MAXPLAYER; i++, j++) {
 	if (j == me)  continue;
-
-#ifdef VOTING
-	for (l=0; l < PV_TOTAL; l++)
-		j->voting[l] = -1;
-#endif
-
+	for (l=0; l < PV_TOTAL; l++) j->voting[l] = -1;
     }
     me->p_speed = 0;
     me->p_desspeed = 0;
@@ -1272,11 +1267,7 @@ void player_maint(void)
 		track->t_seconds = 0;
 		track->t_x = 0;
 		track->t_y = 0;
-#ifdef VOTING
-                for (l = 0; l < PV_TOTAL; l++) {
-                   j->voting[l]=-1;
-          	 }
-#endif
+                for (l = 0; l < PV_TOTAL; l++) j->voting[l] = -1;
                 track->t_flags = 0;
 	    }
 	    continue;		/* do nothing else for dead players */

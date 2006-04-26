@@ -40,11 +40,7 @@ int freeslot(struct player *who)
     who->p_stats.st_tticks=1;
 */
     queues[who->w_queue].free_slots++;
-
-#ifdef VOTING
     MZERO(who->voting, sizeof(time_t) * PV_TOTAL);
-#endif
-
     who->p_process     = 0;
     
     return retvalue;
@@ -105,13 +101,8 @@ int pickslot(int w_queue)
 	    }
 	    players[i].p_stats.st_keymap[95]=0;
 	    players[i].p_stats.st_flags=ST_INITIAL;
-
 	    players[i].p_process     = 0;
-
-#ifdef VOTING
 	    MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
-#endif
-
 #ifdef OBSERVERS
 	    if (queues[w_queue].q_flags & QU_OBSERVER) Observer++;
 #endif

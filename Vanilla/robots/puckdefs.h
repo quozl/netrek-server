@@ -39,7 +39,6 @@
 #define ANNOUNCER                 /*define for more loquacious commentary*/
 #define NEWGAME_RESET             /*define to have newgame reset stats*/
 #define WALL_BOUNCE               /*define to keep players in the rink*/
-#define ALLOW_EJECT
 #define SHOT_DESC		  /*define to have on goal descriptions.  */
 #define LIGHT_PLANETS             /*define to have planets show the score*/
 

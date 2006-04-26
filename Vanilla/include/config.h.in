@@ -347,32 +347,6 @@
                                 /* OBSERVERS       - allow players to watch */
 #define OBSERVERS
 
-                                /* VOTING          - allow voting mode */
-#define VOTING
-
-                                /* ALLOW_EJECT     - define to allow players to
-                                                     eject others */
-                                
-                                /* ALLOW_BAN       - define to allow players to
-                                                     eject and ban others */
-                                
-				/* VICIOUS_EJECT   - free's the players slot
-						     after ejection,
-						     causes some clients to 
-						     hang */
-
-				/* EJECT_ONLY_IF_QUEUE - refuses to eject
-							 unless queue != 0 */
-
-#ifdef VOTING
-#define ALLOW_EJECT
-#ifdef ALLOW_EJECT
-#define ALLOW_BAN
-#undef VICIOUS_EJECT
-#undef EJECT_ONLY_IF_QUEUE
-#endif
-#endif
-
 #define NODOCK          /* NODOCK allow per-slot docking priveledges */
 
 #define NOTRANSWARP	/* NOTRANSWARP	- allow starbase to set transwarp
@@ -397,7 +371,6 @@
 						     this define. */
 #define GENO_COUNT
 
-#ifdef VOTING
                                 /* AUTO_INL        - starts up INL robot
                                                      by majority vote   */
 
@@ -433,7 +406,6 @@ only if you have no intention of retaining stats on the server for pickup */
 #define BALANCE_PLANET  100
 #define BALANCE_DEFENSE   0
 #define BALANCE_OFFENSE 100
-#endif
                                 /* MESSAGES_ALL_TIME - allow messaging during
                                 freezes like twarp, refit, and war decl. 
 				required to be set for INL robot use. */

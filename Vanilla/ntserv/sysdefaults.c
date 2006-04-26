@@ -2,12 +2,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include "defs.h"
-#include INC_STRINGS
 #include "struct.h"
 #include "data.h"
 #include "copyright2.h"
