@@ -24,6 +24,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "genspkt.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -304,8 +305,7 @@ void sendVKills(void)
 
 }
 
-int
-sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
+int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 {
 /*#define FLAGMASK (PFSHIELD|PFBOMB|PFORBIT|PFCLOAK|PFROBOT|PFBEAMUP|PFBEAMDOWN|PFPRACTR|PFDOCK|PFTRACT|PFPRESS|PFDOCKOK) aieee, too much.  7/27/91 TC */ 
 /*#define FLAGMASK (PFSHIELD|PFBOMB|PFORBIT|PFCLOAK|PFROBOT|                    PFPRACTR|PFDOCK|PFTRACT|PFPRESS|PFDOCKOK) still more than needed */

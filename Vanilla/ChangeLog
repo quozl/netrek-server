@@ -1,3 +1,10 @@
+Thu Apr 27 09:32:33 2006  James Cameron  <quozl@us.netrek.org>
+
+	* include/genspkt.h: add separate prototypes for genspkt.c since
+	they cannot live in proto.h, due to the packet structures
+	required.
+	* tools/cambot.c: fix compilation warnings with -Wall.
+
 Wed Apr 26 22:58:34 2006  James Cameron  <quozl@us.netrek.org>
 
 	* tools/cambot.c (cb_updt): fix regression which caused cambot to
@@ -1932,4 +1939,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.33 2006/04/24 12:35:17 quozl Exp $
+	$Id: ChangeLog,v 1.35 2006/04/26 13:10:04 quozl Exp $

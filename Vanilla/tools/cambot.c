@@ -6,12 +6,15 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <signal.h>
+#include <time.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "genspkt.h"
 
 #define UPDT_ALL 0
 #define UPDT_MOST 1
