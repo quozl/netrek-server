@@ -1,3 +1,8 @@
+Wed Apr 26 22:58:34 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/cambot.c (cb_updt): fix regression which caused cambot to
+	corrupt server state when started.
+
 Wed Apr 26 19:37:40 2006  James Cameron  <quozl@us.netrek.org>
 
 	* *.h, *.c: make voting a site policy, by moving the configuration

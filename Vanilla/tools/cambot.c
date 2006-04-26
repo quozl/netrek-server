@@ -4,20 +4,9 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/time.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <signal.h>
-#include <setjmp.h>
-#include <sys/file.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
-#include <time.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -33,6 +22,7 @@ FILE *packetsFile;
 
 struct you_short_spacket clientSelfs[MAXPLAYER];
 struct youss_spacket clientSelfShips[MAXPLAYER];
+struct flags_spacket clientFlags[MAXPLAYER];
 struct player cambot_me;
 struct itimerval udt;
 char	*cb_from = {"GOD->ALL"};
@@ -173,7 +163,8 @@ cb_updt(int unused)
 	for (i=0, pl=players, cpli=clientPlayersInfo, cpl=clientPlayers,
 		 kills=clientKills, pstatus=clientPStatus,
 		 login=clientLogin, stats=clientStats,
-		 self=clientSelfs, self2=clientSelfShips;
+		 self=clientSelfs, self2=clientSelfShips,
+		 flags=clientFlags;
 	     i<MAXPLAYER;
 	     i++, pl++, cpli++, cpl++, kills++, pstatus++, login++,
 		 stats++, self++, self2++) {

@@ -1,3 +1,4 @@
+- fix cambot regression [Cameron]
 - convert voting, ejecting and banning to site policy in sysdef [Cameron]
 - add vote to temporarily ban a player [Cameron]
 - change to conquest sequence to add a parade [Cameron]
