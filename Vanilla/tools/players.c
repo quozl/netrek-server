@@ -185,16 +185,16 @@ int main(int argc, char **argv)
 }
 
 /* server comment */
-static char *comment() {
+static char *comment_get() {
 #define MAXPATH 256
   char name[MAXPATH];
   snprintf(name, MAXPATH, "%s/%s", SYSCONFDIR, "comment");
   FILE *file = fopen(name, "r");
-  if (file == NULL) return "";
+  if (file == NULL) return NULL;
   static char text[80];
   char *res = fgets(text, 80, file);
   fclose(file);
-  if (res == NULL) return "";
+  if (res == NULL) return NULL;
   res[strlen(res)-1] = '\0';
   return res;
 }
@@ -231,19 +231,30 @@ static void udp()
   /* compose a reply packet */
   char packet[128];
   
+  /* default the comment */
+  char *comment = comment_get();
+  if (comment == NULL) {
+    char *ip = inet_ntoa(addr.sin_addr);
+    if (!strcmp(ip,"127.0.0.1")) {
+      comment = "server on this computer";
+    } else {
+      comment = "a nearby netrek server";
+    }
+  }
+
   /* s,type,comment,ports,port,players,queue[,port,players,queue] */
   /* if server isn't running, send simple reply */
   if (!openmem(-1)) {
-    sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment(), 0, 0);
+    sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment, 0, 0);
   } else {
     if (status->gameup & GU_INROBOT) {
       int q1 = QU_HOME;
       int q2 = QU_AWAY;
       sprintf(packet, "s,B,%s,2,4566,%d,%d,4577,%d,%d\n", 
-	      comment(), pc(q1), ql(q1), pc(q2), ql(q2));
+	      comment, pc(q1), ql(q1), pc(q2), ql(q2));
     } else {
       int q = QU_PICKUP;
-      sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment(), pc(q), ql(q));
+      sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment, pc(q), ql(q));
     }
   }
   

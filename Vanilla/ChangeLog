@@ -1,3 +1,10 @@
+Fri Apr 28 20:39:32 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/players.c (udp): if the comment file is not present,
+	provide a default comment.  If the client that requested
+	information is on localhost, return a default "server on this
+	computer".  Such a default is more descriptive.
+
 Fri Apr 28 20:28:37 2006  James Cameron  <quozl@us.netrek.org>
 
 	* robots/inl.c (inl_confine_deorbit): fix INL confine to knock

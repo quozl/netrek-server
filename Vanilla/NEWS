@@ -1,3 +1,4 @@
+- describe a local unnamed server as "server on this computer" [Cameron]
 - fix INL confine to knock ships out of orbit [Cameron]
 - fix cambot regression [Cameron]
 - convert voting, ejecting and banning to site policy in sysdef [Cameron]
