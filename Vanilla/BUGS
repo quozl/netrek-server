@@ -30,13 +30,6 @@ List of things that are defects
 	  running make causes configure to be re-run but without the
 	  appropriate --prefix, thus building for the wrong place.
 
-	- inl confine doesn't knock ships out of orbit, ships may
-	  remain outside their confined zone.
-
-	- configure script, add recognition of --with-inl, and thus
-	  define all the appropriate defines that INSTALL.INL says we
-	  have to do, change PKEY too.
-
 	- configure to set CONFIRM=1 if it finds res-rsa, and Makefile
 	  to recommend the execution of updated at least once.
 

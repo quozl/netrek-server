@@ -250,6 +250,14 @@ inl_freeze(void)
 
 }
 
+static void
+inl_confine_deorbit(struct player *j)
+{
+  if (j->p_flags & PFORBIT) {
+    j->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+  }
+}
+
 void
 inl_confine(void)
 {
@@ -257,14 +265,22 @@ inl_confine(void)
 
   for (j = firstPlayer; j <= lastPlayer; j++)
     {
-      if (j->p_x < cbounds[j->p_team][0])
+      if (j->p_x < cbounds[j->p_team][0]) {
+	inl_confine_deorbit(j);
 	j->p_x = cbounds[j->p_team][0];
-      if (j->p_y < cbounds[j->p_team][1])
+      }
+      if (j->p_y < cbounds[j->p_team][1]) {
+	inl_confine_deorbit(j);
 	j->p_y = cbounds[j->p_team][1];
-      if (j->p_x > cbounds[j->p_team][2])
+      }
+      if (j->p_x > cbounds[j->p_team][2]) {
+	inl_confine_deorbit(j);
 	j->p_x = cbounds[j->p_team][2];
-      if (j->p_y > cbounds[j->p_team][3])
+      }
+      if (j->p_y > cbounds[j->p_team][3]) {
+	inl_confine_deorbit(j);
 	j->p_y = cbounds[j->p_team][3];
+      }
     }
 }
 
