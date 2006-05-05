@@ -4,6 +4,8 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -216,10 +218,10 @@ static int ql(int queue) {
 static void udp()
 {
   char buf[2];
-  struct sockaddr addr;
+  struct sockaddr_in addr;
   socklen_t addrlen = sizeof(addr);
   int sock = 0;
-  int stat = recvfrom(sock, buf, 1, MSG_TRUNC, &addr, &addrlen);
+  int stat = recvfrom(sock, buf, 1, MSG_TRUNC, (struct sockaddr *) &addr, &addrlen);
   if (stat < 0 && errno == ENOTSOCK)
     fprintf(stderr, "players: must be called by netrekd with UDP file descriptor setup\n");
   if (stat < 0) { perror("players: recvfrom"); return; }
@@ -259,7 +261,7 @@ static void udp()
   }
   
   /* send the reply */
-  stat = sendto(sock, packet, strlen(packet), 0, &addr, addrlen);
+  stat = sendto(sock, packet, strlen(packet), 0, (struct sockaddr *) &addr, addrlen);
   if (stat < 0) { perror("players: sendto"); return; }
 }
 

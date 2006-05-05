@@ -1,3 +1,7 @@
+Fri May  5 22:53:54 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/players.c (udp): compilation fix to previous patch.
+
 Fri Apr 28 20:39:32 2006  James Cameron  <quozl@us.netrek.org>
 
 	* tools/players.c (udp): if the comment file is not present,
