@@ -3,6 +3,8 @@ $Id: BUGS,v 1.4 2006/04/12 12:58:11 modemhero Exp $
 
 List of things that are defects
 
+	- find causes of jammed slots and expire them sooner.
+
 	- Player "^%^" took a planet and it said "Planet taken by ^"
 	  reported by zu22 (Zach Uram) on 2006-04-05.  This is also
 	  a client issue.

@@ -3,6 +3,12 @@ $Id: PROJECTS,v 1.8 2006/04/22 11:31:52 quozl Exp $
 
 List of things to do in the future
 
+	- list connection failure scenarios and response by server,
+	  so that we can reduce jammed slots.
+
+	- use response time on metaserver solicitation packet as
+	  indicator of lag to the server.  Client coding required.
+
 	- metaserver begins to list robots on a server after the
 	  server has stopped sending player count updates by perhaps
 	  the TCP query from the server is mistaken.
@@ -60,8 +66,26 @@ struct ban {
 
 	- prevent eject in initial two-minutes of ship time, if ship active,
 
-	- RSS feed for genos, so that people can subscribe and be told when the
-	  galactic is recently reset.  Jerub expressed an interest in doing it.
+	- RSS feed for genos, so that people can subscribe and be told
+	  when the galactic is recently reset.  Jerub expressed an
+	  interest in doing it.
+
+	  Content area on netrek.org showing recent contested genos,
+	  length of game leading up to it, number of players seen,
+	  players per hour, keep latest ten, feed from multiple
+	  servers.  Server generated screen shot of final frame.
+
+	  Separate feed for adminstrivia, with server CLI script for
+	  adding to the feed.
+
+	  INL server specific feed, containing game results, summary,
+	  ltd stats by player.
+
+	  Metaserver specific feed ... new servers listed, delistings,
+	  weekly summary of query counts with history.
+
+	  netrekd forked HTTP responder, or scripts to send stuff to a
+	  web server?
 
 	- If you are observing a friendly player who is t-warping, you
 	  can lock on to other players, but you will not swap to
