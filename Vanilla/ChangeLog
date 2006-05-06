@@ -1,3 +1,10 @@
+Sat May  6 23:58:10 2006  James Cameron  <quozl@us.netrek.org>
+
+	* proto.h, db.c, findslot.c, genspkt.c, getname.c, openmem.c,
+	phaser.c, rsa_key.c, socket.c, solicit.c, startrobot.c,
+	sysdefaults.c: compilation fixes under GCC 4.0.3 with -Wall,
+	ntserv/ now clean apart from crypt(3) issue.
+
 Sat May  6 23:07:29 2006  James Cameron  <quozl@us.netrek.org>
 
 	* sequencer/sequencer.c, ntserv/balance.c, ntserv/ntscmds.c:

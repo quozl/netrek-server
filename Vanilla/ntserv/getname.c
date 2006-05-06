@@ -51,10 +51,8 @@ static void handleLogin(void)
 {
     static struct statentry player;
     static int position= -1;
-    int plfd;
     int i;
     int entries;
-    off_t file_pos;
     saltbuf sb;
     char newpass[NAME_LEN];
 
@@ -71,10 +69,9 @@ static void handleLogin(void)
     ERROR(8,("handleLogin: %s %s %s\n", 
 	     passPick[15] == 0 ? "attempt" : "query", namePick, passPick));
 
-    if (streq(namePick, "Guest") || streq(namePick, "guest") &&
+    if ((streq(namePick, "Guest") || streq(namePick, "guest")) &&
 	!lockout()) {
 
-    handlelogin_guest:
         /* all INL games prohibit guest login */
         if (status->gameup & GU_INROBOT) {
 	  sendClientLogin(NULL);
@@ -181,7 +178,7 @@ static void handleLogin(void)
 	/* race condition: Two new players joining at once
 	 * can screw up the database.
 	 */
-	if (entries = newplayer(&player) < 0) {
+	if ((entries = newplayer(&player)) < 0) {
 	  sendClientLogin(NULL);
 	} else {
 	  me->p_pos = entries;

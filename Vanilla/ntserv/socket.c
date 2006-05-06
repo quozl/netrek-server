@@ -1713,8 +1713,6 @@ static int gwrite(int fd, char *wbuf, size_t size)
 
 static void handleDockingReq(struct dockperm_cpacket *packet)
 {
-    int i;
-
     if (me->p_ship.s_type == STARBASE) {
         if (packet->state) {
             me->p_flags |= PFDOCKOK;
@@ -1876,7 +1874,7 @@ static void handleReserved(struct reserved_cpacket *packet)
     MCOPY(testdata, mysp.data, RESERVED_SIZE);
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
-	ERROR(1,( "%s: gethostname() failed\n", whoami(), 
+	ERROR(1,( "%s: gethostname() failed with %s", whoami(), 
 		  strerror(errno)));
     encryptReservedPacket(&mysp, &mycp, serverName, me->p_no);
     if (MCMP(packet->resp, mycp.resp, RESERVED_SIZE) != 0) {
@@ -1893,7 +1891,6 @@ static void handleReserved(struct reserved_cpacket *packet)
 
 static void handleRSAKey(struct rsa_key_cpacket *packet)
 {
-    struct rsa_key_cpacket mycp;
     struct rsa_key_spacket mysp;
     char serverName[64]; 
 
@@ -1903,7 +1900,7 @@ static void handleRSAKey(struct rsa_key_cpacket *packet)
 
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
-	ERROR(1,( "%s: gethostname() failed\n", whoami(), 
+	ERROR(1,( "%s: gethostname() failed with %s\n", whoami(), 
 		  strerror(errno)));
     if (decryptRSAPacket(&mysp, packet, serverName))
     {
@@ -2835,7 +2832,7 @@ static int check_mesgs(struct mesg_cpacket  *packet)
 		      (packet->group & MGOD))){
 	    static int counter = 0;
 
-	    if(glog_open() != 0) return;
+	    if(glog_open() != 0) return 0;
 	    glog_printf("%s\n", buf);
 	    glog_flush();
 	    counter++;

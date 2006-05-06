@@ -20,8 +20,8 @@
 
 void phaser(u_char course)
 {
-  struct player *j, *target_player;
-  struct torp *t, *target_plasma;
+  struct player *j, *target_player = NULL;
+  struct torp *t, *target_plasma = NULL;
   int pstatus;
   double s, C,D;
   LONG A,B, E,F;

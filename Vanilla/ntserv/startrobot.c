@@ -47,8 +47,10 @@ void practice_robo(void)
 	    case ORI:
 		arg1 = "-To";
 		break;
+	    default:
+		arg1 = "-Tf";
 	}
-	execl(Robot, "robot", arg1, "-p", "-f", "-h", 0);
+	execl(Robot, "robot", arg1, "-p", "-f", "-h", (char *) NULL);
 	/* If we get here, we are hosed anyway */
 	_exit(1);
     }

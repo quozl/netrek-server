@@ -8,6 +8,11 @@
 #include "copyright2.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -20,10 +25,15 @@
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
+#include "proto.h"
 
-makeRSAPacket(packet)
-struct rsa_key_spacket *packet;
+/* from res-rsa/rsa_encode.c */
+void rsa_encode(unsigned char *out, unsigned char *message,
+                unsigned char *key, unsigned char *global, const int digits);
+
+void makeRSAPacket(void *p)
 {
+    struct rsa_key_spacket *packet = (struct rsa_key_spacket *) p;
     int i;
 
     for (i=0; i<KEY_SIZE; i++)
@@ -35,11 +45,12 @@ struct rsa_key_spacket *packet;
 }
 
 /* returns 1 if the user verifies incorrectly */
-decryptRSAPacket(spacket, cpacket, serverName)
-struct rsa_key_spacket *spacket;
-struct rsa_key_cpacket *cpacket;
-char *serverName;
+int decryptRSAPacket (void *s,
+		      void *c,
+		      char *serverName)
 {
+    struct rsa_key_spacket *spacket = (struct rsa_key_spacket *) s;
+    struct rsa_key_cpacket *cpacket = (struct rsa_key_cpacket *) c;
     struct rsa_key key;
     struct sockaddr_in saddr;
     socklen_t addrlen;
@@ -49,9 +60,8 @@ char *serverName;
 #endif
     int fd;
     FILE *logfile;
-    int done, found, curtime;
-    int foo;
-    int total;
+    int done, found;
+    time_t curtime;
 
 /*    SIGNAL(SIGALRM, SIG_IGN);*/
 
@@ -136,7 +146,7 @@ char *serverName;
 #ifdef FEATURE_PACKETS
     if (!F_client_feature_packets)
 #endif
-      TellClient(key.client_type); /* 6/12/93 LAB */
+      TellClient((char *) key.client_type); /* 6/12/93 LAB */
 #endif
 
     return 0;

@@ -14,11 +14,13 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "packets.h"
 #include "proto.h"
 
+#ifdef NO_DUPLICATE_HOSTS
 /* return true if the host is not already in the game */
 static int absent(int w_queue, char *host) {
-  int i, here = 0;
+  int i;
   for (i=0; i<MAXPLAYER; i++) {
     if (players[i].p_status == PFREE) continue;
     if ((players[i].p_flags & PFROBOT)) continue;
@@ -30,6 +32,7 @@ static int absent(int w_queue, char *host) {
   }
   return 1;
 }
+#endif
 
 /*
  * The following code for findslot() is really nice.

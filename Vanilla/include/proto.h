@@ -30,6 +30,7 @@ void coup(void);
 /* db.c */
 int findplayer(char *namePick, struct statentry *player);
 void savestats(void);
+int newplayer(struct statentry *player);
 void changepassword(char *passPick);
 void savepass(const struct statentry *);
 
@@ -80,6 +81,7 @@ void initSPackets(void);
 void clearSPackets(int update_all, int update_sall);
 void sendFeature(struct feature_spacket *packet);
 int addSequence(char *outbuf, LONG *seq_no);
+void addSequenceFlags(void *buf);
 void sendQueuePacket(short pos);
 void sendPickokPacket(int state);
 void sendClientLogin(struct stats *stats);
@@ -176,6 +178,12 @@ int queue_exit(int waitindex);
 int queue_update(int w_queue);
 int queues_purge(void);
 int queue_setname(int w_queue, char *name);
+
+/* rsa_key.c */
+void makeRSAPacket(void *packet);
+int decryptRSAPacket (void *spacket,
+		      void *cpacket,
+		      char *serverName);
 
 /* redraw.c */
 void intrupt(void);

@@ -2385,8 +2385,9 @@ addSequence(char *outbuf, LONG *seq_no)
    update.  The flags sent should be from the end of the update, nominally
    100ms later. */
 void
-addSequenceFlags(struct sequence_spacket *ssp)
+addSequenceFlags(void *buf)
 {
+    struct sequence_spacket *ssp = (struct sequence_spacket *) buf;
     u_int f=0;
 
     /* Doesn't look like a sequence packet */

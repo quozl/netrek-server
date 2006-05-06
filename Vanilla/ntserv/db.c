@@ -7,20 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-#define _XOPEN_SOURCE
-#include <unistd.h>
-#include INC_MATH
-#include <signal.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <time.h>
 #include <fcntl.h>
 #ifdef PLAYER_INDEX
 #include <gdbm.h>
 #endif
 #include "defs.h"
-#include INC_STRINGS
 #include INC_UNISTD
 #include "struct.h"
 #include "data.h"
@@ -213,6 +206,7 @@ void changepassword (char *passPick)
 {
   saltbuf sb;
   struct statentry se;
+  /* implicitly defined on linux, anyone know where to find it? */
   strcpy(se.password, (char *) crypt(passPick, salt(me->p_name, sb)));
   savepass(&se);
 }
