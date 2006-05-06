@@ -11,7 +11,7 @@ INSTALLDATA = @INSTALL_DATA@
 
 #	libnetrek object files
 
-L_OBJS = bay.o \
+L_OBJS = balance.o bay.o \
 	coup.o \
 	data.o db.o detonate.o distress.o \
 	enter.o \

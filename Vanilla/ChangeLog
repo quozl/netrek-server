@@ -1,6 +1,12 @@
-Thu May  4 19:34:10 EDT 2006 Dave Ahn <ahn@orion.netrek.org>
+Sat May  6 23:07:29 2006  James Cameron  <quozl@us.netrek.org>
+
+	* sequencer/sequencer.c, ntserv/balance.c, ntserv/ntscmds.c:
+	reduce includes, move balance and triple to new file, in order to
+	fix compilation errors after
+
+Thu May  4 19:34:10 2006  Dave Ahn <ahn@orion.netrek.org>
 	
-	* Update auto archiver email.
+	* robots/auto-archive.pl: update auto archiver email address
 
 Fri Apr 28 20:39:32 2006  James Cameron  <quozl@us.netrek.org>
 
@@ -1955,4 +1961,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.39 2006/05/06 12:28:20 quozl Exp $
+	$Id: ChangeLog,v 1.40 2006/05/06 13:12:55 quozl Exp $

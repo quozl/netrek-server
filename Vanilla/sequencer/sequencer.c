@@ -1,23 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <signal.h>
-#include <sys/file.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <pwd.h>
-#include <math.h>
-#include <ctype.h>
-#include <time.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "planets.h"
 #include "proto.h"
-#include INC_STRINGS
 
 #define KTOURNSTART     0x0e
 
@@ -79,13 +67,6 @@ void doResources(int startup)
   if (startup)
     {
       MCOPY (pdata, planets, sizeof (pdata));
-
-/*
-      for (i = 0; i < MAXPLANETS; i++)
-        {
-          planets[i].pl_info = ALLTEAM;
-        }
-*/
 
       for (i = 0; i < 4; i++)
         {
@@ -200,15 +181,18 @@ void
 do_nuke ( void *nothing )
 {
     obliterate ( 0, KPROVIDENCE );
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
-**  Balance the teams by statistics.
+**  Balance the teams.
 */
-extern void do_balance(char *);
+#if defined (TRIPLE_PLANET_MAYHEM)
+void
+do_local_balance ( void *nothing )
+{
+    do_balance();
+}
+#endif
 
 /*
 **  Reset planets, save planet state and player state for later scoring
@@ -218,9 +202,6 @@ do_reset ( void *nothing )
 {
     doResources(1);
     /* save planet/player state ? */
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
@@ -230,9 +211,6 @@ void
 do_pause ( void *nothing )
 {
     status->gameup |= (GU_PRACTICE | GU_PAUSED);
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
@@ -242,9 +220,6 @@ void
 do_continue ( void *nothing )
 {
     status->gameup &= ~(GU_PRACTICE | GU_PAUSED);
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
@@ -255,9 +230,6 @@ void
 do_score ( char *nothing )
 {
     printf ( "Score...\n" );
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
@@ -267,9 +239,6 @@ void
 do_eject ( void *nothing )
 {
     obliterate ( 0, KQUIT );
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
@@ -289,9 +258,6 @@ void
 do_exit ( void *nothing )
 {
     exit(0);
-
-    /* get rid of annoying compiler warning, -O will remove this code */
-    if (nothing) return;
 }
 
 /*
@@ -329,7 +295,7 @@ main(int argc, char *argv[])
         COMMAND ( "say",      do_say      );
         COMMAND ( "nuke",     do_nuke     );
 #if defined (TRIPLE_PLANET_MAYHEM)
-        COMMAND ( "balance",  do_balance  ); /* see commands.c */
+        COMMAND ( "balance",  do_local_balance );
 #endif
         COMMAND ( "reset",    do_reset    );
         COMMAND ( "pause",    do_pause    );

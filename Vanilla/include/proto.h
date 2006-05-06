@@ -6,6 +6,12 @@
 #ifndef __INCLUDED_proto_h__
 #define __INCLUDED_proto_h__
 
+/* balance.c */
+#if defined (TRIPLE_PLANET_MAYHEM)
+void do_balance(void);
+void do_triple_planet_mayhem(void);
+#endif
+
 /* bay.c */
 void bay_consistency_check(struct player *base);
 struct player *bay_owner(struct player *me);

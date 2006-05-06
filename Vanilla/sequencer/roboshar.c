@@ -3,6 +3,11 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+
+#ifndef M_PI
+#include <math.h>
+#endif
 
 
 /* Each robot must declare the following variables as globals */
@@ -12,10 +17,7 @@ extern int debug;
  *  The following routines are shared code
  */
 
-/* ARGSUSED */
-void message_flag(cur,address)
-struct message *cur;
-char *address;
+void message_flag(struct message *cur, char *address)
 {
     /* This is to prevent false sending with SP_S_WARNING */
     cur->args[0] = DINVALID;
@@ -24,38 +26,29 @@ char *address;
 /*#include "warnings.h"*/
 /* only the fct, robots cannot set send_short */
 
-/* ARGSUSED */
-void swarning( whichmessage, argument,argument2)
-unsigned char whichmessage,argument,argument2;
+void swarning(unsigned char whichmessage, unsigned char argument,
+              unsigned char argument2)
+{
+}
+
+void spwarning(char *text, int index)
 {
 }
 
 /* ARGSUSED */
-void spwarning(text,index)
-char *text;
-int index;
-{
-}
-
-/* ARGSUSED */
-void s_warning(text,index)
-char *text;
-int index;
+void s_warning(char *text, int index)
 {
 } /* Only stubs to silence the linker */
 
 
-void new_warning(index,mess)
-int index;
-char *mess;
+void new_warning(int index, const char *mess, ...)
 {
     if (debug)
         ERROR(1,("warning: (%d)%s\n", index,mess));
 }
 
 
-void warning(mess)
-int mess;
+void warning(char *mess)
 {
     if (debug)
 	ERROR(1,("warning: %s\n", mess));
@@ -66,8 +59,7 @@ int mess;
  * This routine sets up the robot@nowhere name
  */
 
-void robonameset(myself)
-struct player *myself;
+void robonameset(struct player *myself)
 {
 
     (void) strncpy(myself->p_login, "Robot", sizeof (myself->p_login));
@@ -103,12 +95,12 @@ struct player *myself;
  * c)  Forge a message by setting mynum to whatever it wants.
  */
 
-void messAll(int mynum,char *name,...)
+void messAll(int mynum, char *name, const char *fmt, ...)
 {
     va_list args;
     char addrbuf[15];
 
-    va_start(args, name);
+    va_start(args, fmt);
 
 /* +++ 2.6pl0 cameron@sna.dec.com */
 #if defined(__alpha)
@@ -117,7 +109,7 @@ void messAll(int mynum,char *name,...)
     sprintf(addrbuf, "%s->ALL", name );
 #endif
 /* --- */
-    do_message(0, MALL, addrbuf, mynum, args);
+    do_message(0, MALL, addrbuf, mynum, fmt, args);
     va_end(args);
 }
 
@@ -127,7 +119,7 @@ void messAll(int mynum,char *name,...)
  * The same comments as messAll apply here, too.
  */
 
-void messOne(int mynum,char *name,int who, ...)
+void messOne(int mynum, char *name, int who, const char *fmt, ...)
 {
     va_list args;
     char addrbuf[15];
@@ -139,36 +131,39 @@ void messOne(int mynum,char *name,int who, ...)
       return; /* hack: don't message self :) */
     }
     sprintf(addrbuf, "%s->%2s", name, players[who].p_mapchars);
-    va_start(args, who);
-    do_message(who, MINDIV, addrbuf, mynum, args);
+    va_start(args, fmt);
+    do_message(who, MINDIV, addrbuf, mynum, fmt, args);
     va_end(args);
 }
 
 
-int game_pause(comm,mess)
-char *comm;
-struct message *mess;
+void game_pause(char *comm, struct message *mess)
 {
   status->gameup|=GU_PAUSED;
 }
 
-int game_resume(comm,mess)
-char *comm;
-struct message *mess;
+int game_resume(char *comm, struct message *mess)
 {
   status->gameup&= ~GU_PAUSED;
+  return 1;
 }
-
-#ifndef M_PI
-#include <math.h>
-#endif
 
 /*
  * This returns the direction needed to travel to get from
  * (x1,y1) to (x2,y2). (x1,y1) are commonly me->p_x and me->p_y.
  */
-u_char getcourse2(int x1,int y1,int x2,int y2)
+u_char getcourse2(int x1, int y1, int x2, int y2)
 {
     return((u_char) nint((atan2((double) (x2 - x1),
         (double) (y1 - y2)) / M_PI * 128.)));
+}
+
+/*
+ * Null client packet sending function for ntserv specific code in
+ * enter.c and interface.c so that we can avoid compiling it in the
+ * robots directory, and use libnetrek instead.
+ */
+void sendClientPacket(void *ignored)
+{
+  return;
 }
