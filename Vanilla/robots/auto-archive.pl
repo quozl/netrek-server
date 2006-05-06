@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# $Id: auto-archive.pl,v 1.1 2005/03/21 05:23:46 jerub Exp $
+# $Id: auto-archive.pl,v 1.2 2006/05/04 23:39:58 ahn Exp $
 # 
 # auto-archive.pl
 #
@@ -36,7 +36,7 @@ my $archiver;
 # Archiver address.  DO NOT CHANGE.
 # To never send stats to the central archive, comment it out.
 
-$archiver	= 'stats-archive@genocide.netrek.org';
+$archiver	= 'stats-archive@orion.netrek.org';
 
 ######
 # Name of your clue server.  Visit http://www.netrek.org/stats/ and

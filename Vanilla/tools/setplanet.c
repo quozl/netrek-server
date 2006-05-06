@@ -369,5 +369,10 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
+    if (!strcmp(argv[i], "is-flat")) {
+      if (pl->pl_armies < 5) return 0;
+      return 1;
+    }
+
     goto state_0;
 }

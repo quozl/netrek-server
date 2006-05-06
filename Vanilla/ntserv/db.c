@@ -5,7 +5,10 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
+#define _XOPEN_SOURCE
+#include <unistd.h>
 #include INC_MATH
 #include <signal.h>
 #include <errno.h>
@@ -72,7 +75,7 @@ static off_t db_index_fetch(char *namePick, struct statentry *player) {
   free(content.dptr);
   gdbm_close(dbf);
   ERROR(8,("db.c: db_index_fetch: gdbm_fetch('%s'): index says position '%d'\n",
-	   namePick, position));
+	   namePick, (int) position));
   return position;
 }
 
@@ -94,14 +97,14 @@ static void db_index_store(struct statentry *player, off_t position) {
   /* store this key and position */
   if (gdbm_store(dbf, key, content, GDBM_REPLACE) < 0) {
     ERROR(8,("db.c: db_index_store: gdbm_store('%s' -> '%d'): %s, %s\n", 
-	     player->name, position, gdbm_strerror(gdbm_errno), 
+	     player->name, (int) position, gdbm_strerror(gdbm_errno), 
 	     strerror(errno)));
     gdbm_close(dbf);
     return;
   }
 
   ERROR(8,("db.c: db_index_store: gdbm_store('%s' -> '%d'): ok\n", 
-	   player->name, position));
+	   player->name, (int) position));
   gdbm_close(dbf);
 }
 
@@ -143,15 +146,18 @@ int findplayer(char *namePick, struct statentry *player) {
     if (strcmp(namePick, player->name)==0) {
       close(fd);
       ERROR(8,("db.c: findplayer: ok, '%s' is indeed at position '%d'\n", 
-	       namePick, position));
+	       namePick, (int) position));
 #ifdef DB_TIMING
-      ERROR(8,("db.c: timing, cached resolution, %f\n", g_timer_elapsed(timer, NULL)));
+      ERROR(8,("db.c: timing, cached resolution, %f\n", 
+	       g_timer_elapsed(timer, NULL)));
       g_timer_destroy(timer);
 #endif      
       return position;
     }
     /* otherwise there's an inconsistency that we can recover from */
-    ERROR(2,("db.c: findplayer: player index inconsistent with player file, entered name '%s', index says position '%d', but file entry name '%s'\n", namePick, position, player->name));
+    ERROR(2,("db.c: findplayer: player index inconsistent with player file, "
+	     "entered name '%s', index says position '%d', but file entry name '%s'\n", 
+	     namePick, (int) position, player->name));
     /* return file to start for sequential search */
     lseek(fd, 0, SEEK_SET);
   }
@@ -167,7 +173,7 @@ int findplayer(char *namePick, struct statentry *player) {
       db_index_store(player, position);
 #endif
       ERROR(8,("db.c: findplayer: '%s' found in sequential scan at position '%d'\n", 
-	       namePick, position));
+	       namePick, (int) position));
 #ifdef DB_TIMING
       ERROR(8,("db.c: timing, sequential resolution, %f\n", g_timer_elapsed(timer, NULL)));
       g_timer_destroy(timer);

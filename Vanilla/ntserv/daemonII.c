@@ -6,30 +6,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <sys/types.h>
-#ifdef AUTOMOTD
-#include <sys/stat.h>
-#endif
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/ioctl.h>
-#include <signal.h>
 #include <time.h>
 #include <math.h>
 #include <errno.h>
-#include <sys/errno.h>
-#include <sys/file.h>
 #include <sys/wait.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "planets.h"
 #include "proto.h"
+#include "conquer.h"
+#include "daemon.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
-#include INC_STRINGS
 #include INC_SYS_TIME
 
 #ifdef AUTOMOTD
@@ -118,7 +108,6 @@ static void genocideMessage(int loser, int winner);
 static void conquerMessage(int winner);
 static void displayBest(FILE *conqfile, int team, int type);
 static void fork_robot(int robot);
-void doResources(void);
 /* static void doRotateGalaxy(void); */
 static void signal_servers(void);
 
@@ -395,7 +384,6 @@ static int check_scummers(int verbose)
     FILE *fp;
     struct tm *today;
     time_t gmtsecs;
-    char *jptr, *iptr;
 
     for (i=0; i<MAXPLAYER; i++) {
       struct player *me = &players[i];
@@ -544,7 +532,6 @@ static void political_end(int message)
 
 static void move(int ignored)
 {
-    static int oldtourn=0;
     static int oldmessage;
     int old_robot;
     static enum ts {
@@ -1877,7 +1864,7 @@ static void explode(struct torp *torp)
       }
       else {
 	if ((torp->t_attribute & TDETTEAMSAFE) &&
-	    (j->p_team == players[torp->t_whodet].p_team))
+	    (j->p_team == players[(int)torp->t_whodet].p_team))
 	  continue;
       }
     }
@@ -1959,7 +1946,7 @@ static void explode(struct torp *torp)
 #ifdef CHAIN_REACTION
 	if ((torp->t_whodet != NODET) 
 	    && (torp->t_whodet != j->p_no) 
-	    && (players[torp->t_whodet].p_team != j->p_team))
+	    && (players[(int)torp->t_whodet].p_team != j->p_team))
 	  k = player_(torp->t_whodet);
 	else 
 	  k = player_(torp->t_owner);
@@ -2953,7 +2940,7 @@ static void beam(void)
 {
     register int i;
     register struct player *j;
-    register struct planet *l;
+    register struct planet *l = NULL;
     char buf1[MSG_LEN];
 
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
@@ -3720,7 +3707,6 @@ static int checkwin(struct player *winner)
 {
     register int i, h;
     register struct planet *l;
-    register struct player *j;
     int team[MAXTEAM + 1];
     int teamtemp[MAXTEAM + 1];
 
@@ -4231,34 +4217,34 @@ static void fork_robot(int robot)
         case NO_ROBOT: break;
 #ifdef BASEPRACTICE
         case BASEP_ROBOT:
-                execl(Basep, "basep", 0);
+                execl(Basep, "basep", (char *) NULL);
                 perror(Basep);
                 break;
 #endif
 #ifdef NEWBIESERVER
         case NEWBIE_ROBOT:
-                execl(Newbie, "newbie", 0);
+                execl(Newbie, "newbie", (char *) NULL);
                 perror(Newbie);
                 break;
 #endif
 #ifdef PRETSERVER
         case PRET_ROBOT:
-                execl(PreT, "pret", 0);
+                execl(PreT, "pret", (char *) NULL);
                 perror(PreT);
                 break;
 #endif
 #ifdef DOGFIGHT
         case MARS_ROBOT:
-                execl(Mars, "mars", 0);
+                execl(Mars, "mars", (char *) NULL);
                 perror(Mars);
                 break;
 #endif
         case PUCK_ROBOT:
-                execl(Puck, "puck", 0);
+                execl(Puck, "puck", (char *) NULL);
                 perror(Puck);
                 break;
         case INL_ROBOT:
-                execl(Inl, "inl", 0);
+                execl(Inl, "inl", (char *) NULL);
                 perror(Inl);
                 break;
         default: ERROR(1,( "Unknown Robot: %d\n", robot ));

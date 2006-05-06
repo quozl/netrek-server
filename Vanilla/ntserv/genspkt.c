@@ -11,15 +11,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/time.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <signal.h>
 #include "defs.h"
-#include INC_UNISTD
-#include INC_STRINGS
-#include INC_SYS_SELECT
 #include "struct.h"
 #include "data.h"
 #include "packets.h"

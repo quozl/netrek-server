@@ -1,4 +1,4 @@
-#	$Id: Makefile.in,v 1.10 2006/04/22 11:31:52 quozl Exp $	
+#	$Id: Makefile.in,v 1.11 2006/05/06 12:02:49 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
@@ -214,6 +214,34 @@ dist:
         # build
 	GZIP=--best tar cfz $(NAME).tar.gz $(NAME)
 	rm -rf $(NAME)
+
+dist-minimal:
+	mkdir $(NAME)-minimal
+        # what has changed
+	cp -p ChangeLog NEWS $(NAME)-minimal/
+        # top level documentation
+	cp -p INSTALL INSTALL.INL INSTALL.Newbie INSTALL.RSA README \
+	README.developers $(NAME)-minimal/
+        # configuration
+	cp -p configure.in Makefile.in system.mk.in configure install-sh \
+	name.c $(NAME)-minimal/
+        # subdirectories
+	cp -rp docs include keycomp newstartd ntserv res-rsa robots robotd \
+	$(NAME)-minimal/
+        # packaging subdirectories (debian)
+	mkdir $(NAME)-minimal/debian $(NAME)-minimal/rpm
+	cp -p debian/README.Debian debian/changelog debian/control \
+	debian/copyright debian/init debian/postinst debian/rules \
+	$(NAME)-minimal/debian
+        # packaging subdirectories (rpm)
+	cp -rp rpm $(NAME)-minimal/
+        # strip out surplus
+	rm -rf $(NAME)-minimal/*/CVS $(NAME)-minimal/*/*/CVS 
+	rm -rf $(NAME)-minimal/.cvsignore $(NAME)-minimal/*/.cvsignore
+	rm -rf $(NAME)-minimal/*/.deps $(NAME)-minimal/*~ $(NAME)-minimal/*/*~
+        # build
+	GZIP=--best tar cfz $(NAME)-minimal.tar.gz $(NAME)-minimal
+	rm -rf $(NAME)-minimal
 
 #
 # Maintainer's Debian packaging section

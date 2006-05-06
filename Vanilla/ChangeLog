@@ -1,6 +1,6 @@
-Fri May  5 22:53:54 2006  James Cameron  <quozl@us.netrek.org>
-
-	* tools/players.c (udp): compilation fix to previous patch.
+Thu May  4 19:34:10 EDT 2006 Dave Ahn <ahn@orion.netrek.org>
+	
+	* Update auto archiver email.
 
 Fri Apr 28 20:39:32 2006  James Cameron  <quozl@us.netrek.org>
 
@@ -1955,4 +1955,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.35 2006/04/26 13:10:04 quozl Exp $
+	$Id: ChangeLog,v 1.39 2006/05/06 12:28:20 quozl Exp $

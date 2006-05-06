@@ -1,4 +1,4 @@
-/* 	$Id: sysdefaults.h,v 1.2 2005/03/21 10:17:16 quozl Exp $	 */
+/* 	$Id: sysdefaults.h,v 1.3 2006/04/26 09:52:43 quozl Exp $	 */
 
 /* structure for default values that are represented as array of flags */
 struct sysdef_array {

@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.8 2006/04/24 12:35:17 quozl Exp $
+/* $Id: ntscmds.c,v 1.10 2006/05/06 12:06:39 quozl Exp $
  */
 
 /*
@@ -13,10 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <string.h>
-#include <time.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include "defs.h"
 #include "struct.h"
@@ -354,7 +351,7 @@ void do_start_basep(void)
 {
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
-    execl(Basep, "basep", 0);
+    execl(Basep, "basep", (char *) NULL);
     perror(Basep);
   }
 }
@@ -376,7 +373,7 @@ void do_start_puck(void)
 {
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
-    execl(Puck, "puck", 0);
+    execl(Puck, "puck", (char *) NULL);
     perror(Puck);
   }
 }
@@ -387,7 +384,7 @@ void do_start_mars(void)
 {
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
-    execl(Mars, "mars", 0);
+    execl(Mars, "mars", (char *) NULL);
     perror(Mars);
   }
 }
@@ -1180,7 +1177,7 @@ void do_password(char *comm, struct message *mess)
   char *one, *two;
 
   /* guests have no player file position */
-  if (me->p_pos < 0) {
+  if (p->p_pos < 0) {
     pmessage(who, MINDIV, addr, 
 	     "You can't change your password, sorry!");
     return;
@@ -1298,11 +1295,9 @@ void do_transwarp(char *comm, struct message *mess)
 {
   int whofrom = mess->m_from;
   struct player *p = &players[whofrom];
-  struct player *victim;
   char *addr = addr_mess(whofrom,MINDIV);
-  char *who, *what;
+  char *what;
   char *usage = "transwarp usage: 'TRANSWARP ON|GREEN|YELLOW|SHIELD|OFF'";
-  int slot;
   
   if (p->p_ship.s_type != STARBASE) {
     pmessage(whofrom, MINDIV, addr, "transwarp: must be a starbase to use this");

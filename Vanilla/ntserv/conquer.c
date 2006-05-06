@@ -1,8 +1,12 @@
+#include <stdlib.h>
 #include "copyright.h"
 #include "config.h"
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "daemon.h"
+#include "conquer.h"
 
 /* conquest gloating parade */
 

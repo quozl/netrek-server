@@ -4,19 +4,13 @@
 #include "copyright.h"
 
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
-#include <signal.h>
 #include <pwd.h>
-#include <sys/time.h>
 #include <fcntl.h>
-#include <string.h>
-#include <sys/types.h>
 #include <arpa/inet.h>
 #include "defs.h"
-#include INC_STRINGS
 #include INC_UNISTD
 #include INC_SYS_WAIT
 #include "struct.h"
@@ -28,7 +22,6 @@
 #ifdef SENDFLAGS
 #include "../cflags.h"
 #endif
-
 #include "proto.h"
 
 #ifndef TRUE

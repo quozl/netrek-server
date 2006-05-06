@@ -1,13 +1,10 @@
-/* $Id: data.c,v 1.5 2006/04/24 12:35:17 quozl Exp $
+/* $Id: data.c,v 1.7 2006/05/06 12:06:39 quozl Exp $
  */
 
 #include "copyright.h"
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-
-#include <sys/types.h>		/* needed to define fd_set for inputMask */
-#include INC_SYS_SELECT
 
 struct player *players;
 struct player *me;

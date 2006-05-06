@@ -1,7 +1,43 @@
 
-$Id: PROJECTS,v 1.8 2006/04/22 11:31:52 quozl Exp $	
+$Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $	
 
 List of things to do in the future
+
+	- list connection failure scenarios and response by server,
+	  so that we can reduce jammed slots.
+
+	- use response time on metaserver solicitation packet as
+	  indicator of lag to the server.  Client coding required.
+
+	- dist-minimal target, to make ntserv & include only?
+
+	- config.h.in settings to move to configure --enable-feature
+	  options, so that a separate config.h.in does not need to be
+	  maintained by server administrators.
+
+	- banned login for client with tryudp on seems to begin udp
+	  negotiation, making it hard for the player to see the cause
+	  of hang.
+
+	- banned login can still tie up a slot for as long as it takes
+	  for it to time out or the player to hit QUIT.
+
+	- perm and temp bans in netrekd, have it access shmem and
+	  detach.
+
+	- queue dump, once a sufficient queue has built, for each of
+	  the queued players close the shared memory section for one
+	  game and open a new one.  Forward link from queue to next
+	  section.
+
+	- genocide, pause game, reveal cloakers, declare result, wait
+	  five to ten seconds (sysdef GENOCIDE_WAIT), resume, blow
+	  everyone up, reset galactic, if no queue do a balance
+	  (sysdef GENOCIDE_BALANCE), if queue purge the slots.
+
+	- timercide, pause game, reveal cloakers, declare result, wait
+	  five to ten seconds (sysdef TIMERCIDE_WAIT), resume, blow
+	  losing team up.
 
 	- list connection failure scenarios and response by server,
 	  so that we can reduce jammed slots.
@@ -14,55 +50,6 @@ List of things to do in the future
 	  the TCP query from the server is mistaken.
 
 	- vote per IP address only, not per slot
-
-	- separate ban and eject votes, ban to include effect of
-	  eject, ban for an hour, or while the players that voted
-	  still have the same slot (ban based on an a mask of slots
-	  that voted for it)
-
-quozl's working notes ... {
-
-expiry by time
-	check list, remove based on time (time_t)
-expiry by departure
-	check list, remove if any voters have gone (MAXPLAYER x p_no, p_pos)
-connect
-	do expiry
-	pass if observer
-	check list of temporary bans, by ip address (p_monitor?)
-login
-	do expiry
-	pass if guest
-	pass if observer (but set :ita for all)
-	check list of temporary bans, by p_name
-refit mask wait
-	do not offer a team they have been banned from?
-queue wait
-	do not accept a slot if they are banned from that team
-eject vote
-	do expiry
-	insert entry into list
-		(time_t, p_name, p_monitor, n_voted MAXPLAYER(p_no, p_pos))
-	if they are not banned from the other team, offer them a ship there
-data
-	MAXPERSISTENTBANS (time_t, p_name, p_monitor, MAXPLAYER(p_no, p_updates, p_team, p_pos))
-
-BFGOD
-BFTEAM
-struct ban {
-    u_int b_flags;
-    time_t b_when;
-    char p_name[NAME_LEN];
-    char p_ip[NAME_LEN];
-    struct ban_matrix {
-        int p_no;
-        int p_updates;
-        short p_team;
-        pid_t p_process;
-    } b_matrix[MAXPLAYER];
-} bans[MAXBANS];
-
-} quozl's working notes
 
 	- prevent eject in initial two-minutes of ship time, if ship active,
 

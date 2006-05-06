@@ -2,9 +2,6 @@
  * coup.c
  */
 #include "copyright.h"
-
-#include <stdio.h>
-#include <sys/types.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

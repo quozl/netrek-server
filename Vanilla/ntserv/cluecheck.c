@@ -1,17 +1,12 @@
-/* $Id: cluecheck.c,v 1.1 2005/03/21 05:23:43 jerub Exp $
+/* $Id: cluecheck.c,v 1.2 2006/05/06 12:06:39 quozl Exp $
  */
 
 #include "copyright.h"
-#include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "packets.h"
-
 #include "proto.h"
-
 
 struct Question {
   char *quest;
@@ -250,5 +245,3 @@ void clue_check(void)
     if ((me->p_status != POBSERV) && (me->p_armies>0)) save_armies();
   }
 }
-
-
