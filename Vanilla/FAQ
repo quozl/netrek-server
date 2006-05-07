@@ -1,0 +1,41 @@
+1.  Should it be run as root?
+
+	No.  Run as a non-privileged user.
+
+2.  How do we get client keys?
+
+	crontab updated
+
+--
+
+D1.  How do I update my darcs repo to pull in these changes?
+
+darcs pull
+
+This will pull in these changes from the repository you last did a get
+or pull from.  Chances are this is the repository you want.
+
+Remember there are multiple repositories, and they may not have the same
+changes.  That's the whole idea of decentralised development.  The
+netrek.org repository tracks CVS on SourceForge until 1st June 2006.  My
+public repository has some changes that are not and never will be in
+CVS.
+
+The changes you saw on the Netrek CVS mailing list are the changes made
+to CVS on SourceForge.  If these are the only changes you want in your
+darcs repository, then you should pull from only the netrek.org
+repository.
+
+To make that explicit rather than having darcs default to the last used
+repository, add the URL of the repository to the end of the pull
+command, like so:
+
+darcs pull http://www.netrek.org/repos/netrek-server/
+
+
+Please read this section of the manual:
+
+Switching from CVS
+Darcs commands for CVS users
+http://www.darcs.net/manual/node2.html#SECTION00220000000000000000
+
