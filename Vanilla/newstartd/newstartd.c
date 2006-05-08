@@ -36,21 +36,14 @@ static char vcid[] = "$Id: newstartd.c,v 1.8 2006/04/22 02:16:46 quozl Exp $";
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <sys/ioctl.h>
-#include <sys/file.h>
-#include <signal.h>
+#include <time.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <arpa/inet.h>
 
 #include "defs.h"
-#include INC_STRINGS
 #include INC_FCNTL
 #include "struct.h"
 #include "data.h"
@@ -383,7 +376,7 @@ int get_connection()
   struct sockaddr_in naddr;
   socklen_t addrlen;
   fd_set accept_fds;
-  int len, i, st, newsock;
+  int i, st, newsock;
   
   int foo = 1;
   
@@ -617,22 +610,22 @@ void process (int port_idx)
   pr = &(prog[port_idx]);
   switch (pr->nargs) {
   case 0:
-    execl (pr->prog, pr->progname, peerhostname, 0);
+    execl (pr->prog, pr->progname, peerhostname, (char *) NULL);
     break;
   case 1:
-    execl (pr->prog, pr->progname, pr->arg[0], peerhostname, 0);
+    execl (pr->prog, pr->progname, pr->arg[0], peerhostname, (char *) NULL);
     break;
   case 2:
     execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
-	   peerhostname, 0);
+	   peerhostname, (char *) NULL);
     break;
   case 3:
     execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
-	   pr->arg[2], peerhostname, 0);
+	   pr->arg[2], peerhostname, (char *) NULL);
     break;
   case 4:
     execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
-	   pr->arg[2], pr->arg[3], peerhostname, 0);
+	   pr->arg[2], pr->arg[3], peerhostname, (char *) NULL);
     break;
   default: ;
   }

@@ -13,6 +13,7 @@ static char vcid[] = "$Id: newaccess.c,v 1.3 2006/04/22 02:16:46 quozl Exp $";
 #include <netdb.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <signal.h>
 
@@ -53,10 +54,10 @@ int host_access(char *host)
     char		line[256];
     register char	*cp;
     int			canplay;
-    int			ncanplay;
-    int			netmatch;
+    int			ncanplay = 0;
+    int			netmatch = 0;
     int			count, sockt;
-    unsigned LONG	net_addr;
+    in_addr_t		net_addr;
     struct netent	*np;
     struct sockaddr_in	addr;
     socklen_t		addrlen;
@@ -66,7 +67,7 @@ int host_access(char *host)
     char		snet_name[256];
     int			snetmatch;
     int			sncanplay;
-    unsigned LONG	snet_addr;
+    in_addr_t		snet_addr;
     static int		snet_gotconf = 0;
 #endif
 
@@ -147,9 +148,9 @@ int host_access(char *host)
     
     np = getnetbyaddr(net_addr, AF_INET);
     if (np != NULL)
-	(void) strcpy(net_name, np->n_name);
+	strcpy(net_name, np->n_name);
     else
-	(void) strcpy(net_name,inet_ntoa(*(struct in_addr *)&net_addr));
+	strcpy(net_name,inet_ntoa(*(struct in_addr *)&net_addr));
     
 #ifdef SUBNET
     snet_addr = inet_snetof(addr.sin_addr.s_addr);
