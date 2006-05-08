@@ -8,15 +8,12 @@
 
 #ifndef LTD_STATS
 
-#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <curses.h>
-#include <sys/types.h>
 #include <time.h>
-#include <math.h>
-#include <stdlib.h>		/* For malloc 10/20/94 [007] */
 #include "pledit.h"
 #include "defs.h"
 #include "struct.h"

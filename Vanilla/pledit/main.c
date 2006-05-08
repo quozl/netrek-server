@@ -19,7 +19,6 @@ int main(void) {
 #else /* LTD_STATS */
 
 #include <signal.h>
-#include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <curses.h>
