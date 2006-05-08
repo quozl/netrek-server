@@ -1,3 +1,7 @@
+Mon May  8 18:18:38 2006  James Cameron  <quozl@us.netrek.org>
+
+	* pledit: fix compilation warnings under GCC 4.0.3 with -Wall.
+
 Sat May  6 23:58:10 2006  James Cameron  <quozl@us.netrek.org>
 
 	* proto.h, db.c, findslot.c, genspkt.c, getname.c, openmem.c,

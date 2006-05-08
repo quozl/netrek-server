@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <unistd.h>
 #include <curses.h>
 #include "pledit.h"
 #include "defs.h"
@@ -445,16 +446,12 @@ WINDOW *w;
 
 /* called during editing */
 /* (result: 1 = no change, 2 = new string, -1/-2 = same but BKTAB, 3 = ESC) */
-int
-get_line(w, row, col, width, buf)
-WINDOW *w;
-int row, col, width;
-char *buf;
+int get_line(WINDOW *w, int row, int col, int width, char *buf)
 {
     enum { NOTHING, EDITING } mode;
     int changed, posn;
     int ch, res;
-    int match, last_match;
+    int match, last_match = 0;
     char new[81], blanks[81];
 
     strcpy(new, buf);
@@ -586,10 +583,7 @@ done:
 
 
 /* called from main loop */
-int
-get_input(w, row, col)
-WINDOW *w;
-int row, col;
+int get_input(WINDOW *w, int row, int col)
 {
     int key;
 

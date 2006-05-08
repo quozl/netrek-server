@@ -9,6 +9,7 @@
 #ifndef LTD_STATS
 
 #include <stdio.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <curses.h>
@@ -464,7 +465,7 @@ escape_hit:
 }
 
 
-add_player()
+void add_player()
 {
     struct statentry *sep;
     int i;
@@ -586,12 +587,12 @@ struct statentry *sep;
 struct status *glp;
 {
     char *crypt(const char*, const char*);
-    int idx, newidx, res, new;
+    int idx, newidx, res, new = FALSE;
     char field[81], tmp[32];
     char oldpw[16];
     int ival;
-    float fval;
-    char *sval;
+    float fval = 0.0;
+    char *sval = '\0';
     saltbuf sb;
 
     strcpy(oldpw, sep->password);

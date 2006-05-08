@@ -6,6 +6,11 @@
 
 #include "config.h"
 
+/* prototypes */
+void fatal(int nerrno, const char *fmt, ...);
+int get_input(WINDOW *w, int row, int col);
+int get_line(WINDOW *w, int row, int col, int width, char *buf);
+
 /* how many seconds to look at a popup (add more for slow terminals) */
 #define POP_DELAY	2
 
