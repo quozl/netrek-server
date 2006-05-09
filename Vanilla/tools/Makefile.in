@@ -78,7 +78,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
 	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
 	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/tools/metaget
-	$(INSTALLPROG) $(INSTALLOPTS) setplanet $(DESTDIR)$(LIBDIR)/tools/metaget
+	$(INSTALLPROG) $(INSTALLOPTS) setplanet $(DESTDIR)$(LIBDIR)/tools/setplanet
 
 cambot: cambot.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)
