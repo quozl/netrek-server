@@ -20,7 +20,7 @@ my %config;
 
 # Defaults for the main options
 # Your project name and how many changes to use
-$config{project} = "unnamed project";
+$config{project} = "Netrek Vanilla Server";
 $config{n_items} = 25;
 
 # Where is markdown?
