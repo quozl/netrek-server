@@ -10,16 +10,17 @@
 #include "copyright.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
+#include <time.h>
 #include <signal.h>
-#include <setjmp.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "puckdefs.h"
 #include "proto.h"
+#include "puckdefs.h"
+#include "roboshar.h"
+#include "puckmove.h"
 
 #ifdef PUCK_FIRST 
 #include <sys/sem.h> 

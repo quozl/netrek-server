@@ -35,6 +35,7 @@ static char vcid[] = "$Id: inl.c,v 1.4 2006/05/06 12:28:20 quozl Exp $";
 #include "inldefs.h"
 #include INC_STRINGS
 #include "proto.h"
+#include "roboshar.h"
 #include "ltd_stats.h"
 
 /*
@@ -182,6 +183,7 @@ main(argc, argv)
 
   getpath();
   openmem(1);
+  do_message_post_set(check_command);
   readsysdefaults();
 
   if ((inl_log = fopen(N_INLLOG,"w+"))==NULL) {

@@ -148,7 +148,7 @@ int bouncePingStats(int from);
 int bounceRSAClientType(int from);
 #endif
 int bounceWhois(int from);
-int check_command(struct message *mess);
+int do_check_command(struct message *mess);
 
 /* openmem.c */
 int openmem(int trystart);
@@ -206,6 +206,7 @@ void bounce(int bounceto, const char *, ...);
 void pmessage(int recip, int group, char *address, const char *, ...);
 void pmessage2(int recip, int group, char *address, u_char from,
                const char *, ...);
+void do_message_post_set(int (*proposed)(struct message *message));
 
 /* socket.c */
 struct player_spacket;

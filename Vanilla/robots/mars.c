@@ -14,15 +14,15 @@
 #include "copyright.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
+#include <time.h>
 #include <signal.h>
-#include <setjmp.h>
+#include <unistd.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "marsdefs.h"
 #include "proto.h"
+#include "roboshar.h"
+#include "marsdefs.h"
 
 #define DOG_STATS	".dog_players"
 
@@ -54,6 +54,7 @@ int closeslow;			/* approach speed (hard turn) */
 int closefast;			/* approach speed (soft turn) */
 
 void cleanup();
+void config();
 
 void greeting()
 {
@@ -106,7 +107,7 @@ char **argv;
     openmem(1);
     readsysdefaults();
 
-    sprintf(DogStats,"%s/%s\0",LOCALSTATEDIR,DOG_STATS);
+    sprintf(DogStats,"%s/%s",LOCALSTATEDIR,DOG_STATS);
 	
     if ( (pno = pickslot(QU_ROBOT)) < 0) exit(0);
     me = &players[pno];
@@ -153,7 +154,7 @@ char **argv;
 }
 
 
-config()
+void config()
 {
     int i;
     FILE* f;
@@ -195,7 +196,7 @@ config()
 
 #define IND 0
 
-    sprintf(TournMap_File,"%s/%s\0",SYSCONFDIR,TOURNMAP);
+    sprintf(TournMap_File,"%s/%s",SYSCONFDIR,TOURNMAP);
 
     f = fopen(TournMap_File,"r");
     if (f == NULL) {

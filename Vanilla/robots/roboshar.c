@@ -4,11 +4,14 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "roboshar.h"
 
 #ifndef M_PI
 #include <math.h>
 #endif
 
+extern void do_message(int recip, int group, char *address, u_char from,
+		       const char *fmt, va_list args);
 
 /* Each robot must declare the following variables as globals */
 extern int debug; 
@@ -102,13 +105,7 @@ void messAll(int mynum, char *name, const char *fmt, ...)
 
     va_start(args, fmt);
 
-/* +++ 2.6pl0 cameron@sna.dec.com */
-#if defined(__alpha)
-    sprintf(addrbuf, "%s->ALL", &name ); 
-#else
     sprintf(addrbuf, "%s->ALL", name );
-#endif
-/* --- */
     do_message(0, MALL, addrbuf, mynum, fmt, args);
     va_end(args);
 }

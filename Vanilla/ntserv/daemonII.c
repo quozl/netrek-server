@@ -4488,14 +4488,6 @@ static void signal_servers(void)
     }
 }
 
-/* dummy check_command to fool do_message() */
-
-int check_command(struct message *mess) {
-  /* get rid of annoying compiler warning */
-  if (mess) ;
-  return 1;
-}
-
 void message_flag(struct message *cur, char *address)
 {
             if(arg[0] != DINVALID){

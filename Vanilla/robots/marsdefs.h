@@ -8,6 +8,9 @@
 #ifndef _h_marsdefs
 #define _h_marsdefs
 
+void do_war(void);
+void mars_rules(void);
+void init_mars(void);
 
 #include "defs.h"
 

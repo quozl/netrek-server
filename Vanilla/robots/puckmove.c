@@ -22,7 +22,10 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 #include "puckdefs.h"
+#include "roboshar.h"
+#include "puckmove.h"
 
 #ifdef PUCK_FIRST 
 #include <sys/sem.h> 
@@ -143,13 +146,10 @@ void cleanup(void);
 void do_teleport_home(void);
 void do_peace(void);
 void do_msg_check(void);
-void do_war(void);
 void place_anncer(void);
 void do_offsides(void);
-void puck_rules(void);
 void do_goal(int);
 void do_score(void);
-void do_faceoff(void);
 void woomp(void);
 void player_maint(void);
 void player_bounce(void);
@@ -158,6 +158,8 @@ void light_planets(void);
 unsigned char	getcourse();
 char *robo_message();
 char *puckie_message();		/* added 8/2/91 TC */
+int isInPossession(struct Enemy *enemy_buf);
+int isPressoringMe(struct Enemy *enemy_buf);
 
 #ifdef HAVE_GOALIE
 struct player *ori_goalie = NULL;
@@ -1051,7 +1053,7 @@ void do_offsides(void)
 	if ((j != me) && (j->p_status == PALIVE)) {
 	    if (((j->p_team == KLI) && (j->p_y > GWIDTH/2)) ||
 		((j->p_team == ORI) && (j->p_y < GWIDTH/2))) {
-		int startplanet;
+		int startplanet = 10;
 		messAll(me->p_no,roboname,"%s (%2s) is offsides.", j->p_name,
 			j->p_mapchars);
 		j->p_flags &= ~(PFORBIT|PFPLOCK|PFPLLOCK|PFTRACT|PFPRESS);  /* ***BAV*** */

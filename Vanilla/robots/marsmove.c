@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <signal.h>
 #include <math.h>
 #include <ctype.h>
@@ -34,6 +35,8 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "roboshar.h"
 #include "marsdefs.h"
 
 
@@ -185,14 +188,14 @@ void checkend(void);
 void reset_game(void);
 void reportFinal(void);
 void reportStanding(void);
+int get_num_matches(int a, int b);
 void cleanup(void);
+int nextFreeArena(void);
 void smileon(struct player* j);
 void do_msg_check(void);
 void do_stats(int who);
-void do_war(void);
 void join(int who);
 void join_game(Track *track);
-void mars_rules(void);
 int lookupshipname(char *shipname);
 void do_score(void);
 void player_maint(void);
@@ -1418,7 +1421,7 @@ void go_arena(int ano, int pno, int position)
       return;
     }
 
-  old_a = &arenas[track->t_arena];
+  old_a = &arenas[(int) track->t_arena];
 
 
   checkBadArenaNo(ano,"in teleport\n");
@@ -1704,7 +1707,7 @@ void player_bounce(void)
             continue;  /*Don't do this for dead and for puck*/
 
 
-	a = &arenas[track->t_arena];
+	a = &arenas[(int) track->t_arena];
 
 	/* kill torps that might distract guys in other arenas */
 
@@ -1938,7 +1941,6 @@ void get_dog_stats(struct player *j, Track *track)
    static DogStatEntry player;
    static int position= -1;
    int plfd;
-   int i;
    int entries;
    struct stat buf;
 

@@ -123,6 +123,7 @@ int main(int argc, char **argv)
 
     /* this finds the shared memory information */
     openmem(1);
+    do_message_post_set(do_check_command);
     readsysdefaults();
 
 #ifdef FEATURE_PACKETS

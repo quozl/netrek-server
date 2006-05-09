@@ -27,6 +27,8 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "roboshar.h"
 #include "basepdefs.h"
 
 int debug=0;
@@ -72,8 +74,13 @@ int oldmctl;
 
 void cleanup(int);
 void checkmess(int);
-int start_internal();
-int obliterate();
+int rprog(char *login, char *monitor);
+void start_internal();
+void exitRobot();
+void obliterate(int wflag, char kreason);
+void check_robots_only();
+void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def);
+void fix_planets();
 
 void
 reaper(sig)
@@ -95,7 +102,6 @@ main(argc, argv)
    int team = 4;
    int pno;
    int class;                  /* ship class 8/9/91 TC */
-   int i;
 
    if (gethostname(hostname, 64) != 0) {
       perror("gethostname");
@@ -106,6 +112,7 @@ main(argc, argv)
    getpath();
    (void) SIGNAL(SIGCHLD, reaper);
    openmem(1);
+   do_message_post_set(check_command);
    strcpy(robot_host,REMOTEHOST);
    readsysdefaults();
    SIGNAL(SIGALRM, checkmess);             /*the def signal is needed - MK */
@@ -165,7 +172,6 @@ main(argc, argv)
 void checkmess(int unused)
 {
    int 	shmemKey = PKEY;
-   int i;
 
     HANDLE_SIG(SIGALRM,checkmess);
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
@@ -208,10 +214,10 @@ void checkmess(int unused)
 
 /* check to see if all robots in the game. If so tell them to exit */
 
-check_robots_only()
+void check_robots_only()
 {
-   register        i;
-   register struct player *j;
+   int i;
+   struct player *j;
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
       if (j->p_status == PFREE)
@@ -233,9 +239,7 @@ check_robots_only()
 
 /* this is by no means foolproof */
 
-int
-rprog(login, monitor)
-   char           *login, *monitor;
+int rprog(char *login, char *monitor)
 {
    int             v;
 
@@ -249,10 +253,10 @@ rprog(login, monitor)
 
 /* here we want to make sure everything is fuel and repair */
 
-fix_planets()
+void fix_planets()
 {
-   register        i;
-   register struct planet *j;
+   int i;
+   struct planet *j;
 
    oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
    MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
@@ -266,8 +270,8 @@ fix_planets()
 int
 num_players()
 {
-   register        i;
-   register struct player *j;
+   int i;
+   struct player *j;
    int             c = 0;
    for (i = 0, j = players; i < MAXPLAYER; i++, j++)
       if (j->p_status != PFREE)
@@ -280,7 +284,7 @@ do_start_robot(comm, mess)
    char           *comm;
    struct message *mess;
 {
-   register        i;
+   int i;
    int             sv;
    char            buf[80], team[10], query[20],  host[60], log[4], extra[80], desc[32];
    int             num;
@@ -311,10 +315,10 @@ do_start_robot(comm, mess)
 		  num = 1;
 		  def = 1;
 	       } else
-		  return;
+		  return 0;
 	    } else {  		/* Start iggy, hoser, ... */
 	   	 if (sv == 2) start_internal(team);
-	         return;
+	         return 0;
 	      }
    }
    if (strncmp(team, "fed", 3) == 0) {
@@ -335,17 +339,17 @@ do_start_robot(comm, mess)
       strcpy(team, "-To");
    } else {
       messOne(255,roboname,from,"Unknown team name \"%s\"", team);
-      return;
+      return 0;
    }
 
    if (num_players() + num > MAXPLAYER) {
       messOne(255,roboname,from,"Too many players, sorry.");
-      return;
+      return 0;
    }
 #ifdef nodef
    if (teami == players[from].p_team) {
       messOne(255,roboname,from,"Wrong team, pal.");
-      return;
+      return 0;
    }
 #endif
 
@@ -382,13 +386,14 @@ do_start_robot(comm, mess)
    messAll(255,roboname,buf);
 
    startrobot(num, team, sv >= 4 ? host : NULL, sv > 4 ? log : NULL, dg, base, def);
+   return 0;
 }
 
 char           *
 namearg()
 {
-   register        i, k = 0;
-   register struct player *j;
+   int i, k = 0;
+   struct player *j;
    char           *name;
    int             namef = 1;
 
@@ -413,16 +418,12 @@ namearg()
    }
 }
 
-int
-startrobot(num, s, h, log, dg, base, def)
-   int             num;
-   char           *s, *h, *log;
-   int             dg, base, def;
+void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
 {
    char           *remotehost;
    char            command[256];
    char            logc[256];
-   register        i;
+   int i;
 
    if (h)
       remotehost = h;
@@ -457,16 +458,16 @@ startrobot(num, s, h, log, dg, base, def)
 
       if (fork() == 0) {
 	 SIGNAL(SIGALRM, SIG_DFL);
-	 execl("/bin/sh", "sh", "-c", command, 0);
+	 execl("/bin/sh", "sh", "-c", command, (char *) NULL);
 	 perror("basep'execl");
 	 _exit(1);
       }
       sleep(5);
    }
-   return 1;
+   return;
 }
 
-start_internal(type)
+void start_internal(type)
     char *type;
 {
     char *argv[6];
@@ -530,7 +531,7 @@ void cleanup(int unused)
     exitRobot();
 }
 
-exitRobot()
+void exitRobot()
 {
     SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
@@ -549,13 +550,10 @@ exitRobot()
 }
 
 
-obliterate(wflag, kreason)
-     int wflag;
-     char kreason;
+void obliterate(int wflag, char kreason)
 {
   /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
   struct player *j;
-  int i, k;
 
   /* clear torps and plasmas out */
   MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));

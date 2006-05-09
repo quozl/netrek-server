@@ -507,8 +507,7 @@ int getplayer(int from, char *line)
     return what;
 }
 
-check_listing(comm)
-char *comm;
+int check_listing(char *comm)
 {
     register int i;
 
@@ -675,9 +674,7 @@ int who,type;
 
 
 /* ARGSUSED */
-int do_help(comm,mess)
-char *comm;
-struct message *mess;
+int do_help(char *comm, struct message *mess)
 {
     int who;
     int i;
@@ -748,63 +745,52 @@ struct message *mess;
 		votes[i].type, ch, votes[i].desc);
 	}
     }
-    return;
+    return 0;
 }
 
 #ifndef INL
 
 /*** QUERIES ***/
-send_query(which,who,from)
-char which;
-int  who, from;
+int send_query(char which, int who, int from)
 {
 	pmessage2(who, MINDIV, " ", from, "%c", which);
+	return 0;
 }
 
 /* ARGSUSED */
-do_client_query(comm,mess,who)
-char *comm;
-struct message *mess;
-int who;
+int do_client_query(char *comm, struct message *mess, int who)
 {
 #ifdef RSA
 	send_query('#', who, mess->m_from); 
 #endif
+	return 0;
 }
 
 /* ARGSUSED */
-do_ping_query(comm,mess,who)
-char *comm;
-struct message *mess;
-int who;
+int do_ping_query(char *comm, struct message *mess, int who)
 {
-      send_query('!', who, mess->m_from);
+	send_query('!', who, mess->m_from);
+	return 0;
 }
 
 /* ARGSUSED */
-do_stats_query(comm,mess,who)
-char *comm;
-struct message *mess;
-int who;
+int do_stats_query(char *comm, struct message *mess, int who)
 {
-      send_query('?', who, mess->m_from); 
+	send_query('?', who, mess->m_from); 
+	return 0;
 }
 
 /* ARGSUSED */
-do_whois_query(comm,mess,who)
-char *comm;
-struct message *mess;
-int who;
+int do_whois_query(char *comm, struct message *mess, int who)
 {
-      send_query('@', who, mess->m_from);
+	send_query('@', who, mess->m_from);
+	return 0;
 }
 
 #ifdef RSA
-int bounceRSAClientType(from)
-int from;
+int bounceRSAClientType(int from)
 {
         bounce(from,"Client: %s", RSA_client_type);
-
         return 1;
 }
 #endif
@@ -869,9 +855,7 @@ int bounceSessionStats(int from)
     return 1;
 }
 
-int
-bounceSBStats(from)
-    int from;
+int bounceSBStats(int from)
 {
     float                       sessionRatio, sessionKPH, sessionDPH,
                                 overallKPH, overallDPH, overallRatio;
@@ -961,8 +945,7 @@ bounceSBStats(from)
 
 
 #ifdef PING
-int bouncePingStats(from)
-int from;
+int bouncePingStats(int from)
 {
     if(me->p_avrt == -1){
         /* client doesn't support it or server not pinging */
@@ -986,34 +969,28 @@ int from;
 #if !defined (DOG) && !defined (PUCK) 		/* Server only */
 
 /* ARGSUSED */
-do_sbstats_query(comm,mess,who)
-char *comm;
-struct message *mess;
-int who;
+int do_sbstats_query(char *comm, struct message *mess, int who)
 {
-      send_query('^', who, mess->m_from);	
+	send_query('^', who, mess->m_from);
+	return 0;
 }
 
 #ifdef GENO_COUNT
-do_genos_query(comm,mess,who)
-char *comm;
-struct message *mess;
-int who;
+int do_genos_query(char *comm, struct message *mess, int who)
 {
   char *addr;
 
   addr = addr_mess(mess->m_from,MINDIV);
   pmessage(mess->m_from, MINDIV, addr, "%s has won the game %d times.",
 	players[who].p_name,players[who].p_stats.st_genos);
+  return 0;
 }
 #endif
 
 
 /* ARGSUSED */
 #if !defined (BASEP) || !defined(BASEPRACTICE)
-do_time_msg(comm,mess)
-char *comm;
-struct message *mess;
+int do_time_msg(char *comm, struct message *mess)
 {
   int who;
   int t;
@@ -1029,6 +1006,7 @@ struct message *mess;
   } else {
     pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].s_surrender);
   }
+  return 0;
 }
 
 /*
@@ -1036,9 +1014,7 @@ struct message *mess;
  */
 
 /* ARGSUSED */
-do_queue_msg(comm,mess)
-char *comm;
-struct message *mess;
+int do_queue_msg(char *comm, struct message *mess)
 {
     int who;
     char *addr;
@@ -1059,6 +1035,7 @@ struct message *mess;
 	    pmessage(who, MINDIV, addr, "There is no one on the %s queue.",
 		     queues[i].q_name);
     }
+    return 0;
 }
 
 #endif

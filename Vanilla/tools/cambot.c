@@ -41,7 +41,6 @@ int ignored[MAXPLAYER];
 int debug;
 
 void message_flag(struct message *cur, char *address) {}
-int check_command(struct message *mess) {return 0;}
 void flushSockBuf(void) {}
 int bounceSBStats(int from) {return 0;}
 int bouncePingStats(int from) {return 0;}

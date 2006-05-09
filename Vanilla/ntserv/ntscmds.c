@@ -226,7 +226,7 @@ static struct command_handler_2 nts_commands[] =
     { NULL }
 };
 
-int check_command(struct message *mess)
+int do_check_command(struct message *mess)
 {
   return check_2_command(mess, nts_commands,
 			 (status->gameup & GU_INROBOT) ? 0 : C_PR_INPICKUP);

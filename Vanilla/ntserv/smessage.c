@@ -66,6 +66,13 @@ void pmessage2(int recip, int group, char *address, u_char from,
 
 }
 
+static int (*do_message_post)(struct message *message) = NULL;
+
+void do_message_post_set(int (*proposed)(struct message *message))
+{
+  do_message_post = proposed;
+}
+
 void do_message(int recip, int group, char *address, u_char from,
                 const char *fmt, va_list args) {
 
@@ -108,7 +115,10 @@ void do_message(int recip, int group, char *address, u_char from,
   message_flag(cur,address);
   cur->m_flags |= MVALID;
 
-  if ((cur->m_flags & MINDIV) && (cur->m_recpt == me->p_no) &&
-      (cur->m_from == me->p_no))
-    check_command(cur);
+  if (do_message_post != NULL) {
+    if ((cur->m_flags & MINDIV) && (cur->m_recpt == me->p_no) &&
+	(cur->m_from == me->p_no)) {
+      (*do_message_post)(cur);
+    }
+  }
 }
