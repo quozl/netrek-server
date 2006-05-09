@@ -1,0 +1,285 @@
+#!/usr/bin/env perl
+#
+# Convert darcs changes into RSS 1.0
+#
+# Version 0.6, 2005/02/07 Pedro Melo <melo@simplicidade.org>
+#
+
+use strict;
+$^W = 1; # "use warnings" for dysfunctional older Perls
+use XML::RSS;
+use XML::Parser;
+use Getopt::Long;
+use Config::Simple;
+
+#
+# Configuration hash
+#
+
+my %config;
+
+# Defaults for the main options
+# Your project name and how many changes to use
+$config{project} = "unnamed project";
+$config{n_items} = 25;
+
+# Where is markdown?
+$config{markdown_path} = 'Markdown.pl';
+
+################################################ Nothing to edit below
+
+my $result = 0;
+my %cmd_line_opts;
+eval {
+  # If you change any options here, also update them in the usage docs below. 
+  $result = GetOptions(
+    'project|title|p=s' => \$cmd_line_opts{project},
+    'homepage|link|h=s' => \$cmd_line_opts{homepage},
+    'description|d=s'   => \$cmd_line_opts{description},
+    'url_cgi|u=s'       => \$cmd_line_opts{patch_cgi},
+    'n_items|n=i'       => \$cmd_line_opts{n_items},
+    'darcs|c=s'         => \$cmd_line_opts{darcs_cmd},
+    'filter|f=s'        => \$cmd_line_opts{filter},
+    'markdown|m=s'      => \$cmd_line_opts{markdown_path},
+  )
+};
+
+my $repo = shift || '.';
+
+my @files = (
+    '/etc/darcs2rss/config',
+    "$ENV{HOME}/.darcs2rss",
+    "$repo/.darcs2rss",
+);
+
+foreach my $cfg (@files) {
+  Config::Simple->import_from($cfg, \%config) if -f $cfg && -r _;
+}
+
+while (my ($key, $value) = each %cmd_line_opts) {
+  $config{$key} = $value if defined $value;
+}
+
+$config{darcs_cmd} ||= 'darcs';
+$config{filter}    ||= 'basic';
+
+my $filter;
+if ($config{filter}) {
+  if ($config{filter} eq 'markdown') {
+    if (!$config{markdown_path}) {
+      print STDERR "Error: filter markdown selected, but I need to know where Markdown.pl is\n";
+      print STDERR "       use --markdown /path/to/Markdown.pl to fix\n";
+      exit(1);
+    }
+    eval {
+      $blosxom::version = 1;
+      require $config{markdown_path};
+    };
+    if ($@) {
+      print STDERR "Error: failed loading Markdown module from '$config{markdown_path}'\n";
+      exit(1);
+    }
+    $filter = \&markdown_filter;
+  }
+  elsif ($config{filter} eq 'pre') {
+    $filter = \&pre_filter;
+  }
+  elsif ($config{filter} eq 'basic') {
+    $filter = \&basic_filter;
+  }
+  else {
+    print STDERR "Error: filter type '$config{filter}' is unknown to me. See $0 --help for options \n";
+    exit(1);
+  }
+}
+
+my $cmdline = "$config{darcs_cmd} changes --xml-output";
+$cmdline .= " --last $config{n_items}" if $config{n_items};
+
+my $err_msg;
+if (!$result) {
+  $err_msg = "\n"; # Getopt::Long already printed something to STDERR
+}
+elsif (!chdir($repo)) {
+  $err_msg = "could not chdir into repository '$repo': $!";
+}
+elsif (!-r '_darcs') {
+  $err_msg = "$repo is not a darcs repo. _darcs does not exist or is not readable";
+}
+elsif (`$config{darcs_cmd} --commands 2>&1` !~ m/rollback/) {
+  $err_msg = "'$config{darcs_cmd}' does not appear to be a working darcs binary";
+}
+elsif (!open(CHANGES, "$cmdline |")) {
+  $err_msg = "could not execute '$config{darcs_cmd}': $!\n"
+}
+
+if ($err_msg) { 
+    warn "$err_msg\n\n";
+    die <<USAGE
+Usage: 
+
+  # From the root of a darcs repo
+  darcs2rss > /path/to/rss_file
+
+  # From outside a repo
+  darcs2rss /path/to/your/repo > /path/to/rss_file
+
+Options:
+
+  --project (also --title and -p): project name
+  --homepage (also --link and -h): project homepage
+  --description (also -d): project description
+  --url_cgi (also -u): URL of darcs.cgi script
+  --n_items (also -n): number of changes to include, default 25, 0 for unlimited
+  --darcs (also -c): darcs command to use, default search PATH for 'darcs'
+  --filter (also -f): filter comments - see available filters below
+  --markdown (also -m): Markdown.pl location (mandatory if filter is markdown)
+
+All the long options are case-insensitive and can be abbreviated to
+uniqueness. So you can use --description or --desc but not --d because
+it could mean --darcs
+
+The following filters are available:
+  - basic: convert line breaks and encode HTML entities if possible
+  - markdown: filters your comment with Markdown
+  - pre: puts your comment between <pre></pre>
+
+If you want to use Markdown, you must specify the Markdown.pl location
+with --markdown.
+
+USAGE
+}
+
+my $rss = XML::RSS->new( version => '1.0' );
+
+$rss->channel(
+  title => $config{project},
+  link  => $config{homepage} || '#',
+  description => $config{description} || ' ',
+);
+
+
+my $ctx = {};
+my $parser = XML::Parser->new(
+    Handlers => {
+      Start => sub { _handle_start( $ctx, @_ ) },
+      End   => sub { _handle_end( $ctx, @_ )   },
+      Char  => sub { _handle_char( $ctx, @_ )  },
+    },
+);
+$parser = $parser->parse_start;
+
+while(<CHANGES>) {
+  $parser->parse_more($_);
+}
+$parser->parse_done;
+
+
+print $rss->as_string;
+
+
+#################################################
+# XML::Parser handlers
+
+sub _handle_start {
+  my $ctx = shift;
+  my $expat = shift;
+  my $elem = shift;
+ 
+  if ($elem eq 'patch') {
+    $ctx->{attrs} = { @_ };
+  }
+  elsif ($elem eq 'name' || $elem eq 'comment') {
+    $ctx->{inside} = $elem;
+  }
+}
+
+
+sub _handle_end {
+  my $ctx = shift;
+  my $expat = shift;
+  my $elem = shift;
+
+  if ($elem eq 'patch') {
+    my $link = "";
+    $link = "$config{patch_cgi}?c=annotate&p=$ctx->{attrs}{hash}" if $config{patch_cgi};
+
+    my $item_date;
+    if ($ctx->{attrs}{date} =~ /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/) {
+      $item_date = "$1-$2-$3T$4:$5:$6+00:00"; # TODO: fix timezone info
+    }
+
+    my $comment = $ctx->{comment};
+    if ($filter && $comment) {
+      $comment = $filter->($comment);
+    }
+    
+    $rss->add_item(
+      title => $ctx->{name} || "no title",
+      # default to '#' because a link is required in the RSS spec
+      link  => $link || '#',
+      description => $comment,
+
+      dc => {
+        subject => "Patches",
+        creator => $ctx->{attrs}{author} || "no author",
+        date    => $item_date,
+      },
+    );
+
+    delete $ctx->{attrs};
+    delete $ctx->{name};
+    delete $ctx->{comment};
+  }
+  elsif ($elem eq 'name' || $elem eq 'comment') {
+    delete $ctx->{inside};
+  }
+}
+
+
+sub _handle_char {
+  my $ctx = shift;
+  my $expat = shift;
+  
+  if ($ctx->{inside}) {
+    $ctx->{$ctx->{inside}} .= shift;
+  }
+}
+
+
+#################################################
+# Filters available for comments
+
+sub markdown_filter {
+  return Markdown::Markdown(shift);
+}
+
+
+sub pre_filter {
+  my $comment = shift;
+  return "<pre>$comment</pre>";
+}
+
+sub basic_filter {
+  my $comment = shift;
+
+  eval { require HTML::Entities; };
+  if ($@) {
+      #  we could encode more HTML characters if HTML::Entities was installed;
+  }
+  else {
+      import HTML::Entities;
+      $comment = encode_entities($comment)
+  }
+
+    # To handle all kinds of line endings. See Programming Perl, 3rd Ed, page 623
+  $comment =~ s/\015?\012/\n/g;
+
+  # translate two or more line breaks to a paragraph break
+  $comment =~ s#\n\n+#</p><p>#g;
+
+  # translate a single line break to <BR>
+  $comment =~ s#\n#<br/>#g;
+
+  return "<p>$comment</p>";
+}
