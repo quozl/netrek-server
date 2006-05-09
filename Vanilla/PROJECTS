@@ -3,6 +3,11 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- factorise message insertion, and maintenance of mc_current,
+          as it is distributed all over the code.
+
+	- add a "who am i t-mode against?"
+
 	- list connection failure scenarios and response by server,
 	  so that we can reduce jammed slots.
 
