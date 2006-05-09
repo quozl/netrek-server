@@ -1,0 +1,9 @@
+
+# darcs is currently slighty broken, it doesn't set the executable bits you need
+# Run:
+# sh README.darcs 
+# to fix the bits you need.
+
+[ -x configure ] || (chmod +x configure; echo "./configure set executable")
+[ -x tools/mktrekon ] || (chmod +x tools/mktrekon; echo "tools/mktrekon set executable")
+echo "Should be good now"
