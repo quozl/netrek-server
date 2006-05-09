@@ -228,6 +228,7 @@ int main(int argc, char **argv)
         status->kills=10;
         status->losses=10;
     }
+    context->daemon = getpid();
 
 #undef wait
 

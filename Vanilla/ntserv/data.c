@@ -9,6 +9,7 @@
 struct player *players;
 struct player *me;
 struct torp *torps;
+struct context *context;
 struct status *status;
 struct ship *myship;
 struct stats *mystats;

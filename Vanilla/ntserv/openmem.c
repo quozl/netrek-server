@@ -70,6 +70,7 @@ static void setup_memory(struct memory *sharedMemory)
 {
     players = sharedMemory->players;
     torps = sharedMemory->torps;
+    context = sharedMemory->context;
     status = sharedMemory->status;
     planets = sharedMemory->planets;
     phasers = sharedMemory->phasers;

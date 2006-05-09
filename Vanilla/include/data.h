@@ -57,6 +57,7 @@ extern char *clueString;
 extern struct player *players;
 extern struct player *me;
 extern struct torp *torps;
+extern struct context *context;
 extern struct status *status;
 extern struct ship *myship;
 extern struct stats *mystats;
