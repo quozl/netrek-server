@@ -39,7 +39,16 @@ _state.human = 3;  // Make robots easy to kill.  Change from default of 0.
 o Compile and install the server according to the instructions in the
   INSTALL file.
 
-o Edit .sysdef and set NEWBIE=1.
+o Edit sysdef in the /etc directory and set NEWBIE=1.
+
+o Edit ports in the same directory as sysdef.
+
+  Uncomment these lines:
+  3592 ntserv "ntserv" -q 10
+  2592 ntserv "ntserv" -q 9
+
+  and comment this line:
+  2592 ntserv "ntserv"
 
 TODO: Automate the following:
 
