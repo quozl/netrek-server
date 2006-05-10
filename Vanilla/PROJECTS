@@ -147,11 +147,10 @@ List of things to do in the future
 
 	- need generic shared memory dump tool to assist diagnosis.
 
-	- revisit syntax of .metaservers file to aid understanding,
+	- revisit syntax of metaservers file to aid understanding,
 
 	- compile with -Wall and fix the problems.
-	  [done ntserv, quozl@us.netrek.org]
-	  [big set of prototypes missing in tools/cambot.c, quozl]
+	  [yet to do: crypt(3), sigsetmask(2), keyman, keycomp, & xsg]
 
 	- observers, allow them to have a ship of their own that is ineffective
 	  and invisible to others.
