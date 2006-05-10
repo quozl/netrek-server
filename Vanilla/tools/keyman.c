@@ -9,7 +9,7 @@
 #include <stdio.h>
 #ifdef RSA
 #include <stdlib.h>
-#include <string.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/file.h>
@@ -18,6 +18,7 @@
 #include INC_FCNTL
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 
 #define CATALOG        "catalog"
 

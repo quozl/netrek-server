@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
+#include <unistd.h>
+#include <ctype.h>
 #include "defs.h"
 #include "struct.h"
 #include "planets.h"
@@ -127,6 +130,7 @@ static int set_flag(char *argv, char *name, int mask, struct planet *pl, int ver
     if (verbose) say("%s made %s", pl->pl_name, name);
     return 1;
   }
+  return 0;
 }
 
 /* check for a request to clear a planet flag, and do it */
@@ -138,6 +142,7 @@ static int clr_flag(char *argv, char *name, int mask, struct planet *pl, int ver
     if (verbose) say("%s made %s", pl->pl_name, name);
     return 1;
   }
+  return 0;
 }
 
 /* display everything known about a planet in command line format */

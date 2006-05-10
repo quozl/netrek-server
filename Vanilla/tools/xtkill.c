@@ -9,8 +9,6 @@
 static void Usage(void);
 static void _pmessage(char *str, int recip, int group);
 
-static char *names[] = { "Neutral", "Fed", "Rom", "", "Kli", "", "", "", "Ori"};
-
 static void Usage(void)
 {
   printf("\
@@ -39,8 +37,6 @@ static void Usage(void)
 
 static void refit(struct player *me, int type)
 {
-  int i;
-
   getship(&(me->p_ship), type);
 
   /* enable docking */

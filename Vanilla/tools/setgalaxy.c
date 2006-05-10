@@ -12,6 +12,8 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "defs.h"
 #include "struct.h"
 #include "planets.h"
@@ -288,6 +290,7 @@ static void CoolServerIdea(void)
     }
 }
 
+#ifdef notused
 static void CloseUp(int i) {
   int m, dx, dy, t = 200;
   dx = (planets[i].pl_x - 50000)/t;
@@ -329,6 +332,7 @@ static void CloseUpShop2(void)
   CloseUp(20);
   CloseUp(30);
 }
+#endif
 
 static void CloseUpShop() {
   int i, m, dx[MAXPLANETS], dy[MAXPLANETS], t = 600;

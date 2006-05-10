@@ -20,16 +20,13 @@
 
 */
 
-#ifndef lint
-static char vcid[] = "$Id: metaget.c,v 1.2 2006/04/22 02:16:47 quozl Exp $";
-#endif /* lint */
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 
 int main (int argc, char *argv[])
@@ -47,7 +44,7 @@ int main (int argc, char *argv[])
   if (argc > 2) port = atoi(argv[2]);
 
   sock = socket(AF_INET, SOCK_DGRAM, 0);
-  if (sock < 0) { perror("socket"); exit(1); }
+  if (sock < 0) { perror("socket"); return 1; }
 
   address.sin_family = AF_INET;
   address.sin_port = htons(port);
@@ -56,7 +53,7 @@ int main (int argc, char *argv[])
     struct hostent *hp;
     if ((hp = gethostbyname(host)) == NULL) {
       herror("gethostbyname");
-      exit(2);
+      return 2;
     } else {
       address.sin_addr.s_addr = *(long *) hp->h_addr;
     }
@@ -65,19 +62,20 @@ int main (int argc, char *argv[])
   /* send query */
   stat = sendto(sock, "?", 1, 0, (struct sockaddr *) &address, 
 		sizeof(struct sockaddr));
-  if (stat < 0) { perror("sendto"); exit(3); }
+  if (stat < 0) { perror("sendto"); return 3; }
     
   /* wait for response */
   len = recvfrom(sock, buf, BUFSIZ, 0, NULL, NULL);
-  if (len < 0) { perror("recvfrom"); exit(4); }
+  if (len < 0) { perror("recvfrom"); return 4; }
   if (len == 0) {
     fprintf(stderr, "%s: zero length response received\n", argv[0]);
-    exit(5);
+    return 5;
   }
   
   /* display response */
   stat = write(STDOUT_FILENO, buf, len);
-  if (stat < 0) { perror("write"); exit(6); }
+  if (stat < 0) { perror("write"); return 6; }
   
   close(sock);
+  return 0;
 }

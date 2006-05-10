@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "defs.h"
+#include "struct.h"
+#include "proto.h"
 
 int main(int argc, char **argv)
 {

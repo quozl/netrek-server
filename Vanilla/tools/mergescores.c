@@ -25,14 +25,10 @@
  */
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/file.h>
-#include <sys/time.h>		/* for time() */
+#include <time.h>
 #include <stdlib.h>
-#include <pwd.h>
 #include <unistd.h>
 #include "defs.h"
-#include INC_STRINGS
 #include INC_FCNTL
 #include "struct.h"
 #include "data.h"
@@ -100,7 +96,7 @@ int main(int argc, char **argv)
     lstatus=(struct status *) malloc(sizeof(struct status));
     fstatus=(struct status *) malloc(sizeof(struct status));
     scanf("%10ld %10d %10d %10d %10d %10lf\n", 
-	&fstatus->time, 
+	(long int *) &fstatus->time, 
 	&fstatus->planets, 
 	&fstatus->armsbomb, 
 	&fstatus->kills, 
@@ -117,14 +113,14 @@ int main(int argc, char **argv)
 
     fprintf(stderr, "          Ticks    Planets   Armsbomb      Kills     Losses   Timeprod\n");
     fprintf(stderr, "Loc: %10ld %10d %10d %10d %10d %10lf\n", 
-	lstatus->time, 
+	(long int) lstatus->time, 
 	lstatus->planets, 
 	lstatus->armsbomb, 
 	lstatus->kills, 
 	lstatus->losses,
 	lstatus->timeprod);
     fprintf(stderr, "For: %10ld %10d %10d %10d %10d %10lf\n", 
-	fstatus->time, 
+	(long int) fstatus->time, 
 	fstatus->planets, 
 	fstatus->armsbomb, 
 	fstatus->kills, 

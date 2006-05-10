@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/file.h>
-#include <pwd.h>
 #include "defs.h"
 #include INC_FCNTL
 #include "struct.h"
@@ -60,7 +57,7 @@ static void trimblanks(char *str)
 }
 
 /* ARGSUSED */
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char **argv;
 {
@@ -72,7 +69,7 @@ char **argv;
     printf("Warning:  If you do not know how to use this program, break it now!\n");
     status=(struct status *) malloc(sizeof(struct status));
     scanf("%ld %d %d %d %d %lf\n", 
-	&status->time, 
+	(long int *) &status->time, 
 	&status->planets, 
 	&status->armsbomb, 
 	&status->kills, 

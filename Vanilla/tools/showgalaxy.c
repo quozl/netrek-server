@@ -364,14 +364,13 @@ void writechar(int x, int y, char ch)
 int isinput(int delay)
 {
     struct timeval timeout;
-    int reads, writes, excepts;
+    fd_set reads;
 
-    writes=excepts=0;
-    reads=1;
-    timeout.tv_sec=delay/10;
-    timeout.tv_usec=(delay % 10) * 100000;
-    return (select(1, (fd_set *)&reads, (fd_set *)&writes, (fd_set *)&excepts,
-		   (struct timeval *)&timeout));
+    FD_ZERO(&reads);
+    FD_SET(1, &reads);
+    timeout.tv_sec = delay/10;
+    timeout.tv_usec = (delay % 10) * 100000;
+    return (select(1, &reads, NULL, NULL,&timeout));
 }
 
 void showPlanets(void)

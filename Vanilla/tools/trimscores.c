@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
     int fd;
     struct player j;
-    int count, kept;
+    int count, kept = 0;
     char buf[MAXBUFFER];
     int harsh=10;	/* How strict we will be with player trimming */
     const LONG currenttime = time (NULL);
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     fprintf(stderr,"         you're about to lose the player database\n");
     status=(struct status *) malloc(sizeof(struct status));
     scanf("%10ld %10d %10d %10d %10d %10lf\n", 
-	&status->time, 
+	(long int *) &status->time, 
 	&status->planets, 
 	&status->armsbomb, 
 	&status->kills, 

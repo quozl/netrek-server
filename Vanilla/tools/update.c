@@ -8,26 +8,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <time.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/wait.h>
 #include "defs.h"
-#include INC_SYS_TIME
-#include <sys/resource.h>
-#include <signal.h>
-#include <sys/ioctl.h>
-#include <errno.h>
-#include <sys/file.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include INC_STRINGS
 #include INC_SYS_FCNTL
-#include INC_SYS_PTYIO
 #include "struct.h"
 #include "data.h"
 #include "patchlevel.h"
@@ -338,11 +325,11 @@ int main(int argc, char **argv)
 #endif
 			if (exclude) 
 		 	    execl(buf,KEYCOMP,"-c","-m",buf1,"-t",classes,"-x",
-				exclude,buf2,0);
+				exclude,buf2, (char *) NULL);
  
 			else
 			    execl(buf,KEYCOMP,"-c","-m",buf1,"-t",classes,
-				buf2,0);
+				buf2, (char *) NULL);
 
 		        _exit(1);
 		    }
@@ -378,7 +365,7 @@ int main(int argc, char **argv)
 #endif
 			    } while (num_written < num_read);
 			}
-		        fclose(keyfile);
+		        fclose(featurefile);
 			fprintf(stderr,"Wrote new feature file\n");
                     }
                     close(sock);
