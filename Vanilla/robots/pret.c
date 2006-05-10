@@ -27,17 +27,13 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "roboshar.h"
 #include "pretdefs.h"
 
 int debug=0;
 
 char *roboname = "Kathy";
-
-#define NUMADJ 12
-static char    *adj_s[NUMADJ] = {
-    "VICIOUS", "RUTHLESS", "IRONFISTED", "RELENTLESS",
-    "MERCILESS", "UNFLINCHING", "FEARLESS", "BLOODTHIRSTY",
-    "FURIOUS", "DESPERATE", "FRENZIED", "RABID"};
 
 #define NUMNAMES        20
 
@@ -62,7 +58,7 @@ int phrange; /* phaser range 7/31/91 TC */
 int trrange; /* tractor range 8/2/91 TC */
 int ticks = 0;
 int oldmctl;
-static realT = 0;
+static int realT = 0;
 int pt_robots = 0;
 int team1=0;
 int team2=0;
@@ -71,7 +67,6 @@ static int debugLevel = 0;
 
 static void cleanup(int);
 void checkmess(int);
-static void start_internal(char *type);
 static void obliterate(int wflag, char kreason, int killRobots);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
@@ -109,7 +104,6 @@ main(argc, argv)
     int team = 4;
     int pno;
     int class;                  /* ship class 8/9/91 TC */
-    int i;
  
 #ifndef TREKSERVER
     if (gethostname(hostname, 64) != 0) {
@@ -201,7 +195,6 @@ main(argc, argv)
 void checkmess(int unused)
 { 
     int         shmemKey = PKEY;
-    int i;
     static int no_humans = 0;
     static int no_bots = 0;
     static int time_in_T = 0;
@@ -257,8 +250,8 @@ void checkmess(int unused)
     /* Stop or start a robot. */
     if ((ticks % ROBOCHECK) == 0) {
         int next_team;
-        int np = num_players(&next_team);
- 
+        num_players(&next_team);
+  
         if (!(ticks % ROBOEXITWAIT))
 		{
             if(debugTarget != -1) {
@@ -442,7 +435,6 @@ static void stop_a_robot(void)
 static int
 rprog(char *login, char *robotHost)
 {
-    int             v;
     char localHostName[80];
 
     gethostname(localHostName, 80);
@@ -533,8 +525,8 @@ num_players(int *next_team)
 static char           *
 namearg(void)
 {
-    register        i, k = 0;
-    register struct player *j;
+    int i, k = 0;
+    struct player *j;
     char           *name;
     int             namef = 1;
 
@@ -579,42 +571,12 @@ start_a_robot(char *team)
      return;
     if (pid == 0) {
         SIGNAL(SIGALRM, SIG_DFL);
-        execl("/bin/sh", "sh", "-c", command, 0);
+        execl("/bin/sh", "sh", "-c", command, (char *) NULL);
         perror("pret'execl");
         _exit(1);
     }
     pt_robots++;
     status->gameup |= GU_BOT_IN_GAME;
-}
-
-static void start_internal(char *type)
-{
-    char *argv[6];
-    u_int argc = 0;
-
-    argv[argc++] = "robot";
-    if ((strncmp(type, "iggy", 2) == 0) || 
-        (strncmp(type, "hunterkiller", 2) == 0)) {
-        argv[argc++] = "-Ti";
-        argv[argc++] = "-P";
-        argv[argc++] = "-f";    /* Allow more than one */
-    } else if (strncmp (type, "cloaker", 2) == 0) {
-        argv[argc++] = "-Ti";
-        argv[argc++] = "-C";    /* Never uncloak */
-        argv[argc++] = "-F";    /* Needs no fuel */
-        argv[argc++] = "-f";
-    } else if (strncmp (type, "hoser", 2) == 0) {
-        argv[argc++] = "-p";
-        argv[argc++] = "-f";
-    } else return;
-
-    argv[argc] = NULL;
-    if (fork() == 0) {
-        SIGNAL(SIGALRM, SIG_DFL);
-        execv(Robot,argv);
-        perror(Robot);
-        _exit(1);
-    }
 }
 
 static void cleanup(int unused)
@@ -730,7 +692,6 @@ static void obliterate(int wflag, char kreason, int killRobots)
 {
     /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
     struct player *j;
-    int i, k;
 
     /* clear torps and plasmas out */
     MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
