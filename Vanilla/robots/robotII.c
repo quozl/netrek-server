@@ -4,19 +4,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
+#include <unistd.h>
+#include <time.h>
 #include <signal.h>
-#include <setjmp.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "roboshar.h"
 
 extern int redrawall;		/* maint: missing "extern" 6/22/92 TC */
 extern int lastm;		/* maint: missing "extern" 6/22/92 TC */
 
 extern char roboname[15];  /* So it can be defined dynamically */
 
+void config();
 
 /* lots of neat flags */
 int hostile;
@@ -54,7 +56,7 @@ char **argv;
     register int i;
     void rmove();
     int team = -1;
-    int bteam;
+    int bteam = FED;
     int pno;
     int class;			    /* ship class 8/9/91 TC */
     
@@ -301,7 +303,7 @@ char **argv;
 }
 
 
-config()
+void config()
 {
     /* calc class-specific stuff */
 

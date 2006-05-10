@@ -3,11 +3,14 @@
 #include "copyright.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <math.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "roboshar.h"
 
 
 #define SIZEOF(s)		(sizeof (s) / sizeof (*(s)))
@@ -115,6 +118,12 @@ extern int closefast;
 u_char	getcourse();
 char *robo_message();
 char *termie_message();		/* added 8/2/91 TC */
+void exitRobot();
+int phaser_plasmas();
+void go_home(struct Enemy *ebuf);
+int do_repair();
+int isTractoringMe(struct Enemy *enemy_buf);
+int projectDamage(int eNum, int *dirP);
 
 char roboname[15];
 
@@ -128,7 +137,7 @@ void rmove()
     int		avDir;
     extern struct Enemy *get_nearest();
     struct Enemy *enemy_buf;
-    struct player *enemy;
+    struct player *enemy = NULL;
     static int	roboclock = 0;
     static int	avoid[2] = { -32, 32 };
     int no_cloak;
@@ -573,8 +582,7 @@ struct {
    as close to them as it can, while staying in its own space.
    Otherwise, it will head to the center of its own space.
 */
-go_home(ebuf)
-struct Enemy *ebuf;
+void go_home(struct Enemy *ebuf)
 {
     int x, y;
     double dx, dy;
@@ -638,7 +646,7 @@ struct Enemy *ebuf;
     if (! cloaker) cloak_off();
 }
 
-phaser_plasmas()
+int phaser_plasmas()
 {
   struct torp *t;
   int myphrange;
@@ -667,8 +675,7 @@ phaser_plasmas()
   return 0;		
 }
 
-projectDamage(eNum, dirP)
-	int	*dirP;
+int projectDamage(int eNum, int *dirP)
 {
 	register int		i, j, numHits = 0, mx, my, tx, ty, dx, dy;
 	double			tdx, tdy, mdx, mdy;
@@ -697,11 +704,10 @@ projectDamage(eNum, dirP)
 	}
 	if (numHits > 0)
 		*dirP /= numHits;
-	return (numHits);
+	return numHits;
 }
 
-isTractoringMe(enemy_buf)
-struct Enemy *enemy_buf;
+int isTractoringMe(struct Enemy *enemy_buf)
 {
     return ((enemy_buf->e_hisflags & PFTRACT) && /* bug fix: was using */
 	    !(enemy_buf->e_hisflags & PFPRESS) && /* e_flags 6/24/92 TC */
@@ -819,9 +825,9 @@ get_nearest()
 	}			/* end for */
     }				/* end else */
     if (pcount == 0) {
-	return (NOENEMY);    /* no players in game */
+	return NOENEMY;    /* no players in game */
     } else if (ebuf.e_info == me->p_no) {
-	return (0);			/* no hostile players in the game */
+	return 0;			/* no hostile players in the game */
     } else {
 	j = &players[ebuf.e_info];
 
@@ -892,7 +898,6 @@ get_nearest()
 	if ((polymorphic) && (j->p_ship.s_type != me->p_ship.s_type) &&
 	    (j->p_ship.s_type != ATT)) { /* don't polymorph to ATT 4/8/92 TC */
 	    extern int config();
-	    extern int getship();
 	    int old_shield;
 	    int old_damage;
 	    old_shield = me->p_ship.s_maxshield;
@@ -908,7 +913,7 @@ get_nearest()
 		/(float)old_damage;
 	}
 
-	return (&ebuf);
+	return &ebuf;
     }
 }
 
@@ -931,11 +936,11 @@ struct planet* get_nearest_planet()
     return nearest;
 }
 
-do_repair()
+int do_repair()
 {
 /* Repair if necessary (we are safe) */
 
-    register struct planet* l;
+    struct planet* l;
     int dx, dy;
     int dist;
 
@@ -949,13 +954,13 @@ do_repair()
 		if ((dx < PFIREDIST) && (dy < PFIREDIST)) {
 		    if (debug)
 			ERROR(1,( "%d) on top of hostile planet (%s)\n", me->p_no, l->pl_name));
-		    return(0);	/* can't repair on top of hostile planets */
+		    return 0;	/* can't repair on top of hostile planets */
 		}
 		if ((int) (hypot((double) dx, (double) dy)) < PFIREDIST) {
 		    if (debug)
 		        ERROR(1,("%d) on top of hostile planet (%s)\n", 
 				me->p_no, l->pl_name));
-		    return(0);
+		    return 0;
 		}
 	    } 
 	    me->p_desspeed = 0;
@@ -984,7 +989,7 @@ do_repair()
 		    me->p_flags &= ~PFPLLOCK;
 		    orbit();
 		}
-		return(1);
+		return 1;
 	    }
 	    else {			/* not repair, so ignore it */
 		me->p_desspeed = 0;
@@ -997,10 +1002,10 @@ do_repair()
 	    ERROR(1,( "%d) repairing damage at %d\n",
 		me->p_no,
 		me->p_damage));
-	return(1);
+	return 1;
     }
     else {
-	return (0);
+	return 0;
     }
 }
 
@@ -1075,7 +1080,7 @@ struct player *enemy;
 	}
     }
     *s='\0';
-    return(rmessage);
+    return rmessage;
 }
 
 char* termie_message(enemy)
@@ -1153,11 +1158,10 @@ struct player* enemy;
 	}
     }
     *s='\0';
-    return(tmessage);
-    
+    return tmessage;
 }
 
-exitRobot()
+void exitRobot()
 {
     SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
