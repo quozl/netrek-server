@@ -626,6 +626,7 @@ check_dethis(num_hits, hittime)
       && MYFUEL() > 25)
       req_detonate("");
 #endif
+
 #ifdef nodef
    /* debug */
    if(num_hits > 0 && me->p_speed > 6){

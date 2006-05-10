@@ -70,8 +70,27 @@ goto_assault_planet()
 
    /* bug -- crashes into people */
    /* don't cloak if we're far from planet */
+   /* start within assuming you don't need cloak */
+   cloak = 0;
+
    if(!inl  && pdist > 20000)
       cloak = 0;
+
+   /* cloak bomb near enemy core, so you don't get res-killed */
+
+   if (pdist < 7000) {
+     if (pl && pl->pl_flags&PLHOME)
+       cloak=1;
+
+     if (pl && pl->pl_no == 7) /* Altair */
+       cloak=1;
+
+     if (pl && pl->pl_no == 16) /* Draconis */
+       cloak=1;
+
+     if (pl && pl->pl_no == 26) /* Scorpii */
+       cloak=1;
+   }
 
    if(pdist < 10000 && edist < 18000)
       cloak = 1;
@@ -135,22 +154,42 @@ do_cloak(pdist)
 
 assault_planet()
 {
-   Player		*e = _state.closest_e;
-   struct player	*j = e?e->p:NULL;
-   struct planet 	*pl = _state.assault_planet;
-   int			armies = pl->pl_armies;
+  Player         *e = _state.closest_e;
+  struct player	 *j = e?e->p:NULL;
+  struct planet  *pl = _state.assault_planet;
+  int            cloak;
+  int            armies = pl->pl_armies;
 
 #ifdef nodef
    if(!do_cloak(0))
       req_cloak_off();
 #endif
-   if(e && e->p && isAlive(e->p)){
-      if(e->dist < 10000)
-	 req_cloak_on();
-      else
-	 req_cloak_off("enemy farther than 10000");
+
+   cloak=0; /* start assuming you don't need to cloak */
+
+   if (e && e->p && isAlive(e->p)){ /* cloak when enemy is near */
+     if(e->dist < 10000) {
+	cloak=1;
+     }
    }
-      
+
+   /* cloak bomb near enemy core, so you don't get res-killed */
+   if (pl && pl->pl_flags&PLHOME)
+     cloak=1;
+
+   if (pl && pl->pl_no == 7) /* Altair */
+     cloak=1;
+
+   if (pl && pl->pl_no == 16) /* Draconis */
+     cloak=1;
+
+   if (pl && pl->pl_no == 26) /* Scorpii */
+     cloak=1;
+
+   if(cloak)
+      req_cloak_on();
+   else
+      req_cloak_off("no cloak in assault_planet()");
 
    if(armies > 4){
       req_bomb();
