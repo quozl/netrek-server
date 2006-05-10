@@ -1,3 +1,4 @@
+- fix practice robots to cloak when bombing near home planet [Huang]
 - fix INL confine to knock ships out of orbit [Cameron]
 - describe a local unnamed server as "server on this computer" [Cameron]
 - fix cambot regression [Cameron]

@@ -43,6 +43,30 @@ assault()
    }
 }
 
+/* determine if there is risk of death due to res of opponent */
+static int risk_res_death(struct planet *pl)
+{
+  if (pl == NULL) return 0;
+  /* One of the home planets identified by server etc/sysdef PLANETS */
+  if (pl->pl_flags & PLHOME) return 1;
+  /* Altair in standard position */
+  if (pl->pl_no == 7 && pl->pl_x == 11000 && pl->pl_y == 75000) return 1;
+  /* Draconis in standard position */
+  if (pl->pl_no == 16 && pl->pl_x == 28000 && pl->pl_y == 23000) return 1;
+  /* Scorpii in standard position */
+  if (pl->pl_no == 26 && pl->pl_x == 70720 && pl->pl_y == 26320) return 1;
+  /* Within rectangular phaser distance of any home planet res point */
+  int i;
+  for (i=0,pl=planets;i<MAXPLANETS;i++,pl++) {
+    if (pl->pl_flags & PLHOME) {
+      if(ABS(pl->pl_x - me->p_x) < 12000 && ABS(pl->pl_y - me->p_y) < 12000) {
+	return 1;
+      }
+    }
+  }
+  return 0;
+}
+
 goto_assault_planet()
 {
    Player		*e = _state.closest_e;
@@ -79,17 +103,7 @@ goto_assault_planet()
    /* cloak bomb near enemy core, so you don't get res-killed */
 
    if (pdist < 7000) {
-     if (pl && pl->pl_flags&PLHOME)
-       cloak=1;
-
-     if (pl && pl->pl_no == 7) /* Altair */
-       cloak=1;
-
-     if (pl && pl->pl_no == 16) /* Draconis */
-       cloak=1;
-
-     if (pl && pl->pl_no == 26) /* Scorpii */
-       cloak=1;
+     if (risk_res_death(pl)) cloak = 1;
    }
 
    if(pdist < 10000 && edist < 18000)
@@ -174,17 +188,7 @@ assault_planet()
    }
 
    /* cloak bomb near enemy core, so you don't get res-killed */
-   if (pl && pl->pl_flags&PLHOME)
-     cloak=1;
-
-   if (pl && pl->pl_no == 7) /* Altair */
-     cloak=1;
-
-   if (pl && pl->pl_no == 16) /* Draconis */
-     cloak=1;
-
-   if (pl && pl->pl_no == 26) /* Scorpii */
-     cloak=1;
+   if (risk_res_death(pl)) cloak = 1;
 
    if(cloak)
       req_cloak_on();
