@@ -8,23 +8,12 @@
 */
 
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <signal.h>
-#include <setjmp.h>
-#include <sys/file.h>
-#include <sys/wait.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
-#include <time.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
+#include "roboshar.h"
 #include "inldefs.h"
 
 extern Inl_stats inl_stat;
@@ -88,15 +77,10 @@ check_player(who, captain)
 
 
 
-do_switchside(comm,mess)
+int do_switchside(comm,mess)
      char *comm;
      struct message *mess;
 {
-  int who;
-  int queue;
-  int side;
-  struct player *j;
-
 #ifndef nodef
   return 0;	/* disabled until fixed */
 
@@ -106,6 +90,10 @@ do_switchside(comm,mess)
      with a wait queue.  cameron@stl.dec.com */
 
 #else
+  int who;
+  int queue;
+  int side;
+  struct player *j;
 
 #ifdef INLDEBUG
   ERROR(2,("	Enter do_switchside\n"));
@@ -180,7 +168,7 @@ do_switchside(comm,mess)
 
 /* Allows the captain to agree on starting the game */
 
-do_start(comm,mess)
+int do_start(comm,mess)
      char *comm;
      struct message *mess;
 {
@@ -276,9 +264,10 @@ do_start(comm,mess)
     inl_teams[c].flags &= ~T_START;
 
   start_countdown();
+  return 0;
 }
 
-do_register(comm,mess)
+int do_register(comm,mess)
      char *comm;
      struct message *mess;
 {
@@ -305,9 +294,10 @@ do_register(comm,mess)
 
   pmessage(0, MALL, inl_from,
 	   "Game is official.. will be automatically registered.");
+  return 0;
 }
 
-do_gametime(comm,mess)
+int do_gametime(comm,mess)
      char *comm;
      struct message *mess;
 {
@@ -403,10 +393,11 @@ do_gametime(comm,mess)
       inl_stat.time = time * PERMIN;
       inl_stat.overtime = overtime * PERMIN;
     }
+  return 0;
 }
 
 
-do_army(comm,mess)
+int do_army(comm,mess)
      char *comm;
      struct message *mess;
 {
@@ -467,12 +458,13 @@ do_army(comm,mess)
 	       army);
       inl_stat.start_armies = army;
     }
+  return 0;
 }
 
 
 /* Allows the captains of both teams to agree on resetting the galaxy */
 
-do_resetgalaxy(comm,mess)
+int do_resetgalaxy(comm,mess)
      char *comm;
      struct message *mess;
 {
@@ -517,18 +509,19 @@ do_resetgalaxy(comm,mess)
 
   pmessage (0, MALL, inl_from,
 	    "Game restarting with new galaxy.  Teams should be reselected");
+  return 0;
 }
 
 
 /* Makes the player who sent the message captain if it hasn't been taken
    yet. */
 
-do_captain(comm,mess)
+int do_captain(comm,mess)
      char *comm;
      struct message *mess;
 {
   int who;
-  int c, num=-1;
+  int num = -1;
 
 #ifdef INLDEBUG
   ERROR(2,("	Enter do_captain\n"));
@@ -568,12 +561,12 @@ do_captain(comm,mess)
 
 /* Allows the captain to release captaining duties */
 
-do_uncaptain(comm,mess)
+int do_uncaptain(comm,mess)
      char *comm;
      struct message *mess;
 {
   int who;
-  int c, num=-1;
+  int num = -1;
 
 #ifdef INLDEBUG
   ERROR(2,("	Enter do_uncaptain\n"));
@@ -591,16 +584,25 @@ do_uncaptain(comm,mess)
 }
 
 
+static int get_other_side(int num)
+{
+  int c;
+  for (c=0; c < INLTEAM; c++) {
+    if (inl_teams[num].team != inl_teams[c].team)
+      return inl_teams[c].team;
+  }
+  return 0;
+}
+
 /* This allows the captain to pick the different races */
 
-do_pickside(comm,mess)
+int do_pickside(comm,mess)
      char *comm;
      struct message *mess;
 {
   int who;
 
-  int c, other_side, num=-1;
-  int race,diagonal;
+  int c, other_side, num = -1;
 
 #ifdef INLDEBUG
   ERROR(2,("	Enter pickside\n"));
@@ -618,11 +620,7 @@ do_pickside(comm,mess)
 
   if ((num = check_player(who, 1)) == NONE) return 0;
 
-  for (c=0; c < INLTEAM; c++)
-    {
-      if (inl_teams[num].team != inl_teams[c].team)
-	other_side = inl_teams[c].team;
-    }
+  other_side = get_other_side(num);
 
   if (inl_teams[num].flags & T_SIDELOCKED)
     {
@@ -688,13 +686,10 @@ do_pickside(comm,mess)
   return 1;
 }
 
-do_tname(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_tname(char *comm, struct message *mess)
 {
   int who;
-
-  int c, other_side, num=-1;
+  int num = -1;
 
 #ifdef INLDEBUG
   ERROR(2,("	Enter do_tname\n"));
@@ -717,13 +712,13 @@ do_tname(comm,mess)
       return 0;
     }
 
-  if (strlen(comm)+1 < 2)
+  comm++;
+
+  if (strlen(comm) < 1)
     {
       pmessage(who, MINDIV, addr_mess(who, MINDIV), "No team name was given.");
       return 0;
     }
-
-  comm = ++comm;
 
   /*    free (inl_teams[num].t_name); */
   inl_teams[num].t_name = strdup (comm);
@@ -739,16 +734,14 @@ end_pause()
   inl_stat.flags &= ~(S_FREEZE | S_COUNTDOWN);
   status->gameup &= ~(GU_PRACTICE | GU_PAUSED);
   pmessage(0,MALL, inl_from, "---- Game continues ----");
+  return 0;
 }
 
-do_pause(comm,mess)
+int do_pause(comm,mess)
      char *comm;
      struct message *mess;
 {
   int who;
-  int queue;
-  int side;
-  struct player *j;
   int c, begin=0, num=-1;
 
 #ifdef INLDEBUG
@@ -818,17 +811,14 @@ do_pause(comm,mess)
       inl_countdown.action=end_pause;
       inl_countdown.message="Game continues in %i seconds";
     }
-
+  return 0;
 }
 
-do_restart(comm,mess)
+int do_restart(comm,mess)
      char *comm;
      struct message *mess;
 {
   int who;
-  int queue;
-  int side;
-  struct player *j;
   int c, restart=0, num=-1;
 
 #ifdef INLDEBUG
@@ -861,13 +851,14 @@ do_restart(comm,mess)
       pmessage(0, MALL, inl_from, "INL SERVER RESTARTED");
       reset_inl(0);
     }
+  return 0;
 }
 
-do_timeout(char *comm, struct message *mess)
+int do_timeout(char *comm, struct message *mess)
 {
   int who;
   int other_side;
-  int c, num=-1;
+  int num = -1;
 
 #ifdef INLDEBUG
   ERROR(2,("  Enter do_pause\n"));
@@ -884,11 +875,7 @@ do_timeout(char *comm, struct message *mess)
       return 0;
     }
 
-  for (c=0; c < INLTEAM; c++)
-    {
-      if (inl_teams[num].team != inl_teams[c].team)
-	other_side = inl_teams[c].team;
-    }
+  other_side = get_other_side(num);
 
   if (inl_teams[num].flags & T_TIMEOUT)
     {
@@ -925,12 +912,13 @@ do_timeout(char *comm, struct message *mess)
       pmessage(0, MALL, inl_from,
 	       "**********************************************************");
     }
+  return 0;
 }
 
-do_confine(char *comm, struct message *mess)
+int do_confine(char *comm, struct message *mess)
 {
   int who;
-  int c, other_side, num=-1;
+  int other_side, num = -1;
 
 #ifdef INLDEBUG
   ERROR(2,("  Enter do_confine\n"));
@@ -946,11 +934,7 @@ do_confine(char *comm, struct message *mess)
       return 0;
     }
 
-  for (c=0; c < INLTEAM; c++)
-    {
-      if (inl_teams[num].team != inl_teams[c].team)
-	other_side = inl_teams[c].team;
-    }
+  other_side = get_other_side(num);
 
   if (inl_teams[num].flags & T_CONFINE)
     {
@@ -974,9 +958,10 @@ do_confine(char *comm, struct message *mess)
 	       inl_teams[num].t_name,
 	       players[who].p_mapchars);
     }
+  return 0;
 }
 
-do_free(char *comm, struct message *mess)
+int do_free(char *comm, struct message *mess)
 {
   int num=-1;
   int victim;
@@ -986,6 +971,7 @@ do_free(char *comm, struct message *mess)
 
   if ((num = check_player(who, 1)) == NONE) return 0; /* Captain ? */
 
+  extern int getplayer(int from, char *line); /* gencmds.c */
   if ((victim = getplayer(who, comm)) == -1)
     return 0;
 
@@ -1213,5 +1199,6 @@ int do_scoremode(char *comm, struct message *mess) {
     pmessage(0, MALL, inl_from, "%s scoring mode approved.  See MOTD.", mode);
     inl_stat.score_mode = inl_teams[HOME].score_mode;
   }
+  return 0;
 }
 

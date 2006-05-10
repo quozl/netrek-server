@@ -10,15 +10,9 @@
    would be a horror to implement in the old scheme..
 */
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <time.h>
-#include <signal.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-
 #include "gencmds.h"
 #include "inldefs.h"
 
@@ -49,6 +43,7 @@ extern int cleanup();
 int
 do_nothing()
 {
+  return 0;
 }
 
 /********* COMMANDS LIST ********

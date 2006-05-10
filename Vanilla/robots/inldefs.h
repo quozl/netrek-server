@@ -128,5 +128,7 @@ typedef struct _inl_countdown {
 	char	*message;	/* Message to print */
 } Inl_countdown;
 
-#endif /* _h_inldefs */
+void start_countdown();
+void reset_inl(int);
 
+#endif /* _h_inldefs */

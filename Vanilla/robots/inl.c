@@ -1,9 +1,5 @@
 /* 	$Id: inl.c,v 1.4 2006/05/06 12:28:20 quozl Exp $	 */
 
-#ifndef lint
-static char vcid[] = "$Id: inl.c,v 1.4 2006/05/06 12:28:20 quozl Exp $";
-#endif /* lint */
-
 /*
  * inl.c
  *
@@ -15,25 +11,18 @@ static char vcid[] = "$Id: inl.c,v 1.4 2006/05/06 12:28:20 quozl Exp $";
  */
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <signal.h>
-#include <sys/file.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
-#include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <sys/shm.h>
+#include <time.h>
 #include <math.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "planets.h"
 #include "inldefs.h"
-#include INC_STRINGS
 #include "proto.h"
 #include "roboshar.h"
 #include "ltd_stats.h"
@@ -161,13 +150,19 @@ static int front_planets[4][5] =
 };
 
 void cleanup();
-void reset_inl(int);
-int checkmess();
+void checkmess();
 void inlmove();
 int start_tourney();
 void reset_stats();
 void update_scores();
 void announce_scores(int, int, FILE *);
+void doResources(int startup);
+void countdown(int counter, Inl_countdown *cnt);
+void obliterate(int wflag, char kreason);
+void player_maint();
+void init_server();
+int all_alert(int stat);
+int check_winner();
 
 extern char *addr_mess(int who, int type);
 
@@ -177,8 +172,6 @@ main(argc, argv)
      int	     argc;
      char	    *argv[];
 {
-  int i;
-
   srandom(time(NULL));
 
   getpath();
@@ -388,7 +381,6 @@ checkgeno()
 {
     register int i;
     register struct planet *l;
-    struct planet *homep = NULL;
     struct player *j;
     int loser, winner;
 
@@ -513,15 +505,14 @@ inlmove()
   SIGNAL(SIGALRM, inlmove);
 }
 
-player_maint()
+void player_maint()
 {
 #ifdef INLDEBUG
   ERROR(2,("Enter player_maint\n"));
 #endif
 }
 
-int
-all_alert(int stat)
+int all_alert(int stat)
 {
   struct player *j;
 
@@ -532,43 +523,26 @@ all_alert(int stat)
   return 1;
 }
 
-logmessage(m)
-     struct message *m;
+void logmessage(struct message *m)
 {
-  time_t curtime;
-  struct tm *tmstruct;
-  int hour;
-  int least = MBOMB;
   /* decide whether or not to log this message */
 #ifdef nodef
   if (m->m_flags & MINDIV) return; /* individual message */
   if (!(m->m_flags & MGOD)) return;
   if ((m->m_flags & MGOD) > least) return;
 #endif
-  /*
-    time(&curtime);
-    tmstruct = localtime(&curtime);
-    if (!(hour = tmstruct->tm_hour%12)) hour = 12;
-    fprintf(inl_log,"%02d:%02d %-73.73s\n", hour, tmstruct->tm_min,
-    m->m_data);
-    */
   fprintf(inl_log,"%5d: %s\n",inl_stat.ticks,m->m_data);
 }
 
-checkmess()
+void checkmess()
 {
-  int	shmemKey = PKEY;
-  int i;
-
 #ifdef INLDEBUG
   ERROR(2,("Enter checkmess\n"));
 #endif
 
   /* make sure shared memory is still valid */
-  if (shmget(shmemKey, SHMFLAG, 0) < 0) {
+  if (shmget(PKEY, SHMFLAG, 0) < 0) {
     exit(1);
-    ERROR(2,("ERROR: Invalid shared memory\n"));
-
   }
 
   while (oldmctl!=mctl->mc_current) {
@@ -865,11 +839,10 @@ int check_winner() {
       return -1;
 
   }
-
+  return 0;
 }
 
-int
-end_tourney()
+int end_tourney()
 {
   int game_over = 0;
   int win_cond;
@@ -1026,7 +999,7 @@ end_tourney()
     status->gameup &= ~(GU_PAUSED);
 
     gettimeofday(&tv, (struct timezone *) 0);
-    fprintf(inl_log, "TIME: Game ending at %d seconds\n", tv.tv_sec);
+    fprintf(inl_log, "TIME: Game ending at %d seconds\n", (int) tv.tv_sec);
     fclose(inl_log);
 
     sleep(2); /* a kluge to allow time for all the ntservs to run */
@@ -1043,7 +1016,7 @@ end_tourney()
       players[c].p_pos = -1;
 
     
-    sprintf(name, "%s.%d", N_INLLOG, tv.tv_sec);
+    sprintf(name, "%s.%d", N_INLLOG, (int) tv.tv_sec);
     rename(N_INLLOG, name);
 
     if ((inl_log = fopen(N_INLLOG,"w+"))==NULL) {
@@ -1051,13 +1024,13 @@ end_tourney()
       exit(1);
     }
 
-    sprintf(name, "%s.%d", N_PLAYERFILE, tv.tv_sec);
+    sprintf(name, "%s.%d", N_PLAYERFILE, (int) tv.tv_sec);
     rename(N_PLAYERFILE, name);
 
-    sprintf(name, "%s.%d", N_PLFILE, tv.tv_sec);
+    sprintf(name, "%s.%d", N_PLFILE, (int) tv.tv_sec);
     rename(N_PLFILE, name);
 
-    sprintf(name, "%s.%d", N_GLOBAL, tv.tv_sec);
+    sprintf(name, "%s.%d", N_GLOBAL, (int) tv.tv_sec);
     rename(N_GLOBAL, name);
 
     /* Stop cambot. */
@@ -1065,7 +1038,7 @@ end_tourney()
         kill(cambot_pid, SIGTERM);
         waitpid(cambot_pid, NULL, 0);
         cambot_pid = 0;
-        sprintf(name, "%s.%d", Cambot_out, tv.tv_sec);
+        sprintf(name, "%s.%d", Cambot_out, (int) tv.tv_sec);
         rename(Cambot_out, name);
     }
 
@@ -1079,9 +1052,9 @@ end_tourney()
 	pmessage(who, MINDIV, addr_mess(who, MINDIV),
 		 "Official registration script starting.");
       }
-      sprintf(pipe, "./end_tourney.pl -register %d", tv.tv_sec);
+      sprintf(pipe, "./end_tourney.pl -register %d", (int) tv.tv_sec);
     } else {
-      sprintf(pipe, "./end_tourney.pl -practice %d", tv.tv_sec);
+      sprintf(pipe, "./end_tourney.pl -practice %d", (int) tv.tv_sec);
     }
 
     fp = popen(pipe, "r");
@@ -1110,11 +1083,10 @@ end_tourney()
     reset_inl(1);
 
   } /* if (game_over) */
-
+  return 0;
 }
 
-void
-reset_inl(int is_end_tourney)
+void reset_inl(int is_end_tourney)
      /* is_end_tourney: boolean, used so that the galaxy isn't reset
 	at the end of a tournament. */
 {
@@ -1205,10 +1177,9 @@ reset_inl(int is_end_tourney)
 
 }
 
-init_server()
+void init_server()
 {
-  register	  i;
-  register struct planet *j;
+  int i;
 
   /* Tell other processes a game robot is running */
   status->gameup |= GU_INROBOT;
@@ -1373,10 +1344,8 @@ cleanup()
   exit(0);
 }
 
-start_countdown()
+void start_countdown()
 {
-  int c;
-
   inl_stat.change = 0;
 
   inl_teams[HOME].side = sides[inl_teams[HOME].side_index].flag;
@@ -1417,14 +1386,11 @@ start_countdown()
   inl_countdown.end = inl_stat.ticks+INLSTARTFUSE;
   inl_countdown.action = start_tourney;
   inl_countdown.message = "Game start in %i %s";
-
 }
 
 
-start_tourney()
+int start_tourney()
 {
-  int c;
-  struct player* j;
   struct timeval tv;
   struct tm *tp;
   char *ap;
@@ -1443,7 +1409,7 @@ start_tourney()
 
   gettimeofday (&tv, (struct timezone *) 0);
 
-  fprintf(inl_log, "TIME: Game started at %d seconds\n", tv.tv_sec);
+  fprintf(inl_log, "TIME: Game started at %d seconds\n", (int) tv.tv_sec);
 
   tp = localtime (&tv.tv_sec);
   ap = asctime (tp);
@@ -1502,19 +1468,18 @@ start_tourney()
       if (pid < 0)
           perror("fork cambot");
       else if (pid == 0) {
-          execl(Cambot, "cambot", 0);
+          execl(Cambot, "cambot", (char *) NULL);
           perror("execl cambot");
       }
       else {
           cambot_pid = pid;
       }
   }
+  return 0;
 }
 
 
-obliterate(wflag, kreason)
-     int wflag;
-     char kreason;
+void obliterate(int wflag, char kreason)
 {
   /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
   struct player *j;
@@ -1595,13 +1560,10 @@ obliterate(wflag, kreason)
 }
 
 
-countdown(counter,cnt)
-     int counter;
-     Inl_countdown *cnt;
+void countdown(int counter, Inl_countdown *cnt)
 {
   int i = 0;
   int j = 0;
-  char *ms;
 
   if (cnt->end - cnt->counts[cnt->idx]*cnt->unit > counter)
     return;
@@ -1627,8 +1589,7 @@ countdown(counter,cnt)
 
 }
 
-doResources(startup)
-     int startup;
+void doResources(int startup)
 {
   int i, j, k, which;
 
