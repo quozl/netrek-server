@@ -1,4 +1,4 @@
-/* $Id: sysdefaults.c,v 1.2 2006/04/26 09:52:43 quozl Exp $
+/* $Id: sysdefaults.c,v 1.3 2006/05/06 14:02:39 quozl Exp $
  */
 
 #include <stdio.h>

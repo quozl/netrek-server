@@ -84,11 +84,6 @@ List of things to do in the future
 	  their viewpoint.  Only when twarping is over, you can swap
 	  again [Shadow.Hunter@netrek.org]
 
-	- You can always lock onto an independent ship (Iggy)
-	  (->planets too?) but after doing that you cannot revert to
-	  observing your own team anymore. Bummer ;-(
-	  [Shadow.Hunter@netrek.org]
-
 	- tools/update.c sa_sigaction not present on NetBSD.  [Hietbrink]
 
 	- 'transwarp 0 off' to prevent slot 0 from transwarping.  [Swasey]

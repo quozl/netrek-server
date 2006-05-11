@@ -1,7 +1,7 @@
-/* 	$Id: newaccess.c,v 1.3 2006/04/22 02:16:46 quozl Exp $	 */
+/* 	$Id: newaccess.c,v 1.4 2006/05/08 08:50:21 quozl Exp $	 */
 
 #ifdef lint
-static char vcid[] = "$Id: newaccess.c,v 1.3 2006/04/22 02:16:46 quozl Exp $";
+static char vcid[] = "$Id: newaccess.c,v 1.4 2006/05/08 08:50:21 quozl Exp $";
 #endif /* lint */
 
 #include <stdio.h>

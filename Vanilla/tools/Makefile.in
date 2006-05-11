@@ -159,7 +159,7 @@ conq_vert: conq_vert.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} conq_vert.o
 
 metaget: metaget.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o $(EXTRALIBS)
 
 setplanet: setplanet.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setplanet.o $(OBJS)

@@ -1,3 +1,9 @@
+
+Mon May  8 18:35:57 2006  Bill Balcerski  <williamb@its.caltech.edu>
+
+        * PROJECTS, ntserv/redraw.c: fix to bug where observer locks
+          onto robot and cannot input any other commands
+
 Mon May  8 18:18:38 2006  James Cameron  <quozl@us.netrek.org>
 
 	* pledit: fix compilation warnings under GCC 4.0.3 with -Wall.
@@ -1972,4 +1978,4 @@ Fri Oct  3 18:06:49 1997  Kevin Oconnor  <koconnor@heptane.eng.buffalo.edu>
  	update_sys_defaults in updateMessages to a more appropriate
  	location - updateClient in socket.c.
 	
-	$Id: ChangeLog,v 1.40 2006/05/06 13:12:55 quozl Exp $
+	$Id: ChangeLog,v 1.42 2006/05/08 08:22:41 quozl Exp $

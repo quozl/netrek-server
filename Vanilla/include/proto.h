@@ -1,4 +1,4 @@
-/* $Id: proto.h,v 1.6 2006/04/23 10:39:10 quozl Exp $
+/* $Id: proto.h,v 1.8 2006/05/06 14:02:37 quozl Exp $
  *
  * Function prototypes for externally accessed functions.
  */

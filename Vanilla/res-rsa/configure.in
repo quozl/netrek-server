@@ -53,65 +53,63 @@ if test $GMP_VER != -1; then
 
   # If GMP directory was specified, do some smart checking
   if test "$GMP_DIR" != ""; then
-
     # prefix the search path with the provided path
     GMP_PATH="$GMP_DIR $GMP_PATH"
+  fi
 
-    # search for the header file
-    AC_MSG_CHECKING(for local gmp.h)
+  # search for the header file
+  AC_MSG_CHECKING(for local gmp.h)
+
+  for path in $GMP_PATH; do
+    if test -r $path/gmp.h; then
+      GMP_VER=1
+      GMP_INC="-I$path"
+      break
+    fi
+    if test -r $path/include/gmp.h; then
+      GMP_VER=1
+      GMP_INC="-I$path/include"
+      break
+    fi
+  done
+
+  if test $GMP_VER = 1; then
+    AC_MSG_RESULT(found in $GMP_INC)
+  else
+    AC_MSG_RESULT(not found)
+  fi
+
+  # search for the library file only if header was found
+  if test $GMP_VER = 1; then
+
+    GMP_VER=0
+
+    AC_MSG_CHECKING(for local libgmp.a)
 
     for path in $GMP_PATH; do
-      if test -r $path/gmp.h; then
+      if test -r $path/libgmp.a; then
         GMP_VER=1
-        GMP_INC="-I$path"
+        GMP_LIB="-L$path"
         break
       fi
-      if test -r $path/include/gmp.h; then
+      if test -r $path/lib/libgmp.a; then
         GMP_VER=1
-        GMP_INC="-I$path/include"
+        GMP_LIB="-L$path/lib"
         break
       fi
     done
-
     if test $GMP_VER = 1; then
-      AC_MSG_RESULT(found in $GMP_INC)
+      AC_MSG_RESULT(found in $GMP_LIB)
     else
       AC_MSG_RESULT(not found)
     fi
 
-    # search for the library file only if header was found
+    # Check for GMP2
     if test $GMP_VER = 1; then
-
-      GMP_VER=0
-
-      AC_MSG_CHECKING(for local libgmp.a)
-
-      for path in $GMP_PATH; do
-        if test -r $path/libgmp.a; then
-          GMP_VER=1
-          GMP_LIB="-L$path"
-          break
-        fi
-        if test -r $path/lib/libgmp.a; then
-          GMP_VER=1
-          GMP_LIB="-L$path/lib"
-          break
-        fi
-      done
-      if test $GMP_VER = 1; then
-        AC_MSG_RESULT(found in $GMP_LIB)
-      else
-        AC_MSG_RESULT(not found)
-      fi
-
-      # Check for GMP2
-      if test $GMP_VER = 1; then
-        LDOLD="$LDFLAGS"
-        LDFLAGS="$GMP_LIB -lgmp"
-        AC_CHECK_LIB(gmp, mpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
-        LDFLAGS="$LDOLD"
-      fi
-
+      LDOLD="$LDFLAGS"
+      LDFLAGS="$GMP_LIB -lgmp"
+      AC_CHECK_LIB(gmp, mpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+      LDFLAGS="$LDOLD"
     fi
 
   fi

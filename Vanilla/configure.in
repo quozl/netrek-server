@@ -241,7 +241,7 @@ fi
 #--------------------------------------------------------------------
 
 AC_MSG_CHECKING(for mp.h)
-AC_ARG_WITH(gmp-incdir,[  --with-gmp-incdir       GMP Include Dir], MPINC="-I$withval" search=false, MPINC=nope)
+AC_ARG_WITH(gmp,[  --with-gmp              GMP Dir], MPINC="-I$withval/include"  MPLIB="-L$withval/lib -lgmp" search=false, MPINC=nope MPLIB=nope)
 if test "$MPINC" = nope; then
 AC_EGREP_CPP( GNU_MP,[ 
 #include <mp.h> 
@@ -296,7 +296,6 @@ AC_EGREP_CPP("gmp=.*2", [
   ],AC_DEFINE(HAVE_GMP2_H))
 INCS="$SAVEINCS"
 
-AC_ARG_WITH(gmp-libdir,[  --with-gmp-libdir       GMP Library Dir], MPLIB="-L$withval -lgmp" search=false, MPLIB=nope)
 if test "$MPLIB" = nope; then
   if test "$search" = true; then
     MPLIB=nope
@@ -378,6 +377,7 @@ AC_CHECK_LIB(Xbsd, main, [LIBS="$LIBS -lXbsd"])
 # AC _CHECK_LIB(V3, main, [LIBS="$LIBS -lV3"])
 # AC _CHECK_LIB(PW, main, [LIBS="$LIBS -lPW"])
 AC_CHECK_LIB(socket, main, [LIBS="$LIBS -lsocket"])
+AC_CHECK_LIB(resolv, main, [LIBS="$LIBS -lresolv"])
 AC_CHECK_LIB(inet, main, [LIBS="$LIBS -linet"])
 AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"])
 AC_CHECK_LIB(seq, main, [LIBS="$LIBS -lseq"])
@@ -512,6 +512,7 @@ AC_OUTPUT(system.mk Makefile ntserv/Makefile tools/Makefile
 	docs/sample_geno_timer_crontab docs/sample_sysdef)
 
 if test "x$GUM" = xdo_gum; then
+ifdef([AC_OUTPUT_SUBDIRS],[], [AC_DEFUN([AC_OUTPUT_SUBDIRS],[subdirs=$1; _AC_OUTPUT_SUBDIRS])])
 	AC_OUTPUT_SUBDIRS(gum)
 fi
 

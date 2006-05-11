@@ -210,7 +210,7 @@ static void check_observs(void)
 	  me->p_wtemp = pl->p_wtemp;
 	  me->p_etemp = pl->p_etemp;
 	  /* These flags shouldn't be propagated to observers */
-#define NOOBSMASK	(PFSELFDEST|PFPLOCK|PFPLLOCK|PFOBSERV)
+#define NOOBSMASK (PFWAR|PFREFITTING|PFSELFDEST|PFPLOCK|PFPLLOCK|PFOBSERV)
 	  me->p_flags = (pl->p_flags & ~NOOBSMASK) | (me->p_flags & NOOBSMASK);
 	  
 	  me->p_dir = pl->p_dir;

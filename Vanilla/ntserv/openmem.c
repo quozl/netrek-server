@@ -1,5 +1,5 @@
 /*
- * $Id: openmem.c,v 1.3 2006/04/24 12:35:17 quozl Exp $
+ * $Id: openmem.c,v 1.4 2006/05/06 14:02:37 quozl Exp $
  */
 #include "copyright.h"
 

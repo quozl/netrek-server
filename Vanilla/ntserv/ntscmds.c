@@ -1,4 +1,4 @@
-/* $Id: ntscmds.c,v 1.10 2006/05/06 12:06:39 quozl Exp $
+/* $Id: ntscmds.c,v 1.11 2006/05/06 13:12:56 quozl Exp $
  */
 
 /*
