@@ -759,7 +759,8 @@ inline static int
 updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 {
 
-#define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP)
+#define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP|PLCORE)
+
 
     if (howmuch == UPDT_ALL) {
 	if ( pl->info != plan->pl_info
