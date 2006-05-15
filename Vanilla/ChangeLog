@@ -1,8 +1,11 @@
+Mon May 15 19:01:27 2006  James Cameron  <quozl@us.netrek.org>
+
+	* netrek-server-vanilla-2.11.0 released
 
 Mon May  8 18:35:57 2006  Bill Balcerski  <williamb@its.caltech.edu>
 
-        * PROJECTS, ntserv/redraw.c: fix to bug where observer locks
-          onto robot and cannot input any other commands
+	* PROJECTS, ntserv/redraw.c: fix to bug where observer locks onto
+	robot and cannot input any other commands.
 
 Mon May  8 18:18:38 2006  James Cameron  <quozl@us.netrek.org>
 

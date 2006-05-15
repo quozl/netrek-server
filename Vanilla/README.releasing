@@ -7,8 +7,8 @@ Release Procedure
 cd Vanilla
 
 # set variables
-VS=2.10.3
-VL=v_2_10_3
+VS=2.11.0
+VL=v_2_11_0
 PN=netrek-server-vanilla
 
 # check version numbers in files
@@ -18,6 +18,7 @@ PN=netrek-server-vanilla
 # debian/changelog
 # rpm/netrek.spec
 # README.releasing
+# ChangeLog (add release date)
 
 # crosscheck updates in CVS against ChangeLog
 # crosscheck updates in ChangeLog against NEWS
