@@ -1,9 +1,6 @@
-
-$Id: README.releasing,v 1.13 2006/04/22 02:16:45 quozl Exp $
-
 Release Procedure
 
-# be in local copy of the CVS repository
+# be in local copy of the Darcs repository
 cd Vanilla
 
 # set variables
@@ -20,20 +17,21 @@ PN=netrek-server-vanilla
 # README.releasing
 # ChangeLog (add release date)
 
-# crosscheck updates in CVS against ChangeLog
+# crosscheck updates in Darcs against ChangeLog
 # crosscheck updates in ChangeLog against NEWS
 
 # make sure all changes committed
-cvs diff -u > tmp
+darcs diff -u > tmp
 # review uncommitted changes
 more tmp
 # commit changes
-cvs commit -m "prerelease $VS"
-
-# reduce source tree to only CVS files, or fix .cvsignore
-cvs update > tmp
+darcs record --patch-name="prerelease $VS"
+darcs send
 
 # tag the release
+darcs tag $VS
+
+# temporary: propogate changes to CVS and tag in CVS
 cvs tag -F $VL
 cvs tag -F v_release
 
@@ -88,32 +86,13 @@ cp -p $PN-$VS.tar.gz{,.asc,.md5sum} ~/public_html/external/mine/netrek/
 cd ~/public_html/external/mine/netrek/
 vi index-brief.html
 
-# send .tar.gz and .rpm to ftp sites
-ftp://ftp.netrek.org/pub/netrek/incoming/ (note 15 second login timer)
-put Vanilla-2.10pl8.tar.gz
-put Vanilla-2.10pl8.tar.gz.asc
-put Vanilla-2.10pl8.tar.gz.md5sum
-ftp://ftp.real-time.com/pub/Incoming/
-	
 # notify mirror owners, include URL of incoming copy and md5sum.
-mailto:vanilla-list@us.netrek.org
+mailto:netrek-dev@us.netrek.org
 
 # build differences between this version and previous
 
 # update web page
-http://vanilla.us.netrek.org/index.html
-export CVSROOT=:pserver:cameron@cvs.us.netrek.org:/home/netrek/cvsroot
-cvs checkout web [or] cvs update
-# review differences and generate short change list in index.html
-cvs commit
-
-# await mirror completion
-# notify others
-mailto:vanilla-announce@us.netrek.org
-news:rec.games.netrek
-
-# update version number in files
-# Makefile.in, debian/changelog, rpm/netrek.spec, rpm/tar2rpm, README.releasing
+http://vanilla.netrek.org/
 
 # sourceforge.net upload procedure (brief, yet to be retested)
 # - upload to ftp://upload.sourceforge.net/incoming/

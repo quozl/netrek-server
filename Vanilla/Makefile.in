@@ -186,6 +186,7 @@ rmdependencies:
 
 NAME=$(PACKAGE)-$(VERSION)
 dist:
+	chmod +x debian/rules tools/mktrekon configure
 	mkdir $(NAME)
         # what has changed
 	cp -p ChangeLog NEWS $(NAME)/
