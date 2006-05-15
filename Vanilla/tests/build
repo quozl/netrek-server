@@ -1,0 +1,23 @@
+#!/bin/sh
+set -ev
+
+# where to build
+BUILDROOT=/tmp/netrek-server.$$
+
+# copy the repository there
+darcs put $BUILDROOT
+
+# build configure
+cd $BUILDROOT/Vanilla && autoconf
+cd $BUILDROOT/Vanilla/res-rsa && autoconf
+
+# fix masks
+chmod +x $BUILDROOT/Vanilla/tools/mktrekon
+
+# configure
+cd $BUILDROOT/Vanilla && ./configure --prefix=$BUILDROOT/out
+
+# build all
+cd $BUILDROOT/Vanilla && make
+
+echo success
