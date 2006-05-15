@@ -1,3 +1,9 @@
+Tue May 16 08:29:06 2006  James Cameron  <quozl@us.netrek.org>
+
+	* docs/sample_features: enable CONTINUOUS_MOUSE as it is in common
+	use.  Enable INFO_MODE1 so that the default configuration ships
+	with all features enabled.
+
 Mon May 15 19:01:27 2006  James Cameron  <quozl@us.netrek.org>
 
 	* netrek-server-vanilla-2.11.0 released

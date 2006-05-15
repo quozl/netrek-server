@@ -36,11 +36,11 @@ NEWMACRO              C       ON
 # client macro switch (old clients)
 SMARTMACRO            C       ON
 # continuous mouse
-CONTINUOUS_MOUSE      C       OFF
+CONTINUOUS_MOUSE      C       ON
 # continuous steering
 CONTINUOUS_STEER      C       ON
 # info mode
-INFO_MODE1            C       OFF
+INFO_MODE1            C       ON
 # beeplite options. These get or'ed together to produce the BEEPLITE value.
 #       LITE_PLAYERS_MAP       1
 #       LITE_PLAYERS_LOCAL     2
