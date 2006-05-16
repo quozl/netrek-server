@@ -35,6 +35,7 @@ typedef struct  _player {
    int			run_t;
    int			fuel, subshield, shield, wpntemp, subdamage, damage;
    int			armies, pl_armies, beam_fuse;
+   int                  killfuse;    /* how long with kills */
    float		plcarry;
    int			last_comm_beamup;
    /* last position */
