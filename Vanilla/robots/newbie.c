@@ -295,8 +295,7 @@ static void stop_a_robot(void)
     int i;
     struct player *j;
 
-    /* Nuke robot from the team with the fewest humans. */
-    /* This code really just nukes the first available bot. JKH*/
+    /* nuke the first available bot */
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status == PFREE)
             continue;
@@ -325,7 +324,7 @@ rprog(char *login, char *monitor)
 
 int killrobot(pp_team)
 {
-  register struct player *j;
+  struct player *j;
   int i, keep, kill;
 
   keep = 0;
@@ -401,8 +400,6 @@ num_players(int *next_team)
     }
 
     /* Assign which team gets the next robot. */
-
-    /* Lots of changes here. JKH */
 
     /* Count number of teams */
     if (team_count[ROM] > 0)
@@ -558,7 +555,6 @@ start_a_robot(char *team)
     char            command[256];
     int pid;
 
-    /* bots use -g option to send the OggV packet to self ID themselves JKH */
     sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X robot! -g -b -O -i",
             RCMD, robot_host, OROBOT, team, hostname, PORT, namearg() );
    

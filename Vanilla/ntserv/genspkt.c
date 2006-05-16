@@ -306,7 +306,6 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 /*#define FLAGMASK (PFSHIELD|PFBOMB|PFORBIT|PFCLOAK|PFROBOT|                    PFPRACTR|PFDOCK|PFTRACT|PFPRESS|PFDOCKOK) still more than needed */
 
 /* Flags we get to know about players not seen */
-/* Add PFBPROBOT so newbie bots can see each other using OggV packet JKH */
 #define INVISOMASK (PFCLOAK|PFROBOT|PFPRACTR|PFDOCKOK|PFOBSERV|PFBPROBOT)
 /* Flags we get to know about players who are seen */
 #define FLAGMASK   (PFSHIELD | INVISOMASK)
