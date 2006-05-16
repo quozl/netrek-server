@@ -117,7 +117,7 @@ main(argc, argv)
     if (!debug)
         SIGNAL(SIGINT, cleanup);
 
-    class = STARBASE;
+    class = ATT;
     target = -1;                /* no target 7/27/91 TC */
     if ( (pno = pickslot(QU_NEWBIE_DMN)) < 0) {
        printf("exiting! %d\n", pno);
@@ -137,18 +137,36 @@ main(argc, argv)
 
     me->p_pos = -1;                  /* So robot stats don't get saved */
     me->p_flags |= PFROBOT;          /* Mark as a robot */
-    me->p_x = 75000;                 /* displace to on overlooking position */
-    me->p_y = 100;                  /* maybe we should just make it fight? */
+    me->p_x = 55000;                 /* displace to on overlooking position */
+    me->p_y = 50000;                  /* maybe we should just make it fight? */
     me->p_hostile = 0;
     me->p_swar = 0;
     me->p_war = 0;
     me->p_team = 0;     /* indep */
 
     oldmctl = mctl->mc_current;
+
 #ifdef nodef
     for (i = 0; i <= oldmctl; i++) {
         check_command(&messages[i]);
     }
+#endif
+
+#ifdef nodef
+    /* Could make Merline hostile to everybody, pretty fun */
+    me->p_hostile = (FED | ROM | KLI | ORI); /* WAR! */
+    me->p_swar = (FED | ROM | KLI | ORI); /* WAR! */
+    me->p_war = (FED | ROM | KLI | ORI); /* WAR! */
+#endif
+
+#ifdef nodef
+    /* Could make Merline friendly and allow docking JKH */
+    /* since he is in the middle of the galaxy */
+    me->p_ship.s_type = STARBASE;    /* kludge to allow docking */
+    me->p_flags |= PFDOCKOK;         /* allow docking */
+    /* Merlin Cloaks when t-mode starts, so this is useless for now */
+    /* It's an interesting bug as all the bots like hunterkill are */
+    /* also invisible */
 #endif
 
     status->gameup |= GU_NEWBIE;
@@ -167,12 +185,6 @@ main(argc, argv)
     SIGSETMASK(0);
 
     me->p_status = PALIVE;              /* Put robot in game */
-
-    /* Only allow Rom/Fed game to make robot team selection easier. */
-    /* Disable this because it breaks on timercide.  The other team
-       needs to come in as a 3rd race after being timercided.
-    queues[QU_PICKUP].tournmask = FED|ROM;
-    */
 
     while (1) {
         PAUSE(SIGALRM);
@@ -224,10 +236,14 @@ void checkmess(int unused)
 
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))
         {
-            if (next_team == FED)
-                start_a_robot("-Tf");
-            else
-                start_a_robot("-Tr");
+          if (next_team == FED)
+            start_a_robot("-Tf");
+          if (next_team == ROM)
+            start_a_robot("-Tr");
+          if (next_team == ORI)
+            start_a_robot("-To");
+          if (next_team == KLI)
+            start_a_robot("-Tk");
         }
     }
 
@@ -280,6 +296,7 @@ static void stop_a_robot(void)
     struct player *j;
 
     /* Nuke robot from the team with the fewest humans. */
+    /* This code really just nukes the first available bot. JKH*/
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status == PFREE)
             continue;
@@ -304,6 +321,31 @@ rprog(char *login, char *monitor)
         return 1;
 
     return 0;
+}
+
+int killrobot(pp_team)
+{
+  register struct player *j;
+  int i, keep, kill;
+
+  keep = 0;
+  kill = 0;
+  for (i = 0, j = players; i < MAXPLAYER; i++) {
+    if (j[i].p_status == PFREE)
+      continue;
+    if (j[i].p_status == POBSERV)
+      continue;
+
+    if (strcmp(j[i].p_login,"robot!") == 0)
+      if (j[i].p_status == PALIVE )
+        if (j[i].p_team & pp_team) {
+          keep = i;
+          kill = 1;
+        }
+  }
+  if (kill == 1)
+    stop_this_bot(&j[keep]);
+  return kill;
 }
 
 static void stop_this_bot(struct player *p) {
@@ -339,12 +381,15 @@ num_players(int *next_team)
 {
     int i;
     struct player *j;
-    int team_count[MAXTEAM+1];
-
+    int tc, team_count[MAXTEAM+1];
+    long int rt;
     int c = 0;
 
     team_count[ROM] = 0;
     team_count[FED] = 0;
+    team_count[ORI] = 0;
+    team_count[KLI] = 0;
+    tc = 0;
 
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status != PFREE && j->p_status != POBSERV &&
@@ -356,11 +401,124 @@ num_players(int *next_team)
     }
 
     /* Assign which team gets the next robot. */
-    if (team_count[ROM] > team_count[FED])
-        *next_team = FED;
-    else
-        *next_team = ROM;
 
+    /* Lots of changes here. JKH */
+
+    /* Count number of teams */
+    if (team_count[ROM] > 0)
+      tc++;
+    if (team_count[FED] > 0)
+      tc++;
+    if (team_count[KLI] > 0)
+      tc++;
+    if (team_count[ORI] > 0)
+      tc++;
+
+    if (tc == 0) /* no teams yet, join anybody */
+      {
+        rt = random() % 4;
+
+        if (rt==0)
+          *next_team = FED;
+        if (rt==1)
+          *next_team = ROM;
+        if (rt==2)
+          *next_team = KLI;
+        if (rt==3)
+          *next_team = ORI;
+      }
+
+    if (tc == 1) /* 1 team, join 1 of 2 possible opposing teams */
+      {
+        rt = random() % 2;
+
+        if (team_count[FED] > 0) {
+          if (rt == 1) {
+            *next_team = ROM; }
+          else {
+            *next_team = ORI; }
+        }
+
+        if (team_count[ROM] > 0) {
+          if (rt == 1) {
+            *next_team = FED; }
+          else {
+            *next_team = KLI; }
+        }
+
+        if (team_count[KLI] > 0) {
+          if (rt == 1) {
+            *next_team = ROM; }
+          else {
+            *next_team = ORI; }
+        }
+
+        if (team_count[ORI] > 0) {
+          if (rt == 1) {
+            *next_team = FED; }
+          else {
+            *next_team = KLI; }
+        }
+
+      }
+
+    if (tc >= 2) { /* 2 or more teams, join opposing team with less members */
+      rt = random()%2;
+
+      if (team_count[FED]>0 && team_count[ROM]>0) {
+        if (team_count[ROM]>team_count[FED])
+          *next_team=FED;
+        else
+          *next_team=ROM;
+      }
+
+      if (team_count[ORI]>0 && team_count[KLI]>0) {
+        if (team_count[KLI]>team_count[ORI])
+          *next_team=ORI;
+        else
+          *next_team=KLI;
+      }
+
+      if (team_count[FED]>0 && team_count[ORI]>0) {
+        if (team_count[ORI]>team_count[FED])
+          *next_team=FED;
+        else
+          *next_team=ORI;
+      }
+
+      if (team_count[ROM]>0 && team_count[KLI]>0) {
+        if (team_count[KLI]>team_count[ROM])
+          *next_team=ROM;
+        else
+          *next_team=KLI;
+      }
+
+    }
+
+    /* 3 or more tourn teams.... */
+    /* kill off bots in teams with less than 4 players */
+
+    if (tc >= 3) /* 3 or more teams */
+      {
+        if (team_count[ROM]>=4 && team_count[FED]>=4) {
+          killrobot(KLI);
+          killrobot(ORI);
+        }
+        if (team_count[FED]>=4 && team_count[ORI]>=4) {
+          killrobot(ROM);
+          killrobot(KLI);
+        }
+        if (team_count[ROM]>=4 && team_count[KLI]>=4) {
+          killrobot(FED);
+          killrobot(ORI);
+        }
+        if (team_count[KLI]>=4 && team_count[ORI]>=4) {
+          killrobot(FED);
+          killrobot(ROM);
+        }
+      }
+
+    
     return c;
 }
 
@@ -400,7 +558,8 @@ start_a_robot(char *team)
     char            command[256];
     int pid;
 
-    sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X robot! -b -O -i",
+    /* bots use -g option to send the OggV packet to self ID themselves JKH */
+    sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X robot! -g -b -O -i",
             RCMD, robot_host, OROBOT, team, hostname, PORT, namearg() );
    
     pid = fork();
