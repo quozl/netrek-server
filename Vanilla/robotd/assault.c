@@ -46,6 +46,7 @@ assault()
 /* determine if there is risk of death due to res of opponent */
 static int risk_res_death(struct planet *pl)
 {
+  int i;
   if (pl == NULL) return 0;
   /* One of the home planets identified by server etc/sysdef PLANETS */
   if (pl->pl_flags & PLHOME) return 1;
@@ -56,7 +57,6 @@ static int risk_res_death(struct planet *pl)
   /* Scorpii in standard position */
   if (pl->pl_no == 26 && pl->pl_x == 70720 && pl->pl_y == 26320) return 1;
   /* Within rectangular phaser distance of any home planet res point */
-  int i;
   for (i=0,pl=planets;i<MAXPLANETS;i++,pl++) {
     if (pl->pl_flags & PLHOME) {
       if(ABS(pl->pl_x - me->p_x) < 12000 && ABS(pl->pl_y - me->p_y) < 12000) {
