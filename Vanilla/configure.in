@@ -479,6 +479,17 @@ fi
 #       Check for system dependend programs
 #--------------------------------------------------------------------
 
+AC_MSG_CHECKING(for OSX ranlib)
+RANLIB_FLAGS=
+if ranlib -c 2>/dev/null; then
+    AC_MSG_RESULT(good - no)
+else
+    RANLIB_FLAGS='-c'
+    AC_MSG_RESULT(drat - yes)
+fi
+
+AC_SUBST(RANLIB_FLAGS)
+
 if test "$code" = server; then
 
 AC_MSG_CHECKING(for netstat)

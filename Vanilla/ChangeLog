@@ -1,20 +1,3 @@
-Thu May 18 12:25:36 2006  James Cameron  <quozl@us.netrek.org>
-
-	* ntserv/input.c (input): slots may jam in POUTFIT after KWINNER
-	if the user terminates the client ungracefully ... such that the
-	TCP connection is gone but the ntserv lives on.
-
-	During this time, daemon synchronisation still sends SIGALRM to
-	the ntserv, and ntserv's SIGALRM handler still resets the
-	p_ghostbust timer.
-
-	Prototype solution is to move p_ghostbust watchdog timer reset
-	from within the SIGALRM handler to the section of main loop that
-	is executed when input arrives from the client.
-
-	Monitoring the p_ghostbust timer with gdb shows it is now reset
-	for a dormant client on receipt of ping responses.
-
 Tue May 16 16:59:29 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
 
 	* robots/newbie.c (start_a_robot): add -g option to send the OggV

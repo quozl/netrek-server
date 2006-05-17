@@ -87,7 +87,7 @@ daemonII: $(PMAKE) $(D_OBJS)
 
 libnetrek.a: $(L_OBJS)
 	ar cru $@ $(L_OBJS)
-	ranlib $@
+	ranlib @RANLIB_FLAGS@ $@
 
 libnetrek.so: $(L_OBJS)
 	gcc -shared -Wl,-soname,$@ -o $@ $(L_OBJS) -lc
