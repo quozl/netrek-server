@@ -44,7 +44,7 @@ struct status {
 #define PFTRACT  	0x400000	/* tractor beam activated */
 #define PFPRESS  	0x800000	/* pressor beam activated */
 #define PFDOCKOK	0x1000000	/* docking permission */
-#define PFBPROBOT       0x80000000      /* OggV Packet to ID other bots */
+#define PFBPROBOT	0x80000000      /* OggV Packet to ID other bots */
 
 #define KQUIT		0x01		/* Player quit */
 #define KTORP		0x02		/* killed by torp */

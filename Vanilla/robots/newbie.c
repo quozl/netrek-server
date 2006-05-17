@@ -236,14 +236,14 @@ void checkmess(int unused)
 
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))
         {
-          if (next_team == FED)
-            start_a_robot("-Tf");
-          if (next_team == ROM)
-            start_a_robot("-Tr");
-          if (next_team == ORI)
-            start_a_robot("-To");
-          if (next_team == KLI)
-            start_a_robot("-Tk");
+            if (next_team == FED)
+                start_a_robot("-Tf");
+            if (next_team == ROM)
+                start_a_robot("-Tr");
+            if (next_team == ORI)
+                start_a_robot("-To");
+            if (next_team == KLI)
+                start_a_robot("-Tk");
         }
     }
 
@@ -324,27 +324,29 @@ rprog(char *login, char *monitor)
 
 int killrobot(pp_team)
 {
-  struct player *j;
-  int i, keep, kill;
+    struct player *j;
+    int i, keep, kill;
 
-  keep = 0;
-  kill = 0;
-  for (i = 0, j = players; i < MAXPLAYER; i++) {
-    if (j[i].p_status == PFREE)
-      continue;
-    if (j[i].p_status == POBSERV)
-      continue;
+    keep = 0;
+    kill = 0;
+    for (i = 0, j = players; i < MAXPLAYER; i++) {
+        if (j[i].p_status == PFREE)
+            continue;
+        if (j[i].p_status == POBSERV)
+            continue;
 
-    if (strcmp(j[i].p_login,"robot!") == 0)
-      if (j[i].p_status == PALIVE )
-        if (j[i].p_team & pp_team) {
-          keep = i;
-          kill = 1;
+        if (strcmp(j[i].p_login,"robot!") == 0) {
+            if (j[i].p_status == PALIVE ) {
+                if (j[i].p_team & pp_team) {
+                    keep = i;
+                    kill = 1;
+                }
+            }
         }
-  }
-  if (kill == 1)
-    stop_this_bot(&j[keep]);
-  return kill;
+    }
+    if (kill == 1)
+        stop_this_bot(&j[keep]);
+    return kill;
 }
 
 static void stop_this_bot(struct player *p) {
@@ -392,130 +394,134 @@ num_players(int *next_team)
 
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status != PFREE && j->p_status != POBSERV &&
-            !(j->p_flags & PFROBOT))
-            {
-                team_count[j->p_team]++;
-                c++;
-            }
+                !(j->p_flags & PFROBOT)) {
+            team_count[j->p_team]++;
+            c++;
+        }
     }
 
     /* Assign which team gets the next robot. */
 
     /* Count number of teams */
     if (team_count[ROM] > 0)
-      tc++;
+        tc++;
     if (team_count[FED] > 0)
-      tc++;
+        tc++;
     if (team_count[KLI] > 0)
-      tc++;
+        tc++;
     if (team_count[ORI] > 0)
-      tc++;
+        tc++;
 
-    if (tc == 0) /* no teams yet, join anybody */
-      {
+    if (tc == 0) { /* no teams yet, join anybody */
         rt = random() % 4;
 
         if (rt==0)
-          *next_team = FED;
+            *next_team = FED;
         if (rt==1)
-          *next_team = ROM;
+            *next_team = ROM;
         if (rt==2)
-          *next_team = KLI;
+            *next_team = KLI;
         if (rt==3)
-          *next_team = ORI;
-      }
+            *next_team = ORI;
+    }
 
-    if (tc == 1) /* 1 team, join 1 of 2 possible opposing teams */
-      {
+    if (tc == 1) { /* 1 team, join 1 of 2 possible opposing teams */
         rt = random() % 2;
 
         if (team_count[FED] > 0) {
-          if (rt == 1) {
-            *next_team = ROM; }
-          else {
-            *next_team = ORI; }
+            if (rt == 1) {
+                *next_team = ROM; 
+            }
+            else {
+                *next_team = ORI; 
+            }
         }
 
         if (team_count[ROM] > 0) {
-          if (rt == 1) {
-            *next_team = FED; }
-          else {
-            *next_team = KLI; }
+            if (rt == 1) {
+                *next_team = FED; 
+            }
+            else {
+                *next_team = KLI; 
+            }
         }
 
         if (team_count[KLI] > 0) {
-          if (rt == 1) {
-            *next_team = ROM; }
-          else {
-            *next_team = ORI; }
+            if (rt == 1) {
+                *next_team = ROM; 
+            }
+            else {
+                *next_team = ORI; 
+            }
         }
 
         if (team_count[ORI] > 0) {
-          if (rt == 1) {
-            *next_team = FED; }
-          else {
-            *next_team = KLI; }
+            if (rt == 1) {
+                *next_team = FED; 
+            }
+            else {
+                *next_team = KLI; 
+            }
         }
 
-      }
+    }
 
     if (tc >= 2) { /* 2 or more teams, join opposing team with less members */
-      rt = random()%2;
+        rt = random()%2;
 
-      if (team_count[FED]>0 && team_count[ROM]>0) {
-        if (team_count[ROM]>team_count[FED])
-          *next_team=FED;
-        else
-          *next_team=ROM;
-      }
+        if (team_count[FED]>0 && team_count[ROM]>0) {
+            if (team_count[ROM]>team_count[FED])
+                *next_team=FED;
+            else
+                *next_team=ROM;
+        }
 
-      if (team_count[ORI]>0 && team_count[KLI]>0) {
-        if (team_count[KLI]>team_count[ORI])
-          *next_team=ORI;
-        else
-          *next_team=KLI;
-      }
+        if (team_count[ORI]>0 && team_count[KLI]>0) {
+            if (team_count[KLI]>team_count[ORI])
+                *next_team=ORI;
+            else
+                *next_team=KLI;
+        }
 
-      if (team_count[FED]>0 && team_count[ORI]>0) {
-        if (team_count[ORI]>team_count[FED])
-          *next_team=FED;
-        else
-          *next_team=ORI;
-      }
+        if (team_count[FED]>0 && team_count[ORI]>0) {
+            if (team_count[ORI]>team_count[FED])
+                *next_team=FED;
+            else
+                *next_team=ORI;
+        }
 
-      if (team_count[ROM]>0 && team_count[KLI]>0) {
-        if (team_count[KLI]>team_count[ROM])
-          *next_team=ROM;
-        else
-          *next_team=KLI;
-      }
+        if (team_count[ROM]>0 && team_count[KLI]>0) {
+            if (team_count[KLI]>team_count[ROM])
+                *next_team=ROM;
+            else
+                *next_team=KLI;
+        }
 
     }
 
     /* 3 or more tourn teams.... */
     /* kill off bots in teams with less than 4 players */
 
-    if (tc >= 3) /* 3 or more teams */
-      {
+    if (tc >= 3) { /* 3 or more teams */
         if (team_count[ROM]>=4 && team_count[FED]>=4) {
-          killrobot(KLI);
-          killrobot(ORI);
+            killrobot(KLI);
+            killrobot(ORI);
         }
         if (team_count[FED]>=4 && team_count[ORI]>=4) {
-          killrobot(ROM);
-          killrobot(KLI);
+            killrobot(ROM);
+            killrobot(KLI);
         }
         if (team_count[ROM]>=4 && team_count[KLI]>=4) {
-          killrobot(FED);
-          killrobot(ORI);
+            killrobot(FED);
+            killrobot(ORI);
         }
         if (team_count[KLI]>=4 && team_count[ORI]>=4) {
-          killrobot(FED);
-          killrobot(ROM);
+            killrobot(FED);
+            killrobot(ROM);
         }
-      }
+    }
 
-    
+
     return c;
 }
 
