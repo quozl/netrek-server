@@ -1,3 +1,42 @@
+
+Thu May 18 12:25:36 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/input.c (input): slots may jam in POUTFIT after KWINNER
+	if the user terminates the client ungracefully ... such that the
+	TCP connection is gone but the ntserv lives on.
+
+	During this time, daemon synchronisation still sends SIGALRM to
+	the ntserv, and ntserv's SIGALRM handler still resets the
+	p_ghostbust timer.
+
+	Prototype solution is to move p_ghostbust watchdog timer reset
+	from within the SIGALRM handler to the section of main loop that
+	is executed when input arrives from the client.
+
+	Monitoring the p_ghostbust timer with gdb shows it is now reset
+	for a dormant client on receipt of ping responses.
+
+Thu May 18 01:11:21 2006  Stephen Thorne  <stephen@thorne.id.au>
+
+	* tests/build: Set the configure and mktrekon files executable, just in
+	case.
+
+	* configure.in: Add AC_PROG_LIBTOOL macro.
+
+	* ntserv/Makefile.in: Use the @RANLIB@ and @RANLIB_FLAGS@ macros.
+
+Wed May 17 11:12:04 2006  Stephen Thorne  <stephen@thorne.id.au>
+
+	* ntserv/Makefile.in (libnetrek.a): Pass @RANLIB_FLAGS@ to the ranlib
+	command.
+
+	* configure.in: Check for if ranlib exits with a non-zero exit when run
+	with a bare '-c' option. On debian, ranlib will exit with a 0 exit code
+	if passed a filename that doesen't exist. On OSX, '-c' is a valid flag, 
+	and if passed alone, will exit with an exit code of 1. A better way of
+	detecting this would be nice. If using the OSX version, then we pass -c
+	to all ranlib calls. Fixes build bug on OSX.
+
 Tue May 16 16:59:29 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
 
 	* robots/newbie.c (start_a_robot): add -g option to send the OggV
