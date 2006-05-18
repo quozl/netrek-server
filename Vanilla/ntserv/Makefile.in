@@ -2,6 +2,8 @@ VPATH = @srcdir@
 srcdir = @srcdir@
 
 CONFIG = system.mk
+RANLIB = @RANLIB@
+RANLIB_FLAGS = @RANLIB_FLAGS@
 
 include ../$(CONFIG)
 
@@ -86,11 +88,11 @@ daemonII: $(PMAKE) $(D_OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o daemonII $(D_OBJS) $(EXTRALIBS)
 
 libnetrek.a: $(L_OBJS)
-	ar cru $@ $(L_OBJS)
-	ranlib @RANLIB_FLAGS@ $@
+	$(AR) cru $@ $(L_OBJS)
+	$(RANLIB) $(RANLIB_FLAGS) $@
 
 libnetrek.so: $(L_OBJS)
-	gcc -shared -Wl,-soname,$@ -o $@ $(L_OBJS) -lc
+	$(CC) -shared -Wl,-soname,$@ -o $@ $(L_OBJS) -lc
 
 commands.o: $(PMAKE) ${srcdir}/commands.c
 	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/commands.c

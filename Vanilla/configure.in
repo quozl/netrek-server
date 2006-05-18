@@ -479,10 +479,12 @@ fi
 #       Check for system dependend programs
 #--------------------------------------------------------------------
 
+AC_PROG_LIBTOOL
+
 AC_MSG_CHECKING(for OSX ranlib)
-RANLIB_FLAGS=
-if ranlib -c 2>/dev/null; then
-    AC_MSG_RESULT(good - no)
+if $RANLIB -c 2>/dev/null; then
+    RANLIB_FLAGS=
+    AC_MSG_RESULT(no)
 else
     RANLIB_FLAGS='-c'
     AC_MSG_RESULT(drat - yes)
