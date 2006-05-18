@@ -447,7 +447,7 @@ void do_refit(int type)
     int i=0;
     struct ship_cap_spacket ShipFoo;
 
-    if (type<0 || type>=ATT) return;
+    if (type<0 || type>ATT) return;
     if (me->p_flags & PFORBIT) {
 	if (!(planets[me->p_planet].pl_flags & PLHOME)) {
             new_warning(50,"You must orbit your HOME planet to apply for command reassignment!");

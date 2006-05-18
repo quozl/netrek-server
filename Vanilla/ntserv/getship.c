@@ -276,8 +276,8 @@ void getshipdefaults(void)
     shipvals[ATT].s_mass = 32765; /* att: */
     shipvals[ATT].s_tractstr = 32765; /* att: */
     shipvals[ATT].s_tractrng = 25; /* att: */
-    shipvals[ATT].s_width = 28; /* att: */
-    shipvals[ATT].s_height = 28; /* att: */
+    shipvals[ATT].s_width = 20; /* att: */
+    shipvals[ATT].s_height = 20; /* att: */
     shipvals[ATT].s_type = ATT; /* att: */
     shipvals[CRUISER].s_turns = 170000; /* cruiser: */
     shipvals[CRUISER].s_accint = 150; /* cruiser: */
