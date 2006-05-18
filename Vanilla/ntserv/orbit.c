@@ -33,6 +33,9 @@ void de_lock(struct player *me)
 {
   me->p_flags   &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
 #ifdef SB_TRANSWARP
+  /* upon arrival at a base, during a dock attempt, if the dock fails,
+  and we were transwarping in, force a refit delay for five
+  seconds. */
   if (me->p_flags & PFTWARP){
     me->p_flags &= ~PFTWARP;
     me->p_flags |= PFREFITTING;

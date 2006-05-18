@@ -3,6 +3,11 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
+	- sending SIGSTOP to client for 35 seconds results in ghostbust, which
+	  is good, but the client response after SIGCONT is not good ... it
+	  presents team selection window and clicking on a team hangs the
+	  client.
+
 	- find causes of jammed slots and expire them sooner.
 
 	- Player "^%^" took a planet and it said "Planet taken by ^"

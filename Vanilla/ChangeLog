@@ -1,3 +1,7 @@
+Thu May 18 15:57:08 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/setteam.c, tools/Makefile.in: add utility to view and
+	manipulate starbase reconstruction and surrender timers.
 
 Thu May 18 12:25:36 2006  James Cameron  <quozl@us.netrek.org>
 
