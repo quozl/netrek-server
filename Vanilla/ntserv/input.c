@@ -56,10 +56,8 @@ static void setflag()
     ERROR(2,("%s: ghostbusted by ping loss\n", 
 	     me->p_mapchars));
     fflush(stderr);
-  } else
+  }
 #endif /*PING*/
-
-  me->p_ghostbuster = 0;
 }
 
 static int resurrect(void)
@@ -150,6 +148,7 @@ void input(void)
 	    }
 
 	    readFromClient();
+	    me->p_ghostbuster = 0;
 	    if (sendflag) {
 	      intrupt();
 	      sendflag=0;
@@ -159,5 +158,3 @@ void input(void)
 
     }
 }
-
-
