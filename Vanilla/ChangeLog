@@ -1,3 +1,10 @@
+Fri May 19 14:22:48 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/main.c: banned observers are allowed in and can speak,
+	which was a surprise, but the code has always allowed this since
+	observers were added.  Change to prevent banned observers from
+	talking.  Simplify ban logic further.
+
 Thu May 18 15:57:08 2006  James Cameron  <quozl@us.netrek.org>
 
 	* tools/setteam.c, tools/Makefile.in: add utility to view and

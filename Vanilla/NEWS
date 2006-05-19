@@ -1,3 +1,4 @@
+- mute banned observers [Cameron]
 - add team configuration tool, setteam [Cameron]
 - prevent hung slots by changing ghostbust timer reset method [Cameron]
 - newbie random games against any non-diagonal team combination [Huang]
