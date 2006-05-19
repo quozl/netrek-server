@@ -1,3 +1,88 @@
+Thu May 18 15:57:08 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/setteam.c, tools/Makefile.in: add utility to view and
+	manipulate starbase reconstruction and surrender timers.
+
+Thu May 18 12:25:36 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/input.c (input): slots may jam in POUTFIT after KWINNER
+	if the user terminates the client ungracefully ... such that the
+	TCP connection is gone but the ntserv lives on.
+
+	During this time, daemon synchronisation still sends SIGALRM to
+	the ntserv, and ntserv's SIGALRM handler still resets the
+	p_ghostbust timer.
+
+	Prototype solution is to move p_ghostbust watchdog timer reset
+	from within the SIGALRM handler to the section of main loop that
+	is executed when input arrives from the client.
+
+	Monitoring the p_ghostbust timer with gdb shows it is now reset
+	for a dormant client on receipt of ping responses.
+
+Thu May 18 07:16:00 2006  Bill Balcerski  <williamb@its.caltech.edu>
+
+	* ntserv/transwarp.c: changed the transwarp failure message, in
+	the case of one or both of the ships not being at peace, to
+	something more ambiguous.  Reason for change is to take into
+	account the fact that sometimes the base is peaceful but the
+	other ship isn't, making old error message inaccurate.
+
+Thu May 18 01:14:00 2006  Bill Balcerski  <williamb@its.caltech.edu>
+
+	* ntserv/getship.c, interface.c: fix to ATT size for matching 
+	current bitmap sets, and allowing refit to ATT if the ship is
+	valid as per sysdef file (compared to not ever allowing refit to 
+	ATT under old code).
+
+Thu May 18 02:05:53 2006  Stephen Thorne  <stephen@thorne.id.au>
+
+	* aclocal.m4: Added aclocal.m4
+
+Thu May 18 01:11:21 2006  Stephen Thorne  <stephen@thorne.id.au>
+
+	* tests/build: Set the configure and mktrekon files executable, just in
+	case.
+
+	* configure.in: Add AC_PROG_LIBTOOL macro.
+
+	* ntserv/Makefile.in: Use the @RANLIB@ and @RANLIB_FLAGS@ macros.
+
+Wed May 17 11:12:04 2006  Stephen Thorne  <stephen@thorne.id.au>
+
+	* ntserv/Makefile.in (libnetrek.a): Pass @RANLIB_FLAGS@ to the ranlib
+	command.
+
+	* configure.in: Check for if ranlib exits with a non-zero exit when run
+	with a bare '-c' option. On debian, ranlib will exit with a 0 exit code
+	if passed a filename that doesen't exist. On OSX, '-c' is a valid flag, 
+	and if passed alone, will exit with an exit code of 1. A better way of
+	detecting this would be nice. If using the OSX version, then we pass -c
+	to all ranlib calls. Fixes build bug on OSX.
+
+Tue May 16 16:59:29 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
+
+	* robots/newbie.c (start_a_robot): add -g option to send the OggV
+	packet to self ID themselves.
+
+	* robots/newbie.c (killrobot): change how robots are detected.
+
+	* robots/newbie.c (main): change merlin ship class to ATT, change
+	to overlooking position, allow ORI and KLI.
+
+	* ntserv/genspkt.c (INVISOMASK): add PFBPROBOT so newbie bots can
+	see each other using OggV packet.
+
+Tue May 16 14:03:30 2006  Bill Balcerski  <williamb@its.caltech.edu>
+
+	* robotd/assault.c (risk_res_death): compilation fix gcc 4.0.
+
+Tue May 16 08:29:06 2006  James Cameron  <quozl@us.netrek.org>
+
+	* docs/sample_features: enable CONTINUOUS_MOUSE as it is in common
+	use.  Enable INFO_MODE1 so that the default configuration ships
+	with all features enabled.
+
 Mon May 15 19:01:27 2006  James Cameron  <quozl@us.netrek.org>
 
 	* netrek-server-vanilla-2.11.0 released
