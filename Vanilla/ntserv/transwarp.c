@@ -56,7 +56,7 @@ int handleTranswarp(void)
    }
    if (!((!(j->p_war & me->p_team)) &&
 	 (!(me->p_war & j->p_team)))) {
-      new_warning(UNDEF, "The starbase is not peaceful, captain!", -1);
+      new_warning(UNDEF, "Transwarp request rejected by battle computers, captain!", -1);
       return (0);
    }
    if (!(j->p_flags & PFDOCKOK)) {
