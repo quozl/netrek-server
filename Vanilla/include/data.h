@@ -355,5 +355,6 @@ extern int ban_vote_offset;
 extern int eject_vote_enable;
 extern int eject_vote_only_if_queue;
 extern int eject_vote_vicious;
+extern int duplicates;
 
 #endif /* _h_data */

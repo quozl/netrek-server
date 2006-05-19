@@ -17,22 +17,20 @@
 #include "packets.h"
 #include "proto.h"
 
-#ifdef NO_DUPLICATE_HOSTS
-/* return true if the host is not already in the game */
-static int absent(int w_queue, char *host) {
-  int i;
-  for (i=0; i<MAXPLAYER; i++) {
+/* return number of other hosts in game with same ip */
+static int player_count_by_ip(int w_queue, char *ip) {
+  int i, j;
+  for (i=0, j=0; i<MAXPLAYER; i++) {
     if (players[i].p_status == PFREE) continue;
     if ((players[i].p_flags & PFROBOT)) continue;
 #ifdef OBSERVERS
     /* if we want a pickup slot, ignore any observer slot we have */
     if (w_queue == QU_PICKUP && players[i].p_status == POBSERV) continue;
 #endif	
-    if (strcmp(players[i].p_full_hostname, host) == 0) return 0;
+    if (strcmp(players[i].p_ip, ip) == 0) j++;
   }
-  return 1;
+  return j;
 }
-#endif
 
 /*
  * The following code for findslot() is really nice.
@@ -48,7 +46,7 @@ static int absent(int w_queue, char *host) {
  *   oldcount:      (local) My position last time I looked.
  */
 
-int findslot(int w_queue, char *host)
+int findslot(int w_queue, char *ip)
 {
     u_int oldcount;	/* My old number */
     pid_t mypid = getpid();
@@ -59,24 +57,16 @@ int findslot(int w_queue, char *host)
     /* Ensure that the queue is open */
     if (!(queues[w_queue].q_flags & QU_OPEN)) return (-1);
 
-#ifdef NO_DUPLICATE_HOSTS
     /* pre-queue if client from same ip address is already playing */
     if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
       for (;;) {
-#ifdef CONTINUUM
-	/* dogmeat's obstrek server */
-	if (!strcmp(host, "c-24-4-208-59.client.comcast.net")) break;
-	/* roland's workplace */
-	if (!strcmp(host, "ip57.bb168.pacific.net.hk")) break;
-#endif
-	if (absent(w_queue, host)) break;
+	if (player_count_by_ip(w_queue, ip) <= duplicates) break;
 	if (rep++ % 10 == 1) { sendQueuePacket((short) MAXPLAYER); }
 	if (isClientDead()) { fflush(stderr); exit(0); }
 	if (!(status->gameup & GU_GAMEOK)) { return (-1); }
 	sleep(1);
       }
     }
-#endif
 
     /* If no one is waiting, I will try to enter now */
     if (queues[w_queue].first == -1)

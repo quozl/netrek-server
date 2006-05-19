@@ -210,6 +210,8 @@ struct sysdef_keywords {
     "Only allow ejection if there is a queue of players"	},
   { "EJECT_VOTE_VICIOUS",	SYSDEF_INT,	&eject_vote_vicious,
     "Kill ntserv process to eject, causes some client problems"	},
+  { "DUPLICATES",		SYSDEF_INT,     &duplicates,
+    "Maximum number of duplicate connections from a single IP" },
   { "",			SYSDEF_END,	NULL		}
 };
 

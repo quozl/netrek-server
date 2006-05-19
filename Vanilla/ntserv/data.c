@@ -413,3 +413,4 @@ int ban_vote_offset=0;
 int eject_vote_enable=0;
 int eject_vote_only_if_queue=0;
 int eject_vote_vicious=0;
+int duplicates=3;

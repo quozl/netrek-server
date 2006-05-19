@@ -447,16 +447,6 @@ only if you have no intention of retaining stats on the server for pickup */
 				server. */
 #define PLAYER_INDEX
 
-				/* NO_DUPLICATE_HOSTS - prevents two
-				pickup players from the same host,
-				prevents a player opening an observer
-				slot, but does not prevent a player
-				slot being opened by an existing
-				observer slot.  The new client is
-				given a wait queue response of
-				MAXPLAYERS.   Requires FULL_HOSTNAMES. */
-#undef NO_DUPLICATE_HOSTS
-
 #endif		/* SERVER */
 
 
