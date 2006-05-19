@@ -1,3 +1,4 @@
+- add install-ntserv target for live updates [Cameron]
 - mute banned observers [Cameron]
 - add team configuration tool, setteam [Cameron]
 - prevent hung slots by changing ghostbust timer reset method [Cameron]

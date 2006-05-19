@@ -1,3 +1,18 @@
+Fri May 19 16:08:34 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/Makefile.in (install-ntserv): addition of a target so
+	that a server operator can do a live update of ntserv during a
+	running game.
+  
+	The target moves the existing in-use ntserv binary into an archive
+	tree before installing the new ntserv binary.  This makes it
+	possible to manually back out of an installation if the new binary
+	breaks badly.
+  
+	Other methods to test a new ntserv binary include running it
+	manually for connection back to the client.  See ntserv command
+	line options.
+
 Fri May 19 14:22:48 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/main.c: banned observers are allowed in and can speak,
