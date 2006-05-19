@@ -1,3 +1,4 @@
+- add max duplicate ip count for pickup play [Cameron]
 - add install-ntserv target for live updates [Cameron]
 - mute banned observers [Cameron]
 - add team configuration tool, setteam [Cameron]

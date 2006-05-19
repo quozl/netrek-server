@@ -1,3 +1,22 @@
+Fri May 19 18:06:15 2006  James Cameron  <quozl@us.netrek.org>
+
+	* config.h.in, data.h, sysdefaults.h, data.c, findslot.c, main.c:
+	adds a new etc/sysdef option DUPLICATES which is the maximum
+	number of pickup player slots allowed from the same IP address
+	before the next connection is given the Q32 response.
+
+	This is a denial of service filtering feature.
+
+	The default is 3.  Set this above 16 to make it ineffective.
+
+	Set this to less than half of the number of players per side,
+	otherwise abusers may not be ejected or banned by majority vote
+	because a majority would be impossible.
+
+	Does not affect robots, unless they join via the pickup queue
+	... which would be a misconfiguration.  Robots normally join via a
+	special queue.
+
 Fri May 19 16:08:34 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/Makefile.in (install-ntserv): addition of a target so
