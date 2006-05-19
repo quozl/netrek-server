@@ -133,6 +133,11 @@ install: ntserv daemonII
 	touch $(DESTDIR)$(LOCALSTATEDIR)/planets
 	chmod 600 $(DESTDIR)$(LOCALSTATEDIR)/planets
 
+install-ntserv: ntserv
+	mkdir $(DESTDIR)$(LIBDIR)/ntserv-archive
+	mv $(DESTDIR)$(LIBDIR)/ntserv $(DESTDIR)$(LIBDIR)/ntserv-archive/ntserv.`date +%Y-%m-%d`.$$
+	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
+
 installbin: install
 	echo "target installbin deprecated, assumed install"
 
