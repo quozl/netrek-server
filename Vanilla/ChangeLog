@@ -1,3 +1,19 @@
+Sun May 21 21:48:15 2006  James Cameron  <quozl@us.netrek.org>
+
+	* tools/setgame.c: add script utility for pausing, resuming, and
+	terminating the game.
+
+	* tools/Makefile.in: add setgame target.
+
+	* ntserv/input.c (input): send bad version packet to terminate
+	client as soon as a GU_GAMEOK termination is requested.
+
+	* ntserv/daemonII.c (udplayers): terminate daemon as soon as
+	possible if a GU_GAMEOK termination is requested.  Change nplayers
+	to nfree, to better explain what the variable is.
+
+	* include/struct.h (game_ok): remove unused macro.
+
 Fri May 19 18:06:15 2006  James Cameron  <quozl@us.netrek.org>
 
 	* config.h.in, data.h, sysdefaults.h, data.c, findslot.c, main.c:

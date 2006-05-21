@@ -1,3 +1,4 @@
+- add game pause/resume/terminate tool, setgame [Cameron]
 - add max duplicate ip count for pickup play [Cameron]
 - add install-ntserv target for live updates [Cameron]
 - mute banned observers [Cameron]
