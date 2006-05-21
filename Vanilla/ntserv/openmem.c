@@ -13,6 +13,7 @@
 #include <pwd.h>
 #include <ctype.h>
 #include <time.h>		/* 7/16/91 TC */
+#include <signal.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -53,9 +54,22 @@
  *
  */
 
+/* daemon initialisation is pending */
+static int daemon_initialisation_pending;
+
+/* called when daemon initialisation is complete */
+static void daemon_ready(int signum)
+{
+    daemon_initialisation_pending = 0;
+}
+
 static void startdaemon(void)
 {
     pid_t i;
+
+    /* ask to be told when daemon initialisation completes */
+    daemon_initialisation_pending = 1;
+    signal(SIGUSR1, daemon_ready);
 
     i = fork();
     if (i == (pid_t)0) {
@@ -64,6 +78,10 @@ static void startdaemon(void)
 	ERROR(1,("Couldn't start daemon!!!\n"));
 	_exit(1);
     }
+
+    /* wait until daemon has initialised */
+    while (daemon_initialisation_pending) pause();
+    signal(SIGUSR1, NULL);
 }
 
 static void setup_memory(struct memory *sharedMemory)
@@ -101,7 +119,6 @@ int openmem(int trystart)
 	}
 	if (trystart==1){          /* Create the memory */
 	  startdaemon();
-	  sleep(2);
 	}
 	else if (trystart < 0){    /* Just checking if it exists */
 	  return 0;

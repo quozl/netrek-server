@@ -276,10 +276,12 @@ int main(int argc, char **argv)
         exitDaemon(0);
     }
 
-    x = 0;
-
     check_load();
 
+    /* signal parent ntserv that daemon is ready */
+    kill(getppid(), SIGUSR1);
+
+    x = 0;
     for (;;) {
         PAUSE(SIGALRM);
         if (debug) {
