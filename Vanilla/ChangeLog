@@ -1,3 +1,24 @@
+Sun May 21 22:22:41 2006  James Cameron  <quozl@us.netrek.org>
+
+	Remove the two second delay experienced by clients that connect to
+	a server on which the daemon is not running.  Also fix a cause of
+	initial connection failing, which happens if the daemon does not
+	start up within the hoped-for interval.
+
+	Solution is implemented using the SIGUSR1 signal, but only during
+	the initialisation window between when ntserv forks the daemon and
+	the daemon completes initialisation.  The signal is not used at
+	other times.
+	
+	* ntserv/daemonII.c (main): send a SIGUSR1 to parent process
+	(ntserv) once initialisation of shared memory is completed and
+	regular SIGALRMs are about to commence.
+
+	* ntserv/openmem.c (openmem): remove two second delay that was
+	used to hope for daemon to initialise.
+	
+	* ntserv/openmem.c (startdaemon): add a wait for SIGUSR1.
+
 Sun May 21 21:48:15 2006  James Cameron  <quozl@us.netrek.org>
 
 	* tools/setgame.c: add script utility for pausing, resuming, and
