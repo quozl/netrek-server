@@ -22,6 +22,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "packets.h"
 
 #define GHOSTTIME       (30 * 1000000 / UPDATE) /* 30 secs */
 
@@ -108,6 +109,15 @@ static int resurrect(void)
   return 1;
 }
 
+static void gamedown()
+{
+  struct badversion_spacket packet;
+  packet.type = SP_BADVERSION;
+  packet.why = 6;
+  sendClientPacket(&packet);
+  flushSockBuf();
+}
+
 void input(void)
 {
     fd_set readfds;
@@ -125,6 +135,7 @@ void input(void)
 	    resurrect();
 	}
 	if (! (status -> gameup & GU_GAMEOK)){
+	    gamedown();
 	    freeslot(me);
 	    exit(0);
 	}

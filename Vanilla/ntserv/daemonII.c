@@ -336,7 +336,6 @@ int main(int argc, char **argv)
 #define TERMINATOR      (-2)    /* Terminator */
 #define STERMINATOR     (-3)    /* sticky Terminator */
 
-int nplayers = 0;  /* isae - was missing int */
 int dietime = -1;  /* isae - was missing int */
 
 static int tournamentMode(void)
@@ -864,7 +863,7 @@ static void udplayers(void)
     float dist; /* used by tractor beams */
     int maxspeed;
 
-    nplayers = 0;
+    int nfree = 0;
     tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;
     for (i = status->active = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
 	int outfitdelay;
@@ -907,7 +906,7 @@ static void udplayers(void)
                 }
                 continue;
             case PFREE:
-                nplayers++;
+                nfree++;
                 j->p_ghostbuster = 0;   /* stop from hosing new players */
                 continue;
 #ifdef OBSERVERS
@@ -1473,11 +1472,15 @@ static void udplayers(void)
             break;
         } /* end switch */
     }
-    if (nplayers == MAXPLAYER) {
-        if (dietime == -1)
-            dietime = ticks + 600 / PLAYERFUSE;
-    }
-    else {
+    if (nfree == MAXPLAYER) {
+        if (dietime == -1) {
+            if (status->gameup & GU_GAMEOK) {
+                dietime = ticks + 600 / PLAYERFUSE;
+            } else {
+                dietime = ticks + 10 / PLAYERFUSE;
+            }
+        }
+    } else {
         dietime = -1;
     }
 }

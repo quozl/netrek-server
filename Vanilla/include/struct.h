@@ -89,7 +89,6 @@ struct status {
 
 /* The following defines are for gameup field */
 #define GU_GAMEOK 1
-#define game_ok ((status->gameup) & GU_GAMEOK)
 #define GU_PRACTICE 2
 #define practice_mode ((status->gameup) & GU_PRACTICE)
 #define GU_CHAOS 4
