@@ -1094,8 +1094,7 @@ process_general_message(message, flags, from, to)
       return;
    }
    if(/* from < 0 ||*/ from >= MAXPLAYER){
-     /* mfprintf(stderr, "process_general_message: unknown player %d\n", from); */
-     fprintf(stderr, "process_general_message: unknown player %d\n", from); 
+      mfprintf(stderr, "process_general_message: unknown player %d\n", from);
       return;
    }
    p = &_state.players[from];
@@ -1353,7 +1352,7 @@ struct planet	*closest_planet(j, dist, opl)
 
 {
    register			k;
-   register struct planet	*pl, *rp = opl; /* zxxy */
+   register struct planet	*pl, *rp = NULL;
    register			d, mdist = INT_MAX;
 
    if(opl && (mdist = ihypot((double)(j->p_x - opl->pl_x), 

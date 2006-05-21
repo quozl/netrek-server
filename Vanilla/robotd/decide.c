@@ -170,7 +170,7 @@ decide_defend()
 
 decide_take()
 {
-   PlanetRec	 *pls = _state.planets;
+   PlanetRec		*pls = _state.planets;
    struct planet *tpl = _state.assault_planet;
    struct planet *cpl = me_p->closest_pl;
 
@@ -683,7 +683,6 @@ check_take(ship)
 
    if(pls->total_textra_armies == 0 && me->p_armies == 0) return 0;
 
-   /* find a planet to take */
    for(k=0; k< pls->num_warteamsp; k++){
       pl = pls->warteam_planets[k];
 

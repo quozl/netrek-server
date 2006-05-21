@@ -195,12 +195,7 @@ assault_planet()
    else
       req_cloak_off("no cloak in assault_planet()");
 
-   /* Extra check not to bomb your own armies that you just */
-   /* dropped onto a planet you took */
-   /* Sometimes the bots will try to bomb friendly planets too */
-   /* will need to reset the warring if this happens */
-   /* that should happen elsewhere */
-   if( (armies > 4) && ( pl->pl_owner != me->p_team ) ){
+   if(armies > 4){
       req_bomb();
       return;
    }
