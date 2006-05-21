@@ -175,7 +175,8 @@ shmem_cloakd(j)
    int			tv = mtime(0), htv;
 
    if(!(j->p_flags & PFCLOAK)){
-      mfprintf(stderr, "shmem_cloakd: player not cloaked\n");
+      /* mfprintf(stderr, "shmem_cloakd: player not cloaked\n"); */
+      fprintf(stderr, "shmem_cloakd: player not cloaked\n");
       return 0;
    }
    /* assign my idea of location */

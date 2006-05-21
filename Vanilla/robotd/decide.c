@@ -170,7 +170,7 @@ decide_defend()
 
 decide_take()
 {
-   PlanetRec		*pls = _state.planets;
+   PlanetRec	 *pls = _state.planets;
    struct planet *tpl = _state.assault_planet;
    struct planet *cpl = me_p->closest_pl;
 
@@ -683,6 +683,7 @@ check_take(ship)
 
    if(pls->total_textra_armies == 0 && me->p_armies == 0) return 0;
 
+   /* find a planet to take */
    for(k=0; k< pls->num_warteamsp; k++){
       pl = pls->warteam_planets[k];
 
@@ -697,20 +698,23 @@ check_take(ship)
 	 min_dist = pl->pl_mydist;
       }
    }
-   if(!(pl->pl_flags & PLAGRI) || me->p_armies >= 5){
-      min_dist = GWIDTH;	/* ind overrides non-ind */
-      for(k=0; k< pls->num_indsp; k++){
-	 pl = pls->ind_planets[k];
 
-	 /*
-	 if(pl->pl_mydist < 20000 && pl_defended(pl,3)) continue;
-	 */
+   /* take indep planet first over regular planets */
+   /* but take agris first if you have the armies */
+   if (!tpl || !(tpl->pl_flags&PLAGRI && me->p_armies >= 5) ) {
+       min_dist = GWIDTH;	/* ind overrides non-ind */
+       for(k=0; k< pls->num_indsp; k++){
+	   pl = pls->ind_planets[k];
+	   
+	   /*
+	     if(pl->pl_mydist < 20000 && pl_defended(pl,3)) continue;
+	   */
 
-	 if(pl->pl_mydist < min_dist){
-	    tpl = pl;
-	    min_dist = pl->pl_mydist;
-	 }
-      }
+	   if(pl->pl_mydist < min_dist){
+	       tpl = pl;
+	       min_dist = pl->pl_mydist;
+	   }
+       }
    }
    if(tpl){
       if(pls->total_textra_armies + me->p_armies < tpl->pl_armies)

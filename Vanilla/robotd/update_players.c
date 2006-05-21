@@ -142,11 +142,13 @@ update_players()
 	 army_check1(p, j);
 	 army_check2(p, j);
       }
-      if(p->invisible)
-	 p->closest_pl = NULL;
-      else
-	 p->closest_pl = closest_planet(j, &pldist, p->closest_pl);
-      p->closest_pl_dist = pldist;
+
+      if(p->invisible) {
+	  p->closest_pl = NULL;
+      } else {
+	  p->closest_pl = closest_planet(j, &pldist, p->closest_pl);
+	  p->closest_pl_dist = pldist;
+      }
 
       if(j->p_flags & PFBOMB)
 	 p->bombing = _udcounter;
@@ -277,7 +279,8 @@ check_active_enemies()
       if(_state.player_type == PT_OGGER || _state.player_type == PT_DOGFIGHTER){
 	 timer ++;
 	 if(timer == 100){
-	    mfprintf(stderr, "nobody to fight\n");
+	   /* mfprintf(stderr, "nobody to fight\n"); */
+	    fprintf(stderr, "nobody to fight\n");
 	    exitRobot(0);
 	 }
       }
@@ -1091,7 +1094,8 @@ process_general_message(message, flags, from, to)
       return;
    }
    if(/* from < 0 ||*/ from >= MAXPLAYER){
-      mfprintf(stderr, "process_general_message: unknown player %d\n", from);
+     /* mfprintf(stderr, "process_general_message: unknown player %d\n", from); */
+     fprintf(stderr, "process_general_message: unknown player %d\n", from); 
       return;
    }
    p = &_state.players[from];
@@ -1349,7 +1353,7 @@ struct planet	*closest_planet(j, dist, opl)
 
 {
    register			k;
-   register struct planet	*pl, *rp = NULL;
+   register struct planet	*pl, *rp = opl; /* zxxy */
    register			d, mdist = INT_MAX;
 
    if(opl && (mdist = ihypot((double)(j->p_x - opl->pl_x), 
