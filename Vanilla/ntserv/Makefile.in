@@ -82,7 +82,7 @@ LINTFLAGS = -habxc $(INCS)
 all: $(PMAKE) ntserv daemonII 
 
 ntserv: $(PMAKE) $(R_OBJS)
-	$(CC) $(CFLAGS) ${LDFLAGS} -o ntserv $(R_OBJS) $(LIBS) $(LIBCRYPT) `glib-config --libs` -lgdbm
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ntserv $(R_OBJS) $(LIBS) $(LIBCRYPT) -lgdbm
 
 daemonII: $(PMAKE) $(D_OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o daemonII $(D_OBJS) $(EXTRALIBS)
@@ -98,7 +98,7 @@ commands.o: $(PMAKE) ${srcdir}/commands.c
 	$(CC) $(CFLAGS) $(DEP) -c ${srcdir}/commands.c
 
 db.o: $(PMAKE) db.c
-	$(CC) $(CFLAGS) $(DEP) `glib-config --cflags` -c db.c
+	$(CC) $(CFLAGS) $(DEP) -c db.c
 
 cflags:
 	echo "static char cflags[]=\"$(CFLAGS) $(LIBS)\";" >../cflags.h
