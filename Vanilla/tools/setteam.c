@@ -5,7 +5,6 @@
 #include <ctype.h>
 #include "defs.h"
 #include "struct.h"
-#include "planets.h"
 #include "data.h"
 #include "proto.h"
 
@@ -18,7 +17,7 @@ Usage: setteam dump\n\
 TEAM is a team name prefix.\n\
 COMMAND is one of:\n\
 \n\
-get           dump planet data for one planet in setplanet format\n\
+get           dump team data for one team in setteam format\n\
 verbose       send messages to all in game for certain changes\n\
 \n\
 surrender N             set the surrender countdown\n\
