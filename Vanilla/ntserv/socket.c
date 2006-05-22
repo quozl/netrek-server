@@ -1098,8 +1098,12 @@ static int doRead(int asock)
 	    packets_received ++;
 #endif
 	if (handlers[(int)*bufptr].handler != NULL) {
-	    if (((FD_ISSET(*bufptr, &inputMask)) && 
-		 (me==NULL || !(me->p_flags & (PFWAR|PFREFITTING
+	    if (((FD_ISSET(*bufptr, &inputMask)) &&
+		 (me==NULL 
+#ifdef OBSERVERS
+                           || (me->p_status == POBSERV)
+#endif 
+                           || !(me->p_flags & (PFWAR|PFREFITTING
 #ifdef SB_TRANSWARP
 					       | PFTWARP
 #endif
