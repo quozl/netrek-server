@@ -1,3 +1,7 @@
+Mon May 22 14:03:38 2006  Trent Piepho <xyzzy@speakeasy.org>
+	* res-rsa/configure.in  The check for gmp fails for gmp version 3,
+	fix it by adding a secondary check for the gmp3 symbol names.
+
 Mon May 22 10:53:03 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
 
 	* robotd/assault.c added extra check not to bomb your own armies. 

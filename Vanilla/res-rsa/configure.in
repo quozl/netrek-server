@@ -109,6 +109,10 @@ if test $GMP_VER != -1; then
       LDOLD="$LDFLAGS"
       LDFLAGS="$GMP_LIB -lgmp"
       AC_CHECK_LIB(gmp, mpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+      if test $ac_cv_lib_gmp_mpz_fdiv_q_ui = no; then
+        dnl with gmp3 it's a #define, use real function name
+        AC_CHECK_LIB(gmp, __gmpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+      fi
       LDFLAGS="$LDOLD"
     fi
 
@@ -123,11 +127,19 @@ if test $GMP_VER != -1; then
 
     if test $GMP_VER = 1; then
       AC_CHECK_LIB(gmp, mpz_init, AC_DEFINE(HAVE_LIB_GMP), GMP_VER=0)
+      if test $ac_cv_lib_gmp_mpz_init = no; then
+        dnl with gmp3 it's a #define, use real function name
+        AC_CHECK_LIB(gmp, __gmpz_init, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+      fi
     fi
 
     # Check for GMP2
     if test $GMP_VER = 1; then
       AC_CHECK_LIB(gmp, mpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+      if test $ac_cv_lib_gmp_mpz_fdiv_q_ui = no; then
+        dnl with gmp3 it's a #define, use real function name
+        AC_CHECK_LIB(gmp, __gmpz_fdiv_q_ui, AC_DEFINE(HAVE_LIB_GMP2) GMP_VER=2)
+      fi
     fi
 
   fi
