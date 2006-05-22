@@ -7,12 +7,8 @@ BUILDROOT=/tmp/netrek-server.$$
 # copy the repository there
 darcs put $BUILDROOT
 
-# if these configure files aren't executable, delete them.
-[ -e $BUILDROOT/Vanilla/configure ] && rm $BUILDROOT/Vanilla/configure
-[ -e $BUILDROOT/Vanilla/rsa-rsa/configure ] && rm $BUILDROOT/Vanilla/res-rsa/configure
-
 # build configure
-cd $BUILDROOT/Vanilla && autoconf
+cd $BUILDROOT/Vanilla && libtoolize && aclocal && autoconf
 cd $BUILDROOT/Vanilla/res-rsa && autoconf
 
 # fix masks
