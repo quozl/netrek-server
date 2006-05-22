@@ -357,7 +357,7 @@ void pressor_player(int player)
     
 }
 
-void declare_war(int mask)
+void declare_war(int mask, int refitdelay)
 {
     int changes;
     int i;
@@ -406,7 +406,7 @@ void declare_war(int mask)
 	}
     }
 
-    if (mask & ~me->p_hostile) {
+    if (refitdelay && (mask & ~me->p_hostile)) {
 	me->p_flags |= PFWAR;
 	delay = me->p_updates + 100;
         new_warning(49,"Pausing ten seconds to re-program battle computers.");

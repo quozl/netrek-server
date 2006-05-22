@@ -137,7 +137,7 @@ char *w_texts[]={
 /* beam_down() */
 "Must be orbiting or docked to beam down.",			/* 47 */
 "Comm Officer: Starbase refuses permission to beam our troops over.", /* 48 */
-/*	declare_war(mask)	*/
+/*	declare_war(mask, refitdelay)	*/
 "Pausing ten seconds to re-program battle computers.",		/* 49 */
 /* do_refit(type) */
 "You must orbit your HOME planet to apply for command reassignment!", /* 50 */

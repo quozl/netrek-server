@@ -1329,7 +1329,7 @@ static void handlePlasmaReq(struct plasma_cpacket *packet)
 
 static void handleWarReq(struct war_cpacket *packet)
 {
-    declare_war(packet->newmask);
+    declare_war(packet->newmask, 1);
 }
 
 static void handlePlanlockReq(struct planlock_cpacket *packet)

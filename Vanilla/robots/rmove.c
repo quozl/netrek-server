@@ -201,7 +201,7 @@ void rmove()
         (me->p_team != 0)) {
         messAll(me->p_no,roboname,"I'm bored.");
         hostile++;
-        declare_war(ALLTEAM);
+        declare_war(ALLTEAM, 0);
     }
 
     /* Our first priority is to phaser plasma torps in nearby vicinity... */
@@ -739,7 +739,7 @@ get_nearest()
     if (target >= 0) {
 	j = &players[target];
 	if (!(me->p_war & j->p_team))
-	    declare_war(players[target].p_team); /* make sure we're at war 7/31/91 TC */
+	    declare_war(players[target].p_team, 0); /* make sure we're at war 7/31/91 TC */
 
 	/* We have an enemy */
 	/* Get his range */

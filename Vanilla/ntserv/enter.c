@@ -210,7 +210,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 #endif /*LTD_STATS*/
         /* If switching, become hostile to former team 6/29/92 TC */
 	  if (lastteam >= 0)
-	    declare_war(1<<lastteam);
+	    declare_war(1<<lastteam, 0);
 	}
 	if (lastrank==-1) lastrank=mystats->st_rank;	/* NBT patch */
 	lastteam=tno;

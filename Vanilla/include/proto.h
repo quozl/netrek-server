@@ -129,7 +129,7 @@ void lock_planet(int planet);
 void lock_player(int player);
 void tractor_player(int player);
 void pressor_player(int player);
-void declare_war(int mask);
+void declare_war(int mask, int refitdelay);
 void do_refit(int type);
 int numPlanets(int owner);
 
