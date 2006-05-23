@@ -321,8 +321,10 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 	mask = INVISOMASK;
 	
     /* With short packets 2 flag sampling, these don't need to be sent */
-    if (send_short>1 && pl->p_no<32)
-    	mask &= ~(PFSHIELD|PFCLOAK);
+    if (!(pl->p_flags & PFROBOT)) {
+        if (send_short > 1 && pl->p_no < 32)
+            mask &= ~(PFSHIELD|PFCLOAK);
+    }
 
 
     if ((ntohl(flags->flags)&mask) == (pl->p_flags&mask) &&
