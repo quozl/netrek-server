@@ -75,6 +75,7 @@ static int num_players(int *next_team);
 static int rprog(char *login, char *monitor);
 static void stop_this_bot(struct player * p);
 static void save_armies(struct player *p);
+static int checkpos(void);
 
 static void
 reaper(int sig)
@@ -99,8 +100,8 @@ main(argc, argv)
 
 #ifndef TREKSERVER
     if (gethostname(hostname, 64) != 0) {
-        perror("gethostname");
-        exit(1);
+	 perror("gethostname");
+	 exit(1);
     }
 #else
     strcpy(hostname, TREKSERVER);
@@ -137,8 +138,12 @@ main(argc, argv)
 
     me->p_pos = -1;                  /* So robot stats don't get saved */
     me->p_flags |= PFROBOT;          /* Mark as a robot */
-    me->p_x = 55000;                 /* displace to on overlooking position */
-    me->p_y = 50000;                  /* maybe we should just make it fight? */
+
+#define POSITIONX 55000
+#define POSITIONY 50000
+
+    me->p_x = POSITIONX;                 /* displace to on overlooking position */
+    me->p_y = POSITIONY;                 /* maybe we should just make it fight? */
     me->p_hostile = 0;
     me->p_swar = 0;
     me->p_war = 0;
@@ -153,19 +158,19 @@ main(argc, argv)
 #endif
 
 #ifdef nodef
-    /* Could make Merline hostile to everybody, pretty fun */
+    /* Could make Merlin hostile to everybody, pretty fun */
     me->p_hostile = (FED | ROM | KLI | ORI); /* WAR! */
     me->p_swar = (FED | ROM | KLI | ORI); /* WAR! */
     me->p_war = (FED | ROM | KLI | ORI); /* WAR! */
 #endif
 
 #ifdef nodef
-    /* Could make Merline friendly and allow docking JKH */
+    /* Could make Merlin friendly and allow docking JKH */
     /* since he is in the middle of the galaxy */
     me->p_ship.s_type = STARBASE;    /* kludge to allow docking */
     me->p_flags |= PFDOCKOK;         /* allow docking */
     /* Merlin Cloaks when t-mode starts, so this is useless for now */
-    /* It's an interesting bug as all the bots like hunterkill are */
+    /* It's an interesting bug as all the bots like hunterkiller are */
     /* also invisible */
 #endif
 
@@ -195,7 +200,7 @@ void checkmess(int unused)
 {
     int         shmemKey = PKEY;
     static int no_humans = 0;
-   
+    
     HANDLE_SIG(SIGALRM,checkmess);
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
@@ -222,20 +227,21 @@ void checkmess(int unused)
             no_humans = 0;
     }
 
-    /* Stop or start a robot. */
 
-    if ((ticks % ROBOEXITWAIT) == 0)
-    {
-        if ((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots) {
-                 stop_a_robot();
+    /* Stop a robot. */
+    if ((ticks % ROBOEXITWAIT) == 0) {
+        if ((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > 
+         	    queues[QU_PICKUP].max_slots) {
+	    stop_a_robot();
 	}
     }
+
+    /* Start a robot */
     if ((ticks % ROBOCHECK) == 0) {
         int next_team;
         num_players(&next_team);
-
-        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))
-        {
+	
+        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))  {
             if (next_team == FED)
                 start_a_robot("-Tf");
             if (next_team == ROM)
@@ -245,6 +251,11 @@ void checkmess(int unused)
             if (next_team == KLI)
                 start_a_robot("-Tk");
         }
+    }
+
+    /* Check Merlin's x and y position */
+    if ( (ticks % ROBOCHECK) == 0 ) {
+	checkpos();
     }
 
     if ((ticks % SENDINFO) == 0) {
@@ -263,6 +274,40 @@ void checkmess(int unused)
 
 }
 
+/* assuming this gets called once a second... */
+static int checkpos(void)
+{
+    static int oldx=POSITIONX;
+    static int oldy=POSITIONY;
+    static int moving=0;
+    static int stopped=0;
+
+    /* are we moving? */
+    if ( (me->p_x != oldx) || (me->p_y != oldy) ) {
+	moving=1;
+	stopped=0;
+	oldx=me->p_x;
+	oldy=me->p_y;
+    }
+
+    /* if we stopped moving */
+    /* count how long */
+    if ( (me->p_x == oldx) && (me->p_y == oldy) ) {
+	moving=0;
+	stopped=stopped + 1;
+    }
+
+    /* stopped for sometime now */
+    if ( moving==0 && stopped > 15 ) {
+	/* move us back to overlooking position */
+	if ( me->p_x != POSITIONX )
+	    me->p_x = POSITIONX;
+	if ( me->p_y != POSITIONY )
+	    me->p_y = POSITIONY;
+	stopped=0; /*do we need to reset this? */
+    }
+
+}
 
 static int is_robots_only(void)
 {
@@ -501,23 +546,39 @@ num_players(int *next_team)
 
     /* 3 or more tourn teams.... */
     /* kill off bots in teams with less than 4 players */
-
+    /* re-align *next_team so we don't be polish about it */
     if (tc >= 3) { /* 3 or more teams */
         if (team_count[ROM]>=4 && team_count[FED]>=4) {
             killrobot(KLI);
             killrobot(ORI);
+            if (team_count[ROM]>team_count[FED])
+                *next_team=FED;
+            else
+                *next_team=ROM;
         }
         if (team_count[FED]>=4 && team_count[ORI]>=4) {
             killrobot(ROM);
             killrobot(KLI);
+            if (team_count[ORI]>team_count[FED])
+                *next_team=FED;
+            else
+                *next_team=ORI;
         }
         if (team_count[ROM]>=4 && team_count[KLI]>=4) {
             killrobot(FED);
             killrobot(ORI);
+            if (team_count[KLI]>team_count[ROM])
+                *next_team=ROM;
+            else
+                *next_team=KLI;
         }
         if (team_count[KLI]>=4 && team_count[ORI]>=4) {
             killrobot(FED);
             killrobot(ROM);
+            if (team_count[KLI]>team_count[ORI])
+                *next_team=ORI;
+            else
+                *next_team=KLI;
         }
     }
 
