@@ -1,3 +1,4 @@
+- fix lack of shields shown on practice robots and iggies [Cameron]
 - fix two second delay on client connection if daemon not running [Cameron]
 - add game pause/resume/terminate tool, setgame [Cameron]
 - add max duplicate ip count for pickup play [Cameron]
