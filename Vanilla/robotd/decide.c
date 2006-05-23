@@ -688,9 +688,9 @@ check_take(ship)
       pl = pls->warteam_planets[k];
 
       /*
-      if(pl->pl_mydist < 20000 && pl_defended(pl,3)) continue;
+	if(pl->pl_mydist < 20000 && pl_defended(pl,3)) continue;
       */
-
+      
       if(pl->pl_mydist < min_dist){
 	 if((pl->pl_flags & PLAGRI) && me->p_kills < 1.7)
 	    continue;
@@ -698,30 +698,30 @@ check_take(ship)
 	 min_dist = pl->pl_mydist;
       }
    }
-
+   
    /* take indep planet first over regular planets */
    /* but take agris first if you have the armies */
    if (!tpl || !(tpl->pl_flags&PLAGRI && me->p_armies >= 5) ) {
-       min_dist = GWIDTH;	/* ind overrides non-ind */
-       for(k=0; k< pls->num_indsp; k++){
-	   pl = pls->ind_planets[k];
-	   
-	   /*
-	     if(pl->pl_mydist < 20000 && pl_defended(pl,3)) continue;
-	   */
-
-	   if(pl->pl_mydist < min_dist){
-	       tpl = pl;
-	       min_dist = pl->pl_mydist;
-	   }
-       }
+      min_dist = GWIDTH;	/* ind overrides non-ind */
+      for(k=0; k< pls->num_indsp; k++){
+         pl = pls->ind_planets[k];
+	 
+         /*
+           if(pl->pl_mydist < 20000 && pl_defended(pl,3)) continue;
+         */
+	 
+         if(pl->pl_mydist < min_dist){
+            tpl = pl;
+            min_dist = pl->pl_mydist;
+         }
+      }
    }
    if(tpl){
       if(pls->total_textra_armies + me->p_armies < tpl->pl_armies)
 	 return 0;
-
+      
       /*
-      printf("decide to take %s\n", tpl->pl_name);
+	printf("decide to take %s\n", tpl->pl_name);
       */
       if(_server == SERVER_GRIT && ship)
 	 *ship = ASSAULT;

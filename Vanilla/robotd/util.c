@@ -449,7 +449,7 @@ mfprintf(char *format, ...)
 {
    FILE	*fo;
    va_list	ap;
-
+   
    if(!read_stdin)
       return;
    

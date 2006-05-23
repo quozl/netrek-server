@@ -1917,14 +1917,14 @@ register int bytes;
         n = write(fd, buf, bytes);
         if (n < 0){
 #ifdef ATM
-            if (fd == udpSock) {
-	        /* mfprintf(stderr, "Tried to write %d, 0x%x, %d (error %d)\n",
+	   if (fd == udpSock) {
+	      /* mfprintf(stderr, "Tried to write %d, 0x%x, %d (error %d)\n",
 		 fd, buf, bytes, errno); */
-                fprintf(stderr, "Tried to write %d, 0x%x, %d (error %d)\n",
-                    fd, buf, bytes, errno);
-	        perror("write");
-                printUdpInfo();
-            }
+	      fprintf(stderr, "Tried to write %d, 0x%x, %d (error %d)\n",
+		      fd, buf, bytes, errno);
+	      perror("write");
+	      printUdpInfo();
+	   }
 #endif
             return(-1);
 	}
@@ -2392,12 +2392,10 @@ send:
         UDPDIAG(("Received UDP verification\n"));
         break;
     default:
-      /* mfprintf(stderr, "netrek: Got funny reply (%d) in UDP_REPLY packet\n",
-	 packet->reply); */
-        fprintf(stderr, "netrek: Got funny reply (%d) in UDP_REPLY packet\n",
-                packet->reply);
-
-        break;
+       /* mfprintf(stderr, "netrek: Got funny reply (%d) in UDP_REPLY packet\n", packet->reply); */
+       fprintf(stderr, "netrek: Got funny reply (%d) in UDP_REPLY packet\n",
+	       packet->reply);
+       break;
     }
 }
 
@@ -2409,9 +2407,9 @@ openUdpConn()
     int attempts;
 
     if (udpSock >= 0) {
-      /* mfprintf(stderr, "netrek: tried to open udpSock twice\n"); */
-        fprintf(stderr, "netrek: tried to open udpSock twice\n");
-        return (0);     /* pretend we succeeded (this could be bad) */
+       /* mfprintf(stderr, "netrek: tried to open udpSock twice\n"); */
+       fprintf(stderr, "netrek: tried to open udpSock twice\n");
+       return (0);     /* pretend we succeeded (this could be bad) */
     }
 
     if ((udpSock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
