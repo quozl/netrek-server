@@ -144,10 +144,10 @@ update_players()
       }
 
       if(p->invisible) {
-	 p->closest_pl = NULL;
+	  p->closest_pl = NULL;
       } else {
-	 p->closest_pl = closest_planet(j, &pldist, p->closest_pl);
-	 p->closest_pl_dist = pldist;
+	  p->closest_pl = closest_planet(j, &pldist, p->closest_pl);
+	  p->closest_pl_dist = pldist;
       }
 
       if(j->p_flags & PFBOMB)
@@ -279,7 +279,7 @@ check_active_enemies()
       if(_state.player_type == PT_OGGER || _state.player_type == PT_DOGFIGHTER){
 	 timer ++;
 	 if(timer == 100){
-	    /* mfprintf(stderr, "nobody to fight\n"); */
+	   /* mfprintf(stderr, "nobody to fight\n"); */
 	    fprintf(stderr, "nobody to fight\n");
 	    exitRobot(0);
 	 }

@@ -183,7 +183,7 @@ shmem_cloakd(j)
    r_shmem->px[me->p_no][j->p_no] = j->p_x;
    r_shmem->py[me->p_no][j->p_no] = j->p_y;
    r_shmem->tv[me->p_no][j->p_no] = tv;
-   
+
    if(r_shmem -> num_robots < 2)	/* XXX */
       return 0;
    

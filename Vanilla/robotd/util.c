@@ -445,7 +445,7 @@ nint(x)
 mfprintf(FILE *fo, char *format, ...)
 {
    va_list	ap;
-   
+
    if(!read_stdin)
       return;
    
