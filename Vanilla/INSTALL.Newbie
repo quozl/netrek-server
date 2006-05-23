@@ -2,8 +2,22 @@
 Instructions for installing the Vanilla Netrek Server as a Newbie Server
 
 - install as described in INSTALL
-- change .sysdef to include NEWBIE=1
-- change .ports (see docs/sample_ports)
+- change etc/sysdef to include NEWBIE=1
+- change etc/syddef the following modes to 0 
+	INL=0
+	DOGFIGHT=0
+	TOPGUN=0
+	BASEPRACTISE=0
+	PRET=0
+	HOCKEY=0
+  These are exclusive to each other.
+- change etc/sysdef to include NEWTURN=0 robots don't know how to fly w/ this.
+- change etc/sysdef to include VECTOR=0 robots don't know how to shoot w/ this.
+- change etc/sysdef to include TOURN=4 Merlin assumes this.
+- change etc/sysdef to include CONFIRM=0 (or 2) Robots only have reserved.c
+  verification.
+- change etc/sysdef to include CHECKSCUM=0 Or you will get lots of logs
+- change etc/ports (see docs/sample_ports)
   - port 3592, enable with -q 10 for the practice robots
   - port 2592, use as normal but with -q 9
 - consider blocking port 3592 inbound connections from offsite
