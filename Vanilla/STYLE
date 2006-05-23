@@ -1,12 +1,19 @@
-Coding style for patch acceptance on Vanilla project.
+Coding Style
+------------
 
- *  for minor changes, do not change indentation,
- *  for major changes to a function, reindent the function,
- *  for major changes to a file, reindent the file.
- *  indent by either two or four spaces, or use tabs, just be
-    consistent within a file, preferred is four spaces.
+1.  for minor changes, do not change indentation, keep it consistent
+    with the indentation in the file you are working on,
 
-{{{
+2.  for major changes to a file, reindent the file according to 4
+    below,
+
+3.  for new files, indent the file according to 4 below,
+
+4.  indent by either two or four spaces, or use tabs, but be
+    consistent within a file, preferred is four spaces, no tabs.
+
+An example
+
 static int foo(int a)
 {
     if (a) {
@@ -17,9 +24,33 @@ static int foo(int a)
         jkl;
     }
 }
-}}}
 
-Darcs patch name and long comment requirements for patch acceptance:
+
+Darcs - Sending Patches
+-----------------------
+
+1.  if code is your own work, distribute it as a darcs patch, either
+using "darcs send", "darcs send --output=somefile.dpatch" or by
+publishing it on a repository accessible via HTTP.
+
+2.  if you are unable to use darcs, and want your code to appear
+in the upstream darcs repositories, send a unified diff privately to
+another person who can use darcs.  Don't send it to the list.  That
+person can create the patch (using --author "youremail@example.com")
+in your name, and publish it as a dpatch.
+
+3.  if you receive code via the mailing list that is in a non-darcs
+format, please branch your repository to test the patch.  If you feel
+the need to use "darcs record" please do not publish the dpatch.  Wait
+until a dpatch is sent to the list before applying it to your main
+working repository.
+
+The intention of these patch sending guidelines is to reduce the
+effort required by developers in resolving conflicts.
+
+
+Darcs - Patch Name and Long Comment
+-----------------------------------
 
 1.  the patch name should be the text that would normally be entered
 into the NEWS file of the project.  It is a user-visible description
@@ -33,3 +64,14 @@ change, and their e-mail address.  It is the body of the ChangeLog
 entry.
 
 http://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html
+
+
+Darcs - Signed-off-by
+---------------------
+
+Peer review is where another developer reviews a patch and agrees to
+inclusion.  Some developers may be responsible for certain components.
+Their sign-off may be helpful.  To sign off on a patch, reply to it
+and add a line:
+
+Signed-off-by: Your Name <you@example.com>
