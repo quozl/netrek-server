@@ -22,18 +22,51 @@
 
 int	recflag = 0;
 
+
+/* setflag()
+ *
+ * Returns an incrementing number from 0 during start of program
+ * and stores it in global variable _udcounter. 
+ * _udcounter increments by 1 for every 100ms of time that 
+ * has passed using the mtime function, which returns 
+ * gettimeofday information to the nearest millisecond.
+ *
+ * Function used to return negative numbers when mtime
+ * cycled (anywhere between 2 and 18 hours). Added code 
+ * so udcounter is always incrementing
+ *
+ * Function may still break if unix super-user executes 
+ * set-time-of-day function, via unix command. 
+ */ 
 setflag()
 {
-   static int start;
+   static int start=0; /* start of the robot program */
+   static int cycle=0; /* how many times udtime cycles */
+   static int cyclestarted=0;
+   int udtime; /* 100ms increments JKH */
+   
+   udtime = mtime(1)/100;
+
    if(!start){
-      start = mtime(1)/100;
+      start = udtime;
       _udcounter = 0;
    }
-   else
-      _udcounter = mtime(1)/100 - start;
-   /*
-   printf("_udcounter %d\n", _udcounter);
-   */
+   else {
+      _udcounter = udtime - start + 
+         (cycle * ( (0x0000ffff*1000+999)/100 + 1 ) );
+   }                  /* the max udtime could ever be + 1 */
+
+   /* increment cycle once when udtime flips */
+   if ( (udtime < start) && (cyclestarted == 0) ) {
+      cyclestarted = 1;
+      cycle = cycle + 1;
+   }
+
+   /* reset cyclestart when udtime is "normal" again */
+   if ( udtime > start ) {
+      cyclestarted = 0;
+   }
+
 }
 
 input()
