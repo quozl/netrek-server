@@ -1,4 +1,10 @@
-Mon May 22 14:31:58 2006  Trent Piepho <xyzzy@speakeasy.org>
+Thu May 25 09:57:18 2006  Stas Pirogov  <keyos@keyos.org>
+
+	* configure.in: configure.in: test for ranlib was failing on
+	Solaris. This is probably caused by different /bin/sh
+	interpreters.  This fix should satisfy all of them.
+
+Mon May 22 14:31:58 2006  Trent Piepho  <xyzzy@speakeasy.org>
 
 	* Makefile.in: remove calls to glib-config, they aren't needed
 	and fail if glib-config isn't present.
