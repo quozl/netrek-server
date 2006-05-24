@@ -1,3 +1,14 @@
+Tue May 23 17:21:56 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* ntserv/genspkt.c Fix SP_2 flags, for real.  The sndFlags
+	function will not send flags of observers (except for PFOBSERV of
+	course).  The SP_2 flag sampling code will sample the flags of
+	robots now.  It will not sample observers' flags, except for an
+	observer's own flags.  The SP_2 sampling code will update the last
+	sent flags data, so shield/cloak are not sent again via
+	sndFlags().  When sndFlags() does send flags, it will send the
+	correct shield/cloak and not zero.
+
 Wed May 24 11:18:31 2006  James Cameron  <quozl@us.netrek.org>
 
 	* autogen.sh: add GNU standard autotools configuration sequence,
