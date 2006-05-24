@@ -442,21 +442,15 @@ nint(x)
 }
 #endif
 
-/* This function causes a SIGSEV, dunno why JKH */
-/* replacing it with a straight fprintf which */
-/* accomplishes the same thing */
-mfprintf(char *format, ...)
+mfprintf(FILE *fo, char *format, ...)
 {
-   FILE	*fo;
    va_list	ap;
    
    if(!read_stdin)
       return;
    
    va_start(ap, format);
-   fo = va_arg(ap, FILE *);
    (void)vfprintf(fo, format, ap);
-   fflush(stdout);
+   fflush(fo);
    va_end(ap);
 }
-
