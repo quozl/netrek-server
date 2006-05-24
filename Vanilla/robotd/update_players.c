@@ -1352,7 +1352,7 @@ struct planet	*closest_planet(j, dist, opl)
 
 {
    register			k;
-   register struct planet	*pl, *rp = NULL;
+   register struct planet	*pl, *rp = opl;
    register			d, mdist = INT_MAX;
 
    if(opl && (mdist = ihypot((double)(j->p_x - opl->pl_x), 
@@ -1360,8 +1360,6 @@ struct planet	*closest_planet(j, dist, opl)
       *dist = mdist;
       return opl;
    }
-
-   *dist = INT_MAX;
 
    for(k=0, pl=planets; k < MAXPLANETS; k++, pl++){
 
