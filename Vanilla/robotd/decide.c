@@ -683,6 +683,7 @@ check_take(ship)
 
    if(pls->total_textra_armies == 0 && me->p_armies == 0) return 0;
 
+   /* Look for closest takeable enemy planet */
    for(k=0; k< pls->num_warteamsp; k++){
       pl = pls->warteam_planets[k];
 
