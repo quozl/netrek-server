@@ -46,25 +46,38 @@ assault()
 /* determine if there is risk of death due to res of opponent */
 static int risk_res_death(struct planet *pl)
 {
-  int i;
-  if (pl == NULL) return 0;
-  /* One of the home planets identified by server etc/sysdef PLANETS */
-  if (pl->pl_flags & PLHOME) return 1;
-  /* Altair in standard position */
-  if (pl->pl_no == 7 && pl->pl_x == 11000 && pl->pl_y == 75000) return 1;
-  /* Draconis in standard position */
-  if (pl->pl_no == 16 && pl->pl_x == 28000 && pl->pl_y == 23000) return 1;
-  /* Scorpii in standard position */
-  if (pl->pl_no == 26 && pl->pl_x == 70720 && pl->pl_y == 26320) return 1;
-  /* Within rectangular phaser distance of any home planet res point */
-  for (i=0,pl=planets;i<MAXPLANETS;i++,pl++) {
-    if (pl->pl_flags & PLHOME) {
-      if(ABS(pl->pl_x - me->p_x) < 12000 && ABS(pl->pl_y - me->p_y) < 12000) {
-	return 1;
+   /* Home planet locations.  This will not work if the HWs are not at
+   their normal indexes.  This should always be the case, even for
+   non-standard planet layouts. */
+   const static int hw[4] = {0, 10, 20, 30};
+   int i;
+
+#if 0
+   /* Code to find home planets by name, like the bot does to refit. */
+   static int found_hw = 0;
+   if(!found_hw) {
+      extern struct planet *team_planet(int);
+      hw[0] = (team_planet(FED)?:&planets[0])->pl_no;
+      hw[1] = (team_planet(ROM)?:&planets[0])->pl_no;
+      hw[2] = (team_planet(KLI)?:&planets[0])->pl_no;
+      hw[3] = (team_planet(ORI)?:&planets[0])->pl_no;
+      found_hw = 1;
+      mfprintf(stderr, "planets at %d %d %d %d\n", hw[0], hw[1], hw[2], hw[3]);
+   }
+#endif
+
+   if(pl == NULL) return 0;
+
+   for(i = 0; i < 4; i++){
+      if((1<<i) == me->p_team) continue; /* No danger at MY homeworld */
+
+      pl = &planets[hw[i]];
+      /* Inside rectangular phaser/tractor range of a ressing ship. */
+      if(ABS(pl->pl_x - me->p_x) < 12200 && ABS(pl->pl_y - me->p_y) < 12200){
+	 return 1;
       }
-    }
-  }
-  return 0;
+   }
+   return 0;
 }
 
 goto_assault_planet()
