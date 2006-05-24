@@ -1,3 +1,44 @@
+Wed May 24 10:48:23 2006  James Cameron  <quozl@us.netrek.org>
+
+	* robotd/util.c (mfprintf): fix a regression caused by conversion
+	to stdargs done on Fri Oct 31 09:15:42 2003.
+
+Wed May 24 00:34:00 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
+
+	* robots/newbie.c changed some tabbing for better indent and
+	bracing consistency.
+
+	* robots/newbie.c added #defines POSITIONX and POSITIONY so
+	there's only one place the change the desired x and y position of
+	Merlin.
+
+	* robots/newbie.c added checkpos() function which checks for
+	changes in Merlin's position. Replaces him back into POSITIONX and
+	POSITIONY once it finds that Merlin has stopped moving for 15
+	seconds.
+
+	* robots/newbie.c corrected misspellings of various comments.
+
+	* robots/newbie.c modified num_players() function to return the
+	correct *next_team based on 4 vs. 4 t-mode settings also.
+
+Tue May 23 23:36:00 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
+
+	* robotd/input.c re-wrote the setflag() function. This function is
+	supposed to update the global variable _udcounter. _udcounter is
+	supposed to be a counter that starts at 0, and increments by 1 for
+	every 100 milliseconds. In the orignal code. _udcounter would do
+	this properly for an undetermined amount of time,
+	(anywhere between 30 minutees to 18 hours, depending on what time
+	of day it was!!!). When _udcounter breaks, usually for several
+	hours on an 18 hour cycle, robots report armies carried, but do
+	not report which planet it intends to take.  This is because
+	instead of a positive incrementing number, udcounter counts with a
+	negative decrementing number.  A whole bunch of other things
+	break, but they are not obvious unless you are playing the
+	game. Now, _udcounter should work for about 250 days, before
+	breaking. (It still breaks).
+
 Tue May 23 14:00:37 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/genspkt.c (sndFlags): for practice robots, terminators,
@@ -6,7 +47,8 @@ Tue May 23 14:00:37 2006  James Cameron  <quozl@us.netrek.org>
 	See also "S_P2 new flag sampling" in updateShips().  Reported by
 	William Balcerski.
 
-Mon May 22 14:03:38 2006  Trent Piepho <xyzzy@speakeasy.org>
+Mon May 22 14:03:38 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
 	* res-rsa/configure.in  The check for gmp fails for gmp version 3,
 	fix it by adding a secondary check for the gmp3 symbol names.
 
@@ -158,8 +200,8 @@ Thu May 18 02:05:53 2006  Stephen Thorne  <stephen@thorne.id.au>
 
 Thu May 18 01:11:21 2006  Stephen Thorne  <stephen@thorne.id.au>
 
-	* tests/build: Set the configure and mktrekon files executable, just in
-	case.
+	* tests/build: Set the configure and mktrekon files executable,
+	just in case.
 
 	* configure.in: Add AC_PROG_LIBTOOL macro.
 
@@ -167,15 +209,16 @@ Thu May 18 01:11:21 2006  Stephen Thorne  <stephen@thorne.id.au>
 
 Wed May 17 11:12:04 2006  Stephen Thorne  <stephen@thorne.id.au>
 
-	* ntserv/Makefile.in (libnetrek.a): Pass @RANLIB_FLAGS@ to the ranlib
-	command.
+	* ntserv/Makefile.in (libnetrek.a): Pass @RANLIB_FLAGS@ to the
+	ranlib command.
 
-	* configure.in: Check for if ranlib exits with a non-zero exit when run
-	with a bare '-c' option. On debian, ranlib will exit with a 0 exit code
-	if passed a filename that doesen't exist. On OSX, '-c' is a valid flag, 
-	and if passed alone, will exit with an exit code of 1. A better way of
-	detecting this would be nice. If using the OSX version, then we pass -c
-	to all ranlib calls. Fixes build bug on OSX.
+	* configure.in: Check for if ranlib exits with a non-zero exit
+	when run with a bare '-c' option. On debian, ranlib will exit with
+	a 0 exit code if passed a filename that doesen't exist. On OSX,
+	'-c' is a valid flag, and if passed alone, will exit with an exit
+	code of 1. A better way of detecting this would be nice. If using
+	the OSX version, then we pass -c to all ranlib calls. Fixes build
+	bug on OSX.
 
 Tue May 16 16:59:29 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
 
@@ -247,6 +290,7 @@ Thu Apr 27 09:32:33 2006  James Cameron  <quozl@us.netrek.org>
 	* include/genspkt.h: add separate prototypes for genspkt.c since
 	they cannot live in proto.h, due to the packet structures
 	required.
+	
 	* tools/cambot.c: fix compilation warnings with -Wall.
 
 Wed Apr 26 22:58:34 2006  James Cameron  <quozl@us.netrek.org>
