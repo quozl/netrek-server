@@ -189,7 +189,7 @@ assault_planet()
 
 #ifdef nodef
    if(!do_cloak(0))
-      req_cloak_off();
+      req_cloak_off("no do cloak");
 #endif
 
    cloak=0; /* start assuming you don't need to cloak */

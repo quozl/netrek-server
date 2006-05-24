@@ -49,7 +49,7 @@ escort()
    /* check internal state */
    switch(_state.escort){
       case 0:
-	 req_cloak_off();
+	 req_cloak_off("escort: 0");
 	 /* just got request, need to go to planet */
 	 if(DEBUG & DEBUG_ESCORT)
 	    printf("goto escort planet %s\n", escpl->pl_name);
@@ -58,7 +58,7 @@ escort()
 
       case 1:
 	 /* close enough to escort planet .. wait for escortee */
-	 req_cloak_off();
+	 req_cloak_off("escort: 1");
 	 if(DEBUG & DEBUG_ESCORT)
 	    printf("wait for escort %s\n", escp->p->p_mapchars);
 	 wait_for_escort(escp, escpl);
@@ -82,7 +82,7 @@ escort()
 	 break;
       
       case 5:
-	 req_cloak_off();
+	 req_cloak_off("escort: 5");
 	 /* do defenders */
 	 if(DEBUG & DEBUG_ESCORT)
 	    printf("no defenders\n");

@@ -173,7 +173,7 @@ beam_up_armies(pl)
    else{
       _state.lock = 0;
       req_shields_up();
-      req_cloak_off();
+      req_cloak_off("no armies to beam");
       _state.p_desspeed = me->p_speed;
       return;
    }

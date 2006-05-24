@@ -719,7 +719,7 @@ s_recharge()
    }
    if((me->p_flags & PFCLOAK) &&
       me->p_ship.s_type != ASSAULT && (!pl || !(pl->pl_flags & PLFUEL))){
-      req_cloak_off();
+      req_cloak_off("recharge: no fuel planet");
    }
 
    if(_state.pl_danger){
