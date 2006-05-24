@@ -195,7 +195,31 @@ assault_planet()
    else
       req_cloak_off("no cloak in assault_planet()");
 
-   if(armies > 4){
+   /* Planets that _can_ be dropped on:
+   1. Planets owned by your team
+   2. Planets that you are hostile to
+   3. Independent planets (owned by team 0)
+   Everything else can't be dropped on.  Planets in groups 1 and 3 _can't_
+   be bombed, only group 2 can be bombed, ie. bombable planets is a
+   proper subset of droppable planets. */
+
+   /* Turn off assault for non-droppable (thus non-bombable too) planets. */
+   if(!unknownpl(pl) && !( (pl->pl_owner == me->p_team) ||
+   	((me->p_swar|me->p_hostile) & pl->pl_owner) ||
+	(pl->pl_owner == 0) )){
+      req_shields_up();
+      unassault_c("planet not droppable");
+      return;
+   }
+
+   if(pl->pl_owner == me->p_team && pl->pl_armies >= 4){
+      req_shields_up();
+      unassault_c("planet fully reinforced");
+      return;
+   }
+
+   /* Only bomb bombable planets. */
+   if(armies > 4 && ((me->p_swar|me->p_hostile) & pl->pl_owner)){
       req_bomb();
       return;
    }
