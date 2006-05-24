@@ -1,3 +1,10 @@
+Wed May 24 11:18:31 2006  James Cameron  <quozl@us.netrek.org>
+
+	* autogen.sh: add GNU standard autotools configuration sequence,
+	deprecating execution of README.darcs.  Manual build process then
+	becomes "sh autogen.sh" followed by the usual configure, make, and
+	make install.
+
 Wed May 24 10:48:23 2006  James Cameron  <quozl@us.netrek.org>
 
 	* robotd/util.c (mfprintf): fix a regression caused by conversion
