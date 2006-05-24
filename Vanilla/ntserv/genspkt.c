@@ -151,8 +151,8 @@ static u_char    clientVPlayers[MAXPLAYER*VPLAYER_SIZE + 16];
 u_char clientVKills[MAXPLAYER*2+2 +4];
 int clientVKillsCount;
 struct stats_s_spacket singleStats;
-unsigned char n_flags[MAXPLAYER]; 
-int highest_active_player;
+static unsigned char n_flags[MAXPLAYER];
+static int highest_active_player;
 
 #if MAXPLAYER > 32
 static u_char	clientVXPlayers[33*4];
@@ -300,6 +300,9 @@ void sendVKills(void)
 
 }
 
+/* This function is for sending the flags of OTHER players, the player's
+   own flags are handled elsewhere.  The cambot will set f_many_self,
+   and use this function to record the flags of all players.  */
 int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 {
 /*#define FLAGMASK (PFSHIELD|PFBOMB|PFORBIT|PFCLOAK|PFROBOT|PFBEAMUP|PFBEAMDOWN|PFPRACTR|PFDOCK|PFTRACT|PFPRESS|PFDOCKOK) aieee, too much.  7/27/91 TC */ 
@@ -314,18 +317,17 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
     int tractor = ((F_show_all_tractors || f_many_self) && pl->p_flags&PFTRACT)?
                       (pl->p_tractor|0x40):0;
 
+#ifdef OBSERVERS
+    if (!f_many_self && pl->p_status == POBSERV) {
+    	mask = PFOBSERV;	/* All we need to know about observers. */
+	tractor = 0;
+    } else
+#endif
     if (howmuch == UPDT_ALL) {
 	mask = FLAGMASK;
 	if(F_show_all_tractors || f_many_self) mask |= PFTRACT|PFPRESS;
     } else
 	mask = INVISOMASK;
-	
-    /* With short packets 2 flag sampling, these don't need to be sent */
-    if (!(pl->p_flags & PFROBOT)) {
-        if (send_short > 1 && pl->p_no < 32)
-            mask &= ~(PFSHIELD|PFCLOAK);
-    }
-
 
     if ((ntohl(flags->flags)&mask) == (pl->p_flags&mask) &&
         flags->tractor==tractor)
@@ -1171,17 +1173,18 @@ updateShips(void)
 	sndPlayerInfo(cpli, pl);
 	sndKills(kills, pl);
 
+	/* S_P2 new flag sampling */
+	if (send_short > 1) {
+	    u_int oldflags;
 #ifdef OBSERVERS
-	if(pl->p_status != POBSERV){
+	    /* Skip observers' flags, unless I am the observer. */
+	    if (pl->p_status != POBSERV || pl == me) {
 #endif
-	    /* S_P2 new flag sampling */
-	    if(!(pl->p_flags & PFROBOT)) { /* No robos please */
 		switch(pl->p_status){
 		case PALIVE: /* huh, we must work */
 		    highest_active_player = i;
 		    if(pl->p_flags & PFCLOAK){
 			n_flags[i] = 1;
-			break;
 		    }
 		    else if(pl->p_flags & PFSHIELD){
 			n_flags[i] = 2;
@@ -1200,10 +1203,16 @@ updateShips(void)
 		    /* Is it ok to send the old value ? */
 		    break;
 		}
-	    } /* robos out */ 
+		/* Mark shield and cloak as updated, so they won't be resent
+		   again with a flags packet. */
+		oldflags = ntohl(flags->flags);
+		oldflags &= ~(PFSHIELD|PFCLOAK);
+		oldflags |= pl->p_flags&(PFSHIELD|PFCLOAK);
+		flags->flags = htonl(oldflags);
 #ifdef OBSERVERS
-	}
+	    }
 #endif
+	}
 
 	if (sndPStatus(pstatus, pl)) {
 	    update=1;
