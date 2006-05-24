@@ -1863,10 +1863,16 @@ struct distress *loaddistress(enum dist_type i)
     dist.distype = i;
 
     dist.close_pl = me_p->closest_pl->pl_no;
-    dist.close_en = _state.closest_e->p->p_no;
-    dist.close_fr = _state.closest_f->p->p_no;
-    dist.close_j = (_state.closest_e->dist < _state.closest_f->dist) ?
-                    dist.close_en : dist.close_fr;
+    dist.close_en = _state.closest_e ? _state.closest_e->p->p_no : me->p_no;
+    dist.close_fr = _state.closest_f ? _state.closest_f->p->p_no : me->p_no;
+    if(!_state.closest_f) {
+       dist.close_j = dist.close_en;
+    } else if(!_state.closest_e) {
+       dist.close_j = dist.close_fr;
+    } else {
+       dist.close_j = (_state.closest_e->dist < _state.closest_f->dist) ?
+		       dist.close_en : dist.close_fr;
+    }
                     
     /* These are just guesses.... */
     dist.tclose_pl = 0;
