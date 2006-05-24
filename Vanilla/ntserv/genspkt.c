@@ -1598,7 +1598,7 @@ updateVPlayer(struct player_spacket *p)
 #if MAXPLAYER > 32
     int		j = clientVXPlayerCount;
 #endif
-    U_LONG	x = ntohl(p->x), y = ntohl(p->y);
+    LONG	x = ntohl(p->x), y = ntohl(p->y);
     int 	dir,dx,dy;
     int     		view = SCALE * WINSIDE / 2;
 
