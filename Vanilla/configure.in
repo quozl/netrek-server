@@ -482,7 +482,8 @@ fi
 AC_PROG_LIBTOOL
 
 AC_MSG_CHECKING(for OSX ranlib)
-if $RANLIB -c 2>/dev/null; then
+(eval $RANLIB -c) 2>&5
+if test $? -ne 0; then
     RANLIB_FLAGS=
     AC_MSG_RESULT(no)
 else
