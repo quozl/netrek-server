@@ -565,6 +565,7 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 	tp->type = SP_TORP;
 	tp->x    = htonl(t->t_x);
 	tp->y    = htonl(t->t_y);
+	tp->dir  = t->t_dir; /* The robot needs this */
 	tp->tnum = htons(i);
 	sendClientPacket(tp);
 	if ( (t->t_status != tpi->status)
