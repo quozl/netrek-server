@@ -1,23 +1,29 @@
 #!/bin/sh
 set -ev
 
+# test that current working directory matches darcs get expectation
+if [ ! -f autogen.sh ]; then echo "build: run in wrong directory"; exit 1; fi
+
 # where to build
 BUILDROOT=/tmp/netrek-server.$$
 
 # copy the repository there
-darcs put $BUILDROOT
+darcs get .. $BUILDROOT
+
+# go there
+cd $BUILDROOT/Vanilla
 
 # build configure
-cd $BUILDROOT/Vanilla && libtoolize && aclocal && autoconf
-cd $BUILDROOT/Vanilla/res-rsa && autoconf
-
-# fix masks
-chmod +x $BUILDROOT/Vanilla/tools/mktrekon
+sh autogen.sh
 
 # configure
-cd $BUILDROOT/Vanilla && ./configure --prefix=$BUILDROOT/out
+./configure --prefix=$BUILDROOT/out
 
 # build all
-cd $BUILDROOT/Vanilla && make
+make
 
+# install all
+make install
+
+# report success
 echo success
