@@ -76,37 +76,101 @@ Tue May 23 14:00:37 2006  James Cameron  <quozl@us.netrek.org>
 	See also "S_P2 new flag sampling" in updateShips().  Reported by
 	William Balcerski.
 
+Tue May 23 04:06:08 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* ntserv/genspkt.c Hadley's bot expects to get torp direction
+	from the server, but the server only sends it for your own torps. 
+	Changed to send it for other torps too.  Without it, the bot
+	thinks all torps are going straight up, making it a very bad
+	dodger (unless you attack from below).  Should be fixed to only
+	turn this on for the robot, so as not to help borgs.
+
+Tue May 23 03:05:55 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/assault.c: check for res danger would make the robot
+	cloak when near _any_ home planet, so it would cloak even when
+	bombing it's own core.  Fixed this, and made it faster too.
+
+Tue May 23 01:51:17 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/assault.c, robotd/escort.c, robotd/getarmies.c,
+	robotd/robot.c: some calls to req_cloak_off() were missing the
+	function's argument (reason string).
+
+Tue May 23 01:07:02 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/update_players.c: fix a warning about a uninitialized use
+	of pldist in update_players().
+
+Tue May 23 00:57:29 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/dmessage.c: code to generate the RCD message didn't
+	handle the case when there were no visible friendly and/or enemy
+	ships.  In this case, _state.closest_{e,f} would be NULL.
+
+Tue May 23 00:52:55 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/update_players.c: function closest_planet() would usually
+	return NULL every other time it was called.  For speed, it would
+	check the previous closest planet first, then look for a _closer_
+	planet.  If it didn't find one, it returned NULL, rather than the
+	previous (and current) closest planet.
+
+Mon May 22 16:53:42 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/decide.c: fix several bugs with check_take().  It didn't
+	handle the case when no enemy planets were left.  It looked at the
+	last enemy planet in the list, rather than the target enemy planet
+	when deciding if it should take neut planets.  It would skip
+	looking for neuts when it found an enemy agri and *didn't* have
+	enough armies to take it.
+
+Mon May 22 16:31:58 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/assault.c: have robot check the planet status in assault
+	code, so that if a planet changes teams while it being assaulted
+	the robot will adapt.  It will not try to drop on a planet it can
+	not drop on, and not try to bomb a planet it can not bomb.
+
+	Also, the robot will not reinforce a planet past 4 armies after it
+	takes it.
+
+Mon May 22 15:39:35 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* robotd/util.c: when mfprintf() was change from varargs to
+	stdarg, it wasn't done correctly.  Fix this.
+
 Mon May 22 14:03:38 2006  Trent Piepho  <xyzzy@speakeasy.org>
 
-	* res-rsa/configure.in  The check for gmp fails for gmp version 3,
+	* res-rsa/configure.in: the check for gmp fails for gmp version 3,
 	fix it by adding a secondary check for the gmp3 symbol names.
 
 Mon May 22 10:53:03 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
 
-	* robotd/assault.c added extra check not to bomb your own armies. 
-	Bots will try to bomb own armies when 2 carriers drop on same planet.
-	And planet ends up with >4 armies. 
+	* robotd/assault.c: added extra check not to bomb your own armies.
+	Bots will try to bomb own armies when 2 carriers drop on same
+	planet.  And planet ends up with >4 armies.
 
-	* robotd/decide.c changed some tabbing
+	* robotd/decide.c: changed some tabbing.
 
-	* robotd/decide.c corrected logic in check_take function. Robotd now
-	takes neutral planets. Before it had a tendency to ignore neutral 
-	planets. Also used to crash out when no more enemy planets. Both are
-	fixed with this. 
+	* robotd/decide.c: corrected logic in check_take function. Robotd
+	now takes neutral planets. Before it had a tendency to ignore
+	neutral planets. Also used to crash out when no more enemy
+	planets. Both are fixed with this.
 
-	* robotd/main.c, shmem.c, socket.c, update_players.c
-	removed mfprintf function. replaced with fprintf function until such
-	time that mfprintf function is fixed so it doesn't crash. Bandaid. 
+	* robotd/main.c, shmem.c, socket.c, update_players.c: removed
+	mfprintf function. replaced with fprintf function until such time
+	that mfprintf function is fixed so it doesn't crash. Bandaid.
 
-	* robotd/update_players.c changed some tabbing, added some missing
-	braces.
+	* robotd/update_players.c: changed some tabbing, added some
+	missing braces.
 
-	* robotd/update_players.c changed closest_planet() function to 
+	* robotd/update_players.c: changed closest_planet() function to
 	return the current closest planet instead of NULL when it cannot
-	find a closer planet. 
+	find a closer planet.
 
-	* robotd/util.c added comments to reflect that mfprintf causes
-	crashes for as yet unknown reasons. 
+	* robotd/util.c: added comments to reflect that mfprintf causes
+	crashes for as yet unknown reasons.
 
 Sun May 21 22:22:41 2006  James Cameron  <quozl@us.netrek.org>
 

@@ -1,3 +1,8 @@
+- server sends torp direction, robots dodge better [Piepho]
+- make robots cloak near enemy home planets due res danger [Piepho]
+- make robots take neut planets once there are no enemy planets [Piepho]
+- make robots recognise planet situational change while assaulting [Piepho]
+- various robot fixes that triggered comprehensive work by others [Huang]
 - fix lack of shields shown on practice robots and iggies [Cameron]
 - fix two second delay on client connection if daemon not running [Cameron]
 - add game pause/resume/terminate tool, setgame [Cameron]
