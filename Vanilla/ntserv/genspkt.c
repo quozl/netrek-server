@@ -628,6 +628,11 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	     || ((t->t_war & me->p_team) != tpi->war)) {
 	    tpi->type   = SP_PLASMA_INFO;
 	    tpi->war    = t->t_war & me->p_team;
+	    /* In PP plasma mode, plasmas change teams, but client doesn't
+	       know.  If player is at war with plasma's new team, set the
+	       plasma's war flag, so client knows it is hostile. */
+	    if (pingpong_plasma && (t->t_team & me->p_war))
+		tpi->war |= me->p_team;
 	    tpi->pnum   = htons(i);
 	    tpi->status = t->t_status;
 	    sendClientPacket(tpi);
