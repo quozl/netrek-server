@@ -1,3 +1,16 @@
+Thu May 25 11:37:27 2006  James Cameron  <quozl@us.netrek.org>
+
+	* autogen.sh: add res-rsa to autoconf re-run,
+
+	* tests/build: test for correct directory, use darcs get instead
+	of put, use autogen.sh instead of running autotools here, add the
+	install target.
+
+	"darcs put" is slow, the darcs manual recommends "darcs get" instead, 
+	which is certainly faster.  But "darcs get" must have the exact path to
+	a repo, not like "darcs put".  So a test is added to check that we are
+	in the right directory first.
+
 Thu May 25 09:57:18 2006  Stas Pirogov  <keyos@keyos.org>
 
 	* configure.in: configure.in: test for ranlib was failing on
