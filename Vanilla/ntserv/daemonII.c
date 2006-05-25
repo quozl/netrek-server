@@ -494,7 +494,8 @@ static void political_begin(int message)
                 pmessage(0, MALL, "GOD->ALL","Diplomat insults foriegn emperor's mother and fighting breaks out!");
                 break;
 	case 6:
-                pmessage(0, MALL, "GOD->ALL","Dan Quayle declares self as galactic emperor and chaos breaks out!");
+                pmessage(0, MALL, "GOD->ALL","%s declares self as galactic emperor and chaos breaks out!",
+			 WARMONGER);
                 break;
 	default:
                 pmessage(0, MALL, "GOD->ALL","Peace parties have been demobilized, and fighting ensues.");
@@ -524,7 +525,8 @@ static void political_end(int message)
                 pmessage(0, MALL, "GOD->ALL","Diplomat apologizes to foreign emperor's mother and invasion is stopped!");
                 break;
 	case 6:
-                pmessage(0, MALL, "GOD->ALL","Dan Quayle is locked up and order returns to the galaxy!");
+                pmessage(0, MALL, "GOD->ALL","%s is locked up and order returns to the galaxy!",
+			 WARMONGER);
                 break;
 	default:
                 pmessage(0, MALL, "GOD->ALL","The peace party has reformed, and is rallying for peace");

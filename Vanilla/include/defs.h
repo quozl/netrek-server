@@ -481,4 +481,7 @@ because they have initialisation of variables dependent on UPDATE. */
 
 /* #undef PUCK_FIRST  99 */  /* make sure puck runs before players do */
 
+/* for t-mode messaging, change this according to political environment */
+#define WARMONGER "George Bush"
+
 #endif /* _h_defs */
