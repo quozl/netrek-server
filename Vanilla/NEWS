@@ -1,3 +1,4 @@
+- deprecate dan quayle in t-mode messages [Balcerski]
 - server sends torp direction, robots dodge better [Piepho]
 - make robots cloak near enemy home planets due res danger [Piepho]
 - make robots take neut planets once there are no enemy planets [Piepho]
