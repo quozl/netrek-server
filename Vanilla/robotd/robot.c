@@ -1121,7 +1121,7 @@ phaser_plasmas()
     for (i = 0, pt = &plasmatorps[0]; i < MAXPLASMA * MAXPLAYER; i++, pt++) {
       if (pt->pt_status != PTMOVE) continue;
 
-      if(_server == SERVER_GRIT){
+      if(_server == SERVER_GRIT || _state.torp_bounce){
 	 if(!(pt->pt_war & me->p_team))
 	    continue;
       }

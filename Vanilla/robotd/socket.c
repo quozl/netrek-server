@@ -1708,6 +1708,7 @@ struct plasma_info_spacket *packet;
    }
    thetorp->pt_status=packet->status;
    thetorp->pt_war=packet->war;
+   thetorp->pt_team=players[thetorp->pt_owner].p_team;
    if (thetorp->pt_status == PTEXPLODE) {
       do_plasmadamage(p, j, thetorp);
       j->p_nplasmatorp--;

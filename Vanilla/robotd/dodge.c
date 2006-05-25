@@ -110,6 +110,10 @@ init_torps()
       if(!WAR(j)){
 	 /* friendly torps */
 	 init_ftorps(i, j);
+	 /* With ping-pong plasma, a friendly player's plasma can become
+	 hostile, if an enemy has bounced it. */
+	 if(_state.torp_bounce)
+	    goto check_plasma;
 	 continue;
       }
 
@@ -220,6 +224,10 @@ check_plasma:;
       /* plasma */
       pt = &plasmatorps[i];
       if(pt->pt_status == PTMOVE){
+	 /* Skip non-hostile plasmas */
+	 if( !(pt->pt_war & me->p_team) &&
+	     !((me->p_hostile|me->p_swar) & pt->pt_team))
+	    continue;
 	 ts = SH_PLASMASPEED(j);
 	 tx = pt->pt_x; ty = pt->pt_y;
 	 dx = tx - me->p_x; dy = ty - me->p_y;
