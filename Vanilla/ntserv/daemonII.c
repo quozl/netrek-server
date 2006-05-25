@@ -2752,7 +2752,7 @@ static void pldamageplayer(struct player *j)
       arg[1] = j->p_no;
       arg[2] = l->pl_no;
       arg[3] = 0;
-      arg[4] = 0;
+      arg[4] = j->p_armies;
 #ifdef CHAIN_REACTION
       strcat(buf,"   [planet]");
       arg[5] = KPLANET;

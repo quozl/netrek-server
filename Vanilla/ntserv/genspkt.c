@@ -898,7 +898,7 @@ int updtMessageSMessage(struct message *cur)
     case DMKILLP:
 #ifdef CHAIN_REACTION
 	if (why_dead) {
-	    swarning(KILLARGS2,(u_char)cur->args[5],0);
+	    swarning(KILLARGS2,(u_char)cur->args[5],(u_char)cur->args[4]);
 	}
 #endif
 	swarning(DMKILLP, (u_char)cur->args[1], (u_char)cur->args[2]);
