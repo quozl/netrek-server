@@ -22,3 +22,22 @@ Instructions for installing the Vanilla Netrek Server as a Newbie Server
   - port 2592, use as normal but with -q 9
 - consider blocking port 3592 inbound connections from offsite
 - restart netrekd with SIGHUP
+
+- create a file named "og" in lib/og 
+- this is the initial commands the newbie robots will read
+- add the line "hm 9" into the og file. This will make the bots easy on you.
+
+- test that your "og" file works by adding the line "coff" and "woff"
+- This will make the bots not cloak and not shoot weapons. 
+
+- Remove coff and woff, as that makes the game too easy. 
+- hm 0 is tough and robots will default to this. 
+
+---BEGIN SAMPLE lib/og/og file
+hm 9
+randtorp
+upd 2  /* 5 updates a second */
+human /* emulate a human */
+coff   /* use this for testing only */
+woff   /* use this for testing only */
+---END FILE

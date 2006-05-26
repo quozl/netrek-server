@@ -229,12 +229,11 @@ R_ProcMessage(message, flags, from, to, std)
       return;
    }
 
-   /* Don't accept commands for newbie server. Allow showstate for
-      debugging. */
-/*   if(strncmp(m, "showstate", 5)==0)
-      show_state();
-   else */
-   if (inl) return;
+   /* don't allow players to message bots. 
+      But allow local admin to send directives through terminal
+      also allow bots to read commands file. 
+   */
+   if (inl && !std) return;
 
    if((flags & MINDIV) || std){
      if(!strcmp(me->p_login, PRE_T_ROBOT_LOGIN)

@@ -83,7 +83,7 @@ int	redrawPlayer[MAXPLAYER];	/* Needs redrawing on galactic map */
 int	lastUpdate[MAXPLAYER]={0};	/* Last update of this player */
 int     timerDelay=200000;		/* micro secs between updates */
 int	reportKills=1;			/* report kill messages? */
-float	updates=1.0;
+float	updates=2.0;
 int	nopwd=0;
 int	randtorp=0;
 
