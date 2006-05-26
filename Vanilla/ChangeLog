@@ -1,3 +1,81 @@
+Fri May 26 15:45:00 2006 Jimmy Huang  <jimmyhua73@yahoo.com>
+
+	* INSTALL.Newbie updated documentation to show how to configure
+	the robots to be dumber
+
+	* robotd/data.c changed default updates=2.0 instead of 1.0, decreases
+	CPU load by 50% and fights about the same. This is 5 updates 
+	per second.
+
+	* robotd/dmessage.c allow decoding of local messages and commandfile
+	messages even if robot is in INL mode. In INL mode, robots will
+	ignore other players and GOD's commands.
+
+	* robots/newbie.c checkpos() returns 1, to avoid compiler warning
+
+	* robots/newbie.c added a bunch of comments on what each option
+	does when Merlin forks a robot.
+
+	* robots/newbie.c modified the command so robots now read a command
+	file on startup.
+Thu May 25 14:33:37 2006  Trent Piepho  <xyzzy@speakeasy.org>
+
+	* res-rsa/configure: this is a generated file and shouldn't be
+	kept in the repository.
+
+	* ntserv/genspkt.c (sndPlasma): in Ping-Pong plasma mode, a plasma
+	changes teams when it is bounced.  There is no way to send this
+	change to the client, so the client doesn't know.  For example, if
+	a player at peace with us but who we are at war with bounces our
+	(or a teammate's) plasma back at us, it appears to the client that
+	the plasma is friendly.  But really, it's not, since we are at war
+	with the plasma's new team.  Fix this by setting the plasma's war
+	flag if the player is hostile to the plasma's team.
+
+	In order to take advantage of this, clients will need to be sure
+	to:
+
+	1. Not assume that the player's own plasma is friendly.
+	2. Not assume that plasma from the player's team is friendly.
+	3. Make sure to check the plasma's war flags, and not the flags
+	of the player who fired it.
+
+	* robotd/socket.c (handlePlasmaInfo):
+	* robotd/robot.c (phaser_plasmas):
+	* robotd/dodge.c (init_torps):
+
+	The robot has code to deal with Ping-Pong plasma, but it's an old
+	version.  It doesn't work properly with the current ping-pong
+	plasmas, written by Trent Piepho in 1995 (so the old ones are
+	really old!).  Basically, the bots needs to allow for plasma fired
+	by a friendly player becoming hostile to it.
+
+	Also sets the pl_team member of the plasma struct, which makes
+	getting the plasma's team easier.
+
+Thu May 25 14:12:16 2006  James Cameron  <quozl@us.netrek.org>
+
+	* include/defs.h (WARMONGER): add customisation setting for
+	configuration of local warmonger, so that we are not caught by
+	change again so easily.
+
+	* ntserv/daemonII.c (political_begin): deprecate Dan Quayle in
+	favour of George Bush, subject to mailing list discussion.  Patch
+	by: William Balcerski with rework by James Cameron.
+
+Thu May 25 11:37:27 2006  James Cameron  <quozl@us.netrek.org>
+
+	* autogen.sh: add res-rsa to autoconf re-run,
+
+	* tests/build: test for correct directory, use darcs get instead
+	of put, use autogen.sh instead of running autotools here, add the
+	install target.
+
+	"darcs put" is slow, the darcs manual recommends "darcs get" instead, 
+	which is certainly faster.  But "darcs get" must have the exact path to
+	a repo, not like "darcs put".  So a test is added to check that we are
+	in the right directory first.
+
 Thu May 25 09:57:18 2006  Stas Pirogov  <keyos@keyos.org>
 
 	* configure.in: configure.in: test for ranlib was failing on
