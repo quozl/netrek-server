@@ -1,3 +1,11 @@
+Sat May 27 18:55:49 2006  James Cameron  <quozl@us.netrek.org>
+
+	* ntserv/openmem.c: experimental rework to support wait queue
+	dumping, and multiple server instances in separate shared memory
+	segments.  Provide interface so findslot will be able to detach
+	from an active game segment and create and attach to a new game
+	segment.  Accept NETREK_PKEY environment variable.
+
 Sat May 27 17:10:00 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/ntscmds.c (do_become): add experimental and not yet
