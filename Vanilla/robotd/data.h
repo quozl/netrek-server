@@ -160,7 +160,9 @@ extern int		no_cloak;
 extern int		oggv_packet;
 extern int		off,def;
 
-extern int      ignoreTMode;
+extern int              ignoreTMode;
+extern int              hm_cr;      /* assume a human carries mode */
+extern int              ogg_happy;  /* ogg close by carriers if bombing */
 
 /*this is also defined in ../include/data.h*/
 #define PRE_T_ROBOT_LOGIN "Pre_T_Robot!"

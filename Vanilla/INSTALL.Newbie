@@ -33,11 +33,16 @@ Instructions for installing the Vanilla Netrek Server as a Newbie Server
 - Remove coff and woff, as that makes the game too easy. 
 - hm 0 is tough and robots will default to this. 
 
+Below is a sample robot command file named "og". Please remove anything in 
+comment lines /* */
+
 ---BEGIN SAMPLE lib/og/og file
 hm 9
 randtorp
 upd 2  /* 5 updates a second */
 human /* emulate a human */
-coff   /* use this for testing only */
-woff   /* use this for testing only */
+hcr /* toggle logic to on that assumes humans carry (hm_cr) */
+ogh /* logic that switches to ogg mode while bombing (ogg_happy) */
+coff   /* use this for testing only, cloak OFF */
+woff   /* use this for testing only, weapons OFF*/
 ---END FILE

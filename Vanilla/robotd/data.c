@@ -156,4 +156,6 @@ int		no_cloak = 0;
 int		oggv_packet=0;
 int		off=0,def=0;
 
-int     ignoreTMode = 0;
+int             ignoreTMode = 0;
+int             hm_cr = 0;  /* assume humans carry if they have kills */
+int             ogg_happy = 0; /* ogg carriers while bombing */

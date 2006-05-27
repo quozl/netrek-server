@@ -238,21 +238,24 @@ decide_bomb()
    else if(!unknownpl(_state.assault_planet) && 
       _state.assault_planet->pl_armies < 5){
       unassault_c("already bombed.");
-      check_ogg(NULL,20000); /* test JKH */
+      if (ogg_happy)
+         check_ogg(NULL,20000); /* test JKH */
       check_bomb(NULL);
       return;
    }
 
    if(myteam_bombing(_state.assault_planet, _state.assault_planet->pl_mydist)){
       unassault_c("somebody else bombing");
-      check_ogg(NULL,20000); /* test JKH */
+      if (ogg_happy)
+         check_ogg(NULL,20000); /* test JKH */
       check_bomb(NULL);
       return;
    }
    if(_state.assault_planet->pl_mydist < 20000 && 
       pl_defended(_state.assault_planet, 2)){
       unassault_c("planet defended");
-      check_ogg(NULL,20000); /* test JKH */
+      if (ogg_happy)
+         check_ogg(NULL,20000); /* test JKH */
       check_bomb(NULL);
       return;
    }

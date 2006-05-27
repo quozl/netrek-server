@@ -84,6 +84,8 @@ static char *_commands[] = {
    "wrap             - toggle wrap-around galaxy",
    "woff             - toggle no weapon",
    "coff             - toggle no cloak",
+   "hcr              - toggle logic that assumes humans carry",
+   "ogh (ogg happy)  - switch logic to ogg carriers while bombing",
 
    "",
    "QUERY",
@@ -1147,6 +1149,16 @@ R_ProcMessage(message, flags, from, to, std)
       else if(strncmp(m, "randtorp", 8)==0){
 	 randtorp = !randtorp;
 	 sprintf(buf, "random torps %s", randtorp?"on":"off");
+	 response(buf);
+      }
+      else if(strncmp(m, "hcr", 3)==0){
+	 hm_cr = !hm_cr;
+	 sprintf(buf, "humans carry %s", hm_cr?"on":"off");
+	 response(buf);
+      }
+      else if(strncmp(m, "ogh", 3)==0){
+	 ogg_happy = !ogg_happy;
+	 sprintf(buf, "ogg while bombing %s", ogg_happy?"on":"off");
 	 response(buf);
       }
       else if(strncmp(m, "detall", 6)==0){

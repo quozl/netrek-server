@@ -141,6 +141,8 @@ update_players()
 	 orbit_check(p, j);
 	 army_check1(p, j);
 	 army_check2(p, j);
+         if (hm_cr)
+            army_check3(p, j);
       }
 
       if(p->invisible) {
@@ -410,32 +412,6 @@ army_check2(p, j)
     float                ptrate; /* planet taking rate */
     static int count=0;
 
-    /* a human alive for long time with enough kills to drop */
-    /* just assume he carries as he can trick a bot */
-    if ( j->p_kills == 0 ) /* reset the fuse on death */
-        p->killfuse = 0;
-
-    if ( j->p_kills >= 0.51 ) /* increment the fuse tunable JKH */
-        p->killfuse = p->killfuse + j->p_kills;
-
-    if ( (strcmp(j->p_login,"robot!") != 0) || !(j->p_flags&PFBPROBOT) ) { 
-        if (p->killfuse >= 3000) { /* about 5 min with 1 kill */
-            p->armies = troop_capacity(j);
-            p->plcarry = 100.0;
-        }
-    }
-
-   /* > 1.5 kill & high planet rating on player database */
-   if ( j->p_kills >= 1.5 ) {
-       ptrate = (j->p_stats.st_tplanets * 100000) / j->p_stats.st_tticks;
-       if ( ptrate > 7.0 ) { /* about a planet rating of 4 */
-           if ( (strcmp(j->p_login,"robot!") != 0) || !(j->p_flags&PFBPROBOT) ) {
-               p->armies = troop_capacity(j);
-               p->plcarry = 100.0;
-           }
-       }
-   }
-
    if(!(j->p_flags & PFORBIT)) return;
    /*
    if(!(j->p_flags & PFBEAMUP) && !(j->p_flags & PFBEAMDOWN)) return;
@@ -497,6 +473,49 @@ army_check2(p, j)
    if(p->armies < 0) p->armies = 0;
    if(p->armies > troop_capacity(j))
       p->armies = troop_capacity(j);
+}
+
+
+/* A more intuitive way of figuring out who carries in 
+   a pickup game. Only works with humans */
+army_check3(p, j)
+
+   Player		*p;
+   struct player	*j;
+{
+    struct planet	*pl;
+    bool		ohostile = 0, opl = 0;
+    int			pa;
+    float                ptrate; /* planet taking rate */
+    static int count=0;
+
+    /* a human alive for long time with enough kills to drop */
+    /* just assume he carries as he can trick a bot */
+    if ( j->p_kills == 0 ) /* reset the fuse on death */
+        p->killfuse = 0;
+
+    if ( j->p_kills >= 0.51 ) /* increment the fuse tunable JKH */
+        p->killfuse = p->killfuse + j->p_kills;
+
+    if ( (strcmp(j->p_login,"robot!") != 0) || !(j->p_flags&PFBPROBOT) ) { 
+        if (p->killfuse >= 3000) { /* about 5 min with 1 kill */
+            p->armies = troop_capacity(j);
+            p->plcarry = 100.0;
+        }
+    }
+
+   /* > 1.5 kill & high planet rating on player database */
+    if ( j->p_kills >= 1.5 ) {
+        ptrate = (j->p_stats.st_tplanets * 100000) / j->p_stats.st_tticks;
+       if ( ptrate > 7.0 ) { /* about a planet rating of 4 */
+           if ( (strcmp(j->p_login,"robot!") != 0) || 
+                !(j->p_flags&PFBPROBOT) ) {
+               p->armies = troop_capacity(j);
+               p->plcarry = 100.0;
+           }
+       }
+   }
+
 }
 
 calc_speed(p, j)
