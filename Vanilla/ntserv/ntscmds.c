@@ -56,6 +56,9 @@ void do_time_msg(char *comm, struct message *mess);
 void do_sbtime_msg(char *comm, struct message *mess);
 void do_queue_msg(char *comm, struct message *mess);
 void do_nowobble(char *comm, struct message *mess);
+#ifdef EXPERIMENTAL_BECOME
+void do_become(char *comm, struct message *mess);
+#endif
 
 #ifdef GENO_COUNT
 void do_genos_query(char *comm, struct message *mess, int who);
@@ -153,6 +156,12 @@ static struct command_handler_2 nts_commands[] =
 		0,
 		"Test new wobble on planet lock fix.",
 		do_nowobble },			/* NOWOBBLE */
+#ifdef EXPERIMENTAL_BECOME
+    { "BECOME",
+		0,
+		"Become a different slot number",
+		do_become },			/* BECOME */
+#endif
     { "TIME",
 		C_PR_INPICKUP,
 		"Show time left on surrender timer.",
@@ -744,6 +753,41 @@ void do_nowobble(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "No wobble fix is now %s [%d] {%s}", 
 	     nowobble ? "on (new test mode)" : "off (classic mode)", nowobble, comm );
 }
+
+#ifdef EXPERIMENTAL_BECOME
+/* become another slot ... lacking client support, in progress */
+void do_become(char *comm, struct message *mess)
+{
+    int who, pno;
+    char *addr;
+
+    who = mess->m_from;
+    addr = addr_mess(who,MINDIV);
+
+    pno = atoi(comm+strlen("become "));
+
+    if (pno < 0) return;
+    if (pno > (MAXPLAYER-1)) return;
+
+    if (me->p_no == pno) {
+      pmessage(who, MINDIV, addr, "you are this slot already");
+      return;
+    }
+
+    struct player *be = &players[pno];
+    if (be->p_status != PFREE) {
+      pmessage(who, MINDIV, addr, "slot is not free");
+      return;
+    }
+
+    memcpy(be, me, sizeof(struct player));
+    me->p_status = PFREE;
+    me = be;
+    me->p_no = pno;
+    sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);
+    sprintf(me->p_longname, "%s (%s)", me->p_name, me->p_mapchars);
+}
+#endif
 
 void do_password(char *comm, struct message *mess)
 {
