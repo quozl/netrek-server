@@ -1,6 +1,3 @@
-/*
- * $Id: openmem.c,v 1.4 2006/05/06 14:02:37 quozl Exp $
- */
 #include "copyright.h"
 
 #include <stdio.h>
@@ -10,9 +7,6 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <errno.h>
-#include <pwd.h>
-#include <ctype.h>
-#include <time.h>		/* 7/16/91 TC */
 #include <signal.h>
 #include "defs.h"
 #include "struct.h"
@@ -54,8 +48,43 @@
  *
  */
 
+/* identifier of the shared memory segment */
+static int shmid;
+
+/* shared memory key */
+static int pkey = PKEY;
+
+/* shared memory pointer */
+static struct memory *sharedMemory = NULL;
+
 /* daemon initialisation is pending */
 static int daemon_initialisation_pending;
+
+/* set a different shared memory key for this process and children */
+void setpkey(int nkey)
+{
+  char ev[32];
+  pkey = nkey;
+  sprintf(ev, "NETREK_PKEY=%d", nkey);
+  if (putenv(ev) != 0) {
+    perror("setpkey: putenv");
+  }
+}
+
+/* get the current shared memory key for this process */
+int getpkey()
+{
+  return pkey;
+}
+
+/* initialise shared memory key from environment variables */
+static void initpkey()
+{
+  char *ev = getenv("NETREK_PKEY");
+  if (ev == NULL) return;
+  pkey = atoi(ev);
+  if (pkey < 1) pkey = PKEY;
+}
 
 /* called when daemon initialisation is complete */
 static void daemon_ready(int signum)
@@ -63,6 +92,7 @@ static void daemon_ready(int signum)
     daemon_initialisation_pending = 0;
 }
 
+/* start the daemon, wait for it to finish initialising */
 static void startdaemon(void)
 {
     pid_t i;
@@ -84,6 +114,7 @@ static void startdaemon(void)
     signal(SIGUSR1, NULL);
 }
 
+/* connect all the pointers to the various areas of the segment */
 static void setup_memory(struct memory *sharedMemory)
 {
     players = sharedMemory->players;
@@ -104,14 +135,8 @@ static void setup_memory(struct memory *sharedMemory)
 /*ARGSUSED*/
 int openmem(int trystart)
 {
-    extern int errno;
-    int	shmemKey = PKEY;
-    struct memory	*sharedMemory;
-    int shmid;
-
-    errno = 0;
-   
-    shmid = shmget(shmemKey, SHMFLAG, 0);
+    initpkey();
+    shmid = shmget(pkey, SHMFLAG, 0);
     if (shmid < 0) {            /* Could not find the shared memory */
 	if (errno != ENOENT) {  /* Error other not created yet */
 	    perror("shmget");
@@ -127,7 +152,7 @@ int openmem(int trystart)
 	  fprintf(stderr,"Warning: Daemon not running!\n");
 	  exit(1);
 	}
-	shmid = shmget(shmemKey, SHMFLAG, 0);
+	shmid = shmget(pkey, SHMFLAG, 0);
 	if (shmid < 0) {  /* This is a bummer of an error */
 	    ERROR(1, ("Daemon not running (err:%d)\n",errno));
 	    exit(1);
@@ -140,30 +165,22 @@ int openmem(int trystart)
 	exit(1);
     }
     setup_memory(sharedMemory);
-
     return 1;
 }
 
 
-/* Static variable only used by these routines in the daemon*/
-static int shmid;  /* The id of the shared memory segment */
-
 int setupmem(void) {
-    extern int errno;
-    int       shmemKey = PKEY;
-    struct memory     *sharedMemory;
     struct shmid_ds smbuf;
   
-    errno = 0;
-
+    initpkey();
     /* Kill any existing segments */
-    if ((shmid = shmget(shmemKey, SHMFLAG , 0)) >= 0) {
+    if ((shmid = shmget(pkey, SHMFLAG , 0)) >= 0) {
         ERROR(2,("setupmem: Killing existing segment\n"));
       shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0);
     }
 
     /* Get them memory id */
-    shmid = shmget(shmemKey, sizeof(struct memory), IPC_CREAT | 0777);
+    shmid = shmget(pkey, sizeof(struct memory), IPC_CREAT | 0777);
     if (shmid < 0) {
       ERROR(1,("setupmem: Can't open shared memory, error %i\n",errno));
       return 0;
@@ -194,11 +211,12 @@ int removemem(void) {
   if (shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0) < 0){
     return 0;
   }
+  perror("removemem");
   return 1;
 }
 
-#ifdef nodef
-static int detachmem(void) {
-  return shmdt((void*)players); /* cheat! what is a better way?? jc */
+int detachmem(void) {
+  if (shmdt(sharedMemory) < 0) return 0;
+  perror("detachmem");
+  return 1;
 }
-#endif
