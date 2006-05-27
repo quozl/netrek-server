@@ -1,3 +1,4 @@
+- add experimental future support for slot number change [Cameron]
 - added toggle switches to new ogging and carrier tracking logic [Huang]
 - remove res-rsa/configure [Piepho]
 - help bot deal with ping-pong plasma [Piepho]
