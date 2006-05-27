@@ -28,7 +28,8 @@ void detothers(void)
   }
   if (me->p_flags & PFWEP) {
     new_warning(UNDEF, "Weapons overheated");
-    return;
+    if (!chaosmode)
+      return;
   }
 
   me->p_fuel  -= myship->s_detcost;
