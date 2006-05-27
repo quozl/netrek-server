@@ -1,3 +1,24 @@
+Sat May 27 11:57:00 2006 Jimmy Huang  <jimmyhua73@yahoo.com>
+
+        * INSTALL.Newbie updated INSTALL.Newbie to document newer switches.
+        Need to include all possible robot switches in the future.
+
+        * robotd/data.c added initialization of global variables hm_cr and
+        ogg_happy
+
+        * robotd/data.h added global variables hm_cr and ogg_happy
+
+        * robotd/decide.c added check for ogg_happy mode before
+        check_ogg while bombing
+
+        * robotd/dmessage.c added hcr and ogh message decoding.
+
+        * robotd/update_players.c moved conservative assumptions that
+        humans carry into a new function called army_check3.
+
+        * robotd/update_players.c added logic so army_check3 only
+        executes if (hm_cr) global variable is active.
+
 Fri May 26 15:45:00 2006 Jimmy Huang  <jimmyhua73@yahoo.com>
 
 	* INSTALL.Newbie updated documentation to show how to configure
