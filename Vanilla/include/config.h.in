@@ -472,7 +472,8 @@ only if you have no intention of retaining stats on the server for pickup */
 #define STDC_HEADERS 1 		/* 13/01/94 omit hosed index [007] */
 #undef HAVE_WAIT3 
 #undef NEED_SYS_SELECT_H 
-#undef NO_FD_SET		/* Guess we suck badly if that happens :( */
+				/* Guess we suck badly if that happens :( */
+#undef NO_FD_SET
 #undef HAVE_UNISTD_H 
 #undef HAVE_SYS_TIMEB_H
 #undef TM_IN_SYS_TIME 
@@ -486,7 +487,8 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef HAVE_SYS_RESOURCE_H
 #undef HAVE_SYS_WAIT_H
 #undef HAVE_NETINET_IN_H
-#undef HAVE_SYS_FILIO_H		/* Needed for Solaris 2.5.1 */
+				/* Needed for Solaris 2.x */
+#undef HAVE_SYS_FILIO_H
 #undef HAVE_GMP2_H
 #undef NO_U_INT 
 #undef SIZEOF_LONG
