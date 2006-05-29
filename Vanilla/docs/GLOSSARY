@@ -1,0 +1,16 @@
+Netrek Developer's Glossary 
+by Zachary Uram, with input from James Cameron
+
+Feature Packet -
+A packet for negotiating features.
+
+Short Packet -
+A packet which is a member of the packets used by Heiko's short packets
+protocol redesign from several years ago.
+
+Long Packet -
+A packet which is a member of the packets defined by the protocol before
+Heiko's work began.
+
+--
+Zachary Uram    yoda@netrek.org     http://www.club.cc.cmu.edu/~chaos
