@@ -1,6 +1,6 @@
 #!/bin/sh
-libtoolize
 aclocal
+libtoolize --copy
 autoconf
 cd res-rsa && autoconf && cd ..
 chmod +x tools/mktrekon
