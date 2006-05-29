@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
