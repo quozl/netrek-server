@@ -1,3 +1,15 @@
+Mon May 29 14:24:44 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
+
+        * robotd/update_players.c removed this check
+        (strcmp(j->p_login,"robot!") != 0) || !(j->p_flags&PFBPROBOT).
+        and placed it in a Notrobot(p,j) function.
+
+        * robotd/update_players.c removed some unused variables in
+        army_check3(p,j) function.
+
+        * robotd/update_players.c fixed indent on army_check3() function
+        and also army_check2() function.
+
 Sat May 27 18:55:49 2006  James Cameron  <quozl@us.netrek.org>
 
 	* ntserv/openmem.c: experimental rework to support wait queue
