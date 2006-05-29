@@ -240,13 +240,24 @@ fi
 #	Check for gmp and mp
 #--------------------------------------------------------------------
 
-AC_MSG_CHECKING(for mp.h)
 AC_ARG_WITH(gmp,[  --with-gmp              GMP Dir], MPINC="-I$withval/include"  MPLIB="-L$withval/lib -lgmp" search=false, MPINC=nope MPLIB=nope)
 if test "$MPINC" = nope; then
-AC_EGREP_CPP( GNU_MP,[ 
+    AC_MSG_CHECKING(for mp.h)
+    AC_EGREP_CPP(GNU_MP,[ 
 #include <mp.h> 
 __GNU_MP__
-], [MPINC=nope search=true AC_MSG_RESULT(no)], [MPINC="" search=false AC_MSG_RESULT(no)] )
+],
+        [gnu_mp_ok=yes],
+        [gnu_mp_ok=no])
+    if test "x$gnu_mp_ok" = xyes; then
+        MPINC=nope
+	search=true
+	AC_MSG_RESULT(yes)
+    else
+        MPINC=""
+	search=false
+	AC_MSG_RESULT(no)
+    fi
 fi
 
 AC_MSG_CHECKING(for gmp.h)
