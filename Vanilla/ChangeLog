@@ -1,3 +1,9 @@
+Mon May 29 19:32:48 2006  Bill Balcerski  <williamb@its.caltech.edu>
+
+	* ntserv/detonate.c (detothers): the sysdef CHAOS option ignores
+	weapontemp, except for on torp detonation.  Fix that
+	inconsistency.
+
 Mon May 29 14:24:44 2006  Jimmy Huang  <jimmyhua73@yahoo.com>
 
         * robotd/update_players.c removed this check
