@@ -1,3 +1,15 @@
+Tue May 30 09:49:50 2006  Stas Pirogov  <keyos@keyos.org>
+
+	* autogen.sh: aclocal should be run first to avoid libtoolize
+	warning about missing aclocal.m4.  Also added --copy to libtoolize
+	to make sure developer doesn't mess up system wide config.guess
+	and config.sub.
+
+	* config.h.in: comments are not allowed to present in same line as
+	'undef VARIABLE', otherwise the VARIABLE will never be set. This
+	patch fixes two such mistakes by moving the comments one line
+	above.
+
 Mon May 29 19:32:48 2006  Bill Balcerski  <williamb@its.caltech.edu>
 
 	* ntserv/detonate.c (detothers): the sysdef CHAOS option ignores
