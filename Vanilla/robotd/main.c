@@ -431,9 +431,8 @@ main(argc, argv)
 	    timer2 = 0;
 	    _state.team = team;
 	    if (!teamRequest(team, s_type)){
-              /* mfprintf(stderr, "team or ship rejected.\n"); */
-	      fprintf(stderr, "team or ship rejected.\n");
-	      showteams();
+               mfprintf(stderr, "team or ship rejected.\n");
+               showteams();
 	    }
 	    else 
 	       break;

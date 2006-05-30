@@ -281,8 +281,7 @@ check_active_enemies()
       if(_state.player_type == PT_OGGER || _state.player_type == PT_DOGFIGHTER){
 	 timer ++;
 	 if(timer == 100){
-	   /* mfprintf(stderr, "nobody to fight\n"); */
-	    fprintf(stderr, "nobody to fight\n");
+	    mfprintf(stderr, "nobody to fight\n");
 	    exitRobot(0);
 	 }
       }

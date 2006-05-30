@@ -442,9 +442,6 @@ nint(x)
 }
 #endif
 
-/* This function causes a SIGSEV, dunno why JKH */
-/* replacing it with a straight fprintf which */
-/* accomplishes the same thing */
 mfprintf(FILE *fo, char *format, ...)
 {
    va_list	ap;
