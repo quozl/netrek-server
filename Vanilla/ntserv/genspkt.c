@@ -1187,6 +1187,9 @@ updateShips(void)
 	    if (pl->p_status != POBSERV || pl == me) {
 #endif
 		switch(pl->p_status){
+#ifdef OBSERVERS
+		case POBSERV:
+#endif
 		case PALIVE: /* huh, we must work */
 		    highest_active_player = i;
 		    if(pl->p_flags & PFCLOAK){
