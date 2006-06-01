@@ -197,8 +197,8 @@ dist:
 	cp -p INSTALL INSTALL.INL INSTALL.Newbie INSTALL.RSA README \
 	README.developers README.releasing CHANGES EXAMPLE $(NAME)/
         # configuration
-	cp -p configure.in Makefile.in system.mk.in configure install-sh \
-	name.c $(NAME)/
+	cp -p configure.in Makefile.in system.mk.in configure config.sub \
+	install-sh name.c $(NAME)/
         # subdirectories
 	cp -rp docs gum include keycomp motd newstartd ntserv php \
 	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
