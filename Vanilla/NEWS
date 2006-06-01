@@ -1,3 +1,5 @@
+2.11.1: released 2006-06-01
+
 - fix CHAOS torp detonation which was allowing wtemp [Balcerski}
 - add experimental future support for slot number change [Cameron]
 - added toggle switches to new ogging and carrier tracking logic [Huang]
