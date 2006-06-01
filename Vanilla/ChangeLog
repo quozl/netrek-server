@@ -1,3 +1,7 @@
+Thu Jun  1 12:47:18 2006  James Cameron  <quozl@us.netrek.org>
+
+	* netrek-server-vanilla-2.11.1 released
+
 Tue May 30 09:49:50 2006  Stas Pirogov  <keyos@keyos.org>
 
 	* autogen.sh: aclocal should be run first to avoid libtoolize
