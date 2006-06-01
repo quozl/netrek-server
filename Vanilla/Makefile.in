@@ -198,7 +198,7 @@ dist:
 	README.developers README.releasing CHANGES EXAMPLE $(NAME)/
         # configuration
 	cp -p configure.in Makefile.in system.mk.in configure config.sub \
-	install-sh name.c $(NAME)/
+	config.guess install-sh name.c $(NAME)/
         # subdirectories
 	cp -rp docs gum include keycomp motd newstartd ntserv php \
 	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
