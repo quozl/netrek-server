@@ -37,12 +37,19 @@ cvs tag -F $VL
 cvs tag -F v_release
 
 # build the distribution file
-make maintainer-clean
+cd /tmp
+rm -rf release
+darcs get ~/src/darcs/netrek-server release
+cd release/Vanilla
+sh autogen.sh
 ./configure
 make dist
 
 # record md5sum of kit for publishing
 md5sum $PN-$VS.tar.gz > $PN-$VS.tar.gz.md5sum
+
+# publish
+cp $PN-$VS.tar.gz $PN-$VS.tar.gz.md5sum ~/public_html/external/mine/netrek/
 
 # test build kit
 cp $PN-$VS.tar.gz /tmp
