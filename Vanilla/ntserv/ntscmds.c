@@ -786,6 +786,7 @@ void do_become(char *comm, struct message *mess)
     me->p_no = pno;
     sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);
     sprintf(me->p_longname, "%s (%s)", me->p_name, me->p_mapchars);
+    updateSelf(1);
 }
 #endif
 
