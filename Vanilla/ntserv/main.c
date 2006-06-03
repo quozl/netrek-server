@@ -549,7 +549,6 @@ static void sendConfigMsg(void)
 
     sprintf(buf, "%-30s: ", "Ships Allowed");
     for (i = 0; i < NUM_TYPES; i++) {
-        if (i == ATT) continue;
         if (shipsallowed[i]) {
             strcat(buf, shiptypes[i]);
             strcat(buf, " ");

@@ -153,9 +153,9 @@ void getEntry(int *team, int *stype)
 		    continue;
 		}
 
-	    /* His team choice is ok. */
-	    if (shipPick<0 || shipPick>=ATT) {
-                    new_warning(10,"Please confirm change of teams.  Select the new team again.");
+	    /* His team choice is ok, but ship is not. */
+	    if (shipPick<0 || shipPick>ATT) {
+                new_warning(11,"That is an illegal ship type.  Try again.");
 		sendPickokPacket(0);
 		teamPick= -1;
 		continue;
