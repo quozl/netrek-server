@@ -93,7 +93,7 @@ static int dock(struct player *base)
   }
 
   /* Disallow SB to SB docking */
-  if (me->p_ship.s_type == STARBASE) {
+  if (me->p_ship.s_type == STARBASE && !chaosmode) {
     new_warning(UNDEF, "Starbases are too big to dock onto other starbases.");
     de_lock(me);
     return DOCK_FAILURE;
@@ -199,7 +199,7 @@ void orbit(void)
 
   /*
    * Try to dock on all live starbases: */
-  if (me->p_ship.s_type != STARBASE) {
+  if (me->p_ship.s_type != STARBASE || chaosmode) {
     for (j = firstPlayer; j <= lastPlayer; j++) {
       if (j == me)
 	continue;

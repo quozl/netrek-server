@@ -36,7 +36,7 @@ int handleTranswarp(void)
       new_warning(UNDEF, "Engine temperature is too high to initiate transwarp!", -1);
       return (0);
    }
-   if (me->p_ship.s_type == STARBASE) {
+   if (me->p_ship.s_type == STARBASE && !chaosmode) {
       new_warning(UNDEF, "Starbases are not allowed to transwarp, captain!", -1);
       return (0);
    }
