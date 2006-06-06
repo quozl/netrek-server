@@ -23,7 +23,7 @@ int handleTranswarp(void)
    int		  maxspeed;
 
    if (!twarpMode) {
-      new_warning(UNDEF, "Sorry, transwarp mode is not active during this hour.", -1);
+      new_warning(UNDEF, "Sorry, transwarp mode is not active.", -1);
       return (0);
    }
    if (me->p_status != PALIVE)
