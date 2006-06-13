@@ -86,6 +86,7 @@ static char *_commands[] = {
    "coff             - toggle no cloak",
    "hcr              - toggle logic that assumes humans carry",
    "ogh (ogg happy)  - switch logic to ogg carriers while bombing",
+   "robdc            - logic says robots don't carry",
 
    "",
    "QUERY",
@@ -1159,6 +1160,11 @@ R_ProcMessage(message, flags, from, to, std)
       else if(strncmp(m, "ogh", 3)==0){
 	 ogg_happy = !ogg_happy;
 	 sprintf(buf, "ogg while bombing %s", ogg_happy?"on":"off");
+	 response(buf);
+      }
+      else if(strncmp(m, "robdc", 5)==0){
+	 robdc = !robdc;
+	 sprintf(buf, "robots don't carry: %s", robdc?"on":"off");
 	 response(buf);
       }
       else if(strncmp(m, "detall", 6)==0){

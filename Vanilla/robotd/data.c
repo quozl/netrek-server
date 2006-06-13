@@ -159,3 +159,4 @@ int		off=0,def=0;
 int             ignoreTMode = 0;
 int             hm_cr = 0;  /* assume humans carry if they have kills */
 int             ogg_happy = 0; /* ogg carriers while bombing */
+int             robdc = 0; /* track robot carriers by default */

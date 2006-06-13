@@ -17,6 +17,7 @@
 
 #define NO_PFTRACT
 
+
 Player 		*get_target();
 struct planet	*closest_planet();
 
@@ -112,15 +113,13 @@ update_players()
       p->p = j;
       if(j->p_x < 0 || j->p_y < 0){
 	 /* very little information available */
-	 if(p->invisible)	/* was invisible before */
-	    continue;
-	 else{
+         if ( ! p->invisible ) {
 	    p->invisible = 1;
 	    /*
 	    p->last_init = _udcounter - 1;
 	    p->dist = GWIDTH;
 	    continue;
-	    */
+            */
 	 }
       }
       else
@@ -146,7 +145,7 @@ update_players()
       }
 
       if(p->invisible) {
-	  p->closest_pl = NULL;
+         p->closest_pl = p->closest_pl; /* keep stale info JKH */
       } else {
 	  p->closest_pl = closest_planet(j, &pldist, p->closest_pl);
 	  p->closest_pl_dist = pldist;
@@ -155,10 +154,12 @@ update_players()
       if(j->p_flags & PFBOMB)
 	 p->bombing = _udcounter;
 
+      /* the old information is in p not j */
       if(p->invisible)
 	 d = GWIDTH;
       else
 	 d = edist_to_me(j);
+
       p->lastdist = p->dist;
       p->dist = d;
       p->hispr = PHRANGE(p);
@@ -222,8 +223,11 @@ update_players()
 	 print_player(p);
 #endif
 
+      /* don't update unless it's a value number */
+      if ( ! p->invisible ) {
       p->p_x = j->p_x;	/* last x */
       p->p_y = j->p_y;	/* last y */
+      }
    }
 
    _state.closest_e		= ce;
@@ -308,18 +312,62 @@ orbit_check(p, j)
    Player		*p;
    struct player	*j;
 {
-   if(p->invisible)
-      return;
 
-#ifdef nodef	/* only if PFORBIT not given by server */
+
+
+/* begin -- only if PFORBIT not given by server */
+#ifdef NO_PFORBIT
    /* assume nothing has changed. */
    if(j->p_speed == 0 && (j->p_flags & PFORBIT)){
+      if (p->invisible) /* keep old x & y coordinates */
+         return;
       p->p_x = j->p_x;
       p->p_y = j->p_y;
       return;
    }
 
    j->p_flags &= ~PFORBIT;
+
+   /* Assume the worst if player is invisible JKH */
+   if(p->invisible) {
+      if ( p->closest_pl ){ /* grab stale info */
+         j->p_planet = p->closest_pl->pl_no;
+      } else {
+         j->p_planet = -1;
+      }
+      if(j->p_planet > -1){
+         j->p_flags |= PFORBIT;
+         p->pl_armies = planets[j->p_planet].pl_armies;
+         if(_state.no_speed_given)
+            j->p_speed = 0;
+         if(DEBUG & DEBUG_ENEMY){
+            printf("%s invisible orbitting %s\n", j->p_mapchars, 
+                   planets[j->p_planet].pl_name);
+         }
+      }
+      return;
+   }
+
+   /* Less info is given about cloaked players too
+      so we need to be pessimistic also JKH */
+   if (j->p_flags & PFCLOAK) {
+      if ( p->closest_pl && p->closest_pl_dist < 3000 ){
+         j->p_planet = p->closest_pl->pl_no;
+      } else {
+         j->p_planet = -1;
+      }            
+      if(j->p_planet > -1){
+         j->p_flags |= PFORBIT;
+         p->pl_armies = planets[j->p_planet].pl_armies;
+         if(_state.no_speed_given)
+            j->p_speed = 0;
+         if(DEBUG & DEBUG_ENEMY){
+            printf("%s Cloaked orbitting %s\n", j->p_mapchars, 
+                   planets[j->p_planet].pl_name);
+         }
+      }
+      return;
+   }
 
    if(j->p_speed == 0 && !_state.no_speed_given){
       if(j->p_x != p->p_x || j->p_y != p->p_y){
@@ -330,15 +378,15 @@ orbit_check(p, j)
 	    p->pl_armies = planets[j->p_planet].pl_armies;
 	    if(_state.no_speed_given)
 	       j->p_speed = 0;
-
 	    if(DEBUG & DEBUG_ENEMY){
-	       printf("%s orbitting %s\n", j->p_name, 
+	       printf("%s orbitting no PFORBIT %s\n", j->p_mapchars, 
 		  planets[j->p_planet].pl_name);
 	    }
 	 }
       }
    }
 #endif
+/* end -- only if PFORBIT not given by server */
 
    if(j->p_flags & PFORBIT){
       j->p_planet = planet_from_ppos(j);
@@ -347,12 +395,10 @@ orbit_check(p, j)
 	    p->pl_armies = planets[j->p_planet].pl_armies;
 	 }
 	 if(_state.no_speed_given) j->p_speed = 0;
-#ifdef nodef
 	 if(DEBUG & DEBUG_ENEMY){
-	    printf("%s orbiting %s\n", j->p_name, 
-	       planets[j->p_planet].pl_name);
+	    printf("%s orbiting %s with PFORBIT\n", j->p_mapchars, 
+                   planets[j->p_planet].pl_name);
 	 }
-#endif
       }
       else
 	 p->pl_armies = 0;
@@ -369,6 +415,13 @@ army_check1(p, j)
    struct planet	*pl;
 
    if(!(j->p_flags & PFBEAMUP) && !(j->p_flags & PFBEAMDOWN)) return;
+
+   /* don't track robot carriers if told not to JKH */
+   if ( robdc && !NotRobot(p,j) ) { 
+      p->armies=0;
+      p->plcarry=0.0;
+      return;
+   }
 
    if(j->p_flags & PFBEAMUP){
       if(_udcounter - p->beam_fuse >= 8){
@@ -398,6 +451,7 @@ army_check1(p, j)
       p->armies = 0;
    if(p->armies > troop_capacity(j))
       p->armies = troop_capacity(j);
+
 }
 
 army_check2(p, j)
@@ -412,10 +466,19 @@ army_check2(p, j)
    static int count=0;
 
    if(!(j->p_flags & PFORBIT)) return;
+
    /*
    if(!(j->p_flags & PFBEAMUP) && !(j->p_flags & PFBEAMDOWN)) return;
    */
+
    if(troop_capacity(j) == 0) return;
+
+   /* don't track robot carriers if told not to JKH */
+   if ( robdc && !NotRobot(p,j) ) { 
+      p->armies=0;
+      p->plcarry=0.0;
+      return;
+   }
 
    pl = &planets[j->p_planet];
    if((j->p_swar | j->p_hostile) & pl->pl_owner)
@@ -427,51 +490,59 @@ army_check2(p, j)
 
    if(p->pl_armies == pl->pl_armies) return;
 
+   /* store old army count in pa */
+   /* update army count in player based on planet */
    pa = p->pl_armies;
    p->pl_armies = pl->pl_armies;
 
    if(pa > pl->pl_armies){
       if(ohostile){
-	 p->armies -= (pa - pl->pl_armies);
-	 /* if(DEBUG & DEBUG_ENEMY) */
-#ifdef nodef
-	 printf("%s(%d) beaming DOWN %d armies to hostile %s\n",
-	    j->p_name, j->p_no, (pa - pl->pl_armies),
-	    pl->pl_name);
-	 printf("%s(%d) has %d armies.\n",
-	    j->p_name, j->p_no, p->armies);
-#endif
-      }
-      else{
+         if ( pa <= 4) { /* bombing otherwise */
+            p->armies -= (pa - pl->pl_armies);
+            if(DEBUG & DEBUG_ENEMY) {
+               printf("%s(%s) beaming DOWN %d armies to hostile %s\n",
+                      j->p_name, j->p_mapchars, (pa - pl->pl_armies),
+                      pl->pl_name);
+               printf("%s(%s) has %d armies.\n",
+                      j->p_name, j->p_mapchars, p->armies);
+            }
+         }
+      } else {
+         /* beaming up armies */
+         /* or someone is bombing under the guy */
 	 p->armies += (pa - pl->pl_armies);
-	 /* if(DEBUG & DEBUG_ENEMY) */
-#ifdef nodef
-	 printf("%s(%d) beaming UP %d armies from peaceful %s\n",
-	    j->p_name, j->p_no, (pa - pl->pl_armies),
-	    pl->pl_name);
-	 printf("%s(%d) has %d armies.\n",
-	    j->p_name, j->p_no, p->armies);
-#endif
+	 if(DEBUG & DEBUG_ENEMY) {
+            printf("%s(%s) beaming UP %d armies from peaceful %s\n",
+                   j->p_name, j->p_mapchars, (pa - pl->pl_armies),
+                   pl->pl_name);
+            printf("%s(%s) has %d armies.\n",
+                   j->p_name, j->p_mapchars, p->armies);
+         }
       }
-   }
-   else{
+   } else {
       if(ohostile) 
-	 return;
+	 return; /* planet is popping */
       else{
-	 p->armies -= (pl->pl_armies - pa);
-#ifdef nodef
-	 /* if(DEBUG & DEBUG_ENEMY) */
-	 printf("%s(%d) beaming DOWN %d armies to peaceful %s\n",
-	    j->p_name, j->p_no, (pl->pl_armies - pa),
-	    pl->pl_name);
-	 printf("%s(%d) has %d armies.\n",
-	    j->p_name, j->p_no, p->armies);
-#endif
+         /* either planet is popping or player is */
+         /* ferrying armies JKH */
+         /* as the planet can pop, let's be pessismistic */
+         /* and just assume it popped */ 
+
+	 /* p->armies -= (pl->pl_armies - pa);  */
+	 if(DEBUG & DEBUG_ENEMY) {
+            printf("%s(%s) beaming DOWN %d armies to peaceful %s\n",
+                   j->p_name, j->p_mapchars, (pl->pl_armies - pa),
+                   pl->pl_name);
+            printf("%s(%s) has %d armies.\n",
+                   j->p_name, j->p_mapchars, p->armies);
+         }
       }
    }
    if(p->armies < 0) p->armies = 0;
    if(p->armies > troop_capacity(j))
       p->armies = troop_capacity(j);
+
+
 }
 
 

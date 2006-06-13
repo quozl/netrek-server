@@ -231,3 +231,6 @@ char *getdefault();
 
 #define RANDOM()	rand()
 #define SRANDOM(x)	srand(x)
+
+/* compiler defines to tweak robot behavior */
+#define NO_PFORBIT 1 /* activate some code */

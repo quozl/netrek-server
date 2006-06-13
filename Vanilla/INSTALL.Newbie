@@ -14,7 +14,7 @@ Instructions for installing the Vanilla Netrek Server as a Newbie Server
 - change etc/sysdef to include NEWTURN=0 robots don't know how to fly w/ this.
 - change etc/sysdef to include VECTOR=0 robots don't know how to shoot w/ this.
 - change etc/sysdef to include TOURN=4 Merlin assumes this.
-- change etc/sysdef to include CONFIRM=0 (or 2) Robots only have reserved.c
+- change etc/sysdef to include CONFIRM=0 Robots do not have binary 
   verification.
 - change etc/sysdef to include CHECKSCUM=0 Or you will get lots of logs
 - change etc/ports (see docs/sample_ports)
@@ -23,6 +23,7 @@ Instructions for installing the Vanilla Netrek Server as a Newbie Server
 - consider blocking port 3592 inbound connections from offsite
 - restart netrekd with SIGHUP
 
+---- BELOW IS OPTIONAL ----
 - create a file named "og" in lib/og 
 - this is the initial commands the newbie robots will read
 - add the line "hm 9" into the og file. This will make the bots easy on you.
@@ -39,10 +40,13 @@ comment lines /* */
 ---BEGIN SAMPLE lib/og/og file
 hm 9
 randtorp
-upd 2  /* 5 updates a second */
-human /* emulate a human */
+upd 2  /* 5 updates a second, you can put upd 1 for 10 ups */
+human /* toggle on emulate a human */
 hcr /* toggle logic to on that assumes humans carry (hm_cr) */
 ogh /* logic that switches to ogg mode while bombing (ogg_happy) */
+robdc /* assume robots don't carry armies */
+lookahead 0 /* blind dodging, just like before Trent fixed the 
+               torp direction bug */
 coff   /* use this for testing only, cloak OFF */
 woff   /* use this for testing only, weapons OFF*/
 ---END FILE
