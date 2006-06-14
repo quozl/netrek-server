@@ -161,7 +161,7 @@ struct player {
     char p_name[16];
     char p_login[16];
     char p_monitor[16];		/* Monitor being played on */
-    char p_mapchars[2];		/* Cache for map window image */
+    char p_mapchars[3];		/* Cache for map window image */
     struct ship p_ship;		/* Personal ship statistics */
     int p_x;
     int p_y;
