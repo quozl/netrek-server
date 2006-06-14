@@ -40,7 +40,7 @@ openmem()
 	players[i].p_ntorp = 0;
 	players[i].p_explode = 1;
 	players[i].p_stats.st_tticks = 1;
-        players[i].p_mapchars[2] = '\0';
+	players[i].p_mapchars[2] = '\0';
     }
     mctl->mc_current=0;
     status->time=1;
