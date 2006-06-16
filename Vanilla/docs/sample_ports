@@ -18,7 +18,7 @@
 # UDP Multicast server discovery, for local area network play
 3521u tools/players "players" u
 #
-# Observer player connections
+# Observer player connections for standard pickup game
 2593 ntserv "ntservobs" -q 6
 #
 # Scores dump.  (Disable for large player databases, it is a CPU hog).
@@ -37,7 +37,8 @@
 # The "standard" INL ports, enabled because the INL robot will open these
 # queues and close the main queue if it is voted in or configured in .sysdef
 # INL server owners may wish to remove 2592, 2591, 2593, if a pickup server
-# is operating on the same machine.
+# is operating on the same machine. You can disable these if you do not 
+# plan to run an INL server.
 4566 ntserv "home" -q 2
 4577 ntserv "away" -q 3
 4000 ntserv "homeobs" -q 4
@@ -46,8 +47,14 @@
 # Sample virtual-hosting configuration to only listen on 127.0.0.1
 #127.0.0.1:2592 ntserv "ntserv"
 #
-# Newbie player connections (also used by metaserver), to newbie queue
+# When enabling Newbie mode in sysdef, remember to enable the next
+# three options below. You may need to disable everything else above:
+#
+# Newbie Player Connections (also used by metaserver)
 #2592 ntserv "ntserv" -q 9
 #
 # Newbie robot connections
 #3592 ntserv "ntserv" -q 10
+#
+# Newbie Observer Ports
+#2593 ntserv "ntserv" -q 11
