@@ -18,7 +18,7 @@ static void Usage(void)
       F(ree slot)                   (bypasses 6 minute ghostbuster timeout)\n\
       e(ject from game)             (simulates self-destruct)\n\
       (no mode == obliterate)\n\
-      s(hip class change)[abcdosA]  (A = ATT)\n\
+      s(hip class change)[abcdgosSA](S = super SC with 1pt torps, A = ATT)\n\
       t(eleport to quadrant)[frkoc] (c = center of galaxy)\n\
       p(uck)                        (harmless little thing)\n\
       S(uper)                       (big shields/max damage/max etmp)\n\
@@ -165,14 +165,11 @@ int main(int argc, char **argv)
       case 'b': refit(&players[player], BATTLESHIP); break;
       case 'c': refit(&players[player], CRUISER); break;
       case 'd': refit(&players[player], DESTROYER); break;
+      case 'g': refit(&players[player], SGALAXY); break;
       case 's': refit(&players[player], SCOUT); break;
       case 'o': refit(&players[player], STARBASE); break;
-      case 'A': 
-	getship(&players[player].p_ship, ATT); 
-	players[player].p_ship.s_width = 20;
-	players[player].p_ship.s_height = 20;
-	break;
-      case 'g': 
+      case 'A': refit(&players[player], ATT); break;
+      case 'S': 
 	getship(&players[player].p_ship, SCOUT);
 	players[player].p_ship.s_torpdamage = 1;
 	players[player].p_ship.s_torpfuse = 8;
@@ -183,7 +180,7 @@ int main(int argc, char **argv)
 	players[player].p_ship.s_maxshield = 750;
 	break;
       default:
-	printf("Valid ship types: abcdsoA.\n");
+	printf("Valid ship types: abcdgsoAS.\n");
 	exit(1);
 	break;
       }
