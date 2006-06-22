@@ -747,12 +747,12 @@ void sendClientPacket(void *void_packet)
 	case SP_TORP_INFO:
 	case SP_PHASER:
 	case SP_PLASMA_INFO:
-	case SP_YOU|0x40:	/* ??? what is this? */
+	case SP_YOU|0x40:	/* 0x40 if semi-critical packet */
 /*	case SP_STATUS:		S_P2 */
 	case SP_PLANET:
 	case SP_FLAGS:
 	case SP_HOSTILE:
-	case SP_S_YOU:
+	case SP_S_YOU|0x40:     /* 0x40 if semi-critical packet */
 	case SP_S_PLANET:
         case SP_S_PHASER:       /* S_P2 */
 	case SP_S_KILLS:	/* S_P2 */
