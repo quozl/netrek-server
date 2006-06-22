@@ -182,12 +182,12 @@ static struct command_handler_2 nts_commands[] =
 	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
 	"Eject a player               e.g. 'EJECT 0 IDLE'", 
 	do_player_eject,				/* EJECT */
-	2, PV_EJECT, 120, 600},
+	2, PV_EJECT, 120, 300},
     { "BAN",
 	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
 	"Eject and ban a player       e.g. 'BAN 0'", 
 	do_player_ban,					/* BAN */
-	2, PV_BAN, 120, 600},
+	4, PV_BAN, 120, 120},
 #if defined(TRIPLE_PLANET_MAYHEM)
     { "TRIPLE",
         C_VC_ALL | C_GLOG | C_PR_INPICKUP,
