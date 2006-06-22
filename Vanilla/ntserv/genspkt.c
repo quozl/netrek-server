@@ -29,7 +29,8 @@ static void updateVPlayer(struct player_spacket *p);
 static void sendVPlayers(void);
 void sendVPlanets(void);
 void sendVKills(void);
-
+int check_sendself_critical(struct player* pl, u_int flags, char armies, char swar,
+                            short whydead, short whodead, char pnum);
 
 int sizes[TOTAL_SPACKETS] = {
     0,	/* record 0 */
@@ -1025,6 +1026,33 @@ updateStatus(int force)
     }
 }
 
+/* Determine if sendself packet should be flagged as critical */
+int check_sendself_critical(struct player* pl, u_int flags, char armies, char swar,
+                            short whydead, short whodead, char pnum)
+{
+    int type;
+
+    /* Determine packet type, as per updateSelf check */
+    if(send_short && pl->p_fuel < 61000)
+        type = SP_S_YOU;
+    else
+        type = SP_YOU;
+
+    if (commMode == COMM_UDP) {
+        if (    flags != pl->p_flags ||
+                armies != pl->p_armies ||
+                swar != pl->p_swar) {
+            type = type | 0x40;     /* mark as semi-critical */
+        }
+        if (    whydead != pl->p_whydead ||
+                whodead != pl->p_whodead ||
+                pnum != pl->p_no) {
+            type = type | 0x80;     /* mark as critical */
+        }
+    }
+    return type;
+}
+
 int sndSSelf(struct you_short_spacket *youp, struct player* pl, int howmuch)
 {
     if ( howmuch == UPDT_ALL
@@ -1035,7 +1063,12 @@ int sndSSelf(struct you_short_spacket *youp, struct player* pl, int howmuch)
 	 || youp->whydead != pl->p_whydead
 	 || youp->whodead != pl->p_whodead
 	 || ntohl(youp->flags) != pl->p_flags ) {
-	youp->type = SP_S_YOU;
+
+	/* we want to send it, but how? */
+	youp->type = check_sendself_critical(pl, ntohl(youp->flags), youp->armies,
+                                             youp->swar, youp->whydead,
+                                             youp->whodead, youp->pnum);
+
 	youp->pnum = pl->p_no;
 	youp->hostile = pl->p_hostile;
 	youp->swar = pl->p_swar;
@@ -1068,20 +1101,9 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	 || youp->pnum != pl->p_no) {
 
 	/* we want to send it, but how? */
-	youp->type = SP_YOU;
-
-	if (commMode == COMM_UDP) {
-	    if (    ntohl(youp->flags) != pl->p_flags ||
-		    youp->armies != pl->p_armies ||
-		    youp->swar != pl->p_swar) {
-		youp->type=SP_YOU | 0x40;	/* mark as semi-critical */
-	    }
-	    if (    ntohs(youp->whydead) != pl->p_whydead ||
-		    ntohs(youp->whodead) != pl->p_whodead ||
-		    youp->pnum != pl->p_no) {
-		youp->type=SP_YOU | 0x80;	/* mark as critical */
-	    }
-	}
+	youp->type = check_sendself_critical(pl, ntohl(youp->flags), youp->armies,
+                                             youp->swar, ntohs(youp->whydead),
+                                             ntohs(youp->whodead), youp->pnum);
 
 	youp->pnum=pl->p_no;
 	youp->flags=htonl(pl->p_flags);
