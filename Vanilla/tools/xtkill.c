@@ -27,7 +27,9 @@ static void Usage(void)
       P(romote)                     (+1 to rank)\n\
       k(ills increment)             (+1 kill)\n\
       h(arm)                        (no shields, 50%% damage)\n\
+      H(ack)                        (cripple, puckify, and freeze player)\n\
       a(rmies increment)[n]         (+6 armies, or set to n)\n\
+      u(p shields)                  (raise player's shields)\n\
       C(lock, surrender -- set it)  (to 6 minutes (debugging aid))\n\
       L(oss adjust, SB (-1))        (in case you toast an SB accidentally)\n\
       R(obot obliterate)            (like obliterate, but only for robots)\n\
@@ -62,8 +64,6 @@ int main(int argc, char **argv)
   getpath();
 
   openmem(0);
-
-  getshipdefaults();
 
   player=atoi(argv[1]);
   if ((player == 0) && (*argv[1] != '0')) {
