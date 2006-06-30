@@ -1,0 +1,25 @@
+Test process used by Jimmy Huang for Newbie robots war declarations.
+
+1. start Marvin in a newbie server.
+
+2. time it just right (1 second after t-mode starts) and start another
+Marvin in the same server, in a 3rd scumming team. Use port 3592 so he
+can join any team.
+
+3. watch the war declarations.
+
+4. watch the fighting to make sure, they do the right thing.
+
+5. make the 3rd space scummer leave after a while (like he would if he
+joined the regular port).
+
+6. make the first Marvin's team lose via timercide.  Marvin will be
+forced onto a different team.
+
+7. watch war declarations and make sure Marvin does the right thing as
+far as war goes.
+
+After Genocide, Marvin will be forced onto yet another team. Make sure
+he does the right war declarations again.
+
+Did this 2 times, and seems to work good.
