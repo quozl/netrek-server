@@ -43,63 +43,63 @@ death()
 
     switch (me->p_whydead) {
     case KQUIT:
-	mprintf("You have self-destructed.");
+	mprintf("You have self-destructed.\n");
 	break;
     case KTORP:
-	mprintf("You were killed by a photon torpedo from %s (%c%c).",
+	mprintf("You were killed by a photon torpedo from %s (%c%c).\n",
 	    players[me->p_whodead].p_name,
 	    teamlet[players[me->p_whodead].p_team],
 	    shipnos[me->p_whodead]);
 	break;
     case KPLASMA:
-	mprintf("You were killed by a plasma torpedo from %s (%c%c)",
+	mprintf("You were killed by a plasma torpedo from %s (%c%c)\n",
 	    players[me->p_whodead].p_name,
 	    teamlet[players[me->p_whodead].p_team],
 	    shipnos[me->p_whodead]);
 	break;
     case KPHASER:
-	mprintf("You were killed by a phaser shot from %s (%c%c)",
+	mprintf("You were killed by a phaser shot from %s (%c%c)\n",
 	    players[me->p_whodead].p_name,
 	    teamlet[players[me->p_whodead].p_team],
 	    shipnos[me->p_whodead]);
 	break;
     case KPLANET:
-	mprintf("You were killed by planetary fire from %s (%c)",
+	mprintf("You were killed by planetary fire from %s (%c)\n",
 	    planets[me->p_whodead].pl_name,
 	    teamlet[planets[me->p_whodead].pl_owner]);
 	break;
     case KSHIP:
-	mprintf("You were killed by an exploding ship formerly owned by %s (%c%c)",
+	mprintf("You were killed by an exploding ship formerly owned by %s (%c%c)\n",
 	    players[me->p_whodead].p_name,
 	    teamlet[players[me->p_whodead].p_team],
 	    shipnos[me->p_whodead]);
 	break;
     case KDAEMON:
-	mprintf("You were killed by a dying daemon.");
+	mprintf("You were killed by a dying daemon.\n");
 	break;
     case KWINNER:
-	mprintf("Galaxy has been conquered by %s (%c%c) %s",
+	mprintf("Galaxy has been conquered by %s (%c%c) %s\n",
 	    players[me->p_whodead].p_name,
 	    teamlet[players[me->p_whodead].p_team],
 	    shipnos[players[me->p_whodead].p_no],
 	    teamstring[players[me->p_whodead].p_team]);
 	break;
     case KGHOST:
-	mprintf("You were killed by a confused daemon.");
+	mprintf("You were killed by a confused daemon.\n");
 	ghost++;
 	break;
     case KGENOCIDE:
-	mprintf("Your team was genocided by %s (%c%c) %s.",
+	mprintf("Your team was genocided by %s (%c%c) %s.\n",
 	    players[me->p_whodead].p_name,
 	    teamlet[players[me->p_whodead].p_team],
 	    shipnos[me->p_whodead],
 	    teamstring[players[me->p_whodead].p_team]);
 	break;
     case KPROVIDENCE:
-	mprintf("You were removed from existence by divine mercy.");
+	mprintf("You were removed from existence by divine mercy.\n");
 	break;
     default:
-	mprintf("You were killed by something unknown to this game?");
+	mprintf("You were killed by something unknown to this game?\n");
 	break;
     }
     /*
@@ -107,7 +107,7 @@ death()
     */
     /* First we check for promotions: */
     if (promoted) {
-	mprintf("Congratulations!  You have been promoted to %s", 
+	mprintf("Congratulations!  You have been promoted to %s\n", 
 	    ranks[mystats->st_rank].name);
 	promoted=0;
     }
