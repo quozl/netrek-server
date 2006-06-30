@@ -1024,13 +1024,25 @@ do_expdamage(sh)
 }
 
 /* war & peace.  Done initially */
-/* BUGS */
 
+/* When you first enter the game 10 seconds in, the robot will declare
+   war on the top 2 teams with most players.  If the robot is a 3rd
+   team scummer, it works out quite nicely.
+
+   Will also declare war correctly when forced to join a different
+   team, say during timercide.  Then winners keep their old war
+   declarations (which is the right thing to do), as they don't get
+   forced to join a different team.
+
+   Doesn't work when you lose t-mode and people join back in on
+   different teams, as the function to check for this condition
+   doesn't exist, yet. */
 declare_intents()
 {
    register			i;
    register struct player	*j;
-   int				teams[16], maxt = 0;
+   int				teams[16], maxt=0, maxcount=0;
+   int				maxt2=0, maxcount2=0;
    int				newhostile, pl=0;
    extern char			*team_to_string();
 
@@ -1053,21 +1065,30 @@ declare_intents()
       pl++;
    }
 
+   if (!pl) return;
+
    if(pl){
-      for(i=1; i< 9; i *= 2)
-	 if(teams[i] > maxt)
+      for(i=1; i< 9; i *= 2) {
+	 if(teams[i] > maxcount) {
 	    maxt = i;
+	    maxcount = teams[i];
+	 }
+      }
       mprintf("max team = %s\n", team_to_string(maxt));
+      for(i=1; i< 9; i *= 2) {
+	 if( (teams[i] > maxcount2) && (i != maxt) ) {
+	    maxt2 = i;
+	    maxcount2 = teams[i];
+	 }
+      }
+      mprintf("max team2 = %s\n", team_to_string(maxt2));
    }
-   /*
-   else
-      maxt = -1;
-      */
 
    /* peace */
    for(i=1; i< 9; i *= 2){
-      if(i == maxt) continue;
+      if(i == maxt || i == maxt2) continue;
       if((i & me->p_hostile) && !(i & me->p_swar)){
+	 /* is hostile to and not at war with */
 	 mprintf("declaring peace with %s\n", team_to_string(i));
 	 newhostile ^= i;
       }
@@ -1075,12 +1096,21 @@ declare_intents()
    _state.warteam = maxt;
    
    /* war */
-   if(maxt != -1){
-      if(!((maxt & me->p_swar) || (maxt & me->p_hostile))){
+   if(maxt != 0) {
+      if(!((maxt & me->p_swar) && !(maxt & me->p_hostile))) {
 	 mprintf("declare war with %s\n", team_to_string(maxt));
-	 newhostile ^= maxt;
+	 newhostile |= maxt;
       }
    }
+
+   /* Being hostile to more teams is better than less teams. */
+   if(maxt2 != 0) {
+      if(!((maxt2 & me->p_swar) && !(maxt2 & me->p_hostile))) {
+	 mprintf("declare war with %s\n", team_to_string(maxt2));
+	 newhostile |= maxt2;
+      }
+   }
+
    if(newhostile != me->p_hostile)
       sendWarReq(newhostile);
 }

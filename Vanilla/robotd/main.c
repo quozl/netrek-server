@@ -39,20 +39,21 @@ main(argc, argv)
    char          **argv;
 {
    int             intrupt(), noargs = 0;
-   int		   team = 1, s_type = CRUISER;
+   int             team = 1, s_type = CRUISER;
    int             usage = 0;
    int             err = 0;
    char           *name, *ptr, *cp, *rindex();
    int             dcore(), resetRobot();
-   void		   reaper(int), kill_rwatch(int), exitRobot(int);
+   void            reaper(int), kill_rwatch(int), exitRobot(int);
    int             passive = 0;
    char           *defaultsFile = NULL;
-   register       i;
-   int		  rwatch=0;
-   char		  password[64];
-   int		  timer2 = 0, tryudp=1;
-   char		  **_argv = argv;
-   int		  _argc = argc;
+   register        i;
+   int             rwatch=0;
+   static int      switchedteams=0;
+   char            password[64];
+   int             timer2 = 0, tryudp=1;
+   char          **_argv = argv;
+   int             _argc = argc;
 
    if(argc == 1)
       printUsage(argv[0]);
@@ -400,6 +401,7 @@ main(argc, argv)
 
    mprintf("team ...\n");
    if(!teamRequest(team, s_type)){
+      switchedteams = 1;
       mprintf("team or ship rejected.\n");
 
       /* if base destroyed */
@@ -431,8 +433,9 @@ main(argc, argv)
 	    timer2 = 0;
 	    _state.team = team;
 	    if (!teamRequest(team, s_type)){
-               mfprintf(stderr, "team or ship rejected.\n");
-               showteams();
+	       switchedteams = 1;
+	       mfprintf(stderr, "team or ship rejected.\n");
+	       showteams();
 	    }
 	    else 
 	       break;
@@ -457,6 +460,11 @@ main(argc, argv)
 
    if((_state.try_udp || tryudp) && commMode != COMM_UDP){
       sendUdpReq(COMM_UDP);
+   }
+
+   if (switchedteams) {
+      switchedteams = 0;
+      declare_intents();
    }
 
    input();

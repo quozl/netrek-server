@@ -45,7 +45,7 @@ int	read_stdin=1;
 int	override = 0;
 int	doreserved = 0;
 int	lastm;
-int	delay;			/* delay for decaring war */
+int	delay;			/* delay for declaring war */
 int	rdelay;			/* delay for refitting */
 int	mapmode = 1; 
 int	namemode = 1; 

@@ -34,6 +34,7 @@ decide()
    if(!inl){
       if((_state.warteam < 0 || _state.total_wenemies == 0) &&
 	 _state.total_enemies > 0){
+	 /* beginning of game, no enemies */
 	 declare_intents();
 	 return;
       }
@@ -41,6 +42,7 @@ decide()
    else if(status->tourn){
       if((_state.warteam < 0 || _state.total_wenemies == 0) &&
 	 _state.total_enemies > 0){
+	 /* beginning of game, no enemies */
 	 declare_intents();
 	 return;
       }

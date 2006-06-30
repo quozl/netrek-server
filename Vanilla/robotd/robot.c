@@ -2002,6 +2002,10 @@ reset_r_info(team_r, ship_r, first, login)
       strcpy(_state.ignore_e, ignore_e);
 
       bzero(&_timers, sizeof(_timers));
+
+      /* only happens when robot is dead or when someone sends a reset
+      command to the robot.  If robot is dead, declare_intents does
+      nothing. */
       declare_intents();
       req_cloak_off("reset");
       return 1;
@@ -2065,9 +2069,6 @@ send_initial()
 
    sendUpdatePacket((int)(_state.timer_delay_ms * 100000.));
    init_comm();
-   /*
-   declare_intents();
-   */
 }
 
 ignore_edefault(s)
