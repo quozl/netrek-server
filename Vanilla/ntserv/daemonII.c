@@ -176,7 +176,7 @@ int main(int argc, char **argv)
         players[i].p_stats.st_tticks=1;
 #endif
         players[i].p_no=i;
-	players[i].p_timerdelay = defskip;
+        players[i].p_timerdelay = defskip;
         MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
     }
 
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
             ERROR(1,("Planet file wrong size.  Restarting galaxy\n"));
             doResources();
         }
-	(void) close(plfd);
+        (void) close(plfd);
       }
     }
 
@@ -216,11 +216,11 @@ int main(int argc, char **argv)
             ERROR(1,( "Global file wrong size.  Resetting all stats\n"));
             MZERO((char *) status, sizeof(struct status));
         }
-	(void) close(glfd);
+        (void) close(glfd);
     }
     if (status->time==0) {
         /* Start all stats at 1 to prevent overflow */
-	/* 10, now because of division by 10 in socket.c */
+        /* 10, now because of division by 10 in socket.c */
         status->time=10;
         status->timeprod=10;
         status->planets=10;
@@ -255,14 +255,14 @@ int main(int argc, char **argv)
     if ((pucksem_id = semget(PUCK_FIRST, 1, 0600 | IPC_CREAT)) != -1 ||
         (pucksem_id = semget(PUCK_FIRST, 1, 0600)) != -1) 
     {
-	pucksem_arg.val = 0;
-	pucksem_op[0].sem_num = 0;
-	pucksem_op[0].sem_op = -1;
-	pucksem_op[0].sem_flg = 0;
+        pucksem_arg.val = 0;
+        pucksem_op[0].sem_num = 0;
+        pucksem_op[0].sem_op = -1;
+        pucksem_op[0].sem_flg = 0;
     }
     else 
     {
-	ERROR(1,("Unable to get puck semaphore."));
+        ERROR(1,("Unable to get puck semaphore."));
     }
 #endif /*PUCK_FIRST*/
     
@@ -319,9 +319,9 @@ int main(int argc, char **argv)
 #define HOSEFUSE2       3000    /*  5 min., was  3 minutes 6/29/92 TC */
 
 #ifndef INL_POP
-#define PLANETSTAGGER	4	/* how many udplanets calls we want
-				   to replace the original call.  #ifdef 
-				   this out for just 1 call.  4/15/92 TC */
+#define PLANETSTAGGER   4       /* how many udplanets calls we want
+                                   to replace the original call.  #ifdef 
+                                   this out for just 1 call.  4/15/92 TC */
 
 #endif
 
@@ -358,11 +358,11 @@ static int tournamentMode(void)
     for (i=0, p=players; i<MAXPLAYER; i++, p++) {
         if (((p->p_status != PFREE) && 
 #ifdef OBSERVERS
-	     (p->p_status != POBSERV)) && 
+             (p->p_status != POBSERV)) && 
 #endif
-	   !(p->p_flags & PFROBOT)) {
+           !(p->p_flags & PFROBOT)) {
             teams[p->p_team]++; /* don't count robots for Tmode 10/31/91 TC */
-        }		/* don't count observers for Tmode 06/09/95 JRP */
+        }               /* don't count observers for Tmode 06/09/95 JRP */
     }
     i=0;
     if (teams[FED]>=tournplayers) i++;
@@ -391,12 +391,12 @@ static int check_scummers(int verbose)
       struct player *me = &players[i];
       num=0;
       if (me->p_status == PFREE)
-	   continue;
+           continue;
       if (me->p_flags & PFROBOT)
            continue;
 #ifdef OBSERVERS
       if (me->p_status == POBSERV)
-	   continue;
+           continue;
 #endif
 #ifdef LTD_STATS
       if (ltd_ticks(me, LTD_TOTAL) != 0)
@@ -407,19 +407,19 @@ static int check_scummers(int verbose)
         for (j=i+1; j<MAXPLAYER; j++) {
           struct player *them = &players[j];
           if (them->p_status == PFREE)
-		  continue;
-	  if (them->p_flags & PFROBOT)
-		  continue;
+                  continue;
+          if (them->p_flags & PFROBOT)
+                  continue;
 #ifdef OBSERVERS
-	  if (them->p_status == POBSERV)
-		  continue;
+          if (them->p_status == POBSERV)
+                  continue;
 #endif
 #ifdef LTD_STATS
           if (ltd_ticks(them, LTD_TOTAL) != 0)
 #else
           if (them->p_stats.st_tticks != 0)
 #endif
-	  {
+          {
             if (strcmp(me->p_ip, them->p_ip) == 0) {
                 who=j;
                 num++;
@@ -474,64 +474,64 @@ static int check_scummers(int verbose)
 
 static void political_begin(int message)
 {
-	switch (message) {
-	case 0:
+        switch (message) {
+        case 0:
                 pmessage(0, MALL, "GOD->ALL","A dark mood settles upon the galaxy");
                 break;
-	case 1:
+        case 1:
                 pmessage(0, MALL, "GOD->ALL","Political pressure to expand is rising");
                 break;
-	case 2:
+        case 2:
                 pmessage(0, MALL, "GOD->ALL","Border disputes break out as political tensions increase!");
                 break;
-	case 3:
+        case 3:
                 pmessage(0, MALL, "GOD->ALL","Galactic superpowers seek to colonize new territory!");
                 break;
-	case 4:
+        case 4:
                 pmessage(0, MALL, "GOD->ALL","'Manifest Destiny' becomes motive in galactic superpower conflict!");
                 break;
-	case 5:
+        case 5:
                 pmessage(0, MALL, "GOD->ALL","Diplomat insults foriegn emperor's mother and fighting breaks out!");
                 break;
-	case 6:
+        case 6:
                 pmessage(0, MALL, "GOD->ALL","%s declares self as galactic emperor and chaos breaks out!",
-			 WARMONGER);
+                         WARMONGER);
                 break;
-	default:
+        default:
                 pmessage(0, MALL, "GOD->ALL","Peace parties have been demobilized, and fighting ensues.");
                 break;
-	}
+        }
 }
 
 static void political_end(int message)
 {
-	switch (message) {
-	case 0:
+        switch (message) {
+        case 0:
                 pmessage(0, MALL, "GOD->ALL","A new day dawns as the oppressive mood lifts");
                 break;
-	case 1:
+        case 1:
                 pmessage(0, MALL, "GOD->ALL","The expansionist pressure subsides");
                 break;
-	case 2:
+        case 2:
                 pmessage(0, MALL, "GOD->ALL","Temporary agreement is reached in local border disputes.");
                 break;
-	case 3:
+        case 3:
                 pmessage(0, MALL, "GOD->ALL","Galactic governments reduce colonization efforts.");
                 break;
-	case 4:
+        case 4:
                 pmessage(0, MALL, "GOD->ALL","'Manifest Destiny is no longer a fad.' says influential philosopher.");
                 break;
-	case 5:
+        case 5:
                 pmessage(0, MALL, "GOD->ALL","Diplomat apologizes to foreign emperor's mother and invasion is stopped!");
                 break;
-	case 6:
+        case 6:
                 pmessage(0, MALL, "GOD->ALL","%s is locked up and order returns to the galaxy!",
-			 WARMONGER);
+                         WARMONGER);
                 break;
-	default:
+        default:
                 pmessage(0, MALL, "GOD->ALL","The peace party has reformed, and is rallying for peace");
                 break;
-	}
+        }
 }
 
 static void move(int ignored)
@@ -539,11 +539,11 @@ static void move(int ignored)
     static int oldmessage;
     int old_robot;
     static enum ts {
-	    TS_PICKUP, 
-	    TS_SCUMMERS,
-	    TS_BEGIN,
-	    TS_TOURNAMENT,
-	    TS_END
+            TS_PICKUP, 
+            TS_SCUMMERS,
+            TS_BEGIN,
+            TS_TOURNAMENT,
+            TS_END
     } ts = TS_PICKUP;
 
     /* Don't tell us it's time for another move in the middle of a move. */
@@ -578,66 +578,66 @@ static void move(int ignored)
     }
     old_robot = start_robot;
     if (update_sys_defaults()) {
-	static struct itimerval udt;
+        static struct itimerval udt;
 
         if (chaosmode)
-	    status->gameup |= GU_CHAOS;
+            status->gameup |= GU_CHAOS;
         else
-	    status->gameup &= ~GU_CHAOS;
+            status->gameup &= ~GU_CHAOS;
         if (old_robot != start_robot) {
-	    if (robot_pid) {             /* Terminate old Robot */
+            if (robot_pid) {             /* Terminate old Robot */
                 kill(robot_pid,SIGINT); 
                 robot_pid=0;
             }
             if (start_robot) fork_robot(start_robot);
         }
 
-	/* allow for change to reality timer */
-	udt.it_interval.tv_sec = 0;
-	udt.it_interval.tv_usec = reality;
-	udt.it_value.tv_sec = 0;
-	udt.it_value.tv_usec = reality;
-	if (setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0) < 0){
-	    ERROR(1,( "daemon:  Error resetting itimer.  Exiting.\n"));        
-	    exitDaemon(0);
-	}
+        /* allow for change to reality timer */
+        udt.it_interval.tv_sec = 0;
+        udt.it_interval.tv_usec = reality;
+        udt.it_value.tv_sec = 0;
+        udt.it_value.tv_usec = reality;
+        if (setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0) < 0){
+            ERROR(1,( "daemon:  Error resetting itimer.  Exiting.\n"));        
+            exitDaemon(0);
+        }
 
         /* This message does 2 things:
          * First, it tells the players that the system defaults have in fact
          * changed.  Secondly, it triggers the ntserv processes to check the
-	 * new defaults.
+         * new defaults.
          */
         pmessage(0, MALL, "GOD->ALL","Loading new server configuration.");
     }
 
     switch (ts) {
     case TS_PICKUP:
-	    status->tourn = 0;
-	    if (tournamentMode()) {
-		    ts = TS_BEGIN;
-		    if (check_scum && check_scummers(1))
-			    ts = TS_SCUMMERS;
-	    }
-	    break;
+            status->tourn = 0;
+            if (tournamentMode()) {
+                    ts = TS_BEGIN;
+                    if (check_scum && check_scummers(1))
+                            ts = TS_SCUMMERS;
+            }
+            break;
 
     case TS_SCUMMERS:
-	    status->tourn = 0;
-	    if (!tournamentMode()) {
-		    ts = TS_PICKUP;
-	    } else {
-		    if (!check_scum) {
-			    ts = TS_BEGIN;
-			    break;
-		    }
-		    if (!check_scummers(0))
-			    ts = TS_BEGIN;
-	    }
-	    break;
+            status->tourn = 0;
+            if (!tournamentMode()) {
+                    ts = TS_PICKUP;
+            } else {
+                    if (!check_scum) {
+                            ts = TS_BEGIN;
+                            break;
+                    }
+                    if (!check_scummers(0))
+                            ts = TS_BEGIN;
+            }
+            break;
 
     case TS_BEGIN:
-	    oldmessage = (random() % 8);
-	    political_begin(oldmessage);
-	    ts = TS_TOURNAMENT;
+            oldmessage = (random() % 8);
+            political_begin(oldmessage);
+            ts = TS_TOURNAMENT;
             /* break; */
 
     case TS_TOURNAMENT:
@@ -730,10 +730,10 @@ static void udplayersight(void)
 
   for (j = firstPlayer; j <= lastPlayer; j++) {
     if ((j->p_status != PALIVE) ||
-	/*
-	 * Orbitting any non-owned planet gets you seen */
-	((j->p_flags & PFORBIT) &&
-	 (planet_(j->p_planet)->pl_owner != j->p_team))) {
+        /*
+         * Orbitting any non-owned planet gets you seen */
+        ((j->p_flags & PFORBIT) &&
+         (planet_(j->p_planet)->pl_owner != j->p_team))) {
       j->p_flags |= PFSEEN;
       continue;
     }
@@ -754,13 +754,13 @@ static void udplayersight(void)
        * the square range check, because it is likely that the players will
        * still be in range of each other.  */
       if ((k->p_status == PALIVE) &&
-	  ((k->p_x - j->p_x)*(k->p_x - j->p_x) +
-	   (k->p_y - j->p_y)*(k->p_y - j->p_y) < max_dist_sq)) {
-	/* Still seen. */
-	continue;
+          ((k->p_x - j->p_x)*(k->p_x - j->p_x) +
+           (k->p_y - j->p_y)*(k->p_y - j->p_y) < max_dist_sq)) {
+        /* Still seen. */
+        continue;
       }
     }
-	
+        
     j->p_flags &= ~PFSEEN;
     j->p_lastseenby = VACANT;
     
@@ -787,7 +787,7 @@ static void udplayersight(void)
       dist = dx*dx + dy*dy;
       if (dist <= max_dist_sq) {
         j->p_flags |= PFSEEN;
-	j->p_lastseenby = k->p_no;
+        j->p_lastseenby = k->p_no;
         break;
       }
     }
@@ -801,12 +801,12 @@ static void udplayerpause(void) {
   struct player *j;
 
   for (i=0; i<MAXPLAYER; i++) {
-    int kill_player = 0;	/* 1 = QUIT during pause */
-				/* 2 = ghostbust during pause */
+    int kill_player = 0;        /* 1 = QUIT during pause */
+                                /* 2 = ghostbust during pause */
     j = &players[i];
 
     switch(j->p_status) {
-      case PFREE:	/* reset ghostbuster and continue */
+      case PFREE:       /* reset ghostbuster and continue */
         j->p_ghostbuster = 0;
         continue;
         break;
@@ -870,43 +870,43 @@ static void udplayers(void)
     int nfree = 0;
     tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;
     for (i = status->active = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
-	int outfitdelay;
+        int outfitdelay;
 
         switch (j->p_status) {
             case POUTFIT:
 
-		switch (j->p_whydead) {
-		case KLOGIN:
-		    outfitdelay = LOGINTIME;
-		    break;
-		case KQUIT:
-		case KGHOST:
-		case KPROVIDENCE:
-		case KBADBIN:
-		    outfitdelay = GHOSTTIME;
-		    break;
-		default:
-		    outfitdelay = OUTFITTIME;
-		    break;
-		}
+                switch (j->p_whydead) {
+                case KLOGIN:
+                    outfitdelay = LOGINTIME;
+                    break;
+                case KQUIT:
+                case KGHOST:
+                case KPROVIDENCE:
+                case KBADBIN:
+                    outfitdelay = GHOSTTIME;
+                    break;
+                default:
+                    outfitdelay = OUTFITTIME;
+                    break;
+                }
 
                 if (++(j->p_ghostbuster) > outfitdelay) {
-		    ERROR(4,("%s: ship in POUTFIT too long (of=%d,wd=%d)\n", 
-			     j->p_mapchars, outfitdelay, j->p_whydead));
+                    ERROR(4,("%s: ship in POUTFIT too long (of=%d,wd=%d)\n", 
+                             j->p_mapchars, outfitdelay, j->p_whydead));
 
                     fflush(stdout);
 
-		    /* Force the player out of the game */
+                    /* Force the player out of the game */
                     saveplayer(j);
                     if (j->p_process > 1) {
-			ERROR(8,("%s: sending SIGTERM to %d\n", 
-				 j->p_mapchars, j->p_process));
+                        ERROR(8,("%s: sending SIGTERM to %d\n", 
+                                 j->p_mapchars, j->p_process));
                         if (kill (j->p_process, SIGTERM) < 0)
-			    ERROR(1,("daemonII/udplayers:  kill failed!\n"));
+                            ERROR(1,("daemonII/udplayers:  kill failed!\n"));
                     } else {
                         ERROR(1,("daemonII/udplayers:  bad p_process!\n"));
-			freeslot(j);
-		    }
+                        freeslot(j);
+                    }
                 }
                 continue;
             case PFREE:
@@ -1031,13 +1031,13 @@ static void udplayers(void)
 
                         /* Charge SB's for mass of docked vessels ... */
                         if (j->p_ship.s_type == STARBASE) {
-			    int bays = 0;
+                            int bays = 0;
                             for (k=0; k<NUMBAYS; k++)
                                 if(j->p_bays[k] != VACANT) {
                                     j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
-				    bays++;
+                                    bays++;
                                 }
-			    j->p_etemp += .7*(j->p_speed * bays);
+                            j->p_etemp += .7*(j->p_speed * bays);
                         }
                     }
 #ifdef SB_TRANSWARP
@@ -1111,11 +1111,11 @@ static void udplayers(void)
                    )
                   break;
 
-	    if (status->tourn
+            if (status->tourn
 #ifdef BASEPRACTICE
-		|| practice_mode
+                || practice_mode
 #endif
-		) {
+                ) {
 
 #ifdef LTD_STATS
                     if (status->tourn) ltd_update_ticks(j);
@@ -1406,33 +1406,33 @@ static void udplayers(void)
 
                 /* repair damage */
                 if (j->p_damage && !(j->p_flags & PFSHIELD)) {
-		  if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
-		    j->p_subdamage += j->p_ship.s_repair * 2;
-		    if ((j->p_flags & PFORBIT) &&
-			(planets[j->p_planet].pl_flags & PLREPAIR) &&
-			(!(planets[j->p_planet].pl_owner & j->p_war))) {
-		      j->p_subdamage += j->p_ship.s_repair * 2;
-		    }
-		    if (j->p_flags & PFDOCK) {
-		      j->p_subdamage += j->p_ship.s_repair * 3;
+                  if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
+                    j->p_subdamage += j->p_ship.s_repair * 2;
+                    if ((j->p_flags & PFORBIT) &&
+                        (planets[j->p_planet].pl_flags & PLREPAIR) &&
+                        (!(planets[j->p_planet].pl_owner & j->p_war))) {
+                      j->p_subdamage += j->p_ship.s_repair * 2;
                     }
-		  }
-		  else {
-		    j->p_subdamage += j->p_ship.s_repair;
+                    if (j->p_flags & PFDOCK) {
+                      j->p_subdamage += j->p_ship.s_repair * 3;
+                    }
                   }
-		  if (j->p_subdamage / 1000) {
+                  else {
+                    j->p_subdamage += j->p_ship.s_repair;
+                  }
+                  if (j->p_subdamage / 1000) {
 #ifdef LTD_STATS
                     if (status->tourn)
                         ltd_update_repaired(j, j->p_subdamage / 1000);
 #endif
-		    j->p_damage -= j->p_subdamage / 1000;
-		    j->p_subdamage %= 1000;
-		  }
-		  if (j->p_damage < 0) {
-		    j->p_damage = 0;
-		    j->p_subdamage = 0;
-		  }
-		}
+                    j->p_damage -= j->p_subdamage / 1000;
+                    j->p_subdamage %= 1000;
+                  }
+                  if (j->p_damage < 0) {
+                    j->p_damage = 0;
+                    j->p_subdamage = 0;
+                  }
+                }
 
                 /* Move Player in dock */
                 if (j->p_flags & PFDOCK) {
@@ -1553,7 +1553,7 @@ getcourse(x, y, xme, yme)
      int x, y, xme, yme;
 {
   return (u_char) nint((atan2((double) (x - xme),
-			      (double) (yme - y)) / 3.14159 * 128.));
+                              (double) (yme - y)) / 3.14159 * 128.));
 }
 
 
@@ -1562,7 +1562,7 @@ get_bearing(xme, yme, x, y, dir)
      int x, y;
 {
   int phi = ((int) nint((atan2((double) (x-xme), 
-			       (double) (yme-y)) / 3.14159 * 128.)));
+                               (double) (yme-y)) / 3.14159 * 128.)));
   if (phi < 0)
     phi = 256 + phi;
   if (phi >= dir)
@@ -1662,12 +1662,12 @@ static void udtorps(void)
       /*
        * See if the torp is out of time. */
       if (t->t_fuse-- <= 0)
-	break;
+        break;
 
       /*
        * Change direction for tracking torps  */
       if (t->t_turns > 0)
-	torp_track_target(t);
+        torp_track_target(t);
                 
 #define DO_WALL_HIT(torp) (torp)->t_status = TDET; \
                           (torp)->t_whodet = (torp)->t_owner; \
@@ -1785,7 +1785,7 @@ static void udtorps(void)
             break;
         }
 #endif
-	explode(t);
+        explode(t);
       }
       continue;
     case TDET:
@@ -1793,12 +1793,12 @@ static void udtorps(void)
       continue;
     case TEXPLODE:
       if (t->t_fuse-- > 0)
-	continue;
+        continue;
       break;
     case TOFF:
       break;
 #if 1
-    default:			/* Shouldn't happen */
+    default:                    /* Shouldn't happen */
       break;
 #endif
     }
@@ -1859,21 +1859,21 @@ static void explode(struct torp *torp)
      * Check to see if this player is safe for some reason  */
     if (j->p_no == torp->t_owner) {
       if (torp->t_attribute & TOWNERSAFE)
-	continue;
+        continue;
     }
     else {
       if ((torp->t_attribute & TOWNTEAMSAFE) && (torp->t_team == j->p_team))
-	continue;
+        continue;
     }
     if (torp->t_status == TDET) {
       if (j->p_no == torp->t_whodet) {
-	if (torp->t_attribute & TDETTERSAFE)
-	  continue;
+        if (torp->t_attribute & TDETTERSAFE)
+          continue;
       }
       else {
-	if ((torp->t_attribute & TDETTEAMSAFE) &&
-	    (j->p_team == players[(int)torp->t_whodet].p_team))
-	  continue;
+        if ((torp->t_attribute & TDETTEAMSAFE) &&
+            (j->p_team == players[(int)torp->t_whodet].p_team))
+          continue;
       }
     }
 
@@ -1897,7 +1897,7 @@ static void explode(struct torp *torp)
       damage = torp->t_damage;
     else {
       damage = torp->t_damage * (damdist - sqrt((double) dist))
-	/ (damdist - EXPDIST);
+        / (damdist - EXPDIST);
     }
 
     if (damage > 0) {
@@ -1926,60 +1926,60 @@ static void explode(struct torp *torp)
        * In either case, we don't consider the damage to be
        * an act of war */
       if (player_(torp->t_owner)->p_hostile & j->p_team) {
-	player_(torp->t_owner)->p_swar |= j->p_team;
+        player_(torp->t_owner)->p_swar |= j->p_team;
       }
 
       /*
        * Inflict the damage:  */
       if (j->p_flags & PFSHIELD) {
-	j->p_shield -= damage;
-	if (j->p_shield < 0) {
-	  j->p_damage -= j->p_shield;
-	  j->p_shield = 0;
-	}
+        j->p_shield -= damage;
+        if (j->p_shield < 0) {
+          j->p_damage -= j->p_shield;
+          j->p_shield = 0;
+        }
       }
       else {
-	j->p_damage += damage;
+        j->p_damage += damage;
       }
 
       /* 
        * Check for kill:  */
       if (j->p_damage >= j->p_ship.s_maxdamage) {
-	j->p_status = PEXPLODE;
-	if (j->p_ship.s_type == STARBASE) {
-	  j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-	} else {
-	  j->p_explode = 10/PLAYERFUSE;
-	}
+        j->p_status = PEXPLODE;
+        if (j->p_ship.s_type == STARBASE) {
+          j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
+        } else {
+          j->p_explode = 10/PLAYERFUSE;
+        }
 #ifdef CHAIN_REACTION
-	if ((torp->t_whodet != NODET) 
-	    && (torp->t_whodet != j->p_no) 
-	    && (players[(int)torp->t_whodet].p_team != j->p_team))
-	  k = player_(torp->t_whodet);
-	else 
-	  k = player_(torp->t_owner);
-	if ((k->p_team != j->p_team) || 
-	    ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
+        if ((torp->t_whodet != NODET) 
+            && (torp->t_whodet != j->p_no) 
+            && (players[(int)torp->t_whodet].p_team != j->p_team))
+          k = player_(torp->t_whodet);
+        else 
+          k = player_(torp->t_owner);
+        if ((k->p_team != j->p_team) || 
+            ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
         {
-	  k->p_kills += 1.0 + j->p_armies * 0.1 + j->p_kills * 0.1;
+          k->p_kills += 1.0 + j->p_armies * 0.1 + j->p_kills * 0.1;
 
-#ifndef LTD_STATS	/* ltd_update_kills automatically checks max kills */
+#ifndef LTD_STATS       /* ltd_update_kills automatically checks max kills */
 
-	  checkmaxkills(k->p_no);
+          checkmaxkills(k->p_no);
 
 #endif /* LTD_STATS */
 
-	}
+        }
 
 #ifndef LTD_STATS
 
-	killerstats(k->p_no, torp->t_owner, j);
-	loserstats(j->p_no);
+        killerstats(k->p_no, torp->t_owner, j);
+        loserstats(j->p_no);
 
 #endif /* LTD_STATS */
 
-	j->p_whydead = (torp->t_type == TPHOTON) ? KTORP : KPLASMA;
-	j->p_whodead = k->p_no;
+        j->p_whydead = (torp->t_type == TPHOTON) ? KTORP : KPLASMA;
+        j->p_whodead = k->p_no;
 
 #ifdef LTD_STATS
 
@@ -1999,30 +1999,30 @@ static void explode(struct torp *torp)
 
 #endif /* LTD_STATS */
 
-	killmess(j, k, player_(torp->t_owner), 
-		 (k->p_no != torp->t_owner) ? 
-		 ((torp->t_type == TPHOTON) ? KTORP2 : KPLASMA2) 
-		 : j->p_whydead);
+        killmess(j, k, player_(torp->t_owner), 
+                 (k->p_no != torp->t_owner) ? 
+                 ((torp->t_type == TPHOTON) ? KTORP2 : KPLASMA2) 
+                 : j->p_whydead);
 
 #else /* CHAIN_REACTION */
 
 #ifndef LTD_STATS
 
-	killerstats(torp->t_owner, j);
+        killerstats(torp->t_owner, j);
 
 #endif /* LTD_STATS */
-	players[torp->t_owner].p_kills += 1.0 + 
-	  j->p_armies * 0.1 + j->p_kills * 0.1;
+        players[torp->t_owner].p_kills += 1.0 + 
+          j->p_armies * 0.1 + j->p_kills * 0.1;
 
-#ifndef LTD_STATS	/* ltd_update_kills checks for max kills */
+#ifndef LTD_STATS       /* ltd_update_kills checks for max kills */
 
-	checkmaxkills(torp->t_owner);
-	loserstats(j->p_no);
+        checkmaxkills(torp->t_owner);
+        loserstats(j->p_no);
 
 #endif /* LTD_STATS */
 
-	j->p_whydead = (torp->t_type == TPHOTON) ? KTORP : KPLASMA;
-	j->p_whodead = torp->t_owner;
+        j->p_whydead = (torp->t_type == TPHOTON) ? KTORP : KPLASMA;
+        j->p_whodead = torp->t_owner;
 
 #ifdef LTD_STATS
 
@@ -2042,7 +2042,7 @@ static void explode(struct torp *torp)
 
 #endif /* LTD_STATS */
 
-	killmess(j, &players[torp->t_owner]);
+        killmess(j, &players[torp->t_owner]);
 #endif /* CHAIN_REACTION */
       } 
     } 
@@ -2060,11 +2060,11 @@ static void loserstats(int pl)
     dude= &players[pl];
 
     if (dude->p_ship.s_type == STARBASE) {
-	if (status->tourn
+        if (status->tourn
 #ifdef BASEPRACTICE
-	    || practice_mode
+            || practice_mode
 #endif
-	    )
+            )
          dude->p_stats.st_sblosses++;
     } else {
         if (status->tourn) {
@@ -2089,11 +2089,11 @@ static void killerstats(int cl, int pl, struct player *victim)
       credit_killer = dude;
 
    if (credit_killer->p_ship.s_type == STARBASE) {
-	if (status->tourn
+        if (status->tourn
 #ifdef BASEPRACTICE
-	    || practice_mode
+            || practice_mode
 #endif
-	    )
+            )
       credit_killer->p_stats.st_sbkills++;
       credit_killer->p_stats.st_armsbomb += 5 * victim->p_armies;
    } else {
@@ -2101,12 +2101,12 @@ static void killerstats(int cl, int pl, struct player *victim)
          credit_killer->p_stats.st_tkills++;
          status->kills++;
 #ifdef NO_CHUNG_CREDIT
-	 if (dude->p_team != victim->p_team) {
+         if (dude->p_team != victim->p_team) {
 #endif
-	    credit_killer->p_stats.st_tarmsbomb += 5 * victim->p_armies;
-	    status->armsbomb += 5 * victim->p_armies;
+            credit_killer->p_stats.st_tarmsbomb += 5 * victim->p_armies;
+            status->armsbomb += 5 * victim->p_armies;
 #ifdef NO_CHUNG_CREDIT
-	 }
+         }
 #endif
       } else {
          credit_killer->p_stats.st_kills++;
@@ -2124,11 +2124,11 @@ static void killerstats(int pl, struct player *victim)
     dude= &players[pl];
 
     if (dude->p_ship.s_type == STARBASE) {
-	if (status->tourn
+        if (status->tourn
 #ifdef BASEPRACTICE
-	    || practice_mode
+            || practice_mode
 #endif
-	    )
+            )
         dude->p_stats.st_sbkills++;
         dude->p_stats.st_armsbomb += 5 * victim->p_armies;
     } else {
@@ -2136,12 +2136,12 @@ static void killerstats(int pl, struct player *victim)
             dude->p_stats.st_tkills++;
             status->kills++;
 #ifdef NO_CHUNG_CREDIT
-	    if (dude->p_team != victim->p_team) {
+            if (dude->p_team != victim->p_team) {
 #endif
-		dude->p_stats.st_tarmsbomb += 5 * victim->p_armies;
-		status->armsbomb += 5 * victim->p_armies;
+                dude->p_stats.st_tarmsbomb += 5 * victim->p_armies;
+                status->armsbomb += 5 * victim->p_armies;
 #ifdef NO_CHUNG_CREDIT
-	    }
+            }
 #endif
         } else {
             dude->p_stats.st_kills++;
@@ -2189,13 +2189,13 @@ inline static void army_track(int type, void *who, void *what, int num)
 #ifdef ARMYTRACK
     static char * amt_list[AMT_MAX] =
     {
-	"popped",
-	"plagued",
-	"bombed",
-	"beamed up",
-	"beamed down",
-	"transferred up",
-	"transferred down"
+        "popped",
+        "plagued",
+        "bombed",
+        "beamed up",
+        "beamed down",
+        "transferred up",
+        "transferred down"
     };
     char addr_str[9] = "WRN->\0\0\0";
     struct planet *pl;
@@ -2207,43 +2207,43 @@ inline static void army_track(int type, void *who, void *what, int num)
     switch (type) {
     case AMT_POP:
     case AMT_PLAGUE:
-	strcpy(&addr_str[5], "GOD");
-	pmessage(0, 0, addr_str,
-		 "ARMYTRACK -- -- -- %s %d armies at %s (%d) [%s]",
-		 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
-		 pl->pl_name, pl->pl_armies, teamshort[pl->pl_owner]);
-	break;
+        strcpy(&addr_str[5], "GOD");
+        pmessage(0, 0, addr_str,
+                 "ARMYTRACK -- -- -- %s %d armies at %s (%d) [%s]",
+                 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
+                 pl->pl_name, pl->pl_armies, teamshort[pl->pl_owner]);
+        break;
     case AMT_BOMB:
-	p = (struct player *)who;
-	strncpy(&addr_str[5], p->p_mapchars, 3);
-	pmessage(0, 0, addr_str,
-		 "ARMYTRACK %s {%s} (%d) %s %d armies at %s (%d) [%s]",
-		 p->p_mapchars, shiptypes[p->p_ship.s_type], p->p_armies,
-		 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
-		 pl->pl_name, pl->pl_armies, teamshort[pl->pl_owner]);
-	break;
+        p = (struct player *)who;
+        strncpy(&addr_str[5], p->p_mapchars, 3);
+        pmessage(0, 0, addr_str,
+                 "ARMYTRACK %s {%s} (%d) %s %d armies at %s (%d) [%s]",
+                 p->p_mapchars, shiptypes[p->p_ship.s_type], p->p_armies,
+                 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
+                 pl->pl_name, pl->pl_armies, teamshort[pl->pl_owner]);
+        break;
     case AMT_BEAMUP:
     case AMT_BEAMDOWN:
-	p = (struct player *)who;
-	strncpy(&addr_str[5], p->p_mapchars, 3);
-	pmessage(0, 0, addr_str,
-		 "ARMYTRACK %s {%s} (%d) %s %d armies at %s (%d) [%s]",
-		 p->p_mapchars, shiptypes[p->p_ship.s_type], p->p_armies,
-		 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
-		 pl->pl_name, pl->pl_armies, teamshort[pl->pl_owner]);
-	break;
+        p = (struct player *)who;
+        strncpy(&addr_str[5], p->p_mapchars, 3);
+        pmessage(0, 0, addr_str,
+                 "ARMYTRACK %s {%s} (%d) %s %d armies at %s (%d) [%s]",
+                 p->p_mapchars, shiptypes[p->p_ship.s_type], p->p_armies,
+                 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
+                 pl->pl_name, pl->pl_armies, teamshort[pl->pl_owner]);
+        break;
     case AMT_TRANSUP:
     case AMT_TRANSDOWN:
-	p = (struct player *)who;
-	sb = (struct player *)what;
-	strncpy(&addr_str[5], p->p_mapchars, 3);
-	pmessage(0, 0, addr_str,
-		 "ARMYTRACK %s {%s} (%d) %s %d armies at %s {%s} (%d) [%s]",
-		 p->p_mapchars, shiptypes[p->p_ship.s_type], p->p_armies,
-		 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
-		 sb->p_mapchars, shiptypes[sb->p_ship.s_type], sb->p_armies,
-		 teamshort[sb->p_team]);
-	break;
+        p = (struct player *)who;
+        sb = (struct player *)what;
+        strncpy(&addr_str[5], p->p_mapchars, 3);
+        pmessage(0, 0, addr_str,
+                 "ARMYTRACK %s {%s} (%d) %s %d armies at %s {%s} (%d) [%s]",
+                 p->p_mapchars, shiptypes[p->p_ship.s_type], p->p_armies,
+                 amt_list[type], num, /* num == 1 ? "y" : "ies",  */
+                 sb->p_mapchars, shiptypes[sb->p_ship.s_type], sb->p_armies,
+                 teamshort[sb->p_team]);
+        break;
     }
 
 #endif
@@ -2289,7 +2289,7 @@ static void PopPlanet(int plnum)
            if you happen to have ~4500, though, you could end up with < 0! */
         num = ((random() % 4500) + (l->pl_armies * l->pl_armies)) / 4500;
         if (num) {
-	    army_track(AMT_PLAGUE, NULL, l, num);
+            army_track(AMT_PLAGUE, NULL, l, num);
             l->pl_armies -= num;
 /* not needed since armies never < 5
             if (l->pl_armies < 5)
@@ -2301,7 +2301,7 @@ static void PopPlanet(int plnum)
     if ((random() % 3000) < l->pl_armies) { /* plague! */
         num = (random() % l->pl_armies);
         l->pl_armies -= num;
-	army_track(AMT_PLAGUE, NULL, l, num);
+        army_track(AMT_PLAGUE, NULL, l, num);
         if (l->pl_armies < 5) l->pl_flags |= PLREDRAW /* XXX put in client! */;
     }
 #endif
@@ -2337,7 +2337,7 @@ static void PopPlanet(int plnum)
 
     num = l->pl_armies - orig_armies;
     if (num)
-	army_track(AMT_POP, NULL, l, num);
+        army_track(AMT_POP, NULL, l, num);
 }
 
 /* reorder order in which planets will be populated
@@ -2476,15 +2476,15 @@ static void udsurrend(void)
      * T mode teams
      */
     for (i = 0, j = &players[0]; i < MAXPLAYER; i++, j++) {
-	if( (j->p_status == POBSERV) && 
-	    (j->p_team != NOBODY) &&
-	    (realNumShips(j->p_team) < tournplayers) ) {
-	    j->p_status = PEXPLODE;
+        if( (j->p_status == POBSERV) && 
+            (j->p_team != NOBODY) &&
+            (realNumShips(j->p_team) < tournplayers) ) {
+            j->p_status = PEXPLODE;
             j->p_whydead = KPROVIDENCE;
             j->p_flags &= ~(PFPLOCK | PFPLLOCK);
             j->p_x = -100000;         /* place me off the tactical */
             j->p_y = -100000;
-	}
+        }
     }
 #endif /* OBSERVERS */
 
@@ -2724,8 +2724,8 @@ static void pldamageplayer(struct player *j)
     if (j->p_flags & PFSHIELD) {
       j->p_shield -= damage;
       if (j->p_shield < 0) {
-	j->p_damage -= j->p_shield;
-	j->p_shield = 0;
+        j->p_damage -= j->p_shield;
+        j->p_shield = 0;
       }
     }
     else {
@@ -2733,9 +2733,9 @@ static void pldamageplayer(struct player *j)
     }
     if (j->p_damage >= j->p_ship.s_maxdamage) {
       if (j->p_ship.s_type == STARBASE)
-	j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
+        j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
       else
-	j->p_explode = 10/PLAYERFUSE;
+        j->p_explode = 10/PLAYERFUSE;
       j->p_status = PEXPLODE;
 
 #ifndef LTD_STATS
@@ -2745,9 +2745,9 @@ static void pldamageplayer(struct player *j)
 #endif /* LTD_STATS */
 
       (void) sprintf(buf, "%s killed by %s (%c)",
-		     j->p_longname,
-		     l->pl_name,
-		     teamlet[l->pl_owner]);
+                     j->p_longname,
+                     l->pl_name,
+                     teamlet[l->pl_owner]);
       arg[0] = DMKILLP; /* type */
       arg[1] = j->p_no;
       arg[2] = l->pl_no;
@@ -2796,12 +2796,12 @@ static void plfight(void)
       l->pl_flags &= ~PLCOUP;
       sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
       pmessage(l->pl_owner, MTEAM | MCOUP1, addrbuf, 
-	       "Planet lost in political struggle");
+               "Planet lost in political struggle");
       l->pl_owner = (l->pl_flags & ALLTEAM);
       l->pl_armies = 4;
       sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
       pmessage(l->pl_owner, MTEAM | MCOUP2, addrbuf,
-	       "Previous dictatorship overthrown in coup d'etat");
+               "Previous dictatorship overthrown in coup d'etat");
     }
     l->pl_flags &= ~PLREDRAW;
     if (pl_warning[h] > 0)
@@ -2831,18 +2831,18 @@ static void plfight(void)
     {
       pl_warning[j->p_planet] = 50/PLFIGHTFUSE; 
       (void) sprintf(buf, "%-3s->%-3s",
-		     l->pl_name, teamshort[l->pl_owner]);
+                     l->pl_name, teamshort[l->pl_owner]);
       arg[0] = DMBOMB; /* type */
       arg[1] = j->p_no;
       arg[2] =(100*j->p_damage)/(j->p_ship.s_maxdamage)  ;
       arg[3] = l->pl_no;
       pmessage(l->pl_owner, MTEAM | MBOMB, buf, 
-	       "We are being attacked by %s %s who is %d%% damaged.",
-	       j->p_name,
-	       j->p_mapchars,
-	       (100*j->p_damage)/(j->p_ship.s_maxdamage));
+               "We are being attacked by %s %s who is %d%% damaged.",
+               j->p_name,
+               j->p_mapchars,
+               (100*j->p_damage)/(j->p_ship.s_maxdamage));
       (void) sprintf(buf, "%-3s->%-3s",
-		     l->pl_name, teamshort[l->pl_owner]);
+                     l->pl_name, teamshort[l->pl_owner]);
     }
     
     /* start the war (if necessary) */
@@ -2917,8 +2917,8 @@ static void plfight(void)
 #ifdef FLAT_BONUS                         /* Bonus if you flatten a planet */
     if (status->tourn && realNumShips(l->pl_owner) >= 3) {
       if (l->pl_armies < 5) {
-	j->p_stats.st_tarmsbomb += 2;
-	status->armsbomb +=2;
+        j->p_stats.st_tarmsbomb += 2;
+        status->armsbomb +=2;
       }
     }
 
@@ -2931,14 +2931,14 @@ static void plfight(void)
     
     if (!(status->gameup & GU_INROBOT)) {
       if (((tcount[l->pl_owner] == 0) || (NotTmode(ticks))) && 
-	(l->pl_flags & l->pl_owner) &&
+        (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
     !bot_in_game &&
 #endif
-	tm_robots[l->pl_owner] == 0) {
+        tm_robots[l->pl_owner] == 0) {
 
-	rescue(l->pl_owner, NotTmode(ticks));
-	tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
+        rescue(l->pl_owner, NotTmode(ticks));
+        tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
       }
     }
   }
@@ -2979,9 +2979,9 @@ static void beam(void)
             } 
 
             j->p_armies++;
-	    if (j->p_flags & PFORBIT) {
+            if (j->p_flags & PFORBIT) {
                 l->pl_armies--;
-		army_track(AMT_BEAMUP, j, l, 1);
+                army_track(AMT_BEAMUP, j, l, 1);
 
 #ifdef LTD_STATS
                 /* j = player, NULL = army beamed from planet */
@@ -2989,10 +2989,10 @@ static void beam(void)
                     ltd_update_armies_carried(j, NULL);
                 }
 #endif
-	    } else if (j->p_flags & PFDOCK) {
+            } else if (j->p_flags & PFDOCK) {
                 struct player *base = bay_owner(j);
                 base->p_armies--;
-		army_track(AMT_TRANSUP, j, base, 1);
+                army_track(AMT_TRANSUP, j, base, 1);
 
 #ifdef LTD_STATS
                 if (status->tourn) {
@@ -3000,7 +3000,7 @@ static void beam(void)
                 }
 #endif
  
-	    }
+            }
 
             continue;
         }
@@ -3011,12 +3011,12 @@ static void beam(void)
                 if ((!(j->p_war & l->pl_owner))
                     && (j->p_team != l->pl_owner) && (l->pl_owner != NOBODY))
                     continue;
-		army_track(AMT_BEAMDOWN, j, l, 1);
+                army_track(AMT_BEAMDOWN, j, l, 1);
                 if (j->p_team != l->pl_owner) {
 
 #ifdef NO_BEAM_DOWN_OUT_OF_T_MODE
-		    /* prevent beaming down to non-team planet out of t */
-		    if (!status->tourn) continue;
+                    /* prevent beaming down to non-team planet out of t */
+                    if (!status->tourn) continue;
 #endif
 
                     j->p_armies--;
@@ -3072,7 +3072,7 @@ static void beam(void)
                             arg[1] = l->pl_no;
                             arg[2] = j->p_no;
 
-#ifndef LTD_STATS	/* LTD_STATS should not use NEW_CREDIT */
+#ifndef LTD_STATS       /* LTD_STATS should not use NEW_CREDIT */
 #ifdef NEW_CREDIT       /* give 1 planet credit for destroying planet */
 
                             j->p_kills += 0.25;
@@ -3266,10 +3266,10 @@ static void beam(void)
                 struct player *base = bay_owner(j);
                 if (base->p_team != j->p_team)
                     continue;
-		if (base->p_armies >= base->p_ship.s_maxarmies) {
+                if (base->p_armies >= base->p_ship.s_maxarmies) {
                     continue;
                 } else {
-		    army_track(AMT_TRANSDOWN, j, base, 1);
+                    army_track(AMT_TRANSDOWN, j, base, 1);
                     j->p_armies--;
                     base->p_armies ++;
 #ifdef LTD_STATS
@@ -3482,9 +3482,9 @@ static void exitDaemon(int sig)
         j->p_nplasmatorp = 0;
         j->p_explode = 600/PLAYERFUSE; /* ghost buster was leaving players in */
         if (j->p_process > 1) {
-	    ERROR(8,("%s: sending SIGTERM\n", j->p_mapchars));
+            ERROR(8,("%s: sending SIGTERM\n", j->p_mapchars));
             (void) kill (j->p_process, SIGTERM);
-	}
+        }
     }
 
     status->gameup &= ~(GU_GAMEOK); /* say goodbye to xsg et. al. 4/10/92 TC */
@@ -3538,12 +3538,12 @@ static void save_planets(void)
     if (plfd >= 0) {
         (void) lseek(plfd, (off_t) 0, 0);
         (void) write(plfd, (char *) planets, sizeof(pdata));
-	(void) close(plfd);
+        (void) close(plfd);
     }
     if (glfd >= 0) {
         (void) lseek(glfd, (off_t) 0, 0);
         (void) write(glfd, (char *) status, sizeof(struct status));
-	(void) close(glfd);
+        (void) close(glfd);
     }
 }
 
@@ -3576,7 +3576,7 @@ static void check_load(void)
             pmessage(0, MALL, "GOD->ALL",
                 "The load is %f, this game is going down", load);
         } else if (load<maxload && !(status->gameup & GU_GAMEOK)) {
-	    status->gameup|=GU_GAMEOK;
+            status->gameup|=GU_GAMEOK;
             pmessage(0, MALL, "GOD->ALL",
                 "The load is %f, this game is coming up", load);
         }
@@ -3645,8 +3645,8 @@ static void checkgen(int loser, struct player *winner)
             /* Give extra credit for neutralizing last planet! */
     winner->p_genoplanets++;
     winner->p_planets++;
-#ifndef LTD_STATS	/* NEW_CREDIT is incompatible with LTD_STATS */
-    			/* LTD_STATS does not give credit for timercide
+#ifndef LTD_STATS       /* NEW_CREDIT is incompatible with LTD_STATS */
+                        /* LTD_STATS does not give credit for timercide
                            or geno. */
 #ifdef NEW_CREDIT
     if (status->tourn) {
@@ -3760,8 +3760,8 @@ static int checkwin(struct player *winner)
     for (i = 0; i < 4; i++) {
         if (team[1<<i] >= VICTORY) {
             conquerMessage(winner->p_team);
-	    conquer_begin(winner);
-	    return 1;
+            conquer_begin(winner);
+            return 1;
         }
     }
     return 0;
@@ -3804,7 +3804,7 @@ static void saveplayer(struct player *victim)
     fd = open(PlayerFile, O_WRONLY, 0644);
     if (fd >= 0) {
         lseek(fd, victim->p_pos * sizeof(struct statentry) + 
-	      offsetof(struct statentry, stats), SEEK_SET);
+              offsetof(struct statentry, stats), SEEK_SET);
         write(fd, (char *) &victim->p_stats, sizeof(struct stats));
         close(fd);
     }
@@ -3816,15 +3816,15 @@ char *whydeadmess[] = {
   " ", 
   "[quit]",            /* KQUIT        */
   "[photon]",          /* KTORP        */   
-  "[phaser]", 	       /* KPHASER      */
-  "[planet]", 	       /* KPLANET      */
+  "[phaser]",          /* KPHASER      */
+  "[planet]",          /* KPLANET      */
   "[explosion]",       /* KSHIP        */
-  " ", 		       /* KDAEMON      */
-  " ", 		       /* KWINNER      */
+  " ",                 /* KDAEMON      */
+  " ",                 /* KWINNER      */
   "[ghostbust]",       /* KGHOST       */
   "[genocide]",        /* KGENOCIDE    */
-  " ", 		       /* KPROVIDENCE  */
-  "[plasma]", 	       /* KPLASMA      */
+  " ",                 /* KPROVIDENCE  */
+  "[plasma]",          /* KPLASMA      */
   "[tournament end]",  /* TOURNEND     */
   "[game over]",       /* KOVER        */
   "[tournament start]", /* TOURNSTART   */
@@ -3878,23 +3878,23 @@ static void killmess(struct player *victim, struct player *k)
         arg[3] = 100 * k->p_kills;
         arg[4] = victim->p_armies;
         arg[5] = whydead;
-	if (status->gameup & GU_INROBOT) {
-	    pmessage(0, MALL | MKILL, "GOD->ALL", 
+        if (status->gameup & GU_INROBOT) {
+            pmessage(0, MALL | MKILL, "GOD->ALL", 
                 "%s {%s} was kill %s for %s {%s} %s",
-		 victim->p_longname,
-		 shiptypes[victim->p_ship.s_type],
-		 kills,
-		 k->p_longname,
-		 shiptypes[k->p_ship.s_type],
-		 why);
-	} else {
-	    pmessage(0, MALL | MKILL, "GOD->ALL", 
+                 victim->p_longname,
+                 shiptypes[victim->p_ship.s_type],
+                 kills,
+                 k->p_longname,
+                 shiptypes[k->p_ship.s_type],
+                 why);
+        } else {
+            pmessage(0, MALL | MKILL, "GOD->ALL", 
                 "%s was kill %s for %s %s",
-		 victim->p_longname,
-		 kills,
-		 k->p_longname,
-		 why);
-	}
+                 victim->p_longname,
+                 kills,
+                 k->p_longname,
+                 why);
+        }
         if(k != credit_killer){
             pmessage(0, MALL | MKILL, "GOD->ALL",
                 "  Credit for %s awarded to %s, kill %0.2f",
@@ -3909,18 +3909,18 @@ static void killmess(struct player *victim, struct player *k)
         arg[3] = 100 * k->p_kills;
         arg[4] = victim->p_armies;
         arg[5] = whydead;
-	if (status->gameup & GU_INROBOT) {
+        if (status->gameup & GU_INROBOT) {
           pmessage(0, MALL | MKILLA, "GOD->ALL",
                    "%s (%s+%d) {%s} was kill %s for %s {%s} %s",
                    victim->p_name,
                    victim->p_mapchars,
                    victim->p_armies,
-		   shiptypes[victim->p_ship.s_type],
+                   shiptypes[victim->p_ship.s_type],
                    kills,
                    k->p_longname,
-		   shiptypes[k->p_ship.s_type],
+                   shiptypes[k->p_ship.s_type],
                    why);
-	} else {
+        } else {
           pmessage(0, MALL | MKILLA, "GOD->ALL",
                    "%s (%s+%d armies) was kill %s for %s %s",
                    victim->p_name,
@@ -3929,7 +3929,7 @@ static void killmess(struct player *victim, struct player *k)
                    kills,
                    k->p_longname,
                    why);
-	}
+        }
         if(k != credit_killer){
             pmessage(0, MALL | MKILLA, "GOD->ALL", 
                 "Credit for %s+%d arm%s awarded to %s, kill %0.2f",
@@ -3940,11 +3940,11 @@ static void killmess(struct player *victim, struct player *k)
                        credit_killer->p_kills);
         }
 
-	/*
+        /*
          * Auto-doosher: 
-	 * Will send a message to all when a player is killed with
+         * Will send a message to all when a player is killed with
          * armies. Where did 'doosh' come from?  2/19/93 NBT
-	 */
+         */
         if (doosher) {
             if (victim->p_ship.s_type == STARBASE)
                 pmessage2(0,MALL | MKILLA,"GULP!!",DOOSHMSG, " ");
@@ -4412,35 +4412,35 @@ static void signal_puck(void)
     
     for (i = 0, j = players; i < MAXPLAYER; i++, j++)
         if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
-	    strcmp(j->p_name, "Puck") == 0) 
-	{ 
-	    /* Set semaphore to 0 in case there are multiple pucks. Yuck. */
-	    if (pucksem_id != -1 &&
-		semctl(pucksem_id, 0, SETVAL, pucksem_arg) == -1) 
-	    {
-		perror("signal_puck semctl");
-		pucksem_id = -1;
-		/* are there any errors that would 'fix themselves?' */
-	    }
-	    if (kill(j->p_process, SIGALRM) < 0) 
-	    {
-		if (errno == ESRCH) 
-		{
-		    ERROR(1,("daemonII/signal_puck: slot %d missing\n", i));
-		    freeslot(j);
-		}
-	    }
-	    else if (pucksem_id != -1) 
-	    {
-		puckwait = 1;
-	    }
-	}
+            strcmp(j->p_name, "Puck") == 0) 
+        { 
+            /* Set semaphore to 0 in case there are multiple pucks. Yuck. */
+            if (pucksem_id != -1 &&
+                semctl(pucksem_id, 0, SETVAL, pucksem_arg) == -1) 
+            {
+                perror("signal_puck semctl");
+                pucksem_id = -1;
+                /* are there any errors that would 'fix themselves?' */
+            }
+            if (kill(j->p_process, SIGALRM) < 0) 
+            {
+                if (errno == ESRCH) 
+                {
+                    ERROR(1,("daemonII/signal_puck: slot %d missing\n", i));
+                    freeslot(j);
+                }
+            }
+            else if (pucksem_id != -1) 
+            {
+                puckwait = 1;
+            }
+        }
     
     if (puckwait)
     {
-	SIGNAL(SIGALRM, do_nuttin);
-	semop(pucksem_id, pucksem_op, 1);
-	SIGNAL(SIGALRM, SIG_IGN);
+        SIGNAL(SIGALRM, do_nuttin);
+        semop(pucksem_id, pucksem_op, 1);
+        SIGNAL(SIGALRM, SIG_IGN);
     }
 }
 #endif /*PUCK_FIRST*/
@@ -4467,9 +4467,9 @@ static void signal_servers(void)
 
 #ifdef PUCK_FIRST
       if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
-	  strcmp(j->p_name, "Puck") == 0)
+          strcmp(j->p_name, "Puck") == 0)
       {
-	  continue; 
+          continue; 
       }
 #endif /*PUCK_FIRST*/
 
