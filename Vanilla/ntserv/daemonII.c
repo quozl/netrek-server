@@ -92,7 +92,7 @@ static void exitDaemon(int sig);
 static void save_planets(void);
 static void checkgen(int loser, struct player *winner);
 static int checkwin(struct player *winner);
-static void ghostmess(struct player *victim);
+static void ghostmess(struct player *victim, char *reason);
 static void saveplayer(struct player *victim);
 static void rescue(int team, int target);
 #ifdef CHAIN_REACTION
@@ -830,7 +830,7 @@ static void udplayerpause(void) {
         j->p_armies = 0;
 #endif
 
-      ghostmess(j);
+      ghostmess(j, "no ping in pause");
 
       /* temporary */
       fflush(stdout);
@@ -897,6 +897,7 @@ static void udplayers(void)
                     fflush(stdout);
 
                     /* Force the player out of the game */
+                    ghostmess(j, "outfit timeout");
                     saveplayer(j);
                     if (j->p_process > 1) {
                         ERROR(8,("%s: sending SIGTERM to %d\n", 
@@ -924,7 +925,7 @@ static void udplayers(void)
                                          carries then that players armies will
                                          get saved but they are actually double
                                          credited sort of */
-                    ghostmess (j);
+                    ghostmess (j, "no ping observ");
                     saveplayer (j);
                     j->p_whydead = KGHOST;
                     j->p_whodead = i;
@@ -1225,10 +1226,11 @@ static void udplayers(void)
                         j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
                     else
                         j->p_explode = 10/PLAYERFUSE;
-                    ghostmess(j);
+                    ghostmess(j, "no ping alive");
                     saveplayer(j);
                     j->p_whydead = KGHOST;
                     j->p_whodead = i;
+                    ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
                 }
                         
                 status->active += (1<<i);
@@ -3767,7 +3769,7 @@ static int checkwin(struct player *winner)
     return 0;
 }
 
-static void ghostmess(struct player *victim)
+static void ghostmess(struct player *victim, char *reason)
 {
     static float        ghostkills = 0.0;
     int                 i,k;
@@ -3777,8 +3779,8 @@ static void ghostmess(struct player *victim)
                 arg[1] = victim->p_no;
                 arg[2] = 100 * ghostkills;
     pmessage(0, MALL, "GOD->ALL",
-        "%s was kill %0.2f for the GhostBusters",
-        victim->p_longname, ghostkills);
+        "%s was kill %0.2f for the GhostBusters, %s",
+        victim->p_longname, ghostkills, reason);
     if (victim->p_armies>0) {
         k=10*(remap[victim->p_team]-1);
         if (k>=0 && k<=30) for (i=0; i<10; i++) {
