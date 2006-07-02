@@ -703,6 +703,7 @@ s_recharge()
       if(!(me->p_swar & pl->pl_owner)){
 	 int	newh = me->p_hostile;
 	 newh ^= pl->pl_owner;
+	 /* This code never gets executed, dunno why */
 	 sendWarReq(newh);
 	 _state.state = S_UPDATE;
 	 return;
@@ -936,7 +937,7 @@ struct planet *find_safe_planet(e, dist, team)
 	    !((me->p_swar | me->p_hostile)& pl->pl_owner));
 
 	 if(unknownpl(pl)&& me->p_ship.s_type != STARBASE){
-	    nonhostile = !(guess_team(pl) & me->p_swar);
+	    nonhostile = !(guess_team(pl) & (me->p_swar | me->p_hostile) );
 	    /* kludge */
 	    if(nonhostile)
 	       pl->pl_flags |= (PLFUEL | PLREPAIR);
@@ -2006,7 +2007,7 @@ reset_r_info(team_r, ship_r, first, login)
       /* only happens when robot is dead or when someone sends a reset
       command to the robot.  If robot is dead, declare_intents does
       nothing. */
-      declare_intents();
+      declare_intents(0);
       req_cloak_off("reset");
       return 1;
    }

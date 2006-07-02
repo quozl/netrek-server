@@ -1025,19 +1025,17 @@ do_expdamage(sh)
 
 /* war & peace.  Done initially */
 
-/* When you first enter the game 10 seconds in, the robot will declare
-   war on the top 2 teams with most players.  If the robot is a 3rd
-   team scummer, it works out quite nicely.
+/* Times to declare war:
 
-   Will also declare war correctly when forced to join a different
-   team, say during timercide.  Then winners keep their old war
-   declarations (which is the right thing to do), as they don't get
-   forced to join a different team.
+   1. When t-mode first starts or when t-mode ended and restarted(done)
+   2. When you get forced onto another team due to timercide (done)
+   3. When 3rd space scummer enters game (only happens before t-mode starts
+      So it is covered on step 1.)
+   4. When 3rd space scummers leave the game. (I have bots declare peace
+      everytime after death, and so this should cover this.)
 
-   Doesn't work when you lose t-mode and people join back in on
-   different teams, as the function to check for this condition
-   doesn't exist, yet. */
-declare_intents()
+*/
+int declare_intents(int peaceonly)
 {
    register			i;
    register struct player	*j;
@@ -1047,10 +1045,10 @@ declare_intents()
    extern char			*team_to_string();
 
    if(me_p->alive < 100 || !isAlive(me))	/* 10 seconds into game */
-      return;
+      return 0;
    
    if(_state.player_type == PT_OGGER || _state.player_type == PT_DOGFIGHTER)
-      return;
+      return 0;
 
    newhostile = me->p_hostile;
    bzero(teams, sizeof(teams));
@@ -1065,7 +1063,7 @@ declare_intents()
       pl++;
    }
 
-   if (!pl) return;
+   if (!pl) return 0;
 
    if(pl){
       for(i=1; i< 9; i *= 2) {
@@ -1093,6 +1091,13 @@ declare_intents()
 	 newhostile ^= i;
       }
    }
+
+   if (peaceonly) {
+      if(newhostile != me->p_hostile)
+	 sendWarReq(newhostile);
+      return 1;
+   }
+
    _state.warteam = maxt;
    
    /* war */
@@ -1113,6 +1118,8 @@ declare_intents()
 
    if(newhostile != me->p_hostile)
       sendWarReq(newhostile);
+
+   return 2;
 }
 
 /* DEBUG*/

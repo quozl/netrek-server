@@ -464,7 +464,9 @@ main(argc, argv)
 
    if (switchedteams) {
       switchedteams = 0;
-      declare_intents();
+      declare_intents(0); /* war and peace */
+   } else {
+      declare_intents(1); /* peace only */
    }
 
    input();

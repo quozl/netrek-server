@@ -17,6 +17,7 @@
 decide()
 {
    static int	_donedead;
+   static int	 needswardecs=1; /* track t-mode start and war declarations */
 
    if(_master){
       master();
@@ -31,11 +32,25 @@ decide()
       }
       return;
    }
+
+   if( status->tourn == 0 ) { /* No t-mode, or t-mode ended */
+      needswardecs=1;
+   }
+
+   /* New Game, or t-mode just started */
+   /* Added check, so that it keeps trying until success on
+      war decs */
+   if ( status->tourn && needswardecs ) {
+      if ( declare_intents(0) ) /* declare war and peace */
+         needswardecs=0;
+      return;
+   }
+
    if(!inl){
       if((_state.warteam < 0 || _state.total_wenemies == 0) &&
 	 _state.total_enemies > 0){
 	 /* beginning of game, no enemies */
-	 declare_intents();
+	 declare_intents(0); /* declare war and peace */
 	 return;
       }
    }
@@ -43,7 +58,7 @@ decide()
       if((_state.warteam < 0 || _state.total_wenemies == 0) &&
 	 _state.total_enemies > 0){
 	 /* beginning of game, no enemies */
-	 declare_intents();
+	 declare_intents(0); /* declare war and peace */
 	 return;
       }
    }
