@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/time.h>
+#include <string.h>
 
 #include "defs.h"
 #include "struct.h"
@@ -264,10 +265,14 @@ void solicit(int force)
 	queue = QU_AWAY;
       else
 	queue = QU_PICKUP;
-      
+
+      /* count the slots free to new logins, and the slots taken */
       for (j = queues[queue].low_slot; j < queues[queue].high_slot; j++)
       {
-	if (players[j].p_status == PFREE || strstr(players[j].p_login, "robot"))
+	if (players[j].p_status == PFREE ||
+	    players[j].p_flags & PFBPROBOT ||
+	    players[j].p_flags & PFROBOT ||
+	    strcasestr(players[j].p_login, "robot"))
 	  nfree++;
 	else
 	  nplayers++;
