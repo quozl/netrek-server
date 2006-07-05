@@ -10,6 +10,7 @@
 #include <pwd.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
+#include <signal.h>
 #include "defs.h"
 #include INC_UNISTD
 #include INC_SYS_WAIT
