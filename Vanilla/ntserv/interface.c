@@ -459,9 +459,7 @@ void do_refit(int type)
 	    }
 	} /* if (PLHOME) */
     } else if (me->p_flags & PFDOCK) {
-	if (type == STARBASE
-
-	) {
+	if (type == STARBASE) {
             new_warning(52,"Can only refit to starbase on your home planet.");
 	    return;
 	}
