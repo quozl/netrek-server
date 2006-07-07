@@ -25,7 +25,7 @@ static void Usage(void)
       T(eam change)[frko]           (no team == independent)\n\
       D(emote)                      (-1 to rank)\n\
       P(romote)                     (+1 to rank)\n\
-      k(ills increment)             (+1 kill)\n\
+      k(ills increment)[n]          (+1 kill by default, or +n kills)\n\
       h(arm)                        (no shields, 50%% damage)\n\
       H(ack)                        (cripple, puckify, and freeze player)\n\
       a(rmies increment)[n]         (+6 armies, or set to n)\n\
@@ -223,7 +223,10 @@ int main(int argc, char **argv)
 	++players[player].p_stats.st_rank;
       break;
     case 'k':		/* kill increment */
-      players[player].p_kills += 1.0;
+      if (strlen(argv[2]) > 1)
+        players[player].p_kills += atoi(argv[2]+1);
+      else
+        players[player].p_kills += 1.0;
       break;
     case 'a':		/* army increment */
       if (strlen(argv[2]) > 1) 
