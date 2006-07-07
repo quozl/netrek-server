@@ -565,7 +565,9 @@ start_a_robot(char *team)
     /* robothost can be used to tell the robot where to connect to */
     sprintf(command, "%s %s -h %s -p %d -n '%s' -X %s -b -O -I",
             OROBOT, team, (strlen(robot_host))?robot_host:hostname, PORT, namearg(), PRE_T_ROBOT_LOGIN );
-   
+    /* read commands file, defined as ROBODIR/og */
+    sprintf(command, "%s -C %s",command, COMFILE);
+
     pid = fork();
     if (pid == -1)
      return;
