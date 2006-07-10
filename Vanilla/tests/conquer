@@ -19,9 +19,7 @@ lib/tools/setplanet Ori y 83000 x 20000 owner rom
 
 # teleport test player to ear, give kills, give armies
 lib/tools/xtkill 0 tf
-lib/tools/xtkill 0 k
-lib/tools/xtkill 0 k
-lib/tools/xtkill 0 k
+lib/tools/xtkill 0 k 3
 lib/tools/xtkill 0 a
 
 # instructions for test player
