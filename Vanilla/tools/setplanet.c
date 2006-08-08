@@ -296,6 +296,77 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
+    /* cause a player to visit the planet */
+    if (!strcmp(argv[i], "be-orbited-by")) {
+      enum be_orbit_by_state { BOBS_BEGIN, BOBS_APPROACH } bobs;
+      bobs = BOBS_BEGIN;
+      if (++i == argc) return 0;
+      struct player *me = player_by_number(argv[i]);
+      while (me != NULL) {
+	if (me->p_status != PALIVE) break;
+	switch (bobs) {
+	case BOBS_BEGIN:
+	  /* warp on, from set_speed() in interface.c */
+	  me->p_desspeed = me->p_ship.s_maxspeed;
+	  me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+	  /* lock on, from lock_planet() in interface.c */
+	  me->p_flags |= PFPLLOCK;
+	  me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+	  me->p_planet = pl->pl_no;
+	  bobs = BOBS_APPROACH;
+	case BOBS_APPROACH:
+	  /* wait until we orbit */
+	  if (!(me->p_flags & PFORBIT)) break;
+	  exit(0);
+	}
+	usleep(100000);
+      }
+      exit(1);
+    }
+
+    /* cause a player to take the planet */
+    if (!strcmp(argv[i], "be-taken-by")) {
+      enum be_taken_by_state { BTBS_BEGIN, BTBS_APPROACH, BTBS_ORBIT, BTBS_DROP } btbs;
+      btbs = BTBS_BEGIN;
+      if (++i == argc) return 0;
+      struct player *me = player_by_number(argv[i]);
+      while (me != NULL) {
+	if (me->p_status != PALIVE) break;
+	switch (btbs) {
+	case BTBS_BEGIN:
+	  /* kill increment */
+	  if (me->p_kills < 4) me->p_kills = 4;
+	  /* armies increment */
+	  if (me->p_armies < 6) me->p_armies = 6;
+	  /* planet flatten */
+	  if (pl->pl_armies > 1) pl->pl_armies = 1;
+	  /* warp on, from set_speed() in interface.c */
+	  me->p_desspeed = me->p_ship.s_maxspeed;
+	  me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+	  /* lock on, from lock_planet() in interface.c */
+	  me->p_flags |= PFPLLOCK;
+	  me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+	  me->p_planet = pl->pl_no;
+	  btbs = BTBS_APPROACH;
+	case BTBS_APPROACH:
+	  /* wait until we orbit */
+	  if (!(me->p_flags & PFORBIT)) break;
+	  btbs = BTBS_ORBIT;
+	case BTBS_ORBIT:
+	  /* begin drop */
+	  me->p_flags |= PFBEAMDOWN;
+	  me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP);
+	  btbs = BTBS_DROP;
+	case BTBS_DROP:
+	  /* wait until planet is ours */
+	  if (me->p_team != pl->pl_owner) break;
+	  exit(0);
+	}
+	usleep(100000);
+      }
+      exit(1);
+    }
+
     if (!strcmp(argv[i], "name")) {
       if (++i == argc) return 0;
       if (verbose) say("%s renamed to %s", pl->pl_name, argv[i]);
