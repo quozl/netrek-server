@@ -1,0 +1,56 @@
+#!/bin/sh
+set -v
+
+LIBDIR=/usr/local/games/netrek-server-vanilla
+cd ${LIBDIR}
+
+# reset galaxy
+lib/tools/setgalaxy r
+
+# make all planets visible to all teams
+for x in `seq 10 39`; do lib/tools/setplanet $x reveal; done
+
+# make most of the romulan planets owned by federation
+for x in `seq 10 18`; do lib/tools/setplanet $x owner fed; done
+
+# move hyd near ear and flatten to one army
+lib/tools/setplanet hyd y 80000 x 17000 armies 1
+
+# instructions for test player
+# take planet hyd to trigger conquer
+# neut not enough
+
+# start defending iggies
+for x in f r o k; do
+    lib/robotII -T${x} -f 2>/dev/null >/dev/null &
+    sleep 0.5
+done
+
+# start a full set of robots
+for x in `seq 7`; do 
+    lib/og/robot -h localhost -Tf 2>/dev/null >/dev/null &
+    lib/og/robot -h localhost -Tr 2>/dev/null >/dev/null &
+    sleep 0.8
+done
+lib/og/robot -h localhost -Tr 2>/dev/null >/dev/null &
+
+# allow a few seconds for robots to move around
+lib/tools/setplanet can be-orbited-by 0
+
+# take the planet
+lib/tools/setplanet hyd be-taken-by 0
+
+# allow time for conquer parade to finish
+sleep 60
+
+# destroy all robots
+killall robot
+
+# destroy all client connections
+killall ntserv
+
+# allow time to run down
+sleep 1
+
+# destroy daemon
+killall daemonII
