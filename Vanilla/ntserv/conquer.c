@@ -35,7 +35,7 @@ static void conquer_decloak()
 	struct player *j;
 
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
+		if (j->p_status == PFREE) continue;
 		j->p_flags &= ~PFCLOAK;
 		j->p_flags |= PFSEEN;
 	}
@@ -56,7 +56,7 @@ static int conquer_count_players()
 	int n, h;
 	struct player *j;
 	for (n = 0, h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
+		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
 		n++;
 	}
@@ -127,7 +127,7 @@ static void conquer_ships_ring()
 	n = conquer_count_players();
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
 		int x, y, dx, dy;
-                if (j->p_status == PFREE) continue;
+		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
 		conquer_ring_coordinates(j, h, n, &x, &y);
 		dx = j->p_x - x;
@@ -152,7 +152,7 @@ static void conquer_parade()
 
 	n = conquer_count_players();
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
+		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
 		conquer_ring_coordinates(j, h, n, &j->p_x, &j->p_y);
 		j->p_speed = 0;
@@ -167,24 +167,24 @@ static void conquer_ships_explode()
 
 
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-                if (j->p_status == PFREE) continue;
+		if (j->p_status == PFREE) continue;
 #ifdef NEWBIESERVER
-                /* Don't kill newbie robot. */
-                if (status->gameup & GU_NEWBIE && j->p_flags & PFROBOT) continue;
+		/* Don't kill newbie robot. */
+		if (status->gameup & GU_NEWBIE && j->p_flags & PFROBOT) continue;
 #endif
 #ifdef PRETSERVER
-                /* Don't kill pre-T robot. */
-                if (status->gameup & GU_PRET && j->p_flags & PFROBOT) continue;
+		/* Don't kill pre-T robot. */
+		if (status->gameup & GU_PRET && j->p_flags & PFROBOT) continue;
 #endif
-                j->p_status = PEXPLODE;
-                j->p_whydead = KWINNER;
-                j->p_whodead = conquer_player;
-                if (j->p_ship.s_type == STARBASE)
+		j->p_status = PEXPLODE;
+		j->p_whydead = KWINNER;
+		j->p_whodead = conquer_player;
+		if (j->p_ship.s_type == STARBASE)
 			j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-                else
+		else
 			j->p_explode = 10/PLAYERFUSE;
-                j->p_ntorp = 0;
-                j->p_nplasmatorp = 0;
+		j->p_ntorp = 0;
+		j->p_nplasmatorp = 0;
 	}
 }
 
@@ -195,8 +195,8 @@ static void conquer_galaxy_reset()
 
 	doResources();
 	for (i = 0; i <= MAXTEAM; i++) {
-                teams[i].s_turns = 0;
-                teams[i].s_surrender = 0;
+		teams[i].s_turns = 0;
+		teams[i].s_surrender = 0;
 	}
 }
 
