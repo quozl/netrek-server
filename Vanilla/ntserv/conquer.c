@@ -120,16 +120,16 @@ static void conquer_plasma_explode()
 /* animate a ring of ships, move them slowly into position */
 static void conquer_ships_ring()
 {
-	int n, h;
+	int n, h, k;
 	struct player *j;
 
 	conquer_decloak();
 	n = conquer_count_players();
-	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+	for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
 		int x, y, dx, dy;
 		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
-		conquer_ring_coordinates(j, h, n, &x, &y);
+		conquer_ring_coordinates(j, k++, n, &x, &y);
 		dx = j->p_x - x;
 		dy = j->p_y - y;
 		if (abs(dx) < 50) {
@@ -147,14 +147,14 @@ static void conquer_ships_ring()
 /* force the ring of ships into final position */
 static void conquer_parade()
 {
-	int n, h;
+	int n, h, k;
 	struct player *j;
 
 	n = conquer_count_players();
-	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+	for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
-		conquer_ring_coordinates(j, h, n, &j->p_x, &j->p_y);
+		conquer_ring_coordinates(j, k++, n, &j->p_x, &j->p_y);
 		j->p_speed = 0;
 	}
 }
