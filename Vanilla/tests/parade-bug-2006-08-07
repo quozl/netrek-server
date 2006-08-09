@@ -26,8 +26,8 @@ for x in f r o k; do
     sleep 0.5
 done
 
-# start a full set of robots
-for x in `seq 7`; do 
+# start a partial set of robots
+for x in `seq 3`; do 
     lib/og/robot -h localhost -Tf 2>/dev/null >/dev/null &
     lib/og/robot -h localhost -Tr 2>/dev/null >/dev/null &
     sleep 0.8
