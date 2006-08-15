@@ -22,7 +22,8 @@ LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
 
 OBJS = ../ntserv/libnetrek.a
 
-SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
+SRCS = ${srcdir}/ban.c \
+	${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/mergescores.c \
 	${srcdir}/newscores.c ${srcdir}/planets.c ${srcdir}/players.c \
 	${srcdir}/scores.c ${srcdir}/setgalaxy.c ${srcdir}/showgalaxy.c \
@@ -35,7 +36,7 @@ SRCS = ${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/ntpasswd.c \
 	${srcdir}/setgame.c ${srcdir}/setplanet.c ${srcdir}/setteam.c
 
-EXECS =	blotpassword loadchecker mess message newscores planets players \
+EXECS =	ban blotpassword loadchecker mess message newscores planets players \
 	scores \
         setgalaxy showgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
@@ -83,6 +84,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) setgame $(DESTDIR)$(LIBDIR)/tools/setgame
 	$(INSTALLPROG) $(INSTALLOPTS) setplanet $(DESTDIR)$(LIBDIR)/tools/setplanet
 	$(INSTALLPROG) $(INSTALLOPTS) setteam $(DESTDIR)$(LIBDIR)/tools/setteam
+	$(INSTALLPROG) $(INSTALLOPTS) ban $(DESTDIR)$(LIBDIR)/tools/ban
 
 cambot: cambot.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)
@@ -173,6 +175,9 @@ setplanet: setplanet.o $(OBJS)
 
 setteam: setteam.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setteam.o $(OBJS)
+
+ban: ban.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS)
 
 trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
 	${srcdir}/mktrekon $(LIBDIR)
