@@ -331,24 +331,10 @@ void do_player_ban(int who, int player, int mflags, int sendto)
 	"%2s has been temporarily banned by their team", j->p_mapchars);
 
     eject_player(j->p_no);
-    ban_player(j->p_no);
-}
-
-void ban_player(int who)
-{
-  int i;
-  struct player *j = &players[who];
-  for (i=0; i<MAXBANS; i++) {
-    struct ban *b = &bans[i];
-    if (b->b_expire == 0) {
-      strcpy(b->b_ip, j->p_ip);
-      b->b_expire = ban_vote_length;
-      ERROR(2,( "ban of %s was voted\n", b->b_ip));
-      return;
+    if (!bans_add_temporary_by_player(j->p_no)) {
+      pmessage(0, MALL, addr_mess(who,MALL), 
+	       " temporary ban list is full, ban ineffective");
     }
-  }
-  pmessage(0, MALL, addr_mess(who,MALL), 
-	   " temporary ban list is full, ban ineffective");
 }
 
 #if defined(AUTO_PRACTICE)

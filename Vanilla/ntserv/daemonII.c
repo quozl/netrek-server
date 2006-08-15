@@ -552,6 +552,7 @@ static void move(int ignored)
     if (fuse(QUEUEFUSE)){
         queues_purge();
         solicit(0);
+        bans_age_temporary(QUEUEFUSE/reality);
     }
 
     if (status->gameup & GU_PAUSED){ /* Game is paused */

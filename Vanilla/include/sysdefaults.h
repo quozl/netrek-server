@@ -204,6 +204,8 @@ struct sysdef_keywords {
     "Length of ban in number of non-banned logins"	},
   { "BAN_VOTE_OFFSET",	SYSDEF_INT,	&ban_vote_offset,
     "Offset to change ban length by on each retry during ban period"	},
+  { "BAN_VOTE_DURATION",	SYSDEF_INT,	&ban_vote_duration,
+    "Length of ban in seconds"	},
   { "EJECT_VOTE_ENABLE",	SYSDEF_INT,	&eject_vote_enable,
     "Enable vote for ejection"				},
   { "EJECT_VOTE_ONLY_IF_QUEUE",	SYSDEF_INT,	&eject_vote_only_if_queue,
@@ -225,6 +227,10 @@ James Cameron, 14th February 2004.
 - add to sysdef_keywords in include/sysdefaults.h, in any order, prefer end
 - add to docs/sample_sysdef with comment about value meanings
 - use glade (http://glade.pn.org/) to add to gum/gum.xml and regenerate code
-- leave a comment here if your defaults have not been added to gum
+- leave a comment below if your defaults have not been added to gum
+
+EJECT_VOTE_*
+BAN_VOTE_*
+DUPLICATES
 
 */

@@ -12,6 +12,12 @@ void do_balance(void);
 void do_triple_planet_mayhem(void);
 #endif
 
+/* bans.c */
+int bans_add_temporary_by_player(int who);
+void bans_age_temporary(int elapsed);
+int bans_check_temporary(char *ip);
+int bans_check_permanent(char *login, char *host);
+
 /* bay.c */
 void bay_consistency_check(struct player *base);
 struct player *bay_owner(struct player *me);

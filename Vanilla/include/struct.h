@@ -589,6 +589,7 @@ struct rank {
 };
 
 struct ban {
+    int b_remain;		/* remaining time in seconds	*/
     int b_expire;		/* joins to see before expiry	*/
     char b_ip[NAME_LEN];	/* ip address banned		*/
 };

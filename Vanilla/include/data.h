@@ -352,6 +352,7 @@ extern int voting;
 extern int ban_vote_enable;
 extern int ban_vote_length;
 extern int ban_vote_offset;
+extern int ban_vote_duration;
 extern int eject_vote_enable;
 extern int eject_vote_only_if_queue;
 extern int eject_vote_vicious;
