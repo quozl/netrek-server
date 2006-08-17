@@ -1,0 +1,102 @@
+Checkpointing Project
+
+Server checkpointing is to allow a replacement of ntserv or daemon
+during a game in progress.
+
+As of 2.11.1, we can only:
+
+- stop and restart netrekd at whim,
+
+- replace ntserv for use by new connections, provided the shared
+  memory layout does not change.
+
+
+Requirements
+
+- be able to replace ntserv or daemon,
+
+- no significant delay to be experienced by players,
+
+- in case of program-detected failure, fall back to previous version,
+
+- in case of operator-detected failure, fall back to previous version,
+
+
+Design
+
+- microschedule, immediately after a tick update and before sleeping,
+- macroschedule, prefer to avoid if any player in red alert,
+- signalling, by flags in shared memory,
+- use files to store state, assuming use of filesystem cache,
+- processes with network sockets to pass them on to replacement program,
+
+
+Detailed Design - daemon checkpoint commence
+
+- for all slots, set flag slot checkpoint request,
+- wait for all ntservs to set flag slot checkpoint done,
+
+
+Detailed Design - ntserv checkpoint commence and commit
+
+- write all global variables to a per-process file,
+- set flag indicating slot checkpoint done,
+- exec replacement program, with restart flag,
+
+
+Detailed Design - daemon checkpoint commit
+
+- write all shared memory variables to a file,
+- set flag indicating daemon checkpoint done,
+- exec replacement program, with restart flag,
+
+
+Detailed Design - ntserv restart
+
+- map to shared memory,
+- wait for daemon checkpoint done flag to be clear,
+- read all global variables from the per-process file,
+- clear slot checkpoint done flag,
+- clear slot checkpoint request flag,
+- wait for next daemon synchronisation update signal,
+
+
+Design - daemon restart
+
+- map to shared memory,
+- initialise shared memory,
+- read all shared memory variables from file
+- clear checkpoint done flag,
+- wait for all slots to clear slot checkpoint done flag,
+- clear checkpoint request flag,
+- resume main loop.
+
+
+Timeline
+
+             _________________
+DCRF     ___/                 \___  Daemon Checkpoint Request Flag
+                     ____
+DCDF     ___________/    \________  Daemon Checkpoint Done Flag
+               _____________
+SCRF[0]  _____/             \_____  Slot #0 Checkpoint Request Flag
+                  __________
+SCDF[0]  ________/          \_____  Slot #0 Checkpoint Done Flag
+               ______________
+SCRF[1]  _____/              \____  Slot #1 Checkpoint Request Flag
+                  ___________
+SCDF[1]  ________/           \____  Slot #1 Checkpoint Done Flag
+
+
+Utilities
+
+- set daemon checkpoint request flag, monitor, and exit,
+- set individual slot checkpoint request flag, monitor, and clear,
+
+Shared Memory Impacts
+
+- daemon checkpointing flags to be positioned at top of shared memory,
+  so that they are not affected by redesign of shared memory contents,
+
+- slot checkpointing flags to be positioned immediately after, to
+  allow for the possibility of number of slots changed.
