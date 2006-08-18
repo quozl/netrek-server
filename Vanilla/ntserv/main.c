@@ -289,13 +289,6 @@ int main(int argc, char **argv)
     strcpy(me->p_login, "anonymous");
 #endif
 
-#ifdef CONTINUUM_COMINDICO
-    /* 2005-01-26 temporary address hiding for me */
-    if (strstr(me->p_full_hostname, "comindico.com.au")) {
-      whitelisted = 1;
-    }
-#endif
-
     if (whitelisted) {
       strcpy(me->p_full_hostname, "hidden");
       strcpy(me->p_monitor, "hidden");
