@@ -3,6 +3,8 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
+	- move() in daemon is a signal handler yet calls unsafe functions.
+
 	- cambot does not exit when daemon exits.
 
 	- sending SIGSTOP to client for 35 seconds results in ghostbust, which
