@@ -5,6 +5,9 @@
 #	Edit this file to meet your requirements, or use the program gum to
 #	view and update it graphically.
 #
+#	Maximum number of duplicate connections from a single IP
+DUPLICATES=3
+#
 #	Enable voting by players
 VOTING=0
 #
@@ -43,11 +46,17 @@ EJECT_VOTE_ONLY_IF_QUEUE=0
 #	(requires EJECT_VOTE_ENABLE=1)
 EJECT_VOTE_VICIOUS=0
 #
+#	Mininum client update rate per second
+MINUPDATE=1
+#
 #	Maximum client update rate per second
 MAXUPDATE=10
 #
 #	Default client update rate per second
 DEFUPDATE=10
+#
+#       Reality updates per second
+REALITY=10
 #
 # 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
 #	(We need more twinks, don't turn this on lightly)
@@ -161,6 +170,9 @@ SURRSTART=1
 #
 # 	Frequency of pings in seconds
 PING_FREQ=2
+#
+#       Incremental packet loss sampling interval
+PING_ILOSS_INTERVAL=10
 #
 # 	Allow ghostbusting based on ping stats
 PING_GHOSTBUST=1
