@@ -22,6 +22,11 @@ BAN_VOTE_LENGTH=10
 #	(requires BAN_VOTE_ENABLE=1)
 BAN_VOTE_OFFSET=0
 #
+#	Length of ban in seconds.  Note that ban_vote_length counter will not
+#	decrement until player's ban_vote_duration ticks down to zero.
+#	(requires BAN_VOTE_ENABLE=1)
+BAN_VOTE_DURATION=3600
+#
 #	Enable vote for ejection
 #	(requires VOTING=1)
 EJECT_VOTE_ENABLE=0
