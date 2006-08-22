@@ -15,7 +15,7 @@ void init_mars(void);
 #include "defs.h"
 
 /* Mars specific additions */
-#define TOURNMAP    ".tourn.map"
+#define TOURNMAP    "tourn.map"
 #define STARTPLANET 10
 #define MAXARENAS      9
 #define LEFT1 10000
