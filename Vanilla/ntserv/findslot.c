@@ -23,6 +23,7 @@ static int player_count_by_ip(int w_queue, char *ip) {
   for (i=0, j=0; i<MAXPLAYER; i++) {
     if (players[i].p_status == PFREE) continue;
     if ((players[i].p_flags & PFROBOT)) continue;
+    if ((players[i].p_flags & PFBPROBOT)) continue;
 #ifdef OBSERVERS
     /* if we want a pickup slot, ignore any observer slot we have */
     if (w_queue == QU_PICKUP && players[i].p_status == POBSERV) continue;
