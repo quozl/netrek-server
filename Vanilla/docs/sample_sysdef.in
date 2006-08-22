@@ -5,7 +5,7 @@
 #	Edit this file to meet your requirements, or use the program gum to
 #	view and update it graphically.
 #
-#	Maximum number of duplicate connections from a single IP
+#	Maximum number of duplicate connections from a single IP address
 DUPLICATES=3
 #
 #	Enable voting by players
@@ -56,6 +56,9 @@ MAXUPDATE=10
 DEFUPDATE=10
 #
 #       Reality updates per second
+#	(Warning: intended for testing only, as changing this disturbs
+#	reaction times of players and they learn the new rate, resulting
+#	in a performance decline in normal mode).
 REALITY=10
 #
 # 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
