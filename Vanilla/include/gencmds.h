@@ -14,16 +14,17 @@
 
 #define C_PR_NOONE      0x0100   /* Command deactivated */
 #define C_PR_GOD        0xff00   /* Only god can use the command */
+#define C_PR_INPICKUP   0x0400
 
-#define C_PR_1          0x0400   /* Future use */
-#define C_PR_2          0x0800
-#define C_PR_3          0x1000
-#define C_PR_4          0x2000
-#define C_PR_5          0x4000
-#define C_PR_6          0x8000
+#define C_PR_1          0x8000   /* Future use */
+#define C_PR_2          0x1000
+#define C_PR_3          0x2000
+#define C_PR_4          0x4000
+#define C_PR_5          0x8000
 
 #define C_VC_ALL        0x0020   /* Command only passes with Majority concensus */
 #define C_VC_TEAM       0x0040   /* Command passes with agreement from Team */
+#define C_PR_VOTE       0x0080   /* Command is a vote */
 /*#define C_VC_PLAYER     0x0080 */  /* Each player can be voted on, like eject */
 
 /* Integrate Voting commands and generic commands into the same

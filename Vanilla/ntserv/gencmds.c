@@ -334,7 +334,9 @@ int do_help(char *comm, struct message *mess, struct command_handler_2 *cmds,
 	   (its description has a value of NULL, not "")
 	   Use this hack to make a command hidden */
 	continue;
-      else if ((voting)&&(cmds[i].tag & (C_VC_TEAM | C_VC_ALL)))
+      if (!(voting) && (cmds[i].tag & C_PR_VOTE))
+	continue;
+      else if (cmds[i].tag & (C_VC_TEAM | C_VC_ALL))
       {
 	char ch;
 

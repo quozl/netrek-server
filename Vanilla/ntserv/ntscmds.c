@@ -21,8 +21,6 @@
 #include "gencmds.h"
 #include "proto.h"
 
-#define C_PR_INPICKUP    C_PR_1
-
 void do_player_eject(int who, int player, int mflags, int sendto);
 void do_player_ban(int who, int player, int mflags, int sendto);
 
@@ -179,51 +177,51 @@ static struct command_handler_2 nts_commands[] =
     { "The following votes can be used:  (M=Majority, T=Team vote)",
       C_DESC  | C_PR_INPICKUP},
     { "EJECT",
-	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
+	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP | C_PR_VOTE,
 	"Eject a player               e.g. 'EJECT 0 IDLE'", 
 	do_player_eject,				/* EJECT */
 	2, PV_EJECT, 120, 300},
     { "BAN",
-	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP,
+	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP | C_PR_VOTE,
 	"Eject and ban a player       e.g. 'BAN 0'", 
 	do_player_ban,					/* BAN */
 	4, PV_BAN, 120, 120},
 #if defined(TRIPLE_PLANET_MAYHEM)
     { "TRIPLE",
-        C_VC_ALL | C_GLOG | C_PR_INPICKUP,
+        C_VC_ALL | C_GLOG | C_PR_INPICKUP | C_PR_VOTE,
         "Start triple planet mayhem by vote",
         do_triple_planet_mayhem,
 	2, PV_OTHER, 0},
     { "BALANCE",
-        C_VC_ALL | C_GLOG | C_PR_INPICKUP,
+        C_VC_ALL | C_GLOG | C_PR_INPICKUP | C_PR_VOTE,
         "Request team randomise & balance",
         do_balance,
         4, PV_OTHER+1, 0 },
 #endif
 #if defined(AUTO_INL)
   { "INL",
-	C_VC_ALL | C_GLOG | C_PR_INPICKUP,
+	C_VC_ALL | C_GLOG | C_PR_INPICKUP | C_PR_VOTE,
 	"Start game under INL rules.",
 	do_start_inl,
 	1, PV_OTHER+2, 0 },
 #endif
 #if defined(AUTO_PRACTICE)
   { "PRACTICE",
-	C_VC_ALL | C_PR_INPICKUP,
+	C_VC_ALL | C_PR_INPICKUP | C_PR_VOTE,
 	"Start basepractice by majority vote.",
 	do_start_basep,
 	1, PV_OTHER+3, 0 },
 #endif
 #if defined(AUTO_HOCKEY)
   { "HOCKEY",
-	C_VC_ALL | C_GLOG | C_PR_INPICKUP,
+	C_VC_ALL | C_GLOG | C_PR_INPICKUP | C_PR_VOTE,
 	"Start hockey by majority vote.",
 	do_start_puck,
 	1, PV_OTHER+4, 0 },
 #endif
 #if defined(AUTO_DOGFIGHT)
   { "DOGFIGHT",
-	C_VC_ALL | C_GLOG | C_PR_INPICKUP,
+	C_VC_ALL | C_GLOG | C_PR_INPICKUP | C_PR_VOTE,
 	"Start dogfight tournament by majority vote.",
 	do_start_mars,
 	1, PV_OTHER+5, 0 },
