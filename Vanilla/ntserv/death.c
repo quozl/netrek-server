@@ -76,7 +76,7 @@ void death(void)
     me->p_flags &= ~(PFWAR|PFREFITTING);
 
     /* all INL games advance at guest rate */    
-    if (status->gameup & GU_INROBOT) hourratio=5;
+    if (inl_mode) hourratio=5;
 
     /* First we check for promotions: */
     if (me->p_stats.st_rank < NUMRANKS-1) {

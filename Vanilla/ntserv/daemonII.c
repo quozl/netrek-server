@@ -555,7 +555,7 @@ static void move(int ignored)
         bans_age_temporary(QUEUEFUSE/reality);
     }
 
-    if (status->gameup & GU_PAUSED){ /* Game is paused */
+    if (ispaused){ /* Game is paused */
       if (fuse(PLAYERFUSE))
         udplayerpause();
       if (status->gameup & GU_CONQUER) conquer_update();
@@ -2204,7 +2204,7 @@ inline static void army_track(int type, void *who, void *what, int num)
     struct planet *pl;
     struct player *p, *sb;
 
-    if (!(status->gameup & GU_INROBOT)) return;
+    if (!(inl_mode)) return;
     pl = (struct planet *)what;
 
     switch (type) {
@@ -2932,7 +2932,7 @@ static void plfight(void)
     /* Send in a robot if there are no other defenders (or not Tmode)
        and the planet is in the team's home space */
     
-    if (!(status->gameup & GU_INROBOT)) {
+    if (!(inl_mode)) {
       if (((tcount[l->pl_owner] == 0) || (NotTmode(ticks))) && 
         (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
@@ -3610,7 +3610,7 @@ static void checkgen(int loser, struct player *winner)
     struct player *j;
 
     /* let the inl robot check for geno if in INL mode */
-    if (status->gameup & GU_INROBOT) return;
+    if (inl_mode) return;
 
     for (i = 0; i <= MAXTEAM; i++) /* maint: was "<" 6/22/92 TC */
         teams[i].s_plcount = 0;
@@ -3722,7 +3722,7 @@ static int checkwin(struct player *winner)
     int teamtemp[MAXTEAM + 1];
 
     /* let the inl robot check for geno if in INL mode */
-    if (status->gameup & GU_INROBOT) return 0;
+    if (inl_mode) return 0;
 
     teams[0].s_plcount = 0;
     for (i = 0; i < 4; i++) {
@@ -3881,7 +3881,7 @@ static void killmess(struct player *victim, struct player *k)
         arg[3] = 100 * k->p_kills;
         arg[4] = victim->p_armies;
         arg[5] = whydead;
-        if (status->gameup & GU_INROBOT) {
+        if (inl_mode) {
             pmessage(0, MALL | MKILL, "GOD->ALL", 
                 "%s {%s} was kill %s for %s {%s} %s",
                  victim->p_longname,
@@ -3912,7 +3912,7 @@ static void killmess(struct player *victim, struct player *k)
         arg[3] = 100 * k->p_kills;
         arg[4] = victim->p_armies;
         arg[5] = whydead;
-        if (status->gameup & GU_INROBOT) {
+        if (inl_mode) {
           pmessage(0, MALL | MKILLA, "GOD->ALL",
                    "%s (%s+%d) {%s} was kill %s for %s {%s} %s",
                    victim->p_name,

@@ -230,12 +230,12 @@ void solicit(int force)
     }
 
     /* only process entries with the correct server type */
-    if (status->gameup & GU_INROBOT && tolower(m->type[0]) != 'i')
+    if (inl_mode && tolower(m->type[0]) != 'i')
     {
       ERROR(7,("  skip metaserver entries with non-INL type during INL mode\n"));
       continue;
     }
-    else if (!(status->gameup & GU_INROBOT) && (tolower(m->type[0]) == 'i'))
+    else if (!(inl_mode) && (tolower(m->type[0]) == 'i'))
     {
       ERROR(7,("  skip metaserver entries with INL type during non-INL mode\n"));
       continue;
@@ -247,21 +247,19 @@ void solicit(int force)
     
     /* don't remake the packet unless necessary */
     /* for INL the always recreate because we have multiple ports */
-    if (status->gameup & GU_INROBOT)
+    if (inl_mode)
     {
       here = packet; nplayers=0; nfree=0; gamefull=0; isrsa=0;
     }
     if (here == packet) {
       int queue;
-      if (status->gameup & GU_NEWBIE)
+      if (newbie_mode)
 	queue = QU_NEWBIE_PLR;
-      else if (status->gameup & GU_PRET)
+      else if (pre_t_mode)
 	queue = QU_PRET_PLR;
-      else if (status->gameup & GU_INROBOT &&
-	       strncasecmp( m->ours, "home.", 5 ) == 0 )
+      else if (inl_mode && strncasecmp( m->ours, "home.", 5 ) == 0 )
 	queue = QU_HOME;
-      else if (status->gameup & GU_INROBOT &&
-	       strncasecmp( m->ours, "away.", 5 ) == 0 )
+      else if (inl_mode && strncasecmp( m->ours, "away.", 5 ) == 0 )
 	queue = QU_AWAY;
       else
 	queue = QU_PICKUP;
@@ -284,7 +282,7 @@ void solicit(int force)
          except one last time when players are leaving. Actually i just want to
          delist the server. is there a better way?  ehb  */
       if (nplayers == 0 &&
-          status->gameup & GU_INROBOT &&
+          inl_mode  &&
           (strcmp(packet, m->prior) == 0 || strcmp(m->prior, "") == 0))
       {
 	ERROR(7,("  skip metaserver entries during INL mode if zero players\n"));

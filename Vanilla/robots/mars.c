@@ -137,6 +137,7 @@ char **argv;
     do_war();   /*added MK-9/20/92, to plague and fill slots immediately*/
     mars_rules();
 
+    status->gameup |= GU_DOG;
     ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
 
 

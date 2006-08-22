@@ -170,11 +170,11 @@ static void conquer_ships_explode()
 		if (j->p_status == PFREE) continue;
 #ifdef NEWBIESERVER
 		/* Don't kill newbie robot. */
-		if (status->gameup & GU_NEWBIE && j->p_flags & PFROBOT) continue;
+		if (newbie_mode && j->p_flags & PFROBOT) continue;
 #endif
 #ifdef PRETSERVER
 		/* Don't kill pre-T robot. */
-		if (status->gameup & GU_PRET && j->p_flags & PFROBOT) continue;
+		if (pre_t_mode && j->p_flags & PFROBOT) continue;
 #endif
 		j->p_status = PEXPLODE;
 		j->p_whydead = KWINNER;

@@ -655,6 +655,7 @@ void cleanup(void)
 	    getship(&(j->p_ship), j->p_ship.s_type);
 	}
     }
+    status->gameup &= ~GU_DOG;
     exitRobot();
 }
 
@@ -1812,7 +1813,6 @@ void exitRobot(void)
     }
     
     freeslot(me);
-    
     exit(0);
 }
 

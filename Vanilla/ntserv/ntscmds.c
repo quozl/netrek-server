@@ -238,7 +238,7 @@ static struct command_handler_2 nts_commands[] =
 int do_check_command(struct message *mess)
 {
   return check_2_command(mess, nts_commands,
-			 (status->gameup & GU_INROBOT) ? 0 : C_PR_INPICKUP);
+			 (inl_mode) ? 0 : C_PR_INPICKUP);
 }
 
 void do_player_eject(int who, int player, int mflags, int sendto)
@@ -340,6 +340,11 @@ void do_player_ban(int who, int player, int mflags, int sendto)
 #if defined(AUTO_PRACTICE)
 void do_start_basep(void)
 {
+  if (practice_mode) {
+    pmessage(0, MALL, "GOD->ALL",
+        "Basepractice mode already running, vote ignored.");
+    return;
+  }
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
     execl(Basep, "basep", (char *) NULL);
@@ -351,6 +356,11 @@ void do_start_basep(void)
 #if defined(AUTO_INL)
 void do_start_inl(void)
 {
+  if (inl_mode) {
+    pmessage(0, MALL, "GOD->ALL",
+        "INL mode already running, vote ignored.");
+    return;
+  }
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
     execl(Inl, "inl", 0);
@@ -362,6 +372,11 @@ void do_start_inl(void)
 #if defined(AUTO_HOCKEY)
 void do_start_puck(void)
 {
+  if (hockey_mode) {
+    pmessage(0, MALL, "GOD->ALL",
+        "Hockey mode already running, vote ignored.");
+    return;
+  }
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
     execl(Puck, "puck", (char *) NULL);
@@ -373,6 +388,11 @@ void do_start_puck(void)
 #if defined(AUTO_DOGFIGHT)
 void do_start_mars(void)
 {
+  if (dogfight_mode) {
+    pmessage(0, MALL, "GOD->ALL",
+        "Dogfight mode already running, vote ignored.");
+    return;
+  }
   if (vfork() == 0) {
     (void) SIGNAL(SIGALRM,SIG_DFL);
     execl(Mars, "mars", (char *) NULL);

@@ -89,19 +89,25 @@ struct status {
 
 /* The following defines are for gameup field */
 #define GU_GAMEOK 1
-#define GU_PRACTICE 2
+#define GU_PRACTICE 2			/* Basepractice robot is present */
 #define practice_mode ((status->gameup) & GU_PRACTICE)
 #define GU_CHAOS 4
 #define chaos ((status->gameup) & GU_CHAOS)
 #define GU_PAUSED 8
 #define ispaused ((status->gameup) & GU_PAUSED)
 #define GU_INROBOT 16			/* INL robot is present	*/
-#define GU_NEWBIE 32
-#define GU_PRET 64
+#define inl_mode ((status->gameup) & GU_INROBOT)
+#define GU_NEWBIE 32			/* Newbie robot is present */
+#define newbie_mode ((status->gameup) & GU_NEWBIE)
+#define GU_PRET 64			/* Pre-t robot is present */
 #define pre_t_mode ((status->gameup) & GU_PRET)
-#define GU_BOT_IN_GAME 128
+#define GU_BOT_IN_GAME 128		/* Pre-t robot + bots are present */
 #define bot_in_game ((status->gameup) & GU_BOT_IN_GAME)
 #define GU_CONQUER 256			/* conquest parade in progress	*/
+#define GU_PUCK 512			/* Hockey robot is present */
+#define hockey_mode ((status->gameup) & GU_PUCK)
+#define GU_DOG 1024			/* Dogfight robot is present */
+#define dogfight_mode ((status->gameup) & GU_DOG)
 
 /* values of p_status */
 #define PFREE 		   0x0000

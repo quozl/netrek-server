@@ -150,6 +150,7 @@ char **argv;
     do_war();   /*added MK-9/20/92, to plague and fill slots immediately*/
     puck_rules();
 
+    status->gameup |= GU_PUCK;
     /* Robot is signalled by the Daemon */
     ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
     

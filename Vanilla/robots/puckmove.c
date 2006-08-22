@@ -670,6 +670,7 @@ void cleanup(void)
 	    getship(&(j->p_ship), j->p_ship.s_type);
 	}
     }
+    status->gameup &= ~GU_PUCK;
     exitRobot();
 }
 

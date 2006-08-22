@@ -73,7 +73,7 @@ static void handleLogin(void)
 	!lockout()) {
 
         /* all INL games prohibit guest login */
-        if (status->gameup & GU_INROBOT) {
+        if (inl_mode) {
 	  sendClientLogin(NULL);
 	  flushSockBuf();
 	  return;

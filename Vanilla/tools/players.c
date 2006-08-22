@@ -248,7 +248,7 @@ static void udp()
   if (!openmem(-1)) {
     sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment, 0, 0);
   } else {
-    if (status->gameup & GU_INROBOT) {
+    if (inl_mode) {
       int q1 = QU_HOME;
       int q2 = QU_AWAY;
       sprintf(packet, "s,B,%s,2,4566,%d,%d,4577,%d,%d\n", 
