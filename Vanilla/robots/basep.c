@@ -32,6 +32,7 @@
 #include "basepdefs.h"
 
 int debug=0;
+int nb_robots=0;
 
 char *roboname = "Smack";
 
@@ -89,7 +90,8 @@ reaper(sig)
    int stat=0;
    static int pid;
 
-   while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
+   while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0)
+       nb_robots--;
    HANDLE_SIG(SIGCHLD,reaper);
 }
 
@@ -385,7 +387,8 @@ do_start_robot(comm, mess)
 
    messAll(255,roboname,buf);
 
-   startrobot(num, team, sv >= 4 ? host : NULL, sv > 4 ? log : NULL, dg, base, def);
+   if (nb_robots < NB_ROBOTS)
+       startrobot(num, team, sv >= 4 ? host : NULL, sv > 4 ? log : NULL, dg, base, def);
    return 0;
 }
 
@@ -423,7 +426,7 @@ void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
    char           *remotehost;
    char            command[256];
    char            logc[256];
-   int i;
+   int i, pid;
 
    if (h)
       remotehost = h;
@@ -455,14 +458,16 @@ void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
       /*
        * printf("%s\n", command);
        */
-
-      if (fork() == 0) {
+      pid = fork();
+      if (pid == -1)
+	 return;
+      if (pid == 0) {
 	 SIGNAL(SIGALRM, SIG_DFL);
 	 execl("/bin/sh", "sh", "-c", command, (char *) NULL);
 	 perror("basep'execl");
 	 _exit(1);
       }
-      sleep(5);
+      nb_robots++;
    }
    return;
 }
@@ -495,7 +500,7 @@ void start_internal(type)
 	execv(Robot,argv);
 	perror(Robot);
 	_exit(1);
-	}
+    }
 }
 
 void cleanup(int unused)

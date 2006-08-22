@@ -29,7 +29,7 @@ config.h:
    apply to your configuration can be set to "".
 
    RCMD		-- this is used if the robots will be run on a machine
-		   other then the server.
+		   other then the server, e.g. #define RCMD "/usr/bin/X11/xon"
    OROBOT	-- the robot binary
    NICE		-- the robots will be executed with this "nice" value
    REMOTEHOST	-- remote host

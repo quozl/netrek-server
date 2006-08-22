@@ -18,10 +18,10 @@
 #define ROBODIR(RFILE) (LIBDIR "/" N_ROBODIR RFILE)
 #endif
 
-#define RCMD            "/usr/bin/X11/xon"
+#define RCMD            ""
 #define OROBOT          ROBODIR("/robot")
 #define NICE            "nice -1"
-#define REMOTEHOST      "localhost"
+#define REMOTEHOST      ""
 #define LOGFILE		ROBODIR("")
 #define COMFILE 	ROBODIR("/og")
 #define DOGFILE 	ROBODIR("/dog")
@@ -37,6 +37,8 @@
 
 #define ROBOCHECK (300*PERSEC)		/* Check if only robots are in game */
 #define SENDINFO  (120*PERSEC)		/* send info to all */
+
+#define NB_ROBOTS 16
 
 #endif /* _h_basepdefs */
 
