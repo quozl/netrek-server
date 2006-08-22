@@ -20,6 +20,7 @@ Instructions for installing the Vanilla Netrek Server as a Newbie Server
 - change etc/ports (see docs/sample_ports)
   - port 3592, enable with -q 10 for the practice robots
   - port 2592, use as normal but with -q 9
+  - port 2593, use as normal but with -q 11
 - consider blocking port 3592 inbound connections from offsite
 - restart netrekd with SIGHUP
 
@@ -36,6 +37,8 @@ Instructions for installing the Vanilla Netrek Server as a Newbie Server
 
 Below is a sample robot command file named "og". Please remove anything in 
 comment lines /* */
+
+The full list of robot commands can be found in robotd/dmessage.c
 
 ---BEGIN SAMPLE lib/og/og file
 hm 9
