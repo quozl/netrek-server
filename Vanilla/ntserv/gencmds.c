@@ -81,6 +81,8 @@ int check_2_command(struct message *mess, struct command_handler_2 *cmds,
     if ((cmds[i].tag & C_PR_MASK) & ~(prereqs))
       /* Dont meet the prereqs */
       continue;
+    if (!(voting) && (cmds[i].tag & C_PR_VOTE))
+      continue;
     if (len == strlen(cmds[i].command) &&
 	strncmp(cmds[i].command, comm, strlen(cmds[i].command)) == 0)
     {
