@@ -3,6 +3,16 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
+	- following change "Improved tracking of server modes" Wed Aug
+          23 06:36:42 EST 2006 williamb@its.caltech.edu:
+  
+	  status->gameup synchronisation with forked robots includes
+	  race conditions and unsafe process.  Robot sets flag once
+	  started; it might not complete starting by the time an
+	  attacker requests another vote.  If a robot terminates
+	  unnaturally, the flag is left set, preventing server reset
+	  or another vote.
+
 	- move() in daemon is a signal handler yet calls unsafe functions.
 
 	- cambot does not exit when daemon exits.
