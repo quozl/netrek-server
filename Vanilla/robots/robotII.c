@@ -11,6 +11,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 #include "roboshar.h"
 
 extern int redrawall;		/* maint: missing "extern" 6/22/92 TC */
@@ -248,7 +249,7 @@ char **argv;
 
     if (practice)
 	me->p_flags |= PFPRACTR;		/* Mark as a practice robot */
-    SIGNAL(SIGALRM, rmove);
+    alarm_init();
 
     config();
     if (practice) {
@@ -257,9 +258,6 @@ char **argv;
     else{
       myskip = 5;     /* other robots move every 5 server cycles */
     }
-
-    /* Robot is signalled by the Daemon */
-    ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
 
     me->p_process = getpid();
     me->p_timerdelay = myskip; 
@@ -297,7 +295,8 @@ char **argv;
     me->p_status = PALIVE;		/* Put robot in game */
     if (cloaker) cloak_on();
     while ((status -> gameup & GU_GAMEOK) && (me -> p_status != PFREE)) {
-	PAUSE(SIGALRM);
+        alarm_wait_for();
+        rmove();
     }
     exit(1);
 }

@@ -145,9 +145,6 @@ void rmove()
     int timer;
     static int lastTorpped = 0; /* when we last fired a torp 4/13/92 TC */
 
-
-    HANDLE_SIG(SIGALRM,rmove);
-
     roboclock++;
 
     /* keep ghostbuster away */
@@ -161,7 +158,6 @@ void rmove()
     else if (me->p_status == PDEAD) {
 	if (me->p_ntorp > 0)
                return;
-	SIGNAL(SIGALRM, SIG_IGN);
 	if (debug) ERROR(1,("Robot: done exploding and torps are gone.\n"));
 	exitRobot();
 	return;
@@ -174,7 +170,6 @@ void rmove()
 	    timer=1;
     }
     if (!timer && !sticky) {
-	SIGNAL(SIGALRM, SIG_IGN);
 	exitRobot();
 	return;
     }
@@ -1163,7 +1158,6 @@ struct player* enemy;
 
 void exitRobot()
 {
-    SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
 	if (target >= 0) {
 	    messAll(me->p_no,roboname,"I'll be back.");

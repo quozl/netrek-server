@@ -21,6 +21,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 #include "roboshar.h"
 #include "marsdefs.h"
 
@@ -127,7 +128,7 @@ char **argv;
     me->p_x = 50000;                 /* displace to on overlooking position */
     me->p_y = 5000;                  /* maybe we should just make it fight? */
 
-    SIGNAL(SIGALRM, marsmove);             /*the def signal is needed - MK */
+    alarm_init();
     if (!debug)
 	SIGNAL(SIGINT, cleanup);
 
@@ -138,9 +139,6 @@ char **argv;
     mars_rules();
 
     status->gameup |= GU_DOG;
-    ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
-
-
     me->p_process = getpid();
     me->p_timerdelay = HOWOFTEN; 
 
@@ -150,7 +148,8 @@ char **argv;
     me->p_status = PALIVE;		/* Put robot in game */
     init_mars();
     while (1) {
-	PAUSE(SIGALRM);
+        alarm_wait_for();
+        marsmove();
     }
 }
 

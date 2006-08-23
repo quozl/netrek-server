@@ -202,7 +202,6 @@ void rmove(void)
 
     /***** Start The Code Here *****/
 
-    HANDLE_SIG(SIGALRM,rmove);
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     anncer->p_ghostbuster = 0;     /* keep ghostbuster away */
 
@@ -1629,7 +1628,6 @@ char* puckie_message(struct player* enemy)
 
 void exitRobot(void)
 {
-    SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
 	if (target >= 0) {
 	    messAll(me->p_no,roboname, "I'll be back.");

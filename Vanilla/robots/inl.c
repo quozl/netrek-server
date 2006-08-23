@@ -24,6 +24,7 @@
 #include "planets.h"
 #include "inldefs.h"
 #include "proto.h"
+#include "alarm.h"
 #include "roboshar.h"
 #include "ltd_stats.h"
 
@@ -184,7 +185,7 @@ main(argc, argv)
     exit(1);
   }
 
-  SIGNAL(SIGALRM, inlmove);		/*the def signal is needed - MK */
+  alarm_init();
   if (!debug)
     {
       SIGNAL(SIGINT, cleanup);
@@ -219,7 +220,8 @@ main(argc, argv)
   SIGSETMASK(0);
 
   while (1) {
-    PAUSE(SIGALRM);
+    alarm_wait_for();
+    inlmove();
   }
 }
 
@@ -432,9 +434,6 @@ inlmove()
 
   /***** Start The Code Here *****/
 
-  /* Don't tell us it's time for another move in the middle of a move. */
-  SIGNAL(SIGALRM, SIG_IGN);
-
 #ifdef INLDEBUG
   ERROR(2,("Enter inlsmove\n"));
 #endif
@@ -452,7 +451,6 @@ inlmove()
 
   if (!(inl_stat.flags & (S_TOURNEY | S_OVERTIME)) ||
       (inl_stat.flags & S_FREEZE )) {
-    SIGNAL(SIGALRM, inlmove);
     return;
   }
 
@@ -501,8 +499,6 @@ inlmove()
 #ifdef INLDEBUG
   ERROR(2,("	game ticks = %d\n", inl_stat.game_ticks));
 #endif
-
-  SIGNAL(SIGALRM, inlmove);
 }
 
 void player_maint()
@@ -1269,8 +1265,6 @@ cleanup()
 {
   register struct player *j;
   register int i;
-
-  SIGNAL(SIGALRM, SIG_IGN);
 
   status->gameup &= ~(GU_CHAOS | GU_PRACTICE);
   status->gameup &= ~(GU_PAUSED);

@@ -28,6 +28,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 #include "roboshar.h"
 #include "pretdefs.h"
 
@@ -66,7 +67,7 @@ static int debugTarget = -1;
 static int debugLevel = 0;
 
 static void cleanup(int);
-void checkmess(int);
+void checkmess();
 static void obliterate(int wflag, char kreason, int killRobots);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
@@ -121,7 +122,7 @@ main(argc, argv)
     openmem(1);
     strcpy(robot_host,REMOTEHOST);
     readsysdefaults();
-    SIGNAL(SIGALRM, checkmess);             /*the def signal is needed - MK */
+    alarm_init();
     if (!debug)
         SIGNAL(SIGINT, cleanup);
 
@@ -165,9 +166,6 @@ main(argc, argv)
     queues[QU_PICKUP].q_flags ^= QU_REPORT;
     queues[QU_PICKUP_OBS].q_flags ^= QU_REPORT;
 
-    /* Robot is signalled by the Daemon */
-    ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
-   
     me->p_process = getpid();
     me->p_timerdelay = HOWOFTEN; 
 
@@ -188,18 +186,18 @@ main(argc, argv)
     */
 
     while (1) {
-        PAUSE(SIGALRM);
+        alarm_wait_for();
+        checkmess();
     }
 }
 
-void checkmess(int unused)
+void checkmess()
 { 
     int         shmemKey = PKEY;
     static int no_humans = 0;
     static int no_bots = 0;
     static int time_in_T = 0;
 
-    HANDLE_SIG(SIGALRM,checkmess);
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
         ERROR(2,("ERROR: Kathy died??\n"));
@@ -572,7 +570,7 @@ start_a_robot(char *team)
     if (pid == -1)
      return;
     if (pid == 0) {
-        SIGNAL(SIGALRM, SIG_DFL);
+        alarm_prevent_inheritance();
         execl("/bin/sh", "sh", "-c", command, (char *) NULL);
         perror("pret'execl");
         _exit(1);
@@ -672,7 +670,6 @@ static void resetPlanets(void) {
 
 static void exitRobot(void)
 {
-    SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
         if (target >= 0) {
             messAll(255,roboname, "I'll be back.");

@@ -222,9 +222,6 @@ void marsmove(void)
 {
     /***** Start The Code Here *****/
 
-
-    HANDLE_SIG(SIGALRM,marsmove);
-
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
 
 #ifdef DOGDEBUG
@@ -1799,7 +1796,6 @@ void player_bounce(void)
 
 void exitRobot(void)
 {
-    SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
 	if (target >= 0) {
 	    messAll(255,roboname, "I'll be back.");

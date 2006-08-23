@@ -28,6 +28,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 #include "roboshar.h"
 #include "newbiedefs.h"
 
@@ -63,7 +64,7 @@ int oldmctl;
 
 
 static void cleanup(int);
-void checkmess(int);
+void checkmess();
 static void obliterate(int wflag, char kreason);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
@@ -114,7 +115,7 @@ main(argc, argv)
     openmem(1);
     strcpy(robot_host,REMOTEHOST);
     readsysdefaults();
-    SIGNAL(SIGALRM, checkmess);             /*the def signal is needed - MK */
+    alarm_init();
     if (!debug)
         SIGNAL(SIGINT, cleanup);
 
@@ -180,9 +181,6 @@ main(argc, argv)
     queues[QU_PICKUP].q_flags &= ~(QU_REPORT | QU_OPEN);
     queues[QU_PICKUP_OBS].q_flags &= ~(QU_REPORT | QU_OPEN);
 
-    /* Robot is signalled by the Daemon */
-    ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
-   
     me->p_process = getpid();
     me->p_timerdelay = HOWOFTEN; 
 
@@ -192,16 +190,16 @@ main(argc, argv)
     me->p_status = PALIVE;              /* Put robot in game */
 
     while (1) {
-        PAUSE(SIGALRM);
+        alarm_wait_for();
+        checkmess();
     }
 }
 
-void checkmess(int unused)
+void checkmess()
 {
     int         shmemKey = PKEY;
     static int no_humans = 0;
     
-    HANDLE_SIG(SIGALRM,checkmess);
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
         ERROR(2,("ERROR: Merlin died??\n"));
@@ -238,7 +236,7 @@ void checkmess(int unused)
 
     /* Start a robot */
     if ((ticks % ROBOCHECK) == 0) {
-        int next_team;
+        int next_team = 0;
         num_players(&next_team);
 	
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))  {
@@ -655,7 +653,7 @@ start_a_robot(char *team)
     if (pid == -1)
      return;
     if (pid == 0) {
-        SIGNAL(SIGALRM, SIG_DFL);
+        alarm_prevent_inheritance();
         execl("/bin/sh", "sh", "-c", command, (char *) NULL);
         perror("newbie'execl");
         _exit(1);
@@ -699,7 +697,6 @@ static void cleanup(int unused)
 
 static void exitRobot(void)
 {
-    SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
         if (target >= 0) {
             messAll(255,roboname, "I'll be back.");

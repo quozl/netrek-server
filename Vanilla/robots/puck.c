@@ -18,6 +18,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 #include "puckdefs.h"
 #include "roboshar.h"
 #include "puckmove.h"
@@ -140,7 +141,7 @@ char **argv;
     anncer->p_pos = -1;			/* So robot stats don't get saved */
     anncer->p_flags |= PFROBOT;		/* Mark as a robot */
 
-    SIGNAL(SIGALRM, rmove);             /*the def signal is needed - MK */
+    alarm_init();
     if (!debug)
 	SIGNAL(SIGINT, cleanup);
 
@@ -151,8 +152,6 @@ char **argv;
     puck_rules();
 
     status->gameup |= GU_PUCK;
-    /* Robot is signalled by the Daemon */
-    ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
     
     me->p_process = getpid();
     me->p_timerdelay = HOWOFTEN; 
@@ -165,7 +164,8 @@ char **argv;
     anncer->p_status = PALIVE;
     do_faceoff();
     while (1) {
-	PAUSE(SIGALRM);
+        alarm_wait_for();
+        rmove();
     }
 }
 
