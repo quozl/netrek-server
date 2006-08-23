@@ -5,7 +5,7 @@
 
 /* alarm signal functions */
 
-int alarm_count;
+sig_atomic_t alarm_count;
 
 void alarm_set();
 void alarm_handler(int signum);
@@ -43,4 +43,9 @@ void alarm_wait_for()
     PAUSE(SIGALRM);
     if (alarm_count--) return;
   }
+}
+
+int alarm_send(pid_t pid)
+{
+  return kill(pid, SIGALRM);
 }
