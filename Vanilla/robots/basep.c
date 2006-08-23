@@ -28,6 +28,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 #include "roboshar.h"
 #include "basepdefs.h"
 
@@ -74,7 +75,7 @@ int oldmctl;
 
 
 void cleanup(int);
-void checkmess(int);
+void checkmess();
 int rprog(char *login, char *monitor);
 void start_internal();
 void exitRobot();
@@ -83,12 +84,10 @@ void check_robots_only();
 void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def);
 void fix_planets();
 
-void
-reaper(sig)
-   int	sig;
+static void reaper(int sig)
 {
    int stat=0;
-   static int pid;
+   int pid;
 
    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0)
        nb_robots--;
@@ -117,7 +116,7 @@ main(argc, argv)
    do_message_post_set(check_command);
    strcpy(robot_host,REMOTEHOST);
    readsysdefaults();
-   SIGNAL(SIGALRM, checkmess);             /*the def signal is needed - MK */
+   alarm_init();
    if (!debug)
        SIGNAL(SIGINT, cleanup);
 
@@ -155,9 +154,6 @@ main(argc, argv)
    status->gameup |= GU_CHAOS;
    status->gameup |= GU_PRACTICE;
 
-   /* Robot is signalled by the Daemon */
-   ERROR(3,("\nRobot Using Daemon Synchronization Timing\n"));
-   
    me->p_process = getpid();
    me->p_timerdelay = HOWOFTEN; 
 
@@ -167,15 +163,15 @@ main(argc, argv)
     me->p_status = PALIVE;              /* Put robot in game */
 
     while (1) {
-        PAUSE(SIGALRM);
+        alarm_wait_for();
+        checkmess();
     }
 }
 
-void checkmess(int unused)
+void checkmess()
 {
    int 	shmemKey = PKEY;
 
-    HANDLE_SIG(SIGALRM,checkmess);
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
       ERROR(2,("ERROR: Smack died??\n"));
@@ -462,7 +458,7 @@ void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
       if (pid == -1)
 	 return;
       if (pid == 0) {
-	 SIGNAL(SIGALRM, SIG_DFL);
+	 alarm_prevent_inheritance();
 	 execl("/bin/sh", "sh", "-c", command, (char *) NULL);
 	 perror("basep'execl");
 	 _exit(1);
@@ -496,7 +492,7 @@ void start_internal(type)
 
     argv[argc] = NULL;
     if (fork() == 0) {
-	SIGNAL(SIGALRM, SIG_DFL);
+	alarm_prevent_inheritance();
 	execv(Robot,argv);
 	perror(Robot);
 	_exit(1);
@@ -538,7 +534,6 @@ void cleanup(int unused)
 
 void exitRobot()
 {
-    SIGNAL(SIGALRM, SIG_IGN);
     if (me != NULL && me->p_team != ALLTEAM) {
         if (target >= 0) {
             messAll(255,roboname, "I'll be back.");

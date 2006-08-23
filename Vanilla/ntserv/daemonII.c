@@ -17,6 +17,7 @@
 #include "proto.h"
 #include "conquer.h"
 #include "daemon.h"
+#include "alarm.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
@@ -58,7 +59,7 @@ union semun {
 static void check_load(void);
 static int tournamentMode(void);
 static int check_scummers(int);
-static void move(int ignored);
+static void move();
 static void udplayersight(void);
 static void udplayers(void);
 static void udplayerpause(void);
@@ -266,7 +267,7 @@ int main(int argc, char **argv)
     }
 #endif /*PUCK_FIRST*/
     
-    (void) SIGNAL(SIGALRM, move);
+    alarm_init();
     udt.it_interval.tv_sec = 0;
     udt.it_interval.tv_usec = reality;
     udt.it_value.tv_sec = 0;
@@ -283,7 +284,8 @@ int main(int argc, char **argv)
 
     x = 0;
     for (;;) {
-        PAUSE(SIGALRM);
+        alarm_wait_for();
+        move();
         if (debug) {
             if (!(++x % 50))
                 ERROR(1,("Mark %d\n", x));
@@ -534,7 +536,7 @@ static void political_end(int message)
         }
 }
 
-static void move(int ignored)
+static void move()
 {
     static int oldmessage;
     int old_robot;
@@ -545,9 +547,6 @@ static void move(int ignored)
             TS_TOURNAMENT,
             TS_END
     } ts = TS_PICKUP;
-
-    /* Don't tell us it's time for another move in the middle of a move. */
-    (void) SIGNAL(SIGALRM, SIG_IGN);
 
     if (fuse(QUEUEFUSE)){
         queues_purge();
@@ -560,7 +559,6 @@ static void move(int ignored)
         udplayerpause();
       if (status->gameup & GU_CONQUER) conquer_update();
       signal_servers();
-      (void) SIGNAL(SIGALRM, move);
       return;
     }
 
@@ -715,10 +713,6 @@ static void move(int ignored)
     if (fuse(CHECKLOADFUSE)) {
         check_load(); 
     }
-
-    (void) SIGNAL(SIGALRM, move);
-
-    if (ignored) ;
 }
 
 
@@ -3469,7 +3463,6 @@ static void exitDaemon(int sig)
             fflush(stderr);
         }
     }
-    (void) SIGNAL(SIGALRM, SIG_IGN);     /* ignore timer signal */
 
     /* if problem occured before shared memory setup */
     if (!players)
@@ -3977,7 +3970,7 @@ static void rescue(int team, int target)
             (void) close(1);
             (void) close(2);
         }
-        (void) SIGNAL(SIGALRM, SIG_DFL);
+        alarm_prevent_inheritance();
         argv[argc++] = "robot";
         switch (team) {
           case FED:
@@ -4223,7 +4216,7 @@ static void displayBest(FILE *conqfile, int team, int type)
 static void fork_robot(int robot)
 {
    if ((robot_pid=vfork()) == 0) {
-      (void) SIGNAL(SIGALRM, SIG_DFL);
+      alarm_prevent_inheritance();
       switch(robot) {
         case NO_ROBOT: break;
 #ifdef BASEPRACTICE
@@ -4441,9 +4434,7 @@ static void signal_puck(void)
     
     if (puckwait)
     {
-        SIGNAL(SIGALRM, do_nuttin);
         semop(pucksem_id, pucksem_op, 1);
-        SIGNAL(SIGALRM, SIG_IGN);
     }
 }
 #endif /*PUCK_FIRST*/
