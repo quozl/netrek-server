@@ -152,7 +152,6 @@ char **argv;
     puck_rules();
 
     status->gameup |= GU_PUCK;
-    
     me->p_process = getpid();
     me->p_timerdelay = HOWOFTEN; 
     anncer->p_process = 0;  /* Announcer will not be signalled by DS */

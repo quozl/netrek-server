@@ -255,9 +255,14 @@ void fix_planets()
 {
    int i;
    struct planet *j;
+   char command[256];
 
    oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
    MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+
+   /* Standardize planet locations */
+   sprintf(command, "%s/tools/setgalaxy r", LIBDIR);
+   system(command);
 
    for (i = 0, j = planets; i < MAXPLANETS; i++, j++) {
       j->pl_flags |= (PLREPAIR | PLFUEL);
