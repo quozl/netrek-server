@@ -11,13 +11,14 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "sigpipe.h"
 #include "ltd_stats.h"
 
 extern int living;
 
 void death(void)
 {
-    SIGNAL(SIGALRM, SIG_IGN);
+    sigpipe_suspend(SIGALRM);
 
     me->p_status = POUTFIT;             /* Stop the ghost buster */
 

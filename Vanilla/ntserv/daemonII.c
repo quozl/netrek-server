@@ -4418,7 +4418,7 @@ static void signal_puck(void)
                 pucksem_id = -1;
                 /* are there any errors that would 'fix themselves?' */
             }
-            if (kill(j->p_process, SIGALRM) < 0) 
+            if (alarm_send(j->p_process) < 0) 
             {
                 if (errno == ESRCH) 
                 {
@@ -4478,7 +4478,7 @@ static void signal_servers(void)
 
       if (t == 1 /*skip mod */  || (((counter + i) % t) == 0))
         {
-          if (kill (j->p_process, SIGALRM) < 0)
+          if (alarm_send(j->p_process) < 0)
             {
               /* if the ntserv process died what are we doing here? */
               if (errno == ESRCH) {

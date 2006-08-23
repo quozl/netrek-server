@@ -22,6 +22,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "sigpipe.h"
 #include "packets.h"
 
 #define GHOSTTIME       (30 * 1000000 / UPDATE) /* 30 secs */
@@ -33,7 +34,6 @@ extern int living;
 static void setflag()
 {
   if (!living) return;
-  HANDLE_SIG(SIGALRM,setflag);
 
   if (do_update)
     intrupt();
@@ -65,7 +65,7 @@ static int resurrect(void)
 {
   register int i;
 
-  SIGNAL(SIGALRM, SIG_IGN);
+  sigpipe_suspend(SIGALRM);
 #ifndef SCO /* SCO doesn't have SIGIO, so why bother ignoring it? */
   SIGNAL(SIGIO, SIG_IGN);
 #endif
@@ -105,7 +105,7 @@ static int resurrect(void)
     ERROR(2,("%s: resurrected\n", me->p_mapchars));
     testtime = -1;	/* Do verification after GB  - NBT */
   }
-  SIGNAL(SIGALRM, setflag);
+  sigpipe_resume(SIGALRM);
   return 1;
 }
 
@@ -118,12 +118,22 @@ static void gamedown()
   flushSockBuf();
 }
 
+static void panic()
+{
+  gamedown();
+  freeslot(me);
+  exit(0);
+}
+
 void input(void)
 {
     fd_set readfds;
-    static struct timeval    poll = {2, 0};	
+    static struct timeval    poll = {2, 0};
+    int rv, afd, nfds;
 
-    SIGNAL(SIGALRM, setflag);
+    sigpipe_create();
+    sigpipe_assign(SIGALRM);
+    afd = sigpipe_fd();
 
     /* Idea:  read from client often, send to client not so often */
     while (living) {
@@ -134,38 +144,54 @@ void input(void)
 	    }
 	    resurrect();
 	}
-	if (! (status -> gameup & GU_GAMEOK)){
-	    gamedown();
-	    freeslot(me);
-	    exit(0);
-	}
-        FD_ZERO(&readfds);
-        FD_SET(sock, &readfds);
-        if (udpSock >= 0)
+	if (!(status -> gameup & GU_GAMEOK)) panic();
+	/* wait for activity on network socket or next daemon update */
+	while (1) {
+            FD_ZERO(&readfds);
+            nfds = 0;
+            FD_SET(afd, &readfds);
+            if (nfds < afd) nfds = afd;
+            FD_SET(sock, &readfds);
+            if (nfds < sock) nfds = sock;
+            if (udpSock >= 0) {
                 FD_SET(udpSock, &readfds);
-	poll.tv_sec=2;
-	poll.tv_usec=0;
-	if (select(32, &readfds, 0, 0, &poll) > 0) {
-	    do_update = 0;
+                if (nfds < udpSock) nfds = udpSock;
+	    }
+	    poll.tv_sec = 5;
+	    poll.tv_usec = 0;
+	    rv = select(nfds+1, &readfds, 0, 0, &poll);
+	    if (rv > 0) break;
+	    if (rv == 0) { panic(); /* daemon silence timeout */ }
+	    if (errno == EINTR) continue;
+	    perror("select");
+	    panic();
+	}
+	/* if daemon signalled us, perform the update only */
+	if (FD_ISSET(afd, &readfds)) {
+	    if (sigpipe_read() == SIGALRM) setflag();
+	    continue;
+	}
+	/* otherwise handle input from client */
+	do_update = 0;
 #ifdef PING                     /* reset this here also */
-            ping_ghostbust = 0;
+	ping_ghostbust = 0;
 #endif
 
-	    if (me->p_updates > delay) {
-	        me->p_flags &= ~(PFWAR);
-	    }
-	    if (me->p_updates > rdelay) {
-	        me->p_flags &= ~(PFREFITTING);
-	    }
-
-	    readFromClient();
-	    me->p_ghostbuster = 0;
-	    if (sendflag) {
-	      intrupt();
-	      sendflag=0;
-	    }
-	    do_update = 1;
+	if (me->p_updates > delay) {
+	    me->p_flags &= ~(PFWAR);
+	}
+	if (me->p_updates > rdelay) {
+	    me->p_flags &= ~(PFREFITTING);
 	}
 
+	readFromClient();
+	me->p_ghostbuster = 0;
+	if (sendflag) {
+	    intrupt();
+	    sendflag=0;
+	}
+	do_update = 1;
     }
+    sigpipe_suspend(SIGALRM);
+    sigpipe_close();
 }

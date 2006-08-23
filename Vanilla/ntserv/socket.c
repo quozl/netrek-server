@@ -35,6 +35,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "sigpipe.h"
 #include "ltd_stats.h"
 
 #ifdef OOPS
@@ -3116,7 +3117,8 @@ static void handleThresh(struct threshold_cpacket *packet)
 
 void forceShutdown(int s)
 {
-    SIGNAL (SIGALRM, SIG_IGN);
+    sigpipe_suspend(SIGALRM);
+    sigpipe_close();
     ERROR(1,("%s: shutdown on signal %d\n", whoami(), s));
     shutdown (sock, 2);
     close (sock);

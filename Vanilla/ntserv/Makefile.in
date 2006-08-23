@@ -24,7 +24,7 @@ L_OBJS = alarm.o balance.o bans.o bay.o \
 	openmem.o orbit.o \
 	phaser.o ping.o plasma.o \
 	rsa_key.o reserved.o \
-	salt.o slotmaint.o sintab.o smessage.o socket.o startrobot.o sysdefaults.o \
+	salt.o slotmaint.o sigpipe.o sintab.o smessage.o socket.o startrobot.o sysdefaults.o \
 	torp.o transwarp.o \
 	util.o \
 	warning.o
