@@ -15,6 +15,7 @@ void do_triple_planet_mayhem(void);
 /* bans.c */
 int bans_add_temporary_by_player(int who);
 void bans_age_temporary(int elapsed);
+int bans_check_temporary_remaining();
 int bans_check_temporary(char *ip);
 int bans_check_permanent(char *login, char *host);
 
@@ -67,7 +68,7 @@ void getFeature(struct feature_cpacket *cpack, struct feature_spacket *spack);
 void TellClient(char *typ);
 
 /* findslot.c */
-int findslot(int w_queue, char *host);
+int findslot(int w_queue);
 
 /* gencmds.c */
 char *addr_mess(int who, int type);

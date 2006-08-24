@@ -171,7 +171,7 @@ int main(int argc, char **argv)
     sendMotd();
 
     /* wait for a slot to become free */
-    pno = findslot(w_queue, inet_ntoa(*(struct in_addr *)&remoteaddr));
+    pno = findslot(w_queue);
     if (pno < 0) {
 	/* trigger client's "Sorry, but you cannot play xtrek now.
 	   Try again later." */
@@ -260,8 +260,7 @@ int main(int argc, char **argv)
     }
 
     /* store client IP address from socket peer obtained by checkSocket() */
-    if (remoteaddr != -1)
-      strcpy(me->p_ip, inet_ntoa(*(struct in_addr *)&remoteaddr));
+    STRNCPY(me->p_ip, ip, sizeof(me->p_ip));
 
 #ifdef REVERSED_HOSTNAMES
     if (strlen(host) >= NAME_LEN) {

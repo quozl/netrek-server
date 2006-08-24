@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <time.h>
+#include <string.h>
 #include "defs.h"
 #include INC_UNISTD
 #include INC_STRINGS
@@ -400,6 +401,7 @@ int connectToClient(char *machine, int port)
 	}
     }
     remoteaddr = addr.sin_addr.s_addr;
+    ip = strdup(inet_ntoa(addr.sin_addr));
 
     /* 18th Feb 1999, cameron@stl.dec.com, suspect this is where the large
        delay is for a ghostbusted slot, assuming usual PPP dial-in user, this
@@ -496,6 +498,7 @@ void checkSocket(void)
 	return;
     }
     remoteaddr = sin.sin_addr.s_addr;
+    ip = strdup(inet_ntoa(sin.sin_addr));
 }
 
 void initClientData(void)

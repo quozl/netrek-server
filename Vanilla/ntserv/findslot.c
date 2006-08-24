@@ -17,8 +17,8 @@
 #include "packets.h"
 #include "proto.h"
 
-/* return number of other hosts in game with same ip */
-static int player_count_by_ip(int w_queue, char *ip) {
+/* return number of playing hosts with same ip */
+static int playing_count_by_ip(int w_queue) {
   int i, j;
   for (i=0, j=0; i<MAXPLAYER; i++) {
     if (players[i].p_status == PFREE) continue;
@@ -27,15 +27,26 @@ static int player_count_by_ip(int w_queue, char *ip) {
 #ifdef OBSERVERS
     /* if we want a pickup slot, ignore any observer slot we have */
     if (w_queue == QU_PICKUP && players[i].p_status == POBSERV) continue;
-#endif	
+#endif
     if (strcmp(players[i].p_ip, ip) == 0) j++;
   }
   return j;
 }
 
+/* return number of waiting hosts with same ip */
+static int waiting_count_by_ip(int w_queue) {
+  int i, j, k, n;
+  n = queues[w_queue].count;
+  if (n == 0) return n;
+  k = queues[w_queue].first;
+  for (i=0, j=0; i<n; i++) {
+    if (strcmp(waiting[k].ip, ip) == 0) j++;
+    k = waiting[k].next;
+  }
+  return j;
+}
+
 /*
- * The following code for findslot() is really nice.
- *
  * Returns either the player slot number or -1 if it cannot give a slot.
  *
  * Every process will wait for a second (sleep(1)), and then check the queue
@@ -47,34 +58,62 @@ static int player_count_by_ip(int w_queue, char *ip) {
  *   oldcount:      (local) My position last time I looked.
  */
 
-int findslot(int w_queue, char *ip)
+int findslot(int w_queue)
 {
     u_int oldcount;	/* My old number */
     pid_t mypid = getpid();
-    int i;		
+    int i;
     int rep = 0;
     int mywait = -1;
     
     /* Ensure that the queue is open */
-    if (!(queues[w_queue].q_flags & QU_OPEN)) return (-1);
+    if (!(queues[w_queue].q_flags & QU_OPEN)) return -1;
 
-    /* pre-queue if client from same ip address is already playing */
+    /* unfair pre-queue delay if client ip is banned */
+    if (bans_check_temporary(ip)) {
+      int elapsed = ban_vote_duration - bans_check_temporary_remaining();
+      if (elapsed > 60) {
+	for (;;) {
+	  int remaining = bans_check_temporary_remaining();
+	  if (remaining == 0) break;
+	  if (rep++ % 10 == 1) { sendQueuePacket((short) remaining); }
+	  if (isClientDead()) { fflush(stderr); exit(0); }
+	  if (!(status->gameup & GU_GAMEOK)) { return -1; }
+	  sleep(2);
+	}
+      }
+    }
+
+    /* unfair pre-queue if client from same ip address is already queued */
     if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
       for (;;) {
-	if (player_count_by_ip(w_queue, ip) <= duplicates) break;
-	if (rep++ % 10 == 1) { sendQueuePacket((short) MAXPLAYER); }
+	int n = waiting_count_by_ip(w_queue);
+	if (n < 1) break;
+	if (rep++ % 10 == 1) { sendQueuePacket((short) 2000+n); }
 	if (isClientDead()) { fflush(stderr); exit(0); }
-	if (!(status->gameup & GU_GAMEOK)) { return (-1); }
+	if (!(status->gameup & GU_GAMEOK)) { return -1; }
+	sleep(1);
+      }
+    }
+
+    /* unfair pre-queue if client from same ip address is already playing */
+    if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
+      for (;;) {
+	int n = playing_count_by_ip(w_queue);
+	if (n <= duplicates) break;
+	if (rep++ % 10 == 1) { sendQueuePacket((short) 1000+n); }
+	if (isClientDead()) { fflush(stderr); exit(0); }
+	if (!(status->gameup & GU_GAMEOK)) { return -1; }
 	sleep(1);
       }
     }
 
     /* If no one is waiting, I will try to enter now */
     if (queues[w_queue].first == -1)
-	if ( (i=pickslot(w_queue)) >= 0 )  return (i);
+	if ( (i=pickslot(w_queue)) >= 0 )  return i;
 
     mywait = queue_add(w_queue);    /* Get me into the queue */
-    if (mywait == -1) return (-1);   /* The queue is full! */
+    if (mywait == -1) return -1;    /* The queue is full! */
 
     rep = 0;
     oldcount = waiting[mywait].count;
@@ -84,7 +123,7 @@ int findslot(int w_queue, char *ip)
         if (mypid != waiting[mywait].process){
           ERROR(1,("findslot: process lost its waitq entry!\n"));
           mywait = queue_add(w_queue);        /* Get me into the queue */
-          if (mywait == -1) return (-1);    /* The queue is full! */
+          if (mywait == -1) return -1;        /* The queue is full! */
           /* The count should change, so a new packet will be sent. */
         }
 
@@ -92,7 +131,7 @@ int findslot(int w_queue, char *ip)
 	if (mywait == queues[w_queue].first){
 	    if ((i=pickslot(w_queue)) >= 0 ) {
 		queue_exit(mywait);
-		return (i);
+		return i;
 	    }
 	} /* End of if I am first in line */
 
@@ -115,12 +154,11 @@ int findslot(int w_queue, char *ip)
 	/* Message from daemon that it died (is going down) */
 	if (!(status->gameup & GU_GAMEOK)) {
 	    queue_exit(mywait);
-	    return (-1);
+	    return -1;
 	}
 
 	/* To mimize process overhead and aid synchronization */
 	sleep(1);
 
     }
-/*    return -1; compiler warning: statement unreachable */
 }

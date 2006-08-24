@@ -44,7 +44,6 @@ void get(char *us, struct ban *b)
 {
   printf("add");
   printf(" remain %d", b->b_remain);
-  printf(" expire %d", b->b_expire);
   printf(" ip %s", b->b_ip);
   printf("\\ \n");
 }
@@ -72,7 +71,7 @@ int main(int argc, char **argv)
       if (++i == argc) return 0;
       for(j=0; j<MAXBANS; j++) {
 	if (strlen(bans[j].b_ip) == 0) continue;
-	printf("%s\t%d\t%d\n", bans[j].b_ip, bans[j].b_remain, bans[j].b_expire);
+	printf("%s\t%d\n", bans[j].b_ip, bans[j].b_remain);
       }
       goto state_0;
     }
@@ -80,7 +79,7 @@ int main(int argc, char **argv)
     if (!strcmp(argv[i], "expire-all")) {
       if (++i == argc) return 0;
       for(j=0; j<MAXBANS; j++) {
-	bans[j].b_remain = bans[j].b_expire = 0;
+	bans[j].b_remain = 0;
       }
       goto state_0;
     }
@@ -88,7 +87,7 @@ int main(int argc, char **argv)
     if (!strcmp(argv[i], "clear-all")) {
       if (++i == argc) return 0;
       for(j=0; j<MAXBANS; j++) {
-	bans[j].b_remain = bans[j].b_expire = 0;
+	bans[j].b_remain = 0;
 	bans[j].b_ip[0] = '\0';
       }
       goto state_0;
@@ -125,16 +124,9 @@ int main(int argc, char **argv)
       goto state_add;
     }
 
-    if (!strcmp(argv[i], "expire")) {
-      if (++i == argc) return 0;
-      expire = atoi(argv[i]);
-      goto state_add;
-    }
-
     if (!strcmp(argv[i], "ip")) {
       if (++i == argc) return 0;
       strcpy(bans[n].b_ip, argv[i]);
-      bans[n].b_expire = expire;
       bans[n].b_remain = remain;
       n++;
       if (n == MAXBANS) {

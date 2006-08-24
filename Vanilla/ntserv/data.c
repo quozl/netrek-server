@@ -68,6 +68,7 @@ char 	passPick[NAME_LEN];
 fd_set	inputMask;
 int 	nextSocket;
 char	*host;
+char	*ip;
 int 	noressurect=0;
 int	userVersion=0, userUdpVersion=0;
 int	bypassed=0;
@@ -408,8 +409,6 @@ int ignored[MAXPLAYER];
 
 int voting=0;
 int ban_vote_enable=0;
-int ban_vote_length=10;
-int ban_vote_offset=0;
 int ban_vote_duration=3600;
 int eject_vote_enable=0;
 int eject_vote_only_if_queue=0;

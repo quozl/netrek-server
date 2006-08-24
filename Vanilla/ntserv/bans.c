@@ -21,9 +21,8 @@ int bans_add_temporary_by_player(int who)
   struct player *j = &players[who];
   for (i=0; i<MAXBANS; i++) {
     struct ban *b = &bans[i];
-    if (b->b_remain == 0 && b->b_expire == 0) {
+    if (b->b_remain == 0) {
       strcpy(b->b_ip, j->p_ip);
-      b->b_expire = ban_vote_length;
       b->b_remain = ban_vote_duration;
       ERROR(2,( "ban of %s was voted\n", b->b_ip));
       return 1;
@@ -46,6 +45,15 @@ void bans_age_temporary(int elapsed) {
   }
 }
 
+/* identified ban relevant to caller */
+struct ban *bans_check_temporary_identified;
+
+/* check temporary ban again */
+int bans_check_temporary_remaining()
+{
+  return bans_check_temporary_identified->b_remain;
+}
+
 /* check temporary bans voted */
 int bans_check_temporary(char *ip)
 {
@@ -55,18 +63,8 @@ int bans_check_temporary(char *ip)
     if (b->b_remain) {
       if (!strcmp(b->b_ip, ip)) {
 	ERROR(2,( "ban of %s is still current\n", b->b_ip));
+	bans_check_temporary_identified = b;
 	return TRUE;
-      }
-    }
-    if (b->b_expire) {
-      if (!strcmp(b->b_ip, ip)) {
-	ERROR(2,( "ban of %s has been probed\n", b->b_ip));
-	b->b_expire += ban_vote_offset;
-	return TRUE;
-      }
-      b->b_expire--;
-      if (!b->b_expire) {
-	ERROR(2,( "ban of %s has expired\n", b->b_ip));
       }
     }
   }

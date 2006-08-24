@@ -243,6 +243,7 @@ int queue_add(int w_queue)
     lwait->count       = lqueue->count++;
     lwait->process     = getpid();
     lwait->w_queue     = w_queue;
+    STRNCPY(lwait->ip, ip, sizeof(lwait->ip));
     STRNCPY(lwait->host, host, sizeof(lwait->host));
 
     return i;
