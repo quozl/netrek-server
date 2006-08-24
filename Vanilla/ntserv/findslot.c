@@ -70,7 +70,7 @@ int findslot(int w_queue)
     if (!(queues[w_queue].q_flags & QU_OPEN)) return -1;
 
     /* unfair pre-queue delay if client ip is banned */
-    if (bans_check_temporary(ip)) {
+    if ((w_queue != QU_PICKUP_OBS) && (bans_check_temporary(ip))) {
       int elapsed = ban_vote_duration - bans_check_temporary_remaining();
       if (elapsed > 60) {
 	for (;;) {
