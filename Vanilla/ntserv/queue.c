@@ -137,11 +137,11 @@ int queues_init(void)
     queue_setname(QU_GOD_OBS,"god observer");
 
 #ifdef NEWBIESERVER
-    queues[QU_NEWBIE_PLR].free_slots = (MAXPLAYER - TESTERS) / 2;
-    queues[QU_NEWBIE_PLR].max_slots = (MAXPLAYER - TESTERS) / 2;
+    queues[QU_NEWBIE_PLR].free_slots = MAXPLAYER - TESTERS;
+    queues[QU_NEWBIE_PLR].max_slots = MAXPLAYER - TESTERS;
     queues[QU_NEWBIE_PLR].tournmask = ALLTEAM;
     queues[QU_NEWBIE_PLR].low_slot = 0;
-    queues[QU_NEWBIE_PLR].high_slot = (MAXPLAYER - TESTERS) / 2;
+    queues[QU_NEWBIE_PLR].high_slot = MAXPLAYER - TESTERS;
     queues[QU_NEWBIE_PLR].q_flags = QU_OPEN|QU_RESTRICT;
     queue_setname(QU_NEWBIE_PLR, "newbie player");
 
