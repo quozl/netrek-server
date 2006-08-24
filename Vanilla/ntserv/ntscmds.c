@@ -1052,26 +1052,26 @@ void do_admin(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "admin: erm, send 'em a \"mute on\"");
   } else if (!strcmp(one, "quit")) {
     if (them == NULL) return;
-    sprintf(command, "tools/admin/quit %s %c", p->p_full_hostname, them->p_mapchars[1]);
+    sprintf(command, "../tools/admin/quit %s %c", p->p_full_hostname, them->p_mapchars[1]);
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s forced to quit.", two);
   } else if (!strcmp(one, "kill")) {
     if (them == NULL) return;
-    sprintf(command, "tools/admin/kill %s %c", p->p_full_hostname, them->p_mapchars[1]);
+    sprintf(command, "../tools/admin/kill %s %c", p->p_full_hostname, them->p_mapchars[1]);
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s killed.", two);
   } else if (!strcmp(one, "free")) {
     if (them == NULL) return;
-    sprintf(command, "tools/admin/free %s %c", p->p_full_hostname, them->p_mapchars[1]);
+    sprintf(command, "../tools/admin/free %s %c", p->p_full_hostname, them->p_mapchars[1]);
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s free-ed.", two);
   } else if (!strcmp(one, "ban")) {
     if (them == NULL) return;
-    sprintf(command, "tools/admin/ban %s %s", p->p_full_hostname, them->p_full_hostname);
+    sprintf(command, "../tools/admin/ban %s %s", p->p_full_hostname, them->p_full_hostname);
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s banned.", two);
   } else if (!strcmp(one, "reset")) {
-    sprintf(command, "tools/admin/reset %s", p->p_full_hostname);
+    sprintf(command, "../tools/admin/reset %s", p->p_full_hostname);
     system(command);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
   } else {
