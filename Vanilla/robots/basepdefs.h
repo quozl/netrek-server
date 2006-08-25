@@ -36,7 +36,7 @@
 #define PERSEC (1000000/UPDATE/HOWOFTEN) /* # of robo calls per second*/
 
 #define ROBOCHECK (300*PERSEC)		/* Check if only robots are in game */
-#define SENDINFO  (120*PERSEC)		/* send info to all */
+#define SENDINFO  (600*PERSEC)		/* send info to all */
 
 #define NB_ROBOTS 16
 

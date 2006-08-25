@@ -273,7 +273,7 @@ void checkmess()
         alternate++;
         if (1) {
             messAll(255,roboname,"Welcome to the Newbie Server.");
-            messAll(255,roboname,"See http://cow.netrek.org/current/newbie.html");
+            messAll(255,roboname,"See http://genocide.netrek.org/beginner/newbie.php");
         }
         else {
             messAll(255,roboname,"Think you have what it takes?  Sign up for the draft league!");

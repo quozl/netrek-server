@@ -44,7 +44,7 @@
 #define ROBOCHECK (1*PERSEC)		/* start or stop a robot */
 #define ROBOEXITWAIT (5*ROBOCHECK)  /* wait between exiting bots so that
                                        multiple bots don't exit */
-#define SENDINFO  (120*PERSEC)		/* send info to all */
+#define SENDINFO  (600*PERSEC)		/* send info to all */
 
 #define QUPLAY(A) (queues[A].max_slots - queues[A].free_slots)
 
