@@ -194,6 +194,12 @@ BASEPRACTICE=0
 #    Newbie Server
 NEWBIE=0
 #
+#    Maximum number of newbie server robots to allow at once
+MAX_NEWBIE_ROBOTS=16
+#
+#    Maximum number of newbie server players to allow at once
+MAX_NEWBIE_PLAYERS=8
+#
 #    Pre T-mode Entertainment (maintains 4 on 4 with robots) 
 PRET=0
 #

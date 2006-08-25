@@ -291,6 +291,8 @@ extern char Basep[FNAMESIZE];
 #endif
 #ifdef NEWBIESERVER
 extern char Newbie[FNAMESIZE];
+extern int max_newbie_robots;
+extern int max_newbie_players;
 #endif
 #ifdef PRETSERVER
 extern char PreT[FNAMESIZE];

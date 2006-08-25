@@ -33,9 +33,6 @@
 
 /* Newbie server specific additions */
 
-#define MIN_NUM_PLAYERS	16 /* How many players to maintain. */
-#define MAX_HUMANS 8 /* Max number of humans to let in. */
-
 #define PORT 3592
 
 #define HOWOFTEN 1                       /*Robot moves every HOWOFTEN cycles*/
@@ -47,8 +44,6 @@
 #define SENDINFO  (120*PERSEC)		/* send info to all */
 
 #define QUPLAY(A) (queues[A].max_slots - queues[A].free_slots)
-
-#define NB_ROBOTS 16
 
 #endif /* _h_newbiedefs */
 

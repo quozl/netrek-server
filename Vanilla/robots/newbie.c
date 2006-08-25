@@ -33,7 +33,6 @@
 #include "newbiedefs.h"
 
 int debug=0;
-int nb_robots=0;
 
 char *roboname = "Merlin";
 
@@ -69,6 +68,7 @@ static void obliterate(int wflag, char kreason);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
 static int is_robots_only(void);
+static int totalRobots(void);
 static int num_humans(void);
 static void exitRobot(void);
 static char * namearg(void);
@@ -84,8 +84,7 @@ reaper(int sig)
     int stat=0;
     static int pid;
 
-    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0)
-        nb_robots--;
+    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
     HANDLE_SIG(SIGCHLD,reaper);
 }
 
@@ -228,8 +227,8 @@ void checkmess()
 
     /* Stop a robot. */
     if ((ticks % ROBOEXITWAIT) == 0) {
-        if ((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > 
-         	    queues[QU_PICKUP].max_slots) {
+        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots)
+            && (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
 	    stop_a_robot();
 	}
     }
@@ -238,8 +237,8 @@ void checkmess()
     if ((ticks % ROBOCHECK) == 0) {
         int next_team = 0;
         num_players(&next_team);
-	
-        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1)) && (nb_robots < NB_ROBOTS))  {
+        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1))
+            && (totalRobots() < max_newbie_robots))  {
             if (next_team == FED)
                 start_a_robot("-Tf");
             if (next_team == ROM)
@@ -311,6 +310,27 @@ static int checkpos(void)
 static int is_robots_only(void)
 {
    return !num_humans();
+}
+
+static int totalRobots() {
+   int i;
+   struct player *j;
+   int count = 0;
+
+   for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+      if (j->p_status == PFREE)
+         continue;
+      if (j->p_flags & PFROBOT)
+         continue;
+      if (j->p_status == POBSERV)
+         continue;
+
+      if (rprog(j->p_login, j->p_monitor))
+          /* Found a robot. */
+         count++;
+   }
+
+   return count;
 }
 
 static int num_humans(void) {
@@ -658,7 +678,6 @@ start_a_robot(char *team)
         perror("newbie'execl");
         _exit(1);
     }
-    nb_robots++;
 }
 
 static void cleanup(int unused)

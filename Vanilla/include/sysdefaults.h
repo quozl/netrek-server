@@ -153,6 +153,10 @@ struct sysdef_keywords {
 #ifdef NEWBIESERVER
   { "NEWBIE",	SYSDEF_ROBOT,	(void *) NEWBIE_ROBOT,
     "Enable newbie server robot on startup" },
+  { "MAX_NEWBIE_ROBOTS",     SYSDEF_INT,     &max_newbie_robots,
+    "Maximum number of robots to allow at once" },
+  { "MAX_NEWBIE_PLAYERS",     SYSDEF_INT,     &max_newbie_players,
+    "Maximum number of human players to allow at once" },
 #endif
 #ifdef PRETSERVER
   { "PRET",	SYSDEF_ROBOT,	(void *) PRET_ROBOT,
@@ -228,5 +232,6 @@ James Cameron, 14th February 2004.
 EJECT_VOTE_*
 BAN_VOTE_*
 DUPLICATES
+MAX_NEWBIE_*
 
 */
