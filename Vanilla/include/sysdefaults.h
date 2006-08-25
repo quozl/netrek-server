@@ -221,7 +221,7 @@ James Cameron, 14th February 2004.
 - add to ntserv/data.c
 - add to include/data.h
 - add to sysdef_keywords in include/sysdefaults.h, in any order, prefer end
-- add to docs/sample_sysdef with comment about value meanings
+- add to docs/sample_sysdef.in with comment about value meanings
 - use glade (http://glade.pn.org/) to add to gum/gum.xml and regenerate code
 - leave a comment below if your defaults have not been added to gum
 
