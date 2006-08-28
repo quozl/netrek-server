@@ -42,7 +42,10 @@ void alarm_wait_for()
 {
   while (1) {
     PAUSE(SIGALRM);
-    if (alarm_count--) return;
+    if (alarm_count) {
+      alarm_count--;
+      return;
+    }
   }
 }
 
