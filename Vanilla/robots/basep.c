@@ -61,9 +61,6 @@ static char    *names[NUMNAMES] =
  * "guest" };
  */
 
-#define MAX_NUM_PLAYERS	20
-
-
 static	char	hostname[64];
 struct	planet	*oldplanets;	/* for restoring galaxy */
 
