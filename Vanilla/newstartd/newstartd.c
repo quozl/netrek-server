@@ -39,6 +39,7 @@ static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>

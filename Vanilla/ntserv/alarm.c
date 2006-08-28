@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <sys/wait.h>
 #include "defs.h"
 #include "alarm.h"
@@ -34,7 +35,7 @@ void alarm_prevent_inheritance()
 void alarm_handler(int signum)
 {
   alarm_count++;
-  alarm_set();
+  HANDLE_SIG(SIGALRM, alarm_handler);
 }
 
 void alarm_wait_for()

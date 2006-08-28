@@ -9,6 +9,7 @@
 #include <time.h>
 #include <math.h>
 #include <errno.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include "defs.h"
 #include "struct.h"
