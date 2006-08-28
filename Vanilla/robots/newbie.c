@@ -47,20 +47,15 @@ static char    *names[NUMNAMES] =
  "Ravager", "Despoiler", "Abolisher",
  "Emasculator", "Decimator"};
 
-/*
- * #define NUMNAMES     3 static char *names[NUMNAMES] = { "guest", "guest",
- * "guest" };
- */
-
 static  char    hostname[64];
-struct  planet  *oldplanets;    /* for restoring galaxy */
 
 int target;  /* Terminator's target 7/27/91 TC */
 int phrange; /* phaser range 7/31/91 TC */
 int trrange; /* tractor range 8/2/91 TC */
 int ticks = 0;
 int oldmctl;
-
+static int debugTarget = -1;
+static int debugLevel = 0;
 
 static void cleanup(int);
 void checkmess();
@@ -69,7 +64,6 @@ static void start_a_robot(char *team);
 static void stop_a_robot(void);
 static int is_robots_only(void);
 static int totalRobots(void);
-static int num_humans(void);
 static void exitRobot(void);
 static char * namearg(void);
 static int num_players(int *next_team);
@@ -77,6 +71,8 @@ static int rprog(char *login, char *monitor);
 static void stop_this_bot(struct player * p);
 static void save_armies(struct player *p);
 static int checkpos(void);
+static int num_humans(void);
+static int totalPlayers();
 
 static void
 reaper(int sig)
@@ -198,7 +194,7 @@ void checkmess()
 {
     int         shmemKey = PKEY;
     static int no_humans = 0;
-    
+
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
         ERROR(2,("ERROR: Merlin died??\n"));
@@ -227,8 +223,17 @@ void checkmess()
 
     /* Stop a robot. */
     if ((ticks % ROBOEXITWAIT) == 0) {
+        if(debugTarget != -1) {
+            messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
+                    totalPlayers(), totalRobots(), num_humans());
+        }
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots)
             && (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
+            if(debugTarget != -1) {
+                messOne(255, roboname, debugTarget, "Stopping a robot");
+                messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
+                        totalRobots(), num_humans());
+            }
 	    stop_a_robot();
 	}
     }
@@ -239,14 +244,21 @@ void checkmess()
         num_players(&next_team);
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1))
             && (totalRobots() < max_newbie_robots))  {
+            if(debugTarget != -1) {
+                messOne(255, roboname, debugTarget, "Starting a robot");
+                messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
+                        totalRobots(), num_humans());
+            }
             if (next_team == FED)
                 start_a_robot("-Tf");
-            if (next_team == ROM)
+            else if (next_team == ROM)
                 start_a_robot("-Tr");
-            if (next_team == ORI)
+            else if (next_team == ORI)
                 start_a_robot("-To");
-            if (next_team == KLI)
+            else if (next_team == KLI)
                 start_a_robot("-Tk");
+            else
+                fprintf(stderr, "Start_a_robot team select (%d) failed.", next_team);
         }
     }
 
@@ -326,7 +338,8 @@ static int is_robots_only(void)
    return !num_humans();
 }
 
-static int totalRobots() {
+static int totalRobots()
+{
    int i;
    struct player *j;
    int count = 0;
@@ -347,6 +360,24 @@ static int totalRobots() {
    return count;
 }
 
+static int totalPlayers()
+{
+   int i;
+   struct player *j;
+   int count = 0;
+
+   for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j->p_status == PFREE)
+            continue;
+        if (j->p_flags & PFROBOT)
+            continue;
+        if (j->p_status == POBSERV)
+            continue;
+        count++;
+   }
+   return count;
+}
+
 static int num_humans(void) {
    int i;
    struct player *j;
@@ -360,9 +391,20 @@ static int num_humans(void) {
       if (j->p_status == POBSERV)
          continue;
 
-      if (!rprog(j->p_login, j->p_monitor))
-          /* Found a human. */
-	 count++;
+      if (!rprog(j->p_login, j->p_monitor)) {
+         /* Found a human. */
+         count++;
+         if(debugTarget != -1 && debugLevel == 2) {
+             messOne(255, roboname, debugTarget, "%d: Counting %s (%s %s) as a human",
+                     i, j->p_mapchars, j->p_login, j->p_monitor);
+         }
+      }
+      else {
+         if(debugTarget != -1 && debugLevel == 2) {
+             messOne(255, roboname, debugTarget, "%d: NOT Counting %s (%s %s) as a human",
+                     i, j->p_mapchars, j->p_login, j->p_monitor);
+          }
+      }
    }
 
    return count;
@@ -394,7 +436,6 @@ static int
 rprog(char *login, char *monitor)
 {
     if (strcmp(login, "robot!") == 0)
-        /*      if (strstr(monitor, "uci")) */
         return 1;
 
     return 0;
@@ -427,7 +468,8 @@ int killrobot(pp_team)
     return kill;
 }
 
-static void stop_this_bot(struct player *p) {
+static void stop_this_bot(struct player *p)
+{
     p->p_ship.s_type = STARBASE;
     p->p_whydead=KQUIT;
     p->p_explode=10;
@@ -674,7 +716,7 @@ start_a_robot(char *team)
      * -X login name
      * -g send the OggV byte to ID self as a robot, the bots use this
      * -b blind mode, do not listen to anybody
-     * -0 no passwd during login sequence
+     * -O no passwd during login sequence
      * -i INL mode, sets robot updates to 5 updates per second
      * -C read commands file, usually ROBOTDIR/og 
      */
