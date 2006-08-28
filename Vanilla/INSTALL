@@ -86,7 +86,8 @@ lists the Vanilla Team offers.
 Running two servers on one machine
 ----------------------------------
 
-1) Copy entire Vanilla tree into a new folder.
+1) Copy entire Vanilla tree into a new folder, and rerun ./configure using
+the new path.
 2) Edit include/defs.h and change PKEY to a different value, so the servers
 operate in different shared memory segments.
 3) If running one of the bot servers (newbie, pret, etc) change any defined
