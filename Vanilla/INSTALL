@@ -82,3 +82,16 @@ Developers may wish to subscribe to vanilla-list by sending an empty
 email message to vanilla-list-subscribe@us.netrek.org.  No subject or
 body required.  See the README for more details and other mailing
 lists the Vanilla Team offers.
+
+Running two servers on one machine
+----------------------------------
+
+1) Copy entire Vanilla tree into a new folder.
+2) Edit include/defs.h and change PKEY to a different value, so the servers
+operate in different shared memory segments.
+3) If running one of the bot servers (newbie, pret, etc) change any defined
+ports in the *defs header files so they don't overlap with the ports used
+in the first server.
+4) Edit etc/ports file so that no ports overlap between the two servers.  For
+example, increment all ports by 10000.
+5) Make clean and recompile.
