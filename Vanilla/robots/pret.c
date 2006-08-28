@@ -47,11 +47,6 @@ static char    *names[NUMNAMES] =
  "Ravager", "Despoiler", "Abolisher",
  "Emasculator", "Decimator"};
 
-/*
- * #define NUMNAMES     3 static char *names[NUMNAMES] = { "guest", "guest",
- * "guest" };
- */
-
 static  char    hostname[64];
 
 int target;  /* Terminator's target 7/27/91 TC */
@@ -82,7 +77,6 @@ static void resetPlanets(void);
 static void checkPreTVictory();
 static int num_humans(int team);
 static int totalPlayers();
-static void checkMessage(struct message *p);
  
 static void
 reaper(int sig)
@@ -179,12 +173,6 @@ main(argc, argv)
     me->p_status = PALIVE;              /* Put robot in game */
     resetPlanets();
 
-    /* Only allow Rom/Fed game to make robot team selection easier. */
-    /* Disable this because it breaks on timercide.  The other team
-       needs to come in as a 3rd race after being timercided.
-    queues[QU_PICKUP].tournmask = FED|ROM;
-    */
-
     while (1) {
         alarm_wait_for();
         checkmess();
@@ -232,7 +220,8 @@ void checkmess()
 
         if (num_humans(0) < 8 && realT) {
             if((no_bots % 60) == 0) {
-                messAll(255,roboname,"Pre-T entertainment will start in %d minutes if T-mode doesn't return...", (((300<time_in_T)?300:time_in_T)-no_bots)/60);
+                messAll(255,roboname,"Pre-T entertainment will start in %d minutes if T-mode doesn't return...",
+                        (((300<time_in_T)?300:time_in_T)-no_bots)/60);
             }
             no_bots += ROBOCHECK / PERSEC;
         }
@@ -247,7 +236,7 @@ void checkmess()
 
     /* Stop or start a robot. */
     if ((ticks % ROBOCHECK) == 0) {
-        int next_team;
+        int next_team = 0;
         num_players(&next_team);
   
         if (!(ticks % ROBOEXITWAIT))
@@ -302,45 +291,10 @@ void checkmess()
         if (oldmctl==MAXMESSAGE) oldmctl=0;
         if (messages[oldmctl].m_flags & MINDIV) {
             if (messages[oldmctl].m_recpt == me->p_no)
-                checkMessage(&messages[oldmctl]);
+                check_command(&messages[oldmctl]);
         }
     }
 
-}
-
-static void checkMessage(struct message *mess) {
-    int i, len;
-    char *comm;
-    char query[20];
-    int num = 0;
-    len = strlen(mess->m_data);
-    if(len <= 8)
-        return;
-
-    for (i=8; i<len && isspace(mess->m_data[i]); ++i) continue;
-    comm = strdup(&mess->m_data[i]);
-    len = strlen(comm);
-
-    /* Convert first word in msg to uppercase */
-    for (i=0; (i < len && !isspace(comm[i])); i++)
-    {
-        comm[i] = toupper(comm[i]);
-    }
-    len = i;
-
-    sscanf(comm, "%s %d", query, &num);
-    if(strcmp(query, "DEBUG") == 0) {
-        debugTarget = mess->m_from;
-        if(num > 0) {
-            debugLevel = num;
-            messOne(255, roboname, mess->m_from, "Sending debug info to  %d", debugTarget);
-        }
-        else {
-            debugTarget = -1;
-            debugLevel = 0;
-            messOne(255, roboname, mess->m_from, "Not sending debug info");
-        }
-    }
 }
 
 static int is_robots_only(void)
@@ -348,7 +302,8 @@ static int is_robots_only(void)
    return !num_humans(0);
 }
 
-static int totalPlayers() {
+static int totalPlayers()
+{
    int i;
    struct player *j;
    int count = 0;
@@ -365,7 +320,8 @@ static int totalPlayers() {
    return count;
 }
 
-static int num_humans(int team) {
+static int num_humans(int team)
+{
    int i;
    struct player *j;
    int count = 0;
@@ -383,12 +339,14 @@ static int num_humans(int team) {
           /* Found a human. */
             count++;
             if(debugTarget != -1 && debugLevel == 2) {
-                messOne(255, roboname, debugTarget, "%d: Counting %s (%s %s) as a human", i, j->p_mapchars, j->p_login, j->p_full_hostname);
+                messOne(255, roboname, debugTarget, "%d: Counting %s (%s %s) as a human",
+                        i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
         }
         else {
             if(debugTarget != -1 && debugLevel == 2) {
-                messOne(255, roboname, debugTarget, "%d: NOT Counting %s (%s %s) as a human", i, j->p_mapchars, j->p_login, j->p_full_hostname);
+                messOne(255, roboname, debugTarget, "%d: NOT Counting %s (%s %s) as a human",
+                        i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
         }
    }
@@ -403,7 +361,8 @@ static void stop_a_robot(void)
     int teamToStop;
 
     if(debugTarget != -1 && debugLevel == 3) {
-        messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d", team1, num_humans(team1), team2, num_humans(team2));
+        messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
+                team1, num_humans(team1), team2, num_humans(team2));
     }
     if(num_humans(team1) < num_humans(team2))
         teamToStop = team1;
@@ -437,13 +396,16 @@ rprog(char *login, char *robotHost)
 
     gethostname(localHostName, 80);
 
-    if (strcmp(login, PRE_T_ROBOT_LOGIN) == 0 && (!strcmp(localHostName, robotHost) || !strcmp(robot_host, robotHost)))
+    if (strcmp(login, PRE_T_ROBOT_LOGIN) == 0
+        && (!strcmp(localHostName, robotHost) || !strcmp(robot_host, robotHost)))
         return 1;
 
     return 0;
 }
 
-static void stop_this_bot(struct player *p) {
+
+static void stop_this_bot(struct player *p)
+{
     p->p_ship.s_type = STARBASE;
     p->p_whydead=KQUIT;
     p->p_explode=10;
@@ -454,7 +416,6 @@ static void stop_this_bot(struct player *p) {
         "Robot %s (%2s) was ejected to make room for a human player.",
         p->p_name, p->p_mapchars);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
-/*    pt_robots--;*/
 }
 
 static void save_armies(struct player *p)
@@ -556,10 +517,6 @@ start_a_robot(char *team)
     char            command[256];
     int pid;
 
-    /* No  more remote shell crap...
-    sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X %s -b -O -i -I",
-            RCMD, robot_host, OROBOT, team, hostname, PORT, namearg(), PRE_T_ROBOT_LOGIN );
-            */
     /* robothost can be used to tell the robot where to connect to */
     sprintf(command, "%s %s -h %s -p %d -n '%s' -X %s -b -O -I",
             OROBOT, team, (strlen(robot_host))?robot_host:hostname, PORT, namearg(), PRE_T_ROBOT_LOGIN );
