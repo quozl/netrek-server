@@ -13,6 +13,7 @@
 #include <netdb.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/socket.h>
 #include "defs.h"
 #include <sys/stat.h>
 #include INC_SYS_FCNTL
