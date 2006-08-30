@@ -820,12 +820,6 @@ static void udplayerpause(void) {
       ERROR(4,("daemonII/udplayerpause: %s: ship ghostbusted (wd=%d)\n", 
                    j->p_mapchars, j->p_whydead));
 
-#ifdef OBSERVERS
-      /* observer hack */
-      if (j->p_status == POBSERV)
-        j->p_armies = 0;
-#endif
-
       ghostmess(j, "no ping in pause");
 
       /* temporary */
@@ -917,10 +911,6 @@ static void udplayers(void)
                 /* ghostbusted - attempt to handle it */
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
                     j->p_status = PDEAD;
-                    j->p_armies = 0;  /* hack- if you are locked on a player who
-                                         carries then that players armies will
-                                         get saved but they are actually double
-                                         credited sort of */
                     ghostmess (j, "no ping observ");
                     saveplayer (j);
                     j->p_whydead = KGHOST;
@@ -3776,6 +3766,10 @@ static void ghostmess(struct player *victim, char *reason)
     pmessage(0, MALL, "GOD->ALL",
         "%s was kill %0.2f for the GhostBusters, %s",
         victim->p_longname, ghostkills, reason);
+#ifdef OBSERVERS
+    /* if ghostbusting an observer do not attempt carried army rescue */
+    if (victim->p_status == POBSERV) return;
+#endif
     if (victim->p_armies>0) {
         k=10*(remap[victim->p_team]-1);
         if (k>=0 && k<=30) for (i=0; i<10; i++) {
