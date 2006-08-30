@@ -819,17 +819,10 @@ static void udplayerpause(void) {
     if (++(j->p_ghostbuster) > GHOSTTIME) {
       ERROR(4,("daemonII/udplayerpause: %s: ship ghostbusted (wd=%d)\n", 
                    j->p_mapchars, j->p_whydead));
-
       ghostmess(j, "no ping in pause");
-
-      /* temporary */
-      fflush(stdout);
-
       j->p_status = PDEAD;
       j->p_whydead = KGHOST;
       j->p_whodead = i;
-
-      /* Force the player out of the game */
       kill_player = 2;
     }
 
@@ -883,10 +876,6 @@ static void udplayers(void)
                 if (++(j->p_ghostbuster) > outfitdelay) {
                     ERROR(4,("%s: ship in POUTFIT too long (of=%d,wd=%d)\n", 
                              j->p_mapchars, outfitdelay, j->p_whydead));
-
-                    fflush(stdout);
-
-                    /* Force the player out of the game */
                     ghostmess(j, "outfit timeout");
                     saveplayer(j);
                     if (j->p_process > 1) {
@@ -910,9 +899,9 @@ static void udplayers(void)
                 /* think of them as ghosts! but they still might get */
                 /* ghostbusted - attempt to handle it */
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
+                    ghostmess(j, "no ping observ");
+                    saveplayer(j);
                     j->p_status = PDEAD;
-                    ghostmess (j, "no ping observ");
-                    saveplayer (j);
                     j->p_whydead = KGHOST;
                     j->p_whodead = i;
                     break;
@@ -1207,13 +1196,13 @@ static void udplayers(void)
                 }
 
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
+                    ghostmess(j, "no ping alive");
+                    saveplayer(j);
                     j->p_status = PEXPLODE;
                     if (j->p_ship.s_type == STARBASE)
                         j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
                     else
                         j->p_explode = 10/PLAYERFUSE;
-                    ghostmess(j, "no ping alive");
-                    saveplayer(j);
                     j->p_whydead = KGHOST;
                     j->p_whodead = i;
                     ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
