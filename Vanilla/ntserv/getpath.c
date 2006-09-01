@@ -11,15 +11,35 @@
 #include "struct.h"
 #include "data.h"
 
+/*
+
+getpath() initialises all the file name global variables, by
+concatenating one or more directory names and a file name to make a
+relative path to a file.
+
+The file name global variables are in data.c and data.h, but are not
+initialised there.  They are to be CamelCase.
+
+The file name macros are in defs.h.  They are to begin with N_.
+
+When adding a new file, you must edit each of data.c, data.h, and defs.h.
+
+When using a file from other code, you must include "data.h", and your
+main() must call getpath().
+
+*/
+
 void getpath()
 {
 #define MAXPATH 256
    char libdir[MAXPATH], sysconfdir[MAXPATH], localstatedir[MAXPATH];
 
+   /* define the directory names */
    snprintf(libdir, MAXPATH-1, "%s", LIBDIR);
    snprintf(sysconfdir, MAXPATH-1, "%s", SYSCONFDIR);
    snprintf(localstatedir, MAXPATH-1, "%s", LOCALSTATEDIR);
 
+   /* define the file names */
    sprintf(Global,"%s/%s",localstatedir,N_GLOBAL);
    sprintf(Scores,"%s/%s",localstatedir,N_SCORES);
    sprintf(PlFile,"%s/%s",localstatedir,N_PLFILE);
