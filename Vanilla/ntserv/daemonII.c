@@ -334,6 +334,7 @@ int main(int argc, char **argv)
 #endif
 
 #define GHOSTTIME       (30 * 1000000 / UPDATE) /* 30 secs */
+#define KGHOSTTIME      (32 * 1000000 / UPDATE) /* 32 secs */
 #define OUTFITTIME      (3 * AUTOQUIT * 1000000 / UPDATE) /* three minutes */
 #define LOGINTIME       (6 * AUTOQUIT * 1000000 / UPDATE) /* six minutes */
 
@@ -863,10 +864,12 @@ static void udplayers(void)
                     outfitdelay = LOGINTIME;
                     break;
                 case KQUIT:
-                case KGHOST:
                 case KPROVIDENCE:
                 case KBADBIN:
                     outfitdelay = GHOSTTIME;
+                    break;
+                case KGHOST:
+                    outfitdelay = KGHOSTTIME;
                     break;
                 default:
                     outfitdelay = OUTFITTIME;
@@ -874,9 +877,14 @@ static void udplayers(void)
                 }
 
                 if (++(j->p_ghostbuster) > outfitdelay) {
-                    ERROR(4,("%s: ship in POUTFIT too long (of=%d,wd=%d)\n", 
-                             j->p_mapchars, outfitdelay, j->p_whydead));
-                    ghostmess(j, "outfit timeout");
+                    ERROR(4,("%s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n", 
+                             j->p_mapchars, j->p_ghostbuster,
+                             outfitdelay, j->p_whydead));
+                    if (j->p_whydead == KGHOST) {
+                        ghostmess(j, "no ping alive");
+                    } else {
+                        ghostmess(j, "outfit timeout");
+                    }
                     saveplayer(j);
                     if (j->p_process > 1) {
                         ERROR(8,("%s: sending SIGTERM to %d\n", 
@@ -1196,8 +1204,6 @@ static void udplayers(void)
                 }
 
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
-                    ghostmess(j, "no ping alive");
-                    saveplayer(j);
                     j->p_status = PEXPLODE;
                     if (j->p_ship.s_type == STARBASE)
                         j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
@@ -3759,14 +3765,15 @@ static void ghostmess(struct player *victim, char *reason)
     /* if ghostbusting an observer do not attempt carried army rescue */
     if (victim->p_status == POBSERV) return;
 #endif
-    if (victim->p_armies>0) {
-        k=10*(remap[victim->p_team]-1);
-        if (k>=0 && k<=30) for (i=0; i<10; i++) {
-            if (planets[i+k].pl_owner==victim->p_team) {
-                planets[i+k].pl_armies += victim->p_armies;
+    if (victim->p_armies > 0) {
+        k = 10*(remap[victim->p_team]-1);
+        if (k >= 0 && k <= 30) for (i=0; i<10; i++) {
+            if (planets[i+k].pl_owner == victim->p_team) {
                 pmessage(0, MALL | MGHOST, "GOD->ALL",
                     "%s's %d armies placed on %s",
                     victim->p_name, victim->p_armies, planets[k+i].pl_name);
+                planets[i+k].pl_armies += victim->p_armies;
+                victim->p_armies = 0;
                 break;
             }
         }
