@@ -213,7 +213,7 @@ struct sysdef_keywords {
   { "BAN_VOTE_DURATION",	SYSDEF_INT,	&ban_vote_duration,
     "Length of ban in seconds"	},
   { "BAN_NOCONNECT",        SYSDEF_INT,     &ban_noconnect,
-    "Don't allow banned players to even connect"  },
+    "Don't allow permanently banned players to even connect"  },
   { "EJECT_VOTE_ENABLE",	SYSDEF_INT,	&eject_vote_enable,
     "Enable vote for ejection"				},
   { "EJECT_VOTE_ONLY_IF_QUEUE",	SYSDEF_INT,	&eject_vote_only_if_queue,
