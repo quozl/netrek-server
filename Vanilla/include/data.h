@@ -349,6 +349,9 @@ extern char Cambot_out[FNAMESIZE];
 
 extern int mute;
 extern int remoteaddr;		/* inet address in net format */
+#ifdef OBSERVERS
+extern int observer_muting;
+#endif
 extern int whitelisted;
 extern int blacklisted;
 

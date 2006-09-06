@@ -406,6 +406,9 @@ int F_show_all_tractors = 0;
 int sent_ship[NUM_TYPES];
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
+#ifdef OBSERVERS
+int observer_muting = 0;
+#endif
 int whitelisted = 0;
 int blacklisted = 0;
 int ignored[MAXPLAYER];

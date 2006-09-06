@@ -379,14 +379,12 @@ int main(int argc, char **argv)
         new_warning(UNDEF,"Lock onto a teammate or planet to see the action.");
         pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
 		 "Lock onto a teammate or planet to see the action.");
-#ifdef CONTINUUM_MUTING
-	/* 2005-01-26 temporary default observer muting, for all but me */
-	if (!whitelisted) {
+	/* Check if observer is muted */
+	if (observer_muting && !whitelisted) {
 	  mute = 1;
 	  pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
 		   "Policy: observers may not speak.");
 	}
-#endif
       }
     else
 #endif

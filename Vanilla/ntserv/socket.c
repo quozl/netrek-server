@@ -1492,9 +1492,9 @@ static void handleMessageReq(struct mesg_cpacket *packet)
     time_t thistime;
     int group=0;
 
-#ifdef OBSERVER_MUTING
+#ifdef OBSERVERS
     if (me->p_status == POBSERV) {
-	if (mute) {
+	if (mute || observer_muting) {
 	    new_warning(86,"Be quiet");
 	    return;
 	}

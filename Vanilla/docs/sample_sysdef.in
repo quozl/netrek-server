@@ -124,6 +124,9 @@ RESTRICT_BOMB=1
 #  Disallow 3rd space bombing (1 = no bombing)
 NO_UNWARRING_BOMBING=1
 #
+#	Turn off messaging for observers
+OBSERVER_MUTING=0
+#
 # 	Use topgun mode (0 = no, 1 = yes)
 TOPGUN=0
 #

@@ -202,6 +202,10 @@ struct sysdef_keywords {
     "No bombing out of t-mode"				},
   { "NO_UNWARRING_BOMBING",	SYSDEF_INT,	&no_unwarring_bombing,
     "No 3rd space bombing"				},
+#ifdef OBSERVERS
+  { "OBSERVER_MUTING",   SYSDEF_INT,     &observer_muting,
+    "Turn off messaging for observers"			},
+#endif
   { "VOTING",		SYSDEF_INT,	&voting,
     "Enable voting"			},
   { "BAN_VOTE_ENABLE",	SYSDEF_INT,	&ban_vote_enable,
@@ -236,5 +240,6 @@ BAN_VOTE_*
 DUPLICATES
 MAX_NEWBIE_*
 SAFE_IDLE
+OBSERVER_MUTING
 
 */
