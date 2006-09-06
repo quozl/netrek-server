@@ -212,15 +212,15 @@ struct sysdef_keywords {
     "Enable vote for temporary ban"			},
   { "BAN_VOTE_DURATION",	SYSDEF_INT,	&ban_vote_duration,
     "Length of ban in seconds"	},
-  { "BAN_NOCONNECT",        SYSDEF_INT,     &ban_noconnect,
-    "Don't allow permanently banned players to even connect"  },
+  { "BAN_NOCONNECT",		SYSDEF_INT,	&ban_noconnect,
+    "Deny permanently banned players a slot"	},
   { "EJECT_VOTE_ENABLE",	SYSDEF_INT,	&eject_vote_enable,
     "Enable vote for ejection"				},
   { "EJECT_VOTE_ONLY_IF_QUEUE",	SYSDEF_INT,	&eject_vote_only_if_queue,
     "Only allow ejection if there is a queue of players"	},
   { "EJECT_VOTE_VICIOUS",	SYSDEF_INT,	&eject_vote_vicious,
     "Kill ntserv process to eject, causes some client problems"	},
-  { "DUPLICATES",		SYSDEF_INT,     &duplicates,
+  { "DUPLICATES",		SYSDEF_INT,	&duplicates,
     "Maximum number of duplicate connections from a single IP" },
   { "",			SYSDEF_END,	NULL		}
 };

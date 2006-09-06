@@ -19,7 +19,7 @@ BAN_VOTE_ENABLE=0
 #	(requires BAN_VOTE_ENABLE=1)
 BAN_VOTE_DURATION=3600
 #
-#	Make it so permanently banned players cannot connect
+#	Deny permanently banned players a slot
 BAN_NOCONNECT=0
 #
 #	Enable vote for ejection
