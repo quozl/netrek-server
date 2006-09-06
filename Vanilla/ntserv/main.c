@@ -141,6 +141,15 @@ int main(int argc, char **argv)
 	setNoDelay(sock);
 	initClientData();	/* "normally" called by connectToClient() */
     }
+
+    /* Stop permanent bans from even connecting */
+    if (ban_noconnect) {
+      if ((bans_check_permanent(login, host) == TRUE)
+       || (bans_check_permanent(login, ip) == TRUE)) {
+        exit(0);
+      }
+    }
+
     starttime=time(NULL);
     while (userVersion==0) {
 	time_t t;

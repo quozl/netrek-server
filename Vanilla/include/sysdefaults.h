@@ -212,6 +212,8 @@ struct sysdef_keywords {
     "Enable vote for temporary ban"			},
   { "BAN_VOTE_DURATION",	SYSDEF_INT,	&ban_vote_duration,
     "Length of ban in seconds"	},
+  { "BAN_NOCONNECT",        SYSDEF_INT,     &ban_noconnect,
+    "Don't allow banned players to even connect"  },
   { "EJECT_VOTE_ENABLE",	SYSDEF_INT,	&eject_vote_enable,
     "Enable vote for ejection"				},
   { "EJECT_VOTE_ONLY_IF_QUEUE",	SYSDEF_INT,	&eject_vote_only_if_queue,
@@ -241,5 +243,6 @@ DUPLICATES
 MAX_NEWBIE_*
 SAFE_IDLE
 OBSERVER_MUTING
+BAN_NOCONNECT
 
 */

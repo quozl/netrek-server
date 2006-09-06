@@ -416,6 +416,7 @@ int ignored[MAXPLAYER];
 int voting=0;
 int ban_vote_enable=0;
 int ban_vote_duration=3600;
+int ban_noconnect=0;
 int eject_vote_enable=0;
 int eject_vote_only_if_queue=0;
 int eject_vote_vicious=0;
