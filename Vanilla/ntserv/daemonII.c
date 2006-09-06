@@ -94,6 +94,7 @@ static void exitDaemon(int sig);
 static void save_planets(void);
 static void checkgen(int loser, struct player *winner);
 static int checkwin(struct player *winner);
+static int checksafe(struct player *victim);
 static void ghostmess(struct player *victim, char *reason);
 static void saveplayer(struct player *victim);
 static void rescue(int team, int target);
@@ -1840,6 +1841,8 @@ static void explode(struct torp *torp)
 
     /*
      * Check to see if this player is safe for some reason  */
+    if (checksafe(j))
+        continue;
     if (j->p_no == torp->t_owner) {
       if (torp->t_attribute & TOWNERSAFE)
         continue;
@@ -2564,6 +2567,10 @@ static void udphaser(void)
                 if (j->ph_fuse-- == players[i].p_ship.s_phaserfuse) {
                     victim = player_(j->ph_target);
 
+                    /* Check to see if this player is safe for some reason  */
+                    if (checksafe(victim))
+                        break;
+
                     /* start a war, if necessary */
                     if (player_(i)->p_hostile & victim->p_team) {
                         player_(i)->p_swar |= victim->p_team;
@@ -3284,6 +3291,9 @@ static void blowup(struct player *sh)
             continue;
         /* the following keeps people from blowing up on others */
         me = sh;
+        /* Check to see if this player is safe for some reason  */
+        if (checksafe(j))
+            continue;
         if ((me->p_whydead == KQUIT) && (friendlyPlayer(j)))
             continue;
         /* isae -- nuked/ejected players do no damage */ 
@@ -3747,6 +3757,26 @@ static int checkwin(struct player *winner)
         }
     }
     return 0;
+}
+
+/* This function checks to see if a player is safe from damage. 
+   Requires SAFE_IDLE sysdef option to be on, and player to be cloaked
+   on a homeworld, not in t-mode, with 0 kills, and maximum fuel,
+   shields and hull.
+*/
+static int checksafe(struct player *victim)
+{
+    if (safe_idle
+        && (NotTmode(ticks))
+        && ((victim->p_flags & PFCLOAK) && (victim->p_flags & PFORBIT)
+            && (planets[victim->p_planet].pl_flags & PLHOME))
+        && (victim->p_kills == 0.0)
+        && (victim->p_fuel == victim->p_ship.s_maxfuel)
+        && (victim->p_shield == victim->p_ship.s_maxshield)
+        && (victim->p_damage == 0))
+        return 1;
+    else
+        return 0;
 }
 
 static void ghostmess(struct player *victim, char *reason)

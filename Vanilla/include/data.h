@@ -180,6 +180,7 @@ extern int	eventlog;
 
 extern int testtime;
 extern int tournplayers;
+extern int safe_idle;
 extern int shipsallowed[];
 extern int weaponsallowed[];
 extern struct field_desc ship_fields[];

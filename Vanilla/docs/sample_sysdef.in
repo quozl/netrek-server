@@ -87,6 +87,10 @@ PLANET_MOVE=0
 # 	number of players per team for t-mode
 TOURN=4
 #
+# 	allow cloakers on homeworld to idle safely if no t-mode
+# 	(0 = no, 1 = yes)
+SAFE_IDLE=1
+#
 # 	Which ship types are allowed
 SHIPS=SC,DD,CA,BB,AS,SB
 #

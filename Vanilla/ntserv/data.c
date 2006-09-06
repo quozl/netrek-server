@@ -128,6 +128,7 @@ int	SBhours=0;
 
 int	testtime= -1;
 int 	tournplayers=5;
+int	safe_idle=0;
 int 	shipsallowed[NUM_TYPES];
 int 	weaponsallowed[WP_MAX];
 int 	plkills=2;

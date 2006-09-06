@@ -88,6 +88,8 @@ struct sysdef_keywords {
     "Maximum number of bases in CHAOS mode"		},
   { "TOURN",		SYSDEF_INT,	&tournplayers,
     "Number of players per side for T-Mode"		},
+  { "SAFE_IDLE",	SYSDEF_INT,	&safe_idle,
+    "Allow cloakers on homeworld to idle safely if no t-mode" },
   { "SHIPS",		SYSDEF_ARRAY,	&sysdefships,
     "Ships that may be flown"				},
   { "WEAPONS",		SYSDEF_ARRAY,	&sysdefweapons,
@@ -233,5 +235,6 @@ EJECT_VOTE_*
 BAN_VOTE_*
 DUPLICATES
 MAX_NEWBIE_*
+SAFE_IDLE
 
 */
