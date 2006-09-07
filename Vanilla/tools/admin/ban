@@ -1,11 +1,15 @@
 #!/bin/sh
-echo "`date` $1 $0 $2" >> admin.log
+echo "`date` $1 $0 $2" >> var/admin.log
 mail -s 'ban: $3' `whoami` << EOF
 God observer: $1
 Offending slot host name: $2
 EOF
-echo "# banned by admin command, `date`" >> .banned
-echo "*@$2" >> .banned
-echo "# banned by admin command, `date`" >> .access
-echo "$2 n" >> .access
+echo "# banned by admin command, `date`" >> etc/banned
+echo "*@$2" >> etc/banned
 
+# add to the access file if it is present
+# (see docs/README.ban)
+if [ -f etc/access ]; then
+    echo "# banned by admin command, `date`" >> etc/access
+    echo "$2 n" >> etc/access
+fi
