@@ -5,6 +5,10 @@
 #	Edit this file to meet your requirements, or use the program gum to
 #	view and update it graphically.
 #
+#       Admin password for using admin command (change in order for it to
+#       work, if password is left as "password", it will NOT be accepted)
+ADMIN_PASSWORD=password
+#
 #	Maximum number of duplicate connections from a single IP address
 DUPLICATES=3
 #

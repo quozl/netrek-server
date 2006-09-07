@@ -253,6 +253,8 @@ extern int actual_threshold;
 extern int numupdates;
 extern int send_short;
 
+extern char admin_password[ADMIN_PASS_LEN];
+
 extern char Global[FNAMESIZE];
 extern char Scores[FNAMESIZE];
 extern char PlFile[FNAMESIZE];

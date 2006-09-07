@@ -225,6 +225,8 @@ int send_threshold = 0;		/* infinity */
 int actual_threshold = 0;	/* == send_threshold / numupdates */
 int numupdates = 5;		/* For threshold */
 
+char admin_password[ADMIN_PASS_LEN];
+
 char Global[FNAMESIZE];
 char Scores[FNAMESIZE];
 char PlFile[FNAMESIZE];

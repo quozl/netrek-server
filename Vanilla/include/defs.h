@@ -30,6 +30,7 @@
 #define MSG_LEN		80
 #define NAME_LEN	16
 #define KEYMAP_LEN	96
+#define ADMIN_PASS_LEN	MSG_LEN-20
 
 #ifdef MATH_ERR_CHECK
 #   define MATH_ERR_CHECK(v)            \

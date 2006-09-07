@@ -42,6 +42,8 @@ struct sysdef_keywords {
   char *text;			/* explanatory text for key	*/
 } sysdef_keywords[] =
 {
+  { "ADMIN_PASSWORD",	SYSDEF_CHAR,	admin_password,
+    "Admin password" },
   { "CLUE",		SYSDEF_INT,	&clue,
     "Message based clue checking"			},
   { "CLUERANK",		SYSDEF_INT,	&cluerank,
@@ -244,5 +246,6 @@ MAX_NEWBIE_*
 SAFE_IDLE
 OBSERVER_MUTING
 BAN_NOCONNECT
+ADMIN_PASSWORD
 
 */

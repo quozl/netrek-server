@@ -986,25 +986,20 @@ void do_admin(char *comm, struct message *mess)
   int slot;
   struct player *them = NULL;
 
-#ifdef CONTINUUM_COMINDICO
-  /* 2005-01-26 temporary password access to admin for me */
   if (!authorised) {
-    if (whitelisted) {
-      if (!strcasecmp(comm, "ADMIN password duafpouwaimahghedahaengoosoh")) {
-	authorised = 1;
-	pmessage(who, MINDIV, addr, "admin: authorised");
-	return;
+    if (strstr(comm, "ADMIN password")) {
+      char *cchar = &comm[15];
+      if (!strcasecmp(cchar, admin_password)) {
+        if (!strcasecmp(cchar, "password")) {
+          pmessage(who, MINDIV, addr, "Access denied.  Change admin password.", p->w_queue);
+          return;
+        }
+        authorised = 1;
+        pmessage(who, MINDIV, addr, "admin: authorised");
+        return;
       }
     }
   }
-
-  /* 2005-01-26 temporary player name specific access to admin for me */
-  if (!authorised) {
-    if (!strcmp(p->p_name, "Quozl")) {
-      authorised = 1;
-    }
-  }
-#endif
 
   if (!authorised) {
     if (p->w_queue != QU_GOD_OBS && p->w_queue != QU_GOD) {
