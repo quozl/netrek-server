@@ -1,0 +1,22 @@
+There are 2 files which can store IP addresses to prevent certain players from connecting.
+Both must be in the etc directory.
+
+The first one is named banned, and it can accept wildcard matches for both login and host name.
+To ban everyone, you would use a line like this:
+*@*
+To ban a subdomain, you might use something like this:
+*@usc.edu
+To ban a specific person, you might use something like this:
+Bozo@troublemaker.net
+
+The second file is access.  There is no default access file, so you have to create a new file
+called access in the etc directory.  Note that a blank access file will default to stopping all
+connections!  You will need, at the very least, a line like this in the access file:
+default y
+Now you can start adding hosts, such as:
+user.compuserve.com n
+
+Note that there is no wildcard matching, and the hostname is case sensitive, so generally, it's
+easier to just use the banned file.  And with the sysdef option BAN_NOCONNECT set to 1, the
+banned file acts very much like access does, as it breaks connect before the player can even log
+in.
