@@ -989,14 +989,22 @@ void do_admin(char *comm, struct message *mess)
   if (!authorised) {
     if (strstr(comm, "ADMIN password")) {
       char *cchar = &comm[15];
-      if (!strcasecmp(cchar, admin_password)) {
-        if (!strcasecmp(cchar, "password")) {
-          pmessage(who, MINDIV, addr, "Access denied.  Change admin password.", p->w_queue);
+      if (!strcmp(cchar, admin_password)) {
+        if (!strcmp(cchar, "password")) {
+          pmessage(who, MINDIV, addr, "admin: denied, password is not yet set");
+          ERROR(2,("%s admin: authorisation ignored, ip=%s\n",
+                   p->p_mapchars, p->p_ip));
           return;
         }
         authorised = 1;
         pmessage(who, MINDIV, addr, "admin: authorised");
+        ERROR(2,("%s admin: authorised, ip=%s\n", p->p_mapchars, p->p_ip));
         return;
+      } else {
+        ERROR(2,("%s admin: authorisation failure, ip=%s\n",
+                 p->p_mapchars, p->p_ip));
+        pmessage(who, MINDIV, addr, "admin: denied");
+        sleep(2);
       }
     }
   }
@@ -1004,6 +1012,7 @@ void do_admin(char *comm, struct message *mess)
   if (!authorised) {
     if (p->w_queue != QU_GOD_OBS && p->w_queue != QU_GOD) {
       pmessage(who, MINDIV, addr, "Sorry, no.", p->w_queue);
+      ERROR(2,("%s admin: not yet authorised, ip=%s\n", p->p_mapchars, p->p_ip));
       return;
     }
   }
