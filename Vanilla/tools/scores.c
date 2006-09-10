@@ -260,6 +260,7 @@ int main(int argc, char **argv)
     struct rawdesc *temp;
     int i;
     double totalTime=0;
+    char namebuf[NAME_LEN+1];
 
     getpath();
     status=(struct status *) malloc(sizeof(struct status));
@@ -409,13 +410,14 @@ int main(int argc, char **argv)
 	    }
 	    // Fall through
 	case 'A':
-	    strcat(play_entry.name, "_");
+	    strcpy(namebuf, play_entry.name);
+	    strcat(namebuf, "_");
 #ifdef GENO_COUNT
 	    printf("%-16.16s %-16.16s %-96.96s %1d %9.2lf %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %9.2lf %9ld %7d %7d\n",
 #else
 	    printout("%-16.16s %-16.16s %-96.96s %1d %9.2lf %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %9.2lf %9ld %7d\n",
 #endif
-		play_entry.name,
+		namebuf,
 		play_entry.password,
 		play_entry.stats.st_keymap,
 		play_entry.stats.st_rank,

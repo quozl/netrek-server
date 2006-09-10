@@ -89,6 +89,7 @@ int main(int argc, char **argv)
     int fcount = 0;
     int dupcount = 0;
     int foldcount = 0;
+    char namebuf[NAME_LEN+1];
 
     if (argc>1) usage();
     getpath();
@@ -217,9 +218,10 @@ int main(int argc, char **argv)
 	switch (i) {
 	  case DUP_NAME_DIFF_PASSWORD:
 	    dupcount++;
-	    strcat(play_entry.name, "_");
+	    strcpy(namebuf, play_entry.name);
+	    strcat(namebuf, "_");
 	    printf("%-16.16s %-16.16s %-96.96s %1d %9.2lf %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %9.2lf %9ld %7d\n",
-		   play_entry.name,
+		   namebuf,
 		   play_entry.password,
 		   play_entry.stats.st_keymap,
 		   play_entry.stats.st_rank,
