@@ -147,10 +147,11 @@ char **argv;
 
     me->p_status = PALIVE;		/* Put robot in game */
     init_mars();
-    while (1) {
+    while ((status->gameup) & GU_GAMEOK) {
         alarm_wait_for();
         marsmove();
     }
+    cleanup();
 }
 
 

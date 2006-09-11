@@ -173,10 +173,11 @@ main(argc, argv)
     me->p_status = PALIVE;              /* Put robot in game */
     resetPlanets();
 
-    while (1) {
+    while ((status->gameup) & GU_GAMEOK) {
         alarm_wait_for();
         checkmess();
     }
+    cleanup(0);
 }
 
 void checkmess()

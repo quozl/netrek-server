@@ -220,10 +220,11 @@ main(argc, argv)
   /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
   SIGSETMASK(0);
 
-  while (1) {
+  while ((status->gameup) & GU_GAMEOK) {
     alarm_wait_for();
     inlmove();
   }
+  cleanup();
 }
 
 void

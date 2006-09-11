@@ -162,10 +162,11 @@ char **argv;
     me->p_status = PALIVE;		/* Put robot in game */
     anncer->p_status = PALIVE;
     do_faceoff();
-    while (1) {
+    while ((status->gameup) & GU_GAMEOK) {
         alarm_wait_for();
         rmove();
     }
+    cleanup();
 }
 
 
