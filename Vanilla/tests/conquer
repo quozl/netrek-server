@@ -1,42 +1,39 @@
 #!/bin/sh
-LIBDIR=/usr/local/games/netrek-server-vanilla
-cd ${LIBDIR}
+set -e
+
+# verify we have the netrek server in our shell path
+# you should source setpath before calling this, for example
+# host:~$ . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
+getpath > /dev/null
 
 # reset galaxy
-lib/tools/setgalaxy r
+setgalaxy r
 
 # make all planets visible to all teams
-for x in `seq 10 39`; do lib/tools/setplanet $x reveal; done
+for x in `seq 10 39`; do setplanet $x reveal; done
 
 # make most of the romulan planets owned by federation
-for x in `seq 10 18`; do lib/tools/setplanet $x owner fed; done
+for x in `seq 10 18`; do setplanet $x owner fed; done
 
 # move hyd near ear and flatten to one army
-lib/tools/setplanet hyd y 80000 x 17000 armies 1
+setplanet hyd y 80000 x 17000 armies 1
 
 # move ori near ear and change ownership to rom
-lib/tools/setplanet Ori y 83000 x 20000 owner rom
+setplanet Ori y 83000 x 20000 owner rom
 
 # teleport test player to ear, give kills, give armies
-lib/tools/xtkill 0 tf
-lib/tools/xtkill 0 k 3
-lib/tools/xtkill 0 a
+xtkill 0 tf
+xtkill 0 k 3
+xtkill 0 a
 
-# instructions for test player
-# take planet hyd to trigger conquer
-# neut not enough
+# allow a few seconds for robots to move around
+setplanet can be-orbited-by 0
 
-# allow time for last planet to be taken
-sleep 600
+# take the planet
+setplanet hyd be-taken-by 0
 
-# destroy all robots
-killall robot
+# allow time for conquer parade to finish
+sleep 60
 
-# destroy all client connections
-killall ntserv
-
-# allow time to run down
-sleep 1
-
-# destroy daemon
-killall daemonII
+# shut down the game
+setgame terminate
