@@ -26,9 +26,6 @@ xtkill 0 tf
 xtkill 0 k 3
 xtkill 0 a
 
-# allow a few seconds for robots to move around
-setplanet can be-orbited-by 0
-
 # take the planet
 setplanet hyd be-taken-by 0
 
