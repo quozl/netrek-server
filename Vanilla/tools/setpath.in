@@ -1,0 +1,4 @@
+#!/bin/sh
+LIBDIR=@libdir@
+ROOT=`${LIBDIR}/tools/getpath`
+export PATH=${ROOT}/bin:${ROOT}/lib:${ROOT}/lib/tools:${PATH}
