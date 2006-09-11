@@ -308,7 +308,7 @@ int main(int argc, char **argv)
     players[player].p_whodead=0;
     _pmessage(buf, 0, MALL);
   }
-  return 1;		/* satisfy lint */
+  return 0;
 }
 
 static void _pmessage(char *str, int recip, int group)
