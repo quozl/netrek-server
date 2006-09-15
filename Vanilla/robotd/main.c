@@ -326,7 +326,6 @@ main(argc, argv)
 
    findslot();
    lastm = mctl->mc_current;
-   signal(SIGINT, exitRobot);
    signal(SIGHUP, exitRobot);
    signal(SIGTERM, exitRobot);
    /* TMP 
