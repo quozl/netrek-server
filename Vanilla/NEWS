@@ -1,3 +1,93 @@
+2.11.2: released 2006-09-17
+
+- fix robotd to allow debugging using SIGINT
+- remove unnecessary delay in conquer test
+- fix tests to use shell path
+- fix xtkill exit status
+- fix robots to obey GU_GAMEOK termination
+- add path tools
+- Fix for long names with scores tools
+- Add README.ban
+- Sysdef option for admin password
+- Perm banned doc fix
+- Sysdef option for noconnect for perm bans
+- Fixes for observer muting
+- Sysdef option for preT idling
+- fix ghostbust no ping alive response
+- document getpath
+- fix army rescue on observ ghostbust
+- Addendum to multi install instructions
+- Robot server spam reduction
+- Install directions on running multiple servers
+- Pret enhancements part1 - cleanup, debug
+- Newbie enhancements part1 - cleanup, debug
+- Basepractice unused variable removed
+- fix attempt for pret hang on bsd
+- fix bsd socket include
+- fix signal build errors on bsd
+- remove old policy, add libnetrek and sysdef hints
+- Merlin responds to help
+- Move newbie slot control to sysdef
+- Sysdefault instructions correction
+- Increase newbie slots from 8 to 16
+- Ingame admin tool fixes
+- Pret queue renumbering
+- Standardize planet locs for basepractice
+- add setgame wait-for-terminate command
+- disable ban pre-queue for observers
+- remove ban vote expiry by login, add ban queue
+- adopt sigpipe implementation for ntserv
+- fix fix use of unsafe functions in signal handler, robots
+- add sigpipe implementation
+- Fix so basepractice bots don't get ip blocked by duplicate sysdef option
+- fix use of unsafe functions in signal handler, daemon, basep
+- Basepractice server improvements
+- Addition of missing options to sample sysdef
+- Adding vote tag to voting command structure
+- Remove ability to vote if VOTING=0
+- Dogfight map file fix
+- Ban vote duration in sample sysdef
+- Improved tracking of server modes
+- Newbie server documentation update2
+- comindico whitelist removal, quozl specific
+- noted new bug, signal handler calls unsafe functions
+- initial design of checkpointing
+- add ban tools
+- add ban vote duration
+- add live daemon release target
+- fix test to correctly reproduce parade ring overlap
+- fix for conquer parade alignment, alternate
+- add test for conquer parade slot alignment bug
+- add planet orbit and take test scripts
+- Semi-critical update fix
+- Show geno messages for observers
+- Formatting fix for if statement in interface.c
+- Command file for PreT robots
+- adjust test scripts for xtkill changes
+- Xtkill settable kills
+- Xtkill bug fixes
+- robotd-carriage-return-added-to-death-messages.dpatch
+- freebsd compilation fix, missing header
+- avoid lies to metaserver due pre-t robots
+- further-fixes-to-war-decs.dpatch
+- continuum ghostbust diagnostics
+- untabify daemon main
+- newbie robots war declarations test
+- Newbie robots now declare war properly in pickup games
+- continuum ban vote tweaks 2006-06
+- xtkill ship change fixes
+- newbie-observer-ports.dpatch
+- Chaos mode starbase enhancements
+- Twarp message fix
+- ATT and invalid ship fixes
+- null-terminate-mapchars-indentfix
+- null-terminate-mapchars
+- robotd-improved-army-tracking.dpatch
+- Cross-transwarp check
+- post 2.11.1 release process notes
+- include config.guess in make dist
+- include config.sub in make dist
+
 2.11.1: released 2006-06-01
 
 - fix CHAOS torp detonation which was allowing wtemp [Balcerski}

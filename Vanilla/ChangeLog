@@ -1,3 +1,827 @@
+Sun Sep 17 16:38:41 2006  James Cameron  <quozl@us.netrek.org>
+
+	* netrek-server-vanilla-2.11.2 released
+
+Fri Sep 15 11:25:17 EST 2006  quozl@us.netrek.org
+  * fix robotd to allow debugging using SIGINT
+  
+  	* robotd/main.c: remove SIGINT handling, to aid debugging, no known
+  	  need for SIGINT to be handled in this way.
+  
+
+Mon Sep 11 16:01:02 EST 2006  quozl@us.netrek.org
+  * remove unnecessary delay in conquer test
+
+Mon Sep 11 15:51:27 EST 2006  quozl@us.netrek.org
+  * fix tests to use shell path
+  
+  	* tests/conquer, genocide: fix scripts to use the shell path to find
+  	  the programs, so that LIBDIR doesn't need to be recorded here.
+  
+
+Mon Sep 11 15:41:06 EST 2006  quozl@us.netrek.org
+  * fix xtkill exit status
+
+Mon Sep 11 15:40:38 EST 2006  quozl@us.netrek.org
+  * fix robots to obey GU_GAMEOK termination
+
+Mon Sep 11 14:37:31 EST 2006  quozl@us.netrek.org
+  * add path tools
+  
+  	* tools/getpath.c: program to return various path combinations for use
+  	  by scripts and tests.
+  
+  	* tools/setpath.in: script to set shell PATH, intended for use in a
+  	  .profile or .bashrc file.
+  
+  	* configure.in: add tools/setpath
+  
+  	Note: since configure.in is changed, you should re-run autoconf.
+  
+
+Mon Sep 11 09:39:53 EST 2006  williamb@its.caltech.edu
+  * Fix for long names with scores tools
+            * In the case of player names with maximum name length, adding a "_" to the end would overflow the
+              alloted string size and cause problems such as scores A corrupting passwords.  This patch instead
+              copies the player name to a new buffer of appropriate size, then adds the "_".
+  M ./Vanilla/tools/html.c -3 +4
+  M ./Vanilla/tools/mergescores.c -2 +4
+  M ./Vanilla/tools/scores.c -2 +4
+  M ./Vanilla/tools/text.c -3 +4
+
+Fri Sep  8 09:51:43 EST 2006  quozl@us.netrek.org
+  * Add README.ban, review
+  
+  	* README.ban: rewrite in NPOV and include references to code.
+  
+  	* tools/admin/*: change to use var for admin.log
+  
+  	* tools/admin/ban: avoid creating access file since this would break server.
+  
+
+Thu Sep  7 19:28:47 EST 2006  williamb@its.caltech.edu
+  * Add README.ban
+             * README.ban: new file, explains how banned and access files work.
+  A ./Vanilla/docs/README.ban
+
+Thu Sep  7 13:42:17 EST 2006  quozl@us.netrek.org
+  * Sysdef option for admin password, review
+  
+  	* ntscmds.c: add log entries for uses of admin commands, use case-exact
+  	  comparison to increase password range, add delay to make dictionary
+  	  or brute-force attacks difficult.
+  
+
+Thu Sep  7 11:52:07 EST 2006  williamb@its.caltech.edu
+  * Sysdef option for admin password
+            * Adds sysdef option ADMIN_PASSWORD for authorizing in game through the admin command.  The default
+  	    password is password; for security reasons, this password will never give verification as admin.
+  	    The password must be changed to something else for it to work.
+  M ./Vanilla/docs/sample_sysdef.in +4
+  M ./Vanilla/include/data.h +2
+  M ./Vanilla/include/defs.h +1
+  M ./Vanilla/include/sysdefaults.h +3
+  M ./Vanilla/ntserv/data.c +2
+  M ./Vanilla/ntserv/ntscmds.c -15 +10
+
+Wed Sep  6 16:55:11 EST 2006  quozl@us.netrek.org
+  * review ban_noconnect
+  
+  	* main.c: send bad version packet so that client exits cleanly.
+  
+
+Wed Sep  6 16:43:10 EST 2006  williamb@its.caltech.edu
+  * Perm banned doc fix
+           * Clarify that the sysdef option BAN_NOCONNECT only works on permanently banned players,
+  	   i.e. those banned by the administrator.
+  M ./Vanilla/docs/sample_sysdef.in -1 +1
+  M ./Vanilla/include/sysdefaults.h -1 +1
+
+Wed Sep  6 16:20:29 EST 2006  williamb@its.caltech.edu
+  * Sysdef option for noconnect for perm bans
+           * Adds sysdef option BAN_NOCONNECT to stop permanently banned players from even connecting
+  	   to server (no ntserv is launched, player exits early on in main.c).
+  M ./Vanilla/docs/sample_sysdef.in +3
+  M ./Vanilla/include/data.h +1
+  M ./Vanilla/include/sysdefaults.h +3
+  M ./Vanilla/ntserv/data.c +1
+  M ./Vanilla/ntserv/main.c +9
+
+Wed Sep  6 14:59:28 EST 2006  williamb@its.caltech.edu
+  * Fixes for observer muting
+            * Adds new sysdef option OBSERVER_MUTING to turn on/off muting for all observers.
+  	    Also fixes the bug where banned observers were not being muted properly.  Banned
+  	    observers will be muted independent of the OBSERVER_MUTING setting.
+  M ./Vanilla/docs/sample_sysdef.in +3
+  M ./Vanilla/include/data.h +3
+  M ./Vanilla/include/sysdefaults.h +5
+  M ./Vanilla/ntserv/data.c +3
+  M ./Vanilla/ntserv/main.c -4 +2
+  M ./Vanilla/ntserv/socket.c -2 +2
+
+Wed Sep  6 10:53:14 EST 2006  williamb@its.caltech.edu
+  * Sysdef option for preT idling
+              * Adds sysdef option SAFE_IDLE for allowing people to idle safely prior to t-mode
+                beginning and not take any damage, if they meet the requirements (no t-mode, 0 kills,
+                max fuel, max shields, 0 damage, and orbiting a homeworld planet).
+  M ./Vanilla/docs/sample_sysdef.in +4
+  M ./Vanilla/include/data.h +1
+  M ./Vanilla/include/sysdefaults.h +3
+  M ./Vanilla/ntserv/daemonII.c +30
+  M ./Vanilla/ntserv/data.c +1
+
+Mon Sep  4 14:41:52 EST 2006  quozl@us.netrek.org
+  * fix ghostbust no ping alive response
+  
+  	* daemonII.c: during a no-ping-alive ghostbust, there are two ghostbust
+  	  messages posted.  This fixes the problem by moving the posting of the
+  	  messages to the time after explosion.  The army rescue occurs then as
+  	  well.
+  
+
+Fri Sep  1 16:38:30 EST 2006  quozl@us.netrek.org
+  * document getpath
+  
+  	* getpath.c: explain how it works.
+  
+
+Wed Aug 30 21:29:30 EST 2006  quozl@us.netrek.org
+  * fix army rescue on observ ghostbust, review
+  
+  	* daemonII.c: review of prior change, found a path that could lead to
+  	  army rescue due to status change.  Fixed.
+  
+
+Wed Aug 30 20:51:48 EST 2006  quozl@us.netrek.org
+  * fix army rescue on observ ghostbust
+  
+  	* daemonII.c: avoid rescuing armies for observers.
+  
+
+Tue Aug 29 04:27:40 EST 2006  williamb@its.caltech.edu
+  * Addendum to multi install instructions
+             * INSTALL: forgot to mention to rerun configure
+  M ./Vanilla/INSTALL -1 +2
+
+Tue Aug 29 11:16:19 EST 2006  quozl@us.netrek.org
+  tagged 2006-08-29
+
+Sat Aug 26 07:54:11 EST 2006  williamb@its.caltech.edu
+  * Robot server spam reduction
+             * basepdefs.h/newbiedefs.h/pretdefs.h:  Changes default welcome message from 2 to 10 minutes to cut down
+  	     on spam.
+  	   * newbie.c: Provides a working link to the newbie manual.
+  M ./Vanilla/robots/basepdefs.h -1 +1
+  M ./Vanilla/robots/newbie.c -1 +1
+  M ./Vanilla/robots/newbiedefs.h -1 +1
+  M ./Vanilla/robots/pretdefs.h -1 +1
+
+Tue Aug 29 04:04:21 EST 2006  williamb@its.caltech.edu
+  * Install directions on running multiple servers
+              * INSTALL: add a section on how to run 2 instances of a server on 1 machine.
+  M ./Vanilla/INSTALL +13
+
+Mon Aug 28 16:59:56 EST 2006  williamb@its.caltech.edu
+  * Pret enhancements part1 - cleanup, debug
+  This patch removes unneeded comments, makes some format fixes, and removes an internal function for sending debug output
+  to any slot.  This function was unsafe, as it could be used maliciously to send spam debug output.  It also prevented
+  messages like "help" from being sent to Kathy.
+            * pret.c: checkMessage function removed.  Extra long output lines split into 2 lines for readability.
+  	    Minor format fixes, and unneeded commented out code removed.
+  M ./Vanilla/robots/pret.c -62 +19
+
+Mon Aug 28 15:02:44 EST 2006  williamb@its.caltech.edu
+  * Newbie enhancements part1 - cleanup, debug
+  This patch cleans up newbie.c by removing some unused variables, making some small format
+  fixes, and adding debugging info as is seen in pret.c.  The purpose of this patch and the next
+  patches I will submit are to make newbie.c and pret.c as similar as possible, at which point
+  I can then look to factorize as much code as possible into common functions.  As this is a larger
+  project, I'm breaking it down into smaller chunks, by adding features to newbie.c that are done
+  better in pret.c, and vice versa.
+         * newbie.c: debugTarget and debugLevel added to provide debug output to monitor number of
+  	 bots and humans in game.  Code similar to that in pret.c.
+  	 start_a_robot routine: added safety check in case robot team not selected properly
+  	 totalPlayers(): new function, code similar to pret.c, used in debug output
+  	 Fixed typo in commands file instructions.
+  	 Removed unused variables and unneeded comments
+  M ./Vanilla/robots/newbie.c -19 +61
+
+Mon Aug 28 14:44:59 EST 2006  williamb@its.caltech.edu
+  * Basepractice unused variable removed
+              * basep.c: removes unused max_player definition, if it were to be added in the future, it would be
+  	      in basepdefs.h anyways.
+  M ./Vanilla/robots/basep.c -3
+
+Mon Aug 28 14:02:07 EST 2006  quozl@us.netrek.org
+  * fix attempt for pret hang on bsd
+  
+  	* alarm.c: diagnostic evidence from a BSD system showed that the
+  	  alarm_count was going negative, which could only be caused if the
+  	  pause(2) was returning for a signal other than that requested.
+  	  Changed the code to accept this situation and to check the
+  	  alarm_count before decrementing it.
+  
+
+Mon Aug 28 12:34:40 EST 2006  quozl@us.netrek.org
+  * fix bsd socket include
+
+Mon Aug 28 12:28:59 EST 2006  quozl@us.netrek.org
+  * fix signal build errors on bsd
+
+Fri Aug 25 16:00:34 EST 2006  quozl@us.netrek.org
+  * remove old policy, add libnetrek and sysdef hints
+
+Fri Aug 25 14:17:00 EST 2006  williamb@its.caltech.edu
+  * Merlin responds to help
+            * newbie.c: Have Merlin responds to being sent help, as the other robots such as SMACK and Kathy do.
+  M ./Vanilla/robots/newbie.c +14
+
+Fri Aug 25 13:58:22 EST 2006  williamb@its.caltech.edu
+  * Move newbie slot control to sysdef
+  This patch moves control of the number of robots and players allowed in the newbie server, from the newbiedefs file, to sysdef.  It also adds an improved tracking method of the number of in game robots.
+         * sample_sysdef.in, data.h, data.c, sysdefaults.h: Adds MAX_NEWBIE_PLAYERS and MAX_NEWBIE_ROBOTS.
+         * newbiedefs.h: Removes slot control defines.
+         * newbie.c (totalRobots()): New function.  Replaces nb_robots counter.
+  	 checkmess(): Adds check against player and robot counts before starting/stopping bots.
+  M ./Vanilla/docs/sample_sysdef.in +6
+  M ./Vanilla/include/data.h +2
+  M ./Vanilla/include/sysdefaults.h +5
+  M ./Vanilla/ntserv/data.c +2
+  M ./Vanilla/robots/newbie.c -8 +27
+  M ./Vanilla/robots/newbiedefs.h -5
+
+Fri Aug 25 12:31:11 EST 2006  williamb@its.caltech.edu
+  * Sysdefault instructions correction
+           * sysdefaults.h: Point to .in file for sample sysdef additions.
+  M ./Vanilla/include/sysdefaults.h -1 +1
+
+Fri Aug 25 03:36:29 EST 2006  williamb@its.caltech.edu
+  * Increase newbie slots from 8 to 16
+           * queue.c: Previous patch that reassigned newbie queue to different defines than
+  	   pre-t queue made it so the max # of players decreased from 16 to 8, this patch
+  	   restores newbie queue status to be identical to pret queue status.
+  M ./Vanilla/ntserv/queue.c -3 +3
+
+Thu Aug 24 11:18:32 EST 2006  williamb@its.caltech.edu
+  * Ingame admin tool fixes
+            * autogen.sh: chmod admin scripts to executable
+            * ntscmds.c (do_admin): fixes path to admin scripts
+  M ./Vanilla/autogen.sh +1
+  M ./Vanilla/ntserv/ntscmds.c -5 +5
+
+Thu Aug 24 21:55:52 EST 2006  quozl@us.netrek.org
+  * Pret queue renumbering, review
+  
+  	* defs.h: increase MAXQUEUE to compensate for previous change to QU
+  	  numbers.
+
+Thu Aug 24 09:37:38 EST 2006  williamb@its.caltech.edu
+  * Pret queue renumbering
+            * struct.h: Renumbers PreT queue so it's not defined the same as the newbie queue, this
+  	    was causing the newbie server to report the queue as being the pret queue.
+  M ./Vanilla/include/struct.h -4 +4
+
+Thu Aug 24 01:13:16 EST 2006  williamb@its.caltech.edu
+  * Standardize planet locs for basepractice
+           * basep.c (fix_planets): Calls setplanet to reset planet locations to standard settings,
+  	   to be consistent with how other robot modes set up their galaxy.  In some cases, the
+  	   base practice server could be launched in an odd galaxy configuration, such as hockey
+  	   or dogfight, depending on the voting history of the server.
+  	 * puck.c: Minor formatting fix.
+  M ./Vanilla/robots/basep.c +5
+  M ./Vanilla/robots/puck.c -1
+
+Thu Aug 24 15:13:55 EST 2006  quozl@us.netrek.org
+  * add setgame wait-for-terminate command
+  
+  	* setgame.c: add wait-for-terminate command to be used by test scripts
+  	  that would otherwise have to poll for the existence of running
+  	  daemon.
+
+Thu Aug 24 15:13:17 EST 2006  quozl@us.netrek.org
+  * disable ban pre-queue for observers
+
+Thu Aug 24 14:46:10 EST 2006  quozl@us.netrek.org
+  * remove ban vote expiry by login, add ban queue
+  
+  	Removes the ban expiry by number of logins feature, superceded by the
+  	expiry by duration.
+  
+  	Adds a pre-queue delay for any client that connects while there are
+  	other connections from the same IP address already on the queue.
+  
+  	Adds a pre-queue delay for any temporarily banned client.
+  
+  	* struct.h, sample_sysdef.in, sysdefaults.h: remove b_expire.
+  
+  	* bans.c: remove ban expiry by number of logins.
+  
+  	* data.h, data.c, main.c, socket.c: add textual ip address of client to
+  	  global variables.
+  
+  	* struct.h, queue.c: add ip address of client to wait queue entry.
+  
+  	* bans.c: add function to return remaining ban time, provided a ban is
+  	  current.
+  
+  	* findslot.c: place player on a pre-queue also if they already have a
+  	  place in the queue.  Attempts to reduce effect of denial of service
+  	  attacks.
+  
+  	* findslot.c: if banned, place player on a pre-queue and provide
+  	  countdown to ban expiry.  If the ban is only fresh, within the last
+  	  minute, then allow the player through so that they are told again of
+  	  their ban.
+  
+
+Wed Aug 23 15:13:21 EST 2006  quozl@us.netrek.org
+  * adopt sigpipe implementation for ntserv
+  
+  	* Makefile.in: add sigpipe to libnetrek.
+  
+  	* daemonII.c: use alarm_send rather than kill.
+  
+  	* input.c, socket.c, death.c: use sigpipe for SIGALRM rather than
+  	  unsafe functions called from signal handler.
+  
+
+Wed Aug 23 15:11:53 EST 2006  quozl@us.netrek.org
+  * fix fix use of unsafe functions in signal handler, robots
+  
+  	* inl.c, mars.c, marsmove.c, newbie.c, pret.c, puck.c, puckmove.c,
+  	  rmove.c, robotII.c: remove use of unsafe functions in SIGALRM
+  	  handler.
+  
+
+Wed Aug 23 15:09:42 EST 2006  quozl@us.netrek.org
+  * add sigpipe implementation
+  
+  	* sigpipe.c: the only reliable and portable method to combine a
+  	  select(2) based event loop with signals is to translate the signals
+  	  into messages arriving on a pipe and then select on the pipe file
+  	  descriptor as well.
+  
+
+Wed Aug 23 08:27:19 EST 2006  williamb@its.caltech.edu
+  * Fix so basepractice bots don't get ip blocked by duplicate sysdef option
+            * findslot.c (player_count_by_ip): No longer count base practice robots against player
+  	    count from that IP address.
+  M ./Vanilla/ntserv/findslot.c +1
+
+Wed Aug 23 11:49:48 EST 2006  quozl@us.netrek.org
+  * fix use of unsafe functions in signal handler, daemon, basep
+  
+  	* alarm.c, alarm.h: merge common alarm signal handling functions.
+  
+  	* basep.c, daemonII.c: use common functions and change main loop to
+  	  execute always in non-signal context.
+  
+
+Wed Aug 23 09:45:30 EST 2006  williamb@its.caltech.edu
+  * Basepractice server improvements
+  
+  These changes fix a bug where SMACK would ghostbust if sent a request to spawn enough bots.  This patch also makes the
+  basepractice server run right out of the box, rather than forcing the user to modify the basepdefs settings.
+         * basepdefs.h: Removes running the bots remotely as the default setting, and adds a new define for the max number
+  	 of bots (mirroring how newbiedefs.h is set up)
+         * README.basep: Gives example of remote RCMD setting for those who would still want this information
+         * basep.c (reaper(), do_start_robot(), startrobot()): Adds a counter for number of robots spawned.
+  	 (startrobot()), do_start_robot(), startrobot()): Adds a counter for number of robots spawned.
+  	 (startrobot()): Removes sleep() in favor of counter, and adds extra safety check if fork = -1, similar
+  	 to what is done in newbie.c.
+  	 (start_internal()): small formatting fix.
+  M ./Vanilla/docs/README.basep -1 +1
+  M ./Vanilla/robots/basep.c -7 +12
+  M ./Vanilla/robots/basepdefs.h -2 +4
+
+Wed Aug 23 09:45:37 EST 2006  quozl@us.netrek.org
+  * Addition of missing options to sample sysdef, review
+
+Wed Aug 23 08:01:43 EST 2006  williamb@its.caltech.edu
+  * Addition of missing options to sample sysdef
+            * sample_sysdef.in: Adds 4 options that were in sysdefaults but missing from sysdef.
+  M ./Vanilla/docs/sample_sysdef.in +12
+
+Wed Aug 23 01:08:41 EST 2006  williamb@its.caltech.edu
+  * Adding vote tag to voting command structure
+         * gencmds.h: Formalizes the definition of C_PR_INPICKUP, and adds a new tag C_PR_VOTE
+           gencmds.c (do_help): Only list vote commands if VOTING is set in sysdef
+           ntscmds.c (struct command_handler_2 nts_commands): Adds C_PR_VOTE tag to the vote commands.
+  	 Removes redefinition of C_PR_INPICKUP, as this is now defined in gencmds.h
+  M ./Vanilla/include/gencmds.h -6 +7
+  M ./Vanilla/ntserv/gencmds.c -1 +3
+  M ./Vanilla/ntserv/ntscmds.c -10 +8
+
+Wed Aug 23 01:25:04 EST 2006  williamb@its.caltech.edu
+  * Remove ability to vote if VOTING=0
+         * gencmds.c (check_2_command)  If a command is tagged as a vote, voting must be turned on
+  	 for the command to execute.  This fixes a bug where if voting was off, vote commands could
+  	 still be used, and they would pass with just 1 vote.
+  M ./Vanilla/ntserv/gencmds.c +2
+
+Wed Aug 23 03:59:51 EST 2006  williamb@its.caltech.edu
+  * Dogfight map file fix
+            * marsdefs.h: Correctly defines mapfile (it no longer has the leading period in filename).
+  M ./Vanilla/robots/marsdefs.h -1 +1
+
+Wed Aug 23 09:20:47 EST 2006  quozl@us.netrek.org
+  * Ban vote duration in sample sysdef, review
+  
+  	* docs/sample_sysdef.in: add back lost text caused by my editing
+  	  sample_sysdef instead of sample_sysdef.in.
+  
+
+Tue Aug 22 22:40:35 EST 2006  williamb@its.caltech.edu
+  * Ban vote duration in sample sysdef
+            * (sample_sysdef.in): Adds BAN_VOTE_DURATION.
+  M ./Vanilla/docs/sample_sysdef.in +5
+
+Wed Aug 23 09:14:13 EST 2006  quozl@us.netrek.org
+  * Improved tracking of server modes, review
+
+Wed Aug 23 06:36:42 EST 2006  williamb@its.caltech.edu
+  * Improved tracking of server modes
+  
+  The purpose of this patch is to keep better track of what sort of robot mode the server is running,
+  and to make consistent use of the server status states defined in struct.h.  This makes the code
+  easier to understand in some places (especially regarding the inl robot), and it allows for a 
+  smarter vote system, as votes will no longer pass if the server is already running the mode voted
+  on.  This enhances server stability in the case of rapid switching between modes (dogfight, hockey,
+  basepractice, and inl).  The server will no longer get "stuck" in a hockey galaxy, which has
+  happened in the past when hockey was voted on twice.  Likewise for getting "stuck" in dogfight mode.
+  The initial startup robot mode, as defined in sysdef, is also recognized, and that mode is not able 
+  to be voted again until that robot exits.  There should now never be the case where there are 
+  simultaneous duplicate robots, i.e. 2 hockey announcers, 2 SMACK basepractice starters, etc.
+  
+        * struct.h: Addition of GU_PUCK and GU_DOG server status.  Addition of server mode defines.
+  	conquer.c, daemonII.c, death.c, getname.c, solicit.c, players.c: Replace compound bit
+  	statements with server mode defines.
+  	mars.c, marsmove.c, puck.c, puckmove.c: Track server status with new GU defines.
+  	ntscmds.c: Add check before launching puck, mars, newbie, or pre_t robots.
+  M ./Vanilla/include/struct.h -4 +10
+  M ./Vanilla/ntserv/conquer.c -2 +2
+  M ./Vanilla/ntserv/daemonII.c -7 +7
+  M ./Vanilla/ntserv/death.c -1 +1
+  M ./Vanilla/ntserv/getname.c -1 +1
+  M ./Vanilla/ntserv/ntscmds.c -1 +21
+  M ./Vanilla/ntserv/solicit.c -10 +8
+  M ./Vanilla/robots/mars.c +1
+  M ./Vanilla/robots/marsmove.c -1 +1
+  M ./Vanilla/robots/puck.c +1
+  M ./Vanilla/robots/puckmove.c +1
+  M ./Vanilla/tools/players.c -1 +1
+
+Tue Aug 22 13:28:23 EST 2006  williamb@its.caltech.edu
+  * Newbie server documentation update2
+           * INSTALL.Newbie - mention observer port, and point to robot command file
+  M ./Vanilla/INSTALL.Newbie +3
+
+Fri Aug 18 12:06:53 EST 2006  quozl@us.netrek.org
+  * comindico whitelist removal, quozl specific
+
+Fri Aug 18 10:23:07 EST 2006  quozl@us.netrek.org
+  * noted new bug, signal handler calls unsafe functions
+
+Thu Aug 17 11:59:47 EST 2006  quozl@us.netrek.org
+  * initial design of checkpointing
+  
+  	* PROJECTS.checkpointing: an initial design for checkpointing support
+  	  that should allow live changes to code.
+  
+
+Tue Aug 15 14:21:03 EST 2006  quozl@us.netrek.org
+  * add ban tools
+  
+  	* tools/ban.c: add tool to display ban list, ban a player from command
+  	  line, dump the list, and reload the list.
+  
+  	* tools/Makefile.in: add new ban program.
+  
+
+Tue Aug 15 13:12:42 EST 2006  quozl@us.netrek.org
+  * add ban vote duration
+  
+  	* include/data.h, ntserv/data.c, include/sysdefaults.h: add new
+  	  BAN_VOTE_DURATION sysdef option.
+  
+  	* ntserv/main.c, ntscmds.c, Makefile.in, proto.h, bans.c: move ban
+  	  logic into one source file.
+  	
+  	* daemonII.c: every minute, age the temporary bans.
+  
+
+Wed Aug  9 17:09:52 EST 2006  quozl@us.netrek.org
+  * add live daemon release target
+  	* ntserv/Makefile.in: add target to release a new daemon, though it
+  	does not replace the running daemon.  That's an idea for later.
+
+Wed Aug  9 15:57:41 EST 2006  quozl@us.netrek.org
+  * fix test to correctly reproduce parade ring overlap
+
+Wed Aug  9 14:39:54 EST 2006  quozl@us.netrek.org
+  * fix for conquer parade alignment, alternate
+  	* ntserv/conquer.c (conquer_ships_ring, conquer_parade): add a counter
+  	for calculating ring coordinates rather than using player list position.
+
+Tue Aug  8 15:47:00 EST 2006  quozl@us.netrek.org
+  * add test for conquer parade slot alignment bug
+  	* tests/parade-bug-2006-08-07: a test to try to reproduce the
+  	bug reported by Niclas where iggy slots end up in the same screen
+  	position as player slots.
+
+Tue Aug  8 15:44:56 EST 2006  quozl@us.netrek.org
+  * add planet orbit and take test scripts
+  	* tools/setplanet.c: add be-orbited-by and be-taken-by test
+  	actions, for use by test scripts.  They cheat, and are therefore
+  	not intended for production use.
+
+Tue Aug  8 10:24:18 EST 2006  quozl@us.netrek.org
+  * minor indentation fixes prior to review
+  	* ntserv/conquer.c: tabify, some added lines lacked tabs, made it
+  	  inconsistent.
+
+Thu Jun 22 12:21:26 EST 2006  williamb@its.caltech.edu
+  * Semi-critical update fix
+        * socket.c (updateClient): clarifies purpose of packet type check against 0x40, adds check
+          for SP_S_YOU case.
+
+Thu Jun 22 11:35:21 EST 2006  williamb@its.caltech.edu
+  * Show geno messages for observers
+         * genspkt.c (sndSelf and sndSSelf):
+           Factorized check for whether packet should be marked as critical.
+           (check_sendself_critical): New function.
+           Player status (via sndPStatus) is sent before player whydead (via sndSelf
+           or sndSSelf).  When whydead changes, the packet must be marked as critical in
+           order for that information to arrive first, so that observers can get a proper
+           whydead message upon genocide.  This was previously done for just sndSelf, but
+           with this patch, both sndSelf and sndSSelf now do it, and observers get geno
+           messages with short packets on.
+
+Sat Jul  8 01:16:41 EST 2006  williamb@its.caltech.edu
+  * Formatting fix for if statement in interface.c
+            * interface.c: (do_refit).  Fixes if statement split over 3 lines.
+
+Sat Jul  8 01:25:31 EST 2006  williamb@its.caltech.edu
+  * Command file for PreT robots
+          * robots/pret.c: (start_a_robot) Adds the ability to read in a command file, as
+            per the command file defined in pretdefs.h, but which was unused for whatever reason.          Note that both the newbie server and basepractice server are set to use the same
+            file, defined as COMFILE in pretdefs.h, basepdefs.h, and newbiedefs.h.  As these
+            modes are mutually exclusive, it is ok for them to read in robot commands from
+            the same commands file.
+  M ./Vanilla/robots/pret.c -1 +3
+
+Mon Jul 10 11:47:03 EST 2006  quozl@us.netrek.org
+  * adjust test scripts for xtkill changes
+  	* tests: some scripts used "xtkill k" repeatedly to grant kills,
+  	changed to use the additional parameter.  Note that this additional
+  	parameter is not immediately after the option, like it is with T or t
+  	options.
+
+Sat Jul  8 01:30:51 EST 2006  williamb@its.caltech.edu
+  * Xtkill settable kills
+            * xtkill.c (main): Adds the ability to specify the number of kills to increment
+              the player, identical to how the increment armies option works, rather than 
+              just adding +1 kill per use of the xtkill k option.
+  M ./Vanilla/tools/xtkill.c -2 +5
+
+Fri Jun 23 14:00:57 EST 2006  williamb@its.caltech.edu
+  * Xtkill bug fixes
+          * xtkill.c (Usage): Added 2 missing options (u and H) to options list.
+            (main): Removed call to getshipdefaults(), as this data was already in
+            memory, and it had the unintended consequence of erasing any modifications
+            to ship values that were set in the sysdef file, forcing a sysdef reload
+            every time xtkill was used.
+
+Fri Jun 30 19:29:32 EST 2006  jimmyhua73@yahoo.com
+  * robotd-carriage-return-added-to-death-messages.dpatch
+  
+  	* robotd/death.c in function death(), I added newline character
+  	to the reason of death on all mprintf statements "\n", so it
+  	displays properly in debug mode. 
+  
+
+Wed Jul  5 16:27:26 EST 2006  quozl@us.netrek.org
+  * freebsd compilation fix, missing header
+  
+  	* ntserv/main.c: add signal.h include, after a report from a FreeBSD
+  	user showed that my enthusiastic trimming of headers had broken
+  	compilation on other operating systems.
+  
+
+Mon Jul  3 12:19:15 EST 2006  quozl@us.netrek.org
+  * avoid lies to metaserver due pre-t robots
+  
+  	* solicit.c: count PFBPROBOT slots as being free, since we expect them
+  	to back off and quit if a player arrives, so that the metaserver report
+  	of players properly excludes pre-t robots.
+  
+
+Mon Jul  3 01:31:28 EST 2006  jimmyhua73@yahoo.com
+  * further-fixes-to-war-decs.dpatch
+  
+  This completes the fixes I started with war declarations. 
+  
+  Basically, war is declared when
+  	1. t-mode starts. 
+  	2. bot is forced to switch teams
+  
+  Further peace is declared when:
+  	3. everytime you take out a new ship. 
+  
+  This should cover all scenarios in a typical pickup game. 
+  
+  Tested by having robots join a bronco style game. 1 Kli, 4 feds, 4 Roms.
+  Check war decs. 
+  Have the 1 kli get forced to join one of the t-mode teams. Check war decs
+  Have Feds get timercided, and get forced to join Klis. 
+  Check war decs. 
+  Wait till Roms cause a genocide (Roms will take a neutral planet!). 
+  Then games continues as Rom vs. Kli, and check war decs. 
+  
+  Changelog here:
+  
+  	* robotd/update_players.c changed declare_intents() function so
+  	that it will return success or failure codes. Also, changed function
+  	so that you may declare peace only, by doing declare_intents(1). 
+  
+  	* robotd/decide.c added static int needswardec in function decide()
+  	so that robot can track when t-mode dies off and starts up again. 
+  
+  	* robotd/decide.c added in function decide() logic so, 
+  	declare_intents(0) function gets called when t-mode 
+  	just starts up. 
+  
+  	* robotd/decide.c modified in function decide() other calls
+  	to declare_intents() so that they conform to the extra 
+  	parameter passing
+  
+  	* robotd/robot.c added comment in function s_recharge() 
+  	a peace request never gets called when robot orbits a 
+  	planet it originally wanted to refuel from 
+  
+  	* robotd/robot.c in function find_safe_planet() fixed 
+  	some buggy logic which allowed robots to head towards 
+  	hostile planets to refuel/repair. 
+  
+  	* robotd/robot.c in function reset_r_info() modified 
+  	call to declare_intents() to conform to newly modified
+  	function. 
+  
+
+Fri Jun 30 12:55:45 EST 2006  quozl@us.netrek.org
+  * continuum ghostbust diagnostics
+  	* daemonII.c (ghostmess): add reason for ghostbust to message,
+  	and increase logging of normal ghostbust timeout in ERRORS.
+
+Fri Jun 30 12:29:04 EST 2006  quozl@us.netrek.org
+  * untabify daemon main
+  	* daemonII.c: removed all tabs using untabify in emacs.
+
+Fri Jun 30 12:08:43 EST 2006  quozl@us.netrek.org
+  * newbie robots war declarations test
+
+Fri Jun 30 11:14:31 EST 2006  quozl@us.netrek.org
+  * Newbie robots now declare war properly in pickup games
+  
+  	Derived from Jimmy Huang's patch of the same name.
+  
+  	* robotd/data.c: fixed comment misspelling in int delay.  delay
+  	for declaring war.
+  
+  	* robotd/decide.c (decide): added some comments to help me follow
+  	the code better
+  
+  	* robotd/main.c (main): fixed up indentation of variable
+  	declarations. Added switchedteams variable. Modified main()
+  	function so that when a team switch occurs, declare_intents() gets
+  	called after choosing a new ship.
+  
+  	* robotd/robot.c (reset_r_info): added some commentary on the
+  	declare_intents() call, which only gets something done only if
+  	someone sends a reset command to the robot.
+  
+  	* robotd/robot.c (send_initial): removed commented code of
+  	declare_intents(). This was a bug workaround, robot sends a dummy
+  	packet so it doesn't get ghostbusted.  Doesn't seem needed
+  	anymore.
+  
+  	* robotd/update_players.c (declare_intents): added commentary on
+  	how this function is supposed to work. Function will now properly
+  	declare war on the 2 teams with the most players that isn't the
+  	same team as yourself. And then declares peace with everyone else.
+  
+
+Thu Jun 22 11:53:54 EST 2006  quozl@us.netrek.org
+  * continuum ban vote tweaks 2006-06
+  Following review of continuum recording 2006-06-07-22-00:
+  - require four votes to ban instead of two, to defeat ban scumming,
+  - expire ban votes within two minutes instead of ten,
+  - expire eject votes within five minutes instead of ten.
+
+Tue Jun 20 10:50:09 EST 2006  williamb@its.caltech.edu
+  * xtkill ship change fixes
+           * tools/xtkill.c: Adds the ability to set ship to galaxy class, removes unneccessary
+             ship size change for ATT, and updates the list of valid ship types to include
+             the super SC with 1 point torps (this was missing from list of valid ship types).
+  M ./Vanilla/tools/xtkill.c -8 +5
+
+Fri Jun 16 20:34:48 EST 2006  jimmyhua73@yahoo.com
+  * newbie-observer-ports.dpatch
+  
+  	* docs/sample_ports added observer port definitions for
+  	newbie server. Added commentary to make it easier to configure
+  	the port configuration for a newbie server setup. 
+  
+
+Wed Jun  7 06:08:21 EST 2006  williamb@its.caltech.edu
+  * Chaos mode starbase enhancements
+           * orbit.c, transwarp.c: Allows starbases to transwarp to and dock with other
+             bases if chaos mode is activated.
+
+Wed Jun  7 06:06:52 EST 2006  williamb@its.caltech.edu
+  * Twarp message fix
+           * transwarp.c: Fixes outdated reference to transwarp hours.
+
+Sat Jun  3 19:26:50 EST 2006  williamb@its.caltech.edu
+  * ATT and invalid ship fixes
+        * getentry.c, main.c: allow listing of ATT on features screen, and allow player to select 
+          ATT from entry window if ship is defined in sysdef as a valid ship.  Also fixes incorrect
+          error message in the case of invalid ship type.
+
+Wed Jun 14 20:31:04 EST 2006  Stephen Thorne <stephen@thorne.id.au>
+  * null-terminate-mapchars-indentfix
+
+Wed Jun 14 20:55:40 EST 2006  jimmyhua73@yahoo.com
+  * null-terminate-mapchars
+  
+  	* robotd/struct.h modify mapchars to 3 characters to hold the NULL
+  	at the end
+  
+  	* robotd/enter.c initialize final character to be NULL at the end
+  	when the robot first enters the game. 
+  
+  
+
+Tue Jun 13 20:44:25 EST 2006  jimmyhua73@yahoo.com
+  * robotd-improved-army-tracking.dpatch
+  
+          * INSTALL.Newbie updated installation documentation to reflect
+          changes in code. Also, CONFIRM=0 only works, CONFIRM=2 does not
+          work.
+  
+          * INSTALL.Newbie added toggle robdc, assume robots don't carry.
+          Also added lookahead=0 to emulate how robots were before Trent
+          fixed the torp-dir bug.
+  
+          * robotd/data.c added extern int robdc (robots don't carry)
+  
+          * robotd/data.h extern int robdc defaults to not activated.
+  
+          * robotd/data.h added compiler define NO_PFORBIT, so robot
+          doesn't depend on PFORBIT flag to determine if someone is picking
+          armies or not.
+  
+          * robotd/dmessage.c added robdc in help. added robdc in messaging
+          logic.
+  
+          * robotd/update_players.c commented out a continue; statement
+          as the for loop gets exited too quickly sometimes.
+  
+          * robotd/update_players.c stale information of p->closest_pl is
+          kept even when enemy becomes invisible. Will be used later.
+  
+          * robotd/update_players.c don't update last x or y if invisible.
+  
+          * robotd/update_players.c changes to check_orbit() function to
+          make sure players is marked as orbiting a planet when cloaked near
+          a planet, or invisible.
+  
+          * robotd/update_players.c changed some debug statements to make
+          them more readable during a denemy debug session.
+  
+          * robotd/update_players.c army_check1() and army_check2() added
+          logic so if robdc is activated, robot doesn't track fellow
+          robot carriers.
+  
+          * robotd/update_players.c added some commentary so the army
+          tracking code is more readble. Commented out a beam-down to
+          friendly in favor of the more pessimistic possibility that
+          the planet simply popped.
+  
+
+Fri Jun  9 08:37:09 EST 2006  williamb@its.caltech.edu
+  * Cross-transwarp check
+      * transwarp.c: Prevent transwarping to a base that is already in transwarp.
+
+Thu Jun  1 14:06:43 EST 2006  quozl@us.netrek.org
+  * post 2.11.1 release process notes
+
+Thu Jun  1 13:35:48 EST 2006  quozl@us.netrek.org
+  * include config.guess in make dist
+
+Thu Jun  1 13:30:11 EST 2006  quozl@us.netrek.org
+  * include config.sub in make dist
+
 Thu Jun  1 12:47:18 2006  James Cameron  <quozl@us.netrek.org>
 
 	* netrek-server-vanilla-2.11.1 released
