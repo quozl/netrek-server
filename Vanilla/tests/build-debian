@@ -1,0 +1,64 @@
+#!/bin/sh
+
+echo not ready
+exit 1
+
+VS=2.11.2-0
+
+# apt-get install pbuilder
+
+mkdir -p pbuilder
+
+cat > pbuilder/sarge.rc <<EOF
+BASETGZ=`pwd`/pbuilder/sarge.tgz
+EXTRAPACKAGES=fakeroot
+MIRRORSITE=http://http.us.debian.org/debian
+OTHERMIRROR="deb http://quozl.linux.org.au/netrek ./|deb-src http://quozl.linux.org.au/netrek ./"
+DISTRIBUTION=sarge
+APTCACHE=`pwd`/pbuilder/aptcache
+BUILDPLACE=`pwd`/pbuilder/build
+BUILDUSERNAME=quozl
+EOF
+
+# as root
+pbuilder create --configfile pbuilder/sarge.rc
+
+# grab source manually
+pbuilder login --configfile pbuilder/sarge.rc
+echo "deb-src http://quozl.linux.org.au/netrek ./" >> /etc/apt/sources.list
+apt-get install adduser
+adduser quozl
+apt-get update
+apt-get --yes build-dep netrek-server-vanilla
+apt-get --yes source netrek-server-vanilla
+
+# generates output
+
+Reading Package Lists... Done
+Building Dependency Tree... Done
+Need to get 1241kB of source archives.
+Get:1 http://quozl.linux.org.au ./ netrek-server-vanilla 2.11.2-0 (dsc) [371B]
+Get:2 http://quozl.linux.org.au ./ netrek-server-vanilla 2.11.2-0 (tar) [1241kB]
+Fetched 1241kB in 8s (154kB/s)                                                 
+unable to get login information for username "quozl" at /usr/lib/dpkg/controllib.pl line 59.
+Compilation failed in require at /usr/bin/dpkg-source line 22.
+Unpack command 'dpkg-source -x netrek-server-vanilla_2.11.2-0.dsc' failed.
+E: Child process failed
+
+# future
+wget --no-clobber http://quozl.linux.org.au/netrek/netrek-server-vanilla_${VS}.{dsc,tar.gz}
+pbuilder build --configfile pbuilder/sarge.rc netrek-server-vanilla_${VS}.dsc
+
+# xsg deps
+dors:~/src/darcs/netrek-server/Vanilla/xsg$ ldd xsg
+        linux-gate.so.1 =>  (0xffffe000)
+        libX11.so.6 => /usr/lib/libX11.so.6 (0xb7e4c000)
+        libgdbm.so.3 => /usr/lib/libgdbm.so.3 (0xb7e46000)
+        libresolv.so.2 => /lib/tls/libresolv.so.2 (0xb7e32000)
+        libnsl.so.1 => /lib/tls/libnsl.so.1 (0xb7e1c000)
+        libm.so.6 => /lib/tls/libm.so.6 (0xb7df7000)
+        libc.so.6 => /lib/tls/libc.so.6 (0xb7cc5000)
+        libXau.so.6 => /usr/lib/libXau.so.6 (0xb7cc2000)
+        libXdmcp.so.6 => /usr/lib/libXdmcp.so.6 (0xb7cbd000)
+        libdl.so.2 => /lib/tls/libdl.so.2 (0xb7cb8000)
+        /lib/ld-linux.so.2 (0xb7f28000)

@@ -32,6 +32,9 @@ more tmp.diff
 darcs record --patch-name="prerelease $VS"
 darcs send
 
+# test the build is clean
+tests/build
+
 # tag the release
 darcs tag $VS
 
@@ -90,10 +93,10 @@ rpm -ba netrek.spec
 # test package install
 
 # sign package
+cd ~/public_html/external/mine/netrek/
 gpg --detach-sign -a $PN-$VS.tar.gz
 
-# release to web site
-cp -p $PN-$VS.tar.gz{,.asc,.md5sum} ~/public_html/external/mine/netrek/
+# release on web site
 cd ~/public_html/external/mine/netrek/
 vi index-brief.html
 
