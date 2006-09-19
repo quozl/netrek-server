@@ -54,6 +54,8 @@ int phrange; /* phaser range 7/31/91 TC */
 int trrange; /* tractor range 8/2/91 TC */
 int ticks = 0;
 int oldmctl;
+int team1 = 0;
+int team2 = 0;
 static int debugTarget = -1;
 static int debugLevel = 0;
 
@@ -71,7 +73,7 @@ static int rprog(char *login, char *monitor);
 static void stop_this_bot(struct player * p);
 static void save_armies(struct player *p);
 static int checkpos(void);
-static int num_humans(void);
+static int num_humans(int team);
 static int totalPlayers();
 
 static void
@@ -226,14 +228,14 @@ void checkmess()
     if ((ticks % ROBOEXITWAIT) == 0) {
         if(debugTarget != -1) {
             messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
-                    totalPlayers(), totalRobots(), num_humans());
+                    totalPlayers(), totalRobots(), num_humans(0));
         }
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots)
             && (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Stopping a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
-                        totalRobots(), num_humans());
+                        totalRobots(), num_humans(0));
             }
 	    stop_a_robot();
 	}
@@ -243,12 +245,13 @@ void checkmess()
     if ((ticks % ROBOCHECK) == 0) {
         int next_team = 0;
         num_players(&next_team);
-        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots - 1))
+
+        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots))
             && (totalRobots() < max_newbie_robots))  {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Starting a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
-                        totalRobots(), num_humans());
+                        totalRobots(), num_humans(0));
             }
             if (next_team == FED)
                 start_a_robot("-Tf");
@@ -336,7 +339,7 @@ static int checkpos(void)
 
 static int is_robots_only(void)
 {
-   return !num_humans();
+   return !num_humans(0);
 }
 
 static int totalRobots()
@@ -379,7 +382,7 @@ static int totalPlayers()
    return count;
 }
 
-static int num_humans(void) {
+static int num_humans(int team) {
    int i;
    struct player *j;
    int count = 0;
@@ -391,7 +394,8 @@ static int num_humans(void) {
 	 continue;
       if (j->p_status == POBSERV)
          continue;
-
+      if(team != 0 && j->p_team != team)
+         continue;
       if (!rprog(j->p_login, j->p_monitor)) {
          /* Found a human. */
          count++;
@@ -407,7 +411,6 @@ static int num_humans(void) {
           }
       }
    }
-
    return count;
 }
 
@@ -415,8 +418,27 @@ static void stop_a_robot(void)
 {
     int i;
     struct player *j;
+    int teamToStop, rt;
 
-    /* nuke the first available bot */
+    if(debugTarget != -1 && debugLevel == 3) {
+        messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
+                team1, num_humans(team1), team2, num_humans(team2));
+    }
+    /* Nuke robot from the team with the fewest humans, or if even, a random team. */
+    if(num_humans(team1) < num_humans(team2))
+        teamToStop = team1;
+    else if (num_humans(team1) > num_humans(team2))
+        teamToStop = team2;
+    else {
+        rt = random() % 2;
+        if (rt == 0)
+            teamToStop = team1;
+        else
+            teamToStop = team2;
+    }
+    if(debugTarget != -1 && debugLevel == 3) {
+        messOne(255, roboname, debugTarget, "Stopping from %d", teamToStop);
+    }
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status == PFREE)
             continue;
@@ -424,7 +446,7 @@ static void stop_a_robot(void)
             continue;
 
         /* If he's at the MOTD we'll get him next time. */
-        if (j->p_status == PALIVE && rprog(j->p_login, j->p_monitor)) {
+        if (j->p_team == teamToStop && j->p_status == PALIVE && rprog(j->p_login, j->p_monitor)) {
             stop_this_bot(j);
             return;
         }
@@ -506,6 +528,7 @@ num_players(int *next_team)
     int tc, team_count[MAXTEAM+1];
     long int rt;
     int c = 0;
+    int feds = 0, roms = 0, klis = 0, oris = 0;
 
     team_count[ROM] = 0;
     team_count[FED] = 0;
@@ -523,15 +546,23 @@ num_players(int *next_team)
 
     /* Assign which team gets the next robot. */
 
-    /* Count number of teams */
-    if (team_count[ROM] > 0)
+    /* Count number of teams, and flag team as having at least 1 player */
+    if (team_count[ROM] > 0) {
         tc++;
-    if (team_count[FED] > 0)
+        roms=1;
+    }
+    if (team_count[FED] > 0) {
         tc++;
-    if (team_count[KLI] > 0)
+        feds=1;
+    }
+    if (team_count[KLI] > 0) {
         tc++;
-    if (team_count[ORI] > 0)
+        klis=1;
+    }
+    if (team_count[ORI] > 0) {
         tc++;
+        oris=1;
+    }
 
     if (tc == 0) { /* no teams yet, join anybody */
         rt = random() % 4;
@@ -544,6 +575,8 @@ num_players(int *next_team)
             *next_team = KLI;
         if (rt==3)
             *next_team = ORI;
+        /* Assign the first team */
+        team1 = *next_team;
     }
 
     if (tc == 1) { /* 1 team, join 1 of 2 possible opposing teams */
@@ -585,16 +618,20 @@ num_players(int *next_team)
             }
         }
 
+        /* Assign the second team */
+        team2 = *next_team;
     }
 
     if (tc >= 2) { /* 2 or more teams, join opposing team with less members */
-        rt = random()%2;
+                   /* And let's reassign teams just to be safe */
 
         if (team_count[FED]>0 && team_count[ROM]>0) {
             if (team_count[ROM]>team_count[FED])
                 *next_team=FED;
             else
                 *next_team=ROM;
+            team1 = FED;
+            team2 = ROM;
         }
 
         if (team_count[ORI]>0 && team_count[KLI]>0) {
@@ -602,6 +639,8 @@ num_players(int *next_team)
                 *next_team=ORI;
             else
                 *next_team=KLI;
+            team1 = ORI;
+            team2 = KLI;
         }
 
         if (team_count[FED]>0 && team_count[ORI]>0) {
@@ -609,6 +648,8 @@ num_players(int *next_team)
                 *next_team=FED;
             else
                 *next_team=ORI;
+            team1 = FED;
+            team2 = ORI;
         }
 
         if (team_count[ROM]>0 && team_count[KLI]>0) {
@@ -616,6 +657,8 @@ num_players(int *next_team)
                 *next_team=ROM;
             else
                 *next_team=KLI;
+            team1 = ROM;
+            team2 = KLI;
         }
 
     }
