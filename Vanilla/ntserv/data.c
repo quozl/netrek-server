@@ -132,6 +132,8 @@ int	safe_idle=0;
 int 	shipsallowed[NUM_TYPES];
 int 	weaponsallowed[WP_MAX];
 int 	plkills=2;
+int	ddrank=0;
+int	garank=0;
 int 	sbrank=3;
 int 	startplanets[MAXPLANETS];
 int 	binconfirm=1;

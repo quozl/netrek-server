@@ -185,6 +185,8 @@ extern int shipsallowed[];
 extern int weaponsallowed[];
 extern struct field_desc ship_fields[];
 extern int plkills;
+extern int ddrank;
+extern int garank;
 extern int sbrank;
 extern int startplanets[];
 extern int binconfirm;

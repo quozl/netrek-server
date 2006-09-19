@@ -107,6 +107,12 @@ WEAPONS=PLASMA,TRACTOR
 # 	Number of kills for plasma torpedos
 PLKILLS=2
 #
+#       Rank needed to fly a destroyer (0 = Ensign)
+DDRANK=0
+#
+#       Rank needed to fly a galaxy class ship (0 = Ensign)
+GARANK=0
+#
 # 	Rank needed to take out starbase (3 = Commander)
 SBRANK=3
 #

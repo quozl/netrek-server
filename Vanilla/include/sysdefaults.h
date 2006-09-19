@@ -98,6 +98,10 @@ struct sysdef_keywords {
     "Weapons that may be used"				},
   { "PLKILLS",		SYSDEF_INT,	&plkills,
     "Kills required before plasma granted on refit"	},
+  { "DDRANK",		SYSDEF_INT,	&ddrank,
+    "Rank required to refit to a Destroyer"		},
+  { "GARANK",		SYSDEF_INT,	&garank,
+    "Rank required to refit to a Galaxy class ship"	},
   { "SBRANK",		SYSDEF_INT,	&sbrank,
     "Rank required to refit to Starbase"	 	},
   { "SBPLANETS",	SYSDEF_INT,	&sbplanets,
@@ -247,5 +251,7 @@ SAFE_IDLE
 OBSERVER_MUTING
 BAN_NOCONNECT
 ADMIN_PASSWORD
+DDRANK
+GARANK
 
 */

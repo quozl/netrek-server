@@ -489,6 +489,18 @@ void do_refit(int type)
 	return;
     }
 
+    if (type == DESTROYER) {
+        if (me->p_stats.st_rank < ddrank) {
+            new_warning(UNDEF,"You need a rank of %s or higher to command a destroyer!", ranks[ddrank].name);
+            return;
+        }
+    }
+    if (type == SGALAXY) {
+        if (me->p_stats.st_rank < garank) {
+            new_warning(UNDEF,"You need a rank of %s or higher to command a galaxy class ship!", ranks[garank].name);
+            return;
+        }
+    }
     if (type == STARBASE) {
 	if (me->p_stats.st_rank < sbrank) {
             if(send_short){

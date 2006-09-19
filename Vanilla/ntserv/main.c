@@ -583,6 +583,16 @@ static void sendConfigMsg(void)
         weaponsallowed[WP_SCANNER] ? "enabled" : "disabled");
     sendMotdLine(buf);
 #endif
+    if (shipsallowed[DESTROYER] && ddrank != 0) {
+        sprintf(buf, "%-30s: %s (%d)", "Rank Required for DD",
+                ranks[ddrank].name, ddrank);
+        sendMotdLine(buf);
+    }
+    if (shipsallowed[SGALAXY] && garank != 0) {
+        sprintf(buf, "%-30s: %s (%d)", "Rank Required for GA",
+                ranks[garank].name, garank);
+        sendMotdLine(buf);
+    }
     if (shipsallowed[STARBASE]) {
         sprintf(buf, "%-30s: %s (%d)", "Rank Required for SB",
                 ranks[sbrank].name, sbrank);

@@ -49,6 +49,8 @@ void readsysdefaults(void)
     hiddenenemy=1;
     binconfirm=0;
     plkills=2;
+    ddrank=0;
+    garank=0;
     sbrank=3;
     chaosmode=0;
     tournplayers=5;
@@ -159,6 +161,8 @@ void readsysdefaults(void)
 
     if (start_robot == INL_ROBOT) {
       tournplayers=1;
+      ddrank=0;		/* no DD restriction		*/
+      garank=0;		/* no GA restriction		*/
       sbrank=0;		/* no SB restriction		*/
       killer=0;		/* disable iggy for game	*/
       surrenderStart=0;

@@ -55,6 +55,8 @@ struct rank ranks[NUMRANKS] = {
 
 int tournplayers=5;
 int plkills=2;
+int ddrank=0;
+int garank=0;
 int sbrank=3;
 int binconfirm=1;
 int hourratio=1;

@@ -62,6 +62,8 @@ extern char *teamshort[];
 extern struct rank ranks[NUMRANKS];
 extern int tournplayers;
 extern int plkills;
+extern int ddrank;
+extern int garank;
 extern int sbrank;
 extern int hourratio;
 extern int hiddenenemy;

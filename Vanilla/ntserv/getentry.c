@@ -170,6 +170,22 @@ void getEntry(int *team, int *stype)
 		teamPick= -1;
 		continue;
 	    }
+            if (shipPick==DESTROYER) {
+                if (mystats->st_rank < ddrank) {
+                    new_warning(UNDEF,"You need a rank of %s or higher to command a destroyer!", ranks[ddrank].name);
+                    sendPickokPacket(0);
+                    teamPick= -1;
+                    continue;
+                }
+            }
+            if (shipPick==SGALAXY) {
+                if (mystats->st_rank < garank) {
+                    new_warning(UNDEF,"You need a rank of %s or higher to command a galaxy class ship!", ranks[garank].name);
+                    sendPickokPacket(0);
+                    teamPick= -1;
+                    continue;
+                }
+            }
 	    if (shipPick==STARBASE) {
 		if (teams[1<<teamPick].s_turns > 0 && !chaos && !topgun) {
 
