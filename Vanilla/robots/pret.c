@@ -302,6 +302,11 @@ void checkmess()
         if (messages[oldmctl].m_flags & MINDIV) {
             if (messages[oldmctl].m_recpt == me->p_no)
                 check_command(&messages[oldmctl]);
+        } else if ((messages[oldmctl].m_flags & MALL) &&
+                !(messages[oldmctl].m_from & MGOD)) {
+            if (strstr(messages[oldmctl].m_data, "help") != NULL)
+                messOne(255,roboname,messages[oldmctl].m_from,
+                   "If you want help from me, send ME the message 'help'.");
         }
     }
 
