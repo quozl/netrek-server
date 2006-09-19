@@ -1,3 +1,27 @@
+netrek-server-vanilla (2.11.2-4) unstable; urgency=low
+
+  * add autogen chmod of debian
+
+ -- James Cameron <quozl@us.netrek.org>  Tue, 19 Sep 2006 21:32:19 +1000
+
+netrek-server-vanilla (2.11.2-3) unstable; urgency=low
+
+  * update-rc.d remove
+
+ -- James Cameron <quozl@us.netrek.org>  Tue, 19 Sep 2006 19:24:13 +1000
+
+netrek-server-vanilla (2.11.2-2) unstable; urgency=low
+
+  * update-rc.d
+
+ -- James Cameron <quozl@us.netrek.org>  Tue, 19 Sep 2006 19:19:12 +1000
+
+netrek-server-vanilla (2.11.2-1) unstable; urgency=low
+
+  * chmod +x init.d script
+
+ -- James Cameron <quozl@us.netrek.org>  Tue, 19 Sep 2006 10:26:24 +1000
+
 netrek-server-vanilla (2.11.2-0) unstable; urgency=low
 
   * release planned

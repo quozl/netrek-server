@@ -1,3 +1,6 @@
 #!/bin/sh
 
 chown -R games:games /var/lib/netrek-server-vanilla
+
+# disabled until we add a question for whether it is wanted
+# update-rc.d netrek-server-vanilla defaults > /dev/null

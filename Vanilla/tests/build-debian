@@ -12,7 +12,8 @@ mkdir -p pbuilder
 cat > pbuilder/sarge.rc <<EOF
 BASETGZ=`pwd`/pbuilder/sarge.tgz
 EXTRAPACKAGES=fakeroot
-MIRRORSITE=http://http.us.debian.org/debian
+#MIRRORSITE=http://ftp.real-time.com/linux/debian/
+MIRRORSITE=http://http.us.debian.org/debian/
 OTHERMIRROR="deb http://quozl.linux.org.au/netrek ./|deb-src http://quozl.linux.org.au/netrek ./"
 DISTRIBUTION=sarge
 APTCACHE=`pwd`/pbuilder/aptcache
@@ -26,9 +27,6 @@ pbuilder create --configfile pbuilder/sarge.rc
 # grab source manually
 pbuilder login --configfile pbuilder/sarge.rc
 echo "deb-src http://quozl.linux.org.au/netrek ./" >> /etc/apt/sources.list
-apt-get install adduser
-adduser quozl
-apt-get update
 apt-get --yes build-dep netrek-server-vanilla
 apt-get --yes source netrek-server-vanilla
 
@@ -62,3 +60,10 @@ dors:~/src/darcs/netrek-server/Vanilla/xsg$ ldd xsg
         libXdmcp.so.6 => /usr/lib/libXdmcp.so.6 (0xb7cbd000)
         libdl.so.2 => /lib/tls/libdl.so.2 (0xb7cb8000)
         /lib/ld-linux.so.2 (0xb7f28000)
+
+
+gcc  -g -O2 -Wall  -DRSA  -I../include   -c -o redraw.o redraw.c
+# orion
+gcc  -g -O2 -Wall  -DRSA  -I../include -I -c -o x11window.o x11window.c
+# me
+gcc  -g -O2 -Wall  -DRSA  -I../include  -c -o x11window.o x11window.c
