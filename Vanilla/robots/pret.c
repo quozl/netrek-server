@@ -55,9 +55,8 @@ int trrange; /* tractor range 8/2/91 TC */
 int ticks = 0;
 int oldmctl;
 static int realT = 0;
-int pt_robots = 0;
-int team1=0;
-int team2=0;
+int team1 = 0;
+int team2 = 0;
 static int debugTarget = -1;
 static int debugLevel = 0;
 
@@ -67,6 +66,7 @@ static void obliterate(int wflag, char kreason, int killRobots);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
 static int is_robots_only(void);
+static int totalRobots(void);
 static void exitRobot(void);
 static char * namearg(void);
 static int num_players(int *next_team);
@@ -84,9 +84,7 @@ reaper(int sig)
     int stat=0;
     static int pid;
 
-    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0)
-      ;
-        pt_robots--;
+    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
     HANDLE_SIG(SIGCHLD,reaper);
 }
 
@@ -148,6 +146,7 @@ main(argc, argv)
     me->p_team = 0;     /* indep */
 
     oldmctl = mctl->mc_current;
+
 #ifdef nodef
     for (i = 0; i <= oldmctl; i++) {
         check_command(&messages[i]);
@@ -235,40 +234,50 @@ void checkmess()
         checkPreTVictory();
     }
 
-    /* Stop or start a robot. */
+    /* Stop a robot. */
+    if ((ticks % ROBOEXITWAIT) == 0) {
+        if(debugTarget != -1) {
+            messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
+                    totalPlayers(), totalRobots(), num_humans(0));
+        }
+        if(totalPlayers() > PT_MAX_WITH_ROBOTS) {
+            if(debugTarget != -1) {
+                messOne(255, roboname, debugTarget, "Stopping a robot");
+                messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
+                        totalRobots(), num_humans(0));
+            }
+            stop_a_robot();
+        }
+    }
+
+    /* Start a robot */
     if ((ticks % ROBOCHECK) == 0) {
         int next_team = 0;
         num_players(&next_team);
-  
-        if (!(ticks % ROBOEXITWAIT))
-		{
+
+        if (totalRobots() < PT_ROBOTS && totalPlayers() < PT_MAX_WITH_ROBOTS && realT == 0)
+        {
             if(debugTarget != -1) {
-                messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d", totalPlayers(), pt_robots, num_humans(0));
+                messOne(255, roboname, debugTarget, "Starting a robot");
+                messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
+                        totalRobots(), num_humans(0));
             }
-            if(totalPlayers() > PT_MAX_WITH_ROBOTS) {
-                if(debugTarget != -1) {
-                    messOne(255, roboname, debugTarget, "Stopping a robot");
-                    messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d", pt_robots, num_humans(0));
-                }
-        		stop_a_robot();
-            }
-            else if (pt_robots < PT_ROBOTS && totalPlayers() < PT_MAX_WITH_ROBOTS  && realT == 0)
-            {
-                if(debugTarget != -1) {
-                    messOne(255, roboname, debugTarget, "Starting a robot");
-                    messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d", pt_robots, num_humans(0));
-                }
-                if (next_team == FED)
-                    start_a_robot("-Tf");
-                else if (next_team == KLI)
-                    start_a_robot("-Tk");
-                else if (next_team == ORI)
-                    start_a_robot("-To");
-                else
-                    start_a_robot("-Tr");
-            }
+            if (next_team == FED)
+                start_a_robot("-Tf");
+            else if (next_team == ROM)
+                start_a_robot("-Tr");
+            else if (next_team == ORI)
+                start_a_robot("-To");
+            else if (next_team == KLI)
+                start_a_robot("-Tk");
+            else
+                fprintf(stderr, "Start_a_robot team select (%d) failed.", next_team);
         }
-        if(pt_robots == 0 && totalPlayers() >= 8) {
+    }
+
+   /* Reset for real T mode ? */
+   if ((ticks % ROBOCHECK) == 0) {
+        if(totalRobots() == 0 && totalPlayers() >= 8) {
             time_in_T += ROBOCHECK / PERSEC;
             if(realT == 0) {
                 time_in_T = 0;
@@ -282,7 +291,7 @@ void checkmess()
     }
 
     if ((ticks % SENDINFO) == 0) {
-        if (pt_robots > 0) {
+        if (totalRobots() > 0) {
             messAll(255,roboname,"Welcome to the Pre-T Entertainment.");
             messAll(255,roboname,"Your team wins if you're up by at least 3 planets.");
         }
@@ -337,7 +346,7 @@ static int num_humans(int team)
         if(team != 0 && j->p_team != team)
             continue;
         if (!rprog(j->p_login, j->p_full_hostname)) {
-          /* Found a human. */
+            /* Found a human. */
             count++;
             if(debugTarget != -1 && debugLevel == 2) {
                 messOne(255, roboname, debugTarget, "%d: Counting %s (%s %s) as a human",
@@ -351,7 +360,6 @@ static int num_humans(int team)
             }
         }
    }
-
    return count;
 }
 
@@ -386,6 +394,27 @@ static void stop_a_robot(void)
             return;
         }
     }
+}
+
+static int totalRobots()
+{
+   int i;
+   struct player *j;
+   int count = 0;
+
+   for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j->p_status == PFREE)
+            continue;
+        if (j->p_flags & PFROBOT)
+            continue;
+        if (j->p_status == POBSERV)
+            continue;
+
+        if (rprog(j->p_login, j->p_full_hostname))
+            /* Found a robot. */
+            count++;
+   }
+   return count;
 }
 
 /* this is by no means foolproof */
@@ -533,7 +562,6 @@ start_a_robot(char *team)
         perror("pret'execl");
         _exit(1);
     }
-    pt_robots++;
     status->gameup |= GU_BOT_IN_GAME;
 }
 
@@ -577,7 +605,7 @@ static void checkPreTVictory() {
     int winner = -1;
 
     /* don't interfere with a real game */
-    if(pt_robots == 0) return;
+    if(totalRobots() == 0) return;
 
     f = r = k = o = 0;
     for(i=0;i<40;++i) {
@@ -620,7 +648,7 @@ static void resetPlanets(void) {
             planets[i].pl_armies += (random() % 3) + 2;
         if(planets[i].pl_armies > 7) 
             planets[i].pl_armies = 8 - (random() % 3);
-        if(owner != team1 && owner  != team2)
+        if(owner != team1 && owner != team2)
             planets[i].pl_armies = 30;
         planets[i].pl_owner = owner;
     }
