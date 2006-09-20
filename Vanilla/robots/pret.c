@@ -66,7 +66,7 @@ static void obliterate(int wflag, char kreason, int killRobots);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
 static int is_robots_only(void);
-static int totalRobots(void);
+static int totalRobots(int team);
 static void exitRobot(void);
 static char * namearg(void);
 static int num_players(int *next_team);
@@ -238,13 +238,13 @@ void checkmess()
     if ((ticks % ROBOEXITWAIT) == 0) {
         if(debugTarget != -1) {
             messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
-                    totalPlayers(), totalRobots(), num_humans(0));
+                    totalPlayers(), totalRobots(0), num_humans(0));
         }
         if(totalPlayers() > PT_MAX_WITH_ROBOTS) {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Stopping a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
-                        totalRobots(), num_humans(0));
+                        totalRobots(0), num_humans(0));
             }
             stop_a_robot();
         }
@@ -255,12 +255,12 @@ void checkmess()
         int next_team = 0;
         num_players(&next_team);
 
-        if (totalRobots() < PT_ROBOTS && totalPlayers() < PT_MAX_WITH_ROBOTS && realT == 0)
+        if (totalRobots(0) < PT_ROBOTS && totalPlayers() < PT_MAX_WITH_ROBOTS && realT == 0)
         {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Starting a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
-                        totalRobots(), num_humans(0));
+                        totalRobots(0), num_humans(0));
             }
             if (next_team == FED)
                 start_a_robot("-Tf");
@@ -277,7 +277,7 @@ void checkmess()
 
    /* Reset for real T mode ? */
    if ((ticks % ROBOCHECK) == 0) {
-        if(totalRobots() == 0 && totalPlayers() >= 8) {
+        if(totalRobots(0) == 0 && totalPlayers() >= 8) {
             time_in_T += ROBOCHECK / PERSEC;
             if(realT == 0) {
                 time_in_T = 0;
@@ -291,7 +291,7 @@ void checkmess()
     }
 
     if ((ticks % SENDINFO) == 0) {
-        if (totalRobots() > 0) {
+        if (totalRobots(0) > 0) {
             messAll(255,roboname,"Welcome to the Pre-T Entertainment.");
             messAll(255,roboname,"Your team wins if you're up by at least 3 planets.");
         }
@@ -401,7 +401,7 @@ static void stop_a_robot(void)
     }
 }
 
-static int totalRobots()
+static int totalRobots(int team)
 {
    int i;
    struct player *j;
@@ -413,6 +413,8 @@ static int totalRobots()
         if (j->p_flags & PFROBOT)
             continue;
         if (j->p_status == POBSERV)
+            continue;
+        if(team != 0 && j->p_team != team)
             continue;
 
         if (rprog(j->p_login, j->p_full_hostname))
@@ -610,7 +612,7 @@ static void checkPreTVictory() {
     int winner = -1;
 
     /* don't interfere with a real game */
-    if(totalRobots() == 0) return;
+    if(totalRobots(0) == 0) return;
 
     f = r = k = o = 0;
     for(i=0;i<40;++i) {

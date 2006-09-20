@@ -268,6 +268,7 @@ char Basep[FNAMESIZE];
 #endif
 #ifdef NEWBIESERVER
 char Newbie[FNAMESIZE];
+int newbie_balance_humans=1;
 int max_newbie_robots=16;
 int max_newbie_players=8;
 #endif

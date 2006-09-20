@@ -65,7 +65,7 @@ static void obliterate(int wflag, char kreason);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
 static int is_robots_only(void);
-static int totalRobots(void);
+static int totalRobots(int team);
 static void exitRobot(void);
 static char * namearg(void);
 static int num_players(int *next_team);
@@ -228,14 +228,14 @@ void checkmess()
     if ((ticks % ROBOEXITWAIT) == 0) {
         if(debugTarget != -1) {
             messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
-                    totalPlayers(), totalRobots(), num_humans(0));
+                    totalPlayers(), totalRobots(0), num_humans(0));
         }
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots)
             && (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Stopping a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
-                        totalRobots(), num_humans(0));
+                        totalRobots(0), num_humans(0));
             }
 	    stop_a_robot();
 	}
@@ -247,11 +247,11 @@ void checkmess()
         num_players(&next_team);
 
         if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots))
-            && (totalRobots() < max_newbie_robots))  {
+            && (totalRobots(0) < max_newbie_robots))  {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Starting a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
-                        totalRobots(), num_humans(0));
+                        totalRobots(0), num_humans(0));
             }
             if (next_team == FED)
                 start_a_robot("-Tf");
@@ -342,7 +342,7 @@ static int is_robots_only(void)
    return !num_humans(0);
 }
 
-static int totalRobots()
+static int totalRobots(int team)
 {
    int i;
    struct player *j;
@@ -354,6 +354,8 @@ static int totalRobots()
       if (j->p_flags & PFROBOT)
          continue;
       if (j->p_status == POBSERV)
+         continue;
+      if(team != 0 && j->p_team != team)
          continue;
 
       if (rprog(j->p_login, j->p_monitor))
@@ -424,17 +426,25 @@ static void stop_a_robot(void)
         messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
                 team1, num_humans(team1), team2, num_humans(team2));
     }
-    /* Nuke robot from the team with the fewest humans, or if even, a random team. */
-    if(num_humans(team1) < num_humans(team2))
-        teamToStop = team1;
-    else if (num_humans(team1) > num_humans(team2))
-        teamToStop = team2;
-    else {
-        rt = random() % 2;
-        if (rt == 0)
+    if (newbie_balance_humans == 1) {
+        /* Nuke robot from the team with the fewest humans, or if even, a random team. */
+        if(num_humans(team1) < num_humans(team2))
             teamToStop = team1;
-        else
+        else if (num_humans(team1) > num_humans(team2))
             teamToStop = team2;
+        else {
+            rt = random() % 2;
+            if (rt == 0)
+                teamToStop = team1;
+            else
+                teamToStop = team2;
+    }
+    else {
+        /* Stack humans on 1 side */
+        if (num_humans(team1) < num_humans(team2) && totalRobots(team2) != 0)
+            teamToStop = team2;
+        else
+            teamToStop = team1;
     }
     if(debugTarget != -1 && debugLevel == 3) {
         messOne(255, roboname, debugTarget, "Stopping from %d", teamToStop);

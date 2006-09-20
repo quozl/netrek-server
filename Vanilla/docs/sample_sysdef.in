@@ -220,6 +220,10 @@ MAX_NEWBIE_ROBOTS=16
 #    Maximum number of newbie server players to allow at once
 MAX_NEWBIE_PLAYERS=8
 #
+#    Keep number of humans per team balanced (1 = balance,
+#    0 = fill one side entirely with humans first)
+NEWBIE_BALANCE_HUMANS=1
+#
 #    Pre T-mode Entertainment (maintains 4 on 4 with robots) 
 PRET=0
 #

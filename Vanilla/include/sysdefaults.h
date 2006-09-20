@@ -165,6 +165,8 @@ struct sysdef_keywords {
     "Maximum number of robots to allow at once" },
   { "MAX_NEWBIE_PLAYERS",     SYSDEF_INT,     &max_newbie_players,
     "Maximum number of human players to allow at once" },
+  { "NEWBIE_BALANCE_HUMANS",	SYSDEF_INT,	&newbie_balance_humans,
+    "Keep number of humans on each team balanced" },
 #endif
 #ifdef PRETSERVER
   { "PRET",	SYSDEF_ROBOT,	(void *) PRET_ROBOT,
@@ -247,6 +249,7 @@ EJECT_VOTE_*
 BAN_VOTE_*
 DUPLICATES
 MAX_NEWBIE_*
+NEWBIE_BALANCE_HUMANS
 SAFE_IDLE
 OBSERVER_MUTING
 BAN_NOCONNECT
