@@ -253,7 +253,7 @@ DEBIAN_PACKAGE=`head -1 debian/changelog|cut -f1 -d\ `
 DEBIAN_ARCHIVE=~/public_html/external/mine/netrek
 
 package:
-	fakeroot dpkg-buildpackage -us -uc
+	fakeroot dpkg-buildpackage -us -uc -I_darcs
 
 upload:
 	mv ../$(DEBIAN_PACKAGE)_$(DEBIAN_VERSION)*{.dsc,.changes,.tar.gz,.deb} $(DEBIAN_ARCHIVE)
