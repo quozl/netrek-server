@@ -438,6 +438,7 @@ static void stop_a_robot(void)
                 teamToStop = team1;
             else
                 teamToStop = team2;
+       }
     }
     else {
         /* Stack humans on 1 side */
