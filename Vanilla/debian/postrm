@@ -1,0 +1,9 @@
+#!/bin/sh
+
+pkg=netrek-server-vanilla
+
+case "$1" in
+       purge|remove|failed-upgrade|abort-install|abort-upgrade|disappear)
+        update-rc.d -f ${pkg} remove > /dev/null 
+        ;;
+esac
