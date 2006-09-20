@@ -426,12 +426,26 @@ static void stop_a_robot(void)
         messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
                 team1, num_humans(team1), team2, num_humans(team2));
     }
-    if (newbie_balance_humans == 1) {
-        /* Nuke robot from the team with the fewest humans, or if even, a random team. */
-        if(num_humans(team1) < num_humans(team2))
-            teamToStop = team1;
-        else if (num_humans(team1) > num_humans(team2))
+    /* Either nuke robot from the team with the fewest humans, or stack humans on
+       1 side, depending on balance setting.  If even, stop robot on team with
+       the most robots.  If still even, stop a robot on a random team. */
+    if (num_humans(team1) < num_humans(team2)) {
+        if (!newbie_balance_humans && totalRobots(team2) != 0)
             teamToStop = team2;
+        else
+            teamToStop = team1;
+    }
+    else if (num_humans(team1) > num_humans(team2)) {
+        if (!newbie_balance_humans && totalRobots(team1) != 0)
+            teamToStop = team1;
+        else
+            teamToStop = team2;
+    }
+    else {
+        if (totalRobots(team1) < totalRobots(team2))
+            teamToStop = team2;
+        else if (totalRobots(team1) > totalRobots(team2))
+            teamToStop = team1;
         else {
             rt = random() % 2;
             if (rt == 0)
@@ -439,13 +453,6 @@ static void stop_a_robot(void)
             else
                 teamToStop = team2;
        }
-    }
-    else {
-        /* Stack humans on 1 side */
-        if (num_humans(team1) < num_humans(team2) && totalRobots(team2) != 0)
-            teamToStop = team2;
-        else
-            teamToStop = team1;
     }
     if(debugTarget != -1 && debugLevel == 3) {
         messOne(255, roboname, debugTarget, "Stopping from %d", teamToStop);
