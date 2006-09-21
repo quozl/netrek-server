@@ -25,8 +25,11 @@ intrupt()
    _tcheck = 0;
 keep_reading:
 	;
+#ifdef ATM
    if (readFromServer(pollmode)) {	/* should be 0 */
-
+#else
+   if (readFromServer()) {
+#endif
       cr_time = mtime(0);
 
       _cycletime = cr_time - prevread;

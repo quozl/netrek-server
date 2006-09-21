@@ -38,7 +38,11 @@ int team,ship;
 	    lastTime=time(NULL);
 	}
 	socketPause();
+#ifdef ATM
 	readFromServer(0);
+#else
+	readFromServer();
+#endif
 	if (isServerDead()) {
 	    printf("Whoops!  We've been ghostbusted!\n");
 	    printf("Pray for a miracle!\n");

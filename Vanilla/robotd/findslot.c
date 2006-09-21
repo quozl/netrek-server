@@ -27,7 +27,11 @@ findslot()
 	    mprintf("Augh!  Ghostbusted!\n");
 	    exit(0);
 	}
+#ifdef ATM
 	readFromServer(0);
+#else
+	readFromServer();
+#endif
 	if (me!=NULL) {
 	    /* We are in! */
 	    return(me->p_no);
@@ -36,7 +40,11 @@ findslot()
 
     for (;;) {
 	socketPause();
+#ifdef ATM
 	readFromServer(0);
+#else
+	readFromServer();
+#endif
 	if (isServerDead()) {
 	    mprintf("We've been ghostbusted!\n");
 	    exit(0);

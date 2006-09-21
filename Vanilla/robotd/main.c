@@ -417,7 +417,11 @@ main(argc, argv)
 	    break;
 	 if(read_stdin)
 	    process_stdin();
+#ifdef ATM
 	 readFromServer(1);
+#else
+	 readFromServer();
+#endif
 	 if(_state.command == C_QUIT || timer2 >= TIMEOUT2){
 	    exitRobot(0);
 	 }

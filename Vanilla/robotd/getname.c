@@ -35,7 +35,11 @@ renter(pseudo, pss, log)
 
    while (loginAccept == -1) {
       socketPause();
+#ifdef ATM
       readFromServer(0);
+#else
+      readFromServer();
+#endif
       if (isServerDead()) {
 	 mprintf("Server is dead!\n");
 	 exit(0);
@@ -48,7 +52,11 @@ renter(pseudo, pss, log)
 	 sendLoginReq(pseudo, pss, log, 0);
 	 while (loginAccept == -1) {
 	    socketPause();
+#ifdef ATM
 	    readFromServer(0);
+#else
+	    readFromServer();
+#endif
 	    if (isServerDead()) {
 	       mprintf("Server is dead!\n");
 	       exit(0);
@@ -59,7 +67,11 @@ renter(pseudo, pss, log)
       sendLoginReq(pseudo, pss, log, 0);
       while (loginAccept == -1) {
 	 socketPause();
+#ifdef ATM
 	 readFromServer(0);
+#else
+	 readFromServer();
+#endif
 	 if (isServerDead()) {
 	    mprintf("Server is dead!\n");
 	    exit(0);
