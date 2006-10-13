@@ -3,7 +3,7 @@ Maintainer: James Cameron <quozl@us.netrek.org>
 Section: unknown
 Priority: optional
 Standards-Version: 3.1.1
-Build-Depends: debhelper, ccache, libgdbm-dev, libncurses5-dev, libx11-dev, libxt-dev, libglib1.2-dev
+Build-Depends: debhelper, ccache, libgdbm-dev, libncurses5-dev, libx11-dev, libxt-dev, libglib1.2-dev, libgmp3-dev
 
 Package: netrek-server-vanilla
 Architecture: any
