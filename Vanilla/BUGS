@@ -8,16 +8,10 @@ List of things that are defects
 1) the email address to which statboys is sent to is defunct, and bouncing
 messages.
 
-2) cambot recordings aren't being given proper datestamps like the script
-expects and are thus being ignored.  [confirmed by James 2006-10]
-
-3) having fixed #2, the attempt to fork a process to send cambot is failing
-(not sure if this is a netbsd problem with the script, or a general problem)
-
-4) ltd_dump can't open the playerfile for generating game stats [confirmed by
+2) ltd_dump can't open the playerfile for generating game stats [confirmed by
 James 2006-10]
 
-5) even though i confirmed that servername is being defined correctly by the
+3) even though i confirmed that servername is being defined correctly by the
 script, game stats are still being dumped into "unknown" directory on
 www.netrek.org/stats/
 

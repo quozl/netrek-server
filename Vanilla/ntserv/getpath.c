@@ -105,5 +105,5 @@ void getpath()
    sprintf(Prog,"%s/%s",libdir,N_PROG);
    sprintf(LogFile,"%s/%s",localstatedir,N_LOGFILE);
    sprintf(Cambot,"%s/%s",libdir,N_CAMBOT);
-   sprintf(Cambot_out,"%s/%s",localstatedir,N_CAMBOT_OUT);
+   sprintf(Cambot_out,"%s/%s",libdir,N_CAMBOT_OUT);
 }
