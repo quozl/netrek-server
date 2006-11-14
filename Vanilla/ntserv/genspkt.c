@@ -189,7 +189,8 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 {
     if ( strcmp(pl->p_name, login->name)!=0 ||
 	 pl->p_stats.st_rank != login->rank ||
-	 strcmp(pl->p_monitor, login->monitor)!=0) {
+	 strcmp(pl->p_monitor, login->monitor)!=0 ||
+	 strcmp(pl->p_login, login->login)!=0) {
 	STRNCPY(login->name,pl->p_name,NAME_LEN);
 	STRNCPY(login->monitor,pl->p_monitor,NAME_LEN);
 	STRNCPY(login->login,pl->p_login,NAME_LEN);
