@@ -3,6 +3,29 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
+2006-11-15 INL stat script problems reported by Bill
+
+1) the email address to which statboys is sent to is defunct, and bouncing
+messages.
+
+2) cambot recordings aren't being given proper datestamps like the script
+expects and are thus being ignored.  [confirmed by James 2006-10]
+
+3) having fixed #2, the attempt to fork a process to send cambot is failing
+(not sure if this is a netbsd problem with the script, or a general problem)
+
+4) ltd_dump can't open the playerfile for generating game stats [confirmed by
+James 2006-10]
+
+5) even though i confirmed that servername is being defined correctly by the
+script, game stats are still being dumped into "unknown" directory on
+www.netrek.org/stats/
+
+as far as I can tell the problem with the playerfile is that a
+players.timestamp file is supposed to be generated at end of game (I think?),
+and this file is used for ltd_dump, however no datestamped players file is
+being made
+
 	- following change "Improved tracking of server modes" Wed Aug
           23 06:36:42 EST 2006 williamb@its.caltech.edu:
   
