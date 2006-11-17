@@ -108,6 +108,8 @@ extern int target;		/* robotII.c 7/27/91 TC */
 extern int phrange;		/* robotII.c 7/31/91 TC */
 extern int trrange;		/* robotII.c 8/2/91 TC */
 
+extern int quiet;		/* if set, avoid nuisance messaging */
+
 extern int dogslow;		/* robotII.c 8/9/91 TC */
 extern int dogfast;
 extern int runslow;
@@ -193,7 +195,7 @@ void rmove()
        a practice robot (intended for guardian bots). 4/13/92 TC */
 
     if ((roboclock - lastTorpped > BOREDOM_TIME) && (!practice) && (!hostile) &&
-        (me->p_team != 0)) {
+        (me->p_team != 0 && !quiet)) {
         messAll(me->p_no,roboname,"I'm bored.");
         hostile++;
         declare_war(ALLTEAM, 0);
@@ -213,14 +215,14 @@ void rmove()
 	    (hypot((double) me->p_x-enemy->p_x, (double) me->p_y-enemy->p_y) < 20000.0)) {
 	    /* change 5/10/21 TC ...neut robots don't message */
 	    messfuse = MESSFUSEVAL;
-	    if (me->p_team != 0) {
+	    if (me->p_team != 0 && !quiet) {
 		sprintf(towhom, " %s->%s",
 			players[me->p_no].p_mapchars,
 			players[enemy->p_no].p_mapchars);
 		pmessage2(enemy->p_no, MINDIV,towhom,me->p_no,
 			robo_message(enemy));
 	    }
-	    else if (target >= 0) {
+	    else if (target >= 0 && !quiet) {
 		messAll(me->p_no,roboname,"%s",termie_message(enemy));
 	    }
 	}
@@ -1159,7 +1161,7 @@ struct player* enemy;
 void exitRobot()
 {
     if (me != NULL && me->p_team != ALLTEAM) {
-	if (target >= 0) {
+	if (target >= 0 && !quiet) {
 	    messAll(me->p_no,roboname,"I'll be back.");
 	}
 	else {

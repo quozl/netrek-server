@@ -37,6 +37,8 @@ int target;			/* Terminator's target 7/27/91 TC */
 int phrange;			/* phaser range 7/31/91 TC */
 int trrange;			/* tractor range 8/2/91 TC */
 
+int quiet = 0;			/* Don't bug users with silly messages */
+
 /* velocities 8/9/91 TC */
 
 int dogslow;			/* dodge speed (hard turn) */
@@ -122,6 +124,9 @@ char **argv;
 	    break;
 	case 'b':
 	    berserk++;
+	    break;
+	case 'q':
+    	    quiet = 1;
 	    break;
 	case 'l':
 	    if (argv[1][2] != '\0')
