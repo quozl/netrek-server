@@ -14,6 +14,7 @@
 #include "struct.h"
 #include "data.h"
 #include "solicit.h"
+#include "config.h"
 
 /* our copy of metaservers file */
 static struct metaserver metaservers[MAXMETASERVERS];
@@ -62,6 +63,9 @@ static int udp_attach(struct metaserver *m)
     ours += 5;
   }
 
+#ifdef SOLICIT_BIND_ANY
+  m->address.sin_addr.s_addr = inet_addr("0.0.0.0");
+#else
   /* numeric first */
   if ((m->address.sin_addr.s_addr = inet_addr(ours)) == -1) {
     struct hostent *hp;
@@ -74,6 +78,7 @@ static int udp_attach(struct metaserver *m)
       memcpy(&(m->address.sin_addr.s_addr), hp->h_addr, 4);
     }
   }
+#endif
 
   m->address.sin_family      = AF_INET;
   m->address.sin_port        = 0;
@@ -270,6 +275,7 @@ void solicit(int force)
 	if (players[j].p_status == PFREE ||
 	    players[j].p_flags & PFBPROBOT ||
 	    players[j].p_flags & PFROBOT ||
+	    islocal(&players[j]) ||
 	    strcasestr(players[j].p_login, "robot"))
 	  nfree++;
 	else
@@ -321,8 +327,9 @@ void solicit(int force)
       
       /* now append per-player information to the packet */
       for (j=0; j<MAXPLAYER; j++) {
-	/* ignore free slots */
+	/* ignore free slots and local players */
         if (players[j].p_status == PFREE ||
+	    islocal(&players[j]) ||
 #ifdef LTD_STATS
             ltd_ticks(&(players[j]), LTD_TOTAL) == 0
 #else
@@ -376,4 +383,23 @@ void solicit(int force)
       strcpy(m->prior, packet);
     }
   }
+}
+
+int
+islocal(const struct player *p)
+{
+#if defined(SOLICIT_NOLOCAL) && defined(FULL_HOSTNAMES)
+	/*
+	 * If hostname ends with 'localhost', consider it local.
+	 * Not very efficient, but fast enough and less intrusive than
+	 * adding a new flag.
+	 */
+	size_t	l;
+
+	l = strlen(p->p_full_hostname);
+	if (l >= 9 && strstr(p->p_full_hostname, "localhost") ==
+	    &p->p_full_hostname[l - 9])
+		return 1;
+#endif
+	return 0;
 }

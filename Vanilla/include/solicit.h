@@ -1,3 +1,9 @@
+/* bind to any IP address available on the local host */
+#define SOLICIT_BIND_ANY 0
+
+/* do not report players who are local */
+#define SOLICIT_NOLOCAL 1
+
 /* bytes to reserve for outgoing packet to metaserver */
 #define MAXMETABYTES 2048
 
