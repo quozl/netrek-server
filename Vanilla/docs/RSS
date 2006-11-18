@@ -1,0 +1,49 @@
+Addition of RSS feed for Netrek Server.
+
+Events logged by a class type, such as:
+
+- daemon, starts and stops of the universe simulator,
+- conquer, wins and losses by team,
+
+Design
+
+- daemon calls blog_* from blog.c,
+- blog_* forks and execs tools/blog,
+- tools/blog updates filesystem and static content,
+- web browser accesses static content.
+
+Software dependencies:
+
+- blosxom, a perl script to generate static HTML from text files
+
+Notes from PROJECTS yet to be implemented
+
+	- RSS feed for genos, so that people can subscribe and be told
+	  when the galactic is recently reset.  Jerub expressed an
+	  interest in doing it.
+
+	  Content area on netrek.org showing recent contested genos,
+	  length of game leading up to it, number of players seen,
+	  players per hour, keep latest ten, feed from multiple
+	  servers.  Server generated screen shot of final frame.
+
+	  Separate feed for adminstrivia, with server CLI script for
+	  adding to the feed.
+
+	  INL server specific feed, containing game results, summary,
+	  ltd stats by player.
+
+	  Metaserver specific feed ... new servers listed, delistings,
+	  weekly summary of query counts with history.
+
+	  netrekd forked HTTP responder, or scripts to send stuff to a
+	  web server?
+
+Technical Details
+
+	  lib/conquer -> blosxom data -> blosxom rerun -> static content
+perl /usr/lib/cgi-bin/blosxom -f='blosxom.conf' -password='netrek'
+# use -all=1 for refresh
+	  micro-inetd -> micro-httpd -> static content
+micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
+

@@ -284,6 +284,9 @@ int main(int argc, char **argv)
     /* signal parent ntserv that daemon is ready */
     kill(getppid(), SIGUSR1);
 
+    /* blog it */
+    blog_printf("daemon", "Netrek universe started.");
+
     x = 0;
     for (;;) {
         alarm_wait_for();
@@ -576,6 +579,7 @@ static void move()
             doResources();
 #endif
         }
+        blog_printf("daemon", "Netrek universe stopped, players have left.");
         exitDaemon(0);
     }
     old_robot = start_robot;
@@ -4109,11 +4113,7 @@ static int conqfile_close(FILE *conqfile)
     status = fclose(conqfile);
     if (status != 0) return status;
 
-    if (fork() == 0) {
-        execl("conquer", "conquer", conqfile_name, NULL);
-        perror("conquer");
-        _exit(1);
-    }
+    blog_file("racial", conqfile_name);
     return 0;
 }
 
