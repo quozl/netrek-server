@@ -79,6 +79,13 @@ List of things to do in the future
 	  netrekd forked HTTP responder, or scripts to send stuff to a
 	  web server?
 
+	  lib/conquer -> blosxom data -> blosxom rerun -> static content
+perl /usr/lib/cgi-bin/blosxom -f='blosxom.conf' -password='netrek'
+# use -all=1 for refresh
+	  micro-inetd -> micro-httpd -> static content
+micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
+
+
 	- tools/update.c sa_sigaction not present on NetBSD.  [Hietbrink]
 
 	- 'transwarp 0 off' to prevent slot 0 from transwarping.  [Swasey]
