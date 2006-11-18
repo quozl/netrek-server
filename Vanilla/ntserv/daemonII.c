@@ -4086,13 +4086,44 @@ static void addTroops(int loser, int winner)
     }
 }
 
+char conqfile_name[MSG_LEN];
+
+static FILE *conqfile_open()
+{
+    struct timeval tv;
+    FILE *conqfile;
+
+    gettimeofday(&tv, (struct timezone *) 0);
+    sprintf(conqfile_name, "%s.%d", ConqFile, (int) tv.tv_sec);
+    conqfile = fopen(conqfile_name, "w");
+    if (conqfile == NULL) conqfile = stderr;
+    return conqfile;
+}
+
+static int conqfile_close(FILE *conqfile)
+{
+    int status;
+
+    if (conqfile == stderr) return 0;
+
+    status = fclose(conqfile);
+    if (status != 0) return status;
+
+    if (fork() == 0) {
+        execl("conquer", "conquer", conqfile_name, NULL);
+        perror("conquer");
+        _exit(1);
+    }
+    return 0;
+}
+
 static void surrenderMessage(int loser)
 {
     char buf[MSG_LEN];
     FILE *conqfile;
     time_t curtime;
 
-    conqfile=fopen(ConqFile, "a");
+    conqfile = conqfile_open();
     if (conqfile == NULL) conqfile = stderr;
 
 /* TC 10/90 */
@@ -4106,7 +4137,7 @@ static void surrenderMessage(int loser)
         
     fprintf(conqfile, "  %s\n", buf);
     fprintf(conqfile, "\n");
-    if (conqfile != stderr) fclose(conqfile);
+    conqfile_close(conqfile);
 }
 
 static void genocideMessage(int loser, int winner)
@@ -4115,8 +4146,7 @@ static void genocideMessage(int loser, int winner)
     FILE *conqfile;
     time_t curtime;
 
-    conqfile=fopen(ConqFile, "a");
-    if (conqfile == NULL) conqfile = stderr;
+    conqfile = conqfile_open();
 
 /* TC 10/90 */
     time(&curtime);
@@ -4142,7 +4172,7 @@ static void genocideMessage(int loser, int winner)
     pmessage(0, MALL | MGENO, " ","%s",
         "***********************************************************");
     fprintf(conqfile, "\n");
-    if (conqfile != stderr) fclose(conqfile);
+    conqfile_close(conqfile);
 }
 
 static void conquerMessage(int winner)
@@ -4151,8 +4181,7 @@ static void conquerMessage(int winner)
     FILE *conqfile;
     time_t curtime;
 
-    conqfile=fopen(ConqFile, "a");
-    if (conqfile == NULL) conqfile = stderr;
+    conqfile = conqfile_open();
 
 /* TC 10/90 */
     time(&curtime);
@@ -4172,7 +4201,7 @@ static void conquerMessage(int winner)
     pmessage(0, MALL | MCONQ, " ","%s",
         "***********************************************************");
     fprintf(conqfile, "\n");
-    if (conqfile != stderr) fclose(conqfile);
+    conqfile_close(conqfile);
 }
 
 typedef struct playerlist {
