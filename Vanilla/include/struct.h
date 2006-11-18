@@ -75,6 +75,8 @@ struct queuewait {
 
 struct context {
     int daemon;         /* pid_t of daemon */
+    int blog_pickup_game_full;
+    int blog_pickup_queue_full;
 };
 
 struct status {
@@ -614,8 +616,8 @@ struct memory {
     struct pqueue       queues[MAXQUEUE];
     struct queuewait    waiting[MAXWAITING];
     struct ban          bans[MAXBANS];
+    /* note: adding to struct memory requires changes to openmem.c */
 };
-/* note: adding to struct memory requires changes to openmem.c */
 
 #ifdef RSA
 struct rsa_key {

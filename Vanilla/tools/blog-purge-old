@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+# activated by crontab daily
+
+# determine location of blog files
+BLOG=`tools/getpath --localstatedir`/blog
+
+# create the directory if it does not yet exist
+mkdir -p ${BLOG}
+
+# remove the old files
+find ${BLOG} -ctime +365 | xargs rm

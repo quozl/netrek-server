@@ -1,9 +1,21 @@
-Addition of RSS feed for Netrek Server.
+Addition of RSS feed from Netrek Server.
 
 Events logged by a class type, such as:
 
 - daemon, starts and stops of the universe simulator,
-- conquer, wins and losses by team,
+- queue, game full event, queue full event, block by ip,
+- logins, new character, old character, logout with planet taken count,
+    int  p_avrt;               /* average round trip time */
+    int  p_stdv;               /* standard deviation in round trip time */
+    int  p_pkls_c_s;           /* packet loss (client to server) */
+    int  p_pkls_s_c;           /* packet loss (server to client) */
+
+- racial, wins and losses by race,
+- t-mode, session begin, session end with struct status values,
+- starbase, loss (s_turns)
+- planets, loss,
+- bans,
+- [more to come]
 
 Design
 

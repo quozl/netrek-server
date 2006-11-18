@@ -109,11 +109,26 @@ int findslot(int w_queue)
     }
 
     /* If no one is waiting, I will try to enter now */
-    if (queues[w_queue].first == -1)
-	if ( (i=pickslot(w_queue)) >= 0 )  return i;
+    if (queues[w_queue].first == -1) {
+      if ((i=pickslot(w_queue)) >= 0) {
+        if (w_queue == QU_PICKUP) {
+          if (queues[w_queue].free_slots == 0) {
+            blog_pickup_game_full();
+          } else {
+            blog_pickup_game_not_full();
+          }
+        }
+        return i;
+      }
+    }
+
 
     mywait = queue_add(w_queue);    /* Get me into the queue */
-    if (mywait == -1) return -1;    /* The queue is full! */
+    if (mywait == -1) {
+      if (w_queue == QU_PICKUP) blog_pickup_queue_full();
+      return -1; /* queue full */
+    }
+    if (w_queue == QU_PICKUP) blog_pickup_queue_not_full();
 
     rep = 0;
     oldcount = waiting[mywait].count;
