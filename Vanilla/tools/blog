@@ -5,15 +5,46 @@ set -e
 # surrender, genocide or conquer
 # $1 is the class of the event
 # $2 is the name of the file written by the daemon with the details
+# or $2 and onwards are text words to add to a new file
 
 # determine where to put the file
-BLOG=`tools/getpath --localstatedir`/blog/$1
+BLOG=`tools/getpath --localstatedir`/blog
 
-# create the directory if it does not yet exist
-mkdir -p ${BLOG}
+CLASS=${1}
+shift
 
-# move the file to the directory
-mv $2 ${BLOG}
+# if the class directory does not exist, assume god does not want it logged
+if test ! -d ${BLOG}/${CLASS}; then
+    exit 1
+fi
 
-# refresh the static blog content
-/usr/lib/cgi-bin/blosxom -f='etc/blosxom.conf' -password='netrek'
+# if the caller gave us a file
+if test -f ${1}; then
+    # move the file to the directory
+    mv ${1} ${BLOG}/${CLASS}/
+else
+    # create a file with the text from remainder of command line
+    FILE=${BLOG}/${CLASS}/`date +%s`.txt
+    while test -f ${FILE}; do
+	sleep 0.5
+	FILE=${BLOG}/${CLASS}/`date +%s`.txt
+    done
+    echo $* > ${FILE}
+fi
+
+# avoid blosxom if we don't have it available
+if test ! -x /usr/lib/cgi-bin/blosxom; then
+    exit 2
+fi
+
+# try to prevent multiple instances of blosxom, 
+# attempt a filesystem lock, see debian package procmail
+if test -x /usr/bin/lockfile; then
+    lockfile ${BLOG}/lock
+fi
+
+# refresh the static blog content, continue if fail
+/usr/lib/cgi-bin/blosxom -f="`tools/getpath --sysconfdir`/blosxom.conf" -password='netrek' 1>/dev/null 2>/dev/null || true
+
+# remove the lock
+rm -f ${BLOG}/lock

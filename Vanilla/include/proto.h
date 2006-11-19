@@ -28,14 +28,6 @@ void bay_release_all(struct player *base);
 void bay_init(struct player *me);
 int bay_closest(struct player *base, LONG dx, LONG dy);
 
-/* blog.c */
-void blog_file(char *class, char *file);
-void blog_printf(char *class, const char *fmt, ...);
-void blog_pickup_game_full();
-void blog_pickup_game_not_full();
-void blog_pickup_queue_full();
-void blog_pickup_queue_not_full();
-
 /* cluecheck.c */
 void clue_check(void);
 

@@ -6,6 +6,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "blog.h"
 
 #ifndef TRUE
 #define TRUE 1
@@ -25,6 +26,11 @@ int bans_add_temporary_by_player(int who)
       strcpy(b->b_ip, j->p_ip);
       b->b_remain = ban_vote_duration;
       ERROR(2,( "ban of %s was voted\n", b->b_ip));
+      blog_printf("bans", "temporary ban of %s by player vote\n"
+		  "slot=%s character name=%s user name=%s "
+		  "translated host name=%s\n",
+		  b->b_ip, j->p_mapchars, j->p_name, me->p_login,
+		  me->p_full_hostname);
       return 1;
     }
   }
@@ -39,6 +45,7 @@ void bans_age_temporary(int elapsed) {
     if (b->b_remain == 0) continue;
     if (b->b_remain < elapsed) {
       b->b_remain = 0;
+      blog_printf("bans", "temporary ban of %s expired\n", b->b_ip);
     } else {
       b->b_remain -= elapsed;
     }

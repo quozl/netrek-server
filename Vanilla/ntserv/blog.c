@@ -13,9 +13,12 @@
 
 void blog_file(char *class, char *file)
 {
+  char blog[256];
+  snprintf(blog, 256-1, "%s/blog", LIBDIR);
+
   if (fork() == 0) {
-    execl("blog", "blog", class, file, NULL);
-    perror("blog");
+    execl(blog, blog, class, file, NULL);
+    perror(blog);
     _exit(1);
   }
 }
@@ -28,7 +31,7 @@ void blog_printf(char *class, const char *fmt, ...)
   FILE *file;
 
   gettimeofday(&tv, (struct timezone *) 0);
-  sprintf(name, "%s.%d", class, (int) tv.tv_sec);
+  sprintf(name, "%s.%d.txt", class, (int) tv.tv_sec);
   file = fopen(name, "w");
   va_start(args, fmt);
   vfprintf(file, fmt, args);
@@ -40,7 +43,7 @@ void blog_printf(char *class, const char *fmt, ...)
 void blog_pickup_game_full()
 {
   if (context->blog_pickup_game_full) return;
-  blog_printf("queue", "Pickup game full.");
+  blog_printf("queue", "Pickup game full.\n");
   context->blog_pickup_game_full = 1;
 }
 
@@ -52,7 +55,7 @@ void blog_pickup_game_not_full()
 void blog_pickup_queue_full()
 {
   if (context->blog_pickup_queue_full) return;
-  blog_printf("queue", "Pickup queue full.");
+  blog_printf("queue", "Pickup queue full.\n");
   context->blog_pickup_queue_full = 1;
 }
 

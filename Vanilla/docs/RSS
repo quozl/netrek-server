@@ -10,12 +10,14 @@ Events logged by a class type, such as:
     int  p_pkls_c_s;           /* packet loss (client to server) */
     int  p_pkls_s_c;           /* packet loss (server to client) */
 
-- racial, wins and losses by race,
+- racial, wins and losses by race, (coqn, geno, surr, base),
 - t-mode, session begin, session end with struct status values,
-- starbase, loss (s_turns)
+	gantt chart showing players who were there, icons per pick/take/death
 - planets, loss,
-- bans,
+- bans, temporary add, temporary expire, 
+- scriptable, "blog class 'message'"
 - [more to come]
+- metaserver blog, of major activity by other servers,
 
 Design
 
@@ -23,6 +25,7 @@ Design
 - blog_* forks and execs tools/blog,
 - tools/blog updates filesystem and static content,
 - web browser accesses static content.
+- TODO: configuration of suppression of blog by class name,
 
 Software dependencies:
 

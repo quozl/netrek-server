@@ -53,10 +53,16 @@ reallyclean: clean
 
 
 install: $(EXECS) 
-	-@if [ ! -d $(DESTDIR)$(LIBDIR)/tools ]; then \
-          /bin/mkdir $(DESTDIR)$(LIBDIR)/tools; \
-        fi
+	mkdir -p $(DESTDIR)$(LIBDIR)/tools
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/daemon
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/queue
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/racial
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/bans
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www
 	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(DESTDIR)$(LIBDIR)/tools/updatekeys
+	$(INSTALLPROG) $(INSTALLOPTS) blog $(DESTDIR)$(LIBDIR)/blog
+	$(INSTALLPROG) $(INSTALLOPTS) blog-purge-old $(DESTDIR)$(LIBDIR)/blog-purge-old
 	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(DESTDIR)$(LIBDIR)/tools/blotpassword
 	$(INSTALLPROG) $(INSTALLOPTS) loadchecker $(DESTDIR)$(LIBDIR)/tools/loadchecker
 	$(INSTALLPROG) $(INSTALLOPTS) mess $(DESTDIR)$(LIBDIR)/tools/mess

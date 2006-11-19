@@ -19,6 +19,7 @@
 #include "conquer.h"
 #include "daemon.h"
 #include "alarm.h"
+#include "blog.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
@@ -286,7 +287,7 @@ int main(int argc, char **argv)
     /* signal parent ntserv that daemon is ready */
     kill(getppid(), SIGUSR1);
 
-    blog_printf("daemon", "Netrek universe started.");
+    blog_printf("daemon", "Netrek universe started.\n");
     memcpy(&status_at_start, status, sizeof(struct status));
     context->blog_pickup_game_full = 0;
     context->blog_pickup_queue_full = 0;
@@ -583,7 +584,7 @@ static void move()
             doResources();
 #endif
         }
-        blog_printf("daemon", "Netrek universe stopped, players have left, %d planet takes.", (int) (status->planets - status_at_start.planets));
+        blog_printf("daemon", "Netrek universe stopped, players have left, %d planet takes.\n", (int) (status->planets - status_at_start.planets));
         exitDaemon(0);
     }
     old_robot = start_robot;
@@ -955,8 +956,11 @@ static void udplayers(void)
                             (j->p_whydead == KPLASMA) ||
                             (j->p_whydead == KPLANET) ||
                             (j->p_whydead == KGENOCIDE)) && (status->tourn))
-                    teams[j->p_team].s_turns=BUILD_SB_TIME; /* in defs.h */
-                        /* 30 minute reconstruction period for new starbase */
+                    /* reconstruction period for new starbase, see defs.h */
+                    teams[j->p_team].s_turns = BUILD_SB_TIME;
+                    blog_printf("racial", 
+                                "%s lost their starbase, with %d armies\n",
+                                team_name(j->p_team), j->p_armies);
                 }
                 /* And he is ejected from orbit. */
                 j->p_flags &= ~PFORBIT;
@@ -2369,12 +2373,6 @@ static void udplanets(void)
 {
   register int i;
   register struct planet *l;
-  
-  /* moved to udsurrend
-     for (i = 0; i <= MAXTEAM; i++) {
-     (teams[i].s_turns--);
-     }
-     */
   
   for (i = 0, l = &planets[i]; i < MAXPLANETS; i++, l++) {
     
@@ -4102,7 +4100,7 @@ static FILE *conqfile_open()
     FILE *conqfile;
 
     gettimeofday(&tv, (struct timezone *) 0);
-    sprintf(conqfile_name, "%s.%d", ConqFile, (int) tv.tv_sec);
+    sprintf(conqfile_name, "%s.%d.txt", ConqFile, (int) tv.tv_sec);
     conqfile = fopen(conqfile_name, "w");
     if (conqfile == NULL) conqfile = stderr;
     return conqfile;
