@@ -3,21 +3,33 @@ Addition of RSS feed from Netrek Server.
 Events logged by a class type, such as:
 
 - daemon, starts and stops of the universe simulator,
-- queue, game full event, queue full event, block by ip,
+	ok
+- queue, game full event, queue full event,
+	ok
 - logins, new character, old character, logout with planet taken count,
     int  p_avrt;               /* average round trip time */
     int  p_stdv;               /* standard deviation in round trip time */
     int  p_pkls_c_s;           /* packet loss (client to server) */
     int  p_pkls_s_c;           /* packet loss (server to client) */
-
+	not yet done
 - racial, wins and losses by race, (coqn, geno, surr, base),
+	ok
 - t-mode, session begin, session end with struct status values,
 	gantt chart showing players who were there, icons per pick/take/death
+	not yet done
 - planets, loss,
+	not yet done
 - bans, temporary add, temporary expire, 
+	ok
 - scriptable, "blog class 'message'"
-- [more to come]
+	ok
 - metaserver blog, of major activity by other servers,
+	not yet done
+- inl, game completion, stats, recordings.
+	not yet done
+
+TODO: not all .txt files in tree processed, why?  rerun blosxom?
+TODO: avoid running blosxom too frequently
 
 Design
 
@@ -40,7 +52,9 @@ Notes from PROJECTS yet to be implemented
 	  Content area on netrek.org showing recent contested genos,
 	  length of game leading up to it, number of players seen,
 	  players per hour, keep latest ten, feed from multiple
-	  servers.  Server generated screen shot of final frame.
+	  servers. [planet .netrek .org?]
+
+	  Server generated screen shot of final frame.
 
 	  Separate feed for adminstrivia, with server CLI script for
 	  adding to the feed.
@@ -56,9 +70,16 @@ Notes from PROJECTS yet to be implemented
 
 Technical Details
 
-	  lib/conquer -> blosxom data -> blosxom rerun -> static content
+	lib/conquer -> blosxom data -> blosxom rerun -> static content
 perl /usr/lib/cgi-bin/blosxom -f='blosxom.conf' -password='netrek'
 # use -all=1 for refresh
-	  micro-inetd -> micro-httpd -> static content
+	micro-inetd -> micro-httpd -> static content
 micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
+
+	# package tcputils and micro-httpd
+	  mini-inetd -> micro-httpd -> static content
+
+mini-inetd 80 /usr/sbin/micro_httpd httpd /usr/local/games/netrek-server-vanilla/var/www/
+mini-inetd 80 /usr/sbin/micro_httpd httpd /usr/games/continuum/var/www/
+
 
