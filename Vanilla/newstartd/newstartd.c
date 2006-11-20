@@ -663,7 +663,7 @@ void reaper_unblock()
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
   if (sigprocmask(SIG_UNBLOCK, &set, NULL) < 0) {
-    perror("sigprocmask: SIG_BLOCK SIGCHLD");
+    perror("sigprocmask: SIG_UNBLOCK SIGCHLD");
   }
 }
 

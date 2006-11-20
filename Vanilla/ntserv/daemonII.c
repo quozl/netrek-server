@@ -106,6 +106,7 @@ static void killmess(struct player *victim, struct player *credit_killer,
 static void killmess(struct player *victim, struct player *k);
 #endif
 static void reaper(int sig);
+static void reaper_start();
 static void addTroops(int loser, int winner);
 static void surrenderMessage(int loser);
 static void genocideMessage(int loser, int winner);
@@ -162,7 +163,8 @@ int main(int argc, char **argv)
         SIGNAL(SIGSTOP, SIG_DFL); /* accept SIGSTOP? 3/6/92 TC */
         SIGNAL(SIGTSTP, SIG_DFL); /* accept SIGTSTP? 3/6/92 TC */
         SIGNAL(SIGCONT, SIG_DFL); /* accept SIGCONT? 3/6/92 TC */
-      }
+    }
+    reaper_start();
 
     /* Set up the shared memory segment and attach to it*/
     if (!(setupmem())){
@@ -242,8 +244,6 @@ int main(int argc, char **argv)
 
     status->active = 0;
     status->gameup = (GU_GAMEOK | (chaosmode ? GU_CHAOS : 0));
-
-    (void) SIGNAL(SIGCHLD, reaper);
 
 #ifdef AUTOMOTD
    if(stat(Motd, &mstat) == 0 && (time(NULL) - mstat.st_mtime) > 60*60*12){
@@ -3563,9 +3563,7 @@ static void check_load(void)
     fgets(buf, 100, fp);
     s=RINDEX(buf, ':');
     if (s==NULL) {
-        SIGNAL(SIGCHLD, SIG_DFL);
         pclose(fp);
-        SIGNAL(SIGCHLD, reaper);
         exit(0);
     }
     if (sscanf(s+1, " %f", &load) == 1) {
@@ -3585,9 +3583,7 @@ static void check_load(void)
     } else {
         pmessage(0, MALL, "GOD->ALL","Load check failed :-(");
     }
-    SIGNAL(SIGCHLD, SIG_DFL);
     pclose(fp);
-    SIGNAL(SIGCHLD, reaper);
     exit(0);
   }
 }
@@ -4049,23 +4045,33 @@ static void rescue(int team, int target)
 
 static void reaper(int sig)
 {
-    static int status;
-    static int pid;
+    int pid, status;
 
-    while ((pid = WAIT3(&status, WNOHANG, 0)) > 0) {
-        if (debug) {
-            ERROR(1,( "Reaping: pid is %d (status: %d)\n",
-                    pid, status));
-        }
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
+        if (debug) ERROR(1,("reaper: pid is %d (status: %d)\n", pid, status));
     }
-
-    HANDLE_SIG(SIGCHLD, reaper);
-
-    /* get rid of annoying compiler warning */
-    if (sig) return;
 }
 
+static void reaper_start()
+{
+  /* ask for the reaper to be called on SIGCHLD */
+  struct sigaction action;
+  action.sa_handler = reaper;
+  action.sa_sigaction = NULL;
+  sigemptyset(&(action.sa_mask));
+  action.sa_flags = SA_NOCLDWAIT | SA_NOCLDSTOP;
+  if (sigaction(SIGCHLD, &action, NULL) < 0) {
+    perror("sigaction: SIGCHLD");
+  }
 
+  /* unblock the SIGCHLD signal, as netrekd normally blocks it */
+  sigset_t set;
+  sigemptyset(&set);
+  sigaddset(&set, SIGCHLD);
+  if (sigprocmask(SIG_UNBLOCK, &set, NULL) < 0) {
+    perror("sigprocmask: SIG_UNBLOCK SIGCHLD");
+  }
+}
 
 /* Give more troops to winning team in case they need them. */
 static void addTroops(int loser, int winner)
