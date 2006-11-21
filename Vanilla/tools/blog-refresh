@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+# avoid blosxom if we don't have it available
+if test ! -x /usr/lib/cgi-bin/blosxom; then
+    exit 2
+fi
+
+# try to prevent multiple instances of blosxom, 
+# attempt a filesystem lock, see debian package procmail
+if test -x /usr/bin/lockfile; then
+    lockfile ${BLOG}/lock
+fi
+
+# refresh the static blog content, continue if fail
+/usr/lib/cgi-bin/blosxom -f="`tools/getpath --sysconfdir`/blosxom.conf" -password='netrek' -all=1 1>/dev/null 2>/dev/null || true
+
+# remove the lock
+rm -f ${BLOG}/lock
