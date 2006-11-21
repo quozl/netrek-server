@@ -66,3 +66,22 @@ void blog_pickup_queue_not_full()
 {
   context->blog_pickup_queue_full = 0;
 }
+
+void blog_game_over(struct status *was, struct status *is)
+{
+  int np;
+
+  if (!blogging) return;
+  np = (is->planets - was->planets);
+  if (np < 1) return;
+
+  blog_printf("daemon", "Game over\n"
+              "Players have left, %d planets taken, %d armies bombed, "
+              "%d deaths, %d kills, over %.1f hours of t-mode play.\n",
+              np,
+              (int) (is->armsbomb - was->armsbomb),
+              (int) (is->kills - was->kills),
+              (int) (is->losses - was->losses),
+              (float) (is->time - was->time) / reality / 60.0
+              );
+}

@@ -287,7 +287,6 @@ int main(int argc, char **argv)
     /* signal parent ntserv that daemon is ready */
     kill(getppid(), SIGUSR1);
 
-    blog_printf("daemon", "Netrek universe started.\n");
     memcpy(&status_at_start, status, sizeof(struct status));
     context->blog_pickup_game_full = 0;
     context->blog_pickup_queue_full = 0;
@@ -584,7 +583,7 @@ static void move()
             doResources();
 #endif
         }
-        blog_printf("daemon", "Netrek universe stopped, players have left, %d planet takes.\n", (int) (status->planets - status_at_start.planets));
+        blog_game_over(&status_at_start, status);
         exitDaemon(0);
     }
     old_robot = start_robot;
