@@ -14,6 +14,8 @@
 void blog_file(char *class, char *file)
 {
   char blog[256];
+
+  if (!blogging) return;
   snprintf(blog, 256-1, "%s/blog", LIBDIR);
 
   if (fork() == 0) {
@@ -30,6 +32,7 @@ void blog_printf(char *class, const char *fmt, ...)
   struct timeval tv;
   FILE *file;
 
+  if (!blogging) return;
   gettimeofday(&tv, (struct timezone *) 0);
   sprintf(name, "%s.%d.txt", class, (int) tv.tv_sec);
   file = fopen(name, "w");

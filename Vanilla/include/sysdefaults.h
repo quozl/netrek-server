@@ -231,6 +231,8 @@ struct sysdef_keywords {
   { "DUPLICATES",		SYSDEF_INT,	&duplicates,
     "Maximum number of duplicate connections from a single IP" },
   { "",			SYSDEF_END,	NULL		}
+  { "BLOGGING",		SYSDEF_INT,	&blogging,
+    "Enable blogging of server events" },
 };
 
 /*
@@ -256,5 +258,6 @@ BAN_NOCONNECT
 ADMIN_PASSWORD
 DDRANK
 GARANK
+BLOGGING
 
 */

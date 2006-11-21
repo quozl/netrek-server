@@ -368,5 +368,6 @@ extern int eject_vote_enable;
 extern int eject_vote_only_if_queue;
 extern int eject_vote_vicious;
 extern int duplicates;
+extern int blogging;
 
 #endif /* _h_data */

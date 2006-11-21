@@ -67,6 +67,9 @@ HUNTERKILLER=0
 #	log in after the daemon has gone because everybody left).
 RESETGALAXY=1
 #
+#	Enable blogging of server events
+BLOGGING=1
+#
 # 	Log all messages (0 = no, 1 = yes)
 LOGALL=0
 #
