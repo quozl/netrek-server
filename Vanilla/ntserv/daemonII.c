@@ -59,7 +59,7 @@ union semun {
 
 /* file scope prototypes */
 static void check_load(void);
-static int tournamentMode(void);
+static int is_tournament_mode(void);
 static int check_scummers(int);
 static void move();
 static void udplayersight(void);
@@ -352,37 +352,43 @@ int main(int argc, char **argv)
 
 int dietime = -1;  /* isae - was missing int */
 
-static int tournamentMode(void)
+static int is_tournament_mode(void)
 /* Return 1 if tournament mode, 0 otherwise.
- * This function only used to determine if we should be recording stats.
+ * This function used to determine if we should be recording stats.
  */
 {
-    int               i, teams[MAXTEAM + 1]; /* not the global var */
-    struct player       *p;
+    int i, count[MAXTEAM+1], quorum[MAXTEAM+1];
+    struct player *p;
 
-    if (practice_mode) return(0);     /* No t-mode in practice mode 
-                                         06/19/94 [007] */
+    if (practice_mode) return 0;
 #ifdef PRETSERVER    
-    if(bot_in_game) return(0);
+    if (bot_in_game) return 0;
 #endif
-    
-    MZERO((int *) teams, sizeof(int) * (MAXTEAM + 1));
+
+    MZERO((int *) count, sizeof(int) * (MAXTEAM+1));
+    MZERO((int *) quorum, sizeof(int) * (MAXTEAM+1));
+
     for (i=0, p=players; i<MAXPLAYER; i++, p++) {
-        if (((p->p_status != PFREE) && 
+        if (((p->p_status != PFREE) &&
 #ifdef OBSERVERS
-             (p->p_status != POBSERV)) && 
+             /* don't count observers for Tmode 06/09/95 JRP */
+             (p->p_status != POBSERV)) &&
 #endif
-           !(p->p_flags & PFROBOT)) {
-            teams[p->p_team]++; /* don't count robots for Tmode 10/31/91 TC */
-        }               /* don't count observers for Tmode 06/09/95 JRP */
+             /* don't count robots for Tmode 10/31/91 TC */
+            !(p->p_flags & PFROBOT)) {
+                count[p->p_team]++;
+        }
     }
+
     i=0;
-    if (teams[FED]>=tournplayers) i++;
-    if (teams[ROM]>=tournplayers) i++;
-    if (teams[KLI]>=tournplayers) i++;
-    if (teams[ORI]>=tournplayers) i++;
-    if (i>1) return(1);
-    return(0);
+    if (count[FED] >= tournplayers) quorum[i++] = FED;
+    if (count[ROM] >= tournplayers) quorum[i++] = ROM;
+    if (count[KLI] >= tournplayers) quorum[i++] = KLI;
+    if (count[ORI] >= tournplayers) quorum[i++] = ORI;
+    context->quorum[0] = quorum[0];
+    context->quorum[1] = quorum[1];
+    if (i > 1) return 1;
+    return 0;
 }
 
 
@@ -623,7 +629,7 @@ static void move()
     switch (ts) {
     case TS_PICKUP:
             status->tourn = 0;
-            if (tournamentMode()) {
+            if (is_tournament_mode()) {
                     ts = TS_BEGIN;
                     if (check_scum && check_scummers(1))
                             ts = TS_SCUMMERS;
@@ -632,7 +638,7 @@ static void move()
 
     case TS_SCUMMERS:
             status->tourn = 0;
-            if (!tournamentMode()) {
+            if (!is_tournament_mode()) {
                     ts = TS_PICKUP;
             } else {
                     if (!check_scum) {
@@ -654,7 +660,7 @@ static void move()
             status->tourn = 1;
             status->time++;
             tourntimestamp = ticks;
-            if (tournamentMode()) break;
+            if (is_tournament_mode()) break;
             ts = TS_END;
             /* break; */
 

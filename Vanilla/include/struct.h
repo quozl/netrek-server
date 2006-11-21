@@ -77,6 +77,7 @@ struct context {
     int daemon;         /* pid_t of daemon */
     int blog_pickup_game_full;
     int blog_pickup_queue_full;
+    int quorum[2];      /* teams involved in t-mode */
 };
 
 struct status {

@@ -167,3 +167,12 @@ void orbit_release_by_planet(struct planet *pl) {
     }
   }
 }
+
+/* given a team number, return the team number of the opposing team */
+int team_opposing(int team)
+{
+  if (!status->tourn) return NOBODY;
+  if (team == context->quorum[0]) return context->quorum[1];
+  if (team == context->quorum[1]) return context->quorum[0];
+  return NOBODY;
+}
