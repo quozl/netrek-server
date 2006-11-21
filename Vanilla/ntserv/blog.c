@@ -10,6 +10,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 
 void blog_file(char *class, char *file)
 {
@@ -84,4 +85,11 @@ void blog_game_over(struct status *was, struct status *is)
               (int) (is->losses - was->losses),
               (float) (is->time - was->time) / reality / 60.0
               );
+}
+
+void blog_base_loss(struct player *j)
+{
+  blog_printf("racial", 
+              "%s lost their starbase, with %d armies\n",
+              team_name(j->p_team), j->p_armies);
 }

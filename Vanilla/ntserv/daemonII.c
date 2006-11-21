@@ -949,17 +949,16 @@ static void udplayers(void)
                 bay_release(j);
                 if (j->p_ship.s_type == STARBASE) {
                     bay_release_all(j);
+                    /* set reconstruction time for new starbase */
                     if (((j->p_whydead == KSHIP) || 
-                            (j->p_whydead == KTORP) ||
-                            (j->p_whydead == KPHASER) || 
-                            (j->p_whydead == KPLASMA) ||
-                            (j->p_whydead == KPLANET) ||
-                            (j->p_whydead == KGENOCIDE)) && (status->tourn))
-                    /* reconstruction period for new starbase, see defs.h */
-                    teams[j->p_team].s_turns = BUILD_SB_TIME;
-                    blog_printf("racial", 
-                                "%s lost their starbase, with %d armies\n",
-                                team_name(j->p_team), j->p_armies);
+                         (j->p_whydead == KTORP) ||
+                         (j->p_whydead == KPHASER) || 
+                         (j->p_whydead == KPLASMA) ||
+                         (j->p_whydead == KPLANET) ||
+                         (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
+                        teams[j->p_team].s_turns = BUILD_SB_TIME;
+                        if (j->p_status == PDEAD) blog_base_loss(j);
+                    }
                 }
                 /* And he is ejected from orbit. */
                 j->p_flags &= ~PFORBIT;
