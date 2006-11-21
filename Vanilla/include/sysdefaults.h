@@ -230,9 +230,9 @@ struct sysdef_keywords {
     "Kill ntserv process to eject, causes some client problems"	},
   { "DUPLICATES",		SYSDEF_INT,	&duplicates,
     "Maximum number of duplicate connections from a single IP" },
-  { "",			SYSDEF_END,	NULL		}
   { "BLOGGING",		SYSDEF_INT,	&blogging,
     "Enable blogging of server events" },
+  { "",			SYSDEF_END,	NULL		}
 };
 
 /*
