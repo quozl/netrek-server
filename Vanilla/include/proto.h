@@ -103,6 +103,7 @@ void getname(void);
 
 /* getpath.c */
 void getpath(void);
+void setpath(void);
 
 /* getship.c */
 void getshipdefaults(void);

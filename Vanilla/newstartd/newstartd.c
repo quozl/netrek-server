@@ -148,7 +148,8 @@ int main (int argc, char *argv[])
   FILE *file;
 
   active = 0;
-  getpath ();
+  getpath();
+  setpath();
 
   /* if someone tries to ask for help, give 'em it */
   if (argc == 2 && argv[1][0] == '-') {

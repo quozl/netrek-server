@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -106,4 +107,50 @@ void getpath()
    sprintf(LogFile,"%s/%s",localstatedir,N_LOGFILE);
    sprintf(Cambot,"%s/%s",libdir,N_CAMBOT);
    sprintf(Cambot_out,"%s/%s",libdir,N_CAMBOT_OUT);
+}
+
+void setpath()
+{
+  char *old, *new;
+  int len, siz;
+
+  /* get the current PATH */
+  old = getenv("PATH");
+  if (old == NULL) {
+    fprintf(stderr, "setpath: the PATH environment variable has no value\n");
+    exit(1);
+  }
+
+  /* do not set PATH if PATH already contains our LIBDIR and BINDIR */
+  if (strstr(old, LIBDIR) != NULL && strstr(old, BINDIR) != NULL) {
+    /* fprintf(stderr, "setpath: PATH has what we need\n%s\n", old); */
+    return;
+  }
+
+  /* calculate and allocate space for a new PATH */
+  len = strlen(BINDIR) + strlen(LIBDIR) * 2 + 64 + strlen(old);
+  new = malloc(len+1);
+  if (new == NULL) {
+    fprintf(stderr, "setpath: unable to allocate memory for new PATH\n");
+    exit(1);
+  }
+
+  /* compose the new PATH by prefixing existing PATH with LIBDIR references */
+  siz = snprintf(new, len, "%s:%s:%s/tools:%s", 
+                 BINDIR, LIBDIR, LIBDIR, old);
+  if (siz > len) {
+    fprintf(stderr, "setpath: snprintf: exceeded allocated buffer\n");
+    exit(1);
+  }
+  if (siz < 0) {
+    fprintf(stderr, "setpath: snprintf: output error\n");
+    exit(1);
+  }
+
+  /* set the new PATH */
+  if (setenv("PATH", new, 1) < 0) {
+    fprintf(stderr, "setpath: unable to set new PATH, insufficient space\n");
+    exit(1);
+  }
+  free(new);
 }
