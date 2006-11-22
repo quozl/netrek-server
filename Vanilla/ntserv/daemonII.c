@@ -4131,24 +4131,11 @@ static int conqfile_close(FILE *conqfile)
 
 static void surrenderMessage(int loser)
 {
-    char buf[MSG_LEN];
     FILE *conqfile;
-    time_t curtime;
 
     conqfile = conqfile_open();
-    if (conqfile == NULL) conqfile = stderr;
-
-/* TC 10/90 */
-    time(&curtime);
-    strcpy(buf,"\nSurrender! ");
-    strcat(buf, ctime(&curtime));
-    fprintf(conqfile,"  %s\n",buf);
-
-    sprintf(buf, "The %s %s surrendered.", team_name(loser),
+    fprintf(conqfile, "%s %s surrendered\n\n", team_name(loser),
         team_verb(loser));
-        
-    fprintf(conqfile, "  %s\n", buf);
-    fprintf(conqfile, "\n");
     conqfile_close(conqfile);
 }
 
@@ -4156,23 +4143,17 @@ static void genocideMessage(int loser, int winner)
 {
     char buf[MSG_LEN];
     FILE *conqfile;
-    time_t curtime;
 
     conqfile = conqfile_open();
-
-/* TC 10/90 */
-    time(&curtime);
-    strcpy(buf,"\nGenocide! ");
-    strcat(buf, ctime(&curtime));
-    fprintf(conqfile,"  %s\n",buf);
+    fprintf(conqfile, "%s %s been genocided by the %s\n\n",
+            team_name(loser), team_verb(loser), team_name(winner));
 
     pmessage(0, MALL | MGENO, " ","%s",
         "***********************************************************");
     sprintf(buf, "The %s %s been genocided by the %s.", team_name(loser),
         team_verb(loser), team_name(winner));
     pmessage(0, MALL | MGENO, " ","%s",buf);
-        
-    fprintf(conqfile, "  %s\n", buf);
+
     sprintf(buf, "The %s:", team_name(winner));
     pmessage(0, MALL | MGENO, " ","%s",buf);
     fprintf(conqfile, "  %s\n", buf);
@@ -4191,15 +4172,9 @@ static void conquerMessage(int winner)
 {
     char buf[MSG_LEN];
     FILE *conqfile;
-    time_t curtime;
 
     conqfile = conqfile_open();
-
-/* TC 10/90 */
-    time(&curtime);
-    strcpy(buf,"\nConquer! ");
-    strcat(buf, ctime(&curtime));
-    fprintf(conqfile,"  %s\n",buf);
+    fprintf(conqfile, "Galaxy conquered by the %s\n\n", team_name(winner));
 
     pmessage(0, MALL | MCONQ, " ","%s",
         "***********************************************************");

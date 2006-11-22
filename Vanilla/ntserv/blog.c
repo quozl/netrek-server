@@ -34,6 +34,7 @@ void blog_printf(char *class, const char *fmt, ...)
   FILE *file;
 
   if (!blogging) return;
+  /* TODO: watch out for choosing the same file name */
   gettimeofday(&tv, (struct timezone *) 0);
   sprintf(name, "%s.%d.txt", class, (int) tv.tv_sec);
   file = fopen(name, "w");
@@ -47,7 +48,7 @@ void blog_printf(char *class, const char *fmt, ...)
 void blog_pickup_game_full()
 {
   if (context->blog_pickup_game_full) return;
-  blog_printf("queue", "Pickup game full.\n");
+  blog_printf("queue", "Pickup game full\n\n");
   context->blog_pickup_game_full = 1;
 }
 
@@ -59,7 +60,7 @@ void blog_pickup_game_not_full()
 void blog_pickup_queue_full()
 {
   if (context->blog_pickup_queue_full) return;
-  blog_printf("queue", "Pickup queue full.\n");
+  blog_printf("queue", "Pickup queue full\n\n");
   context->blog_pickup_queue_full = 1;
 }
 
@@ -76,7 +77,7 @@ void blog_game_over(struct status *was, struct status *is)
   np = (is->planets - was->planets);
   if (np < 1) return;
 
-  blog_printf("daemon", "Game over\n"
+  blog_printf("daemon", "Game over\n\n"
               "Players have left, %d planets taken, %d armies bombed, "
               "%d deaths, %d kills, over %.1f hours of t-mode play.\n",
               np,
@@ -90,6 +91,6 @@ void blog_game_over(struct status *was, struct status *is)
 void blog_base_loss(struct player *j)
 {
   blog_printf("racial", 
-              "%s lost their starbase, with %d armies\n",
-              team_name(j->p_team), j->p_armies);
+              "%s lost their starbase\n\nStarbase with %d armies, piloted by %s, reported destroyed in valiant battle with enemy forces.  Reconstruction is underway.  Long live the %s.\n",
+              team_name(j->p_team), j->p_armies, j->p_name, team_name(j->p_team));
 }
