@@ -20,6 +20,7 @@ void blog_file(char *class, char *file)
   snprintf(blog, 256-1, "%s/blog", LIBDIR);
 
   if (fork() == 0) {
+    nice(1);
     execl(blog, blog, class, file, NULL);
     perror(blog);
     _exit(1);
@@ -79,12 +80,12 @@ void blog_game_over(struct status *was, struct status *is)
 
   blog_printf("daemon", "Game over\n\n"
               "Players have left, %d planets taken, %d armies bombed, "
-              "%d deaths, %d kills, over %.1f hours of t-mode play.\n",
+              "%d deaths, %d kills, over %d ticks of t-mode play.\n",
               np,
               (int) (is->armsbomb - was->armsbomb),
               (int) (is->kills - was->kills),
               (int) (is->losses - was->losses),
-              (float) (is->time - was->time) / reality / 60.0
+              (int) (is->time - was->time)
               );
 }
 
