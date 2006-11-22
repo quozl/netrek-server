@@ -4180,10 +4180,8 @@ static void conquerMessage(int winner)
         "***********************************************************");
     sprintf(buf, "The galaxy has been conquered by the %s:", team_name(winner));
     pmessage(0, MALL | MCONQ, " ","%s",buf);
-    fprintf(conqfile, "  %s\n", buf);
     sprintf(buf, "The %s:", team_name(winner));
     pmessage(0, MALL | MCONQ, " ","%s",buf);
-    fprintf(conqfile, "  %s\n", buf);
     displayBest(conqfile, winner, KWINNER);
     pmessage(0, MALL | MCONQ, " ","%s",
         "***********************************************************");
