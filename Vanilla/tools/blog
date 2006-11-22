@@ -1,15 +1,25 @@
 #!/bin/sh
 set -e
 
-# activated by daemon when a bloggable event occurs, such as a
+# activated by daemon or user when a bloggable event occurs, such as a
 # surrender, genocide or conquer
+
 # $1 is the class of the event
 # $2 is the name of the file written by the daemon with the details
 # or $2 and onwards are text words to add to a new file
 
-# determine where to put the file
-BLOG=`tools/getpath --localstatedir`/blog
+# Note: this script assumes you have the netrek server binary
+# directories in your shell path, so you should source setpath before
+# calling this, for example:
+# . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
 
+# determine where to put the file
+BLOG=`getpath --localstatedir`/blog
+
+# set path to blosxom
+BLOSXOM=/usr/lib/cgi-bin/blosxom
+
+# consume the class argument
 CLASS=${1}
 shift
 
@@ -33,7 +43,7 @@ else
 fi
 
 # avoid blosxom if we don't have it available
-if test ! -x /usr/lib/cgi-bin/blosxom; then
+if test ! -x ${BLOSXOM}; then
     exit 2
 fi
 
@@ -44,7 +54,9 @@ if test -x /usr/bin/lockfile; then
 fi
 
 # refresh the static blog content, continue if fail
-/usr/lib/cgi-bin/blosxom -f="`tools/getpath --sysconfdir`/blosxom.conf" -password='netrek' 1>/dev/null 2>/dev/null || true
+${BLOSXOM} \
+    -f="`getpath --sysconfdir`/blosxom.conf" \
+    -password='netrek' 1>/dev/null 2>/dev/null || true
 
 # remove the lock
 rm -f ${BLOG}/lock
