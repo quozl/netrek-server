@@ -551,22 +551,21 @@ namearg(void)
 static void
 start_a_robot(char *team)
 {
-    char            command[256];
     int pid;
 
-    /* robothost can be used to tell the robot where to connect to */
-    sprintf(command, "%s %s -h %s -p %d -n '%s' -X %s -b -O -I",
-            OROBOT, team, (strlen(robot_host))?robot_host:hostname, PORT, namearg(), PRE_T_ROBOT_LOGIN );
-    /* read commands file, defined as ROBODIR/og */
-    sprintf(command, "%s -C %s",command, COMFILE);
-
     pid = fork();
-    if (pid == -1)
-     return;
+    if (pid == -1) return;
     if (pid == 0) {
         alarm_prevent_inheritance();
-        execl("/bin/sh", "sh", "-c", command, (char *) NULL);
-        perror("pret'execl");
+        execl(OROBOT, "pretbot",
+              team,
+              "-h", (strlen(robot_host))?robot_host:hostname,
+              "-p", PORT,
+              "-n", namearg(),
+              "-X", PRE_T_ROBOT_LOGIN,
+              "-b", "-O", "-I",
+              "-C", COMFILE, (char *) NULL);
+        perror("pretbot'execl");
         _exit(1);
     }
     status->gameup |= GU_BOT_IN_GAME;
