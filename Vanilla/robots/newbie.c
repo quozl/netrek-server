@@ -756,7 +756,6 @@ namearg(void)
 static void
 start_a_robot(char *team)
 {
-    char            command[256];
     int pid;
 
     /* How Merlin forks a robot
@@ -770,7 +769,7 @@ start_a_robot(char *team)
      * namearg() -> Name of the bot, circulates from the namelist above
      *
      * So robot command usually looks like:
-     * robot -Tr -h localhost -p 3592 -n Obliterator -X robot! -g -b -0 -i
+     * robot -Tr -h localhost -p 3592 -n Obliterator -X robot! -g -b -O -i
      * -Tr join Romulans
      * -h hostname
      * -p portname
@@ -782,18 +781,34 @@ start_a_robot(char *team)
      * -i INL mode, sets robot updates to 5 updates per second
      * -C read commands file, usually ROBOTDIR/og 
      */
-    sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X robot! -g -b -O -i",
-            RCMD, robot_host, OROBOT, team, hostname, PORT, namearg() );
-
-    sprintf(command, "%s -C %s",command, COMFILE); 
 
     pid = fork();
-    if (pid == -1)
-     return;
+    if (pid == -1) return;
     if (pid == 0) {
         alarm_prevent_inheritance();
-        execl("/bin/sh", "sh", "-c", command, (char *) NULL);
-        perror("newbie'execl");
+        if (strlen(RCMD)) {
+            execl(RCMD,
+                  robot_host,
+                  OROBOT, "newbiebot",
+                  team,
+                  "-h", hostname,
+                  "-p", PORT,
+                  "-n", namearg(),
+                  "-X", "robot!",
+                  "-g", "-b", "-O", "-I",
+                  "-C", COMFILE, (char *) NULL);
+        }
+        else {
+            execl(OROBOT, "newbiebot",
+                  team,
+                  "-h", hostname,
+                  "-p", PORT,
+                  "-n", namearg(),
+                  "-X", "robot!",
+                  "-g", "-b", "-O", "-I",
+                  "-C", COMFILE, (char *) NULL);
+        }
+        perror("newbiebot'execl");
         _exit(1);
     }
 }

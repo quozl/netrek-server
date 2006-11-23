@@ -33,7 +33,7 @@
 
 /* Newbie server specific additions */
 
-#define PORT 3592
+#define PORT "3592"
 
 #define HOWOFTEN 1                       /*Robot moves every HOWOFTEN cycles*/
 #define PERSEC (1000000/UPDATE/HOWOFTEN) /* # of robo calls per second*/
