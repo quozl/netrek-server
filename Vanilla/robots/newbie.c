@@ -785,29 +785,37 @@ start_a_robot(char *team)
     pid = fork();
     if (pid == -1) return;
     if (pid == 0) {
+        char *path;
+        char *argv[20];
+        int argc = 0;
+
         alarm_prevent_inheritance();
+        argv[argc++] = "newbiebot";
         if (strlen(RCMD)) {
-            execl(RCMD,
-                  robot_host,
-                  OROBOT, "newbiebot",
-                  team,
-                  "-h", hostname,
-                  "-p", PORT,
-                  "-n", namearg(),
-                  "-X", "robot!",
-                  "-g", "-b", "-O", "-I",
-                  "-C", COMFILE, (char *) NULL);
+          path = RCMD;
+          argv[argc++] = robot_host;
+          argv[argc++] = OROBOT;
+        } else {
+          path = OROBOT;
         }
-        else {
-            execl(OROBOT, "newbiebot",
-                  team,
-                  "-h", hostname,
-                  "-p", PORT,
-                  "-n", namearg(),
-                  "-X", "robot!",
-                  "-g", "-b", "-O", "-I",
-                  "-C", COMFILE, (char *) NULL);
-        }
+        argv[argc++] = team;
+        argv[argc++] = "-h";
+        argv[argc++] = hostname;
+        argv[argc++] = "-p";
+        argv[argc++] = PORT;
+        argv[argc++] = "-n";
+        argv[argc++] = namearg();
+        argv[argc++] = "-X";
+        argv[argc++] = "robot!";
+        argv[argc++] = "-g";
+        argv[argc++] = "-b";
+        argv[argc++] = "-O";
+        argv[argc++] = "-I";
+        argv[argc++] = "-C";
+        argv[argc++] = COMFILE;
+        argv[argc++] = NULL;
+
+        execv(path, argv);
         perror("newbiebot'execl");
         _exit(1);
     }
