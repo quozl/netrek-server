@@ -563,7 +563,7 @@ start_a_robot(char *team)
               "-p", PORT,
               "-n", namearg(),
               "-X", PRE_T_ROBOT_LOGIN,
-              "-b", "-O", "-I",
+              "-b", "-O", "-I", "-g",
               "-C", COMFILE, (char *) NULL);
         perror("pretbot'execl");
         _exit(1);
