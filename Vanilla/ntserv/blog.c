@@ -20,6 +20,7 @@ void blog_file(char *class, char *file)
   snprintf(blog, 256-1, "%s/blog", LIBDIR);
 
   if (fork() == 0) {
+    alarm_prevent_inheritance();
     nice(1);
     execl(blog, blog, class, file, NULL);
     perror(blog);
