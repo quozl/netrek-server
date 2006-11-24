@@ -408,13 +408,13 @@ static int check_scummers(int verbose)
     for (i=0; i<MAXPLAYER; i++) {
       struct player *me = &players[i];
       num=0;
-      if (me->p_status == PFREE)
-           continue;
-      if (me->p_flags & PFROBOT)
-           continue;
+      if (me->p_status == PFREE) continue;
+      if (me->p_flags & PFROBOT) continue;
+#ifdef PFBPROBOT
+      if (me->p_flags & PFBPROBOT) continue;
+#endif
 #ifdef OBSERVERS
-      if (me->p_status == POBSERV)
-           continue;
+      if (me->p_status == POBSERV) continue;
 #endif
 #ifdef LTD_STATS
       if (ltd_ticks(me, LTD_TOTAL) != 0)
@@ -424,13 +424,13 @@ static int check_scummers(int verbose)
       {
         for (j=i+1; j<MAXPLAYER; j++) {
           struct player *them = &players[j];
-          if (them->p_status == PFREE)
-                  continue;
-          if (them->p_flags & PFROBOT)
-                  continue;
+          if (them->p_status == PFREE) continue;
+          if (them->p_flags & PFROBOT) continue;
+#ifdef PFBPROBOT
+          if (me->p_flags & PFBPROBOT) continue;
+#endif
 #ifdef OBSERVERS
-          if (them->p_status == POBSERV)
-                  continue;
+          if (them->p_status == POBSERV) continue;
 #endif
 #ifdef LTD_STATS
           if (ltd_ticks(them, LTD_TOTAL) != 0)
