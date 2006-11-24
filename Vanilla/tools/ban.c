@@ -53,7 +53,7 @@ static void dump(char *us) {
   int j;
   printf("%s erase-all \\\n", us);
   for(j=0; j<MAXBANS; j++) {
-    if (b->b_remain != 0 || b->b_ip[0] != 0)
+    if (bans[j].b_remain != 0 || bans[j].b_ip[0] != 0)
       get(us, &bans[j]);
   }
 }
