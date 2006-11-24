@@ -427,7 +427,7 @@ static int check_scummers(int verbose)
           if (them->p_status == PFREE) continue;
           if (them->p_flags & PFROBOT) continue;
 #ifdef PFBPROBOT
-          if (me->p_flags & PFBPROBOT) continue;
+          if (them->p_flags & PFBPROBOT) continue;
 #endif
 #ifdef OBSERVERS
           if (them->p_status == POBSERV) continue;
