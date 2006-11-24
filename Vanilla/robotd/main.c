@@ -351,6 +351,7 @@ main(argc, argv)
       renter(pseudo, password, login);
    else
       renter(pseudo, "marvin", login);
+   /* FLAW: cannot send an empty password */
 
    mprintf("\n");
 
@@ -521,7 +522,7 @@ void reaper(int sig)
 
 void exitRobot(int sig)
 {
-   fprintf(stderr, "exiting ...");
+   fprintf(stderr, "robotd: exiting\n");
    fflush(stderr);
 
    if(shmem)
@@ -533,8 +534,6 @@ void exitRobot(int sig)
    if(udpSock)
       shutdown(udpSock, 2);
    sleep(1);
-   fprintf(stderr, "bye.\n");
-   fflush(stderr);
 
    switch(sig){
       case SIGBUS:

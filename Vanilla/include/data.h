@@ -302,6 +302,7 @@ extern int newbie_balance_humans;
 #endif
 #ifdef PRETSERVER
 extern char PreT[FNAMESIZE];
+extern int pret_guest;
 #endif
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 extern char Robodir[FNAMESIZE];

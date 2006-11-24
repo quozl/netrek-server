@@ -526,6 +526,8 @@ namearg(void)
     char           *name;
     int             namef = 1;
 
+    if (pret_guest) return "Guest";
+
     while (1) {
 
         name = names[random() % NUMNAMES];

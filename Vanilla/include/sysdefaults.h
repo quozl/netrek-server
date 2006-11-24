@@ -171,6 +171,8 @@ struct sysdef_keywords {
 #ifdef PRETSERVER
   { "PRET",	SYSDEF_ROBOT,	(void *) PRET_ROBOT,
     "Enable pre T entertainment robot on startup" },
+  { "PRET_GUEST",	SYSDEF_INT,	&pret_guest,
+    "Use guest logins instead of random logins" },
 #endif
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,

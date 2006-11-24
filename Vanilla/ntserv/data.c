@@ -274,6 +274,7 @@ int max_newbie_players=8;
 #endif
 #ifdef PRETSERVER
 char PreT[FNAMESIZE];
+int pret_guest = 0;
 #endif
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
 char Robodir[FNAMESIZE];

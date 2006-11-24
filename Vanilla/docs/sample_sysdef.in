@@ -230,6 +230,9 @@ NEWBIE_BALANCE_HUMANS=1
 #    Pre T-mode Entertainment (maintains 4 on 4 with robots) 
 PRET=0
 #
+#    Use guest logins instead of random logins
+PRET_GUEST=0
+#
 #	Hockey Server
 HOCKEY=0
 #
