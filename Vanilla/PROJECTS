@@ -3,6 +3,17 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- tools/players.c ... pc() doesn't exclude robots, packet says 
+          bronco even if run on a sturgeon server.
+
+	- reduce time delay caused by newstartd/newaccess.c call to
+	  gethostbyaddr, which is looking up the host name
+	  corresponding to the ip address of the inbound connection
+	  ... this delay can be several seconds, especially if name
+	  server lookups are ignored or blocked ... since we don't
+	  necessarily trust the name returned these days, we should
+	  not try to rely on it.
+
 	- factorise message insertion, and maintenance of mc_current,
           as it is distributed all over the code.
 
