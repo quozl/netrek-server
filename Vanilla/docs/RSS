@@ -9,6 +9,8 @@ var/www directories),
 tools/blog and tools/blog-refresh to point to it, see variable
 BLOSXOM,
 
+TODO: detect blosxom using configure, --with-blosxom=/path/to/program
+
 3.  test by using the tools/blog script to add a daemon class comment,
 like this:
 

@@ -12,7 +12,8 @@ set -e
 # determine path to blog storage
 BLOG=`getpath --localstatedir`/blog
 
-# set path to blosxom
+# set full path to blosxom script
+# TODO: detect blosxom using configure, --with-blosxom=/path/to/program
 BLOSXOM=/usr/lib/cgi-bin/blosxom
 
 # avoid blosxom if we don't have it available
@@ -32,8 +33,8 @@ fi
 ${BLOSXOM} \
     -f="`getpath --sysconfdir`/blosxom.conf" \
     -password='netrek' -all=1 \
-    1>/dev/null 2>/dev/null || true
-echo "blog-refresh: blog refresh complete" 1>&2
+    || true
+echo "blog-refresh: blog refresh attempt complete" 1>&2
 
 # remove the lock
 rm -f ${BLOG}/lock
