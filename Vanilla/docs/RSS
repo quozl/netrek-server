@@ -7,7 +7,8 @@ var/www directories),
 
 2.  install blosxom, and if it is not in the usual location edit
 tools/blog and tools/blog-refresh to point to it, see variable
-BLOSXOM,
+BLOSXOM, ... it does not need to be installed in the web server
+document or cgi-bin path,
 
 TODO: detect blosxom using configure, --with-blosxom=/path/to/program
 

@@ -1,38 +1,37 @@
 digraph me {
 label="netrek blog data flow, 25th november 2006";
-subgraph cluster_0 {
-label="netrek user";
-client;
-browser;
-}
-subgraph cluster_1 {
-label="netrek connection server";
-ntserv [label="ntserv\nprocesses"];
-client -> ntserv;
-}
+#subgraph cluster_0 {
+#label="netrek user";
+#client;
+#browser;
+#}
+#subgraph cluster_1 {
+#label="netrek connection server";
+#ntserv [label="ntserv\nprocesses"];
+#client -> ntserv;
+#}
 subgraph cluster_2 {
 label="netrek universe simulation server";
-daemon [label="daemonII\nprocess"];
-blog_printf [label="blog_printf()\nfunction"];
+daemon [label="daemon\nprocess"];
 blog_file [label="blog_file()\nfunction"];
-ntserv -> daemon -> blog_printf -> blog_file;
 daemon -> blog_file;
 }
+#ntserv -> daemon;
 subgraph cluster_3 {
 label="blog scripts";
 tools_blog [label="tools/blog\nshell script"];
-var_blog [shape=box,label="var/blog\ndirectory"];
-blog_file -> tools_blog [label="fork"];
+var_blog [shape=box,label="var/blog\ndirectory\naka\n$datadir"];
+blog_file -> tools_blog [label="fork\nper\nevent"];
+blog_file -> var_blog [label="create\nfile"];
 tools_blog -> var_blog;
 blosxom [label="blosxom\nperl script"];
 tools_blog -> blosxom [label="fork"];
 tools_blog_refresh [label="tools/blog-refresh\nshell script"];
 tools_blog_refresh -> blosxom [label="fork"];
-tools_blog_refresh -> var_blog;
 etc_blosxom_conf [label="etc/blosxom.conf\nconfiguration file"];
 etc_blosxom_conf -> blosxom;
 var_blog -> blosxom;
-var_www_blog [shape=box,label="var/www/blog\ndirectory"];
+var_www_blog [shape=box,label="var/www/blog\ndirectory\naka\n$static_dir"];
 blosxom -> var_www_blog;
 }
 subgraph cluster_4 {
