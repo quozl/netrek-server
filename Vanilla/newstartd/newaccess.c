@@ -113,6 +113,7 @@ int host_access(char *host)
 	return (canplay);
     }
     
+    /* TODO: reduce the time delay caused by this */
     hp = gethostbyaddr((char *) &addr.sin_addr.s_addr, sizeof(U_LONG),
 		       AF_INET);
     if (hp != NULL)
