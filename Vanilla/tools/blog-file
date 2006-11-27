@@ -1,0 +1,37 @@
+#!/bin/sh
+set -e
+
+# activated by daemon when a bloggable event occurs, such as a
+# surrender, genocide or conquer
+
+# $1 is the class of the event
+# $2 is the name of the file written by the daemon with the details
+
+# Note: this script assumes you have the netrek server binary
+# directories in your shell path, so you should source setpath before
+# calling this, for example:
+# . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
+
+# determine where to put the file
+# this must be the same as $datadir in etc/blosxom.conf
+BLOG=`getpath --localstatedir`/blog
+
+# consume the class argument
+CLASS=${1}
+shift
+
+# if the class directory does not exist, assume god does not want it logged
+if test ! -d ${BLOG}/${CLASS}; then
+    exit 1
+fi
+
+# if the caller gave us a file
+if test -f ${1}; then
+    # move the file to the directory
+    mv ${1} ${BLOG}/${CLASS}/
+else
+    echo "blog-file: file ${1} does not exist" 1>&2
+    exit 1
+fi
+
+blog-update

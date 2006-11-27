@@ -1,12 +1,11 @@
 #!/bin/sh
 set -e
 
-# activated by daemon or user when a bloggable event occurs, such as a
-# surrender, genocide or conquer
+# activated by user to blog an event
 
 # $1 is the class of the event
-# $2 is the name of the file written by the daemon with the details
-# or $2 and onwards are text words to add to a new file
+# $2 is the title of the event
+# $3 and onwards are text to further explain the event
 
 # Note: this script assumes you have the netrek server binary
 # directories in your shell path, so you should source setpath before
@@ -14,6 +13,7 @@ set -e
 # . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
 
 # determine where to put the file
+# this must be the same as $datadir in etc/blosxom.conf
 BLOG=`getpath --localstatedir`/blog
 
 # set full path to blosxom script
@@ -26,38 +26,20 @@ shift
 
 # if the class directory does not exist, assume god does not want it logged
 if test ! -d ${BLOG}/${CLASS}; then
+    echo "blog: class ${CLASS} is not enabled" 1>&2
     exit 1
 fi
 
-# if the caller gave us a file
-if test -f ${1}; then
-    # move the file to the directory
-    mv ${1} ${BLOG}/${CLASS}/
-else
-    # create a file with the text from remainder of command line
+# create a file with the text from remainder of command line
+FILE=${BLOG}/${CLASS}/`date +%s`.txt
+while test -f ${FILE}; do
+    sleep 0.5
     FILE=${BLOG}/${CLASS}/`date +%s`.txt
-    while test -f ${FILE}; do
-	sleep 0.5
-	FILE=${BLOG}/${CLASS}/`date +%s`.txt
-    done
-    echo $* > ${FILE}
-fi
+done
+TITLE=${1}
+shift
+( echo ${TITLE} && echo "" && echo $* ) > ${FILE}
 
-# avoid blosxom if we don't have it available
-if test ! -x ${BLOSXOM}; then
-    exit 2
-fi
+blog-update
 
-# try to prevent multiple instances of blosxom, 
-# attempt a filesystem lock, see debian package procmail
-if test -x /usr/bin/lockfile; then
-    lockfile ${BLOG}/lock
-fi
-
-# refresh the static blog content, continue if fail
-${BLOSXOM} \
-    -f="`getpath --sysconfdir`/blosxom.conf" \
-    -password='netrek' 1>/dev/null 2>/dev/null || true
-
-# remove the lock
-rm -f ${BLOG}/lock
+echo "blog: to add more to this item, edit ${FILE} and run blog-update." 1>&2

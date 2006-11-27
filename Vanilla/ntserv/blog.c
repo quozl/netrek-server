@@ -11,13 +11,14 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "alarm.h"
 
 void blog_file(char *class, char *file)
 {
   char blog[256];
 
   if (!blogging) return;
-  snprintf(blog, 256-1, "%s/blog", LIBDIR);
+  snprintf(blog, 256-1, "%s/blog-file", LIBDIR);
 
   if (fork() == 0) {
     alarm_prevent_inheritance();

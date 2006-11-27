@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+# determine where blog input files are
+# this must be the same as $datadir in etc/blosxom.conf
+BLOG=`getpath --localstatedir`/blog
+
+# set full path to blosxom script
+# TODO: detect blosxom using configure, --with-blosxom=/path/to/program
+BLOSXOM=/usr/lib/cgi-bin/blosxom
+
+# avoid blosxom if we don't have it available
+if test ! -x ${BLOSXOM}; then
+    echo "blog-update: cannot proceed, blosxom not found" 1>&2
+    exit 2
+fi
+
+# try to prevent multiple instances of blosxom, 
+# attempt a filesystem lock, see debian package procmail
+if test -x /usr/bin/lockfile; then
+    echo "blog-update: blog lock created" 1>&2
+    lockfile ${BLOG}/lock
+fi
+
+# refresh the static blog content, continue if fail
+${BLOSXOM} \
+    -f="`getpath --sysconfdir`/blosxom.conf" \
+    -password='netrek' $* 1>/dev/null 2>/dev/null || true
+echo "blog-update: blog update attempt complete" 1>&2
+
+# remove the lock
+rm -f ${BLOG}/lock
+echo "blog-update: blog lock removed" 1>&2

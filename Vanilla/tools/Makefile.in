@@ -63,7 +63,9 @@ install: $(EXECS)
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www/blog
 	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(DESTDIR)$(LIBDIR)/tools/updatekeys
 	$(INSTALLPROG) $(INSTALLOPTS) blog $(DESTDIR)$(LIBDIR)/blog
-	$(INSTALLPROG) $(INSTALLOPTS) blog-refresh $(DESTDIR)$(LIBDIR)/blog-refresh
+	$(INSTALLPROG) $(INSTALLOPTS) blog-file $(DESTDIR)$(LIBDIR)/blog-file
+	$(INSTALLPROG) $(INSTALLOPTS) blog-update $(DESTDIR)$(LIBDIR)/blog-update
+	$(INSTALLPROG) $(INSTALLOPTS) blog-update-all $(DESTDIR)$(LIBDIR)/blog-update-all
 	$(INSTALLPROG) $(INSTALLOPTS) blog-purge-old $(DESTDIR)$(LIBDIR)/blog-purge-old
 	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(DESTDIR)$(LIBDIR)/tools/blotpassword
 	$(INSTALLPROG) $(INSTALLOPTS) loadchecker $(DESTDIR)$(LIBDIR)/tools/loadchecker
