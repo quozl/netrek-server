@@ -329,7 +329,7 @@ void do_player_ban(int who, int player, int mflags, int sendto)
 	"%2s has been temporarily banned by their team", j->p_mapchars);
 
     eject_player(j->p_no);
-    if (!bans_add_temporary_by_player(j->p_no)) {
+    if (!bans_add_temporary_by_player(j->p_no, " by the players")) {
       pmessage(0, MALL, addr_mess(who,MALL), 
 	       " temporary ban list is full, ban ineffective");
     }

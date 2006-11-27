@@ -13,7 +13,7 @@ void do_triple_planet_mayhem(void);
 #endif
 
 /* bans.c */
-int bans_add_temporary_by_player(int who);
+int bans_add_temporary_by_player(int who, char *by);
 void bans_age_temporary(int elapsed);
 int bans_check_temporary_remaining();
 int bans_check_temporary(char *ip);

@@ -108,12 +108,13 @@ int main(int argc, char **argv)
         fprintf(stderr, "player %s not found\n", argv[i]);
         return 1;
       }
-      bans_add_temporary_by_player(p->p_no);
+      bans_add_temporary_by_player(p->p_no, " by the administrator");
     }
 
     int remain = 3600, expire = 10;
     int n = 0;
     if (!strcmp(argv[i], "add")) goto state_add;
+    if (++i == argc) return 0;
     goto state_0;
 
  state_add:
