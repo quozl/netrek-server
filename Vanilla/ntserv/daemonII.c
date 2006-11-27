@@ -579,6 +579,7 @@ static void move()
     }
 
     if (++ticks == dietime) {/* no player for 1 minute. kill self */
+        blog_game_over(&status_at_start, status);
         if (debug) {
             ERROR(1,("Ho hum.  1 minute, no activity...\n"));
         }
@@ -589,7 +590,6 @@ static void move()
             doResources();
 #endif
         }
-        blog_game_over(&status_at_start, status);
         exitDaemon(0);
     }
     old_robot = start_robot;
@@ -3622,18 +3622,24 @@ static void checkgen(int loser, struct player *winner)
 
     if ((teams[loser].s_surrender == 0) &&
         (teams[loser].s_plcount == surrenderStart)) {
+        /* shorter for borgs? */
+        /* start the clock 1/27/92 TC */
+        int minutes = binconfirm ? SURRLENGTH : SURRLENGTH*2/3;
+        blog_printf("racial", "%s collapsing\n\n",
+                    "The %s %s %d minutes before the empire collapses.  "
+                    "%d planets are needed to sustain the empire.",
+                    team_name(loser), team_name(loser), team_verb(loser),
+                    minutes, SURREND);
         pmessage(0, MALL, " ", " ");
         pmessage(0, MALL, "GOD->ALL",
                 "The %s %s %d minutes before the empire collapses.",
-                team_name(loser), team_verb(loser),
-                binconfirm ? SURRLENGTH : SURRLENGTH*2/3);
+                team_name(loser), team_verb(loser), minutes);
         pmessage(0, MALL, "GOD->ALL",
                 "%d planets are needed to sustain the empire.",
                 SURREND);
         pmessage(0, MALL, " ", " ");
 
-        teams[loser].s_surrender = binconfirm ? /* shorter for borgs? */
-            SURRLENGTH : SURRLENGTH*2/3; /* start the clock 1/27/92 TC */
+        teams[loser].s_surrender = minutes;
     }
 
     if (teams[loser].s_plcount > 0) return;
@@ -3747,6 +3753,12 @@ static int checkwin(struct player *winner)
 
     if ((teams[winner->p_team].s_surrender > 0) &&
              (teams[winner->p_team].s_plcount == SURREND)) {
+        blog_printf("racial", "%s recovered\n\n",
+                    "The %s %s prevented collapse of the empire, "
+                    "they now have %d planets.",
+                    team_name(winner->p_team),
+                    team_name(winner->p_team), team_verb(winner->p_team),
+                    teams[winner->p_team].s_plcount);
         pmessage(0, MALL, " ", " ");
         pmessage(0, MALL, "GOD->ALL",
                 "The %s %s prevented collapse of the empire.",
