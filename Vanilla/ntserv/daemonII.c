@@ -3625,7 +3625,7 @@ static void checkgen(int loser, struct player *winner)
         /* shorter for borgs? */
         /* start the clock 1/27/92 TC */
         int minutes = binconfirm ? SURRLENGTH : SURRLENGTH*2/3;
-        blog_printf("racial", "%s collapsing\n\n",
+        blog_printf("racial", "%s collapsing\n\n"
                     "The %s %s %d minutes before the empire collapses.  "
                     "%d planets are needed to sustain the empire.",
                     team_name(loser), team_name(loser), team_verb(loser),
@@ -3753,7 +3753,7 @@ static int checkwin(struct player *winner)
 
     if ((teams[winner->p_team].s_surrender > 0) &&
              (teams[winner->p_team].s_plcount == SURREND)) {
-        blog_printf("racial", "%s recovered\n\n",
+        blog_printf("racial", "%s recovered\n\n"
                     "The %s %s prevented collapse of the empire, "
                     "they now have %d planets.",
                     team_name(winner->p_team),
