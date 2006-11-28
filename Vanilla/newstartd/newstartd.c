@@ -57,19 +57,18 @@ static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
 int restart;		/* global flag, set by SIGHUP, cleared by read	*/
 int debug = 0;		/* programmers' debugging flag			*/
 
-int get_connection();
-int read_portfile(char *);
-void deny(void);
-void statistics (int);
-void process(int);
-void reaper_block();
-void reaper_unblock();
-void reaper(int);
-void hangup(int);
-void putpid(void);
+static int get_connection();
+static int read_portfile(char *);
+static int is_host_denied(char *ip);
+static void deny(void);
+static void statistics(int, char *ip);
+static void process(int, char *ip);
+static void reaper_block();
+static void reaper_unblock();
+static void reaper(int);
+static void hangup(int);
+static void putpid(void);
 
-extern int host_access(char *);
- 
 #define SP_BADVERSION 21
 struct badversion_spacket {
   char type;
@@ -103,7 +102,6 @@ struct progrecord {			/* array of data read from file	*/
 
 static int num_progs = 0;
 
-extern char peerhostname[];		/* defined in newaccess.c	*/
 int fd;					/* log file file descriptor	*/
 
 
@@ -301,15 +299,16 @@ int main (int argc, char *argv[])
     /* run until restart requested */
     while (!restart) {
       pid_t pid;
+      struct sockaddr_in addr;
 
       /* wait for one connection */
-      port_idx = get_connection ();
+      port_idx = get_connection (&addr);
       if (port_idx < 0) continue;
       prog[port_idx].accepts++;
 
       /* check this client against denied parties */
-      if (host_access (NULL) == 0) {
-        prog[port_idx].denials++;
+      if (is_host_denied(inet_ntoa(addr.sin_addr))) {
+	prog[port_idx].denials++;
 	deny ();
 	close (0);
 	continue;
@@ -325,7 +324,7 @@ int main (int argc, char *argv[])
 
       /* check for internals */
       if (prog[port_idx].internal) {
-	statistics (port_idx);
+	statistics (port_idx, inet_ntoa(addr.sin_addr));
 	continue;
       }
 
@@ -340,7 +339,8 @@ int main (int argc, char *argv[])
       }
 
       if (pid == 0) {
-	process (port_idx);		/* returns only on error */
+	process (port_idx, inet_ntoa(addr.sin_addr));
+	/* process() returns only on error */
 	exit (0);
       }
 
@@ -373,10 +373,9 @@ int main (int argc, char *argv[])
   }
 }
 
-int get_connection()
+static int get_connection(struct sockaddr_in *peer)
 {
   struct sockaddr_in addr;
-  struct sockaddr_in naddr;
   socklen_t addrlen;
   fd_set accept_fds;
   int i, st, newsock;
@@ -503,12 +502,11 @@ int get_connection()
   /* none of the sockets showed activity? erk */
   if (i >= num_progs) return -1;
 
-  addrlen = sizeof(naddr);
-
   if (prog[i].type == SOCK_STREAM) {
     /* accept stream connections as new socket */
     for (;;) {
-      newsock = accept(sock, (struct sockaddr *) &naddr, &addrlen);
+      addrlen = sizeof(addr);
+      newsock = accept(sock, (struct sockaddr *) peer, &addrlen);
       if (newsock >= 0) break;
       if (errno == EINTR) continue;
       fprintf(stderr, "netrekd: port %d, %s, ", prog[i].port, prog[i].prog);
@@ -529,7 +527,14 @@ int get_connection()
   return i;
 }
 
-void deny(void)
+static int is_host_denied(char *ip)
+{
+  char name[64];
+  snprintf(name, 63, "%s/deny/%s", SYSCONFDIR, ip);
+  return (access(name, F_OK) == 0);
+}
+
+static void deny(void)
 {
   struct badversion_spacket packet;
 
@@ -540,7 +545,7 @@ void deny(void)
 
     time (&curtime);
     sprintf (logname, "Denied %-32.32s %s",
-	     peerhostname,
+	     ip,
 	     ctime(&curtime));
     write (fd, logname, strlen(logname));
   }
@@ -553,7 +558,7 @@ void deny(void)
   sleep (2);
 }
 
-void statistics (int port_idx)
+static void statistics (int port_idx, char *ip)
 {
   FILE *client;
   int i;
@@ -563,8 +568,7 @@ void statistics (int port_idx)
     setsockopt (0, SOL_SOCKET, SO_LINGER, (char *) &linger, sizeof (linger));
     client = fdopen (0, "w");
     if (client != NULL) {
-      if (!strcmp (peerhostname, "localhost")) {
-	/* TODO: above check vulnerable to DNS attack, minor impact */
+      if (!strcmp (ip, "127.0.0.1")) {
 	fprintf (client, "port\taccepts\tdenials\tforks\n" );
 	for (i=0; i<num_progs; i++) {
 	  fprintf (client,
@@ -590,7 +594,7 @@ void statistics (int port_idx)
   if (port_idx) return;
 }
 
-void process (int port_idx)
+static void process (int port_idx, char *ip)
 {
   struct progrecord *pr;
 
@@ -603,7 +607,7 @@ void process (int port_idx)
 
     time (&curtime);
     sprintf (logname, "       %-32.32s %s",
-	     peerhostname,
+	     ip,
 	     ctime(&curtime));
     write (fd, logname, strlen(logname));
     close (fd);
@@ -613,22 +617,22 @@ void process (int port_idx)
   pr = &(prog[port_idx]);
   switch (pr->nargs) {
   case 0:
-    execl (pr->prog, pr->progname, peerhostname, (char *) NULL);
+    execl (pr->prog, pr->progname, ip, (char *) NULL);
     break;
   case 1:
-    execl (pr->prog, pr->progname, pr->arg[0], peerhostname, (char *) NULL);
+    execl (pr->prog, pr->progname, pr->arg[0], ip, (char *) NULL);
     break;
   case 2:
     execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
-	   peerhostname, (char *) NULL);
+	   ip, (char *) NULL);
     break;
   case 3:
     execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
-	   pr->arg[2], peerhostname, (char *) NULL);
+	   pr->arg[2], ip, (char *) NULL);
     break;
   case 4:
     execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
-	   pr->arg[2], pr->arg[3], peerhostname, (char *) NULL);
+	   pr->arg[2], pr->arg[3], ip, (char *) NULL);
     break;
   default: ;
   }
@@ -639,7 +643,7 @@ void process (int port_idx)
 }
 
 /* set flag requesting restart, select() will get EINTR */
-void hangup (int sig)
+static void hangup (int sig)
 {
   restart++;
   HANDLE_SIG (SIGHUP, hangup);
@@ -648,7 +652,7 @@ void hangup (int sig)
   if (sig) return;
 }
 
-void reaper_block()
+static void reaper_block()
 {
   sigset_t set;
   sigemptyset(&set);
@@ -658,7 +662,7 @@ void reaper_block()
   }
 }
 
-void reaper_unblock()
+static void reaper_unblock()
 {
   sigset_t set;
   sigemptyset(&set);
@@ -669,7 +673,7 @@ void reaper_unblock()
 }
 
 /* accept termination of any child processes */
-void reaper (int sig)
+static void reaper (int sig)
 {
   int stat;
   pid_t pid;
@@ -702,7 +706,7 @@ void reaper (int sig)
 }
 
 /* write process id to file to assist with automatic signalling */
-void putpid(void)
+static void putpid(void)
 {
   FILE *file;
 
@@ -712,7 +716,7 @@ void putpid(void)
   fclose (file);
 }
 
-int read_portfile (char *portfile)
+static int read_portfile (char *portfile)
 {
   FILE *fi;
   char buf[BUFSIZ], addrbuf[BUFSIZ], *port;
