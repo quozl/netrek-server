@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -120,6 +121,24 @@ static int udp_tx(struct metaserver *m, char *buffer, int length)
   }
   
   return 1;
+}
+
+static int is_local(const struct player *p)
+{
+#if defined(SOLICIT_NOLOCAL)
+	/*
+	 * If hostname ends with 'localhost', consider it local.
+	 * Not very efficient, but fast enough and less intrusive than
+	 * adding a new flag.
+	 */
+	size_t	l;
+
+	l = strlen(p->p_full_hostname);
+	if (l >= 9 && strstr(p->p_full_hostname, "localhost") ==
+	    &p->p_full_hostname[l - 9])
+		return 1;
+#endif
+	return 0;
 }
 
 void solicit(int force)
@@ -275,7 +294,7 @@ void solicit(int force)
 	if (players[j].p_status == PFREE ||
 	    players[j].p_flags & PFBPROBOT ||
 	    players[j].p_flags & PFROBOT ||
-	    islocal(&players[j]) ||
+	    is_local(&players[j]) ||
 	    strcasestr(players[j].p_login, "robot"))
 	  nfree++;
 	else
@@ -329,7 +348,7 @@ void solicit(int force)
       for (j=0; j<MAXPLAYER; j++) {
 	/* ignore free slots and local players */
         if (players[j].p_status == PFREE ||
-	    islocal(&players[j]) ||
+	    is_local(&players[j]) ||
 #ifdef LTD_STATS
             ltd_ticks(&(players[j]), LTD_TOTAL) == 0
 #else
@@ -383,23 +402,4 @@ void solicit(int force)
       strcpy(m->prior, packet);
     }
   }
-}
-
-int
-islocal(const struct player *p)
-{
-#if defined(SOLICIT_NOLOCAL)
-	/*
-	 * If hostname ends with 'localhost', consider it local.
-	 * Not very efficient, but fast enough and less intrusive than
-	 * adding a new flag.
-	 */
-	size_t	l;
-
-	l = strlen(p->p_full_hostname);
-	if (l >= 9 && strstr(p->p_full_hostname, "localhost") ==
-	    &p->p_full_hostname[l - 9])
-		return 1;
-#endif
-	return 0;
 }
