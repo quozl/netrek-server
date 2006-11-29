@@ -19,7 +19,7 @@ L_OBJS = alarm.o balance.o bans.o bay.o blog.o \
 	enter.o \
 	feature.o features.o \
 	gencmds.o genspkt.o getpath.o getship.o glog.o \
-	interface.o \
+	interface.o ip.o \
 	ltd_stats.o \
 	openmem.o orbit.o \
 	phaser.o ping.o plasma.o \

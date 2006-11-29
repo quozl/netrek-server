@@ -141,6 +141,10 @@ void declare_war(int mask, int refitdelay);
 void do_refit(int type);
 int numPlanets(int owner);
 
+/* ip.c */
+void ip_lookup(char *ip, char *p_full_hostname);
+void ip_waitpid();
+
 /* main.c */
 void exitGame(void);
 int CheckBypass(char *login, char *host, char *file);

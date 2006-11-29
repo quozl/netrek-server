@@ -50,7 +50,6 @@ int main(int argc, char **argv)
     int usage = 0;
     int err = 0;
     char *name, *ptr;
-    struct passwd *pwent;
     int callHost=0;
     time_t starttime;
     int i;
@@ -225,17 +224,16 @@ int main(int argc, char **argv)
     updatePlanets();
     flushSockBuf();
 
+#ifdef FULL_HOSTNAMES
+    /* reverse lookup hostname from ip address */
+    /* clear the host name to indicate work in progress */
+    strcpy(me->p_full_hostname, "");
+    ip_lookup(host, me->p_full_hostname);
+#endif
+
     /* Get login name */
-
-    if ((pwent = getpwuid(getuid())) != NULL)
-	STRNCPY(login, pwent->pw_name, NAME_LEN);
-    else
-	STRNCPY(login, "Bozo", NAME_LEN);
-    login[NAME_LEN - 1] = '\0';
-    endpwent();
-
+    strcpy(login, "unknown");
     strcpy(pseudo, "Guest");
-
     strcpy(me->p_name, pseudo);
     me->p_team=ALLTEAM;
     getname();
@@ -283,8 +281,11 @@ int main(int argc, char **argv)
 #ifdef FULL_HOSTNAMES
     /* assume this is only place p_monitor is set, and mirror accordingly */
     /* 4/13/92 TC */
-    STRNCPY(me->p_full_hostname, host, sizeof(me->p_full_hostname));
-    me->p_full_hostname[sizeof(me->p_full_hostname) - 1] = '\0';
+    ip_waitpid();
+    if (strlen(me->p_full_hostname) == 0) {
+      STRNCPY(me->p_full_hostname, host, sizeof(me->p_full_hostname));
+      me->p_full_hostname[sizeof(me->p_full_hostname) - 1] = '\0';
+    }
 #endif
 
     logEntry(); /* moved down to get login/monitor 2/12/92 TMC */
