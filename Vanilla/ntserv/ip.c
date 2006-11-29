@@ -13,6 +13,7 @@
 #include "struct.h"
 #include "data.h"
 #include "alarm.h"
+#include "ip.h"
 
 pid_t pid;
 

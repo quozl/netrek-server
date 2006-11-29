@@ -24,6 +24,7 @@
 #include "../cflags.h"
 #endif
 #include "proto.h"
+#include "ip.h"
 
 #ifndef TRUE
 #define TRUE 1
