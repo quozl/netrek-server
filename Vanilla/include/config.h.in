@@ -185,10 +185,6 @@
                                                      communication */
 #define FEATURES
 
-                                /*  FULL_HOSTNAMES - Show entire player
-                                                     location (domain) */
-#define FULL_HOSTNAMES
-
 				/*  REVERSED_HOSTNAMES - Truncate the short
                                                      hostname from the end
                                                      rather than the start */

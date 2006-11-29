@@ -529,8 +529,8 @@ static int get_connection(struct sockaddr_in *peer)
 
 static int is_host_denied(char *ip)
 {
-  char name[64];
-  snprintf(name, 63, "%s/deny/%s", SYSCONFDIR, ip);
+  char name[128];
+  snprintf(name, 127, "%s/deny/%s", SYSCONFDIR, ip);
   return (access(name, F_OK) == 0);
 }
 

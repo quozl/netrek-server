@@ -67,15 +67,10 @@ void robonameset(struct player *myself)
     (void) strncpy(myself->p_monitor, "Nowhere", sizeof(myself->p_monitor));
     myself->p_monitor[sizeof(myself->p_monitor) - 1] = '\0';
 
-#ifdef FULL_HOSTNAMES
-
     /* repeat "Nowhere" for completeness 4/13/92 TC */
     (void) strncpy(myself->p_full_hostname, "Nowhere",
 		   sizeof(myself->p_full_hostname));
     myself->p_full_hostname[sizeof(myself->p_full_hostname) - 1] = '\0';
-
-#endif
-
 }
 
 

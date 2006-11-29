@@ -397,9 +397,7 @@ struct player {
     short p_tractor;		/* What player is in tractor lock */
     int p_pos;			/* My position in the player file */
     int w_queue;		/* Waitqueue of my team */
-#ifdef FULL_HOSTNAMES
     char p_full_hostname[MAXHOSTNAMESIZE];	/* full hostname 4/13/92 TC */
-#endif
 #ifdef PING
     int  p_avrt;               /* average round trip time */
     int  p_stdv;               /* standard deviation in round trip time */

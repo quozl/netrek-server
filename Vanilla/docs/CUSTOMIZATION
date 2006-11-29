@@ -20,9 +20,6 @@ that can change the server.
 	FEATURES - This is for client/server communication. You can specify
 		options in the .features file that some servers may have.
 
-	FULL_HOSTNAMES - Show the player's full domain when they enter/leave
-		the game.
-
 	INL_RESOURCES - Follow the INL's rules for resources when making a new
 		galaxy.
 

@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 	printUsage(name);
 	exit(err);
     }
-    /* accept host name from newstartd */
+    /* accept ip address from newstartd */
     if (argc > 0)
 	host = argv[0];
     srandom((int)getpid() * time((time_t *) 0));
@@ -194,6 +194,7 @@ int main(int argc, char **argv)
 
     me->p_process = getpid ();
     me->p_timerdelay = defskip;
+    strncpy(me->p_ip, host, sizeof(me->p_ip));
 
     me->p_mapchars[0] = 'X';
     me->p_mapchars[1] = shipnos[pno];
@@ -224,12 +225,10 @@ int main(int argc, char **argv)
     updatePlanets();
     flushSockBuf();
 
-#ifdef FULL_HOSTNAMES
     /* reverse lookup hostname from ip address */
     /* clear the host name to indicate work in progress */
     strcpy(me->p_full_hostname, "");
-    ip_lookup(host, me->p_full_hostname);
-#endif
+    ip_lookup(host, me->p_full_hostname, sizeof(me->p_full_hostname));
 
     /* Get login name */
     strcpy(login, "unknown");
@@ -259,26 +258,14 @@ int main(int argc, char **argv)
     STRNCPY(me->p_login, login, NAME_LEN);
     me->p_login[NAME_LEN - 1] = '\0';
 
+    /* set initial ignore status */
     {
-	int i;
-	for (i = 0; i < MAXPLAYER; i++) ignored[i] = 0;
+      int i, mode = 0;
+      if (ip_ignore(me->p_ip)) { mode = MALL; }
+      if (ip_mute(me->p_ip)) { mode = MALL | MTEAM | MINDIV; }
+      for (i = 0; i < MAXPLAYER; i++) ignored[i] = mode;
     }
 
-    /* store client IP address from socket peer obtained by checkSocket() */
-    STRNCPY(me->p_ip, ip, sizeof(me->p_ip));
-
-#ifdef REVERSED_HOSTNAMES
-    if (strlen(host) >= NAME_LEN) {
-      STRNCPY(me->p_monitor, host + (strlen(host) - NAME_LEN + 1), NAME_LEN);
-      /* The # denotes truncation */
-      me->p_monitor[0] = '#';
-    }
-    else
-#endif
-    STRNCPY(me->p_monitor, host, NAME_LEN);
-    me->p_monitor[NAME_LEN - 1] = '\0';
-
-#ifdef FULL_HOSTNAMES
     /* assume this is only place p_monitor is set, and mirror accordingly */
     /* 4/13/92 TC */
     ip_waitpid();
@@ -286,19 +273,32 @@ int main(int argc, char **argv)
       STRNCPY(me->p_full_hostname, host, sizeof(me->p_full_hostname));
       me->p_full_hostname[sizeof(me->p_full_hostname) - 1] = '\0';
     }
+
+#ifdef REVERSED_HOSTNAMES
+    if (strlen(me->p_full_hostname) >= NAME_LEN) {
+      STRNCPY(me->p_monitor, me->p_full_hostname + (strlen(me->p_full_hostname) - NAME_LEN + 1), NAME_LEN);
+      /* The # denotes truncation */
+      me->p_monitor[0] = '#';
+    }
+    else
 #endif
+    {
+      STRNCPY(me->p_monitor, me->p_full_hostname, NAME_LEN);
+      me->p_monitor[NAME_LEN - 1] = '\0';
+    }
 
     logEntry(); /* moved down to get login/monitor 2/12/92 TMC */
 
-#ifdef NO_HOSTNAMES
-    strcpy(me->p_full_hostname, "hidden");
-    strcpy(me->p_monitor, "hidden");
-    strcpy(me->p_login, "anonymous");
-#endif
-
+    whitelisted = ip_whitelisted(me->p_ip);
     if (whitelisted) {
       strcpy(me->p_full_hostname, "hidden");
       strcpy(me->p_monitor, "hidden");
+    }
+    if (ip_hide(me->p_ip)) {
+      strcpy(me->p_full_hostname, "hidden");
+      strcpy(me->p_monitor, "hidden");
+      strcpy(me->p_login, "anonymous");
+      strcpy(me->p_ip, "127.0.0.1");
     }
 
 #ifdef PING     /* 0 might just be legit for a local player */
@@ -424,16 +424,6 @@ void exitGame(void)
     if (me != NULL && me->p_team != ALLTEAM) {
         sprintf(addrbuf, " %c%c->ALL",
 	   teamlet[me->p_team], shipnos[me->p_no]);
-#ifndef FULL_HOSTNAMES
-	/* old-style leaving message 4/13/92 TC */
-	pmessage2(0, MALL | MLEAVE, addrbuf, me->p_no,
-	    "%s %s (%s) leaving the game (%.16s@%.16s)", 
-	    ranks[me->p_stats.st_rank].name,
-	    me->p_name,
-	    me->p_mapchars, 
-	    me->p_login,
-	    me->p_monitor);
-#else
 	/* new-style leaving message 4/13/92 TC */
 	pmessage2(0, MALL | MLEAVE, addrbuf, me->p_no, 
 	    "%s %s (%s) leaving game (%.16s@%.32s)", 
@@ -442,7 +432,6 @@ void exitGame(void)
 	    me->p_mapchars, 
 	    me->p_login,
 	    me->p_full_hostname);
-#endif
 	me->p_stats.st_flags &= ~ST_CYBORG; /* clear this flag 8/27/91 TC */
 	savestats();
 	printStats();
@@ -796,11 +785,7 @@ static void printStats(void)
 #endif /* LTD_STATS */
 	    numPlanets(me->p_team),
 	    me->p_login,
-#ifndef FULL_HOSTNAMES
-	    me->p_monitor,
-#else
 	    me->p_full_hostname,
-#endif
 	    ctime(&curtime));
     fclose(logfile);
 }

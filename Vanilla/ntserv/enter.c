@@ -251,15 +251,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	/* NBT added...nicer output I think */
 
 	if (lastrank != mystats->st_rank) {
-#ifndef FULLHOSTNAMES
-	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
-	        "%.16s (%2.2s) promoted to %s (%.16s@%.16s)",
-		me->p_name,
-		me->p_mapchars,
-		ranks[me->p_stats.st_rank].name,
-		me->p_login,
-		me->p_monitor);
-#else
 	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
 	        "%.16s (%2.2s) promoted to %s (%.16s@%.32s)",
 		me->p_name,
@@ -267,18 +258,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
                 ranks[me->p_stats.st_rank].name,
                 me->p_login,
 		me->p_full_hostname);
-#endif
 	} else {
-#ifndef FULL_HOSTNAMES
-	/* old-style join message 4/13/92 TC */
-	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
-	        "%s %.16s joining as %2.2s (%.16s@%.16s)", 
-		ranks[me->p_stats.st_rank].name, 
-		me->p_name, 
-		me->p_mapchars, 
-		me->p_login,
-		me->p_monitor);
-#else
 	/* new-style join message 4/13/92 TC */
 	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
 	        "%s %.16s is now %2.2s (%.16s@%.32s)", 
@@ -287,7 +267,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_mapchars, 
 		me->p_login,
 		me->p_full_hostname);
-#endif
 	}
 
 	lastrank = mystats->st_rank;

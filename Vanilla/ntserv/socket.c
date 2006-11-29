@@ -1639,12 +1639,7 @@ void logEntry(void)
 	    shipnos[me->p_no],
 	    ctime(&curtime),
 	    me->p_login, /* debug 2/21/92 TMC */
-#ifndef FULL_HOSTNAMES
-	    /* revised join log message, 4/13/92 TC */
-	    me->p_monitor
-#else
 	    me->p_full_hostname
-#endif
 	);
     fclose(logfile);
 }
@@ -1703,13 +1698,8 @@ static int gwrite(int fd, char *wbuf, size_t size)
 		printUdpInfo();
 		logmessage("UDP gwrite failed:");
 	    }
-#ifndef FULL_HOSTNAMES
-	    sprintf(tempbuf, "Died in gwrite, n=%d, errno=%d <%s@%s>",
-		    n, errno, me->p_login, me->p_monitor);
-#else
 	    sprintf(tempbuf, "Died in gwrite, n=%d, errno=%d <%s@%s>",
 		    n, errno, me->p_login, me->p_full_hostname);
-#endif
 	    logmessage(tempbuf);
 	    return(-1);
 	}
@@ -2821,13 +2811,8 @@ static int check_mesgs(struct mesg_cpacket  *packet)
 #else
 	strftime(tbuf, 40, "%Y-%m-%d %T", tmv);
 #endif
-#ifdef FULL_HOSTNAMES
 	sprintf(buf, "%s %s@%s %s \"%s\"", tbuf, me->p_login, 
 		me->p_full_hostname, me->p_longname, packet->mesg);
-#else
-	sprintf(buf, "%s %s@%s %s \"%s\"", tbuf, me->p_login, 
-		me->p_monitor, me->p_longname, packet->mesg);
-#endif
 	if(logall){
 	    if(!mlog) {
 		ERROR(1,( "ntserv: ERROR, null mlog file descriptor\n"));

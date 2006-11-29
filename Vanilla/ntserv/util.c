@@ -115,7 +115,6 @@ int find_slot_by_host(char *host, int j)
   struct player *p;
   int i;
 
-#ifdef FULL_HOSTNAMES
   p = &players[0];
   for(i=j;i<MAXPLAYER;i++) {
     if ( (p->p_status != PFREE) && (!(p->p_flags & PFROBOT))) {
@@ -123,7 +122,6 @@ int find_slot_by_host(char *host, int j)
     }
     p++;
   }
-#endif
   return -1;
 }
 

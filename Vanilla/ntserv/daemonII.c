@@ -472,12 +472,7 @@ static int check_scummers(int verbose)
                   fprintf(fp,"  %2s: %-16s  <%s@%s> %6.2f\n",
                     players[j].p_mapchars, players[j].p_name,
                     players[j].p_login,
-#ifndef FULL_HOSTNAMES
-                    players[j].p_monitor,
-#else
                     players[j].p_full_hostname,
-#endif
-
                     players[j].p_kills);
                 }
             }

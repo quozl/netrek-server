@@ -147,11 +147,7 @@ int main(int argc, char **argv)
 #endif
 		   (fixed_name) ? fixed_name : players[i].p_name,
 		   players[i].p_login,
-#ifdef FULL_HOSTNAMES
 		   players[i].p_full_hostname,
-#else
-		   players[i].p_monitor,
-#endif
 		   '\n');
             free(fixed_name);
 	    break;

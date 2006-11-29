@@ -16,7 +16,9 @@
 
 pid_t pid;
 
-void ip_lookup(char *ip, char *p_full_hostname)
+// TODO: set an alarm and die if no response in gethostbyaddr
+
+void ip_lookup(char *ip, char *p_full_hostname, int len)
 {
   /* resolve the host name in a new process */
   pid = fork();
@@ -45,7 +47,8 @@ void ip_lookup(char *ip, char *p_full_hostname)
   }
 
   /* set the address in shared memory */
-  strcpy(p_full_hostname, hostent->h_name);
+  p_full_hostname[len-1] = '\0';
+  strncpy(p_full_hostname, hostent->h_name, len-1);
   ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
   _exit(0);
 }
@@ -53,4 +56,31 @@ void ip_lookup(char *ip, char *p_full_hostname)
 void ip_waitpid()
 {
   waitpid(pid, NULL, 0);
+}
+
+static int ip_test(char *prefix, char *ip)
+{
+  char name[128];
+  snprintf(name, 127, "%s/%s/%s", SYSCONFDIR, prefix, ip);
+  return (access(name, F_OK) == 0);
+}
+
+/* whitelist, whether to trust user more */
+int ip_whitelisted(char *ip) {
+  return ip_test("whitelist", ip);
+}
+
+/* hide, whether to hide ip address and host name */
+int ip_hide(char *ip) {
+  return ip_test("hide", ip);
+}
+
+/* mute, default :ita to individual, team and all ignore */
+int ip_mute(char *ip) {
+  return ip_test("mute", ip);
+}
+
+/* ignore, default :ita to individual ignore */
+int ip_ignore(char *ip) {
+  return ip_test("ignore", ip);
 }

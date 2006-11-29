@@ -388,7 +388,7 @@ void solicit(int force)
 int
 islocal(const struct player *p)
 {
-#if defined(SOLICIT_NOLOCAL) && defined(FULL_HOSTNAMES)
+#if defined(SOLICIT_NOLOCAL)
 	/*
 	 * If hostname ends with 'localhost', consider it local.
 	 * Not very efficient, but fast enough and less intrusive than
