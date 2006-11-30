@@ -1018,21 +1018,25 @@ int end_tourney()
 
     
     sprintf(name, "%s.%d", N_INLLOG, (int) tv.tv_sec);
-    rename(N_INLLOG, name);
+    if (rename(N_INLLOG, name) != 0)
+      ERROR(1,("Rename of INL log failed.\n"));
 
     if ((inl_log = fopen(N_INLLOG,"w+"))==NULL) {
       ERROR(1,("Could not re-open INL log file.\n"));
       exit(1);
     }
 
-    sprintf(name, "%s.%d", N_PLAYERFILE, (int) tv.tv_sec);
-    rename(N_PLAYERFILE, name);
+    sprintf(name, "%s.%d", PlayerFile, (int) tv.tv_sec);
+    if (rename(PlayerFile, name) != 0)
+      ERROR(1,("Rename of player file failed.\n"));
 
-    sprintf(name, "%s.%d", N_PLFILE, (int) tv.tv_sec);
-    rename(N_PLFILE, name);
+    sprintf(name, "%s.%d", PlFile, (int) tv.tv_sec);
+    if (rename(PlFile, name) != 0)
+      ERROR(1,("Rename of planet file failed.\n"));
 
-    sprintf(name, "%s.%d", N_GLOBAL, (int) tv.tv_sec);
-    rename(N_GLOBAL, name);
+    sprintf(name, "%s.%d", Global, (int) tv.tv_sec);
+    if (rename(Global, name) != 0)
+      ERROR(1,("Rename of global file failed.\n"));
 
     /* Stop cambot. */
     if (cambot_pid > 0) {
@@ -1040,7 +1044,8 @@ int end_tourney()
         waitpid(cambot_pid, NULL, 0);
         cambot_pid = 0;
         sprintf(name, "%s.%d", Cambot_out, (int) tv.tv_sec);
-        rename(Cambot_out, name);
+        if (rename(Cambot_out, name) != 0)
+            ERROR(1,("Rename of cambot file failed.\n"));
     }
 
     for (c=0; c < INLTEAM; c++) {
