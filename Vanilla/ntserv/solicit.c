@@ -243,15 +243,11 @@ void solicit(int force)
   for (i=0; i<MAXMETASERVERS; i++) {
     struct metaserver *m = &metaservers[i];
     int j;
-    
-    ERROR(9,("solicit[%d](ours:'%s' type='%s' pport=%d oport=%d meta='%s' mport=%d)\n", i, m->ours, m->type, m->pport, m->oport, m->host, m->port));
 
     /* skip empty metaserver entries */
-    if (m->sock == -1)
-    {
-      ERROR(7,("  skip empty metaserver entries\n"));
-      continue;
-    }
+    if (m->sock == -1) continue;
+    
+    ERROR(9,("solicit[%d](ours:'%s' type='%s' pport=%d oport=%d meta='%s' mport=%d)\n", i, m->ours, m->type, m->pport, m->oport, m->host, m->port));
 
     /* only process entries with the correct server type */
     if (inl_mode && tolower(m->type[0]) != 'i')
