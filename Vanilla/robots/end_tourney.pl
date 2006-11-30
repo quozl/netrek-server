@@ -73,7 +73,7 @@ if ( $id ) {
     $cambotfile = "cambot.pkt";
 }
 
-system("./tools/ltd_dump players." . $id . " > $inputfile");
+system("./tools/ltd_dump `./tools/getpath --localstatedir`/players." . $id . " > $inputfile")
 
 open (INPUT,"$inputfile");
 open (OUTPUT,">$outputfile");
