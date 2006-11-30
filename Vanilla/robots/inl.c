@@ -28,6 +28,7 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "ltd_stats.h"
+#include "blog.h"
 
 /*
 
@@ -225,6 +226,7 @@ main(argc, argv)
     inlmove();
   }
   cleanup();
+  return 0;
 }
 
 void
@@ -999,6 +1001,7 @@ int end_tourney()
     gettimeofday(&tv, (struct timezone *) 0);
     fprintf(inl_log, "TIME: Game ending at %d seconds\n", (int) tv.tv_sec);
     fclose(inl_log);
+    blog_printf("inl", "INL robot moderated game ended at %d\n\nLook for your stats at http://www.netrek.org/stats/SERVERNAME/%d/\n", (int) tv.tv_sec, (int) tv.tv_sec);
 
     sleep(2); /* a kluge to allow time for all the ntservs to run */
               /* savestats() before stats-post processing I hope  */
