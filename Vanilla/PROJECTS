@@ -3,6 +3,12 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- move ignored[] to struct player, and make it persistent by
+          ip address of source and target.  Idea credit to Bill on
+          misinterpretation of Quozl's motd update: "New feature added
+          to allow IP address specific :a or :ita pre-set, to handle
+          regular abusive message senders."
+
 	- tools/players.c ... pc() doesn't exclude robots, packet says 
           bronco even if run on a sturgeon server.
 
