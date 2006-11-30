@@ -1,4 +1,6 @@
-#!/bin/sh
 LIBDIR=@libdir@
 ROOT=`${LIBDIR}/tools/getpath`
 export PATH=${ROOT}/bin:${ROOT}/lib:${ROOT}/lib/tools:${PATH}
+
+# designed for people who use who use /bin/sh or /bin/bash bourne style shell
+# type "source setpath" to use
