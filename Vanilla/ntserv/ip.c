@@ -35,7 +35,7 @@ void ip_lookup(char *ip, char *p_full_hostname, int len)
   struct in_addr addr;
   if (inet_aton(ip, &addr) == 0) {
     ERROR(2,("ip_to_full_hostname: numeric ip address not valid format %s\n", ip));
-    strcpy(p_full_hostname, "unknown");
+    strcpy(p_full_hostname, ip);
     _exit(1);
   }
 
@@ -43,7 +43,7 @@ void ip_lookup(char *ip, char *p_full_hostname, int len)
   struct hostent *hostent = gethostbyaddr(&addr, sizeof(addr), AF_INET);
   if (hostent == NULL) {
     ERROR(2,("ip_to_full_hostname: gethostbyaddr failed for %s\n", ip));
-    strcpy(p_full_hostname, "unknown");
+    strcpy(p_full_hostname, ip);
     _exit(1);
   }
 
