@@ -73,13 +73,6 @@ struct queuewait {
 
 /* End of waitq related stuff */
 
-struct context {
-    int daemon;         /* pid_t of daemon */
-    int blog_pickup_game_full;
-    int blog_pickup_queue_full;
-    int quorum[2];      /* teams involved in t-mode */
-};
-
 struct status {
     int		active;
     u_char	tourn;		/* Tournament mode? */
@@ -90,6 +83,18 @@ struct status {
     int		gameup;
     /* CAUTION, adding to this struct invalidates var/global */
 };
+
+struct context {
+    int daemon;                 /* pid_t of daemon */
+    int ticks;                  /* cycle counter */
+    int ts;                     /* cycle counter at last t-mode begin */
+    int te;                     /* cycle counter at last t-mode end */
+    int quorum[2];              /* teams involved in t-mode */
+    int blog_pickup_game_full;
+    int blog_pickup_queue_full;
+    struct status start;        /* status copy at time of daemon cold start */
+};
+
 
 /* The following defines are for gameup field */
 #define GU_GAMEOK 1
@@ -602,10 +607,10 @@ struct ban {
 };
 
 struct memory {
-    struct player	players[MAXPLAYER];
-    struct torp		torps[MAXPLAYER * (MAXTORP + MAXPLASMA)];
     struct context	context[1];
     struct status	status[1];
+    struct player	players[MAXPLAYER];
+    struct torp		torps[MAXPLAYER * (MAXTORP + MAXPLASMA)];
     struct planet	planets[MAXPLANETS];
     struct phaser	phasers[MAXPLAYER];
     struct mctl		mctl[1];

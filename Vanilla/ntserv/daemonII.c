@@ -45,9 +45,9 @@ union semun {
 #endif /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
 #endif /*PUCK_FIRST*/
 
-#define fuse(X) ((ticks % (X)) == 0)
+#define fuse(X) ((context->ticks % (X)) == 0)
 #define TOURNEXTENSION 15       /* Tmode gone for 15 seconds 8/26/91 TC */
-#define NotTmode(X) (!(status->tourn) && ((X - tourntimestamp)/10 > TOURNEXTENSION))
+#define NotTmode(X) (!(status->tourn) && ((X - context->te)/10 > TOURNEXTENSION))
 
 #undef PMOVEMENT
 
@@ -113,31 +113,42 @@ static void genocideMessage(int loser, int winner);
 static void conquerMessage(int winner);
 static void displayBest(FILE *conqfile, int team, int type);
 static void fork_robot(int robot);
-/* static void doRotateGalaxy(void); */
 static void signal_servers(void);
+
+#ifdef PUCK_FIRST
+static void signal_puck(void);
+#endif /*PUCK_FIRST*/
 
 /* external scope prototypes */
 extern void pinit(void);
 extern void solicit(int force);
 extern void pmove(void);
 
+/* global scope variables */
+
+/* note: consider restart capability before extending these, it may be
+   better to place new variables in struct memory */
+
+static int opt_debug   = 0;             /* --debug                      */
+static int opt_tell    = 0;             /* --tell                       */
+static int opt_restart = 0;             /* --restart                    */
+
+static int sig_restart = 0;             /* restart signal received      */
+
+static int tcount[MAXTEAM + 1];         /* team count, planet rescue    */
+static int arg[8];                      /* short message                */
+
 #ifdef PUCK_FIRST
-static void signal_puck(void);
 static int pucksem_id;
 static union semun pucksem_arg;
 static struct sembuf pucksem_op[1];
 #endif /*PUCK_FIRST*/
 
-static int debug = 0;
-static int ticks = 0;
-static int tourntimestamp = 0; /* ticks since last Tmode 8/2/91 TC */
-
-static int tcount[MAXTEAM + 1];
-u_char getbearing();
-
-int arg[8];
-
-struct status status_at_start;
+void restart_handler(int signum)
+{
+  sig_restart++;
+  HANDLE_SIG(SIGHUP, restart_handler);
+}
 
 int main(int argc, char **argv)
 {
@@ -147,35 +158,60 @@ int main(int argc, char **argv)
     int glfd, plfd;
 
 #ifdef AUTOMOTD
-  time_t        mnow;
-  struct stat   mstat;
+    time_t        mnow;
+    struct stat   mstat;
 #endif
 
-    if (argc > 1)
-        debug = 1;
+    i = 1;
+    for(i=1;argc>i;i++) {
+        if (!strcmp(argv[i], "--debug")) { opt_debug = 1; continue; }
+        if (!strcmp(argv[i], "--restart")) { opt_restart++; continue; }
+        if (!strcmp(argv[i], "--tell")) { opt_tell++; continue; }
+    }
 
     getpath();          /* added 11/6/92 DRG */
     srandom(getpid());
-    if (!debug) {
+    if (!opt_debug) {
         for (i = 1; i < NSIG; i++) {
             (void) SIGNAL(i, exitDaemon);
         }
         SIGNAL(SIGSTOP, SIG_DFL); /* accept SIGSTOP? 3/6/92 TC */
         SIGNAL(SIGTSTP, SIG_DFL); /* accept SIGTSTP? 3/6/92 TC */
         SIGNAL(SIGCONT, SIG_DFL); /* accept SIGCONT? 3/6/92 TC */
+        SIGNAL(SIGHUP, restart_handler);
     }
     reaper_start();
 
-    /* Set up the shared memory segment and attach to it*/
-    if (!(setupmem())){
-#ifdef ONCHECK
-        execl("/bin/rm", "rm", "-f", On_File, 0);
-#endif
-        exit(1);
+    /* set up the shared memory segment and attach to it */
+    if (opt_restart) {
+        if (openmem(-1) == 0) {
+            ERROR(1,("daemon: restart failed, no existing memory segment\n"));
+            opt_restart = 0;
+        } else {
+            if (context->daemon != getpid()) {
+                if (kill(context->daemon, 0) == 0) {
+                    ERROR(1,("daemon: restart failed, %d still exists\n", context->daemon));
+                    opt_restart = 0;
+                }
+            }
+        }
     }
+    if (!opt_restart)
+        if (!setupmem()) {
+#ifdef ONCHECK
+            unlink(On_File);
+#endif
+            exit(1);
+        }
 
     readsysdefaults();
+    if (opt_restart) goto restart;
     
+    ERROR(1,("daemon: cold start\n"));
+    context->daemon = getpid();
+    context->ticks = context->ts = context->te = 0;
+    context->quorum[0] = context->quorum[1] = NOBODY;
+
     for (i = 0; i < MAXPLAYER; i++) {
         players[i].p_status = PFREE;
 #ifdef LTD_STATS
@@ -211,9 +247,6 @@ int main(int argc, char **argv)
       }
     }
 
-    /* Initialize the planet movement capabilities */
-    pinit();
-
     glfd = open(Global, O_RDWR, 0744);
     if (glfd < 0) {
         ERROR(1,( "No global file.  Resetting all stats\n"));
@@ -236,7 +269,10 @@ int main(int argc, char **argv)
         status->kills=10;
         status->losses=10;
     }
-    context->daemon = getpid();
+
+    memcpy(&context->start, status, sizeof(struct status));
+    context->blog_pickup_game_full = 0;
+    context->blog_pickup_queue_full = 0;
 
 #undef wait
 
@@ -257,6 +293,8 @@ int main(int argc, char **argv)
 
    if (start_robot) fork_robot(start_robot);
 
+ restart:
+
 #ifdef PUCK_FIRST
     if ((pucksem_id = semget(PUCK_FIRST, 1, 0600 | IPC_CREAT)) != -1 ||
         (pucksem_id = semget(PUCK_FIRST, 1, 0600)) != -1) 
@@ -271,7 +309,10 @@ int main(int argc, char **argv)
         ERROR(1,("Unable to get puck semaphore."));
     }
 #endif /*PUCK_FIRST*/
-    
+
+    /* initialize the planet movement capabilities */
+    pinit();
+
     alarm_init();
     udt.it_interval.tv_sec = 0;
     udt.it_interval.tv_usec = reality;
@@ -285,17 +326,19 @@ int main(int argc, char **argv)
     check_load();
 
     /* signal parent ntserv that daemon is ready */
-    kill(getppid(), SIGUSR1);
+    if (opt_tell) kill(getppid(), SIGUSR1);
 
-    memcpy(&status_at_start, status, sizeof(struct status));
-    context->blog_pickup_game_full = 0;
-    context->blog_pickup_queue_full = 0;
-
+    sig_restart = 0;
     x = 0;
     for (;;) {
         alarm_wait_for();
         move();
-        if (debug) {
+        if (sig_restart) {
+            ERROR(1,("daemon: pid %d received SIGHUP for restart, "
+                     "exec'ing\n", getpid()));
+            execl(argv[0], argv[0], "--restart", NULL);
+        }
+        if (opt_debug) {
             if (!(++x % 50))
                 ERROR(1,("Mark %d\n", x));
             if (x > 10000) x = 0;                       /* safety measure */
@@ -573,9 +616,9 @@ static void move()
       return;
     }
 
-    if (++ticks == dietime) {/* no player for 1 minute. kill self */
-        blog_game_over(&status_at_start, status);
-        if (debug) {
+    if (++context->ticks == dietime) {/* no player for 1 minute. kill self */
+        blog_game_over(&context->start, status);
+        if (opt_debug) {
             ERROR(1,("Ho hum.  1 minute, no activity...\n"));
         }
         else {
@@ -649,18 +692,19 @@ static void move()
             oldmessage = (random() % 8);
             political_begin(oldmessage);
             ts = TS_TOURNAMENT;
+            context->ts = context->ticks;
             /* break; */
 
     case TS_TOURNAMENT:
             status->tourn = 1;
             status->time++;
-            tourntimestamp = ticks;
+            context->te = context->ticks;
             if (is_tournament_mode()) break;
             ts = TS_END;
             /* break; */
 
     case TS_END:
-            tourntimestamp = ticks; /* record end of Tmode 8/2/91 TC */
+            context->te = context->ticks; /* record end of Tmode 8/2/91 TC */
             political_end(oldmessage);
             ts = TS_PICKUP;
             break;
@@ -1474,9 +1518,9 @@ static void udplayers(void)
     if (nfree == MAXPLAYER) {
         if (dietime == -1) {
             if (status->gameup & GU_GAMEOK) {
-                dietime = ticks + 600 / PLAYERFUSE;
+                dietime = context->ticks + 600 / PLAYERFUSE;
             } else {
-                dietime = ticks + 10 / PLAYERFUSE;
+                dietime = context->ticks + 10 / PLAYERFUSE;
             }
         }
     } else {
@@ -1541,32 +1585,6 @@ static void udcloak(void)
   }
 }
     
-
-#if 0    
-u_char 
-getcourse(x, y, xme, yme)
-     int x, y, xme, yme;
-{
-  return (u_char) nint((atan2((double) (x - xme),
-                              (double) (yme - y)) / 3.14159 * 128.));
-}
-
-
-u_char 
-get_bearing(xme, yme, x, y, dir)
-     int x, y;
-{
-  int phi = ((int) nint((atan2((double) (x-xme), 
-                               (double) (yme-y)) / 3.14159 * 128.)));
-  if (phi < 0)
-    phi = 256 + phi;
-  if (phi >= dir)
-    return (u_char) (phi - dir);
-  else
-    return (u_char) (256 + phi - dir);
-}
-#endif
-
 /* 
  * Find nearest hostile vessel and turn toward it
  */
@@ -2267,7 +2285,7 @@ static void PopPlanet(int plnum)
     int num;
     int orig_armies;
 
-    if(debug)printf("populating planet %d\n", plnum);
+    if(opt_debug)printf("populating planet %d\n", plnum);
 
     if( plnum <0 || plnum >= MAXPLANETS) return; /* arg sanity */
 
@@ -2343,7 +2361,7 @@ static void RandomizePopOrder(void)
 {
      register int i,tmp,tmp2;
 
-     if(debug) printf("Randomizing planetary pop order!\n");
+     if(opt_debug) printf("Randomizing planetary pop order!\n");
 
      if (pl_poporder[0] < 0) {
      for(i=0;i<MAXPLANETS;i++) /* init the pop order table */
@@ -2358,7 +2376,7 @@ static void RandomizePopOrder(void)
         pl_poporder[i]=tmp2;
         }
 
-     if(debug){
+     if(opt_debug){
          printf("Planet pop order:");
          for(i=0;i<MAXPLANETS;i++)printf(" %d", pl_poporder[i]);
          printf("\n");
@@ -2925,14 +2943,14 @@ static void plfight(void)
        and the planet is in the team's home space */
     
     if (!(inl_mode)) {
-      if (((tcount[l->pl_owner] == 0) || (NotTmode(ticks))) && 
+      if (((tcount[l->pl_owner] == 0) || (NotTmode(context->ticks))) && 
         (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
     !bot_in_game &&
 #endif
         tm_robots[l->pl_owner] == 0) {
 
-        rescue(l->pl_owner, NotTmode(ticks));
+        rescue(l->pl_owner, NotTmode(context->ticks));
         tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
       }
     }
@@ -3119,7 +3137,7 @@ static void beam(void)
 
                             /* out of Tmode?  Terminate.  8/2/91 TC */
 
-                            if (NotTmode(ticks)
+                            if (NotTmode(context->ticks)
 #ifdef PRETSERVER
                                 && !bot_in_game
 #endif
@@ -3515,7 +3533,7 @@ static void exitDaemon(int sig)
             break;
     }
 #ifdef ONCHECK
-    execl("/bin/rm", "rm", "-f", On_File, 0);
+    unlink(On_File);
 #endif
     exit(0);
 }
@@ -3780,7 +3798,7 @@ static int checkwin(struct player *winner)
 static int checksafe(struct player *victim)
 {
     if (safe_idle
-        && (NotTmode(ticks))
+        && (NotTmode(context->ticks))
         && ((victim->p_flags & PFCLOAK) && (victim->p_flags & PFORBIT)
             && (planets[victim->p_planet].pl_flags & PLHOME))
         && (victim->p_kills == 0.0)
@@ -3999,7 +4017,7 @@ static void rescue(int team, int target)
     int pid;
 
     if ((pid = vfork()) == 0) {
-        if (!debug) {
+        if (!opt_debug) {
             (void) close(0);
             (void) close(1);
             (void) close(2);
@@ -4036,7 +4054,7 @@ static void rescue(int team, int target)
         }
         if (target > 0)         /* be fleet 8/28/91 TC */
                 argv[argc++] = "-f";
-        if (debug)
+        if (opt_debug)
                 argv[argc++] =  "-d";
         argv[argc] = (char *) 0;
         execv(Robot, argv);
@@ -4045,7 +4063,7 @@ static void rescue(int team, int target)
         _exit(1);                /* NBT exit just in case a robot couldn't
                                     be started                              */
     }
-    else if (debug) {
+    else if (opt_debug) {
             ERROR(1,( "Forking robot: pid is %d\n", pid));
     }
 }
@@ -4059,7 +4077,7 @@ static void reaper(int sig)
     int pid, status;
 
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        if (debug) ERROR(1,("reaper: pid is %d (status: %d)\n", pid, status));
+        if (opt_debug) ERROR(1,("reaper: pid is %d (status: %d)\n", pid, status));
     }
 }
 
@@ -4405,37 +4423,6 @@ void doResources(void)
 }
 #endif /* INL_RESOURCES */
 
-#ifdef nodef
-static void doRotateGalaxy(void)
-{
-   int i, ox, oy;
-   static int degree=1;
-   
-   if (degree++>3) degree=0;
-   for (i=0; i<40; i++){
-     ox = planets[i].pl_x;
-     oy = planets[i].pl_y;
-     switch(degree){
-       case 0: 
-         break;
-       case 1:
-        planets[i].pl_x = (GWIDTH/2) - oy + (GWIDTH/2);
-        planets[i].pl_y = ox - (GWIDTH/2) + (GWIDTH/2);
-        break;
-       case 2:
-        planets[i].pl_x = (GWIDTH/2) - ox + (GWIDTH/2);
-        planets[i].pl_y = (GWIDTH/2) - oy + (GWIDTH/2);
-        break;
-       case 3:
-        planets[i].pl_x = oy - (GWIDTH/2) + (GWIDTH/2);
-        planets[i].pl_y = (GWIDTH/2) - ox + (GWIDTH/2);
-        break;
-       default: 
-        break;
-       }
-   }
-}
-#endif
 #ifdef PUCK_FIRST
 void do_nuttin (int sig) { }
 

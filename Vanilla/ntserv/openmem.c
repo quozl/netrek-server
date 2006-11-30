@@ -103,7 +103,7 @@ static void startdaemon(void)
 
     i = fork();
     if (i == (pid_t)0) {
-	execl(Daemon, "daemon", (char *) NULL);
+	execl(Daemon, "daemon", "netrek daemon", "--tell", (char *) NULL);
 	perror(Daemon);
 	ERROR(1,("Couldn't start daemon!!!\n"));
 	_exit(1);
