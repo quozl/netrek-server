@@ -12,7 +12,7 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-N_SRC = ${srcdir}/newstartd.c ${srcdir}/newaccess.c ${srcdir}/subnet.c
+N_SRC = ${srcdir}/newstartd.c
 N_OBJS = newstartd.o ../ntserv/libnetrek.a
 
 LIBS = $(EXTRALIBS)
