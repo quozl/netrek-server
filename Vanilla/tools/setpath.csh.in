@@ -1,4 +1,4 @@
-LIBDIR=@libdir@
+set LIBDIR=@libdir@
 set ROOT=`${LIBDIR}/tools/getpath`
 setenv PATH ${ROOT}/bin:${ROOT}/lib:${ROOT}/lib/tools:${PATH}
 
