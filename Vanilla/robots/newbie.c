@@ -197,6 +197,7 @@ void checkmess()
 {
     int         shmemKey = PKEY;
     static int no_humans = 0;
+    static int count = 0;
 
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
@@ -223,6 +224,7 @@ void checkmess()
             no_humans = 0;
     }
 
+    count = (QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT));
 
     /* Stop a robot. */
     if ((ticks % ROBOEXITWAIT) == 0) {
@@ -230,7 +232,7 @@ void checkmess()
             messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
                     totalPlayers(), totalRobots(0), num_humans(0));
         }
-        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) > queues[QU_PICKUP].max_slots)
+        if (((count > queues[QU_PICKUP].max_slots) || (totalPlayers() > min_newbie_slots))
             && (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Stopping a robot");
@@ -246,8 +248,7 @@ void checkmess()
         int next_team = 0;
         num_players(&next_team);
 
-        if (((QUPLAY(QU_NEWBIE_PLR) + QUPLAY(QU_NEWBIE_BOT)) < (queues[QU_PICKUP].max_slots))
-            && (totalRobots(0) < max_newbie_robots))  {
+        if ((count < (queues[QU_PICKUP].max_slots)) && (totalPlayers() < min_newbie_slots)) {
             if(debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Starting a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",

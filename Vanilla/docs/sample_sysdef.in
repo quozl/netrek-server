@@ -217,8 +217,12 @@ BASEPRACTICE=0
 #    Newbie Server
 NEWBIE=0
 #
-#    Maximum number of newbie server robots to allow at once
-MAX_NEWBIE_ROBOTS=16
+#    Target number that sets the minimum number of total players (robots + humans)
+#    that is maintained at all times.  If there are less humans than this number,
+#    the rest of the slots will be filled with robots until this number of slots is
+#    reached.  If there are an equal number or more huamans than this number, there
+#    will be no robots in game.
+MIN_NEWBIE_SLOTS=12
 #
 #    Maximum number of newbie server players to allow at once
 MAX_NEWBIE_PLAYERS=8

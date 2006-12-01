@@ -269,7 +269,7 @@ char Basep[FNAMESIZE];
 #ifdef NEWBIESERVER
 char Newbie[FNAMESIZE];
 int newbie_balance_humans=1;
-int max_newbie_robots=16;
+int min_newbie_slots=12;
 int max_newbie_players=8;
 #endif
 #ifdef PRETSERVER

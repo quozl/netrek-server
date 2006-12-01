@@ -161,8 +161,8 @@ struct sysdef_keywords {
 #ifdef NEWBIESERVER
   { "NEWBIE",	SYSDEF_ROBOT,	(void *) NEWBIE_ROBOT,
     "Enable newbie server robot on startup" },
-  { "MAX_NEWBIE_ROBOTS",     SYSDEF_INT,     &max_newbie_robots,
-    "Maximum number of robots to allow at once" },
+  { "MIN_NEWBIE_SLOTS",     SYSDEF_INT,     &min_newbie_slots,
+    "Minimum number of total (human + robot) players to maintain" },
   { "MAX_NEWBIE_PLAYERS",     SYSDEF_INT,     &max_newbie_players,
     "Maximum number of human players to allow at once" },
   { "NEWBIE_BALANCE_HUMANS",	SYSDEF_INT,	&newbie_balance_humans,

@@ -296,7 +296,7 @@ extern char Basep[FNAMESIZE];
 #endif
 #ifdef NEWBIESERVER
 extern char Newbie[FNAMESIZE];
-extern int max_newbie_robots;
+extern int min_newbie_slots;
 extern int max_newbie_players;
 extern int newbie_balance_humans;
 #endif
