@@ -21,6 +21,248 @@
 /* file scope prototypes */
 static void sendwarn(char *string, int atwar, int team);
 
+#ifdef STURGEON
+int upgrade(int type, struct player *me, char *item, double base, double adder)
+{
+    double  kills_req, kills_gained;
+    char    buf[80];
+
+    if (me->p_undo_upgrade) {
+        if (me->p_upgradelist[type]) {
+            me->p_upgradelist[type]--;
+            kills_gained = baseupgradecost[type] + me->p_upgradelist[type] * adderupgradecost[type];
+            /* Try to increment rank credit first */
+            if (((float) me->p_stats.st_rank - me->p_rankcredit) >= kills_gained
+              && me->p_upgrades <= (float) me->p_stats.st_rank)
+              me->p_rankcredit += kills_gained;
+            else
+              me->p_kills += kills_gained;
+            if (type < UPG_OFFSET)
+              sprintf(buf, "Ship's %s decreased.", item);
+            else /* 1 time upgrades */
+              sprintf(buf, "You have lost the %s upgrade!", item);
+            new_warning(UNDEF,buf);
+            unapply_upgrade(type, me, 1);
+            me->p_upgrades -= kills_gained;
+            me->p_undo_upgrade = 0;
+            return(0);
+        }
+        else {
+            new_warning(UNDEF,"Undo upgrade failed - you don't have that upgrade.");
+            return(0);
+        }
+    }
+    if (type > 0)
+        kills_req = baseupgradecost[type] +
+            me->p_upgradelist[type] * adderupgradecost[type];
+    else
+        kills_req = base + me->p_upgradelist[type] * adder;
+
+    me->p_upgrading = 0;
+    me->p_flags &= ~(PFREFIT);
+    /* Either kills or rank credits can be spent on upgrades */
+    if (type > 0) {
+        if (me->p_kills + me->p_rankcredit < kills_req) {
+            if (type < UPG_OFFSET)
+                sprintf(buf, "You need %0.2f kills/rank credit to increase your ship's %s.",
+                        kills_req, item);
+            else /* 1 time upgrades */
+                sprintf(buf, "You need %0.2f kills/rank credit to gain the %s upgrade.",
+                    kills_req, item);
+            new_warning(UNDEF,buf);
+            return(0);
+        }
+        if (sturgeon_maxupgrades) {
+            if (me->p_upgrades >= sturgeon_maxupgrades) {
+               sprintf(buf, "You are at the upgrade limit and cannot buy any more upgrades.");
+                new_warning(UNDEF,buf);
+                return(0);
+            }
+            else if ((me->p_upgrades + kills_req) > sturgeon_maxupgrades) {
+                sprintf(buf, "That would put you over the upgrade limit,  try buying something less expensive.");
+                new_warning(UNDEF,buf);
+                return(0);
+            }
+        }
+    }
+    /* Only actual kills can buy temporary items */
+    else {
+        if (me->p_kills < kills_req) {
+            sprintf(buf, "You need %0.2f kills to increase your ship's %s.",
+                    kills_req, item);
+            new_warning(UNDEF,buf);
+            return(0);
+        }
+        /* Limit on shield overcharge */
+        if (strstr(item, "shields")) {
+            long shieldboost;
+
+            shieldboost = (100 * me->p_shield)/(me->p_ship.s_maxshield);
+            if (shieldboost >= 200) {
+                sprintf(buf, "Your shields (%ld percent normal) cannot be overcharged any more.", shieldboost);
+                new_warning(UNDEF,buf);
+                return(0);
+            }
+        }
+    }
+    me->p_flags |= PFREFITTING;
+    if (type) {
+        me->p_upgrades += kills_req;
+        me->p_upgradelist[type]++;
+    }
+    /* Decrement any rank credit first, for actual upgrades */
+    if (type > 0 && me->p_rankcredit >= kills_req)
+        me->p_rankcredit -= kills_req;
+    else if (type > 0 && me->p_rankcredit > 0.0) {
+        me->p_kills -= (kills_req - me->p_rankcredit);
+        me->p_rankcredit = 0.0;
+    }
+    else
+        me->p_kills -= kills_req;
+
+    rdelay = me->p_updates + (kills_req * 10);
+    if (type < UPG_OFFSET)
+        sprintf(buf, "Ship's %s increased.", item);
+    else /* 1 time upgrades */
+        sprintf(buf, "You have gained the %s upgrade!", item);
+    new_warning(UNDEF,buf);
+    return(1);
+}
+
+/* Function to actually apply all upgrades */
+void apply_upgrade(int type, struct player *j, int multiplier)
+{
+    int i = multiplier;
+
+    switch(type)
+    {
+    case UPG_TEMPSHIELD: /* Temporary shield boost */
+        j->p_shield += 50 * i;
+        break;
+    case UPG_PERMSHIELD: /* Permanent shield boost */
+        j->p_ship.s_maxshield += 10 * i;
+        break;
+    case UPG_HULL: /* Permanent hull boost */
+        j->p_ship.s_maxdamage += 10 * i;
+        break;
+    case UPG_FUEL: /* Fuel capacity */
+        j->p_ship.s_maxfuel += 250 * i;
+        break;
+    case UPG_RECHARGE: /* Fuel recharge rate */
+        j->p_ship.s_recharge += 1 * i;
+        break;
+    case UPG_MAXWARP: /* Maximum warp speed */
+        j->p_ship.s_maxspeed += 1 * i;
+        break;
+    case UPG_ACCEL: /* Acceleration rate */
+        j->p_ship.s_accint += 10 * i;
+        break;
+    case UPG_DECEL: /* Deceleration rate */
+        j->p_ship.s_decint += 10 * i;
+        break;
+    case UPG_ENGCOOL: /* Engine cool rate */
+        j->p_ship.s_egncoolrate += 1 * i;
+        break;
+    case UPG_PHASER: /* Phaser efficiency */
+        j->p_ship.s_phaserdamage += 2 * i;
+        break;
+    case UPG_TORPSPEED: /* Photon speed */
+        j->p_ship.s_torpspeed += 1 * i;
+        break;
+    case UPG_TORPFUSE: /* Photon fuse */
+        j->p_ship.s_torpfuse += 1 * i;
+        break;
+    case UPG_WPNCOOL: /* Weapon cooling rate */
+        j->p_ship.s_wpncoolrate += 1 * i;
+        break;
+    case UPG_CLOAK: /* Cloak device efficiency - unused */
+        break;
+    case UPG_TPSTR: /* Tractor/pressor strength */
+        j->p_ship.s_tractstr += 100 * i;
+        break;
+    case UPG_TPRANGE: /* Tractor/pressor range */
+        j->p_ship.s_tractrng += .05 * i;
+        break;
+    case UPG_REPAIR: /* Damage control efficiency */
+        j->p_ship.s_repair += 10 * i;
+        break;
+    case UPG_FIRECLOAK: /* Fire while cloaked */
+    case UPG_DETDMG: /* Det own torps for damage */
+    default:
+        break;
+    }
+
+    /* Notify client of new ship stats */
+    sndShipCap();
+}
+
+/* Function to unapply upgrades */
+void unapply_upgrade(int type, struct player *j, int multiplier)
+{
+    int i = multiplier;
+
+    switch(type)
+    {
+    case UPG_PERMSHIELD: /* Permanent shield boost */
+        j->p_ship.s_maxshield -= 10 * i;
+        j->p_shield -= 10 * i;
+        break;
+    case UPG_HULL: /* Permanent hull boost */
+        j->p_ship.s_maxdamage -= 10 * i;
+        break;
+    case UPG_FUEL: /* Fuel capacity */
+        j->p_ship.s_maxfuel -= 250 * i;
+        break;
+    case UPG_RECHARGE: /* Fuel recharge rate */
+        j->p_ship.s_recharge -= 1 * i;
+        break;
+    case UPG_MAXWARP: /* Maximum warp speed */
+        j->p_ship.s_maxspeed -= 1 * i;
+        break;
+    case UPG_ACCEL: /* Acceleration rate */
+        j->p_ship.s_accint -= 10 * i;
+        break;
+    case UPG_DECEL: /* Deceleration rate */
+        j->p_ship.s_decint -= 10 * i;
+        break;
+    case UPG_ENGCOOL: /* Engine cool rate */
+        j->p_ship.s_egncoolrate -= 1 * i;
+        break;
+    case UPG_PHASER: /* Phaser efficiency */
+        j->p_ship.s_phaserdamage -= 2 * i;
+        break;
+    case UPG_TORPSPEED: /* Photon speed */
+        j->p_ship.s_torpspeed -= 1 * i;
+        break;
+    case UPG_TORPFUSE: /* Photon fuse */
+        j->p_ship.s_torpfuse -= 1 * i;
+        break;
+    case UPG_WPNCOOL: /* Weapon cooling rate */
+        j->p_ship.s_wpncoolrate -= 1 * i;
+        break;
+    case UPG_CLOAK: /* Cloak device efficiency - unused */
+        break;
+    case UPG_TPSTR: /* Tractor/pressor strength */
+        j->p_ship.s_tractstr -= 100 * i;
+        break;
+    case UPG_TPRANGE: /* Tractor/pressor range */
+        j->p_ship.s_tractrng -= .05 * i;
+        break;
+    case UPG_REPAIR: /* Damage control efficiency */
+        j->p_ship.s_repair -= 10 * i;
+        break;
+    case UPG_TEMPSHIELD: /* Temp shield boost */
+    case UPG_FIRECLOAK: /* Fire while cloaked */
+    case UPG_DETDMG: /* Det own torps for damage */
+    default:
+        break;
+    }
+
+    /* Notify client of new ship stats */
+    sndShipCap();
+}
+#endif
+
 void set_speed(int speed)
 {
     if (speed > me->p_ship.s_maxspeed) {
