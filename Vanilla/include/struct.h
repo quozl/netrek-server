@@ -517,7 +517,7 @@ struct torp {
 #ifdef STURGEON
   int t_no;         /* Index in owner's torp array */
   char t_pldamage;  /* Nuke damage, if any */
-  char t_plbombed;  /* If this is a nuke, which planet? */
+  short t_plbombed; /* If this is a nuke, which planet? */
   char t_spinspeed; /* Spin speed for mines */
 #endif
 };
