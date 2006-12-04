@@ -193,6 +193,43 @@ struct context {
 #define KPLASMA2	KPLASMA		/* killed by a plasma */
 #endif
 
+#ifdef STURGEON
+#define UPG_TEMPSHIELD	0
+#define UPG_PERMSHIELD	1
+#define UPG_HULL	2
+#define UPG_FUEL	3
+#define UPG_RECHARGE	4
+#define UPG_MAXWARP	5
+#define UPG_ACCEL	6
+#define UPG_DECEL	7
+#define UPG_ENGCOOL	8
+#define UPG_PHASER	9
+#define UPG_TORPSPEED	10
+#define UPG_TORPFUSE	11
+#define UPG_WPNCOOL	12
+#define UPG_CLOAK	13
+#define UPG_TPSTR	14
+#define UPG_TPRANGE	15
+#define UPG_REPAIR	16
+#define UPG_FIRECLOAK	17
+#define UPG_DETDMG	18
+
+#define UPG_OFFSET 17			/* Offset at which upgrades become 1 time upgrades */
+#define NUMUPGRADES 20                  /* Maximum number of different ship upgrades */
+#define NUMSPECIAL 16                   /* Number of special weapon types */
+
+struct specialweapon {
+    char sw_name[20];
+    char sw_type;
+    short sw_fuelcost;
+    int sw_number;
+    int sw_damage;
+    int sw_fuse;
+    char sw_speed;
+    char sw_turns;
+};
+#endif
+
 struct team {
     int s_turns;		/* turns till another starbase is legal */
     int s_surrender;		/* minutes until this team surrenders */
@@ -419,6 +456,16 @@ struct player {
     time_t voting[PV_TOTAL];	/* voting array */
     int p_candock;              /* is this player allowed to dock onto SB */
     int p_transwarp;		/* flags base must have to allow transwarp */
+#ifdef STURGEON
+    short p_refitting;		/* Ship is doing upgrading */
+    float p_upgrades;		/* Number of kills devoted to upgrades */
+    float p_rankcredit;		/* Number of bonus kills based on rank that can be used on upgrades */
+    short p_undo_upgrade;	/* Undo next upgrade selected (1 if yes, 0 if no) */
+    short p_free_upgrade;	/* Number of free upgrade that is gained upon a planet take (0 if no upgrade) */
+    short p_upgradelist[NUMUPGRADES];
+    short p_special;
+    struct specialweapon p_weapons[NUMSPECIAL];
+#endif
 };
 
 struct statentry {
@@ -465,8 +512,13 @@ struct torp {
   u_char t_team;    /* Set of owning team (singleton) */
   char t_whodet;    /* Player number of player who detonated, or NODET */
 #if 0
-  int t_no;         /* Index in owner's torp array.  Not used */
   int t_speed;      /* Moving speed, in player units.  Not used */
+#endif
+#ifdef STURGEON
+  int t_no;         /* Index in owner's torp array */
+  char t_pldamage;  /* Nuke damage, if any */
+  char t_plbombed;  /* If this is a nuke, which planet? */
+  char t_spinspeed; /* Spin speed for mines */
 #endif
 };
 

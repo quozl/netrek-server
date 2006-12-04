@@ -234,6 +234,18 @@ struct sysdef_keywords {
     "Maximum number of duplicate connections from a single IP" },
   { "BLOGGING",		SYSDEF_INT,	&blogging,
     "Enable blogging of server events" },
+#ifdef STURGEON
+  { "STURGEON",			SYSDEF_INT,	&sturgeon,
+    "Use kills to buy ship upgrades" },
+  { "STURGEON_MAXUPGRADES",	SYSDEF_INT,	&sturgeon_maxupgrades,
+    "# of kills worth of upgrades that can be purchased" },
+  { "STURGEON_EXTRAKILLS",	SYSDEF_INT,	&sturgeon_extrakills,
+    "Get .15 kill credit per upgrade on ships that are killed" },
+  { "STURGEON_PLANETUPGRADES",	SYSDEF_INT,	&sturgeon_planetupgrades,
+    "Get free upgrades for taking planets in enemy space" },
+  { "STURGEON_LITE",		SYSDEF_INT,	&sturgeon_lite,
+    "Only lose most expensive upgrade on death." },
+#endif
   { "",			SYSDEF_END,	NULL		}
 };
 
@@ -249,6 +261,7 @@ James Cameron, 14th February 2004.
 - use glade (http://glade.pn.org/) to add to gum/gum.xml and regenerate code
 - leave a comment below if your defaults have not been added to gum
 
+STURGEON*
 EJECT_VOTE_*
 BAN_VOTE_*
 DUPLICATES

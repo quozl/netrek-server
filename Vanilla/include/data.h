@@ -371,4 +371,21 @@ extern int eject_vote_vicious;
 extern int duplicates;
 extern int blogging;
 
+#ifdef STURGEON
+#define SPECPLAS 1
+#define SPECBOMB 2
+#define SPECTORP 3
+#define SPECPHAS 4
+#define SPECMINE 5
+extern int sturgeon;
+extern int sturgeon_maxupgrades;
+extern int sturgeon_extrakills;
+extern int sturgeon_planetupgrades;
+extern int sturgeon_lite;
+extern int upgradeable;
+extern char *upgradename[];
+extern double baseupgradecost[];
+extern double adderupgradecost[];
+#endif
+
 #endif /* _h_data */

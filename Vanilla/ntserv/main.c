@@ -255,6 +255,15 @@ int main(int argc, char **argv)
     me->p_armsbomb=0;
     me->p_genoarmsbomb=0;
     me->p_candock = 1;
+#ifdef STURGEON
+    me->p_upgrades = 0.0;
+    me->p_undo_upgrade = 0;
+    me->p_free_upgrade = 0;
+    for (i = 0; i < NUMUPGRADES; i++)
+      me->p_upgradelist[i] = 0;
+    for (i = 0; i < NUMSPECIAL; i++)
+      me->p_weapons[i].sw_number = 0;
+#endif
 
     STRNCPY(me->p_login, login, NAME_LEN);
     me->p_login[NAME_LEN - 1] = '\0';

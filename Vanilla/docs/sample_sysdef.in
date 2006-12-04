@@ -125,6 +125,24 @@ SBPLANETS=5
 # 	Use Chaos mode (0 = no, 1 = yes)
 CHAOS=0
 #
+#	Use Sturgeon mode (0 = no, 1 = yes)
+STURGEON=0
+#
+#	Maximum number of kills that can be spent on upgrades.
+#	(0 = no limit)
+STURGEON_MAXUPGRADES=100
+#
+#	Give .15 kill credit per upgrade on ships that are killed
+#	(0 = no, 1 = yes)
+STURGEON_EXTRAKILLS=0
+#
+#	Get free upgrades for taking planet in enemy space.  Can go
+#	over MAXUPGRADES with this on (0 = no, 1 = yes)
+STURGEON_PLANETUPGRADES=0
+#
+#	Only lose most expensive upgrade on death (0 = no, 1 = yes)
+STURGEON_LITE=0
+#
 #  Use "wrap around" style galaxy (0 = no, 1 = yes)
 WRAP_GALAXY=0
 #

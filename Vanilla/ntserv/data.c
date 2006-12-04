@@ -428,3 +428,20 @@ int eject_vote_only_if_queue=0;
 int eject_vote_vicious=0;
 int duplicates=3;
 int blogging=1;
+
+#ifdef STURGEON
+int sturgeon = 0;
+int sturgeon_maxupgrades = 100;
+int sturgeon_extrakills = 0;
+int sturgeon_planetupgrades = 0;
+int sturgeon_lite = 0;
+int upgradeable = 1;
+char *upgradename[] = { "misc", "shield", "hull", "fuel", "recharge", "maxwarp",
+                       "accel", "decel", "engine cool", "phaser damage",
+                       "torp speed", "torp fuse", "weapon cooling", "cloak", "tractor str",
+                       "tractor range", "repair", "fire while cloaked", "det own torps for damage" };
+double baseupgradecost[] = { 0.0, 1.0, 1.5, 0.5, 1.0, 2.0, 0.5, 0.5, 1.0, 1.0,
+                             2.0, 0.5, 1.0, 2.0, 1.0, 1.0, 1.0, 5.0, 5.0, 0.0 };
+double adderupgradecost[]= { 0.0, 0.2, 0.5, 0.1, 1.5, 1.0, 0.1, 0.1, 0.5, 1.5,
+                             3.0, 0.5, 1.5, 1.0, 0.5, 1.5, 1.0, 0.0, 0.0, 0.0 };
+#endif

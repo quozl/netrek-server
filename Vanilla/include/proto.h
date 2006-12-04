@@ -119,6 +119,10 @@ void glog_flush();
 void input(void);
 
 /* interface.c */
+#ifdef STURGEON
+void apply_upgrade(int type, struct player *j, int multiplier);
+void unapply_upgrade(int type, struct player *j, int multiplier);
+#endif
 void set_speed(int speed);
 void set_course(u_char dir);
 void shield_up(void);

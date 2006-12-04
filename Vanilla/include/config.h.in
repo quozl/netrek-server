@@ -305,6 +305,9 @@
                                 /* PRETSERVER      - pre-T bot  support */
 #define PRETSERVER
 
+                                /* STURGEON        - sturgeon mode support */
+#define STURGEON
+
                                 /* NEW_CREDIT      - give 1 planet for
                                                      destroying, two planets
                                                      for taking.  Be sure to
