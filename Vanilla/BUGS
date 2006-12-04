@@ -3,22 +3,16 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
-2006-11-15 INL stat script problems reported by Bill
+        - Sturgeon bugs: 1) Ship cap packets not being properly sent to observers,
+          or to all players upon a free planet upgrade. 2) Problem with torp or
+          plasma array in which a player may sometimes get to fire 9 torps, the
+          9th being in someone else's array (it's a different color torp).  On
+          a related note, some people have reported losing the ability to fire
+          torps, sometimes completely, sometimes in increments of 2, such as
+          6 or 4 or 2.
 
-1) the email address to which statboys is sent to is defunct, and bouncing
-messages.
-
-2) ltd_dump can't open the playerfile for generating game stats [confirmed by
-James 2006-10]
-
-3) even though i confirmed that servername is being defined correctly by the
-script, game stats are still being dumped into "unknown" directory on
-www.netrek.org/stats/
-
-as far as I can tell the problem with the playerfile is that a
-players.timestamp file is supposed to be generated at end of game (I think?),
-and this file is used for ltd_dump, however no datestamped players file is
-being made
+        - the email address to which INL statboys is sent to is defunct, and
+          bouncing messages.
 
 	- following change "Improved tracking of server modes" Wed Aug
           23 06:36:42 EST 2006 williamb@its.caltech.edu:
