@@ -1981,6 +1981,10 @@ static void explode(struct torp *torp)
             ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
         {
           k->p_kills += 1.0 + j->p_armies * 0.1 + j->p_kills * 0.1;
+#ifdef STURGEON
+          if (sturgeon && sturgeon_extrakills)
+            k->p_kills += j->p_upgrades * 0.15;
+#endif
 
 #ifndef LTD_STATS       /* ltd_update_kills automatically checks max kills */
 
@@ -2032,6 +2036,10 @@ static void explode(struct torp *torp)
 #endif /* LTD_STATS */
         players[torp->t_owner].p_kills += 1.0 + 
           j->p_armies * 0.1 + j->p_kills * 0.1;
+#ifdef STURGEON
+        if (sturgeon && sturgeon_extrakills)
+          players[torp->t_owner].p_kills += j->p_upgrades * 0.15;
+#endif
 
 #ifndef LTD_STATS       /* ltd_update_kills checks for max kills */
 
@@ -2623,6 +2631,10 @@ static void udphaser(void)
                             players[i].p_kills += 1.0 + 
                                 victim->p_armies * 0.1 +
                                 victim->p_kills * 0.1;
+#ifdef STURGEON
+                            if (sturgeon && sturgeon_extrakills)
+                                players[i].p_kills += victim->p_upgrades * 0.15;
+#endif
 
 #ifndef LTD_STATS
 #ifdef CHAIN_REACTION
@@ -3377,6 +3389,11 @@ static void blowup(struct player *sh)
                     ((k->p_team == j->p_team) && !(j->p_flags & PFPRACTR))){
                   k->p_kills += 1.0 + 
                     j->p_armies * 0.1 + j->p_kills * 0.1;
+#ifdef STURGEON
+                  if (sturgeon && sturgeon_extrakills)
+                    k->p_kills += j->p_upgrades * 0.15;
+#endif
+
 #ifdef LTD_STATS
                   ltd_update_kills_max(k);
 #else /* LTD_STATS */
@@ -3418,6 +3435,10 @@ static void blowup(struct player *sh)
 #else /* CHAIN_REACTION */
                 sh->p_kills += 1.0 + 
                   j->p_armies * 0.1 + j->p_kills * 0.1;
+#ifdef STURGEON
+                if (sturgeon && sturgeon_extrakills)
+                  sh->p_kills += j->p_upgrades * 0.15;
+#endif
 
 #ifndef LTD_STATS
 
@@ -3816,6 +3837,10 @@ static void ghostmess(struct player *victim, char *reason)
     int                 i,k;
 
     ghostkills += 1.0 + victim->p_armies * 0.1 + victim->p_kills * 0.1;
+#ifdef STURGEON
+    if (sturgeon && sturgeon_extrakills)
+        ghostkills += victim->p_upgrades * 0.15;
+#endif
                 arg[0] = DGHOSTKILL; /* type */
                 arg[1] = victim->p_no;
                 arg[2] = 100 * ghostkills;
