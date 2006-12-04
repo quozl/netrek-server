@@ -78,8 +78,23 @@ void ntorp(u_char course, int attributes)
     return;
   }
   if ((me->p_cloakphase) && (me->p_ship.s_type != ATT)) {
-    new_warning(29, "We are unable to fire while in cloak, captain!");
-    return;
+#ifdef STURGEON
+    if (sturgeon) {
+      if (!me->p_upgradelist[UPG_FIRECLOAK]) {
+        new_warning(UNDEF,"We don't have the proper upgrade to fire while cloaked, captain!");
+        return;
+      }
+      if (me->p_fuel < myship->s_torpcost * 2) {
+        new_warning(UNDEF,"We don't have enough fuel to fire photon torpedos while cloaked!");
+        return;
+      }
+    }
+    else
+#endif
+    {
+      new_warning(29, "We are unable to fire while in cloak, captain!");
+      return;
+    }
   }
 
 
