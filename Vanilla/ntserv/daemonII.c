@@ -1611,7 +1611,7 @@ static void torp_track_target(struct torp *t)
       continue;
     if (j == owner)
       continue;
-    if (j->p_team == owner->p_team)
+    if (j->p_team == owner->p_team && !(j->p_flags & PFPRACTR))
       continue;
     if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
       continue;
