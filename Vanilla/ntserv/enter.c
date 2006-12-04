@@ -103,10 +103,111 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 #endif /* of FASTER_SB_MAXUPDATES */
 #endif /* of #ifndef ROBOT */
 
-    /* Need 2 kills to use plasma torpedoes */
-    if ((s_type != STARBASE) && (s_type != ATT) && plkills>0) {
-	me->p_ship.s_plasmacost = -1;
+#ifdef STURGEON
+    if (sturgeon) {
+      char buf[80];
+      /* Remove upgrades for bases */
+      if (s_type == STARBASE) {
+        me->p_upgrades = 0.0;
+        for (i = 0; i < NUMUPGRADES; i++)
+            me->p_upgradelist[i] = 0;
+      }
+      /* If non-base ship hasn't spent it's base rank credit upgrades, leave them on */
+      /* And in the case of genocide/conquer, leave them on too */
+      else if (me->p_upgrades > (float) me->p_stats.st_rank
+               && me->p_whydead != KGENOCIDE
+               && me->p_whydead != KWINNER) {
+        if (sturgeon_lite) {
+          /* Lose most costly upgrade */
+          double highestcost = 0.0, tempcost = 0.0;
+          int highestupgrade = 0;
+          for (i = 1; i < NUMUPGRADES; i++) {
+            if (me->p_upgradelist[i] > 0) {
+              tempcost = baseupgradecost[i] + (me->p_upgradelist[i] - 1.0) * adderupgradecost[i];
+              if (tempcost > highestcost) {
+                highestupgrade = i;
+                highestcost = tempcost;
+              }
+            }
+          }
+          /* Only remove it if rank credit insufficient to cover all upgrades */
+          if (me->p_upgrades > (float) me->p_stats.st_rank) {
+            me->p_upgradelist[highestupgrade]--;
+            me->p_upgrades -= highestcost;
+          }
+        }
+        else {
+          /* Strip off upgrades until total upgrade amount is less than or equal
+             to rank credit.  Run through normal upgrades first, then strip off
+             the one time upgrades last, only if necessary. */
+          for (i = 1; i < NUMUPGRADES; i++) {
+            if (me->p_upgradelist[i] > 0) {
+              while (me->p_upgradelist[i] != 0) {
+                me->p_upgradelist[i]--;
+                me->p_upgrades -= baseupgradecost[i] + me->p_upgradelist[i] * adderupgradecost[i];
+                if (me->p_upgrades <= (float) me->p_stats.st_rank)
+                  break;
+              }
+            }
+            if (me->p_upgrades <= (float) me->p_stats.st_rank)
+              break;
+          }
+          /* If for some reason we still are over, just set upgrades to zero.  Should
+             never happen, but here to be safe */
+          if (me->p_upgrades > (float) me->p_stats.st_rank)
+            me->p_upgrades = 0;
+        }
+      }
+      /* Calculate new rank credit */
+      me->p_rankcredit = (float) me->p_stats.st_rank - me->p_upgrades;
+      if (me->p_rankcredit < 0.0)
+         me->p_rankcredit = 0.0;
+      /* Now we need to go through the upgrade list and reapply all upgrades
+         that are left, as default ship settings have been reset */
+      for (i = 1; i < NUMUPGRADES; i++) {
+        if (me->p_upgradelist[i] > 0)
+          apply_upgrade(i, me, me->p_upgradelist[i]);
+      }
+      me->p_special = -1;
+      initspecial(me);
+      /* AS get unlimited mines */
+      if (s_type == ASSAULT) {
+        me->p_weapons[11].sw_number = -1;
+        me->p_special = 11;
+      }
+      me->p_team = (1 << tno);
+      /* SB gets unlimited pseudoplasma, type 5 plasma, and suicide drones */
+      if (s_type == STARBASE) {
+        me->p_weapons[0].sw_number = -1;
+        me->p_weapons[5].sw_number = -1;
+        me->p_weapons[10].sw_number = -1;
+        me->p_special = 10;
+        sprintf(buf, "%s (%c%c) is now a Starbase",
+                me->p_name, teamlet[me->p_team], shipnos[me->p_no]);
+        strcpy(addrbuf, "GOD->ALL");
+        pmessage(0, MALL, addrbuf, buf);
+      }
+      /* Galaxy class gets unlimited pseudoplasma */
+      if (s_type == SGALAXY) {
+        me->p_weapons[0].sw_number = -1;
+        me->p_special = 0;
+      }
+      /* ATT gets unlimited everything */
+      if (s_type == ATT) {
+        for (i = 0; i <= 10; i++)
+            me->p_weapons[i].sw_number = -1;
+        me->p_special = 10;
+      }
     }
+#endif
+
+    /* Check if can use plasma torpedoes */
+    if (s_type != STARBASE && s_type != ATT && (
+#ifdef STURGEON  /* force plasmas -> upgrade feature */
+        !sturgeon &&
+#endif
+        plkills > 0))
+	me->p_ship.s_plasmacost = -1;
     me->p_updates = 0;
     me->p_flags = PFSHIELD|PFGREEN;
     if (s_type == STARBASE) {
