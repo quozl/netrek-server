@@ -159,6 +159,9 @@ void ntorp(u_char course, int attributes)
   k->t_no = i;
   k->t_speed = k->t_gspeed / WARP1;
 #endif
+#ifdef STURGEON
+  k->t_spinspeed = 0;
+#endif
 
 #ifdef LTD_STATS
 
