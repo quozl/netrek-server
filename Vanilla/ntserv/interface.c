@@ -265,6 +265,335 @@ void unapply_upgrade(int type, struct player *j, int multiplier)
 
 void set_speed(int speed)
 {
+
+#ifdef STURGEON
+    struct ship tmpship;
+    char buf[100];
+    char addrbuf[10];
+    int i;
+
+    if (sturgeon && me->p_upgrading)
+    {
+        if (speed == 0) {
+            new_warning(UNDEF,"Upgrade aborted");
+            me->p_flags &= ~(PFREFIT);
+            me->p_upgrading = 0;
+            return;
+        }
+        sprintf(addrbuf,"UPG->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
+        getship(&tmpship, me->p_ship.s_type);
+        switch(me->p_upgrading)
+        {
+        case 1:                 /* first level menu */
+            switch(speed)
+            {
+            case 1: me->p_shield = me->p_ship.s_maxshield;
+                    me->p_fuel = me->p_ship.s_maxfuel;
+                    me->p_damage = me->p_wtemp = me->p_etemp = 0;
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_flags |= PFREFITTING;
+                    rdelay = me->p_updates + 30;
+                    new_warning(UNDEF,"Ship being overhauled...");
+                    me->p_upgrading = 0;
+                    break;
+            case 2: pmessage(me->p_no, MINDIV, addrbuf,"Shields/Hull: 0=abort, 1=perm shield, 2=temp shield, 3=perm hull");
+                    me->p_upgrading = 2;
+                    break;
+            case 3: pmessage(me->p_no, MINDIV, addrbuf,"Engines: 0=abort, 1=fuel, 2=rechg, 3=maxwarp, 4=acc, 5=dec, 6=cool");
+                    me->p_upgrading = 3;
+                    break;
+            case 4: pmessage(me->p_no, MINDIV, addrbuf,"Weapons: 0=abort, 1=phaser dmg, 2=torp speed, 3=torp fuse, 4=cooling");
+                    me->p_upgrading = 4;
+                    break;
+            case 5: pmessage(me->p_no, MINDIV, addrbuf,"Special: 0=abort, 1=plasmas, 2=nukes, 3=drones, 4=mines, 5=inventory");
+                    me->p_upgrading = 5;
+                    break;
+            case 6: pmessage(me->p_no, MINDIV, addrbuf,"One time: 0=abort, 1=fire while cloaked, 2=det own for damage");
+                    me->p_upgrading = 6;
+                    break;
+            case 7: pmessage(me->p_no, MINDIV, addrbuf,"Misc: 0=abort, 1=cloak, 2=tractor strength, 3=tractor range");
+                    pmessage(me->p_no, MINDIV, addrbuf,"      4=repair rate, 5=current status 6=undo next upgrade");
+                    me->p_upgrading = 7;
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+	    }
+	    break;
+        case 2:                 /* shield/hull upgrade menu */
+            switch(speed)
+            {
+            case 1: if (upgrade(UPG_PERMSHIELD, me, "shield max", 0.0, 0.0))
+                        apply_upgrade(UPG_PERMSHIELD, me, 1);
+                    break;
+            case 2: if (upgrade(UPG_TEMPSHIELD, me, "shields (temporarily)", 1.0, 0.0))
+                        apply_upgrade(UPG_TEMPSHIELD, me, 1);
+                    break;
+            case 3: if (upgrade(UPG_HULL, me, "hull max", 0.0, 0.0))
+                        apply_upgrade(UPG_HULL, me, 1);
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        case 3:                 /* engine upgrade menu */
+            switch(speed)
+            {
+            case 1: if (upgrade(UPG_FUEL, me, "fuel capacity", 0.0, 0.0))
+                        apply_upgrade(UPG_FUEL, me, 1);
+                    break;
+            case 2: if (upgrade(UPG_RECHARGE, me, "fuel collector efficiency", 0.0, 0.0))
+                        apply_upgrade(UPG_RECHARGE, me, 1);
+                    break;
+            case 3: if (upgrade(UPG_MAXWARP, me, "maximum warp speed", 0.0, 0.0))
+                        apply_upgrade(UPG_MAXWARP, me, 1);
+                    break;
+            case 4: if (upgrade(UPG_ACCEL, me, "acceleration rate", 0.0, 0.0))
+                        apply_upgrade(UPG_ACCEL, me, 1);
+                    break;
+            case 5: if (upgrade(UPG_DECEL, me, "deceleration rate", 0.0, 0.0))
+                         apply_upgrade(UPG_DECEL, me, 1);
+                    break;
+            case 6: if (upgrade(UPG_ENGCOOL, me, "engine cooling rate", 0.0, 0.0))
+                         apply_upgrade(UPG_ENGCOOL, me, 1);
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        case 4:                 /* weapon upgrade menu */
+            switch(speed)
+            {
+            case 1: if (upgrade(UPG_PHASER, me, "phaser damage", 0.0, 0.0))
+                        apply_upgrade(UPG_PHASER, me, 1);
+                    break;
+            case 2: if (upgrade(UPG_TORPSPEED, me, "photon speed", 0.0, 0.0))
+                        apply_upgrade(UPG_TORPSPEED, me, 1);
+                    break;
+            case 3: if (upgrade(UPG_TORPFUSE, me, "photon fuse", 0.0, 0.0))
+                        apply_upgrade(UPG_TORPFUSE, me, 1);
+                    break;
+            case 4: if (upgrade(UPG_WPNCOOL, me, "weapon cooling rate", 0.0, 0.0))
+                        apply_upgrade(UPG_WPNCOOL, me, 1);
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        case 5:                 /* special weapons menu */
+            switch(speed)
+            {
+            case 1: pmessage(me->p_no, MINDIV, addrbuf,"Plasmas: 0=abort, 1-5 = type 1-5, 9=pseudoplasma");
+                    me->p_upgrading = 8;
+                    break;
+            case 2: pmessage(me->p_no, MINDIV, addrbuf,"Nuclear: 0=abort, 1=small, 2=med, 3=big, 4=huge");
+                    me->p_upgrading = 9;
+                    break;
+            case 3:
+                    if (me->p_weapons[10].sw_number < 0) {
+                        pmessage(me->p_no, MINDIV, addrbuf,"You don't need to buy drones.");
+                        break;
+                    }
+                    if (upgrade(0, me, "drone inventory", 1.0, 0.0)) {
+                        me->p_weapons[10].sw_number += 3;
+                        sprintf(buf, "%s (%d)", me->p_weapons[10].sw_name,
+                            me->p_weapons[10].sw_number);
+                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        me->p_special = 10;
+                    }
+                    break;
+            case 4:
+                    if (me->p_weapons[11].sw_number < 0) {
+                        pmessage(me->p_no, MINDIV, addrbuf,"You don't need to buy mines.");
+                        break;
+                    }
+                    if (upgrade(0, me, "mine inventory", 1.0, 0.0)) {
+                        me->p_weapons[11].sw_number += 2;
+                        sprintf(buf, "%s (%d)", me->p_weapons[11].sw_name,
+                            me->p_weapons[11].sw_number);
+                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        me->p_special = 11;
+                    }
+                    break;
+            case 5:
+                    if (me->p_special < 0) {
+                        new_warning(UNDEF,"This ship has no special weapons");
+                        break;
+                    }
+                    pmessage(me->p_no, MINDIV, addrbuf,"Inventory:");
+                    for (i=0; i < NUMSPECIAL; i++)
+                        if (me->p_weapons[i].sw_number != 0) {
+                            if (me->p_weapons[i].sw_number < 0)
+                                sprintf(buf, " inf %s", me->p_weapons[i].sw_name);
+                            else
+                                sprintf(buf, "%4d %s", me->p_weapons[i].sw_number,
+                                    me->p_weapons[i].sw_name);
+                            pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        }
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        case 6:                 /* One time upgrade menu */
+            switch(speed)
+            {
+            case 1:
+                    if (me->p_upgradelist[UPG_FIRECLOAK] && !me->p_undo_upgrade) {
+                        pmessage(me->p_no, MINDIV, addrbuf,"You can already fire while cloaked.");
+                        break;
+                    }
+                    if (upgrade(UPG_FIRECLOAK, me, "fire while cloak", 0.0, 0.0))
+                        apply_upgrade(UPG_FIRECLOAK, me, 1);
+                    break;
+            case 2:
+                    if (me->p_upgradelist[UPG_DETDMG] && !me->p_undo_upgrade) {
+                        pmessage(me->p_no, MINDIV, addrbuf,"You can already det own torps for damage.");
+                        break;
+                    }
+                    if (upgrade(UPG_DETDMG, me, "det own torps for damage", 0.0, 0.0))
+                        apply_upgrade(UPG_DETDMG, me, 1);
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+
+        case 7:                 /* miscellaneous systems menu */
+            switch(speed)
+            {
+            case 1:
+                new_warning(UNDEF,"Sorry, cloak upgrades have been disabled.");
+                me->p_flags &= ~(PFREFIT);
+                me->p_upgrading = 0;
+                break;
+
+                if (me->p_ship.s_cloakcost) {
+                    if (upgrade(UPG_CLOAK, me, "cloaking device efficiency", 0.0, 0.0)) {
+                        if (me->p_ship.s_cloakcost == 1)
+                            me->p_ship.s_cloakcost = 0;
+                        else
+                            me->p_ship.s_cloakcost =
+                                ceil(me->p_ship.s_cloakcost / 2.0);
+                    }
+                }
+                else
+                    new_warning(UNDEF,"Cloaking device efficiency already at maximum.");
+                break;
+            case 2:
+                if (upgrade(UPG_TPSTR, me, "tractor/pressor strength", 0.0, 0.0))
+                    apply_upgrade(UPG_TPSTR, me, 1);
+                break;
+            case 3:
+                if (upgrade(UPG_TPRANGE, me, "tractor/pressor range", 0.0, 0.0))
+                    apply_upgrade(UPG_TPRANGE, me, 1);
+                break;
+            case 4:
+                if (upgrade(UPG_REPAIR, me, "damage control efficiency", 0.0, 0.0))
+                    apply_upgrade(UPG_REPAIR, me, 1);
+                break;
+            case 5:
+                if (me->p_upgrades == 0.0) {
+                    new_warning(UNDEF,"This ship has no upgrades");
+                    break;
+                }
+                pmessage(me->p_no, MINDIV, addrbuf,"Current upgrades (cost for next):");
+                for (i = 1; i < NUMUPGRADES; i++) {
+                    if (me->p_upgradelist[i] > 0) {
+                        if (i < UPG_OFFSET)
+                            sprintf(buf, "%4d (%6.2f) %s", me->p_upgradelist[i],
+                                baseupgradecost[i] + me->p_upgradelist[i] *
+                                adderupgradecost[i], upgradename[i]);
+                        else /* 1 time upgrades */
+                            sprintf(buf, "%s upgrade", upgradename[i]);
+                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    }
+                }
+                break;
+            case 6:
+                if (me->p_undo_upgrade) {
+                    me->p_undo_upgrade = 0;
+                    new_warning(UNDEF,"Undo upgrade flag removed.");
+                }
+                else {
+                    me->p_undo_upgrade = 1;
+                    new_warning(UNDEF,"Undo upgrade flag set - next upgrade purchased will be removed instead.");
+                }
+                break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        case 8:                 /* Plasma torp menu */
+            switch(speed)
+            {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                    if (upgrade(0, me, "plasma torp inventory", 2.0, 0.0)) {
+                        me->p_weapons[speed].sw_number += 12/speed;
+                        sprintf(buf, "%s (%d)", me->p_weapons[speed].sw_name,
+                            me->p_weapons[speed].sw_number);
+                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        me->p_special = speed;
+                    }
+                    break;
+            case 9:
+                    if (upgrade(0, me, "pseudoplasma inventory", 1.0, 0.0)) {
+                        me->p_weapons[0].sw_number += 12;
+                        sprintf(buf, "%s (%d)", me->p_weapons[0].sw_name,
+                            me->p_weapons[0].sw_number);
+                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        me->p_special = 0;
+                    }
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        case 9:                 /* Nuclear warhead menu */
+            switch(speed)
+            {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                    if (speed > me->p_ship.s_maxarmies) {
+                        warning("Not enough cargo room for that size nuke!");
+                        break;
+                    }
+                    if (upgrade(0, me, "nuke inventory",
+                        (float) (1 << (speed-1)), 0.0)) {
+                        me->p_weapons[5+speed].sw_number += 1;
+                        me->p_ship.s_maxarmies -= speed;
+                        apply_upgrade(100, me, 0); /* Dummy upgrade just to send ship cap */
+                        sprintf(buf, "%s (%d)", me->p_weapons[5+speed].sw_name,
+                            me->p_weapons[5+speed].sw_number);
+                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        me->p_special = 5+speed;
+                    }
+                    break;
+            default:
+                    me->p_flags &= ~(PFREFIT);
+                    me->p_upgrading = 0;
+            }
+            break;
+        }
+        return;
+    }
+#endif
+
     if (speed > me->p_ship.s_maxspeed) {
 	me->p_desspeed = me->p_ship.s_maxspeed;
     } else if (speed < 0) {
@@ -687,7 +1016,10 @@ static void sendwarn(char *string, int atwar, int team)
 void do_refit(int type)
 {	
     int i=0;
-    struct ship_cap_spacket ShipFoo;
+#ifdef STURGEON
+    char buf[80];
+    char addrbuf[80];
+#endif
 
     if (type<0 || type>ATT) return;
     if (me->p_flags & PFORBIT) {
@@ -725,6 +1057,20 @@ void do_refit(int type)
         new_warning(56,"You must beam your armies down before moving to your new ship");
 	return;
     }
+
+#ifdef STURGEON
+    if (sturgeon && (type == me->p_ship.s_type) && upgradeable) {
+        /* No upgrades for starbases */
+        if (type != STARBASE) {
+          sprintf(addrbuf,"UPG->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
+          pmessage(me->p_no, MINDIV, addrbuf,"Upgrade: 0=abort, 1=normal refit, 2=shields/hull, 3=engines");
+          pmessage(me->p_no, MINDIV, addrbuf,"         4=weapons, 5=special weapons, 6=one time upgrades, 7=misc");
+          new_warning(UNDEF,"Please make an upgrade selection");
+          me->p_upgrading = 1;
+          return;
+        }
+    }
+#endif
 
     if (shipsallowed[type]==0) {
         new_warning(57,"That ship hasn't been designed yet.");
@@ -810,35 +1156,87 @@ void do_refit(int type)
 
     
     getship(&(me->p_ship), type);
-    /* Notify client of new ship stats, if necessary */
-#ifndef ROBOT
-    if ((F_ship_cap)&&(!sent_ship[type])) {
-	sent_ship[type] = 1;
-	ShipFoo.type = SP_SHIP_CAP;
-	ShipFoo.s_type = htons(me->p_ship.s_type);
-	ShipFoo.operation = 0;
-	ShipFoo.s_torpspeed = htons(me->p_ship.s_torpspeed);
-	ShipFoo.s_maxfuel = htonl(me->p_ship.s_maxfuel);
-	ShipFoo.s_maxspeed = htonl(me->p_ship.s_maxspeed);
-	ShipFoo.s_maxshield = htonl(me->p_ship.s_maxshield);
-	ShipFoo.s_maxdamage = htonl(me->p_ship.s_maxdamage);
-	ShipFoo.s_maxwpntemp = htonl(me->p_ship.s_maxwpntemp);
-	ShipFoo.s_maxegntemp = htonl(me->p_ship.s_maxegntemp);
-	ShipFoo.s_width = htons(me->p_ship.s_width);
-	ShipFoo.s_height = htons(me->p_ship.s_height);
-	ShipFoo.s_maxarmies = htons(me->p_ship.s_maxarmies);
-	ShipFoo.s_letter = "sdcbaog*"[me->p_ship.s_type];
-	ShipFoo.s_desig1 = shiptypes[type][0];
-	ShipFoo.s_desig2 = shiptypes[type][1];
-	ShipFoo.s_phaserrange = htons(me->p_ship.s_phaserdamage);
-	ShipFoo.s_bitmap = htons(me->p_ship.s_type);
-	strcpy(ShipFoo.s_name,shipnames[me->p_ship.s_type]);
-	sendClientPacket((CVOID) &ShipFoo);
+
+#ifdef STURGEON
+    if (sturgeon) {
+        /* Convert upgrades back to kills, but dont give credit for upgrades bought with rank */
+/*
+        if (me->p_upgrades > 0.0) {
+            float rankcredit;
+            rankcredit = (float)me->p_stats.st_rank - me->p_rankcredit;
+            if (rankcredit < 0)
+                rankcredit = 0;
+            me->p_kills += me->p_upgrades - rankcredit;
+            me->p_upgrades = 0.0;
+        }
+        me->p_rankcredit = (float) me->p_stats.st_rank;
+        for (i = 0; i < NUMUPGRADES; i++)
+            me->p_upgradelist[i] = 0;
+*/
+        for (i = 0; i < NUMSPECIAL; i++)
+            me->p_weapons[i].sw_number = 0;
+        if (type == STARBASE) {
+            /* Remove upgrades for bases */
+            me->p_upgrades = 0.0;
+            for (i = 0; i < NUMUPGRADES; i++)
+                me->p_upgradelist[i] = 0;
+        }
+        else {
+            /* Now we need to go through the upgrade list and reapply all upgrades
+               that are left, as default ship settings have been reset */
+            for (i = 1; i < NUMUPGRADES; i++) {
+              if (me->p_upgradelist[i] > 0)
+                apply_upgrade(i, me, me->p_upgradelist[i]);
+            }
+        }
+        switch(type)
+        {
+        /* AS get unlimited mines */
+        case ASSAULT:
+            me->p_weapons[11].sw_number = -1;
+            me->p_special = 11;
+            break;
+        /* SB gets unlimited pseudoplasma, type 5 plasma, and suicide drones */
+        case STARBASE:
+            me->p_weapons[0].sw_number = -1;
+            me->p_weapons[5].sw_number = -1;
+            me->p_weapons[10].sw_number = -1;
+            me->p_special = 10;
+            sprintf(buf, "%s (%c%c) is now a Starbase",
+                    me->p_name, teamlet[me->p_team], shipnos[me->p_no]);
+            strcpy(addrbuf, "GOD->ALL");
+            pmessage(0, MALL, addrbuf, buf);
+            break;
+        /* Galaxy class gets unlimited pseudoplasma */
+        case SGALAXY:
+            me->p_weapons[0].sw_number = -1;
+            me->p_special = 0;
+            break;
+        /* ATT gets unlimited everything */
+        case ATT:
+            for (i = 0; i <= 10; i++)
+                me->p_weapons[i].sw_number = -1;
+            me->p_special = 10;
+            break;
+        default:
+            me->p_special = -1;
+            break;
+        }
     }
 #endif
+
+    /* Notify client of new ship stats, if necessary */
+    sndShipCap();
     if (type != STARBASE && me->p_kills < plkills) {
 	me->p_ship.s_plasmacost = -1;
     }
+
+    if (type != STARBASE && type != ATT && (
+#ifdef STURGEON  /* force plasmas -> upgrade feature */
+        !sturgeon &&
+#endif
+        me->p_kills < plkills))
+        me->p_ship.s_plasmacost = -1;
     me->p_shield = me->p_ship.s_maxshield;
     me->p_damage = 0;
     me->p_fuel = me->p_ship.s_maxfuel;
