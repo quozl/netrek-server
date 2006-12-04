@@ -907,6 +907,7 @@ static void udplayers(void)
     register int i, k;
     register struct player *j;
     float dist; /* used by tractor beams */
+    struct torp *t;
     int maxspeed;
 
     int nfree = 0;
@@ -1011,6 +1012,18 @@ static void udplayers(void)
                 }
                 /* And he is ejected from orbit. */
                 j->p_flags &= ~PFORBIT;
+
+                /* Reduce any torp or plasma timers longer than 5 seconds, mainly */
+                /* for ATT torps/plasmas, and sturgeon weapons */
+
+                for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
+                    if (t->t_status == TMOVE && t->t_fuse > 50)
+                        t->t_fuse = 50;
+                }
+                for (t = firstPlasmaOf(j); t <= lastPlasmaOf(j); t++) {
+                    if (t->t_status == TMOVE && t->t_fuse > 50)
+                        t->t_fuse = 50;
+                }
 
                 /* Fall through to alive so explosions move */
                         
