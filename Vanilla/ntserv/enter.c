@@ -29,6 +29,10 @@ static void placeIndependent(void);
 static int first_time = 1;
 #endif
 
+#ifdef STURGEON
+extern void initspecial();
+#endif
+
 /* change 5/10/91 TC -- if tno == 4, independent */
 /*                         tno == 5, Terminator  */
 /* change 3/25/93 NBT -- added promote string    */
@@ -326,3 +330,59 @@ static void placeIndependent(void)
     }
     ERROR(2,("Couldn't place the bot successfully.\n"));
 }
+
+#ifdef STURGEON
+void initspecial(struct player *me)
+{
+    int i;
+    for (i = 0; i < NUMSPECIAL; i++)
+        me->p_weapons[i].sw_number = 0;
+    strcpy (me->p_weapons[0].sw_name, "Pseudoplasma");
+    me->p_weapons[0].sw_type = SPECPLAS;
+    me->p_weapons[0].sw_fuelcost = 0;
+    me->p_weapons[0].sw_damage = 0;
+    me->p_weapons[0].sw_fuse = 30;
+    me->p_weapons[0].sw_speed = 15;
+    me->p_weapons[0].sw_turns = 1;
+    for (i = 1; i <= 5; i++)
+    {
+        sprintf(me->p_weapons[i].sw_name, "Type %d Plasma", i);
+        me->p_weapons[i].sw_type = SPECPLAS;
+        me->p_weapons[i].sw_fuelcost = 0;
+        me->p_weapons[i].sw_damage = 25 * (i + 1);
+        me->p_weapons[i].sw_fuse = 30;
+        me->p_weapons[i].sw_speed = 15;
+        me->p_weapons[i].sw_turns = 1;
+    }
+    strcpy(me->p_weapons[6].sw_name, "10 megaton warhead");
+    me->p_weapons[6].sw_damage = 2;
+    strcpy(me->p_weapons[7].sw_name, "20 megaton warhead");
+    me->p_weapons[7].sw_damage = 5;
+    strcpy(me->p_weapons[8].sw_name, "50 megaton warhead");
+    me->p_weapons[8].sw_damage = 10;
+    strcpy(me->p_weapons[9].sw_name, "100 megaton warhead");
+    me->p_weapons[9].sw_damage = 25;
+    for (i = 6; i <= 9; i++)
+    {
+        me->p_weapons[i].sw_type = SPECBOMB;
+        me->p_weapons[i].sw_fuelcost = 0;
+        me->p_weapons[i].sw_fuse = 1;
+        me->p_weapons[i].sw_speed = 0;
+        me->p_weapons[i].sw_turns = 0;
+    }
+    strcpy(me->p_weapons[10].sw_name, "Suicide Drones");
+    me->p_weapons[10].sw_type = SPECTORP;
+    me->p_weapons[10].sw_fuelcost = 500;
+    me->p_weapons[10].sw_damage = 60;
+    me->p_weapons[10].sw_speed = 5;
+    me->p_weapons[10].sw_fuse = 150;
+    me->p_weapons[10].sw_turns = 2;
+    strcpy(me->p_weapons[11].sw_name, "Mines");
+    me->p_weapons[11].sw_type = SPECMINE;
+    me->p_weapons[11].sw_fuelcost = 250;
+    me->p_weapons[11].sw_damage = 200;
+    me->p_weapons[11].sw_speed = 2;
+    me->p_weapons[11].sw_fuse = 600;
+    me->p_weapons[11].sw_turns = 0;
+}
+#endif
