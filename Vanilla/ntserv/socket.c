@@ -27,6 +27,7 @@
 #include <signal.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 #include "defs.h"
 #include INC_UNISTD
 #include INC_STRINGS
