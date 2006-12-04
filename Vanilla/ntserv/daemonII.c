@@ -1835,6 +1835,15 @@ static void udtorps(void)
         continue;
       break;
     case TOFF:
+#ifdef STURGEON
+      /* Detting your own torps may do damage */
+      if (sturgeon && players[t->t_owner].p_upgradelist[UPG_DETDMG]) {
+        t->t_status = TDET;
+        t->t_damage /= 4;
+        t->t_whodet = players[t->t_owner].p_no;
+        explode(t);
+      }
+#endif
       break;
 #if 1
     default:                    /* Shouldn't happen */
