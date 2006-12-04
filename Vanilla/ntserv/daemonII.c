@@ -1960,7 +1960,7 @@ static void explode(struct torp *torp)
     /* Send in a robot if there are no other defenders (or not Tmode)
        and the planet is in the team's home space */
 
-    if (!(status->gameup & GU_INROBOT)) {
+    if (!(inl_mode)) {
       if (((tcount[l->pl_owner] == 0) || (NotTmode(context->ticks))) &&
          (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
