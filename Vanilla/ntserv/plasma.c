@@ -61,9 +61,9 @@ void nplasmatorp(u_char course, int attributes)
   }
     
 #if 0
-  /* Pseudo code for run-time debugging, if someone wants it. */
-  if (k > lastPlasmaOf(me))
-    error();
+    /* Pseudo code for run-time debugging, if someone wants it. */
+    if (k > lastPlasmaOf(me))
+      error();
 #endif
 
   me->p_nplasmatorp++;
