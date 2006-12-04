@@ -129,6 +129,11 @@ void ntorp(u_char course, int attributes)
   /*
    * Change my ship state: less fuel, more weapon temp  */
   me->p_ntorp++;
+#ifdef STURGEON
+  if (sturgeon && me->p_cloakphase)
+    me->p_fuel -= myship->s_torpcost * 2;
+  else
+#endif
   me->p_fuel -= myship->s_torpcost;
   me->p_wtemp += (myship->s_torpcost / 10) - 10;	/* Heat weapons */
 
