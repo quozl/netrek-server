@@ -457,7 +457,7 @@ struct player {
     int p_candock;              /* is this player allowed to dock onto SB */
     int p_transwarp;		/* flags base must have to allow transwarp */
 #ifdef STURGEON
-    short p_refitting;		/* Ship is doing upgrading */
+    short p_upgrading;		/* Ship is doing upgrading */
     float p_upgrades;		/* Number of kills devoted to upgrades */
     float p_rankcredit;		/* Number of bonus kills based on rank that can be used on upgrades */
     short p_undo_upgrade;	/* Undo next upgrade selected (1 if yes, 0 if no) */
