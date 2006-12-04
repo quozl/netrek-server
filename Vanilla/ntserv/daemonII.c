@@ -144,6 +144,10 @@ static union semun pucksem_arg;
 static struct sembuf pucksem_op[1];
 #endif /*PUCK_FIRST*/
 
+int pl_warning[MAXPLANETS];             /* To keep planets shut up for awhile */
+int tm_robots[MAXTEAM + 1];             /* To limit the number of robots */
+int tm_coup[MAXTEAM + 1];               /* To allow a coup */
+
 void restart_handler(int signum)
 {
   sig_restart++;
@@ -2680,10 +2684,6 @@ static void udphaser(void)
         }
     }
 }
-
-int pl_warning[MAXPLANETS];     /* To keep planets shut up for awhile */
-int tm_robots[MAXTEAM + 1];             /* To limit the number of robots */
-int tm_coup[MAXTEAM + 1];               /* To allow a coup */
 
 static void teamtimers(void)
 {
