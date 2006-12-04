@@ -88,8 +88,7 @@ void nplasmatorp(u_char course, int attributes)
   k->t_team   = me->p_team;
   k->t_whodet = NODET;
 #if 0
-  k->t_no = i;
-  k->t_speed = k->t_gspeed / WARP1;
+    k->t_speed = k->t_gspeed / WARP1;
 #endif
 
 #ifdef LTD_STATS
