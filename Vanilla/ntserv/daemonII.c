@@ -1798,8 +1798,17 @@ static void udtorps(void)
       }
 #undef DO_WALL_HIT
 
-      if (t->t_attribute & TWOBBLE)
+      if (t->t_attribute & TWOBBLE) {
+#ifdef STURGEON
+        /* So that mines spin in a constant position */
+        if (sturgeon && t->t_spinspeed)
+          t->t_dir = (t->t_dir + t->t_spinspeed) % 256;
+        else
+          t->t_dir += (random() % 3) - 1;
+#else
         t->t_dir += (random() % 3) - 1;
+#endif
+      }
 
       if (near(t)) {
 #ifdef LTD_STATS
