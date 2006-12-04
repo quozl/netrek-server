@@ -3392,6 +3392,17 @@ static void blowup(struct player *sh)
             else
                 damage = 100;
         }
+#ifdef STURGEON
+        if (sturgeon) {
+            /* If you die with nukes on board, your explosion gets bonus damage */
+            for (i = 0; i < NUMSPECIAL; i++) {
+                if (sh->p_weapons[i].sw_type == SPECBOMB &&
+                    sh->p_weapons[i].sw_number > 0)
+                damage += (sh->p_weapons[i].sw_damage * 10 *
+                sh->p_weapons[i].sw_number);
+            }
+        }
+#endif
         if (damage > 0) {
             if (j->p_flags & PFSHIELD) {
                 j->p_shield -= damage;
