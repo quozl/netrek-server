@@ -3083,6 +3083,10 @@ static void beam(void)
     register struct player *j;
     register struct planet *l = NULL;
     char buf1[MSG_LEN];
+#ifdef STURGEON
+    int k = 0, n = 0;
+    struct player *p;
+#endif
 
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
         if ((j->p_status != PALIVE) || !(j->p_flags & (PFORBIT|PFDOCK)))
@@ -3364,6 +3368,25 @@ static void beam(void)
                                 "%s taken over by %s",
                                 l->pl_name,
                                 j->p_longname);
+#ifdef STURGEON
+                        /* Free random upgrades for your team when you take planet */
+                        if (sturgeon && sturgeon_planetupgrades) {
+                          /* Don't want temporary or non-working upgrades */
+                          do {
+                            k = random() % UPG_OFFSET;
+                          } while (k == UPG_TEMPSHIELD || k == UPG_CLOAK);
+                          for (n = 0, p = &players[0]; n < MAXPLAYER; n++, p++) {
+                            if (p->p_team != l->pl_owner || p->p_ship.s_type == STARBASE
+                                || p->p_status == PFREE
+                                || (sturgeon_maxupgrades && p->p_upgrades >= sturgeon_maxupgrades))
+                              continue;
+                            p->p_free_upgrade = k;
+                          }
+                          /* Now tell the team */
+                          sprintf(buf1, "UPG->%-3s", teamshort[l->pl_owner]);
+                          pmessage(l->pl_owner, MTEAM | MTAKE, buf1, "All teammates have gained a free %s upgrade", upgradename[k]);
+                        }
+#endif
                     }
                 }
 

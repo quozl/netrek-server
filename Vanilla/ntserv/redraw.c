@@ -644,6 +644,17 @@ static void auto_features(void)
 	    }
 	}
     }
+#ifdef STURGEON
+    /* Check if eligible for free upgrade */
+    if (sturgeon) {
+        if (me->p_free_upgrade) {
+            me->p_upgrades += baseupgradecost[me->p_free_upgrade] + me->p_upgradelist[me->p_free_upgrade]*adderupgradecost[me->p_free_upgrade];
+            me->p_upgradelist[me->p_free_upgrade]++;
+            apply_upgrade(me->p_free_upgrade, me, 1);
+            me->p_free_upgrade = 0;
+        }
+    }
+#endif
 }
 
 static u_char newcourse(int x, int y)
