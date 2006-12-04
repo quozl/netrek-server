@@ -47,7 +47,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     static int lastrank= -1;
     char addrbuf[10];
     int startplanet;
-    struct ship_cap_spacket ShipFoo;
     int i;
 
     /* Use local variables, not the globals */
@@ -69,31 +68,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     getship(myship, s_type);
 
     /* Alert client about new ship stats */
-#ifndef ROBOT
-    if ((F_ship_cap)&&(!sent_ship[s_type])) {
-      sent_ship[s_type] = 1;
-      ShipFoo.type = SP_SHIP_CAP;
-      ShipFoo.s_type = htons(myship->s_type);
-      ShipFoo.operation = 0;
-      ShipFoo.s_torpspeed = htons(myship->s_torpspeed);
-      ShipFoo.s_maxfuel = htonl(myship->s_maxfuel);
-      ShipFoo.s_maxspeed = htonl(myship->s_maxspeed);
-      ShipFoo.s_maxshield = htonl(myship->s_maxshield);
-      ShipFoo.s_maxdamage = htonl(myship->s_maxdamage);
-      ShipFoo.s_maxwpntemp = htonl(myship->s_maxwpntemp);
-      ShipFoo.s_maxegntemp = htonl(myship->s_maxegntemp);
-      ShipFoo.s_width = htons(myship->s_width);
-      ShipFoo.s_height = htons(myship->s_height);
-      ShipFoo.s_maxarmies = htons(myship->s_maxarmies);
-      ShipFoo.s_letter = "sdcbaog*"[myship->s_type];
-      ShipFoo.s_desig1 = shiptypes[s_type][0];
-      ShipFoo.s_desig2 = shiptypes[s_type][1];
-      ShipFoo.s_phaserrange = htons(myship->s_phaserdamage);
-      ShipFoo.s_bitmap = htons(myship->s_type);
-      strcpy(ShipFoo.s_name,shipnames[myship->s_type]);
-      sendClientPacket((CVOID) &ShipFoo);
-    }
-#endif
+    sndShipCap();
 
     /* Limit client updates if needed */
 #ifndef ROBOT

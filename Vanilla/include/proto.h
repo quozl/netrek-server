@@ -94,6 +94,7 @@ void sendPickokPacket(int state);
 void sendClientLogin(struct stats *stats);
 void sendMotdLine(char *line);
 void sendMaskPacket(int mask);
+int sndShipCap(void);
 
 /* getentry.c */
 void getEntry(int *team, int *stype);
