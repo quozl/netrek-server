@@ -273,16 +273,21 @@ void checkmess()
     }
 
     if ((ticks % SENDINFO) == 0) {
-        static int alternate = 0;
-
-        alternate++;
-        if (1) {
-            messAll(255,roboname,"Welcome to the Newbie Server.");
-            messAll(255,roboname,"See http://genocide.netrek.org/beginner/newbie.php");
-        }
-        else {
-            messAll(255,roboname,"Think you have what it takes?  Sign up for the draft league!");
-            messAll(255,roboname, "See http://draft.lagparty.org/");
+        switch (NEWBIEMSG) {
+            case 0:
+                break;
+            case 1:
+                messAll(255,roboname,"Welcome to the Newbie Server.");
+                messAll(255,roboname,"See http://genocide.netrek.org/beginner/newbie.php");
+                break;
+            case 2:
+                messAll(255,roboname,"Welcome to the Sturgeon Server in newbie mode.");
+                messAll(255,roboname,"See http://netrek.warped.us for how to play sturgeon!");
+                break;
+            default:
+                messAll(255,roboname,"Want all the latest netrek news?");
+                messAll(255,roboname, "See http://www.netrek.org/");
+                break;
         }
     }
 

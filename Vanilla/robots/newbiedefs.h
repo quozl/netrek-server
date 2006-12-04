@@ -42,7 +42,7 @@
 #define ROBOEXITWAIT (5*ROBOCHECK)  /* wait between exiting bots so that
                                        multiple bots don't exit */
 #define SENDINFO  (600*PERSEC)		/* send info to all */
-
+#define NEWBIEMSG 1			/* what info msg to send, 0 = off */
 #define QUPLAY(A) (queues[A].max_slots - queues[A].free_slots)
 
 #endif /* _h_newbiedefs */
