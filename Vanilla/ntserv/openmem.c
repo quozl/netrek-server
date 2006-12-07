@@ -208,15 +208,17 @@ int setupmem(void) {
 }
 
 int removemem(void) {
-  if (shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0) < 0){
+  if (shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0) < 0) {
+    perror("removemem");
     return 0;
   }
-  perror("removemem");
   return 1;
 }
 
 int detachmem(void) {
-  if (shmdt(sharedMemory) < 0) return 0;
-  perror("detachmem");
+  if (shmdt(sharedMemory) < 0) {
+    perror("detachmem");
+    return 0;
+  }
   return 1;
 }
