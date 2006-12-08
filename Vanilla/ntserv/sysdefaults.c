@@ -40,7 +40,7 @@ void readsysdefaults(void)
 
 /* Clear ship type sent field, in case the .sysdef change changed ship defs */
     for (i=0;i<NUM_TYPES;i++) {
-	sent_ship[i] = 0;
+	ship_cap_sent[i] = 0;
     }
 
     testtime= -1;

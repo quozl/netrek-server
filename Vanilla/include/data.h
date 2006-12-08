@@ -345,7 +345,7 @@ extern int F_rc_distress;
 extern int F_self_8flags;
 extern int F_19flags;
 extern int F_show_all_tractors;
-extern int sent_ship[];
+extern int ship_cap_sent[];
 
 extern char Cambot[FNAMESIZE];
 extern char Cambot_out[FNAMESIZE];
