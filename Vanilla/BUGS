@@ -3,10 +3,7 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
-        - Sturgeon bug: ship cap packets not being properly sent to
-          observers, or to all players upon a free planet upgrade.
-
-	- Sturgeon bug: poblem with torp or plasma array in which a
+	- Sturgeon bug: problem with torp or plasma array in which a
           player may sometimes get to fire 9 torps, the 9th being in
           someone else's array (it's a different color torp).  On a
           related note, some people have reported losing the ability
