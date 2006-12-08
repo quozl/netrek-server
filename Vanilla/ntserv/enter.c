@@ -17,6 +17,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "sturgeon.h"
 
 /* file scope prototypes */
 
@@ -130,7 +131,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
          that are left, as default ship settings have been reset */
       for (i = 1; i < NUMUPGRADES; i++) {
         if (me->p_upgradelist[i] > 0)
-          apply_upgrade(i, me, me->p_upgradelist[i]);
+          sturgeon_apply_upgrade(i, me, me->p_upgradelist[i]);
       }
       me->p_special = -1;
       initspecial(me);

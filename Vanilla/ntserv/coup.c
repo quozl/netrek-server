@@ -17,7 +17,7 @@ void coup(void)
     struct planet *l;
 
 #ifdef STURGEON
-    if (sturgeon) if (!sturgeon_coup()) return;
+    if (sturgeon && !sturgeon_hook_coup()) return;
 #endif
 
     if (me->p_kills < 1.0) {

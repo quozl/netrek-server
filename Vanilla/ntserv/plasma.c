@@ -8,6 +8,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "sturgeon.h"
 
 /*
  * See torp.c for comments; in essence this code is an exact copy of that
@@ -281,7 +282,7 @@ void nplasmatorp(u_char course, int attributes)
         k->t_whodet = me->p_no;
         k->t_status = TDET;             /* moved down here for safety...  */
                                         /* daemon will ignore until ready */
-        apply_upgrade(100, me, 0); /* Dummy upgrade just to send ship cap */
+        sturgeon_apply_upgrade(100, me, 0); /* Dummy upgrade just to send ship cap */
 
         break;
 
