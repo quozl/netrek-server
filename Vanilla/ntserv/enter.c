@@ -30,10 +30,6 @@ static void placeIndependent(void);
 static int first_time = 1;
 #endif
 
-#ifdef STURGEON
-extern void initspecial();
-#endif
-
 /* change 5/10/91 TC -- if tno == 4, independent */
 /*                         tno == 5, Terminator  */
 /* change 3/25/93 NBT -- added promote string    */
@@ -69,101 +65,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     getship(myship, s_type);
 
 #ifdef STURGEON
-    if (sturgeon) {
-      char buf[80];
-      /* Remove upgrades for bases */
-      if (s_type == STARBASE) {
-        me->p_upgrades = 0.0;
-        for (i = 0; i < NUMUPGRADES; i++)
-            me->p_upgradelist[i] = 0;
-      }
-      /* If non-base ship hasn't spent it's base rank credit upgrades, leave them on */
-      /* And in the case of genocide/conquer, leave them on too */
-      else if (me->p_upgrades > (float) me->p_stats.st_rank
-               && me->p_whydead != KGENOCIDE
-               && me->p_whydead != KWINNER) {
-        if (sturgeon_lite) {
-          /* Lose most costly upgrade */
-          double highestcost = 0.0, tempcost = 0.0;
-          int highestupgrade = 0;
-          for (i = 1; i < NUMUPGRADES; i++) {
-            if (me->p_upgradelist[i] > 0) {
-              tempcost = baseupgradecost[i] + (me->p_upgradelist[i] - 1.0) * adderupgradecost[i];
-              if (tempcost > highestcost) {
-                highestupgrade = i;
-                highestcost = tempcost;
-              }
-            }
-          }
-          /* Only remove it if rank credit insufficient to cover all upgrades */
-          if (me->p_upgrades > (float) me->p_stats.st_rank) {
-            me->p_upgradelist[highestupgrade]--;
-            me->p_upgrades -= highestcost;
-          }
-        }
-        else {
-          /* Strip off upgrades until total upgrade amount is less than or equal
-             to rank credit.  Run through normal upgrades first, then strip off
-             the one time upgrades last, only if necessary. */
-          for (i = 1; i < NUMUPGRADES; i++) {
-            if (me->p_upgradelist[i] > 0) {
-              while (me->p_upgradelist[i] != 0) {
-                me->p_upgradelist[i]--;
-                me->p_upgrades -= baseupgradecost[i] + me->p_upgradelist[i] * adderupgradecost[i];
-                if (me->p_upgrades <= (float) me->p_stats.st_rank)
-                  break;
-              }
-            }
-            if (me->p_upgrades <= (float) me->p_stats.st_rank)
-              break;
-          }
-          /* If for some reason we still are over, just set upgrades to zero.  Should
-             never happen, but here to be safe */
-          if (me->p_upgrades > (float) me->p_stats.st_rank)
-            me->p_upgrades = 0;
-        }
-      }
-      /* Calculate new rank credit */
-      me->p_rankcredit = (float) me->p_stats.st_rank - me->p_upgrades;
-      if (me->p_rankcredit < 0.0)
-         me->p_rankcredit = 0.0;
-      /* Now we need to go through the upgrade list and reapply all upgrades
-         that are left, as default ship settings have been reset */
-      for (i = 1; i < NUMUPGRADES; i++) {
-        if (me->p_upgradelist[i] > 0)
-          sturgeon_apply_upgrade(i, me, me->p_upgradelist[i]);
-      }
-      me->p_special = -1;
-      initspecial(me);
-      /* AS get unlimited mines */
-      if (s_type == ASSAULT) {
-        me->p_weapons[11].sw_number = -1;
-        me->p_special = 11;
-      }
-      me->p_team = (1 << tno);
-      /* SB gets unlimited pseudoplasma, type 5 plasma, and suicide drones */
-      if (s_type == STARBASE) {
-        me->p_weapons[0].sw_number = -1;
-        me->p_weapons[5].sw_number = -1;
-        me->p_weapons[10].sw_number = -1;
-        me->p_special = 10;
-        sprintf(buf, "%s (%c%c) is now a Starbase",
-                me->p_name, teamlet[me->p_team], shipnos[me->p_no]);
-        strcpy(addrbuf, "GOD->ALL");
-        pmessage(0, MALL, addrbuf, buf);
-      }
-      /* Galaxy class gets unlimited pseudoplasma */
-      if (s_type == SGALAXY) {
-        me->p_weapons[0].sw_number = -1;
-        me->p_special = 0;
-      }
-      /* ATT gets unlimited everything */
-      if (s_type == ATT) {
-        for (i = 0; i <= 10; i++)
-            me->p_weapons[i].sw_number = -1;
-        me->p_special = 10;
-      }
-    }
+    if (sturgeon) sturgeon_hook_enter(me, s_type, tno);
 #endif
 
     /* Alert client about new ship stats */
@@ -407,59 +309,3 @@ static void placeIndependent(void)
     }
     ERROR(2,("Couldn't place the bot successfully.\n"));
 }
-
-#ifdef STURGEON
-void initspecial(struct player *me)
-{
-    int i;
-    for (i = 0; i < NUMSPECIAL; i++)
-        me->p_weapons[i].sw_number = 0;
-    strcpy (me->p_weapons[0].sw_name, "Pseudoplasma");
-    me->p_weapons[0].sw_type = SPECPLAS;
-    me->p_weapons[0].sw_fuelcost = 0;
-    me->p_weapons[0].sw_damage = 0;
-    me->p_weapons[0].sw_fuse = 30;
-    me->p_weapons[0].sw_speed = 15;
-    me->p_weapons[0].sw_turns = 1;
-    for (i = 1; i <= 5; i++)
-    {
-        sprintf(me->p_weapons[i].sw_name, "Type %d Plasma", i);
-        me->p_weapons[i].sw_type = SPECPLAS;
-        me->p_weapons[i].sw_fuelcost = 0;
-        me->p_weapons[i].sw_damage = 25 * (i + 1);
-        me->p_weapons[i].sw_fuse = 30;
-        me->p_weapons[i].sw_speed = 15;
-        me->p_weapons[i].sw_turns = 1;
-    }
-    strcpy(me->p_weapons[6].sw_name, "10 megaton warhead");
-    me->p_weapons[6].sw_damage = 2;
-    strcpy(me->p_weapons[7].sw_name, "20 megaton warhead");
-    me->p_weapons[7].sw_damage = 5;
-    strcpy(me->p_weapons[8].sw_name, "50 megaton warhead");
-    me->p_weapons[8].sw_damage = 10;
-    strcpy(me->p_weapons[9].sw_name, "100 megaton warhead");
-    me->p_weapons[9].sw_damage = 25;
-    for (i = 6; i <= 9; i++)
-    {
-        me->p_weapons[i].sw_type = SPECBOMB;
-        me->p_weapons[i].sw_fuelcost = 0;
-        me->p_weapons[i].sw_fuse = 1;
-        me->p_weapons[i].sw_speed = 0;
-        me->p_weapons[i].sw_turns = 0;
-    }
-    strcpy(me->p_weapons[10].sw_name, "Suicide Drones");
-    me->p_weapons[10].sw_type = SPECTORP;
-    me->p_weapons[10].sw_fuelcost = 500;
-    me->p_weapons[10].sw_damage = 60;
-    me->p_weapons[10].sw_speed = 5;
-    me->p_weapons[10].sw_fuse = 150;
-    me->p_weapons[10].sw_turns = 2;
-    strcpy(me->p_weapons[11].sw_name, "Mines");
-    me->p_weapons[11].sw_type = SPECMINE;
-    me->p_weapons[11].sw_fuelcost = 250;
-    me->p_weapons[11].sw_damage = 200;
-    me->p_weapons[11].sw_speed = 2;
-    me->p_weapons[11].sw_fuse = 600;
-    me->p_weapons[11].sw_turns = 0;
-}
-#endif
