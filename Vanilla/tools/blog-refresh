@@ -13,7 +13,7 @@ set -e
 BLOG=`getpath --localstatedir`/blog
 
 # set full path to blosxom script
-BLOSXOM=`getpath --libdir`
+BLOSXOM=`getpath --libdir`/blosxom
 
 # avoid blosxom if we don't have it available
 if test ! -x ${BLOSXOM}; then

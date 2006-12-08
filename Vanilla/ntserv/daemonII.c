@@ -1013,9 +1013,8 @@ static void udplayers(void)
                 /* And he is ejected from orbit. */
                 j->p_flags &= ~PFORBIT;
 
-                /* Reduce any torp or plasma timers longer than 5 seconds, mainly */
-                /* for ATT torps/plasmas, and sturgeon weapons */
-
+                /* Reduce any torp or plasma timers longer than 5 seconds,
+		   mainly for ATT torps/plasmas, and sturgeon weapons */
                 for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
                     if (t->t_status == TMOVE && t->t_fuse > 50)
                         t->t_fuse = 50;
@@ -1624,7 +1623,7 @@ static void torp_track_target(struct torp *t)
       continue;
     if (j == owner)
       continue;
-    if (j->p_team == owner->p_team && !(j->p_flags & PFPRACTR))
+    if ((j->p_team == owner->p_team) && !(j->p_flags & PFPRACTR))
       continue;
     if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
       continue;
@@ -1800,7 +1799,7 @@ static void udtorps(void)
 
       if (t->t_attribute & TWOBBLE) {
 #ifdef STURGEON
-        /* So that mines spin in a constant position */
+        /* mines spin in a constant position */
         if (sturgeon && t->t_spinspeed)
           t->t_dir = (t->t_dir + t->t_spinspeed) % 256;
         else
@@ -1836,7 +1835,7 @@ static void udtorps(void)
       break;
     case TOFF:
 #ifdef STURGEON
-      /* Detting your own torps may do damage */
+      /* detting your own torps may do damage */
       if (sturgeon && players[t->t_owner].p_upgradelist[UPG_DETDMG]) {
         t->t_status = TDET;
         t->t_damage /= 4;
@@ -1950,7 +1949,6 @@ static void explode(struct torp *torp)
       if (status->tourn && realNumShips(l->pl_owner) < 2 &&
           realNumShips(l->pl_flags & (FED|ROM|ORI|KLI)) < 2) {
         l->pl_flags |= PLCHEAP;
-        /* Next person to take this planet gets limited credit */
       }
       oldowner = l->pl_owner;
       l->pl_owner = NOBODY;

@@ -17,7 +17,7 @@ set -e
 BLOG=`getpath --localstatedir`/blog
 
 # set full path to blosxom script
-BLOSXOM=`getpath --libdir`
+BLOSXOM=`getpath --libdir`/blosxom
 
 # consume the class argument
 CLASS=${1}

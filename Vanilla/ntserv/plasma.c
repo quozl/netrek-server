@@ -181,7 +181,7 @@ void nplasmatorp(u_char course, int attributes)
   } /* End normal plasmas/SPECPLAS */
 #ifdef STURGEON
   if (sturgeon) {
-    switch(sw->sw_type) {
+    switch (sw->sw_type) {
       case SPECBOMB:
         if (me->p_nplasmatorp == MAXPLASMA) {
             new_warning(UNDEF,"We cannot drop a nuke yet!");

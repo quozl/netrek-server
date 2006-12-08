@@ -1559,15 +1559,14 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 	    return;
 	}
 #ifdef STURGEON
-        if (sturgeon)
-        {
+        if (sturgeon) {
             struct player *dude;
             char buf2[20];
             int i;
 
             dude = &players[packet->indiv];
             if ((packet->indiv == me->p_no) & (strlen(packet->mesg) == 1)) {
-                switch(toupper(*packet->mesg)) {
+                switch (toupper(*packet->mesg)) {
                     case 'C':
                         sprintf(addrbuf, "GOD->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
                         pmessage(me->p_no, MINDIV, addrbuf,"[C] this message, [u] list upgrades, [k] list kills, [i] inventory");

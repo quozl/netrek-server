@@ -45,11 +45,10 @@ int upgrade(int type, struct player *me, char *item, double base, double adder)
             unapply_upgrade(type, me, 1);
             me->p_upgrades -= kills_gained;
             me->p_undo_upgrade = 0;
-            return(0);
-        }
-        else {
+            return 0;
+        } else {
             new_warning(UNDEF,"Undo upgrade failed - you don't have that upgrade.");
-            return(0);
+            return 0;
         }
     }
     if (type > 0)
@@ -76,22 +75,20 @@ int upgrade(int type, struct player *me, char *item, double base, double adder)
             if (me->p_upgrades >= sturgeon_maxupgrades) {
                sprintf(buf, "You are at the upgrade limit and cannot buy any more upgrades.");
                 new_warning(UNDEF,buf);
-                return(0);
-            }
-            else if ((me->p_upgrades + kills_req) > sturgeon_maxupgrades) {
-                sprintf(buf, "That would put you over the upgrade limit,  try buying something less expensive.");
+                return 0;
+            } else if ((me->p_upgrades + kills_req) > sturgeon_maxupgrades) {
+                sprintf(buf, "That would put you over the upgrade limit, try buying something less expensive.");
                 new_warning(UNDEF,buf);
-                return(0);
+                return 0;
             }
         }
-    }
-    /* Only actual kills can buy temporary items */
-    else {
+    } else {
+        /* Only actual kills can buy temporary items */
         if (me->p_kills < kills_req) {
             sprintf(buf, "You need %0.2f kills to increase your ship's %s.",
                     kills_req, item);
             new_warning(UNDEF,buf);
-            return(0);
+            return 0;
         }
         /* Limit on shield overcharge */
         if (strstr(item, "shields")) {
@@ -101,7 +98,7 @@ int upgrade(int type, struct player *me, char *item, double base, double adder)
             if (shieldboost >= 200) {
                 sprintf(buf, "Your shields (%ld percent normal) cannot be overcharged any more.", shieldboost);
                 new_warning(UNDEF,buf);
-                return(0);
+                return 0;
             }
         }
     }
@@ -111,13 +108,12 @@ int upgrade(int type, struct player *me, char *item, double base, double adder)
         me->p_upgradelist[type]++;
     }
     /* Decrement any rank credit first, for actual upgrades */
-    if (type > 0 && me->p_rankcredit >= kills_req)
+    if (type > 0 && me->p_rankcredit >= kills_req) {
         me->p_rankcredit -= kills_req;
-    else if (type > 0 && me->p_rankcredit > 0.0) {
+    } else if (type > 0 && me->p_rankcredit > 0.0) {
         me->p_kills -= (kills_req - me->p_rankcredit);
         me->p_rankcredit = 0.0;
-    }
-    else
+    } else
         me->p_kills -= kills_req;
 
     rdelay = me->p_updates + (kills_req * 10);
@@ -126,7 +122,7 @@ int upgrade(int type, struct player *me, char *item, double base, double adder)
     else /* 1 time upgrades */
         sprintf(buf, "You have gained the %s upgrade!", item);
     new_warning(UNDEF,buf);
-    return(1);
+    return 1;
 }
 
 /* Function to actually apply all upgrades */
@@ -134,8 +130,7 @@ void apply_upgrade(int type, struct player *j, int multiplier)
 {
     int i = multiplier;
 
-    switch(type)
-    {
+    switch (type) {
     case UPG_TEMPSHIELD: /* Temporary shield boost */
         j->p_shield += 50 * i;
         break;
@@ -201,8 +196,7 @@ void unapply_upgrade(int type, struct player *j, int multiplier)
 {
     int i = multiplier;
 
-    switch(type)
-    {
+    switch (type) {
     case UPG_PERMSHIELD: /* Permanent shield boost */
         j->p_ship.s_maxshield -= 10 * i;
         j->p_shield -= 10 * i;
@@ -272,8 +266,7 @@ void set_speed(int speed)
     char addrbuf[10];
     int i;
 
-    if (sturgeon && me->p_upgrading)
-    {
+    if (sturgeon && me->p_upgrading) {
         if (speed == 0) {
             new_warning(UNDEF,"Upgrade aborted");
             me->p_flags &= ~(PFREFIT);
@@ -282,11 +275,9 @@ void set_speed(int speed)
         }
         sprintf(addrbuf,"UPG->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
         getship(&tmpship, me->p_ship.s_type);
-        switch(me->p_upgrading)
-        {
+        switch (me->p_upgrading) {
         case 1:                 /* first level menu */
-            switch(speed)
-            {
+            switch(speed) {
             case 1: me->p_shield = me->p_ship.s_maxshield;
                     me->p_fuel = me->p_ship.s_maxfuel;
                     me->p_damage = me->p_wtemp = me->p_etemp = 0;
@@ -321,8 +312,7 @@ void set_speed(int speed)
 	    }
 	    break;
         case 2:                 /* shield/hull upgrade menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1: if (upgrade(UPG_PERMSHIELD, me, "shield max", 0.0, 0.0))
                         apply_upgrade(UPG_PERMSHIELD, me, 1);
                     break;
@@ -338,8 +328,7 @@ void set_speed(int speed)
             }
             break;
         case 3:                 /* engine upgrade menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1: if (upgrade(UPG_FUEL, me, "fuel capacity", 0.0, 0.0))
                         apply_upgrade(UPG_FUEL, me, 1);
                     break;
@@ -364,8 +353,7 @@ void set_speed(int speed)
             }
             break;
         case 4:                 /* weapon upgrade menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1: if (upgrade(UPG_PHASER, me, "phaser damage", 0.0, 0.0))
                         apply_upgrade(UPG_PHASER, me, 1);
                     break;
@@ -384,8 +372,7 @@ void set_speed(int speed)
             }
             break;
         case 5:                 /* special weapons menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1: pmessage(me->p_no, MINDIV, addrbuf,"Plasmas: 0=abort, 1-5 = type 1-5, 9=pseudoplasma");
                     me->p_upgrading = 8;
                     break;
@@ -442,8 +429,7 @@ void set_speed(int speed)
             }
             break;
         case 6:                 /* One time upgrade menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1:
                     if (me->p_upgradelist[UPG_FIRECLOAK] && !me->p_undo_upgrade) {
                         pmessage(me->p_no, MINDIV, addrbuf,"You can already fire while cloaked.");
@@ -467,8 +453,7 @@ void set_speed(int speed)
             break;
 
         case 7:                 /* miscellaneous systems menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1:
                 new_warning(UNDEF,"Sorry, cloak upgrades have been disabled.");
                 me->p_flags &= ~(PFREFIT);
@@ -533,8 +518,7 @@ void set_speed(int speed)
             }
             break;
         case 8:                 /* Plasma torp menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1:
             case 2:
             case 3:
@@ -563,8 +547,7 @@ void set_speed(int speed)
             }
             break;
         case 9:                 /* Nuclear warhead menu */
-            switch(speed)
-            {
+            switch (speed) {
             case 1:
             case 2:
             case 3:
@@ -1298,8 +1281,8 @@ int sndShipCap(void)
         ShipFoo.s_bitmap = htons(me->p_ship.s_type);
         strcpy(ShipFoo.s_name,shipnames[me->p_ship.s_type]);
         sendClientPacket((CVOID) &ShipFoo);
-        return (1);
+        return 1;
     }
 #endif
-    return (0);
+    return 0;
 }
