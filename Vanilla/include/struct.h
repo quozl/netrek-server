@@ -214,9 +214,14 @@ struct context {
 #define UPG_FIRECLOAK	17
 #define UPG_DETDMG	18
 
-#define UPG_OFFSET 17			/* Offset at which upgrades become 1 time upgrades */
-#define NUMUPGRADES 20                  /* Maximum number of different ship upgrades */
-#define NUMSPECIAL 16                   /* Number of special weapon types */
+/* Offset at which upgrades become 1 time upgrades */
+#define UPG_OFFSET 17
+
+/* Maximum number of different ship upgrades */
+#define NUMUPGRADES 20
+
+/* Number of special weapon types */
+#define NUMSPECIAL 16
 
 struct specialweapon {
     char sw_name[20];
