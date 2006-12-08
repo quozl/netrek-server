@@ -162,7 +162,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     bay_init(me);
     me->p_dock_with = 0;
     me->p_dock_bay = 0;
-    me->p_update_shipcap = 0;
 /*  if (!keeppeace) me->p_hostile = (FED|ROM|KLI|ORI); */
     if( !(me->p_flags & PFROBOT) && (me->p_team == NOBODY) ) {
       me->p_hostile = NOBODY;

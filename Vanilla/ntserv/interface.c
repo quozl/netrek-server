@@ -259,11 +259,6 @@ void lock_player(int player)
     me->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
     me->p_playerl = player;
 
-#ifdef OBSERVERS
-    if (Observer)
-        me->p_update_shipcap = 1;
-#endif
-
     /* notify player docking perm status of own SB when locking 7/19/92 TC */
 
     if ((players[player].p_team == me->p_team) &&
@@ -630,47 +625,42 @@ int numPlanets(int owner)
 int sndShipCap(void)
 {
     struct ship_cap_spacket sc;
+    static struct ship_cap_spacket prior[NUM_TYPES];
     struct player *pl;
 
-#ifndef ROBOT
-    if ((F_ship_cap && !ship_cap_sent[me->p_ship.s_type])
-#ifdef STURGEON
-        || sturgeon
-#endif
-        ) {
-#ifdef OBSERVERS
-        /* Use person observed if we are an observer */
-        if (Observer && (me->p_flags & PFPLOCK))
-            pl = &players[me->p_playerl];
-        else
-#endif
-            pl = me;
-
-        sc.type = SP_SHIP_CAP;
-        sc.s_type = htons(pl->p_ship.s_type);
-        sc.operation = 0;
-        sc.s_torpspeed = htons(pl->p_ship.s_torpspeed);
-        sc.s_maxfuel = htonl(pl->p_ship.s_maxfuel);
-        sc.s_maxspeed = htonl(pl->p_ship.s_maxspeed);
-        sc.s_maxshield = htonl(pl->p_ship.s_maxshield);
-        sc.s_maxdamage = htonl(pl->p_ship.s_maxdamage);
-        sc.s_maxwpntemp = htonl(pl->p_ship.s_maxwpntemp);
-        sc.s_maxegntemp = htonl(pl->p_ship.s_maxegntemp);
-        sc.s_width = htons(pl->p_ship.s_width);
-        sc.s_height = htons(pl->p_ship.s_height);
-        sc.s_maxarmies = htons(pl->p_ship.s_maxarmies);
-        sc.s_letter = "sdcbaog*"[pl->p_ship.s_type];
-        sc.s_desig1 = shiptypes[pl->p_ship.s_type][0];
-        sc.s_desig2 = shiptypes[pl->p_ship.s_type][1];
-        sc.s_phaserrange = htons(pl->p_ship.s_phaserdamage);
-        sc.s_bitmap = htons(pl->p_ship.s_type);
-        strcpy(sc.s_name,shipnames[pl->p_ship.s_type]);
-        sendClientPacket(&sc);
-        ship_cap_sent[pl->p_ship.s_type] = 1;
-
-        me->p_update_shipcap = 0;
-        return 1;
-    }
-#endif
+#ifdef ROBOT
     return 0;
+#else
+    if (!F_ship_cap) return 0;
+#ifdef OBSERVERS
+    /* Use person observed if we are an observer */
+    if (Observer && (me->p_flags & PFPLOCK))
+        pl = &players[me->p_playerl];
+    else
+#endif
+        pl = me;
+
+    sc.type = SP_SHIP_CAP;
+    sc.s_type = htons(pl->p_ship.s_type);
+    sc.operation = 0;
+    sc.s_torpspeed = htons(pl->p_ship.s_torpspeed);
+    sc.s_maxfuel = htonl(pl->p_ship.s_maxfuel);
+    sc.s_maxspeed = htonl(pl->p_ship.s_maxspeed);
+    sc.s_maxshield = htonl(pl->p_ship.s_maxshield);
+    sc.s_maxdamage = htonl(pl->p_ship.s_maxdamage);
+    sc.s_maxwpntemp = htonl(pl->p_ship.s_maxwpntemp);
+    sc.s_maxegntemp = htonl(pl->p_ship.s_maxegntemp);
+    sc.s_width = htons(pl->p_ship.s_width);
+    sc.s_height = htons(pl->p_ship.s_height);
+    sc.s_maxarmies = htons(pl->p_ship.s_maxarmies);
+    sc.s_letter = "sdcbaog*"[pl->p_ship.s_type];
+    sc.s_desig1 = shiptypes[pl->p_ship.s_type][0];
+    sc.s_desig2 = shiptypes[pl->p_ship.s_type][1];
+    sc.s_phaserrange = htons(pl->p_ship.s_phaserdamage);
+    sc.s_bitmap = htons(pl->p_ship.s_type);
+    strcpy(sc.s_name,shipnames[pl->p_ship.s_type]);
+    if (memcmp(prior[pl->p_ship.s_type], sc, sizeof(sc)) == 0) return 0;
+    memcpy(prior[pl->p_ship.s_type], sc, sizeof(sc));
+    sendClientPacket(&sc);
+    return 1;
 }

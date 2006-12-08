@@ -38,11 +38,6 @@ void readsysdefaults(void)
     setarray ( &sysdefships, 1 );
     setarray ( &sysdefweapons, 1 );
 
-/* Clear ship type sent field, in case the .sysdef change changed ship defs */
-    for (i=0;i<NUM_TYPES;i++) {
-	ship_cap_sent[i] = 0;
-    }
-
     testtime= -1;
     topgun=0; /* added 12/9/90 TC */
     newturn=0; /* added 1/20/91 TC */

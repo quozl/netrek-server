@@ -646,8 +646,7 @@ static void auto_features(void)
 	}
     }
     /* Send ship cap if necessary */
-    if (me->p_update_shipcap)
-        sndShipCap();
+    sndShipCap();
 
 #ifdef STURGEON
     /* Check if eligible for free upgrade */

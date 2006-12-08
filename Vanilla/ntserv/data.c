@@ -409,7 +409,6 @@ int F_rc_distress   = 0;
 int F_self_8flags   = 0;
 int F_19flags       = 0;	/* pack 19 flags into spare bytes */
 int F_show_all_tractors = 0;
-int ship_cap_sent[NUM_TYPES];
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 #ifdef OBSERVERS
