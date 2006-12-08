@@ -194,7 +194,7 @@ int main(int argc, char **argv)
     }
 
     /* check for planet identifier */
-    if (isalpha(argv[i][0])) {
+    if (isalpha((int)argv[i][0])) {
       pl = planet_find(argv[i]);
     } else {
       pl = planet_by_number(argv[i]);
