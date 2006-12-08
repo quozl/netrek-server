@@ -40,7 +40,7 @@ void ip_lookup(char *ip, char *p_full_hostname, int len)
   }
 
   /* lookup the fully qualified domain name using the address */
-  struct hostent *hostent = gethostbyaddr(&addr, sizeof(addr), AF_INET);
+  struct hostent *hostent = gethostbyaddr((char *)&addr, sizeof(addr), AF_INET);
   if (hostent == NULL) {
     ERROR(2,("ip_to_full_hostname: gethostbyaddr failed for %s\n", ip));
     strcpy(p_full_hostname, ip);
