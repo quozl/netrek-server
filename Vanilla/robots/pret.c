@@ -177,6 +177,7 @@ main(argc, argv)
         checkmess();
     }
     cleanup(0);
+    return 0;
 }
 
 void checkmess()

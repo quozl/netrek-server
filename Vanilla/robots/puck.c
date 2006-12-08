@@ -167,6 +167,7 @@ char **argv;
         rmove();
     }
     cleanup();
+    return 0;
 }
 
 

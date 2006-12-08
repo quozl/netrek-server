@@ -152,6 +152,7 @@ char **argv;
         marsmove();
     }
     cleanup();
+    return 0;
 }
 
 
