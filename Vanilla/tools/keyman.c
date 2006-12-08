@@ -38,7 +38,7 @@ void addkey(char *name);
 void reorder(int argc, char *argv[]);
 
 
-struct rsa_key key_list[1000] = {"\0", "\0", "\0"};
+struct rsa_key key_list[1000] = { {"\0", "\0", "\0"} };
 int key_count=0;
 
 void readkeys(int convert)
