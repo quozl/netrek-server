@@ -8,6 +8,7 @@
 #include <math.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/select.h>
 #include <errno.h>
 #include <pwd.h>
 #include <string.h>
