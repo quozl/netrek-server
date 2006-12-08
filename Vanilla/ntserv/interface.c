@@ -1227,9 +1227,6 @@ void do_refit(int type)
 
     /* Notify client of new ship stats, if necessary */
     sndShipCap();
-    if (type != STARBASE && me->p_kills < plkills) {
-	me->p_ship.s_plasmacost = -1;
-    }
 
     if (type != STARBASE && type != ATT && (
 #ifdef STURGEON  /* force plasmas -> upgrade feature */
