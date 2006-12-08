@@ -113,7 +113,7 @@ encode(bin, buf)
    unsigned char	*bin;
    char			*buf;
 {
-   register	i;
+   register int i;
    for(i=0; i< KEY_SIZE; i++){
       sprintf(buf, "%02x", bin[i]);
       buf += 2;

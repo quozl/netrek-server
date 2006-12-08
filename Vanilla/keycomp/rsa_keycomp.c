@@ -19,6 +19,7 @@
 #include INC_FCNTL
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 
 /* ONLY IF YOU HAVE  char key_name[2*KEYSIZE] in struct rsa_key. */
 /* #define RSA_KEYNAME */
@@ -70,6 +71,8 @@ void sort_motdlist P_((int nk));
 int class_ok P_((char *cl1, char *cl2));
 void store_keydesc P_((struct motd_keylist *keys, char *client, char *arch));
 void usage P_((char *p));
+void loadkeys P_((char *reservedf));
+int exist P_((struct rsa_key *k));
 
 #ifdef _NEED_SYS_PROTOS
 extern int                    fprintf P_((FILE *, const char *, ...));
@@ -259,6 +262,7 @@ backup(f)
  * keys are new 
  */
 
+void
 loadkeys(file)
 char *file;
 {
@@ -426,7 +430,7 @@ read_key(fi, bp)
    char	*bp;
 {
    register char	*cp;
-   register 		c;
+   register char	c;
 
    do {
       cp = bp;
@@ -538,7 +542,7 @@ read_exclude_file(n)
 {
    char		buf[80];
    char		**s, *nl;
-   register	l;
+   register int	l;
    FILE		*fi = fopen(n, "r");
    if(!fi){
       /*
@@ -572,7 +576,7 @@ read_class_file(n)
 {
    char		buf[BUFSIZ], *s=buf;
    FILE		*fi = fopen(n, "r");
-   register	c;
+   register char c;
    if(!fi)
       return NULL;
 
@@ -596,7 +600,7 @@ read_class_exclude(n)
 {
    char         buf[BUFSIZ], *s=buf;
    FILE         *fi = fopen(n, "r");
-   register     c;
+   register char c;
    if(!fi)
       return NULL;
 
@@ -640,7 +644,7 @@ sort_motdlist(nk)
    char			buf[80];
    struct  motd_keylist *keys, *k;
    char			client[80], arch[80];
-   register		i, f;
+   register int	i, f;
    FILE			*fi = fopen(motdlist, "r"), *fo;
 
    if(!fi) { perror(motdlist); return; }
