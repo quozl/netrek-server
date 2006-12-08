@@ -515,7 +515,7 @@ void reaper(int sig)
    wait((int *) 0);
 #else				/* hpux */
    /* SUPRESS 530 */
-   while (wait3((union wait *) 0, WNOHANG, NULL) > 0);
+   while (wait3((int *) 0, WNOHANG, NULL) > 0);
 #endif				/* hpux */
    signal(SIGCHLD, reaper);
 }
