@@ -22,9 +22,9 @@ void nplasmatorp(u_char course, int attributes)
 {
   struct torp *k;
 #ifdef STURGEON
-  register int i;
+  register int i = 0;
   struct torp *j;
-  struct   specialweapon *sw;
+  struct   specialweapon *sw = NULL;
   struct   planet *l;
   struct   ship *myship;
   char     buf[80];
