@@ -189,6 +189,7 @@ int main(int argc, char **argv)
       players[player].p_wtemp = 0;
       players[player].p_etemp = 0;
       players[player].p_fuel = players[player].p_ship.s_maxfuel;
+      players[player].p_update_shipcap = 1;
       if (argv[2][1] == 'o') players[player].p_flags |= PFDOCKOK;
       break;
     case 'p':		/* puck? */
@@ -211,6 +212,7 @@ int main(int argc, char **argv)
       players[player].p_damage = 0;
       players[player].p_ship.s_maxegntemp = 5000;
       players[player].p_etemp = 0;
+      players[player].p_update_shipcap = 1;
       break;
     case 'D':		/* demote, but not beyond ensign */
       if(players[player].p_stats.st_rank == 0)

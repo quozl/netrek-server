@@ -456,6 +456,7 @@ struct player {
     time_t voting[PV_TOTAL];	/* voting array */
     int p_candock;              /* is this player allowed to dock onto SB */
     int p_transwarp;		/* flags base must have to allow transwarp */
+    int p_update_shipcap;	/* does player need a ship cap packet */
 #ifdef STURGEON
     short p_upgrading;		/* Ship is doing upgrading */
     float p_upgrades;		/* Number of kills devoted to upgrades */

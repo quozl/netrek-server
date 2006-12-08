@@ -259,6 +259,11 @@ void lock_player(int player)
     me->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
     me->p_playerl = player;
 
+#ifdef OBSERVERS
+    if (Observer)
+        me->p_update_shipcap = 1;
+#endif
+
     /* notify player docking perm status of own SB when locking 7/19/92 TC */
 
     if ((players[player].p_team == me->p_team) &&
@@ -625,6 +630,7 @@ int numPlanets(int owner)
 int sndShipCap(void)
 {
     struct ship_cap_spacket ShipFoo;
+    struct player *pl;
 
 #ifndef ROBOT
     if ((F_ship_cap && !sent_ship[me->p_ship.s_type])
@@ -632,27 +638,37 @@ int sndShipCap(void)
         || sturgeon
 #endif
         ) {
-        sent_ship[me->p_ship.s_type] = 1;
+#ifdef OBSERVERS
+       /* Use person observed if we are an observer */
+       if(Observer && (me->p_flags&PFPLOCK))
+           pl = &players[me->p_playerl];
+       else
+#endif
+           pl = me;
+
         ShipFoo.type = SP_SHIP_CAP;
-        ShipFoo.s_type = htons(me->p_ship.s_type);
+        ShipFoo.s_type = htons(pl->p_ship.s_type);
         ShipFoo.operation = 0;
-        ShipFoo.s_torpspeed = htons(me->p_ship.s_torpspeed);
-        ShipFoo.s_maxfuel = htonl(me->p_ship.s_maxfuel);
-        ShipFoo.s_maxspeed = htonl(me->p_ship.s_maxspeed);
-        ShipFoo.s_maxshield = htonl(me->p_ship.s_maxshield);
-        ShipFoo.s_maxdamage = htonl(me->p_ship.s_maxdamage);
-        ShipFoo.s_maxwpntemp = htonl(me->p_ship.s_maxwpntemp);
-        ShipFoo.s_maxegntemp = htonl(me->p_ship.s_maxegntemp);
-        ShipFoo.s_width = htons(me->p_ship.s_width);
-        ShipFoo.s_height = htons(me->p_ship.s_height);
-        ShipFoo.s_maxarmies = htons(me->p_ship.s_maxarmies);
-        ShipFoo.s_letter = "sdcbaog*"[me->p_ship.s_type];
-        ShipFoo.s_desig1 = shiptypes[me->p_ship.s_type][0];
-        ShipFoo.s_desig2 = shiptypes[me->p_ship.s_type][1];
-        ShipFoo.s_phaserrange = htons(me->p_ship.s_phaserdamage);
-        ShipFoo.s_bitmap = htons(me->p_ship.s_type);
-        strcpy(ShipFoo.s_name,shipnames[me->p_ship.s_type]);
+        ShipFoo.s_torpspeed = htons(pl->p_ship.s_torpspeed);
+        ShipFoo.s_maxfuel = htonl(pl->p_ship.s_maxfuel);
+        ShipFoo.s_maxspeed = htonl(pl->p_ship.s_maxspeed);
+        ShipFoo.s_maxshield = htonl(pl->p_ship.s_maxshield);
+        ShipFoo.s_maxdamage = htonl(pl->p_ship.s_maxdamage);
+        ShipFoo.s_maxwpntemp = htonl(pl->p_ship.s_maxwpntemp);
+        ShipFoo.s_maxegntemp = htonl(pl->p_ship.s_maxegntemp);
+        ShipFoo.s_width = htons(pl->p_ship.s_width);
+        ShipFoo.s_height = htons(pl->p_ship.s_height);
+        ShipFoo.s_maxarmies = htons(pl->p_ship.s_maxarmies);
+        ShipFoo.s_letter = "sdcbaog*"[pl->p_ship.s_type];
+        ShipFoo.s_desig1 = shiptypes[pl->p_ship.s_type][0];
+        ShipFoo.s_desig2 = shiptypes[pl->p_ship.s_type][1];
+        ShipFoo.s_phaserrange = htons(pl->p_ship.s_phaserdamage);
+        ShipFoo.s_bitmap = htons(pl->p_ship.s_type);
+        strcpy(ShipFoo.s_name,shipnames[pl->p_ship.s_type]);
         sendClientPacket((CVOID) &ShipFoo);
+        sent_ship[pl->p_ship.s_type] = 1;
+
+        me->p_update_shipcap = 0;
         return 1;
     }
 #endif

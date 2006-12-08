@@ -845,7 +845,7 @@ int sturgeon_hook_set_speed(int speed)
                         (float) (1 << (speed-1)), 0.0)) {
                         me->p_weapons[5+speed].sw_number += 1;
                         me->p_ship.s_maxarmies -= speed;
-                        sturgeon_apply_upgrade(100, me, 0); /* Dummy upgrade just to send ship cap */
+                        sndShipCap(); /* Need to update ship army capacity */
                         sprintf(buf, "%s (%d)", me->p_weapons[5+speed].sw_name,
                             me->p_weapons[5+speed].sw_number);
                         pmessage(me->p_no, MINDIV, addrbuf,buf);

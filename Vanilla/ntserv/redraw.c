@@ -645,6 +645,10 @@ static void auto_features(void)
 	    }
 	}
     }
+    /* Send ship cap if necessary */
+    if (me->p_update_shipcap)
+        sndShipCap();
+
 #ifdef STURGEON
     /* Check if eligible for free upgrade */
     if (sturgeon) {

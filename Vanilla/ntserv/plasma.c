@@ -282,7 +282,7 @@ void nplasmatorp(u_char course, int attributes)
         k->t_whodet = me->p_no;
         k->t_status = TDET;             /* moved down here for safety...  */
                                         /* daemon will ignore until ready */
-        sturgeon_apply_upgrade(100, me, 0); /* Dummy upgrade just to send ship cap */
+        sndShipCap();			/* Need to update ship army capacity */
 
         break;
 
