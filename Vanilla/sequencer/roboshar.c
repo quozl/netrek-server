@@ -9,6 +9,8 @@
 #include <math.h>
 #endif
 
+extern void do_message(int recip, int group, char *address, u_char from,
+                       const char *fmt, va_list args);
 
 /* Each robot must declare the following variables as globals */
 extern int debug; 
