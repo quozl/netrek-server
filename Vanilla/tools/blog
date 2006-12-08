@@ -17,8 +17,7 @@ set -e
 BLOG=`getpath --localstatedir`/blog
 
 # set full path to blosxom script
-# TODO: detect blosxom using configure, --with-blosxom=/path/to/program
-BLOSXOM=/usr/lib/cgi-bin/blosxom
+BLOSXOM=`getpath --libdir`
 
 # consume the class argument
 CLASS=${1}

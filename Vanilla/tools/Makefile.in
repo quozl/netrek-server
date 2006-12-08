@@ -63,6 +63,7 @@ install: $(EXECS)
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www/blog
 	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(DESTDIR)$(LIBDIR)/tools/updatekeys
+	$(INSTALLPROG) $(INSTALLOPTS) blosxom $(DESTDIR)$(LIBDIR)/blosxom
 	$(INSTALLPROG) $(INSTALLOPTS) blog $(DESTDIR)$(LIBDIR)/blog
 	$(INSTALLPROG) $(INSTALLOPTS) blog-file $(DESTDIR)$(LIBDIR)/blog-file
 	$(INSTALLPROG) $(INSTALLOPTS) blog-update $(DESTDIR)$(LIBDIR)/blog-update
