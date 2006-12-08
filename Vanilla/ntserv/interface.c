@@ -449,10 +449,6 @@ static void sendwarn(char *string, int atwar, int team)
 void do_refit(int type)
 {	
     int i=0;
-#ifdef STURGEON
-    char buf[80];
-    char addrbuf[80];
-#endif
 
     if (type<0 || type>ATT) return;
     if (me->p_flags & PFORBIT) {
@@ -492,17 +488,7 @@ void do_refit(int type)
     }
 
 #ifdef STURGEON
-    if (sturgeon && (type == me->p_ship.s_type) && upgradeable) {
-        /* No upgrades for starbases */
-        if (type != STARBASE) {
-          sprintf(addrbuf,"UPG->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-          pmessage(me->p_no, MINDIV, addrbuf,"Upgrade: 0=abort, 1=normal refit, 2=shields/hull, 3=engines");
-          pmessage(me->p_no, MINDIV, addrbuf,"         4=weapons, 5=special weapons, 6=one time upgrades, 7=misc");
-          new_warning(UNDEF,"Please make an upgrade selection");
-          me->p_upgrading = 1;
-          return;
-        }
-    }
+    if (sturgeon && sturgeon_hook_refit_0(me, type)) return;
 #endif
 
     if (shipsallowed[type]==0) {
@@ -591,71 +577,7 @@ void do_refit(int type)
     getship(&(me->p_ship), type);
 
 #ifdef STURGEON
-    if (sturgeon) {
-        /* Convert upgrades back to kills, but dont give credit for upgrades bought with rank */
-/*
-        if (me->p_upgrades > 0.0) {
-            float rankcredit;
-            rankcredit = (float)me->p_stats.st_rank - me->p_rankcredit;
-            if (rankcredit < 0)
-                rankcredit = 0;
-            me->p_kills += me->p_upgrades - rankcredit;
-            me->p_upgrades = 0.0;
-        }
-        me->p_rankcredit = (float) me->p_stats.st_rank;
-        for (i = 0; i < NUMUPGRADES; i++)
-            me->p_upgradelist[i] = 0;
-*/
-        for (i = 0; i < NUMSPECIAL; i++)
-            me->p_weapons[i].sw_number = 0;
-        if (type == STARBASE) {
-            /* Remove upgrades for bases */
-            me->p_upgrades = 0.0;
-            for (i = 0; i < NUMUPGRADES; i++)
-                me->p_upgradelist[i] = 0;
-        }
-        else {
-            /* Now we need to go through the upgrade list and reapply all upgrades
-               that are left, as default ship settings have been reset */
-            for (i = 1; i < NUMUPGRADES; i++) {
-              if (me->p_upgradelist[i] > 0)
-                sturgeon_apply_upgrade(i, me, me->p_upgradelist[i]);
-            }
-        }
-        switch(type)
-        {
-        /* AS get unlimited mines */
-        case ASSAULT:
-            me->p_weapons[11].sw_number = -1;
-            me->p_special = 11;
-            break;
-        /* SB gets unlimited pseudoplasma, type 5 plasma, and suicide drones */
-        case STARBASE:
-            me->p_weapons[0].sw_number = -1;
-            me->p_weapons[5].sw_number = -1;
-            me->p_weapons[10].sw_number = -1;
-            me->p_special = 10;
-            sprintf(buf, "%s (%c%c) is now a Starbase",
-                    me->p_name, teamlet[me->p_team], shipnos[me->p_no]);
-            strcpy(addrbuf, "GOD->ALL");
-            pmessage(0, MALL, addrbuf, buf);
-            break;
-        /* Galaxy class gets unlimited pseudoplasma */
-        case SGALAXY:
-            me->p_weapons[0].sw_number = -1;
-            me->p_special = 0;
-            break;
-        /* ATT gets unlimited everything */
-        case ATT:
-            for (i = 0; i <= 10; i++)
-                me->p_weapons[i].sw_number = -1;
-            me->p_special = 10;
-            break;
-        default:
-            me->p_special = -1;
-            break;
-        }
-    }
+    if (sturgeon) sturgeon_hook_refit_1(me, type);
 #endif
 
     /* Notify client of new ship stats, if necessary */
