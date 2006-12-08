@@ -532,7 +532,7 @@ struct status *glp;
 	sep->stats.st_sbmaxkills);
 
     mvwprintw(mainw, 14, 0, "Miscellaneous:");
-    mvwprintw(mainw, 15, 2, "Last lg:%10d    Rank:    %6d    Flags:     %6d",
+    mvwprintw(mainw, 15, 2, "Last lg:%10ld    Rank:    %6d    Flags:     %6d",
 	sep->stats.st_lastlogin, sep->stats.st_rank, sep->stats.st_flags);
     mvwprintw(mainw, 16, 2, "Keymap: %.48s", sep->stats.st_keymap);
     mvwprintw(mainw, 17, 2, "        %s", sep->stats.st_keymap+48);
@@ -587,7 +587,7 @@ struct status *glp;
     int idx, newidx, res, new = FALSE;
     char field[81], tmp[32];
     char oldpw[16];
-    int ival;
+    int ival = 0;
     float fval = 0.0;
     char *sval = '\0';
     saltbuf sb;
