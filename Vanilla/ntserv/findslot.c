@@ -116,7 +116,9 @@ int findslot(int w_queue)
           if (queues[w_queue].free_slots == 0) {
             blog_pickup_game_full();
           } else {
-            blog_pickup_game_not_full();
+            if (queues[w_queue].free_slots > 8) {
+              blog_pickup_game_not_full();
+            }
           }
         }
         return i;
