@@ -133,6 +133,8 @@ static int dock(struct player *base)
   me->p_speed     = 0;
   me->p_desspeed  = 0;
 #ifdef SB_TRANSWARP
+  /* Should never happen, as PFTWARP is unset once player reaches 2*DOCKDIST from base during
+     auto_features() routine */
   if (me->p_flags & PFTWARP){
     me->p_flags &= ~PFTWARP;
     me->p_flags |= PFREFITTING;
