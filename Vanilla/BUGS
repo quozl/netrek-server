@@ -3,6 +3,15 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
+	- Twarping to base docked on base can occassionally cause a glitch where
+          both bases head warp 60 off the galaxy map.
+
+	- Triple mode blanks planet names, if server vote to dogfight or hockey,
+	  names are not restored.
+
+	- With surrenderstart=1, occassionally see "The 0 0 20 minutes before
+	  empire collapses" messages upon neuting a planet.
+
 	- Sturgeon bug: problem with torp or plasma array in which a
           player may sometimes get to fire 9 torps, the 9th being in
           someone else's array (it's a different color torp).  On a
