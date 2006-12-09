@@ -659,8 +659,9 @@ int sndShipCap(void)
     sc.s_phaserrange = htons(pl->p_ship.s_phaserdamage);
     sc.s_bitmap = htons(pl->p_ship.s_type);
     strcpy(sc.s_name,shipnames[pl->p_ship.s_type]);
-    if (memcmp(prior[pl->p_ship.s_type], sc, sizeof(sc)) == 0) return 0;
-    memcpy(prior[pl->p_ship.s_type], sc, sizeof(sc));
+    if (memcmp(&prior[pl->p_ship.s_type], &sc, sizeof(sc)) == 0) return 0;
+    memcpy(&prior[pl->p_ship.s_type], &sc, sizeof(sc));
     sendClientPacket(&sc);
     return 1;
+#endif
 }
