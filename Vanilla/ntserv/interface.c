@@ -115,9 +115,11 @@ void bomb_planet(void)
 #endif
 
     if(no_unwarring_bombing) {
-/* Added ability to take back your own planets from 3rd team 11-15-93 ATH */
+        /* Allowed to take back your own planets or your t-mode opponents
+           planets from 3rd team  */
         if ((status->tourn && realNumShips(owner) < tournplayers) 
-          && !(me->p_team & planets[me->p_planet].pl_flags)) {
+          && !(me->p_team & planets[me->p_planet].pl_flags)
+          && !(team_opposing(me->p_team) & planets[me->p_planet].pl_flags)) {
             new_warning(UNDEF,"You may not bomb 3rd and 4th space planets.");
             return;
          }

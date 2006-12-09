@@ -269,6 +269,7 @@ char *team_name(int team);
 char *team_verb(int team);
 char *team_code(int team);
 int team_find(char *name);
+int team_opposing(int team);
 
 /* warning.c */
 void new_warning(int index, const char *fmt, ...);
