@@ -255,6 +255,7 @@ int main(int argc, char **argv)
     me->p_armsbomb=0;
     me->p_genoarmsbomb=0;
     me->p_candock = 1;
+    me->p_cantranswarp = 1;
 #ifdef STURGEON
     me->p_upgrades = 0.0;
     me->p_undo_upgrade = 0;

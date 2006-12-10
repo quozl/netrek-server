@@ -103,8 +103,6 @@ micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
 
 	- tools/update.c sa_sigaction not present on NetBSD.  [Hietbrink]
 
-	- 'transwarp 0 off' to prevent slot 0 from transwarping.  [Swasey]
-
 	- add lag statistics to LTD stats.  [Zach]
 
 	- tail waggle effect, necessary?

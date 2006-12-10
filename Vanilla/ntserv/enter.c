@@ -116,8 +116,10 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     if (s_type == STARBASE) {
 	me->p_flags |= PFDOCKOK; /* allow docking by default */
 	for(i = 0; i < MAXPLAYER; i++)
-	    if (players[i].p_team == me->p_team)
+	    if (players[i].p_team == me->p_team) {
 	        players[i].p_candock = 1; /* give team permission to dock */
+	        players[i].p_cantranswarp = 1; /* and transwarp */
+	    }
     }
     me->p_transwarp = PFGREEN|PFYELLOW|PFRED;
     me->p_dir = 0;

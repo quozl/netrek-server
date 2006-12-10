@@ -28,6 +28,10 @@ int handleTranswarp(void)
    }
    if (me->p_status != PALIVE)
       return (0);
+   if (!me->p_cantranswarp) {
+      new_warning(UNDEF, "Starbase refuses transwarping from us in particular, captain!", -1);
+      return (0);
+   }
    if (!me->p_candock) {
       new_warning(UNDEF, "Starbase refuses docking from us in particular, captain!", -1);
       return (0);

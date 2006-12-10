@@ -851,6 +851,7 @@ void do_nodock(char *comm, struct message *mess)
   struct player *victim;
   char *addr = addr_mess(whofrom,MINDIV);
   char *who, *what;
+  char *usage = "dock usage: 'DOCK 0 ON|OFF'";
   int slot;
   
   if (p->p_ship.s_type != STARBASE)
@@ -874,14 +875,14 @@ void do_nodock(char *comm, struct message *mess)
   who = strtok(NULL, " ");
   if(who == NULL)
     {
-      pmessage(whofrom, MINDIV, addr, "dock usage: 'DOCK 0 ON|OFF'");
+      pmessage(whofrom, MINDIV, addr, usage);
       return;
     }
 
   what = strtok(NULL, " ");
   if(what == NULL)
     {
-      pmessage(whofrom, MINDIV, addr, "dock usage: 'DOCK 0 ON|OFF'");
+      pmessage(whofrom, MINDIV, addr, usage);
       return;
     }
 
@@ -909,21 +910,24 @@ void do_nodock(char *comm, struct message *mess)
       pmessage(whofrom, MINDIV, addr, "Slot %c no longer allowed to dock to SB", *who);
     }
   else if ( !strcmp("on", what) )
-         {
-           victim->p_candock = 1;
-           pmessage(whofrom, MINDIV, addr, "Slot %c is allowed to dock to SB", *who);
-         }
-       else pmessage(whofrom, MINDIV, addr, "dock usage: dock 0 on|off");
+    {
+      victim->p_candock = 1;
+      pmessage(whofrom, MINDIV, addr, "Slot %c is allowed to dock to SB", *who);
+    }
+  else pmessage(whofrom, MINDIV, addr, usage);
 }
 
 void do_transwarp(char *comm, struct message *mess)
 {
   int whofrom = mess->m_from;
   struct player *p = &players[whofrom];
+  struct player *victim;
   char *addr = addr_mess(whofrom,MINDIV);
-  char *what;
+  char *who, *what;
   char *usage = "transwarp usage: 'TRANSWARP ON|GREEN|YELLOW|SHIELD|OFF'";
-  
+  char *usage2 = "additional usage: 'TRANSWARP ON|OFF player#'";
+  int slot;
+
   if (p->p_ship.s_type != STARBASE) {
     pmessage(whofrom, MINDIV, addr, "transwarp: must be a starbase to use this");
     return;
@@ -942,14 +946,50 @@ void do_transwarp(char *comm, struct message *mess)
   what = strtok(NULL, " ");
   if (what == NULL) {
     pmessage(whofrom, MINDIV, addr, usage);
+    pmessage(whofrom, MINDIV, addr, usage2);
     return;
   }
 
-  if (!strcmp("off", what) ) {
-    me->p_transwarp = 0;
-    pmessage(me->p_team, MTEAM, 
-	     addr_mess(me->p_team,MTEAM), 
-	     "Starbase %s refusing transwarp", me->p_mapchars);
+  if (!strcmp("off", what) || !strcmp("on", what)) {
+    who = strtok(NULL, " ");
+    if (who == NULL) {
+      if ( !strcmp("off", what) ) {
+        me->p_transwarp = 0;
+        pmessage(me->p_team, MTEAM, 
+	         addr_mess(me->p_team,MTEAM), 
+	         "Starbase %s refusing transwarp", me->p_mapchars);
+      } else {
+        me->p_transwarp = PFGREEN|PFYELLOW|PFRED;
+        pmessage(me->p_team, MTEAM,
+	         addr_mess(me->p_team,MTEAM),
+	         "Starbase %s transwarp restored", me->p_mapchars);
+      }
+    } else {
+      /* Individual transwarp toggle */
+      *who = toupper(*who);
+      if( (*who >= '0') && (*who <= '9') )
+        slot = *who - '0';
+      else if ( (*who >= 'A') && (*who <= ('A' + MAXPLAYER - 10) ) )
+        slot = 10 + *who - 'A';
+      else {
+        pmessage(whofrom, MINDIV, addr, "transwarp: unrecognized slot");
+        return;
+      }
+      victim = &players[slot];
+
+      if (victim->p_status == PFREE) {
+        pmessage(whofrom, MINDIV, addr, "transwarp: ignored, slot is free");
+        return;
+      }
+
+      if( !strcmp("off", what) ) {
+        victim->p_cantranswarp = 0;
+        pmessage(whofrom, MINDIV, addr, "Slot %c no longer allowed to transwarp to SB", *who);
+      } else {
+        victim->p_cantranswarp = 1;
+        pmessage(whofrom, MINDIV, addr, "Slot %c is allowed to transwarp to SB", *who);
+      }
+    }
   } else if (!strcmp("green", what)) {
     me->p_transwarp = PFGREEN;
     pmessage(me->p_team, MTEAM, 
@@ -965,13 +1005,10 @@ void do_transwarp(char *comm, struct message *mess)
     pmessage(me->p_team, MTEAM, 
 	     addr_mess(me->p_team,MTEAM), 
 	     "Starbase %s refusing transwarp while shields up", me->p_mapchars);
-  } else if (!strcmp("on", what)) {
-    me->p_transwarp = PFGREEN|PFYELLOW|PFRED;
-    pmessage(me->p_team, MTEAM, 
-	     addr_mess(me->p_team,MTEAM), 
-	     "Starbase %s transwarp restored", me->p_mapchars);
+  } else {
+    pmessage(whofrom, MINDIV, addr, usage);
+    pmessage(whofrom, MINDIV, addr, usage2);
   }
-  else pmessage(whofrom, MINDIV, addr, usage);
 }
 
 static int authorised = 0;
