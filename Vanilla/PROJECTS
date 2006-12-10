@@ -150,8 +150,6 @@ micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
 
 	- include server in spiffy download package [Nowakowski]
 
-	- update t-mode messages, they are outdated.
-
 	- there is no way to tell the difference between a busted client and
 	  the player simply walking off.
 
