@@ -20,6 +20,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "genspkt.h"
+#include "ip.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -109,6 +110,9 @@ int sizes[TOTAL_SPACKETS] = {
     0,						/* 61 */
 };
 
+/* a collection of previously sent packets by packet type and slot,
+used to determine whether to send another one if critical values
+change */
 struct plyr_info_spacket clientPlayersInfo[MAXPLAYER];
 struct plyr_login_spacket clientLogin[MAXPLAYER];
 struct hostile_spacket clientHostile[MAXPLAYER];
@@ -201,9 +205,11 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 	login->pnum=pl->p_no;
 	login->rank=pl->p_stats.st_rank;
 	sendClientPacket(login);
-	return (TRUE);
+	/* on every change to player list, check saved ignore status */
+	if (me != pl && pl->p_status == PFREE) ip_ignore_login(me, pl);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 inline static int
@@ -1250,7 +1256,6 @@ updateShips(void)
 	    update=1;
 	    if (pl->p_status == PFREE) { /* I think this will turn off ignores
 					    for players that leave. 7/24/91 TC */
-		extern int ignored[];
 		ignored[i] = 0;
 	    }
 	}

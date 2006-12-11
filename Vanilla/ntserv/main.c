@@ -270,12 +270,9 @@ int main(int argc, char **argv)
     me->p_login[NAME_LEN - 1] = '\0';
 
     /* set initial ignore status */
-    {
-      int i, mode = 0;
-      if (ip_ignore(me->p_ip)) { mode = MALL; }
-      if (ip_mute(me->p_ip)) { mode = MALL | MTEAM | MINDIV; }
-      for (i = 0; i < MAXPLAYER; i++) ignored[i] = mode;
-    }
+    ip_ignore_initial(me);
+    if (ip_ignore_doosh(me->p_ip)) dooshignore = 1;
+    if (ip_ignore_multi(me->p_ip)) macroignore = 1;
 
     /* assume this is only place p_monitor is set, and mirror accordingly */
     /* 4/13/92 TC */

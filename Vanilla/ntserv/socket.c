@@ -39,6 +39,7 @@
 #include "proto.h"
 #include "sigpipe.h"
 #include "ltd_stats.h"
+#include "ip.h"
 
 #ifdef OOPS
 #ifdef MIPSEL
@@ -3084,9 +3085,11 @@ static int parseIgnore(struct mesg_cpacket *packet)
 	if (dooshignore) {
 	    new_warning(UNDEF,"Accepting Doosh messages.");
 	    dooshignore=0;
+	    ip_ignore_doosh_clear(me->p_ip);
 	} else  {
 	    new_warning(UNDEF,"Ignoring Doosh messages.");
 	    dooshignore=1;
+	    ip_ignore_doosh_set(me->p_ip);
 	}
 	return TRUE;
     }
@@ -3094,9 +3097,11 @@ static int parseIgnore(struct mesg_cpacket *packet)
 	if (macroignore) {
 	    new_warning(UNDEF,"Accepting multi-line macros.");
 	    macroignore=0;
+	    ip_ignore_multi_clear(me->p_ip);
 	} else  {
 	    new_warning(UNDEF,"Ignoring multi-line macros.");
 	    macroignore=1;
+	    ip_ignore_multi_set(me->p_ip);
 	}
 	return TRUE;
     }
@@ -3150,6 +3155,7 @@ static int parseIgnore(struct mesg_cpacket *packet)
 	}
 	ignored[who] ^= what;
     } while (what != 0);
+    ip_ignore_ip_update(me->p_ip, players[who].p_ip, ignored[who]);
 
     strcpy(buf, "Ignore status for this player: ");
     noneflag = TRUE;
