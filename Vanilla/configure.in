@@ -163,7 +163,7 @@ if test "$XINCLUDES" = nope; then
       /usr/include/X11R4 /usr/X11R5/include /usr/include/X11R5 \
       /usr/openwin/include /usr/X11/include /pub/X11R5/include \
       /usr/local/X11R5/include /usr/X11R6/include /usr/include/X11R6 \
-      /pub/X11R6/include /usr/local/X11R6/include"
+      /pub/X11R6/include /usr/local/X11R6/include /usr/include"
 
     for i in $dirs ; do
 	if test -r $i/X11/Intrinsic.h; then
@@ -199,7 +199,11 @@ if test "$XLIBSWLIB" = nope ; then
     XLIBSWLIB=-lX11
 fi
 else
-XINCLUDES="-I$x_includes"
+if test -n "$x_includes" ; then
+   echo "Warning: x_includes was going to be blank, check with quozl"
+else
+   XINCLUDES="-I$x_includes"
+fi
 XLIBSWDIR="-L$x_libraries"
 XLIBSWLIB="-lX11"
 fi
