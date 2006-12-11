@@ -67,8 +67,8 @@ by James Cameron <quozl@us.netrek.org>
 from work by "E. Hietbrink" <Shadow.Hunter@netrek.org> on 7th June 2004
 
 a) list your server twice each time, with "home." and "away." in front
-of the host name (these names need not be registered, as the server
-will strip the name before sending the host name to the metaserver),
+of the host name, and have the DNS entries for these names point to
+your server.
 
 b) set the server type to I,
 
