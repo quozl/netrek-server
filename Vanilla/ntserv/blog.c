@@ -94,6 +94,11 @@ void blog_game_over(struct status *was, struct status *is)
 void blog_base_loss(struct player *j)
 {
   blog_printf("racial", 
-              "%s lost their starbase\n\nStarbase with %d armies, piloted by %s, reported destroyed in valiant battle with enemy forces.  Reconstruction is underway.  Long live the %s.\n",
-              team_name(j->p_team), j->p_armies, j->p_name, team_name(j->p_team));
+              "%s lost their starbase\n\n"
+              "Starbase with %d armies, piloted by %s, "
+              "reported destroyed in valiant battle with enemy forces.  "
+              "Reconstruction is underway, due in %d minutes.  "
+              "Long live the %s.\n",
+              team_name(j->p_team), j->p_armies, j->p_name, 
+              starbase_rebuild_time, team_name(j->p_team));
 }

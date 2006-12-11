@@ -246,6 +246,8 @@ struct sysdef_keywords {
   { "STURGEON_LITE",		SYSDEF_INT,	&sturgeon_lite,
     "Only lose most expensive upgrade on death." },
 #endif
+  { "STARBASE_REBUILD_TIME",	SYSDEF_INT,	&starbase_rebuild_time,
+    "Rebuild time of starbase, in minutes." },
   { "",			SYSDEF_END,	NULL		}
 };
 
@@ -261,6 +263,7 @@ James Cameron, 14th February 2004.
 - use glade (http://glade.pn.org/) to add to gum/gum.xml and regenerate code
 - leave a comment below if your defaults have not been added to gum
 
+STARBASE_REBUILD_TIME
 STURGEON*
 EJECT_VOTE_*
 BAN_VOTE_*

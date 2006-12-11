@@ -189,7 +189,6 @@ because they have initialisation of variables dependent on UPDATE. */
 #define WARNTIME 30	/* Number of updates to have a warning on the screen */
 #define MESSTIME 30	/* Number of updates to have a message on the screen */
 
-#define BUILD_SB_TIME   30	/* Minutes to rebuild an SB 4/15/92 TC */
 #define MIN_COUP_TIME   30	/* Min/max minutes before a geno'ed race */
 #define MAX_COUP_TIME   60	/* can reenter and coup (random) 4/15/92 TC */
 

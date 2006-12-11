@@ -386,5 +386,6 @@ extern char *upgradename[];
 extern double baseupgradecost[];
 extern double adderupgradecost[];
 #endif
+extern int starbase_rebuild_time;
 
 #endif /* _h_data */

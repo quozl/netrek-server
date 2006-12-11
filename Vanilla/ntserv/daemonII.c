@@ -1006,7 +1006,7 @@ static void udplayers(void)
                          (j->p_whydead == KPLASMA) ||
                          (j->p_whydead == KPLANET) ||
                          (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
-                        teams[j->p_team].s_turns = BUILD_SB_TIME;
+                        teams[j->p_team].s_turns = starbase_rebuild_time;
                         if (j->p_status == PDEAD) blog_base_loss(j);
                     }
                 }

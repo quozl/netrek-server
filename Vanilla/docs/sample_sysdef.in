@@ -101,6 +101,9 @@ TOURN=4
 # 	(0 = no, 1 = yes)
 SAFE_IDLE=1
 #
+#	Rebuild time of starbase, in minutes
+STARBASE_REBUILD_TIME=30
+#
 # 	Which ship types are allowed
 SHIPS=SC,DD,CA,BB,AS,SB
 #

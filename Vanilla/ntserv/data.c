@@ -444,3 +444,6 @@ double baseupgradecost[] = { 0.0, 1.0, 1.5, 0.5, 1.0, 2.0, 0.5, 0.5, 1.0, 1.0,
 double adderupgradecost[]= { 0.0, 0.2, 0.5, 0.1, 1.5, 1.0, 0.1, 0.1, 0.5, 1.5,
                              3.0, 0.5, 1.5, 1.0, 0.5, 1.5, 1.0, 0.0, 0.0, 0.0 };
 #endif
+
+/* starbase rebuild time first implemented by TC in 1992-04-15 */
+int starbase_rebuild_time = 30;
