@@ -41,4 +41,11 @@ server startup and subsequent opening of the queues by the INL robot.
 The symptom is a "Sorry, but you cannot play Xtrek right now" or
 similar.
 
+6) See docs/metaservers-HowTo for a way to list player ports on the
+metaserver.  Most clients assume the observer port is +1 port higher
+than the player port, so using the standard 4566/4000 home and 
+4577/5000 away ports will cause problems with connecting to observe
+through the metaserver window.  One solution is to instead use 
+4566/4567 home and 4577/4578 away ports.
+
 For assistance, write to vanilla-list@us.netrek.org

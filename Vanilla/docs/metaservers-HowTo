@@ -83,3 +83,5 @@ For example;
 
 metaserver.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
 metaserver.us.netrek.org 3521 60 120 away.nl.netrek.org I 4577 5000 open
+metaserver2.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
+metaserver2.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
