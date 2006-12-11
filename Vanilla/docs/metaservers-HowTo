@@ -54,6 +54,9 @@ Beware: informing the metaserver more frequently than the limits define
 will cause your server to be delisted from the metaserver automatically.
 This is handled by program code at the metaserver.
 
+To remove your server from metaserver listing, simply delete or rename
+the metaservers file.
+
 --
 James Cameron                                    (cameron@stl.dec.com)
 Digital Equipment Corporation (Australia) Pty. Ltd. A.C.N. 000 446 800
