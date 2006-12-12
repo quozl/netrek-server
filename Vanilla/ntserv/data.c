@@ -409,6 +409,9 @@ int F_rc_distress   = 0;
 int F_self_8flags   = 0;
 int F_19flags       = 0;	/* pack 19 flags into spare bytes */
 int F_show_all_tractors = 0;
+int F_sp_generic_32 = 0;		/* Repair time, etc. */
+int F_full_direction_resolution = 0;	/* Use SP_PLAYER instead of
+					 * SP_S_PLAYER */
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 #ifdef OBSERVERS

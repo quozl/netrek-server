@@ -70,7 +70,7 @@ int sizes[TOTAL_SPACKETS] = {
 #else
     0,						/* 31 */
 #endif
-    0,						/* 32 */
+    sizeof(struct generic_32_spacket),		/* SP_GENERIC_32 */
     0,						/* 33 */
     0,						/* 34 */
     0,						/* 35 */
@@ -485,7 +485,7 @@ inline static int
 sndPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 {
     if (updtPlayer(cpl, pl, howmuch)) {
-	if (send_short)
+	if (send_short && !F_full_direction_resolution)
 	    updateVPlayer(cpl);
 	else
 	    sendClientPacket(cpl);

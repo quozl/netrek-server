@@ -63,6 +63,8 @@
 #define SP_PING         46              /* ping packet */
 #endif
 
+#define SP_GENERIC_32	32		/* 32 byte packet, currently sends ship
+					   repair time, room for future info */
 #define SP_SHIP_CAP	39		/* Handles server ship mods */
 
 #define SP_S_TORP       47              /* variable length torp packet */
@@ -941,6 +943,12 @@ struct ship_cap_spacket {	/* Server configuration of client */
     u_short	s_bitmap;
 };
 
+struct generic_32_spacket {
+    char 	type;		/* SP_GENERIC_32 Header */
+    char 	version;
+    int 	repair_time;	/* Estimated repair time, in seconds */
+    char 	pad1;		/* TODO: Change to union */
+};
 
 #ifdef FEATURE_PACKETS
 

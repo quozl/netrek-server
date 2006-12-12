@@ -63,6 +63,10 @@ LITE_PLANETS          C       ON
 LITE_SOUNDS           C       ON
 # ship stat. packets
 SHIP_CAP              S       ON
+# generic packets
+SP_GENERIC_32         S       ON
+# use SP_PLAYER w/ short packets
+FULL_DIRECTION_RESOLUTION     S       ON
 # Show tractors and pressors for all players' ships.  Regardless of the
 # setting here, this will be turned on for observers.
 SHOW_ALL_TRACTORS     S       OFF
