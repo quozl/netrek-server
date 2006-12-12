@@ -9,6 +9,10 @@ List of things to do in the future
           to allow IP address specific :a or :ita pre-set, to handle
           regular abusive message senders."
 
+	  (in progress, yet to do is clean up old ignore entries created for
+	  dynamic IP addresses, and check for performance impact of file access
+	  every login by every ntserv process.)
+
 	- tools/players.c ... pc() doesn't exclude robots, packet says 
           bronco even if run on a sturgeon server.
 

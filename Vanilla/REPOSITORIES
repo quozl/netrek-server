@@ -1,0 +1,19 @@
+developers
+
+http://james.tooraweenah.com/darcs/netrek-server/
+http://shiny.thorne.id.au/~stephen/netrek-server/
+http://netrek.warped.us/public-server/
+
+project
+
+http://netrek.org/repos/netrek-server/
+
+private push targets
+
+quozl@giskard.tooraweenah.com:/var/www/tooraweenah.com/james/darcs/netrek-server
+quozl@sage.real-time.com:darcs/netrek-server-inl
+quozl@sage.real-time.com:darcs/netrek-server-continuum
+
+web references
+
+http://james.tooraweenah.com/cgi-bin/darcs.cgi/netrek-server/?c=patches
