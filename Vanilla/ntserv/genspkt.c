@@ -1158,6 +1158,7 @@ updateSelf(int force)
     } else
 	/* Send Self using normal packets */
 	sndSelf(&clientSelf, me, force ? UPDT_ALL : UPDT_MOST);
+    sendGeneric32Packet();
 }
 
 void
@@ -2557,6 +2558,29 @@ sendMaskPacket(int mask)
     maskPacket.type=SP_MASK;
     maskPacket.mask=mask;
     sendClientPacket((CVOID) &maskPacket);
+}
+
+void
+sendGeneric32Packet(void)
+{
+    struct generic_32_spacket gen32Pack;
+    struct player *pl;
+
+    if (!F_sp_generic_32) return;
+
+#ifdef OBSERVERS
+    /* Use person observed if we are an observer */
+    if (Observer && (me->p_flags & PFPLOCK))
+        pl = &players[me->p_playerl];
+    else
+#endif
+        pl = me;
+
+    gen32Pack.type = SP_GENERIC_32;
+    gen32Pack.version = 1;
+    gen32Pack.repair_time = pl->p_repair_time;
+//    gen32Pack.pad1 = NULL; /* Padding */
+    sendClientPacket(&gen32Pack);
 }
 
 /*  Hey Emacs!

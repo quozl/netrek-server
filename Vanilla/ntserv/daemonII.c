@@ -909,6 +909,8 @@ static void udplayers(void)
     float dist; /* used by tractor beams */
     struct torp *t;
     int maxspeed;
+    int repair_needed, repair_progress_old;
+    float repair_gained;
 
     int nfree = 0;
     tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;
@@ -1429,8 +1431,9 @@ static void udplayers(void)
                   j->p_flags &= ~PFCLOAK;
                 }
         
-        /* repair shields */
+                /* repair shields */
                 if (j->p_shield < j->p_ship.s_maxshield) {
+                    repair_progress_old = j->p_subshield;
                     if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
                         j->p_subshield += j->p_ship.s_repair * 4;
                         if ((j->p_flags & PFORBIT) &&
@@ -1445,6 +1448,13 @@ static void udplayers(void)
                     else {
                         j->p_subshield += j->p_ship.s_repair * 2;
                     }
+                    /* 1000 subshield  =  1 shield or hull repaired 
+                       This routine is used by server every update
+                       Repair time assumes 10 updates/sec */
+                    repair_needed = j->p_ship.s_maxshield - j->p_shield;
+                    /* How much repair would be gained, normalized to 1 second */
+                    repair_gained = (float)(j->p_subshield - repair_progress_old)/(float)100.0;
+                    j->p_repair_time = (int)(repair_needed/repair_gained);
                     if (j->p_subshield / 1000) {
 #ifdef LTD_STATS
                         if (status->tourn)
@@ -1461,6 +1471,7 @@ static void udplayers(void)
 
                 /* repair damage */
                 if (j->p_damage && !(j->p_flags & PFSHIELD)) {
+                  repair_progress_old = j->p_subdamage;
                   if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
                     j->p_subdamage += j->p_ship.s_repair * 2;
                     if ((j->p_flags & PFORBIT) &&
@@ -1475,6 +1486,9 @@ static void udplayers(void)
                   else {
                     j->p_subdamage += j->p_ship.s_repair;
                   }
+                  repair_needed = j->p_damage;
+                  repair_gained = (float)(j->p_subdamage - repair_progress_old)/(float)100.0;
+                  j->p_repair_time = MAX(j->p_repair_time, (int)(repair_needed/repair_gained));
                   if (j->p_subdamage / 1000) {
 #ifdef LTD_STATS
                     if (status->tourn)

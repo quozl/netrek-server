@@ -462,6 +462,7 @@ struct player {
     int p_candock;              /* is this player allowed to dock onto SB */
     int p_cantranswarp;		/* is this player allowed to transwarp to SB  */
     int p_transwarp;		/* flags base must have to allow transwarp */
+    short p_repair_time;	/* server estimate of repair time in seconds */
 #ifdef STURGEON
     short p_upgrading;		/* Ship is doing upgrading */
     float p_upgrades;		/* Number of kills devoted to upgrades */

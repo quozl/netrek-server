@@ -16,3 +16,4 @@ void sendVKills(void);
 void sendVKills(void);
 void sendVPlanets(void);
 void updtMessage(struct mesg_spacket *msg, struct message *cur);
+void sendGeneric32Packet(void);
