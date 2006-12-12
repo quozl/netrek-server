@@ -1244,10 +1244,12 @@ updateShips(void)
 		}
 		/* Mark shield and cloak as updated, so they won't be resent
 		   again with a flags packet. */
-		oldflags = ntohl(flags->flags);
-		oldflags &= ~(PFSHIELD|PFCLOAK);
-		oldflags |= pl->p_flags&(PFSHIELD|PFCLOAK);
-		flags->flags = htonl(oldflags);
+		if (!F_full_direction_resolution) {
+		    oldflags = ntohl(flags->flags);
+		    oldflags &= ~(PFSHIELD|PFCLOAK);
+		    oldflags |= pl->p_flags&(PFSHIELD|PFCLOAK);
+		    flags->flags = htonl(oldflags);
+		}
 #ifdef OBSERVERS
 	    }
 #endif
