@@ -634,7 +634,14 @@ int sndShipCap(void)
     return 0;
 #else
     if (!F_ship_cap) return 0;
-    pl = my();
+#ifdef OBSERVERS
+    /* Use person observed if we are an observer */
+    if (Observer && (me->p_flags & PFPLOCK))
+        pl = &players[me->p_playerl];
+    else
+#endif
+        pl = me;
+
     sc.type = SP_SHIP_CAP;
     sc.s_type = htons(pl->p_ship.s_type);
     sc.operation = 0;
