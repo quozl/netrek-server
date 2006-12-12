@@ -597,7 +597,7 @@ static void political_end(int message)
 static void move()
 {
     static int oldmessage;
-    int old_robot, reality_converted;
+    int old_robot;
     static enum ts {
             TS_PICKUP, 
             TS_SCUMMERS,
@@ -609,8 +609,7 @@ static void move()
     if (fuse(QUEUEFUSE)){
         queues_purge();
         solicit(0);
-        reality_converted = 1000000/reality; /* Converted back to updates/sec */
-        bans_age_temporary(QUEUEFUSE/reality_converted);
+        bans_age_temporary(QUEUEFUSE/(1000000/reality));
     }
 
     if (ispaused){ /* Game is paused */
