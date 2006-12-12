@@ -1,6 +1,4 @@
-$Id: metaservers-HowTo,v 1.4 2006/01/27 00:26:39 quozl Exp $
-
-Date: Wed, 15 April 1998 09:06:09 +0000 (edited since)
+Date: Wed, 15 April 1998 09:06:09 +0000 (edited by many since)
 From: James Cameron <cameron@stl.dec.com>
 Subject: Metaservers File Format
 
@@ -54,8 +52,8 @@ Beware: informing the metaserver more frequently than the limits define
 will cause your server to be delisted from the metaserver automatically.
 This is handled by program code at the metaserver.
 
-To remove your server from metaserver listing, simply delete or rename
-the metaservers file.
+To remove your server from metaserver listing, delete or rename the
+metaservers file.  After a while, the metaserver will remove the entry.
 
 --
 James Cameron                                    (cameron@stl.dec.com)
