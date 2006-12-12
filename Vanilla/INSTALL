@@ -76,12 +76,7 @@ docs/DEBUG.HELP file for possible solutions.
 
 See docs/metaservers-HowTo for soliciting players via the metaservers.
 
-For assistance, write to vanilla-list@us.netrek.org.
-
-Developers may wish to subscribe to vanilla-list by sending an empty
-email message to vanilla-list-subscribe@us.netrek.org.  No subject or
-body required.  See the README for more details and other mailing
-lists the Vanilla Team offers.
+For assistance, write to netrek-dev@us.netrek.org.
 
 Running two servers on one machine
 ----------------------------------
