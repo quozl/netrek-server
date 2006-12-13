@@ -2565,6 +2565,7 @@ sendGeneric32Packet(void)
 {
     struct generic_32_spacket gen32Pack;
     struct player *pl;
+    int i;
 
     if (!F_sp_generic_32) return;
 
@@ -2576,10 +2577,16 @@ sendGeneric32Packet(void)
 #endif
         pl = me;
 
+    memset(&gen32Pack, 0, GENERIC_32_LENGTH);
     gen32Pack.type = SP_GENERIC_32;
-    gen32Pack.version = 1;
+    gen32Pack.version = GENERIC_32_VERSION;
     gen32Pack.repair_time = pl->p_repair_time;
-//    gen32Pack.pad1 = NULL; /* Padding */
+    if (pl->p_flags & PFORBIT)
+      gen32Pack.pl_orbit = pl->p_planet;
+    else
+      gen32Pack.pl_orbit = -1;
+    for (i = 0; i < 26; i++)
+      gen32Pack.pad1[i] = 0; /* Padding */
     sendClientPacket(&gen32Pack);
 }
 

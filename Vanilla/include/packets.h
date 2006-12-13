@@ -64,7 +64,8 @@
 #endif
 
 #define SP_GENERIC_32	32		/* 32 byte packet, currently sends ship
-					   repair time, room for future info */
+					   repair time and planet #, room for
+					   future expansion */
 #define SP_SHIP_CAP	39		/* Handles server ship mods */
 
 #define SP_S_TORP       47              /* variable length torp packet */
@@ -947,7 +948,8 @@ struct generic_32_spacket {
     char	type;		/* SP_GENERIC_32 */
     char	version;	/* alphabetic */
     short	repair_time;	/* server estimate of repair time in seconds */
-    char	pad1[28];	/* TODO: consider using a union */
+    short	pl_orbit;	/* what planet player orbiting, -1 if none */
+    char	pad1[25];	/* TODO: consider using a union */
 #define GENERIC_32_VERSION 'a'
 #define GENERIC_32_LENGTH 32
 };
