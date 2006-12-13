@@ -1486,8 +1486,12 @@ static void udplayers(void)
                     j->p_subdamage += j->p_ship.s_repair;
                   }
                   repair_needed = j->p_damage;
-                  repair_gained = (float)(j->p_subdamage - repair_progress_old)/(float)100.0;
-                  j->p_repair_time = MAX(j->p_repair_time, (int)(repair_needed/repair_gained));
+                  repair_gained = j->p_subdamage - repair_progress_old;
+                  if (j->p_shield != j->p_ship.s_maxshield)
+                    j->p_repair_time = MAX(repair_time,
+                                           repair_needed * 100 / repair_gained);
+                  else
+                    j->p_repair_time = repair_needed * 100 / repair_gained;
                   if (j->p_subdamage / 1000) {
 #ifdef LTD_STATS
                     if (status->tourn)
