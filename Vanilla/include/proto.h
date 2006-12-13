@@ -270,6 +270,7 @@ char *team_verb(int team);
 char *team_code(int team);
 int team_find(char *name);
 int team_opposing(int team);
+struct player *my();
 
 /* warning.c */
 void new_warning(int index, const char *fmt, ...);

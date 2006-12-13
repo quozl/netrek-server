@@ -174,3 +174,13 @@ int team_opposing(int team)
   if (team == context->quorum[1]) return context->quorum[0];
   return NOBODY;
 }
+
+/* return either me or the observed me */
+struct player *my()
+{
+#ifdef OBSERVERS
+  if (Observer && (me->p_flags & PFPLOCK))
+    return &players[me->p_playerl];
+#endif
+  return me;
+}

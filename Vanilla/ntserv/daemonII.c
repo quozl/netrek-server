@@ -909,8 +909,7 @@ static void udplayers(void)
     float dist; /* used by tractor beams */
     struct torp *t;
     int maxspeed;
-    int repair_needed, repair_progress_old;
-    float repair_gained;
+    int repair_needed, repair_progress_old, repair_gained, repair_time;
 
     int nfree = 0;
     tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;
@@ -1453,8 +1452,8 @@ static void udplayers(void)
                        Repair time assumes 10 updates/sec */
                     repair_needed = j->p_ship.s_maxshield - j->p_shield;
                     /* How much repair would be gained, normalized to 1 second */
-                    repair_gained = (float)(j->p_subshield - repair_progress_old)/(float)100.0;
-                    j->p_repair_time = (int)(repair_needed/repair_gained);
+                    repair_gained = j->p_subshield - repair_progress_old;
+                    repair_time = repair_needed * 100 / repair_gained;
                     if (j->p_subshield / 1000) {
 #ifdef LTD_STATS
                         if (status->tourn)
@@ -1487,8 +1486,9 @@ static void udplayers(void)
                     j->p_subdamage += j->p_ship.s_repair;
                   }
                   repair_needed = j->p_damage;
-                  repair_gained = (float)(j->p_subdamage - repair_progress_old)/(float)100.0;
-                  j->p_repair_time = MAX(j->p_repair_time, (int)(repair_needed/repair_gained));
+                  repair_gained = j->p_subdamage - repair_progress_old;
+                  j->p_repair_time = MAX(repair_time,
+                                         repair_needed * 100 / repair_gained);
                   if (j->p_subdamage / 1000) {
 #ifdef LTD_STATS
                     if (status->tourn)

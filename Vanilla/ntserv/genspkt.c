@@ -2563,31 +2563,18 @@ sendMaskPacket(int mask)
 void
 sendGeneric32Packet(void)
 {
-    struct generic_32_spacket gen32Pack;
+    struct generic_32_spacket gp;
     struct player *pl;
-    int i;
 
     if (!F_sp_generic_32) return;
 
-#ifdef OBSERVERS
-    /* Use person observed if we are an observer */
-    if (Observer && (me->p_flags & PFPLOCK))
-        pl = &players[me->p_playerl];
-    else
-#endif
-        pl = me;
-
-    memset(&gen32Pack, 0, GENERIC_32_LENGTH);
-    gen32Pack.type = SP_GENERIC_32;
-    gen32Pack.version = GENERIC_32_VERSION;
-    gen32Pack.repair_time = pl->p_repair_time;
-    if (pl->p_flags & PFORBIT)
-      gen32Pack.pl_orbit = pl->p_planet;
-    else
-      gen32Pack.pl_orbit = -1;
-    for (i = 0; i < 26; i++)
-      gen32Pack.pad1[i] = 0; /* Padding */
-    sendClientPacket(&gen32Pack);
+    pl = my();
+    memset(&gp, 0, GENERIC_32_LENGTH);
+    gp.type = SP_GENERIC_32;
+    gp.version = GENERIC_32_VERSION;
+    gp.repair_time = pl->p_repair_time;
+    gp.pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
+    sendClientPacket(&gp);
 }
 
 /*  Hey Emacs!
