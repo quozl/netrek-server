@@ -3,6 +3,8 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- add host names to 'queue hosts' output.
+
 	- move ignored[] to struct player, and make it persistent by
           ip address of source and target.  Idea credit to Bill on
           misinterpretation of Quozl's motd update: "New feature added
@@ -16,14 +18,6 @@ List of things to do in the future
 	- tools/players.c ... pc() doesn't exclude robots, packet says 
           bronco even if run on a sturgeon server.
 
-	- reduce time delay caused by newstartd/newaccess.c call to
-	  gethostbyaddr, which is looking up the host name
-	  corresponding to the ip address of the inbound connection
-	  ... this delay can be several seconds, especially if name
-	  server lookups are ignored or blocked ... since we don't
-	  necessarily trust the name returned these days, we should
-	  not try to rely on it.
-
 	- factorise message insertion, and maintenance of mc_current,
           as it is distributed all over the code.
 
@@ -33,7 +27,8 @@ List of things to do in the future
 	- use response time on metaserver solicitation packet as
 	  indicator of lag to the server.  Client coding required.
 
-	- dist-minimal target, to make ntserv & include only?
+	- install-minimal, dist-minimal targets, to make ntserv &
+          include only?
 
 	- config.h.in settings to move to configure --enable-feature
 	  options, so that a separate config.h.in does not need to be
