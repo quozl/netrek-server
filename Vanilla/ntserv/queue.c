@@ -5,6 +5,7 @@
 #include INC_UNISTD
 #include "struct.h"
 #include "data.h"
+#include "ip.h"
 
 /*
  * queue.c:  Wait queue handling routines
@@ -243,8 +244,14 @@ int queue_add(int w_queue)
     lwait->count       = lqueue->count++;
     lwait->process     = getpid();
     lwait->w_queue     = w_queue;
-    STRNCPY(lwait->ip, ip, sizeof(lwait->ip));
-    STRNCPY(lwait->host, host, sizeof(lwait->host));
+    if (ip_hide(ip)) {
+        strcpy(lwait->ip, "127.0.0.1");
+        strcpy(lwait->host, "hidden");
+    } else {
+        STRNCPY(lwait->ip, ip, sizeof(lwait->ip));
+        STRNCPY(lwait->host, host, sizeof(lwait->host));
+    }
+    ip_lookup(ip, lwait->host, sizeof(lwait->host));
 
     return i;
 }
@@ -289,7 +296,8 @@ int queue_exit(int waitindex)
     lwait->inuse = 0;
 
     queue_update(w_queue);  /* Update everyone's count */
-    
+    ip_waitpid();
+
     return 1;
 }
 
@@ -416,5 +424,3 @@ int queues_purge(void)
 
     return 1;
 }
-
-
