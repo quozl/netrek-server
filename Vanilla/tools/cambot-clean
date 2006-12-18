@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+# prune old recordings
+
+# activate manually once, or from crontab using a line such as:
+# 00 11 * * * cambot-clean 2>&1 >> cambot-clean.log
+
+# place where recordings are stored
+RECORDINGS=`getpath --localstatedir`/recordings
+cd ${RECORDINGS}
+
+# clean any created more than two weeks ago
+find ${RECORDINGS} -depth -type d -ctime +14 \
+    -exec rm --recursive --force {} \;

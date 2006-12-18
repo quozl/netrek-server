@@ -99,6 +99,8 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) ban $(DESTDIR)$(LIBDIR)/tools/ban
 	$(INSTALLPROG) $(INSTALLOPTS) getpath $(DESTDIR)$(LIBDIR)/tools/getpath
 	$(INSTALLPROG) $(INSTALLOPTS) setpath $(DESTDIR)$(LIBDIR)/tools/setpath
+	$(INSTALLPROG) $(INSTALLOPTS) cambot-cyclic $(DESTDIR)$(LIBDIR)/
+	$(INSTALLPROG) $(INSTALLOPTS) cambot-clean $(DESTDIR)$(LIBDIR)/
 
 cambot: cambot.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)

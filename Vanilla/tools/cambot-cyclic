@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+# make a cambot recording for ten minutes
+
+# activate manually once, or from crontab using a line such as:
+# 00,10,20,30,40,50 * * * * cambot-cyclic 2>&1 >> cambot-cyclic.log
+
+# place where recordings are stored
+RECORDINGS=`getpath --localstatedir`/recordings
+cd ${RECORDINGS}
+
+# create the directory for this recording
+DATE=`date +'%Y-%m-%d-%H-%M'`
+mkdir -p ${DATE}
+cd ${DATE}
+
+# start recording process and background it
+cambot 2>&1 > /dev/null &
+
+# obtain the process id created
+CAMBOT="$!"
+
+# sleep for ten minutes
+sleep 600
+
+# kill the backgrounded process
+kill ${CAMBOT} 2>&1 > /dev/null
+
+# TODO: implement this inside daemon instead of depending on crond
+# TODO: accept a file name on cambot command line for output
