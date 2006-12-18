@@ -101,6 +101,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) setpath $(DESTDIR)$(LIBDIR)/tools/setpath
 	$(INSTALLPROG) $(INSTALLOPTS) cambot-cyclic $(DESTDIR)$(LIBDIR)/
 	$(INSTALLPROG) $(INSTALLOPTS) cambot-clean $(DESTDIR)$(LIBDIR)/
+	$(INSTALLPROG) $(INSTALLOPTS) ignore-clean $(DESTDIR)$(LIBDIR)/
 
 cambot: cambot.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)

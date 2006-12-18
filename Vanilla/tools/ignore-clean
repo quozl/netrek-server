@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+# prune old ignore requests
+
+# activate manually once, or from crontab using a line such as:
+# 00 11 * * * ignore-clean 2>&1 >> ignore-clean.log
+
+# place where ignore requests are stored
+IGNORES=`getpath --localstatedir`/ip/ignore
+cd ${IGNORES}
+
+# clean any accessed more than two weeks ago
+find ${IGNORES} -depth -type f -atime +14 -exec rm --verbose {} \;
+
+# clean any created more than two lunar months ago
+find ${IGNORES} -depth -type f -ctime +56 -exec rm --verbose {} \;
