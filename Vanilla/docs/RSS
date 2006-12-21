@@ -5,27 +5,17 @@ Installation:
 1.  install Netrek server as usual, (this will create
 ${LOCALSTATEDIR}/blog and ${LOCALSTATEDIR}/www directories),
 
-2.  install blosxom, and if it is not in the usual location edit
-${LIBDIR}/tools/blog-update to point to it, see variable BLOSXOM,
-... it does not need to be installed in the web server document or
-cgi-bin path,
-
-TODO: detect blosxom using configure, --with-blosxom=/path/to/program
-
-TODO: include debian blosxom inside netrek source distribution, now
-that copyright and license review is done.
-
-3.  edit ${SYSCONFDIR}/blosxom.conf to set $url to the URL that uses
+2.  edit ${SYSCONFDIR}/blosxom.conf to set $url to the URL that uses
 your web server to reach your ${LOCALSTATEDIR}/www directory,
 
-4.  test by using the ${LIBDIR}/tools/blog script to add a daemon
+3.  test by using the ${LIBDIR}/tools/blog script to add a daemon
 class comment, like this:
 
 	blog daemon "Blog is on" "Installed the server blog feature."
 
-5.  verify that files have been placed in ${LOCALSTATEDIR}/www,
+4.  verify that files have been placed in ${LOCALSTATEDIR}/www,
 
-6.  verify that normal Netrek game activity updates the files in
+5.  verify that normal Netrek game activity updates the files in
 ${LOCALSTATEDIR}/blog and thus in ${LOCALSTATEDIR}/www,
 
 
