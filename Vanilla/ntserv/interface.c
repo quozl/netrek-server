@@ -18,6 +18,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "sturgeon.h"
+#include "util.h"
 
 /* file scope prototypes */
 static void sendwarn(char *string, int atwar, int team);

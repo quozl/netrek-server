@@ -34,6 +34,7 @@
 #ifdef INL
 #include "inldefs.h"
 #endif
+#include "util.h"
 
 /***** Command Interface Defines *****/
 /*     The lowest byte is used for message flags. This is used mostly by the */

@@ -21,6 +21,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "util.h"
 
 /* file scope prototypes */
 static int deadTeam(int owner);

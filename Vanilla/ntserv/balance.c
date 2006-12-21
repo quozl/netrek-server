@@ -5,6 +5,7 @@
 #include "data.h"
 #include "gencmds.h"
 #include "proto.h"
+#include "util.h"
 
 #ifdef TRIPLE_PLANET_MAYHEM
 /*

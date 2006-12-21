@@ -11,6 +11,7 @@
 #include "data.h"
 #include "proto.h"
 #include "roboshar.h"
+#include "util.h"
 
 
 #define SIZEOF(s)		(sizeof (s) / sizeof (*(s)))

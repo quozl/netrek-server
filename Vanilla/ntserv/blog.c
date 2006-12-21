@@ -12,6 +12,7 @@
 #include "data.h"
 #include "proto.h"
 #include "alarm.h"
+#include "util.h"
 
 void blog_file(char *class, char *file)
 {

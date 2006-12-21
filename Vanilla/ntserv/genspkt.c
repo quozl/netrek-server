@@ -21,6 +21,7 @@
 #include "proto.h"
 #include "genspkt.h"
 #include "ip.h"
+#include "util.h"
 
 #define FALSE 0
 #define TRUE 1

@@ -20,6 +20,7 @@
 #include "daemon.h"
 #include "alarm.h"
 #include "blog.h"
+#include "util.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
@@ -456,10 +457,7 @@ static int check_scummers(int verbose)
       struct player *me = &players[i];
       num=0;
       if (me->p_status == PFREE) continue;
-      if (me->p_flags & PFROBOT) continue;
-#ifdef PFBPROBOT
-      if (me->p_flags & PFBPROBOT) continue;
-#endif
+      if (is_robot(me)) continue;
 #ifdef OBSERVERS
       if (me->p_status == POBSERV) continue;
 #endif
@@ -472,10 +470,7 @@ static int check_scummers(int verbose)
         for (j=i+1; j<MAXPLAYER; j++) {
           struct player *them = &players[j];
           if (them->p_status == PFREE) continue;
-          if (them->p_flags & PFROBOT) continue;
-#ifdef PFBPROBOT
-          if (them->p_flags & PFBPROBOT) continue;
-#endif
+	  if (is_robot(them)) continue;
 #ifdef OBSERVERS
           if (them->p_status == POBSERV) continue;
 #endif
@@ -909,7 +904,7 @@ static void udplayers(void)
     float dist; /* used by tractor beams */
     struct torp *t;
     int maxspeed;
-    int repair_needed, repair_progress_old, repair_gained, repair_time;
+    int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
 
     int nfree = 0;
     tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;

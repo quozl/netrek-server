@@ -31,6 +31,7 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "pretdefs.h"
+#include "util.h"
 
 int debug=0;
 
@@ -70,7 +71,6 @@ static int totalRobots(int team);
 static void exitRobot(void);
 static char * namearg(void);
 static int num_players(int *next_team);
-static int rprog(char *login, char *monitor);
 static void stop_this_bot(struct player * p);
 static void save_armies(struct player *p);
 static void resetPlanets(void);
@@ -351,7 +351,7 @@ static int num_humans(int team)
             continue;
         if(team != 0 && j->p_team != team)
             continue;
-        if (!rprog(j->p_login, j->p_full_hostname)) {
+        if (!is_robot(j)) {
             /* Found a human. */
             count++;
             if(debugTarget != -1 && debugLevel == 2) {
@@ -395,7 +395,7 @@ static void stop_a_robot(void)
             continue;
 
         /* If he's at the MOTD we'll get him next time. */
-        if (j->p_team == teamToStop && j->p_status == PALIVE && rprog(j->p_login, j->p_full_hostname)) {
+        if (j->p_team == teamToStop && j->p_status == PALIVE && is_robot(j)) {
             stop_this_bot(j);
             return;
         }
@@ -418,29 +418,12 @@ static int totalRobots(int team)
         if(team != 0 && j->p_team != team)
             continue;
 
-        if (rprog(j->p_login, j->p_full_hostname))
+        if (is_robot(j))
             /* Found a robot. */
             count++;
    }
    return count;
 }
-
-/* this is by no means foolproof */
-
-static int
-rprog(char *login, char *robotHost)
-{
-    char localHostName[80];
-
-    gethostname(localHostName, 80);
-
-    if (strcmp(login, PRE_T_ROBOT_LOGIN) == 0
-        && (!strcmp(localHostName, robotHost) || !strcmp(robot_host, robotHost)))
-        return 1;
-
-    return 0;
-}
-
 
 static void stop_this_bot(struct player *p)
 {
@@ -582,14 +565,14 @@ static void cleanup(int unused)
     do {
         /* terminate all robots */
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-            if ((j->p_status == PALIVE) && rprog(j->p_login, j->p_full_hostname))
+            if ((j->p_status == PALIVE) && is_robot(j))
                 stop_this_bot(j);
         }
 
         USLEEP(2000000); 
         retry=0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-            if ((j->p_status != PFREE) && rprog(j->p_login, j->p_full_hostname))
+            if ((j->p_status != PFREE) && is_robot(j))
                 retry++;
         }
     } while (retry);            /* Some robots havn't terminated yet */

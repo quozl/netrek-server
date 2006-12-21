@@ -1,6 +1,7 @@
 /*
  * util.c
  */
+#include <string.h>
 #include "copyright.h"
 #include "config.h"
 #include "defs.h"
@@ -183,4 +184,28 @@ struct player *my()
     return &players[me->p_playerl];
 #endif
   return me;
+}
+
+int is_robot(const struct player *pl)
+{
+  if (pl->p_flags & PFBPROBOT) return 1;
+  if (pl->p_flags & PFROBOT) return 1;
+  if (strcasestr(pl->p_login, "robot")) return 1;
+  return 0;
+}
+
+int is_local(const struct player *p)
+{
+  /*
+   * If hostname ends with 'localhost', consider it local.
+   * Not very efficient, but fast enough and less intrusive than
+   * adding a new flag.
+   */
+  size_t len;
+  
+  len = strlen(p->p_full_hostname);
+  if (len >= 9 && 
+      strstr(p->p_full_hostname, "localhost") == &p->p_full_hostname[len - 9])
+    return 1;
+  return 0;
 }
