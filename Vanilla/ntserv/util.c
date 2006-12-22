@@ -209,3 +209,13 @@ int is_local(const struct player *p)
     return 1;
   return 0;
 }
+
+/* if only one ship type is allowed, force the passed type to it */
+int is_only_one_ship_type_allowed(int *type)
+{
+  int i, count = 0, seen = 0;
+  for (i=0;i<NUM_TYPES;i++)
+    if (shipsallowed[i]) { count++; seen=i; }
+  if (count == 1) { *type = seen; return 1; }
+  return 0;
+}

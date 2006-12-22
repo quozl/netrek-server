@@ -17,6 +17,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "blog.h"
+#include "util.h"
 
 /* return number of playing hosts with same ip */
 static int playing_count_by_ip(int w_queue) {

@@ -17,3 +17,4 @@ int team_opposing(int team);
 struct player *my();
 int is_robot(const struct player *pl);
 int is_local(const struct player *p);
+int is_only_one_ship_type_allowed(int *type);

@@ -10,6 +10,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "util.h"
 
 #define planet_(i)       (planets + (i))
 #define player_(i)       (players + (i))

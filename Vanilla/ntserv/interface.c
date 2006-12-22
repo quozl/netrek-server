@@ -494,6 +494,9 @@ void do_refit(int type)
     if (sturgeon && sturgeon_hook_refit_0(me, type)) return;
 #endif
 
+    if (is_only_one_ship_type_allowed(&type)) {
+        new_warning(UNDEF,"Only one ship type is allowed, you get that one.");
+    }
     if (shipsallowed[type]==0) {
         new_warning(57,"That ship hasn't been designed yet.");
 	return;

@@ -161,12 +161,17 @@ void getEntry(int *team, int *stype)
 		teamPick= -1;
 		continue;
 	    }
+            /* force choice if there is only one type allowed */
+            if (is_only_one_ship_type_allowed(&shipPick)) {
+                new_warning(UNDEF,"Only one ship type is allowed, you get that one.");
+            }
+            /* refuse choice if selected ship type not available */
 	    if (shipsallowed[shipPick]==0) {
 	        if(send_short){
 		    swarning(TEXTE,12,0);
 	        }
 	        else
-                  new_warning(UNDEF,"That ship hasn't beed designed yet.  Try again.");
+                  new_warning(UNDEF,"That ship hasn't been designed yet.  Try again.");
 		sendPickokPacket(0);
 		teamPick= -1;
 		continue;
