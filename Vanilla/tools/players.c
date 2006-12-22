@@ -9,6 +9,7 @@
 #include "struct.h"
 #include "data.h"
 #include "ltd_stats.h"
+#include "util.h"
 
 extern int openmem(int);
 
@@ -200,7 +201,8 @@ static char *comment_get() {
 static int pc(int queue) {
   int j, n = 0;
   for (j=queues[QU_PICKUP].low_slot;j < queues[QU_PICKUP].high_slot;j++)
-    if (players[j].p_status != PFREE) n++;
+    if (players[j].p_status != PFREE)
+      if (!is_robot(&players[j])) n++;
   return n;
 }
 
@@ -242,16 +244,21 @@ static void udp()
   /* s,type,comment,ports,port,players,queue[,port,players,queue] */
   /* if server isn't running, send simple reply */
   if (!openmem(-1)) {
-    sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment, 0, 0);
+    /* we don't have sysdefaults, so give an invalid type of unknown */
+    sprintf(packet, "s,unknown,%s,1,2592,%d,%d\n", comment, 0, 0);
   } else {
+    char *type = my_metaserver_type();
     if (inl_mode) {
       int q1 = QU_HOME;
       int q2 = QU_AWAY;
-      sprintf(packet, "s,B,%s,2,4566,%d,%d,4577,%d,%d\n", 
-	      comment, pc(q1), ql(q1), pc(q2), ql(q2));
+      /* assume standard INL port numbers, we do not read etc/ports */
+      sprintf(packet, "s,%s,%s,2,4566,%d,%d,4577,%d,%d\n",
+              type, comment, pc(q1), ql(q1), pc(q2), ql(q2));
     } else {
       int q = QU_PICKUP;
-      sprintf(packet, "s,B,%s,1,2592,%d,%d\n", comment, pc(q), ql(q));
+      /* assume standard bronco port numbers, we do not read etc/ports */
+      sprintf(packet, "s,%s,%s,1,2592,%d,%d\n",
+              type, comment, pc(q), ql(q));
     }
   }
   

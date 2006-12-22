@@ -219,3 +219,13 @@ int is_only_one_ship_type_allowed(int *type)
   if (count == 1) { *type = seen; return 1; }
   return 0;
 }
+
+/* return the metaserver type code for this server */
+char *my_metaserver_type()
+{
+  if (sturgeon) return "S";
+  if (inl_mode) return "I";
+  if (practice_mode) return "F";
+  if (hockey_mode) return "H";
+  return "B";
+}
