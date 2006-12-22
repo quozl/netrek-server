@@ -223,7 +223,9 @@ int is_only_one_ship_type_allowed(int *type)
 /* return the metaserver type code for this server */
 char *my_metaserver_type()
 {
+#ifdef STURGEON
   if (sturgeon) return "S";
+#endif
   if (inl_mode) return "I";
   if (practice_mode) return "F";
   if (hockey_mode) return "H";
