@@ -25,6 +25,7 @@ List of things to do in the future
 
 	- banned login can still tie up a slot for as long as it takes
 	  for it to time out or the player to hit QUIT.
+	  (impact reduced by BAN_NOCONNECT)
 
 	- perm and temp bans in netrekd, have it access shmem and
 	  detach.
@@ -34,56 +35,18 @@ List of things to do in the future
 	  game and open a new one.  Forward link from queue to next
 	  section.
 
-	- genocide, pause game, reveal cloakers, declare result, wait
-	  five to ten seconds (sysdef GENOCIDE_WAIT), resume, blow
-	  everyone up, reset galactic, if no queue do a balance
-	  (sysdef GENOCIDE_BALANCE), if queue purge the slots.
-
-	- timercide, pause game, reveal cloakers, declare result, wait
-	  five to ten seconds (sysdef TIMERCIDE_WAIT), resume, blow
-	  losing team up.
-
-	- list connection failure scenarios and response by server,
-	  so that we can reduce jammed slots.
-
-	- use response time on metaserver solicitation packet as
-	  indicator of lag to the server.  Client coding required.
-
-	- metaserver begins to list robots on a server after the
-	  server has stopped sending player count updates by perhaps
-	  the TCP query from the server is mistaken.
-
 	- vote per IP address only, not per slot
 
 	- prevent eject in initial two-minutes of ship time, if ship active,
 
-	- RSS feed for genos, so that people can subscribe and be told
-	  when the galactic is recently reset.  Jerub expressed an
-	  interest in doing it.
-
-	  Content area on netrek.org showing recent contested genos,
-	  length of game leading up to it, number of players seen,
-	  players per hour, keep latest ten, feed from multiple
-	  servers.  Server generated screen shot of final frame.
-
-	  Separate feed for adminstrivia, with server CLI script for
-	  adding to the feed.
+	- server generated screen shot of final frame of genocide, for
+          use in the blog entry,
 
 	  INL server specific feed, containing game results, summary,
 	  ltd stats by player.
 
 	  Metaserver specific feed ... new servers listed, delistings,
 	  weekly summary of query counts with history.
-
-	  netrekd forked HTTP responder, or scripts to send stuff to a
-	  web server?
-
-	  lib/conquer -> blosxom data -> blosxom rerun -> static content
-perl /usr/lib/cgi-bin/blosxom -f='blosxom.conf' -password='netrek'
-# use -all=1 for refresh
-	  micro-inetd -> micro-httpd -> static content
-micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
-
 
 	- tools/update.c sa_sigaction not present on NetBSD.  [Hietbrink]
 
@@ -133,11 +96,10 @@ micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
 	- send player IPs to metaserver for statistics generation [Uram]
 
 	- include server in spiffy download package [Nowakowski]
+          (mactrek does this, 2006-12)
 
 	- there is no way to tell the difference between a busted client and
 	  the player simply walking off.
-
-	- need generic shared memory dump tool to assist diagnosis.
 
 	- revisit syntax of metaservers file to aid understanding,
 
@@ -160,26 +122,11 @@ micro_inetd 8090 /usr/sbin/micro_httpd /tmp/blosxom/static/
 	- mark's changes, if p_y or p_x = 100000, ship oscillates
 	  [mark hasn't come back to me on that, it awaits him]
 
-	- add IP addresses, port numbers, and byte counters to
-	  struct.h for player so we can dump them in tools/players.c;
-	  and also to enhance "whois".
-
 	- accumulate byte counters server wide for bandwidth accounting.
 
 	- all the code in the robots/ directory really need some
 	  serious cleanup.  the whole thing is a mess.
 
-	- netrekd is now restartable without affecting play, but it would be
-	  suitably cool if daemon could also be restarted.  Could also do with
-	  a check for change to the shared memory size.
-
-	- connections made immediately after a genocide/conquer seem to stall
-	  for up to a minute, happens on continuum and has been confirmed by
-	  numerous players,
-
-	- proposed client metaserver window solicitation UDP protocol, to fill
-	  out a column of ping times to the server from the client,
-	
 	- slots that timeout during login or outfit (resurrect) should be moved
 	  back onto the wait queue (at end or start?) and their slot given to
 	  the current head of queue player.  May require client changes.
