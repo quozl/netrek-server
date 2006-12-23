@@ -43,9 +43,6 @@ all: xsg
 xsg: $(OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(OBJS) $(LIBS)
 
-x11window.o: x11window.c
-	$(CC) $(CFLAGS) $(X11INCLUDE) -c -o $@ $<
-
 clean:
 	/bin/rm -f *.o make.out core
 

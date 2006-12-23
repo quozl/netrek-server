@@ -252,6 +252,9 @@ DEBIAN_VERSION=`head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\)`
 DEBIAN_PACKAGE=`head -1 debian/changelog|cut -f1 -d\ `
 DEBIAN_ARCHIVE=~/public_html/external/mine/netrek
 
+source-package:
+	fakeroot dpkg-buildpackage -S -us -uc -I_darcs
+
 package:
 	fakeroot dpkg-buildpackage -us -uc -I_darcs
 
