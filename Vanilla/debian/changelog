@@ -1,3 +1,9 @@
+netrek-server-vanilla (2.12.0-0) unstable; urgency=low
+
+  * begin
+
+ -- James Cameron <quozl@us.netrek.org>  Sat, 23 Dec 2006 22:04:48 +1100
+
 netrek-server-vanilla (2.11.2-7) unstable; urgency=low
 
   * exclude darcs from build package

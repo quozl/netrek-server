@@ -43,7 +43,7 @@ install: build
 	chmod +x `pwd`/debian/`dh_listpackages`/etc/init.d/netrek-server-vanilla
 # documentation
 	mkdir -p `pwd`/debian/`dh_listpackages`/usr/share/doc/netrek-server-vanilla
-	cp ChangeLog NEWS README README.developers PROJECTS INSTALL* `pwd`/debian/`dh_listpackages`/usr/share/doc/netrek-server-vanilla/
+	cp ChangeLog NEWS README README.developers PROJECTS INSTALL* docs/RSS* docs/meta* docs/multicast* `pwd`/debian/`dh_listpackages`/usr/share/doc/netrek-server-vanilla/
 
 # Build architecture-independent files here.
 binary-indep: build install

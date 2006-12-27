@@ -5,7 +5,7 @@
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.11.2
+VERSION=2.12.0
 
 RANLIB =  @RANLIB@
 VPATH = @srcdir@
