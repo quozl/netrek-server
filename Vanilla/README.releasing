@@ -53,7 +53,7 @@ cvs tag -F v_release
 # build the distribution file from pristine darcs sources
 cd /tmp
 rm -rf release
-darcs get ~/src/darcs/netrek-server release
+darcs get --tag=${VS} ~/src/darcs/netrek-server release
 cd release/Vanilla
 sh autogen.sh
 ./configure
@@ -72,7 +72,7 @@ tar xfz $PN-$VS.tar.gz
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make
-# FUTURE, test that the tree is returned to pristine condition by distclean
+# FUTURE, ensure that the tree is returned to pristine condition by distclean
 
 # test install kit
 make install
@@ -115,6 +115,7 @@ mailto:netrek-dev@us.netrek.org
 
 # update web page
 http://vanilla.netrek.org/
+~/public_html/external/vanilla.netrek.org/html
 
 # sourceforge.net upload procedure (brief, yet to be retested)
 # - upload to ftp://upload.sourceforge.net/incoming/
