@@ -1,26 +1,26 @@
 #!/bin/sh
 
 cat <<EOF >trekon
-#!/bin/csh 
+#!/bin/sh
 
-if (! \$?NTSERV_PATH) then
-set NTSERV_PATH=$1
-endif
+if [ -z \$NTSERV_PATH ]; then
+    export NTSERV_PATH=\$1
+fi
 
 exec xbiff -update 60 -file \$NTSERV_PATH/on -name trekon \
-	   -xrm "trekon*emptyPixmap: \$NTSERV_PATH/trekoff.bitmap"\
-	   -xrm "trekon*fullPixmap: \$NTSERV_PATH/trekon.bitmap"
+           -xrm "trekon*emptyPixmap: \$NTSERV_PATH/trekoff.bitmap"\
+           -xrm "trekon*fullPixmap: \$NTSERV_PATH/trekon.bitmap"
 EOF
 #!/bin/sh
 
 cat <<EOF >trekon
-#!/bin/csh 
+#!/bin/sh
 
-if (! \$?NTSERV_PATH) then
-set NTSERV_PATH=$1
-endif
+if [ -z \$NTSERV_PATH ]; then
+    export NTSERV_PATH=\$1
+fi
 
 exec xbiff -update 60 -file \$NTSERV_PATH/on -name trekon \
-	   -xrm "trekon*emptyPixmap: \$NTSERV_PATH/trekoff.bitmap"\
-	   -xrm "trekon*fullPixmap: \$NTSERV_PATH/trekon.bitmap"
+           -xrm "trekon*emptyPixmap: \$NTSERV_PATH/trekoff.bitmap"\
+           -xrm "trekon*fullPixmap: \$NTSERV_PATH/trekon.bitmap"
 EOF

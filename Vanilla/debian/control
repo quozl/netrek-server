@@ -1,13 +1,15 @@
 Source: netrek-server-vanilla
 Maintainer: James Cameron <quozl@us.netrek.org>
-Section: unknown
+Uploaders: Robert J. Tanner <tanner@real-time.com>
+Section: x11
 Priority: optional
-Standards-Version: 3.1.1
-Build-Depends: make, libtool, gcc, debhelper, libgdbm-dev, libncurses5-dev, libx11-dev, libxt-dev, libglib1.2-dev, libgmp3-dev
+Build-Depends: debhelper (>= 4.2.32), cdbs (>= 0.4.27), libtool, autoconf, automake, libgdbm-dev, libncurses5-dev, libx11-dev, libxt-dev, libglib1.2-dev, libgmp3-dev
+Standards-Version: 3.7.2
 
 Package: netrek-server-vanilla
 Architecture: any
-Depends: 
+Depends: ${shlibs:Depends}
 Description: Netrek Server, Vanilla
  The Netrek server, packaged by the upstream team.
- http://playnetrek.org/
+ .
+ Homepage: http://playnetrek.org/
