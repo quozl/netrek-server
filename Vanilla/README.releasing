@@ -86,11 +86,20 @@ cow -h 127.0.0.1
 rm -rf /tmp/$VS /tmp/$PN-$VS
 cd
 
-# debian packaging
+# debian packaging (from tar.gz)
 cd /tmp
 tar xfz $PN-$VS.tar.gz 
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
+make release
+
+# debian packaging (from darcs)
+cd /tmp
+rm -rf netrek-server-debian-packaging
+darcs get ~/src/darcs/netrek-server netrek-server-debian-packaging
+cd netrek-server-debian-packaging/Vanilla
+sh autogen.sh
+./configure
 make release
 
 # rpm packaging

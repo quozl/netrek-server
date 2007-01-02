@@ -60,6 +60,7 @@ EOF
 
 # create pbuilder instance
 sudo pbuilder create --configfile pbuilder/${DISTRIBUTION}/rc
+sudo pbuilder update --configfile pbuilder/${DISTRIBUTION}/rc
 
 # grab source automatically and build
 wget --no-clobber \
