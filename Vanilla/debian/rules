@@ -48,6 +48,7 @@ makebuilddir/netrek-server-vanilla::
 	if [ ! -x res-rsa/configure ]; then \
 		(cd res-rsa; autoconf) ;\
     fi
+
 clean::
 	rm -f config.status
 	/usr/bin/debconf-updatepo

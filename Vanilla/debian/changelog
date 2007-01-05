@@ -1,3 +1,13 @@
+netrek-server-vanilla (2.12.0-2) unstable; urgency=low
+
+  * Created debconf template to ask the user if they want to start netrekd on boot
+  * Added debconf template to display error if chown fails in postinst script
+  * Removed de-register from postrm, dh_installinit/cdbs automatically takes care of removing init.d files
+  * Added db_purge to postrm,just as a safety measure, debhelper should take care of this.
+  * Started framework for i18n support in the debconf templates
+
+ -- Robert J. Tanner <tanner@real-time.com>  Fri, 29 Dec 2006 14:23:13 -0600
+
 netrek-server-vanilla (2.12.0-1) unstable; urgency=low
 
   * Clean up of control file to make linda and lintian happy
@@ -15,7 +25,7 @@ netrek-server-vanilla (2.12.0-1) unstable; urgency=low
   * The postrm de-registers an /etc/init.d script which has not been registered in the postinst 
     script before. Comments in the postinst ask for a debconf configuration option. Commenting
     out the de-register to make lintian happy.
-  * Added symlink between netrekd and newstartd
+  * Added symlink between netrekd.1 and newstartd.1 manpages
 
  -- Robert J. Tanner <tanner@real-time.com>  Tue, 26 Dec 2006 22:05:07 -0600
 
@@ -109,6 +119,4 @@ netrek-server-vanilla (2.10.0-0) unstable; urgency=low
 
  -- James Cameron <quozl@us.netrek.org>  Sat, 10 Sep 2005 12:24:49 +1000
 
-Local variables:
-mode: debian-changelog
-End:
+
