@@ -1,0 +1,49 @@
+#!/bin/sh
+set -e
+
+# default place to run the pbuilder
+NETREK_SERVER_VANILLA_PBUILDER_ROOT=`pwd`
+
+# allow user to override
+if test -f ~/.netrek-server-vanilla-pbuilder; then
+    source ~/.netrek-server-vanilla-pbuilder
+fi
+
+ROOT=${NETREK_SERVER_VANILLA_PBUILDER_ROOT}
+
+# configure a pbuilder instance or two
+for DISTRIBUTION in sarge etch; do
+
+    mkdir -p \
+	${ROOT}/pbuilder \
+	${ROOT}/pbuilder/${DISTRIBUTION} \
+	${ROOT}/pbuilder/${DISTRIBUTION}/aptcache \
+	${ROOT}/pbuilder/${DISTRIBUTION}/build \
+	${ROOT}/pbuilder/${DISTRIBUTION}/result
+
+    # create pbuilder configuration file
+    cat > ${ROOT}/pbuilder/${DISTRIBUTION}/rc <<EOF
+# which distribution version to build
+DISTRIBUTION=${DISTRIBUTION}
+# mirror sites when built on quozl's pbuilder
+MIRRORSITE=http://http.us.debian.org/debian/
+OTHERMIRROR="deb-src http://www.lan/~james/external/mine/netrek ./"
+# mirror sites when built on real-time's pbuilder
+MIRRORSITE=http://ftp.real-time.com/linux/debian/
+OTHERMIRROR="deb-src http://quozl.linux.org.au/netrek ./"
+# rootishness
+EXTRAPACKAGES=fakeroot
+BUILDUSERNAME=root
+# directories
+BASETGZ=${ROOT}/pbuilder/${DISTRIBUTION}/base.tgz
+APTCACHE=${ROOT}/pbuilder/${DISTRIBUTION}/aptcache
+BUILDPLACE=${ROOT}/pbuilder/${DISTRIBUTION}/build
+BUILDRESULT=${ROOT}/pbuilder/${DISTRIBUTION}/result
+EOF
+    
+    # create pbuilder instance
+    sudo pbuilder create --configfile ${ROOT}/pbuilder/${DISTRIBUTION}/rc
+done
+
+# future
+# sudo pbuilder update --configfile pbuilder/${DISTRIBUTION}/rc

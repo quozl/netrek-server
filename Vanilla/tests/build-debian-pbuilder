@@ -1,0 +1,55 @@
+#!/bin/sh
+# test that the current darcs repository builds under debian pbuilder
+set -ev
+
+# default place to run the pbuilder
+NETREK_SERVER_VANILLA_PBUILDER_ROOT=`pwd`
+
+# allow user to override
+if test -f ~/.netrek-server-vanilla-pbuilder; then
+    source ~/.netrek-server-vanilla-pbuilder
+fi
+
+# test that current working directory matches darcs get expectation
+if [ ! -f autogen.sh ]; then echo "build: run in wrong directory"; exit 1; fi
+
+# where to build
+BUILDROOT=/tmp/netrek-server.$$
+
+# copy the repository there
+darcs get .. $BUILDROOT
+
+# go there
+cd $BUILDROOT/Vanilla
+
+# grab the version
+DEBIAN_VERSION=`head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\)`
+DEBIAN_PACKAGE=`head -1 debian/changelog|cut -f1 -d\ `
+
+# build configure
+sh autogen.sh
+
+# configure
+./configure
+
+# build all
+make source-package
+
+# note the source package
+cd ..
+ls -l ${DEBIAN_PACKAGE}_${DEBIAN_VERSION}.{tar.gz,dsc}
+
+# place the source packages in the pbuilder root
+mv ${DEBIAN_PACKAGE}_${DEBIAN_VERSION}.{tar.gz,dsc} \
+    ${NETREK_SERVER_VANILLA_PBUILDER_ROOT}
+
+# build the source package
+for DISTRIBUTION in sarge etch; do
+    sudo pbuilder build --configfile \
+	${NETREK_SERVER_VANILLA_PBUILDER_ROOT}/pbuilder/${DISTRIBUTION}/rc \
+	${DEBIAN_PACKAGE}_${DEBIAN_VERSION}.dsc
+done
+
+# report success
+echo success
+exit 0

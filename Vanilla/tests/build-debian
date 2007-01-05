@@ -1,81 +1,28 @@
 #!/bin/sh
+# test that the current darcs repository builds debian style
+set -ev
 
-echo not ready
-exit 1
+# test that current working directory matches darcs get expectation
+if [ ! -f autogen.sh ]; then echo "build: run in wrong directory"; exit 1; fi
 
-# dependencies for debian etch build 2006-12-22
-apt-get install make debhelper libgdbm-dev libncurses5-dev libx11-dev libxt-dev libglib1.2-dev libgmp3-dev gcc
+# where to build
+BUILDROOT=/tmp/netrek-server.$$
 
-# set version
-VS=2.12.0-0
+# copy the repository there
+darcs get .. $BUILDROOT
 
-# build debian style source from repository (see also README.releasing)
-cd /tmp
-darcs get --tag=${VS/-0/} \
-http://james.tooraweenah.com/darcs/netrek-server/ \
-netrek-server-source-package
-#darcs get --tag=${VS/-0/} \
-~/src/darcs/netrek-server \
-netrek-server-source-package
+# go there
+cd $BUILDROOT/Vanilla
 
-cd netrek-server-source-package/Vanilla
-. autogen.sh
+# build configure
+sh autogen.sh
+
+# configure
 ./configure
-make source-package
-cd ..
-ls *.tar.gz *.dsc
 
-# apt-get install pbuilder
+# build all
+make package
 
-DISTRIBUTION=sarge
-DISTRIBUTION=etch
-DISTRIBUTION=sid
-
-# configure a pbuilder instance or two
-mkdir -p \
-pbuilder \
-pbuilder/${DISTRIBUTION} \
-pbuilder/${DISTRIBUTION}/aptcache \
-pbuilder/${DISTRIBUTION}/build \
-pbuilder/${DISTRIBUTION}/result
-
-cat > pbuilder/${DISTRIBUTION}/rc <<EOF
-# which distribution version to build
-DISTRIBUTION=${DISTRIBUTION}
-# mirror sites when built on quozl's pbuilder
-MIRRORSITE=http://http.us.debian.org/debian/
-OTHERMIRROR="deb-src http://www.lan/~james/external/mine/netrek ./"
-# mirror sites when built on real-time's pbuilder
-MIRRORSITE=http://ftp.real-time.com/linux/debian/
-OTHERMIRROR="deb-src http://quozl.linux.org.au/netrek ./"
-# rootishness
-EXTRAPACKAGES=fakeroot
-BUILDUSERNAME=root
-# directories
-BASETGZ=`pwd`/pbuilder/${DISTRIBUTION}/base.tgz
-APTCACHE=`pwd`/pbuilder/${DISTRIBUTION}/aptcache
-BUILDPLACE=`pwd`/pbuilder/${DISTRIBUTION}/build
-BUILDRESULT=`pwd`/pbuilder/${DISTRIBUTION}/result
-EOF
-
-# create pbuilder instance
-sudo pbuilder create --configfile pbuilder/${DISTRIBUTION}/rc
-sudo pbuilder update --configfile pbuilder/${DISTRIBUTION}/rc
-
-# grab source automatically and build
-wget --no-clobber \
-http://quozl.linux.org.au/netrek/\
-netrek-server-vanilla{_${VS}.dsc,-${VS}.tar.gz}
-wget --no-clobber \
-http://www.lan/~james/external/mine/netrek/\
-netrek-server-vanilla{_${VS}.dsc,-${VS}.tar.gz}
-
-sudo pbuilder build --configfile pbuilder/${DISTRIBUTION}/rc netrek-server-vanilla_${VS}.dsc
-
-# alternative, grab source manually and build, to find problems
-pbuilder login --configfile pbuilder/${DISTRIBUTION}/rc
-	apt-get --yes build-dep netrek-server-vanilla
-	apt-get --yes source netrek-server-vanilla
-
-# cleanup, destroys aptcache
-pbuilder clean --configfile pbuilder/${DISTRIBUTION}/rc
+# report success
+echo success
+exit 0
