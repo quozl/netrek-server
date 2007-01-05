@@ -45,6 +45,7 @@ Default regulation and overtime periods
 int debug=0;
 
 static int cambot_pid = 0;
+static int obliterate_timer = 0;
 
 struct planet *oldplanets;	/* for restoring galaxy */
 #ifdef nodef
@@ -459,13 +460,16 @@ inlmove()
   }
 
   inl_stat.game_ticks++;
+  if (obliterate_timer > 0)
+    obliterate_timer--;
 
   /* check for timeout */
   if (inl_stat.flags & S_TMOUT)
     {
       inl_stat.tmout_ticks++;
-      if ((inl_stat.tmout_ticks > 1300) || all_alert(PFGREEN)
-	  || ((inl_stat.tmout_ticks > 800) && all_alert(PFYELLOW)))
+      if (!obliterate_timer &&
+          ((inl_stat.tmout_ticks > 1300) || all_alert(PFGREEN)
+	  || ((inl_stat.tmout_ticks > 800) && all_alert(PFYELLOW))))
 	/* This is a loose approximation
 	   of the INL source code.. */
 	{
@@ -1488,6 +1492,9 @@ void obliterate(int wflag, char kreason)
   /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
   struct player *j;
   int i, k;
+
+  /* set obliterate timer, so we know if it's safe to pause the game */
+  obliterate_timer = 10;
 
   /* clear torps and plasmas out */
   MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
