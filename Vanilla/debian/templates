@@ -1,0 +1,9 @@
+Template: netrek-server-vanilla/start_on_boot
+Type: boolean
+_Description: Should the Netrek Server start on boot?
+ The Netrek Server can start automatically on boot time or only if you manually
+ type '/etc/init.d/netrek-server-vanilla start'.
+
+Template: netrek-server-vanilla/error_chown
+Type: note
+_Description: Error: Could not change netrek file ownership to games:games
