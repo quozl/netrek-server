@@ -144,6 +144,8 @@ maintainer-clean: distclean
 	@echo 'deletes files that may need special tools to rebuild.'
 	rm -f Makefile */Makefile
 	rm -rf */.depend
+	rm -rf autom4te.cache conf*.dir
+	rm -f config.* configure libtool ltmain.sh aclocal.m4 system.mk
 
 installbin: all
 	cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
