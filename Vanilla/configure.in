@@ -496,14 +496,13 @@ fi
 
 AC_PROG_LIBTOOL
 
-AC_MSG_CHECKING(for OSX ranlib)
-(eval $RANLIB -c) 2>&5
-if test $? -ne 0; then
+AC_MSG_CHECKING(for Mac OS X/Darwin ranlib)
+if test "$OSTYPE" != "darwin"; then
     RANLIB_FLAGS=
     AC_MSG_RESULT(no)
 else
     RANLIB_FLAGS='-c'
-    AC_MSG_RESULT(drat - yes)
+    AC_MSG_RESULT(yes)
 fi
 
 AC_SUBST(RANLIB_FLAGS)

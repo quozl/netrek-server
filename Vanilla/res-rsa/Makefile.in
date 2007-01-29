@@ -114,7 +114,7 @@ distclean:	reallyclean
 
 install:
 
-depend:;	/bin/touch .depend
+depend:;	touch .depend
 		@makedepend -f.depend $(CFLAGS) $(GMP_INC) $(RSA_LIBSRC) \
 			$(RSA_GMPSRC) $(MKKEY_SRC)
 
