@@ -50,7 +50,7 @@ struct planet pdata[MAXPLANETS] = {
     { 28, KLI, KLI, 54600, 22600, "Cygni", 5, START_ARMIES, KLI },
     { 29, KLI|PLCORE, KLI, 73080, 6640, "Achernar", 8, START_ARMIES, KLI },
     { 30, ORI|PLHOME|PLCORE|PLREPAIR|PLFUEL, ORI, 80000, 80000, "Orion", 5, START_ARMIES, ORI },
-    { 31, ORI, ORI, 91200, 56600, "Cassiopia", 9, START_ARMIES, ORI },
+    { 31, ORI, ORI, 91200, 56600, "Cassiopeia", 10, START_ARMIES, ORI },
     { 32, ORI, ORI, 70800, 54200, "El Nath", 7, START_ARMIES, ORI },
     { 33, ORI, ORI, 57400, 62600, "Spica", 5, START_ARMIES, ORI },
     { 34, ORI|PLCORE, ORI, 72720, 70880, "Procyon", 7, START_ARMIES, ORI },

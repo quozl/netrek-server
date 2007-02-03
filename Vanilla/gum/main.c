@@ -3056,7 +3056,7 @@ create_gum (void)
   glade_menuitem = gtk_menu_item_new_with_label ("Orion");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (PLANETS_3_menu), glade_menuitem);
-  glade_menuitem = gtk_menu_item_new_with_label ("Cassiopia");
+  glade_menuitem = gtk_menu_item_new_with_label ("Cassiopeia");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (PLANETS_3_menu), glade_menuitem);
   glade_menuitem = gtk_menu_item_new_with_label ("El Nath");
