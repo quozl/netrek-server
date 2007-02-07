@@ -298,7 +298,7 @@ static int tournamentMask(int team, int w_queue)
 
     /* First, handle any special cases */
     /* INL guests cannot play and are only here to read the motd */
-    if (inl_mode && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
+    if (inl_mode && !Observer && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
         return 0;
     /* Is the server closed, or did the daemond die. */
     if ((!time_access()) || !(status->gameup & GU_GAMEOK)) return 0;

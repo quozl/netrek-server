@@ -513,7 +513,7 @@ static void sendMotd(void)
     strcpy(motd_file,Motd_Path);
     if (clue) 				/* added 2/6/93 NBT */
 	strcat(motd_file,N_MOTD_CLUE);
-    else if (inl_mode && me && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
+    else if (inl_mode && me && !Observer && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
     strcat(motd_file,N_MOTD_INLGUEST);
     else strcat(motd_file,Motd);
  
