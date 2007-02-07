@@ -146,6 +146,7 @@ maintainer-clean: distclean
 	rm -rf */.depend
 	rm -rf autom4te.cache conf*.dir
 	rm -f config.* configure libtool ltmain.sh aclocal.m4 system.mk
+	rm -f docs/sample_sysdef
 
 installbin: all
 	cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
