@@ -72,14 +72,6 @@ static void handleLogin(void)
     if ((streq(namePick, "Guest") || streq(namePick, "guest")) &&
 	!lockout()) {
 
-        /* all INL games prohibit guest login */
-        if (inl_mode) {
-	  sendClientLogin(NULL);
-	  flushSockBuf();
-	  return;
-	}
-	/* todo: we don't check for existing guests on INL robot entry */
-
 	hourratio=5;
 	MZERO(&player.stats, sizeof(struct stats));
 #ifdef LTD_STATS

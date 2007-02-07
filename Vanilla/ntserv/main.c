@@ -181,7 +181,8 @@ int main(int argc, char **argv)
     SIGNAL(SIGTERM, forceShutdown);
     SIGNAL(SIGPIPE, SIG_IGN);
 
-    sendMotd();
+    if (!inl_mode)
+        sendMotd();
 
     /* wait for a slot to become free */
     pno = findslot(w_queue);
@@ -240,6 +241,9 @@ int main(int argc, char **argv)
     strcpy(pseudo, me->p_name);
 
     ERROR(7,("%s: is %s@%s as %s\n", me->p_mapchars, login, host, pseudo));
+
+    if (inl_mode)
+        sendMotd();
 
     keeppeace = (me->p_stats.st_flags / ST_KEEPPEACE) & 1;
 /*    showgalactic = 1 + (me->p_stats.st_flags / ST_GALFREQUENT) & 1;*/
@@ -509,6 +513,8 @@ static void sendMotd(void)
     strcpy(motd_file,Motd_Path);
     if (clue) 				/* added 2/6/93 NBT */
 	strcat(motd_file,N_MOTD_CLUE);
+    else if (inl_mode && me && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
+    strcat(motd_file,N_MOTD_INLGUEST);
     else strcat(motd_file,Motd);
  
     /* the following will read a motd */
