@@ -1449,6 +1449,7 @@ static void udplayers(void)
                     /* How much repair would be gained, normalized to 1 second */
                     repair_gained = j->p_subshield - repair_progress_old;
                     repair_time = repair_needed * 100 / repair_gained;
+                    j->p_repair_time = repair_time;
                     if (j->p_subshield / 1000) {
 #ifdef LTD_STATS
                         if (status->tourn)
