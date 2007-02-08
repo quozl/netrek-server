@@ -99,13 +99,13 @@ void intrupt(void)
        
     }
 
-    if (clue) {
+    if (RECHECK_CLUE && clue) {
 	    if (clueFuse > CLUEINTERVAL) { 
 		clueVerified = 0;
 		clueFuse = 0;
 		clueCount = 0;
 	    } else {
-		if (queues[QU_PICKUP].count != 0) clueFuse++;
+		clueFuse++;
 	    }
 	    if (!clueVerified) clue_check();
     }

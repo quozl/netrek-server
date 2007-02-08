@@ -47,6 +47,7 @@
 #endif
 
 
+#define RECHECK_CLUE	0	/* recheck at CLUEINTERVAL if set */
 #define CLUEINTERVAL	9000	/* 30 minute timer */
 #define ONEMINUTE       300
 #define THREEMINUTES    900

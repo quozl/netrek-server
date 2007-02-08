@@ -209,7 +209,8 @@ void clue_check(void)
   }
 
   /* We don't proceed if there is no wait-q */
-  if (queues[QU_PICKUP].count == 0) return; 
+  if (!inl_mode)
+    if (queues[QU_PICKUP].count == 0) return; 
 
   clueCount++;
 
