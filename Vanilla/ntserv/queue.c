@@ -251,7 +251,7 @@ int queue_add(int w_queue)
         STRNCPY(lwait->ip, ip, sizeof(lwait->ip));
         STRNCPY(lwait->host, host, sizeof(lwait->host));
     }
-    ip_lookup(ip, lwait->host, sizeof(lwait->host));
+    ip_lookup(ip, lwait->host, lwait->host, sizeof(lwait->host));
 
     return i;
 }

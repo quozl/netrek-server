@@ -230,7 +230,7 @@ int main(int argc, char **argv)
     /* reverse lookup hostname from ip address */
     /* clear the host name to indicate work in progress */
     strcpy(me->p_full_hostname, "");
-    ip_lookup(host, me->p_full_hostname, sizeof(me->p_full_hostname));
+    ip_lookup(host, me->p_full_hostname, me->p_dns_hostname, sizeof(me->p_full_hostname));
 
     /* Get login name */
     strcpy(login, "unknown");

@@ -630,7 +630,7 @@ int bounceWhois(int from)
     bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
   } else {
     bounce(from, "%s is %s (%s@%s)", me->p_mapchars, me->p_name, me->p_login, me->p_full_hostname);
-    bounce(from, "%s at %s (ip)", me->p_mapchars, me->p_ip);
+    bounce(from, "%s at %s (%s) [DNS]", me->p_mapchars, me->p_ip, me->p_dns_hostname);
   }
   return 1;
 }

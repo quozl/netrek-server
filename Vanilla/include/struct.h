@@ -445,6 +445,7 @@ struct player {
     int p_pos;			/* My position in the player file */
     int w_queue;		/* Waitqueue of my team */
     char p_full_hostname[MAXHOSTNAMESIZE];	/* full hostname 4/13/92 TC */
+    char p_dns_hostname[MAXHOSTNAMESIZE];	/* actual reverse dns */
 #ifdef PING
     int  p_avrt;               /* average round trip time */
     int  p_stdv;               /* standard deviation in round trip time */

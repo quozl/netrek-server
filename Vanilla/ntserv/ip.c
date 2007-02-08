@@ -19,7 +19,7 @@ pid_t pid;
 
 // TODO: set an alarm and die if no response in gethostbyaddr
 
-void ip_lookup(char *ip, char *p_full_hostname, int len)
+void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
 {
   /* resolve the host name in a new process */
   pid = fork();
@@ -28,14 +28,12 @@ void ip_lookup(char *ip, char *p_full_hostname, int len)
   /* ignore alarms */
   alarm_prevent_inheritance();
 
-  /* lower priority */
-  nice(1);
-
   /* convert textual ip address to binary */
   struct in_addr addr;
   if (inet_aton(ip, &addr) == 0) {
     ERROR(2,("ip_to_full_hostname: numeric ip address not valid format %s\n", ip));
     strcpy(p_full_hostname, ip);
+    strcpy(p_dns_hostname, ip);
     _exit(1);
   }
 
@@ -44,12 +42,18 @@ void ip_lookup(char *ip, char *p_full_hostname, int len)
   if (hostent == NULL) {
     ERROR(2,("ip_to_full_hostname: gethostbyaddr failed for %s\n", ip));
     strcpy(p_full_hostname, ip);
+    strcpy(p_dns_hostname, ip);
     _exit(1);
   }
 
   /* set the address in shared memory */
-  p_full_hostname[len-1] = '\0';
-  strncpy(p_full_hostname, hostent->h_name, len-1);
+  /* Display the IP if the forward and reverse DNS do not match */
+  strcpy(p_dns_hostname, hostent->h_name);
+  hostent = gethostbyname(p_dns_hostname);
+  if (!hostent || strcmp(p_dns_hostname, hostent->h_name))
+    strcpy(p_full_hostname, ip);
+  else
+    strcpy(p_full_hostname, p_dns_hostname);
   ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
   _exit(0);
 }
