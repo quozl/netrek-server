@@ -99,15 +99,16 @@ void intrupt(void)
        
     }
 
-    if (RECHECK_CLUE && clue) {
-	    if (clueFuse > CLUEINTERVAL) { 
-		clueVerified = 0;
-		clueFuse = 0;
-		clueCount = 0;
-	    } else {
-		clueFuse++;
-	    }
-	    if (!clueVerified) clue_check();
+    if (clue) {
+        if (RECHECK_CLUE && (clueFuse > CLUEINTERVAL)) {
+            clueVerified = 0;
+            clueFuse = 0;
+            clueCount = 0;
+        }
+        if (!clueVerified && (inl_mode || (queues[QU_PICKUP].count != 0))) {
+            clueFuse++;
+            clue_check();
+        }
     }
     auto_features();
     updateClient();
