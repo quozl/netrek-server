@@ -511,11 +511,12 @@ static void sendMotd(void)
         sendMotdLine(" ");
     }
     strcpy(motd_file,Motd_Path);
-    if (clue) 				/* added 2/6/93 NBT */
-	strcat(motd_file,N_MOTD_CLUE);
-    else if (inl_mode && me && !Observer && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
-    strcat(motd_file,N_MOTD_INLGUEST);
-    else strcat(motd_file,Motd);
+    if (inl_mode && me && !Observer && (!strcmp(me->p_name, "guest") || !strcmp(me->p_name, "Guest")))
+        strcat(motd_file,N_MOTD_INLGUEST);
+    else if (clue) 				/* added 2/6/93 NBT */
+        strcat(motd_file,N_MOTD_CLUE);
+    else
+        strcat(motd_file,Motd);
  
     /* the following will read a motd */
     if ((motd = fopen(motd_file, "r")) != NULL) {
