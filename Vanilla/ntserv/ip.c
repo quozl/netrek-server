@@ -32,8 +32,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
   struct in_addr addr;
   if (inet_aton(ip, &addr) == 0) {
     ERROR(2,("ip_to_full_hostname: numeric ip address not valid format %s\n", ip));
-    strcpy(p_full_hostname, ip);
-    strcpy(p_dns_hostname, ip);
+    strncpy(p_full_hostname, ip, len - 1);
+    strncpy(p_dns_hostname, ip, len - 1);
     _exit(1);
   }
 
@@ -41,19 +41,19 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
   struct hostent *hostent = gethostbyaddr((char *)&addr, sizeof(addr), AF_INET);
   if (hostent == NULL) {
     ERROR(2,("ip_to_full_hostname: gethostbyaddr failed for %s\n", ip));
-    strcpy(p_full_hostname, ip);
-    strcpy(p_dns_hostname, ip);
+    strncpy(p_full_hostname, ip, len - 1);
+    strncpy(p_dns_hostname, ip, len - 1);
     _exit(1);
   }
 
   /* set the address in shared memory */
   /* Display the IP if the forward and reverse DNS do not match */
-  strcpy(p_dns_hostname, hostent->h_name);
+  strncpy(p_dns_hostname, hostent->h_name, MAXHOSTNAMESIZE - 1);
   hostent = gethostbyname(p_dns_hostname);
-  if (!hostent || strcmp(p_dns_hostname, hostent->h_name))
-    strcpy(p_full_hostname, ip);
+  if (!hostent || strncmp(p_dns_hostname, hostent->h_name, MAXHOSTNAMESIZE - 1))
+    strncpy(p_full_hostname, ip, len - 1);
   else
-    strcpy(p_full_hostname, p_dns_hostname);
+    strncpy(p_full_hostname, p_dns_hostname, MAXHOSTNAMESIZE - 1);
   ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
   _exit(0);
 }
