@@ -3049,6 +3049,10 @@ static void check_clue(struct mesg_cpacket  *packet)
 {
     char player[10];
 
+    /* We probably have cluecheck enabled in pickup and no queue */
+    if (!clueString)
+        return;
+
     if ((packet->group == MINDIV) && (packet->indiv == me->p_no)) {
 	if (!strcmp(packet->mesg,clueString)) {
 	    sprintf(player, "GOD->%c%c", teamlet[me->p_team], shipnos[me->p_no]);
