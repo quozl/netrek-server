@@ -252,7 +252,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_mapchars, 
 		me->p_login,
 		me->p_full_hostname);
-	  if (strcmp(me->p_full_hostname, me->p_dns_hostname))
+	  if (strcmp(addrbuf, "") && strcmp(me->p_full_hostname, me->p_dns_hostname))
     	    pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
 		"[DNS] %s resolves to %s", me->p_ip, me->p_dns_hostname);
 	}
