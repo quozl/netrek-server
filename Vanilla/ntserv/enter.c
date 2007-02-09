@@ -254,7 +254,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_full_hostname);
 	  if (!is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname))
     	    pmessage(0, MALL, "GOD->ALL",
-		"[DNS Mismatch] %s resolves to \'%s\'", me->p_mapchars, me->p_dns_hostname);
+		"[DNS Mismatch] %s resolves to \'%s\'.", me->p_mapchars, me->p_dns_hostname);
 	}
 
 	lastrank = mystats->st_rank;
