@@ -17,45 +17,56 @@
 
 pid_t pid;
 
-// TODO: set an alarm and die if no response in gethostbyaddr
-
 void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
 {
-  /* resolve the host name in a new process */
-  pid = fork();
-  if (pid != 0) return;
+    struct in_addr addr;
+    struct hostent *reverse, *forward;
+    char fwdhost[MAXHOSTNAMESIZE];
+    
+    /* resolve the host name in a new process */
+    pid = fork();
+    if (pid != 0) return;
 
-  /* ignore alarms */
-  alarm_prevent_inheritance();
+    /* ignore alarms */
+    alarm_prevent_inheritance();
 
-  /* convert textual ip address to binary */
-  struct in_addr addr;
-  if (inet_aton(ip, &addr) == 0) {
-    ERROR(2,("ip_to_full_hostname: numeric ip address not valid format %s\n", ip));
-    strncpy(p_full_hostname, ip, len - 1);
-    strncpy(p_dns_hostname, ip, len - 1);
-    _exit(1);
-  }
-
-  /* lookup the fully qualified domain name using the address */
-  struct hostent *hostent = gethostbyaddr((char *)&addr, sizeof(addr), AF_INET);
-  if (hostent == NULL) {
-    ERROR(2,("ip_to_full_hostname: gethostbyaddr failed for %s\n", ip));
-    strncpy(p_full_hostname, ip, len - 1);
-    strncpy(p_dns_hostname, ip, len - 1);
-    _exit(1);
-  }
-
-  /* set the address in shared memory */
-  /* Display the IP if the forward and reverse DNS do not match */
-  strncpy(p_dns_hostname, hostent->h_name, MAXHOSTNAMESIZE - 1);
-  hostent = gethostbyname(p_dns_hostname);
-  if (!hostent || strncmp(p_dns_hostname, hostent->h_name, MAXHOSTNAMESIZE - 1))
-    strncpy(p_full_hostname, ip, len - 1);
-  else
-    strncpy(p_full_hostname, p_dns_hostname, MAXHOSTNAMESIZE - 1);
-  ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
-  _exit(0);
+    /* Pack IP text string into binary */
+    if (inet_aton(ip, &addr) == 0) {
+        /* Display the IP in both full_hostname and dns_hostname on failure */
+        ERROR(2,("ip_to_full_hostname: numeric ip address not valid format %s\n", ip));
+        strncpy(p_full_hostname, ip, len - 1);
+        strncpy(p_dns_hostname, ip, len - 1);
+        _exit(1);
+    }
+    
+    /* Resolve the FQDN from the IP address */
+    reverse = gethostbyaddr((char *)&addr, sizeof(addr), AF_INET);
+    if (reverse == NULL) {
+        /* Display the IP in both full_hostname and dns_hostname on failure */
+        ERROR(2,("ip_to_full_hostname: reverse lookup failed for %s\n", ip));
+        strncpy(p_full_hostname, ip, len - 1);
+        strncpy(p_dns_hostname, ip, len - 1);
+        _exit(1);
+    }
+    
+    /* Resolve the IP from the FQDN resolved above and store the text string in fwdhost */
+    if (!(forward = gethostbyname(reverse->h_name)) || !inet_ntop(AF_INET, forward->h_addr_list[0], fwdhost, MAXHOSTNAMESIZE)
+        || strncmp(ip, fwdhost, len - 1)) {
+        /* Display the IP in full_hostname and the resolved reverse in dns_hostname if the reverse does not forward resolve to an IP
+            or if the forward resolution does not match the original IP */
+        ERROR(3,("ip_to_full_hostname: forward lookup failed for %s (%s)\n", reverse->h_name, ip));
+        strncpy(p_full_hostname, ip, len - 1);
+        strncpy(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
+        /* This is a soft error */
+        _exit(0);
+    }
+    
+    /* Display the resolved reverse in both full_hostname and dns_hostname if the resolved forward matches */
+    strncpy(p_full_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
+    strncpy(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
+    ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
+    /* DNS is actually set up correctly! */
+    _exit(0);
 }
 
 void ip_waitpid()

@@ -252,9 +252,9 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_mapchars, 
 		me->p_login,
 		me->p_full_hostname);
-	  if (strcmp(me->p_full_hostname, me->p_dns_hostname))
-    	    pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
-		"[DNS] %s resolves to %s", me->p_ip, me->p_dns_hostname);
+	  if (!is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname))
+    	    pmessage(0, MALL, "GOD->ALL",
+		"[DNS Mismatch] %s resolves to \'%s\'", me->p_mapchars, me->p_dns_hostname);
 	}
 
 	lastrank = mystats->st_rank;
