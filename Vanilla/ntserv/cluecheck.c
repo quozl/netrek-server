@@ -208,7 +208,7 @@ void clue_check(void)
     flag=1;
   }
 
-  /* We don't proceed if there is no wait-q */
+  /* do not clue check in pickup if no wait queue exists */
   if (!inl_mode)
     if (queues[QU_PICKUP].count == 0) return; 
 
