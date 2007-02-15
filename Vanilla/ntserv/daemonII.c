@@ -320,9 +320,9 @@ int main(int argc, char **argv)
 
     alarm_init();
     udt.it_interval.tv_sec = 0;
-    udt.it_interval.tv_usec = reality;
+    udt.it_interval.tv_usec = 1000000 / reality;
     udt.it_value.tv_sec = 0;
-    udt.it_value.tv_usec = reality;
+    udt.it_value.tv_usec = 1000000 / reality;
     if (setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0) < 0){
         ERROR(1,( "daemon:  Error setting itimer.  Exiting.\n"));        
         exitDaemon(0);
@@ -604,7 +604,7 @@ static void move()
     if (fuse(QUEUEFUSE)){
         queues_purge();
         solicit(0);
-        bans_age_temporary(QUEUEFUSE/(1000000/reality));
+        bans_age_temporary(QUEUEFUSE/reality);
     }
 
     if (ispaused){ /* Game is paused */
@@ -647,9 +647,9 @@ static void move()
 
         /* allow for change to reality timer */
         udt.it_interval.tv_sec = 0;
-        udt.it_interval.tv_usec = reality;
+        udt.it_interval.tv_usec = 1000000 / reality;
         udt.it_value.tv_sec = 0;
-        udt.it_value.tv_usec = reality;
+        udt.it_value.tv_usec = 1000000 / reality;
         if (setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0) < 0){
             ERROR(1,( "daemon:  Error resetting itimer.  Exiting.\n"));        
             exitDaemon(0);

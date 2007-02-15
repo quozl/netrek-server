@@ -164,7 +164,6 @@ void readsysdefaults(void)
     }
 
     /* convert frequencies to cycle times (microseconds) and skip counts */
-    reality = 1000000 / reality;
     minskip = 1000000 / minskip / UPDATE;
     maxskip = 1000000 / maxskip / UPDATE;
     defskip = 1000000 / defskip / UPDATE;
