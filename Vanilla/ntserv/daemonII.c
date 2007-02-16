@@ -71,7 +71,8 @@ static void udcloak(void);
 static void torp_track_target(struct torp *t);
 static void udtorps(void);
 static int near(struct torp *t);
-static void explode(struct torp *torp);
+static void t_explosion(struct torp *torp);
+static void p_explosion(struct player *player, int whydead, int whodead);
 #ifndef LTD_STATS
 static void loserstats(int pl);
 #ifdef CHAIN_REACTION
@@ -1272,13 +1273,7 @@ static void udplayers(void)
                 }
 
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
-                    j->p_status = PEXPLODE;
-                    if (j->p_ship.s_type == STARBASE)
-                        j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-                    else
-                        j->p_explode = 10/PLAYERFUSE;
-                    j->p_whydead = KGHOST;
-                    j->p_whodead = i;
+                    p_explosion(j, KGHOST, i);
                     ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
                 }
                         
@@ -1713,7 +1708,7 @@ static void udtorps(void)
                 
 #define DO_WALL_HIT(torp) (torp)->t_status = TDET; \
                           (torp)->t_whodet = (torp)->t_owner; \
-                          explode(torp)
+                          t_explosion(torp)
 
       /*
        * Move the torp, checking for wall hits  */
@@ -1836,11 +1831,11 @@ static void udtorps(void)
             break;
         }
 #endif
-        explode(t);
+        t_explosion(t);
       }
       continue;
     case TDET:
-      explode(t);
+      t_explosion(t);
       continue;
     case TEXPLODE:
       if (t->t_fuse-- > 0)
@@ -1853,7 +1848,7 @@ static void udtorps(void)
         t->t_status = TDET;
         t->t_damage /= 4;
         t->t_whodet = players[t->t_owner].p_no;
-        explode(t);
+        t_explosion(t);
       }
 #endif
       break;
@@ -1898,10 +1893,25 @@ static int near(struct torp *t)
 }
     
 
-/* 
- * Dole out damage to all unsafe surrounding players 
- */
-static void explode(struct torp *torp)
+/* trigger a ship explosion */
+static void p_explosion(struct player *player, int why, int who)
+{
+    player->p_status = PEXPLODE;
+    /* todo: fps support, use of a fuse */
+    player->p_explode =
+        (player->p_ship.s_type == STARBASE ? 2*SBEXPVIEWS : 10) / PLAYERFUSE;
+    player->p_whydead = why;
+    player->p_whodead = who;
+    /* damage resulting from ship explosion is done in subsequent frames */
+}
+
+static int t_whydead(struct torp *torp)
+{
+    return torp->t_type == TPHOTON ? KTORP : KPLASMA;
+}
+
+/* trigger a torpedo explosion, and damage surrounding players */
+static void t_explosion(struct torp *torp)
 {
   int dx, dy, dist;
   int damage, damdist;
@@ -1980,6 +1990,7 @@ static void explode(struct torp *torp)
          tm_robots[l->pl_owner] == 0) {
 
          rescue(l->pl_owner, NotTmode(context->ticks));
+	 /* todo: fps support, use of a fuse */
          tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
       }
     }
@@ -2083,12 +2094,6 @@ static void explode(struct torp *torp)
       /* 
        * Check for kill:  */
       if (j->p_damage >= j->p_ship.s_maxdamage) {
-        j->p_status = PEXPLODE;
-        if (j->p_ship.s_type == STARBASE) {
-          j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-        } else {
-          j->p_explode = 10/PLAYERFUSE;
-        }
 #ifdef CHAIN_REACTION
         if ((torp->t_whodet != NODET) 
             && (torp->t_whodet != j->p_no) 
@@ -2096,6 +2101,7 @@ static void explode(struct torp *torp)
           k = player_(torp->t_whodet);
         else 
           k = player_(torp->t_owner);
+        p_explosion(j, t_whydead(torp), k->p_no);
         if ((k->p_team != j->p_team) || 
             ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
         {
@@ -2120,8 +2126,6 @@ static void explode(struct torp *torp)
 
 #endif /* LTD_STATS */
 
-        j->p_whydead = (torp->t_type == TPHOTON) ? KTORP : KPLASMA;
-        j->p_whodead = k->p_no;
 
 #ifdef LTD_STATS
 
@@ -2147,6 +2151,7 @@ static void explode(struct torp *torp)
                  : j->p_whydead);
 
 #else /* CHAIN_REACTION */
+        p_explosion(j, t_whydead(torp), torp->t_owner);
 
 #ifndef LTD_STATS
 
@@ -2166,9 +2171,6 @@ static void explode(struct torp *torp)
         loserstats(j->p_no);
 
 #endif /* LTD_STATS */
-
-        j->p_whydead = (torp->t_type == TPHOTON) ? KTORP : KPLASMA;
-        j->p_whodead = torp->t_owner;
 
 #ifdef LTD_STATS
 
@@ -2676,13 +2678,7 @@ static void udsurrend(void)
                     j->p_planets=0;
                 }
                 if ((j->p_status == PALIVE) && (j->p_team == t)) {
-                    j->p_status = PEXPLODE;
-                    if (j->p_ship.s_type == STARBASE)
-                        j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-                    else
-                        j->p_explode = 10/PLAYERFUSE;
-                    j->p_whydead = KPROVIDENCE;
-                    j->p_whodead = 0;
+                    p_explosion(j, KPROVIDENCE, 0);
                 }
             }                   /* end for */
             
@@ -2742,11 +2738,8 @@ static void udphaser(void)
                             victim->p_damage += j->ph_damage;
                         }
                         if (victim->p_damage >= victim->p_ship.s_maxdamage) {
-                            victim->p_status = PEXPLODE;
-                            if (victim->p_ship.s_type == STARBASE)
-                                victim->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-                            else
-                                victim->p_explode = 10/PLAYERFUSE;
+                            p_explosion(victim, KPHASER, i);
+
                             players[i].p_kills += 1.0 + 
                                 victim->p_armies * 0.1 +
                                 victim->p_kills * 0.1;
@@ -2774,9 +2767,6 @@ static void udphaser(void)
                             loserstats(j->ph_target);
 
 #endif /* LTD_STATS */
-
-                            victim->p_whydead = KPHASER;
-                            victim->p_whodead = i;
 
 #ifdef LTD_STATS
                             /* i = credit killer = actual killer
@@ -2876,11 +2866,7 @@ static void pldamageplayer(struct player *j)
       j->p_damage += damage;
     }
     if (j->p_damage >= j->p_ship.s_maxdamage) {
-      if (j->p_ship.s_type == STARBASE)
-        j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-      else
-        j->p_explode = 10/PLAYERFUSE;
-      j->p_status = PEXPLODE;
+      p_explosion(j, KPLANET, l->pl_no);
 
 #ifndef LTD_STATS
 
@@ -2902,9 +2888,6 @@ static void pldamageplayer(struct player *j)
       arg[5] = KPLANET;
 #endif
       pmessage(0, MALL | MKILLP, "GOD->ALL", buf);
-
-      j->p_whydead = KPLANET;
-      j->p_whodead = l->pl_no;
 
 #ifdef LTD_STATS
 
@@ -3526,18 +3509,16 @@ static void blowup(struct player *sh)
                 j->p_damage += damage;
             }
             if (j->p_damage >= j->p_ship.s_maxdamage) {
-                j->p_status = PEXPLODE;
-                if (j->p_ship.s_type == STARBASE)
-                    j->p_explode = 2*SBEXPVIEWS;
-                else
-                    j->p_explode = 10;
 #ifdef CHAIN_REACTION
                 if ((j->p_no != sh->p_whodead) && (j->p_team != players[sh->p_whodead].p_team)
                     && (sh->p_whydead == KSHIP ||  sh->p_whydead == KTORP ||
                         sh->p_whydead == KPHASER || sh->p_whydead == KPLASMA))
-                  k= &players[sh->p_whodead]; 
+                  k = &players[sh->p_whodead]; 
                 else
-                  k= sh;
+                  k = sh;
+
+                p_explosion(j, KSHIP, k->p_no);
+
                 if ((k->p_team != j->p_team) ||
                     ((k->p_team == j->p_team) && !(j->p_flags & PFPRACTR))){
                   k->p_kills += 1.0 + 
@@ -3558,9 +3539,6 @@ static void blowup(struct player *sh)
                 killerstats(k->p_no, sh->p_no, j);
                 loserstats(i);
 #endif /* LTD_STATS */
-
-                j->p_whydead = KSHIP;
-                j->p_whodead = k->p_no;
 
 #ifdef LTD_STATS
 
@@ -3586,6 +3564,8 @@ static void blowup(struct player *sh)
 
                 killmess(j, k, sh, (k->p_no == sh->p_no)? KSHIP : KSHIP2);
 #else /* CHAIN_REACTION */
+                p_explosion(j, KSHIP, sh->p_no);
+
                 sh->p_kills += 1.0 + 
                   j->p_armies * 0.1 + j->p_kills * 0.1;
 #ifdef STURGEON
@@ -3600,9 +3580,6 @@ static void blowup(struct player *sh)
                 loserstats(i);
 
 #endif /* LTD_STATS */
-
-                j->p_whydead = KSHIP;
-                j->p_whodead = sh->p_no;
 
 #ifdef LTD_STATS
 
@@ -3875,13 +3852,7 @@ static void checkgen(int loser, struct player *winner)
             j->p_planets=0;
         }
         if (j->p_status == PALIVE && j->p_team == loser) {
-            j->p_status = PEXPLODE;
-            if (j->p_ship.s_type == STARBASE)
-                j->p_explode = 2*SBEXPVIEWS/PLAYERFUSE;
-            else
-                j->p_explode = 10/PLAYERFUSE;
-            j->p_whydead = KGENOCIDE;
-            j->p_whodead = winner->p_no;
+            p_explosion(j, KGENOCIDE, winner->p_no);
         }
     }
 
