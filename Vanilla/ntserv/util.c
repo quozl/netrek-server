@@ -1,6 +1,9 @@
 /*
  * util.c
  */
+
+#define _GNU_SOURCE
+
 #include <string.h>
 #include "copyright.h"
 #include "config.h"
@@ -230,4 +233,11 @@ char *my_metaserver_type()
   if (practice_mode) return "F";
   if (hockey_mode) return "H";
   return "B";
+}
+
+int is_guest(char *name)
+{
+  if (!strcmp(name, "guest")) return 1;
+  if (!strcmp(name, "Guest")) return 1;
+  return 0;
 }

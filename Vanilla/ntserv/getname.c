@@ -26,6 +26,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "salt.h"
+#include "util.h"
 
 #define streq(a,b) (strcmp((a),(b)) == 0)
 
@@ -69,8 +70,7 @@ static void handleLogin(void)
     ERROR(8,("handleLogin: %s %s %s\n", 
 	     passPick[15] == 0 ? "attempt" : "query", namePick, passPick));
 
-    if ((streq(namePick, "Guest") || streq(namePick, "guest")) &&
-	!lockout()) {
+    if (is_guest(namePick) && !lockout()) {
 
 	hourratio=5;
 	MZERO(&player.stats, sizeof(struct stats));

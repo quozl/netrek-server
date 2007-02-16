@@ -25,6 +25,7 @@
 #endif
 #include "proto.h"
 #include "ip.h"
+#include "util.h"
 
 #ifndef TRUE
 #define TRUE 1
@@ -511,7 +512,7 @@ static void sendMotd(void)
         sendMotdLine(" ");
     }
     strcpy(motd_file,Motd_Path);
-    if (inl_mode && me && !Observer && !strcasecmp(me->p_name, "guest"))
+    if (inl_mode && me && !Observer && is_guest(me->p_name))
         strcat(motd_file,N_MOTD_INLGUEST);
     else if (clue) 				/* added 2/6/93 NBT */
         strcat(motd_file,N_MOTD_CLUE);

@@ -1176,7 +1176,7 @@ void do_register(char *comm, struct message *mess)
   }
 
   fprintf(file, "%s\t%s\t%s\t%s\t%s\n",
-	  (!strcmp(p->p_name, "guest")) ? "add" : "change", 
+	  is_guest(p->p_name) ? "add" : "change", 
 	  host, registered_users_name, registered_users_pass, two);
   if (fclose(file) != 0) {
     pmessage(who, MINDIV, addr, "Registration could not be recorded.");
