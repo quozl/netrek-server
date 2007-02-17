@@ -883,137 +883,127 @@ static void udplayerpause(void) {
   }
 }
 
-
-static void udplayers(void)
+static void udplayers_poutfit(struct player *j)
 {
-    register int i, k;
-    register struct player *j;
-    float dist; /* used by tractor beams */
-    struct torp *t;
-    int maxspeed;
-    int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
-
-    int nfree = 0;
-    tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;
-    for (i = status->active = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
         int outfitdelay;
 
-        switch (j->p_status) {
-            case POUTFIT:
+        switch (j->p_whydead) {
+        case KLOGIN:
+                outfitdelay = LOGINTIME;
+                break;
+        case KQUIT:
+        case KPROVIDENCE:
+        case KBADBIN:
+                outfitdelay = GHOSTTIME;
+                break;
+        case KGHOST:
+                outfitdelay = KGHOSTTIME;
+                break;
+        default:
+                outfitdelay = OUTFITTIME;
+                break;
+        }
 
-                switch (j->p_whydead) {
-                case KLOGIN:
-                    outfitdelay = LOGINTIME;
-                    break;
-                case KQUIT:
-                case KPROVIDENCE:
-                case KBADBIN:
-                    outfitdelay = GHOSTTIME;
-                    break;
-                case KGHOST:
-                    outfitdelay = KGHOSTTIME;
-                    break;
-                default:
-                    outfitdelay = OUTFITTIME;
-                    break;
-                }
-
-                if (++(j->p_ghostbuster) > outfitdelay) {
-                    ERROR(4,("%s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n", 
-                             j->p_mapchars, j->p_ghostbuster,
-                             outfitdelay, j->p_whydead));
-                    if (j->p_whydead == KGHOST) {
+        if (++(j->p_ghostbuster) > outfitdelay) {
+                ERROR(4,("%s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n", 
+                         j->p_mapchars, j->p_ghostbuster,
+                         outfitdelay, j->p_whydead));
+                if (j->p_whydead == KGHOST) {
                         ghostmess(j, "no ping alive");
-                    } else {
+                } else {
                         ghostmess(j, "outfit timeout");
-                    }
-                    saveplayer(j);
-                    if (j->p_process > 1) {
-                        ERROR(8,("%s: sending SIGTERM to %d\n", 
+                }
+                saveplayer(j);
+                if (j->p_process > 1) {
+                        ERROR(8,("%s: sending SIGTERM to %d\n",
                                  j->p_mapchars, j->p_process));
                         if (kill (j->p_process, SIGTERM) < 0)
-                            ERROR(1,("daemonII/udplayers:  kill failed!\n"));
-                    } else {
+                                ERROR(1,("daemonII/udplayers: kill failed!\n"));
+                } else {
                         ERROR(1,("daemonII/udplayers:  bad p_process!\n"));
                         freeslot(j);
-                    }
                 }
-                continue;
-            case PFREE:
-                nfree++;                /* count slot toward empty server */
-                j->p_ghostbuster = 0;   /* stop from hosing new players */
-                continue;
-#ifdef OBSERVERS
-            case POBSERV:
-                /* observer players, perpetually 'dead'-like state */
-                /* think of them as ghosts! but they still might get */
-                /* ghostbusted - attempt to handle it */
-                if (++(j->p_ghostbuster) > GHOSTTIME) {
-                    ghostmess(j, "no ping observ");
-                    saveplayer(j);
-                    j->p_status = PDEAD;
-                    j->p_whydead = KGHOST;
-                    j->p_whodead = i;
-                    break;
-                }
-                nfree++;                /* count slot toward empty server */
-                continue;
-#endif  /* OBSERVERS */
+        }
+}
 
-            case PDEAD:
-                if (--j->p_explode <= 0) {      /* Ghost Buster */
-                    saveplayer(j);
-                    j->p_status = POUTFIT; /* change 5/24/91 TC, was PFREE */
-                }
-                continue;
-            case PEXPLODE:
-                j->p_updates++;
-                j->p_flags &= ~PFCLOAK;
-                if ((j->p_ship.s_type == STARBASE) && 
-		    /* todo: fps support, use of fuse for explosion time */
-                   (j->p_explode == ((2*SBEXPVIEWS-3)/PLAYERFUSE)))
-                        blowup(j);  /* damdiffe everyone else around */
-                else if (j->p_explode == ((10-3)/PLAYERFUSE))
-                        blowup(j);      /* damdiffe everyone else around */
+static void udplayers_pobserv(struct player *j)
+{
+        /* observer players, perpetually 'dead'-like state */
+        /* think of them as ghosts! but they still might get */
+        /* ghostbusted - attempt to handle it */
+        if (++(j->p_ghostbuster) > GHOSTTIME) {
+                ghostmess(j, "no ping observ");
+                saveplayer(j);
+                j->p_status = PDEAD;
+                j->p_whydead = KGHOST;
+                j->p_whodead = j->p_no;
+        }
+}
 
-                if (--j->p_explode <= 0) {
-                    j->p_status = PDEAD;
-		    /* todo: fps support, use of fuse for ghostbust time */
-                    j->p_explode = 600/PLAYERFUSE; /* set ghost buster */
-                }
+static void udplayers_pdead(struct player *j)
+{
+        if (--j->p_explode <= 0) {      /* Ghost Buster */
+                saveplayer(j);
+                j->p_status = POUTFIT; /* change 5/24/91 TC, was PFREE */
+        }
+}
 
-                bay_release(j);
-                if (j->p_ship.s_type == STARBASE) {
-                    bay_release_all(j);
-                    /* set reconstruction time for new starbase */
-                    if (((j->p_whydead == KSHIP) || 
-                         (j->p_whydead == KTORP) ||
-                         (j->p_whydead == KPHASER) || 
-                         (j->p_whydead == KPLASMA) ||
-                         (j->p_whydead == KPLANET) ||
-                         (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
+static void udplayers_pexplode(struct player *j)
+{
+        j->p_updates++;
+        j->p_flags &= ~PFCLOAK;
+        if ((j->p_ship.s_type == STARBASE) && 
+            /* todo: fps support, use of fuse for explosion time */
+            (j->p_explode == ((2*SBEXPVIEWS-3)/PLAYERFUSE)))
+                blowup(j);  /* damdiffe everyone else around */
+        else if (j->p_explode == ((10-3)/PLAYERFUSE))
+                blowup(j);      /* damdiffe everyone else around */
+        
+        if (--j->p_explode <= 0) {
+                j->p_status = PDEAD;
+                /* todo: fps support, use of fuse for time limit */
+                j->p_explode = 600/PLAYERFUSE; /* set PDEAD time limit */
+        }
+        
+        bay_release(j);
+        if (j->p_ship.s_type == STARBASE) {
+                bay_release_all(j);
+                /* set reconstruction time for new starbase */
+                if (((j->p_whydead == KSHIP) || 
+                     (j->p_whydead == KTORP) ||
+                     (j->p_whydead == KPHASER) || 
+                     (j->p_whydead == KPLASMA) ||
+                     (j->p_whydead == KPLANET) ||
+                     (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
                         teams[j->p_team].s_turns = starbase_rebuild_time;
                         if (j->p_status == PDEAD) blog_base_loss(j);
-                    }
                 }
-                /* And he is ejected from orbit. */
-                j->p_flags &= ~PFORBIT;
-
-                /* Reduce any torp or plasma timers longer than 5 seconds,
-		   mainly for ATT torps/plasmas, and sturgeon weapons */
-		/* todo: fps support, fuse used for real time */
-                for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
-                    if (t->t_status == TMOVE && t->t_fuse > 50)
+        }
+        /* And he is ejected from orbit. */
+        j->p_flags &= ~PFORBIT;
+        
+        /* Reduce any torp or plasma timers longer than 5 seconds,
+           mainly for ATT torps/plasmas, and sturgeon weapons */
+        /* todo: fps support, fuse used for real time */
+        struct torp *t;
+        for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
+                if (t->t_status == TMOVE && t->t_fuse > 50)
                         t->t_fuse = 50;
-                }
-                for (t = firstPlasmaOf(j); t <= lastPlasmaOf(j); t++) {
-                    if (t->t_status == TMOVE && t->t_fuse > 50)
+        }
+        for (t = firstPlasmaOf(j); t <= lastPlasmaOf(j); t++) {
+                if (t->t_status == TMOVE && t->t_fuse > 50)
                         t->t_fuse = 50;
-                }
+        }
+}
 
-                /* Fall through to alive so explosions move */
-                        
-            case PALIVE:
+static void udplayers_palive(struct player *j)
+{
+    int k;
+    float dist; /* used by tractor beams */
+    int maxspeed;
+    int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
+    /* not yet indented, so as to verify no significant change */
+
                 /* Move Player in orbit */
                 if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
                     /* todo: fps support */
@@ -1154,7 +1144,7 @@ static void udplayers(void)
                       ||  j->p_status == POBSERV
 #endif
                    )
-                  break;
+                  return;
 
             if (status->tourn
 #ifdef BASEPRACTICE
@@ -1265,11 +1255,10 @@ static void udplayers(void)
                 }
 
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
-                    p_explosion(j, KGHOST, i);
+                    p_explosion(j, KGHOST, j->p_no);
                     ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
                 }
                         
-                status->active += (1<<i);
                 tcount[j->p_team]++;
                 j->p_updates++;
 
@@ -1532,7 +1521,40 @@ static void udplayers(void)
                         }
                     }
                 }
-            break;
+	}
+
+static void udplayers(void)
+{
+    int i;
+    struct player *j;
+
+    int nfree = 0;
+    tcount[FED] = tcount[ROM] = tcount[KLI] = tcount[ORI] = 0;
+    for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
+
+        switch (j->p_status) {
+            case POUTFIT:
+                udplayers_poutfit(j);
+                continue;
+            case PFREE:
+                nfree++;                /* count slot toward empty server */
+                j->p_ghostbuster = 0;   /* stop from hosing new players */
+                continue;
+#ifdef OBSERVERS
+            case POBSERV:
+                udplayers_pobserv(j);
+                nfree++;                /* count slot toward empty server */
+                continue;
+#endif  /* OBSERVERS */
+            case PDEAD:
+                udplayers_pdead(j);
+                continue;
+            case PEXPLODE:
+                udplayers_pexplode(j);
+                /* fall through to alive so explosions move */
+            case PALIVE:
+                udplayers_palive(j);
+                break;
         } /* end switch */
     }
     if (nfree == MAXPLAYER) {
