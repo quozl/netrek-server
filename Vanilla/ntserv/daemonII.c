@@ -996,28 +996,28 @@ static void udplayers_pexplode(struct player *j)
         }
 }
 
-static void udplayers_palive(struct player *j)
+static void udplayers_palive_move_in_orbit(struct player *j)
 {
-    int k;
-    float dist; /* used by tractor beams */
-    int maxspeed;
-    int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
-    /* not yet indented, so as to verify no significant change */
+        /* todo: fps support */
+        j->p_dir += 2;
+        j->p_desdir = j->p_dir;
+        j->p_x = planets[j->p_planet].pl_x + ORBDIST
+                * Cos[(u_char) (j->p_dir - (u_char) 64)];
+        j->p_y = planets[j->p_planet].pl_y + ORBDIST
+                * Sin[(u_char) (j->p_dir - (u_char) 64)];
+}
 
-                /* Move Player in orbit */
-                if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
-                    /* todo: fps support */
-                    j->p_dir += 2;
-                    j->p_desdir = j->p_dir;
-                    j->p_x = planets[j->p_planet].pl_x + ORBDIST
-                        * Cos[(u_char) (j->p_dir - (u_char) 64)];
-                    j->p_y = planets[j->p_planet].pl_y + ORBDIST
-                        * Sin[(u_char) (j->p_dir - (u_char) 64)];
-                }
+static void udplayers_palive_move_in_dock(struct player *j)
+{
+        j->p_x = players[j->p_dock_with].p_x + 
+                 DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
+        j->p_y = players[j->p_dock_with].p_y + 
+                 DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
+}
 
-                /* Move player through space */
-                else if (!(j->p_flags & PFDOCK)) {
-
+static void udplayers_palive_move_in_space(struct player *j)
+{
+    int maxspeed, k;
                     if ((j->p_dir != j->p_desdir) && (j->p_status != PEXPLODE))
                         changedir(j);
 
@@ -1136,21 +1136,16 @@ static void udplayers_palive(struct player *j)
                      j->p_y = 0;
 
                     }
-                }
+}
 
-                /* If player is actually dead, don't do anything below ... */
-                if (j->p_status == PEXPLODE || j->p_status == PDEAD
-#ifdef OBSERVERS
-                      ||  j->p_status == POBSERV
-#endif
-                   )
-                  return;
+static void udplayers_palive_update_stats(struct player *j)
+{
 
-            if (status->tourn
+    if (status->tourn
 #ifdef BASEPRACTICE
-                || practice_mode
+	|| practice_mode
 #endif
-                ) {
+	    ) {
 
 #ifdef LTD_STATS
                     if (status->tourn) ltd_update_ticks(j);
@@ -1253,15 +1248,19 @@ static void udplayers_palive(struct player *j)
                     }
 #endif /* LTD_STATS */
                 }
+	}
+
+static void udplayers_palive_check_ghostbuster(struct player *j)
+{
 
                 if (++(j->p_ghostbuster) > GHOSTTIME) {
                     p_explosion(j, KGHOST, j->p_no);
                     ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
                 }
-                        
-                tcount[j->p_team]++;
-                j->p_updates++;
+}
 
+static void udplayers_palive_fuel_shields(struct player *j)
+	{
                 /* Charge for shields */
                 if (j->p_flags & PFSHIELD) {  /* This is a kludge, I know. */
                     switch (j->p_ship.s_type) {
@@ -1281,9 +1280,13 @@ static void udplayers_palive(struct player *j)
                         break;
                     }
                 }
+	}
 
+static void udplayers_palive_tractor(struct player *j)
+	{
+    float dist;
+		if (!(j->p_flags & PFTRACT)) return;
                 /* affect tractor beams */
-                if (j->p_flags & PFTRACT) {
                   if ((isAlive(&players[j->p_tractor])) &&
                       ((j->p_fuel > TRACTCOST) && !(j->p_flags & PFENG)) &&
                       ((dist=hypot((double)(j->p_x-players[j->p_tractor].p_x),
@@ -1323,7 +1326,10 @@ static void udplayers_palive(struct player *j)
                   } else {
                     j->p_flags &= ~(PFTRACT | PFPRESS);
                   }     
-                }
+}
+
+static void udplayers_palive_cool_weapons(struct player *j)
+	{
                         
                 /* cool weapons */
                 j->p_wtemp -= j->p_ship.s_wpncoolrate;
@@ -1341,6 +1347,11 @@ static void udplayers_palive(struct player *j)
                                      PLAYERFUSE;
                     }
                 }
+	}
+
+static void udplayers_palive_cool_engines(struct player *j)
+	{
+
                 /* cool engine */
                 j->p_etemp -= j->p_ship.s_egncoolrate;
                 if (j->p_etemp < 0)
@@ -1358,6 +1369,10 @@ static void udplayers_palive(struct player *j)
                         j->p_desspeed = 0;
                     }
                 }
+	}
+
+static void udplayers_palive_fuel_cloak(struct player *j)
+	{
 
                 /* Charge for cloaking */
                 if (j->p_flags & PFCLOAK) {
@@ -1367,7 +1382,10 @@ static void udplayers_palive(struct player *j)
                         j->p_fuel -= j->p_ship.s_cloakcost;
                     }
                 }
+	}
 
+    static void udplayers_palive_make_fuel(struct player *j)
+	    {
 #ifdef SBFUEL_FIX
                 /* Add fuel */
                 j->p_fuel += 2 * j->p_ship.s_recharge;
@@ -1404,7 +1422,11 @@ static void udplayers_palive(struct player *j)
                   j->p_desspeed = 0;
                   j->p_flags &= ~PFCLOAK;
                 }
-        
+	    }        
+
+    static void udplayers_palive_repair(struct player *j)
+	    {
+    int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
                 /* repair shields */
                 if (j->p_shield < j->p_ship.s_maxshield) {
                     repair_progress_old = j->p_subshield;
@@ -1481,13 +1503,11 @@ static void udplayers_palive(struct player *j)
                     j->p_subdamage = 0;
                   }
                 }
+	    }
 
-                /* Move Player in dock */
-                if (j->p_flags & PFDOCK) {
-                    j->p_x = players[j->p_dock_with].p_x + DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
-                    j->p_y = players[j->p_dock_with].p_y + DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
-                }
-
+    static void udplayers_palive_set_alert(struct player *j)
+	    {
+		    int k;
                 /* Set player's alert status */
 #define YRANGE ((GWIDTH)/7)
 #define RRANGE ((GWIDTH)/10)
@@ -1521,7 +1541,42 @@ static void udplayers_palive(struct player *j)
                         }
                     }
                 }
-	}
+	    }
+
+static void udplayers_palive(struct player *j)
+{
+    if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
+	    /* move player in orbit */
+	    udplayers_palive_move_in_orbit(j);
+    } else if (!(j->p_flags & PFDOCK)) {
+	    /* move player through space */
+	    udplayers_palive_move_in_space(j);
+    } else if (j->p_flags & PFDOCK) {
+	    /* move player in dock */
+	    udplayers_palive_move_in_dock(j);
+    }
+
+    /* If player is actually dead, don't do anything below ... */
+    if (j->p_status == PEXPLODE || j->p_status == PDEAD
+#ifdef OBSERVERS
+	||  j->p_status == POBSERV
+#endif
+	    )
+	    return;
+
+    udplayers_palive_update_stats(j);
+    udplayers_palive_check_ghostbuster(j);
+    j->p_updates++;
+
+    udplayers_palive_fuel_shields(j);
+    udplayers_palive_tractor(j);
+    udplayers_palive_cool_weapons(j);
+    udplayers_palive_cool_engines(j);
+    udplayers_palive_fuel_cloak(j);
+    udplayers_palive_make_fuel(j);
+    udplayers_palive_repair(j);
+    udplayers_palive_set_alert(j);
+}
 
 static void udplayers(void)
 {
@@ -1553,6 +1608,7 @@ static void udplayers(void)
                 udplayers_pexplode(j);
                 /* fall through to alive so explosions move */
             case PALIVE:
+                tcount[j->p_team]++;
                 udplayers_palive(j);
                 break;
         } /* end switch */
