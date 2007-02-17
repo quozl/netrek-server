@@ -782,7 +782,7 @@ static void udplayersight(void)
       k = player_(j->p_lastseenby);
       /*
        * If existent, check the player K who last saw player J.  
-       * There is a very good change that K can still see J.
+       * There is a very good chance that K can still see J.
        * 
        * The only way p_lastseenby gets set to non-VACANT is in the for-loop
        * below; hence, we don't have to check whether K is a robot or whether
@@ -1017,144 +1017,144 @@ static void udplayers_palive_move_in_dock(struct player *j)
 
 static void udplayers_palive_move_in_space(struct player *j)
 {
-    int maxspeed, k;
-                    if ((j->p_dir != j->p_desdir) && (j->p_status != PEXPLODE))
-                        changedir(j);
+        int maxspeed, k;
 
-                    /* Alter speed */
+        if ((j->p_dir != j->p_desdir) && (j->p_status != PEXPLODE))
+                changedir(j);
+        
+        /* Alter speed */
 #ifdef SB_TRANSWARP
-                  if (j->p_flags & PFTWARP){
-                      if ((j->p_speed *= 2)>(j->p_desspeed)) 
-                          j->p_speed = j->p_desspeed;
-                      j->p_fuel -= (int)((j->p_ship.s_warpcost * j->p_speed) * 0.8);
-                      j->p_etemp += j->p_ship.s_maxspeed;
-                  } else { /* not transwarping */
+        if (j->p_flags & PFTWARP) {
+                if ((j->p_speed *= 2)>(j->p_desspeed))
+                        j->p_speed = j->p_desspeed;
+                j->p_fuel -= (int)((j->p_ship.s_warpcost * j->p_speed) * 0.8);
+                j->p_etemp += j->p_ship.s_maxspeed;
+        } else { /* not transwarping */
 #endif
 #ifdef NEW_ETEMP
-                    if (j->p_flags & PFENG)
+                if (j->p_flags & PFENG)
                         maxspeed = 1;
-                    else
+                else
 #endif
-                    maxspeed = (j->p_ship.s_maxspeed+2) -
-                            (j->p_ship.s_maxspeed+1)*
-                           ((float)j->p_damage/ (float)(j->p_ship.s_maxdamage));
-                    if (j->p_desspeed > maxspeed)
+                        maxspeed = (j->p_ship.s_maxspeed+2) -
+                                (j->p_ship.s_maxspeed+1)*
+                                ((float)j->p_damage/ (float)(j->p_ship.s_maxdamage));
+                if (j->p_desspeed > maxspeed)
                         j->p_desspeed = maxspeed;
-                    if (j->p_flags & PFENG)
+                if (j->p_flags & PFENG)
                         j->p_desspeed = 1;
-
-                    /* Charge for speed */
-                    if (j->p_fuel < (j->p_ship.s_warpcost * j->p_speed)) {
-                      /* 
-                       * Out of fuel ... set speed to one that uses less fuel
-                       *  than the ship's reactor generates (if necessary).
-                       */
-                      if (j->p_ship.s_recharge/j->p_ship.s_warpcost < 
-                                j->p_speed) {
-                        j->p_desspeed = j->p_ship.s_recharge/j->p_ship.s_warpcost + 2;
-                        /* Above incantation is a magic formula ... (hack). */
-                        if (j->p_desspeed > j->p_ship.s_maxspeed)
-                          j->p_desspeed = j->p_ship.s_maxspeed - 1;
-                      } else {
-                        j->p_desspeed = j->p_speed;
-                      }
-                      j->p_fuel = 0;
-                    } else {
+                
+                /* Charge for speed */
+                if (j->p_fuel < (j->p_ship.s_warpcost * j->p_speed)) {
+                        /*
+                         * Out of fuel ... set speed to one that uses less fuel
+                         *  than the ship's reactor generates (if necessary).
+                         */
+                        if (j->p_ship.s_recharge/j->p_ship.s_warpcost <
+                            j->p_speed) {
+                                j->p_desspeed = j->p_ship.s_recharge/j->p_ship.s_warpcost + 2;
+                                /* Above incantation is a magic formula ... (hack). */
+                                if (j->p_desspeed > j->p_ship.s_maxspeed)
+                                        j->p_desspeed = j->p_ship.s_maxspeed - 1;
+                        } else {
+                                j->p_desspeed = j->p_speed;
+                        }
+                        j->p_fuel = 0;
+                } else {
                         j->p_fuel -= (j->p_ship.s_warpcost * j->p_speed);
                         j->p_etemp += j->p_speed;
-
+                        
                         /* Charge SB's for mass of docked vessels ... */
                         if (j->p_ship.s_type == STARBASE) {
-                            int bays = 0;
-                            for (k=0; k<NUMBAYS; k++)
-                                if(j->p_bays[k] != VACANT) {
-                                    j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
-                                    bays++;
-                                }
-                            j->p_etemp += .7*(j->p_speed * bays);
+                                int bays = 0;
+                                for (k=0; k<NUMBAYS; k++)
+                                        if(j->p_bays[k] != VACANT) {
+                                                j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
+                                                bays++;
+                                        }
+                                j->p_etemp += .7*(j->p_speed * bays);
                         }
-                    }
-#ifdef SB_TRANSWARP
                 }
+#ifdef SB_TRANSWARP
+        }
 #endif                  
-
-                    if (j->p_desspeed > j->p_speed) {
-                        j->p_subspeed += j->p_ship.s_accint;
-                    }
-                    if (j->p_desspeed < j->p_speed)
-                        j->p_subspeed -= j->p_ship.s_decint;
-
-                    if (j->p_subspeed / 1000) {
-                        j->p_speed += j->p_subspeed / 1000;
-                        j->p_subspeed %= 1000;
-                        if (j->p_speed < 0)
-                            j->p_speed = 0;
-                        if (j->p_speed > j->p_ship.s_maxspeed)
-                            j->p_speed = j->p_ship.s_maxspeed;
-                    }
-
-                    /* todo: fps support */
-                    j->p_x += (double) (j->p_speed * WARP1) * Cos[j->p_dir];
-                    j->p_y += (double) (j->p_speed * WARP1) * Sin[j->p_dir];
-
-                    /* Bounce off the side of the galaxy */
-                    if (j->p_x < 0) {
-             if (!wrap_galaxy) {
-                         j->p_x = -j->p_x;
-                         if (j->p_dir == 192)
-                            j->p_dir = j->p_desdir = 64;
-                         else
-                            j->p_dir = j->p_desdir = 64 - (j->p_dir - 192);
-             } else 
-                     j->p_x = GWIDTH;
-                    } else if (j->p_x > GWIDTH) {
-             if (!wrap_galaxy) {
-                          j->p_x = GWIDTH - (j->p_x - GWIDTH);
-                          if (j->p_dir == 64)
-                            j->p_dir = j->p_desdir = 192;
-                          else
-                            j->p_dir = j->p_desdir = 192 - (j->p_dir - 64);
-             } else 
-                     j->p_x = 0;
-                    } if (j->p_y < 0) {
-             if (!wrap_galaxy) {
-                          j->p_y = -j->p_y;
-                          if (j->p_dir == 0)
-                            j->p_dir = j->p_desdir = 128;
-                          else
-                            j->p_dir = j->p_desdir = 128 - j->p_dir;
-             } else 
-                     j->p_y = GWIDTH;
-                    } else if (j->p_y > GWIDTH) {
-             if (!wrap_galaxy) {
-                          j->p_y = GWIDTH - (j->p_y - GWIDTH);
-                          if (j->p_dir == 128)
-                            j->p_dir = j->p_desdir = 0;
-                          else
-                            j->p_dir = j->p_desdir = 0 - (j->p_dir - 128);
-             } else 
-                     j->p_y = 0;
-
-                    }
+        
+        if (j->p_desspeed > j->p_speed) {
+                j->p_subspeed += j->p_ship.s_accint;
+        }
+        if (j->p_desspeed < j->p_speed)
+                j->p_subspeed -= j->p_ship.s_decint;
+        
+        if (j->p_subspeed / 1000) {
+                j->p_speed += j->p_subspeed / 1000;
+                j->p_subspeed %= 1000;
+                if (j->p_speed < 0)
+                        j->p_speed = 0;
+                if (j->p_speed > j->p_ship.s_maxspeed)
+                        j->p_speed = j->p_ship.s_maxspeed;
+        }
+        
+        /* todo: fps support */
+        j->p_x += (double) (j->p_speed * WARP1) * Cos[j->p_dir];
+        j->p_y += (double) (j->p_speed * WARP1) * Sin[j->p_dir];
+        
+        /* Bounce off the side of the galaxy */
+        if (j->p_x < 0) {
+                if (!wrap_galaxy) {
+                        j->p_x = -j->p_x;
+                        if (j->p_dir == 192)
+                                j->p_dir = j->p_desdir = 64;
+                        else
+                                j->p_dir = j->p_desdir = 64 - (j->p_dir - 192);
+                } else 
+                        j->p_x = GWIDTH;
+        } else if (j->p_x > GWIDTH) {
+                if (!wrap_galaxy) {
+                        j->p_x = GWIDTH - (j->p_x - GWIDTH);
+                        if (j->p_dir == 64)
+                                j->p_dir = j->p_desdir = 192;
+                        else
+                                j->p_dir = j->p_desdir = 192 - (j->p_dir - 64);
+                } else 
+                        j->p_x = 0;
+        } if (j->p_y < 0) {
+                if (!wrap_galaxy) {
+                        j->p_y = -j->p_y;
+                        if (j->p_dir == 0)
+                                j->p_dir = j->p_desdir = 128;
+                        else
+                                j->p_dir = j->p_desdir = 128 - j->p_dir;
+                } else 
+                        j->p_y = GWIDTH;
+        } else if (j->p_y > GWIDTH) {
+                if (!wrap_galaxy) {
+                        j->p_y = GWIDTH - (j->p_y - GWIDTH);
+                        if (j->p_dir == 128)
+                                j->p_dir = j->p_desdir = 0;
+                        else
+                                j->p_dir = j->p_desdir = 0 - (j->p_dir - 128);
+                } else 
+                        j->p_y = 0;
+                
+        }
 }
 
 static void udplayers_palive_update_stats(struct player *j)
 {
-
-    if (status->tourn
+        if (status->tourn
 #ifdef BASEPRACTICE
-	|| practice_mode
+            || practice_mode
 #endif
-	    ) {
-
+                ) {
+        
 #ifdef LTD_STATS
-                    if (status->tourn) ltd_update_ticks(j);
-                    if (j->p_ship.s_type != STARBASE)
+                if (status->tourn) ltd_update_ticks(j);
+                if (j->p_ship.s_type != STARBASE)
                         status->timeprod++;
 #else
-                    if (j->p_ship.s_type==STARBASE) {
+                if (j->p_ship.s_type==STARBASE) {
                         j->p_stats.st_sbticks++;
-                    } else if (status->tourn) {
+                } else if (status->tourn) {
                         j->p_stats.st_tticks++;
                         status->timeprod++;
 #ifdef ROLLING_STATS
@@ -1243,339 +1243,332 @@ static void udplayers_palive_update_stats(struct player *j)
                                 j->p_stats.st_rollingslot = 0;
                         }
 #endif /* ROLLING_STATS */
-                    } else {
+                } else {
                         j->p_stats.st_ticks++;
-                    }
-#endif /* LTD_STATS */
                 }
-	}
+#endif /* LTD_STATS */
+        }
+}
 
 static void udplayers_palive_check_ghostbuster(struct player *j)
 {
-
-                if (++(j->p_ghostbuster) > GHOSTTIME) {
-                    p_explosion(j, KGHOST, j->p_no);
-                    ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
-                }
+        if (++(j->p_ghostbuster) > GHOSTTIME) {
+                p_explosion(j, KGHOST, j->p_no);
+                ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
+        }
 }
 
 static void udplayers_palive_fuel_shields(struct player *j)
-	{
-                /* Charge for shields */
-                if (j->p_flags & PFSHIELD) {  /* This is a kludge, I know. */
-                    switch (j->p_ship.s_type) {
-                    case SCOUT:
+{
+        /* Charge for shields */
+        if (j->p_flags & PFSHIELD) {  /* This is a kludge, I know. */
+                switch (j->p_ship.s_type) {
+                case SCOUT:
                         j->p_fuel -= 2;
                         break;
-                    case DESTROYER: 
-                    case CRUISER:
-                    case BATTLESHIP:
-                    case ASSAULT:
+                case DESTROYER: 
+                case CRUISER:
+                case BATTLESHIP:
+                case ASSAULT:
                         j->p_fuel -= 3;
                         break;
-                    case STARBASE:
+                case STARBASE:
                         j->p_fuel -= 6;
                         break;
-                    default:
+                default:
                         break;
-                    }
                 }
-	}
+        }
+}
 
 static void udplayers_palive_tractor(struct player *j)
-	{
-    float dist;
-		if (!(j->p_flags & PFTRACT)) return;
-                /* affect tractor beams */
-                  if ((isAlive(&players[j->p_tractor])) &&
-                      ((j->p_fuel > TRACTCOST) && !(j->p_flags & PFENG)) &&
-                      ((dist=hypot((double)(j->p_x-players[j->p_tractor].p_x),
-                                   (double)(j->p_y-players[j->p_tractor].p_y))) 
-                                   < ((double) TRACTDIST)*j->p_ship.s_tractrng) &&
-                      (!(j->p_flags & (PFORBIT | PFDOCK))) &&
-                      (!(players[j->p_tractor].p_flags & PFDOCK))) {
-                    float cosTheta, sinTheta;  /* Cos and Sin from me to him */
-                    int halfforce; /* Half force of tractor */
-                    int dir;       /* -1 for repress, otherwise 1 */
+{
+        float dist;
 
-                    if (players[j->p_tractor].p_flags & PFORBIT)
-                       players[j->p_tractor].p_flags &= ~PFORBIT;
-                    
-                    j->p_fuel -= TRACTCOST;
-                    j->p_etemp += TRACTEHEAT;
-                    
-                    cosTheta = players[j->p_tractor].p_x - j->p_x;
-                    sinTheta = players[j->p_tractor].p_y - j->p_y;
-                    if (dist == 0) dist = 1; /* prevent divide by zero */
-                    cosTheta /= dist;   /* normalize sin and cos */
-                    sinTheta /= dist;
-                    /* force of tractor is WARP2 * tractstr */
-                    halfforce = (WARP1*j->p_ship.s_tractstr);
-
-                    dir = 1;
-                    if (j->p_flags & PFPRESS) dir = -1;
-                    /* change in position is tractor strength over mass */
-                    /* todo: fps support */
-                    j->p_x += dir * cosTheta * halfforce/(j->p_ship.s_mass);
-                    j->p_y += dir * sinTheta * halfforce/(j->p_ship.s_mass);
-                    /* todo: fps support */
-                    players[j->p_tractor].p_x -= dir * cosTheta *
-                       halfforce/(players[j->p_tractor].p_ship.s_mass);
-                    players[j->p_tractor].p_y -= dir * sinTheta *
-                       halfforce/(players[j->p_tractor].p_ship.s_mass);
-                  } else {
-                    j->p_flags &= ~(PFTRACT | PFPRESS);
-                  }     
+        if (!(j->p_flags & PFTRACT)) return;
+        /* affect tractor beams */
+        if ((isAlive(&players[j->p_tractor])) &&
+            ((j->p_fuel > TRACTCOST) && !(j->p_flags & PFENG)) &&
+            ((dist=hypot((double)(j->p_x-players[j->p_tractor].p_x),
+                         (double)(j->p_y-players[j->p_tractor].p_y))) 
+             < ((double) TRACTDIST)*j->p_ship.s_tractrng) &&
+            (!(j->p_flags & (PFORBIT | PFDOCK))) &&
+            (!(players[j->p_tractor].p_flags & PFDOCK))) {
+                float cosTheta, sinTheta;  /* Cos and Sin from me to him */
+                int halfforce; /* Half force of tractor */
+                int dir;       /* -1 for repress, otherwise 1 */
+                
+                if (players[j->p_tractor].p_flags & PFORBIT)
+                        players[j->p_tractor].p_flags &= ~PFORBIT;
+                
+                j->p_fuel -= TRACTCOST;
+                j->p_etemp += TRACTEHEAT;
+                
+                cosTheta = players[j->p_tractor].p_x - j->p_x;
+                sinTheta = players[j->p_tractor].p_y - j->p_y;
+                if (dist == 0) dist = 1; /* prevent divide by zero */
+                cosTheta /= dist;   /* normalize sin and cos */
+                sinTheta /= dist;
+                /* force of tractor is WARP2 * tractstr */
+                halfforce = (WARP1*j->p_ship.s_tractstr);
+                
+                dir = 1;
+                if (j->p_flags & PFPRESS) dir = -1;
+                /* change in position is tractor strength over mass */
+                /* todo: fps support */
+                j->p_x += dir * cosTheta * halfforce/(j->p_ship.s_mass);
+                j->p_y += dir * sinTheta * halfforce/(j->p_ship.s_mass);
+                /* todo: fps support */
+                players[j->p_tractor].p_x -= dir * cosTheta *
+                        halfforce/(players[j->p_tractor].p_ship.s_mass);
+                players[j->p_tractor].p_y -= dir * sinTheta *
+                        halfforce/(players[j->p_tractor].p_ship.s_mass);
+        } else {
+                j->p_flags &= ~(PFTRACT | PFPRESS);
+        }     
 }
 
 static void udplayers_palive_cool_weapons(struct player *j)
-	{
-                        
-                /* cool weapons */
-                j->p_wtemp -= j->p_ship.s_wpncoolrate;
-                if (j->p_wtemp < 0)
-                    j->p_wtemp = 0;
-                if (j->p_flags & PFWEP) {
-                    if (--j->p_wtime <= 0)
+{
+        /* cool weapons */
+        j->p_wtemp -= j->p_ship.s_wpncoolrate;
+        if (j->p_wtemp < 0)
+                j->p_wtemp = 0;
+        if (j->p_flags & PFWEP) {
+                if (--j->p_wtime <= 0)
                         j->p_flags &= ~PFWEP;
-                }
-                else if (j->p_wtemp > j->p_ship.s_maxwpntemp) {
-                    if (!(random() % 40)) {
+        }
+        else if (j->p_wtemp > j->p_ship.s_maxwpntemp) {
+                if (!(random() % 40)) {
                         j->p_flags |= PFWEP;
-		        /* todo: fps support, use of fuse for duration */
+                        /* todo: fps support, use of fuse for duration */
                         j->p_wtime = ((short) (random() % 150) + 100) /
-                                     PLAYERFUSE;
-                    }
+                                PLAYERFUSE;
                 }
-	}
+        }
+}
 
 static void udplayers_palive_cool_engines(struct player *j)
-	{
-
-                /* cool engine */
-                j->p_etemp -= j->p_ship.s_egncoolrate;
-                if (j->p_etemp < 0)
-                    j->p_etemp = 0;
-                if (j->p_flags & PFENG) {
-                    if (--j->p_etime <= 0)
+{
+        /* cool engine */
+        j->p_etemp -= j->p_ship.s_egncoolrate;
+        if (j->p_etemp < 0)
+                j->p_etemp = 0;
+        if (j->p_flags & PFENG) {
+                if (--j->p_etime <= 0)
                         j->p_flags &= ~PFENG;
-                }
-                else if (j->p_etemp > j->p_ship.s_maxegntemp) {
-                    if (!(random() % 40)) {
+        } else if (j->p_etemp > j->p_ship.s_maxegntemp) {
+                if (!(random() % 40)) {
                         j->p_flags |= PFENG;
-		        /* todo: fps support, use of fuse for duration */
+                        /* todo: fps support, use of fuse for duration */
                         j->p_etime = ((short) (random() % 150) + 100) /
-                                     PLAYERFUSE;
+                                PLAYERFUSE;
                         j->p_desspeed = 0;
-                    }
                 }
-	}
+        }
+}
 
 static void udplayers_palive_fuel_cloak(struct player *j)
-	{
-
-                /* Charge for cloaking */
-                if (j->p_flags & PFCLOAK) {
-                    if (j->p_fuel < j->p_ship.s_cloakcost) {
+{
+        /* Charge for cloaking */
+        if (j->p_flags & PFCLOAK) {
+                if (j->p_fuel < j->p_ship.s_cloakcost) {
                         j->p_flags &= ~PFCLOAK;
-                    } else {
+                } else {
                         j->p_fuel -= j->p_ship.s_cloakcost;
-                    }
                 }
-	}
+        }
+}
 
-    static void udplayers_palive_make_fuel(struct player *j)
-	    {
+static void udplayers_palive_make_fuel(struct player *j)
+{
 #ifdef SBFUEL_FIX
-                /* Add fuel */
-                j->p_fuel += 2 * j->p_ship.s_recharge;
-                if ((j->p_flags & PFORBIT) &&
-                    (planets[j->p_planet].pl_flags & PLFUEL) &&
-                    (!(planets[j->p_planet].pl_owner & j->p_war))) {
-                  j->p_fuel += 6 * j->p_ship.s_recharge;
-                } else if ((j->p_flags & PFDOCK) && 
-                           (j->p_fuel < j->p_ship.s_maxfuel) &&
-                           (players[j->p_dock_with].p_fuel > SBFUELMIN)) {
-                  int fc = MIN(10*j->p_ship.s_recharge,
-                               j->p_ship.s_maxfuel - j->p_fuel);
-                  j->p_fuel += fc;
-                  players[j->p_dock_with].p_fuel -= fc;
-                }
+        /* Add fuel */
+        j->p_fuel += 2 * j->p_ship.s_recharge;
+        if ((j->p_flags & PFORBIT) &&
+            (planets[j->p_planet].pl_flags & PLFUEL) &&
+            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+                j->p_fuel += 6 * j->p_ship.s_recharge;
+        } else if ((j->p_flags & PFDOCK) && 
+                   (j->p_fuel < j->p_ship.s_maxfuel) &&
+                   (players[j->p_dock_with].p_fuel > SBFUELMIN)) {
+                int fc = MIN(10*j->p_ship.s_recharge,
+                             j->p_ship.s_maxfuel - j->p_fuel);
+                j->p_fuel += fc;
+                players[j->p_dock_with].p_fuel -= fc;
+        }
 #else
-                /* Add fuel */
-                if ((j->p_flags & PFORBIT) &&
-                    (planets[j->p_planet].pl_flags & PLFUEL) &&
-                    (!(planets[j->p_planet].pl_owner & j->p_war))) {
-                  j->p_fuel += 8 * j->p_ship.s_recharge;
-                } else if ((j->p_flags & PFDOCK) && (j->p_fuel < j->p_ship.s_maxfuel)) {
-                  if (players[j->p_dock_with].p_fuel > SBFUELMIN) {
-                    j->p_fuel += 12*j->p_ship.s_recharge;
-                    players[j->p_dock_with].p_fuel -= 12*j->p_ship.s_recharge;
-                  }
-                } else
-                  j->p_fuel += 2 * j->p_ship.s_recharge;
-#endif /* SBFUEL_FIX */
-                
-                if (j->p_fuel > j->p_ship.s_maxfuel)
-                  j->p_fuel = j->p_ship.s_maxfuel;
-                if (j->p_fuel < 0) {
-                  j->p_desspeed = 0;
-                  j->p_flags &= ~PFCLOAK;
+        /* Add fuel */
+        if ((j->p_flags & PFORBIT) &&
+            (planets[j->p_planet].pl_flags & PLFUEL) &&
+            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+                j->p_fuel += 8 * j->p_ship.s_recharge;
+        } else if ((j->p_flags & PFDOCK) && (j->p_fuel < j->p_ship.s_maxfuel)) {
+                if (players[j->p_dock_with].p_fuel > SBFUELMIN) {
+                        j->p_fuel += 12*j->p_ship.s_recharge;
+                        players[j->p_dock_with].p_fuel -= 12*j->p_ship.s_recharge;
                 }
-	    }        
+        } else
+                j->p_fuel += 2 * j->p_ship.s_recharge;
+#endif /* SBFUEL_FIX */
 
-    static void udplayers_palive_repair(struct player *j)
-	    {
-    int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
-                /* repair shields */
-                if (j->p_shield < j->p_ship.s_maxshield) {
-                    repair_progress_old = j->p_subshield;
-                    if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
+        if (j->p_fuel > j->p_ship.s_maxfuel)
+                j->p_fuel = j->p_ship.s_maxfuel;
+        if (j->p_fuel < 0) {
+                j->p_desspeed = 0;
+                j->p_flags &= ~PFCLOAK;
+        }
+}        
+
+static void udplayers_palive_repair(struct player *j)
+{
+        int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
+
+        /* repair shields */
+        if (j->p_shield < j->p_ship.s_maxshield) {
+                repair_progress_old = j->p_subshield;
+                if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
                         j->p_subshield += j->p_ship.s_repair * 4;
                         if ((j->p_flags & PFORBIT) &&
                             (planets[j->p_planet].pl_flags & PLREPAIR) &&
                             (!(planets[j->p_planet].pl_owner & j->p_war))) {
-                                    j->p_subshield += j->p_ship.s_repair * 4;
+                                j->p_subshield += j->p_ship.s_repair * 4;
                         } 
                         if (j->p_flags & PFDOCK)  {
-                            j->p_subshield += j->p_ship.s_repair * 6;
+                                j->p_subshield += j->p_ship.s_repair * 6;
                         }
-                    }
-                    else {
+                } else {
                         j->p_subshield += j->p_ship.s_repair * 2;
-                    }
-                    /* 1000 subshield  =  1 shield or hull repaired 
-                       This routine is used by server every update
-                       Repair time assumes 10 updates/sec */
-                    repair_needed = j->p_ship.s_maxshield - j->p_shield;
-                    /* How much repair would be gained, normalized to 1 second */
-                    repair_gained = j->p_subshield - repair_progress_old;
-                    repair_time = repair_needed * 100 / repair_gained;
-                    j->p_repair_time = repair_time;
-                    if (j->p_subshield / 1000) {
+                }
+                /* 1000 subshield  =  1 shield or hull repaired 
+                   This routine is used by server every update
+                   Repair time assumes 10 updates/sec */
+                repair_needed = j->p_ship.s_maxshield - j->p_shield;
+                /* How much repair would be gained, normalized to 1 second */
+                repair_gained = j->p_subshield - repair_progress_old;
+                repair_time = repair_needed * 100 / repair_gained;
+                j->p_repair_time = repair_time;
+                if (j->p_subshield / 1000) {
 #ifdef LTD_STATS
                         if (status->tourn)
-                            ltd_update_repaired(j, j->p_subshield / 1000);
+                                ltd_update_repaired(j, j->p_subshield / 1000);
 #endif
                         j->p_shield += j->p_subshield / 1000;
                         j->p_subshield %= 1000;
-                    }
-                    if (j->p_shield > j->p_ship.s_maxshield) {
+                }
+                if (j->p_shield > j->p_ship.s_maxshield) {
                         j->p_shield = j->p_ship.s_maxshield;
                         j->p_subshield = 0;
-                    }
                 }
-
-                /* repair damage */
-                if (j->p_damage && !(j->p_flags & PFSHIELD)) {
-                  repair_progress_old = j->p_subdamage;
-                  if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
-                    j->p_subdamage += j->p_ship.s_repair * 2;
-                    if ((j->p_flags & PFORBIT) &&
-                        (planets[j->p_planet].pl_flags & PLREPAIR) &&
-                        (!(planets[j->p_planet].pl_owner & j->p_war))) {
-                      j->p_subdamage += j->p_ship.s_repair * 2;
-                    }
-                    if (j->p_flags & PFDOCK) {
-                      j->p_subdamage += j->p_ship.s_repair * 3;
-                    }
-                  }
-                  else {
-                    j->p_subdamage += j->p_ship.s_repair;
-                  }
-                  repair_needed = j->p_damage;
-                  repair_gained = j->p_subdamage - repair_progress_old;
-                  if (j->p_shield != j->p_ship.s_maxshield)
-                    j->p_repair_time = MAX(repair_time,
-                                           repair_needed * 100 / repair_gained);
-                  else
-                    j->p_repair_time = repair_needed * 100 / repair_gained;
-                  if (j->p_subdamage / 1000) {
+        }
+        
+        /* repair damage */
+        if (j->p_damage && !(j->p_flags & PFSHIELD)) {
+                repair_progress_old = j->p_subdamage;
+                if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
+                        j->p_subdamage += j->p_ship.s_repair * 2;
+                        if ((j->p_flags & PFORBIT) &&
+                            (planets[j->p_planet].pl_flags & PLREPAIR) &&
+                            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+                                j->p_subdamage += j->p_ship.s_repair * 2;
+                        }
+                        if (j->p_flags & PFDOCK) {
+                                j->p_subdamage += j->p_ship.s_repair * 3;
+                        }
+                } else {
+                        j->p_subdamage += j->p_ship.s_repair;
+                }
+                repair_needed = j->p_damage;
+                repair_gained = j->p_subdamage - repair_progress_old;
+                if (j->p_shield != j->p_ship.s_maxshield)
+                        j->p_repair_time = MAX(repair_time,
+                                               repair_needed * 100 / repair_gained);
+                else
+                        j->p_repair_time = repair_needed * 100 / repair_gained;
+                if (j->p_subdamage / 1000) {
 #ifdef LTD_STATS
-                    if (status->tourn)
-                        ltd_update_repaired(j, j->p_subdamage / 1000);
+                        if (status->tourn)
+                                ltd_update_repaired(j, j->p_subdamage / 1000);
 #endif
-                    j->p_damage -= j->p_subdamage / 1000;
-                    j->p_subdamage %= 1000;
-                  }
-                  if (j->p_damage < 0) {
-                    j->p_damage = 0;
-                    j->p_subdamage = 0;
-                  }
+                        j->p_damage -= j->p_subdamage / 1000;
+                        j->p_subdamage %= 1000;
                 }
-	    }
+                if (j->p_damage < 0) {
+                        j->p_damage = 0;
+                        j->p_subdamage = 0;
+                }
+        }
+}
 
-    static void udplayers_palive_set_alert(struct player *j)
-	    {
-		    int k;
-                /* Set player's alert status */
+static void udplayers_palive_set_alert(struct player *j)
+{
+        int k;
+
+        /* Set player's alert status */
 #define YRANGE ((GWIDTH)/7)
 #define RRANGE ((GWIDTH)/10)
-                j->p_flags |= PFGREEN;
-                j->p_flags &= ~(PFRED|PFYELLOW);
-                for (k = 0; k < MAXPLAYER; k++) {
-                    int dx, dy, dist;
-                    if ((players[k].p_status != PALIVE) ||
-                        ((!(j->p_war & players[k].p_team)) &&
-                        (!(players[k].p_war & j->p_team)))) {
-                            continue;
-                    }
-                    else if (j == &players[k]) {
+        j->p_flags |= PFGREEN;
+        j->p_flags &= ~(PFRED|PFYELLOW);
+        for (k = 0; k < MAXPLAYER; k++) {
+                int dx, dy, dist;
+                if ((players[k].p_status != PALIVE) ||
+                    ((!(j->p_war & players[k].p_team)) &&
+                     (!(players[k].p_war & j->p_team)))) {
                         continue;
-                    }
-                    else {
+                } else if (j == &players[k]) {
+                        continue;
+                } else {
                         dx = j->p_x - players[k].p_x;
                         dy = j->p_y - players[k].p_y;
                         if (ABS(dx) > YRANGE || ABS(dy) > YRANGE)
-                            continue;
+                                continue;
                         dist = dx * dx + dy * dy;
                         if (dist <  RRANGE * RRANGE) {
-                            j->p_flags |= PFRED;
-                            j->p_flags &= ~(PFGREEN|PFYELLOW);
-                            /* jac: can't get any worse, should we break; ? */
+                                j->p_flags |= PFRED;
+                                j->p_flags &= ~(PFGREEN|PFYELLOW);
+                                /* jac: can't get any worse, should we break; ? */
+                        } else if ((dist <  YRANGE * YRANGE) &&
+                                   (!(j->p_flags & PFRED))) {
+                                j->p_flags |= PFYELLOW;
+                                j->p_flags &= ~(PFGREEN|PFRED);
                         }
-                        else if ((dist <  YRANGE * YRANGE) &&
-                            (!(j->p_flags & PFRED))) {
-                            j->p_flags |= PFYELLOW;
-                            j->p_flags &= ~(PFGREEN|PFRED);
-                        }
-                    }
                 }
-	    }
+        }
+}
 
 static void udplayers_palive(struct player *j)
 {
-    if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
-	    /* move player in orbit */
-	    udplayers_palive_move_in_orbit(j);
-    } else if (!(j->p_flags & PFDOCK)) {
-	    /* move player through space */
-	    udplayers_palive_move_in_space(j);
-    } else if (j->p_flags & PFDOCK) {
-	    /* move player in dock */
-	    udplayers_palive_move_in_dock(j);
-    }
+        if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
+                /* move player in orbit */
+                udplayers_palive_move_in_orbit(j);
+        } else if (!(j->p_flags & PFDOCK)) {
+                /* move player through space */
+                udplayers_palive_move_in_space(j);
+        } else if (j->p_flags & PFDOCK) {
+                /* move player in dock */
+                udplayers_palive_move_in_dock(j);
+        }
 
-    /* If player is actually dead, don't do anything below ... */
-    if (j->p_status == PEXPLODE || j->p_status == PDEAD
+        /* If player is actually dead, don't do anything below ... */
+        if (j->p_status == PEXPLODE || j->p_status == PDEAD
 #ifdef OBSERVERS
-	||  j->p_status == POBSERV
+            ||  j->p_status == POBSERV
 #endif
-	    )
-	    return;
+                )
+                return;
 
-    udplayers_palive_update_stats(j);
-    udplayers_palive_check_ghostbuster(j);
-    j->p_updates++;
+        udplayers_palive_update_stats(j);
+        udplayers_palive_check_ghostbuster(j);
+        j->p_updates++;
 
-    udplayers_palive_fuel_shields(j);
-    udplayers_palive_tractor(j);
-    udplayers_palive_cool_weapons(j);
-    udplayers_palive_cool_engines(j);
-    udplayers_palive_fuel_cloak(j);
-    udplayers_palive_make_fuel(j);
-    udplayers_palive_repair(j);
-    udplayers_palive_set_alert(j);
+        udplayers_palive_fuel_shields(j);
+        udplayers_palive_tractor(j);
+        udplayers_palive_cool_weapons(j);
+        udplayers_palive_cool_engines(j);
+        udplayers_palive_fuel_cloak(j);
+        udplayers_palive_make_fuel(j);
+        udplayers_palive_repair(j);
+        udplayers_palive_set_alert(j);
 }
 
 static void udplayers(void)
