@@ -94,6 +94,7 @@ static void udsurrend(void);
 static void udphaser(void);
 static void teamtimers(void);
 static void pldamageplayer(struct player *j);
+static void plrescue(struct planet *l);
 static void plfight(void);
 static void beam(void);
 static void blowup(struct player *sh);
@@ -1910,6 +1911,69 @@ static int t_whydead(struct torp *torp)
     return torp->t_type == TPHOTON ? KTORP : KPLASMA;
 }
 
+#ifdef STURGEON
+/* nuke has exploded on a planet, damage planet accordingly */
+static void t_nuke_planet(struct torp *torp)
+{
+  struct planet *l;
+  struct player *me;
+  char buf[80];
+  char addrbuf[80];
+  int oldowner, h;
+
+  l = &planets[torp->t_plbombed];
+  me = &players[torp->t_owner];
+  h = torp->t_pldamage;
+  if (h > l->pl_armies)
+    h = l->pl_armies;
+
+  if ((l->pl_armies >= 5) && (l->pl_armies - h < 5))
+    l->pl_flags |= PLREDRAW;
+
+  l->pl_armies -= h;
+
+  me->p_armsbomb += h;
+  /* Give him bombing stats if he is bombing a team with 3+ */
+  if (status->tourn && (realNumShips(l->pl_owner) >= 3)) {
+    me->p_kills += 0.02 * h;
+    me->p_genoarmsbomb += h;
+#ifndef LTD_STATS
+    checkmaxkills(me->p_no);
+    me->p_stats.st_tarmsbomb += h;
+#endif
+    status->armsbomb += h;
+  } else {
+#ifndef LTD_STATS
+    me->p_stats.st_armsbomb += h;
+#endif
+  }
+
+  if (l->pl_armies > 0)
+    sprintf(buf,
+            "Help!  %c%c (%s) nuked %d of our armies (%d left).",
+            teamlet[me->p_team], shipnos[me->p_no], me->p_name,
+            h, l->pl_armies);
+  else
+    sprintf(buf, "Help!  %c%c (%s) is nuking... <crackle>",
+            teamlet[me->p_team], shipnos[me->p_no], me->p_name);
+
+  sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
+  pmessage(l->pl_owner, MTEAM, addrbuf,buf);
+
+  if (l->pl_armies == 0) {
+    if (status->tourn && realNumShips(l->pl_owner) < 2 &&
+        realNumShips(l->pl_flags & (FED|ROM|ORI|KLI)) < 2) {
+      l->pl_flags |= PLCHEAP;
+    }
+    oldowner = l->pl_owner;
+    l->pl_owner = NOBODY;
+    checkgen(oldowner, me);
+  }
+  plrescue(l);
+}
+#endif
+
+
 /* trigger a torpedo explosion, and damage surrounding players */
 static void t_explosion(struct torp *torp)
 {
@@ -1919,81 +1983,10 @@ static void t_explosion(struct torp *torp)
 #ifdef CHAIN_REACTION
   struct player *k;
 #endif
+
 #ifdef STURGEON
-  char buf[80];
-  char addrbuf[80];
-  struct planet *l;
-  struct player *me;
-  int oldowner, h;
-
-  /* Nuke has exploded on a planet, damage planet accordingly */
   if (sturgeon && torp->t_pldamage > 0) {
-    l = &planets[torp->t_plbombed];
-    me = &players[torp->t_owner];
-    h = torp->t_pldamage;
-    if (h > l->pl_armies)
-      h = l->pl_armies;
-
-    if ((l->pl_armies >= 5) && (l->pl_armies - h < 5))
-      l->pl_flags |= PLREDRAW;
-
-    l->pl_armies -= h;
-
-    me->p_armsbomb += h;
-    /* Give him bombing stats if he is bombing a team with 3+ */
-    if (status->tourn && (realNumShips(l->pl_owner) >= 3)) {
-      me->p_kills += 0.02 * h;
-      me->p_genoarmsbomb += h;
-#ifndef LTD_STATS
-      checkmaxkills(me->p_no);
-      me->p_stats.st_tarmsbomb += h;
-#endif
-      status->armsbomb += h;
-    }
-    else {
-#ifndef LTD_STATS
-      me->p_stats.st_armsbomb += h;
-#endif
-    }
-
-    if (l->pl_armies > 0)
-      sprintf(buf,
-              "Help!  %c%c (%s) nuked %d of our armies (%d left).",
-              teamlet[me->p_team], shipnos[me->p_no], me->p_name,
-              h, l->pl_armies);
-    else
-      sprintf(buf, "Help!  %c%c (%s) is nuking... <crackle>",
-              teamlet[me->p_team], shipnos[me->p_no], me->p_name);
-
-    sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
-    pmessage(l->pl_owner, MTEAM, addrbuf,buf);
-
-    if (l->pl_armies == 0) {
-      if (status->tourn && realNumShips(l->pl_owner) < 2 &&
-          realNumShips(l->pl_flags & (FED|ROM|ORI|KLI)) < 2) {
-        l->pl_flags |= PLCHEAP;
-      }
-      oldowner = l->pl_owner;
-      l->pl_owner = NOBODY;
-      checkgen(oldowner, me);
-    }
-
-    /* Send in a robot if there are no other defenders (or not Tmode)
-       and the planet is in the team's home space */
-
-    if (!(inl_mode)) {
-      if (((tcount[l->pl_owner] == 0) || NotTmode) &&
-         (l->pl_flags & l->pl_owner) &&
-#ifdef PRETSERVER
-         !bot_in_game &&
-#endif
-         tm_robots[l->pl_owner] == 0) {
-
-         rescue(l->pl_owner, NotTmode);
-	 /* todo: fps support, use of a fuse */
-         tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
-      }
-    }
+    t_nuke_planet(torp);
   }
 #endif
 
@@ -2909,6 +2902,25 @@ static void pldamageplayer(struct player *j)
   }
 }
 
+static void plrescue(struct planet *l)
+{
+    /* Send in a robot if there are no other defenders (or not Tmode)
+       and the planet is in the team's home space */
+    
+    if (!(inl_mode)) {
+      if (((tcount[l->pl_owner] == 0) || NotTmode) && 
+        (l->pl_flags & l->pl_owner) &&
+#ifdef PRETSERVER
+    !bot_in_game &&
+#endif
+        tm_robots[l->pl_owner] == 0) {
+
+        rescue(l->pl_owner, NotTmode);
+	/* todo: fps support, use of a fuse */
+        tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
+      }
+    }
+}
 
 static void plfight(void)
 {
@@ -3056,22 +3068,7 @@ static void plfight(void)
 
 #endif /* LTD_STATS */
 
-    /* Send in a robot if there are no other defenders (or not Tmode)
-       and the planet is in the team's home space */
-    
-    if (!(inl_mode)) {
-      if (((tcount[l->pl_owner] == 0) || NotTmode) && 
-        (l->pl_flags & l->pl_owner) &&
-#ifdef PRETSERVER
-    !bot_in_game &&
-#endif
-        tm_robots[l->pl_owner] == 0) {
-
-        rescue(l->pl_owner, NotTmode);
-	/* todo: fps support, use of a fuse */
-        tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
-      }
-    }
+    plrescue(l);
   }
 }
 
