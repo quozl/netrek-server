@@ -86,9 +86,9 @@ struct status {
 
 struct context {
     int daemon;                 /* pid_t of daemon */
-    int ticks;                  /* cycle counter */
-    int ts;                     /* cycle counter at last t-mode begin */
-    int te;                     /* cycle counter at last t-mode end */
+    int frame;                  /* frame counter */
+    int frame_tourn_start;      /* frame counter at last t-mode begin */
+    int frame_tourn_end;        /* frame counter at last t-mode end */
     int quorum[2];              /* teams involved in t-mode */
     int blog_pickup_game_full;
     int blog_pickup_queue_full;

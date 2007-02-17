@@ -3,6 +3,18 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- flexible frames per second support (todo: fps support), add
+          stricter ntserv vs daemon lock-stepping, analyse daemon
+          performance using gettimeofday to judge how long it takes to
+          make an update, analyse ntserv performance using
+          gettimeofday to judge how long they take to make an update,
+          results into logarithmic stats buckets, side-effect is
+          detection of server side lag, select a simulation rate
+          depending on results, support at least 25 fps updates to
+          client, perhaps lower for observers, guarantee 25 fps for
+          bases if there is limitation, rework all time and motion
+          math.
+
 	- factorise message insertion, and maintenance of mc_current,
           as it is distributed all over the code.
 

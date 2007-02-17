@@ -77,6 +77,7 @@ void pmove(void)
     double dir;
     static int planeti=0, planetj=0;
 
+    /* todo: fps support */
     for (i = 0; i < 4; i++) {
 	for (j = 0; j < 4; j++) { 
     i = planeti;

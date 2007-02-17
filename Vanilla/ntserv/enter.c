@@ -18,6 +18,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "sturgeon.h"
+#include "util.h"
 
 /* file scope prototypes */
 

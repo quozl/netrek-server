@@ -1,5 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 #include "defs.h"
 #include "alarm.h"
 #include INC_UNISTD
@@ -52,4 +55,22 @@ void alarm_wait_for()
 int alarm_send(pid_t pid)
 {
   return kill(pid, SIGALRM);
+}
+
+void alarm_setitimer(int reality, int fps)
+{
+  struct itimerval udt;
+  int tv_usec = 1000000 / reality * 10 / fps;
+  int stat;
+
+  udt.it_interval.tv_sec = 0;
+  udt.it_interval.tv_usec = tv_usec;
+  udt.it_value.tv_sec = 0;
+  udt.it_value.tv_usec = tv_usec;
+
+  stat = setitimer(ITIMER_REAL, &udt, (struct itimerval *) NULL);
+  if (stat == 0) return;
+
+  perror("alarm_setitimer");
+  exit(1);
 }

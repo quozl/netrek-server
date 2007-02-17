@@ -46,9 +46,13 @@ union semun {
 #endif /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
 #endif /*PUCK_FIRST*/
 
-#define fuse(X) ((context->ticks % (X)) == 0)
+/* todo: fps support */
+int fps = 50;
+#define fuse(X) ((context->frame % (X*fps/reality)) == 0)
+#define seconds_to_frames(X) (X*fps)
+#define frames_to_seconds(X) (X/fps)
 #define TOURNEXTENSION 15       /* Tmode gone for 15 seconds 8/26/91 TC */
-#define NotTmode(X) (!(status->tourn) && ((X - context->te)/10 > TOURNEXTENSION))
+#define NotTmode (!(status->tourn) && (frames_to_seconds(context->frame - context->frame_tourn_end) > TOURNEXTENSION))
 
 #undef PMOVEMENT
 
@@ -160,7 +164,6 @@ int main(int argc, char **argv)
 {
     register int i;
     int x = 0;
-    static struct itimerval udt;
     int glfd, plfd;
 
 #ifdef AUTOMOTD
@@ -215,7 +218,7 @@ int main(int argc, char **argv)
     
     ERROR(1,("daemon: cold start\n"));
     context->daemon = getpid();
-    context->ticks = context->ts = context->te = 0;
+    context->frame = context->frame_tourn_start = context->frame_tourn_end = 0;
     context->quorum[0] = context->quorum[1] = NOBODY;
 
     for (i = 0; i < MAXPLAYER; i++) {
@@ -320,14 +323,7 @@ int main(int argc, char **argv)
     pinit();
 
     alarm_init();
-    udt.it_interval.tv_sec = 0;
-    udt.it_interval.tv_usec = 1000000 / reality;
-    udt.it_value.tv_sec = 0;
-    udt.it_value.tv_usec = 1000000 / reality;
-    if (setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0) < 0){
-        ERROR(1,( "daemon:  Error setting itimer.  Exiting.\n"));        
-        exitDaemon(0);
-    }
+    alarm_setitimer(reality, fps);
 
     check_load();
 
@@ -356,6 +352,7 @@ int main(int argc, char **argv)
    UPDATE units (0.10 seconds, currently.)
 */
 
+/* todo: fps support */
 #define PLAYERFUSE      1
 #define TORPFUSE        1
 #define PLASMAFUSE      1
@@ -593,7 +590,7 @@ static void political_end(int message)
 static void move()
 {
     static int oldmessage;
-    int old_robot;
+    int old_robot, old_reality, old_fps;
     static enum ts {
             TS_PICKUP, 
             TS_SCUMMERS,
@@ -616,7 +613,7 @@ static void move()
       return;
     }
 
-    if (++context->ticks == dietime) {/* no player for 1 minute. kill self */
+    if (++context->frame == dietime) {/* no player for 1 minute. kill self */
         blog_game_over(&context->start, status);
         if (opt_debug) {
             ERROR(1,("Ho hum.  1 minute, no activity...\n"));
@@ -631,9 +628,9 @@ static void move()
         exitDaemon(0);
     }
     old_robot = start_robot;
+    old_reality = reality;
+    old_fps = fps;
     if (update_sys_defaults()) {
-        static struct itimerval udt;
-
         if (chaosmode)
             status->gameup |= GU_CHAOS;
         else
@@ -647,14 +644,8 @@ static void move()
         }
 
         /* allow for change to reality timer */
-        udt.it_interval.tv_sec = 0;
-        udt.it_interval.tv_usec = 1000000 / reality;
-        udt.it_value.tv_sec = 0;
-        udt.it_value.tv_usec = 1000000 / reality;
-        if (setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0) < 0){
-            ERROR(1,( "daemon:  Error resetting itimer.  Exiting.\n"));        
-            exitDaemon(0);
-        }
+        if (old_reality != reality || old_fps != fps)
+            alarm_setitimer(reality, fps);
 
         /* This message does 2 things:
          * First, it tells the players that the system defaults have in fact
@@ -692,28 +683,25 @@ static void move()
             oldmessage = (random() % 8);
             political_begin(oldmessage);
             ts = TS_TOURNAMENT;
-            context->ts = context->ticks;
+            context->frame_tourn_start = context->frame;
             /* break; */
 
     case TS_TOURNAMENT:
             status->tourn = 1;
             status->time++;
-            context->te = context->ticks;
+            context->frame_tourn_end = context->frame;
             if (is_tournament_mode()) break;
             ts = TS_END;
             /* break; */
 
     case TS_END:
-            context->te = context->ticks; /* record end of Tmode 8/2/91 TC */
+            context->frame_tourn_end = context->frame;
             political_end(oldmessage);
             ts = TS_PICKUP;
             break;
     }
 
 #ifdef PUCK_FIRST
-    /* The placement of signal_puck before udplayers() is key.  If udplayers()
-       happens first the puck can be pushed out of range of a valid shot,
-       among other things.  */
     signal_puck();
 #endif /*PUCK_FIRST */
 
@@ -730,10 +718,7 @@ static void move()
         udcloak();
     }
 
-  /* not sure where's the best place to put this (or even if it matters).
-     If here, we tell the ntserv processes to update now while the daemon
-     putters through the remaining non-essential updates */
-    signal_servers ();
+    signal_servers();
 
     if (fuse(TEAMFUSE)) {
         teamtimers();
@@ -954,7 +939,7 @@ static void udplayers(void)
                 }
                 continue;
             case PFREE:
-                nfree++;
+                nfree++;                /* count slot toward empty server */
                 j->p_ghostbuster = 0;   /* stop from hosing new players */
                 continue;
 #ifdef OBSERVERS
@@ -970,6 +955,7 @@ static void udplayers(void)
                     j->p_whodead = i;
                     break;
                 }
+                nfree++;                /* count slot toward empty server */
                 continue;
 #endif  /* OBSERVERS */
 
@@ -983,6 +969,7 @@ static void udplayers(void)
                 j->p_updates++;
                 j->p_flags &= ~PFCLOAK;
                 if ((j->p_ship.s_type == STARBASE) && 
+		    /* todo: fps support, use of fuse for explosion time */
                    (j->p_explode == ((2*SBEXPVIEWS-3)/PLAYERFUSE)))
                         blowup(j);  /* damdiffe everyone else around */
                 else if (j->p_explode == ((10-3)/PLAYERFUSE))
@@ -990,6 +977,7 @@ static void udplayers(void)
 
                 if (--j->p_explode <= 0) {
                     j->p_status = PDEAD;
+		    /* todo: fps support, use of fuse for ghostbust time */
                     j->p_explode = 600/PLAYERFUSE; /* set ghost buster */
                 }
 
@@ -1012,6 +1000,7 @@ static void udplayers(void)
 
                 /* Reduce any torp or plasma timers longer than 5 seconds,
 		   mainly for ATT torps/plasmas, and sturgeon weapons */
+		/* todo: fps support, fuse used for real time */
                 for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
                     if (t->t_status == TMOVE && t->t_fuse > 50)
                         t->t_fuse = 50;
@@ -1026,6 +1015,7 @@ static void udplayers(void)
             case PALIVE:
                 /* Move Player in orbit */
                 if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
+                    /* todo: fps support */
                     j->p_dir += 2;
                     j->p_desdir = j->p_dir;
                     j->p_x = planets[j->p_planet].pl_x + ORBDIST
@@ -1112,6 +1102,7 @@ static void udplayers(void)
                             j->p_speed = j->p_ship.s_maxspeed;
                     }
 
+                    /* todo: fps support */
                     j->p_x += (double) (j->p_speed * WARP1) * Cos[j->p_dir];
                     j->p_y += (double) (j->p_speed * WARP1) * Sin[j->p_dir];
 
@@ -1331,8 +1322,10 @@ static void udplayers(void)
                     dir = 1;
                     if (j->p_flags & PFPRESS) dir = -1;
                     /* change in position is tractor strength over mass */
+                    /* todo: fps support */
                     j->p_x += dir * cosTheta * halfforce/(j->p_ship.s_mass);
                     j->p_y += dir * sinTheta * halfforce/(j->p_ship.s_mass);
+                    /* todo: fps support */
                     players[j->p_tractor].p_x -= dir * cosTheta *
                        halfforce/(players[j->p_tractor].p_ship.s_mass);
                     players[j->p_tractor].p_y -= dir * sinTheta *
@@ -1353,6 +1346,7 @@ static void udplayers(void)
                 else if (j->p_wtemp > j->p_ship.s_maxwpntemp) {
                     if (!(random() % 40)) {
                         j->p_flags |= PFWEP;
+		        /* todo: fps support, use of fuse for duration */
                         j->p_wtime = ((short) (random() % 150) + 100) /
                                      PLAYERFUSE;
                     }
@@ -1368,6 +1362,7 @@ static void udplayers(void)
                 else if (j->p_etemp > j->p_ship.s_maxegntemp) {
                     if (!(random() % 40)) {
                         j->p_flags |= PFENG;
+		        /* todo: fps support, use of fuse for duration */
                         j->p_etime = ((short) (random() % 150) + 100) /
                                      PLAYERFUSE;
                         j->p_desspeed = 0;
@@ -1542,9 +1537,9 @@ static void udplayers(void)
     if (nfree == MAXPLAYER) {
         if (dietime == -1) {
             if (status->gameup & GU_GAMEOK) {
-                dietime = context->ticks + 600 / PLAYERFUSE;
+                dietime = context->frame + seconds_to_frames(60);
             } else {
-                dietime = context->ticks + 10 / PLAYERFUSE;
+                dietime = context->frame + seconds_to_frames(1);
             }
         }
     } else {
@@ -1566,6 +1561,7 @@ static void changedir(struct player *sp)
         sp->p_subdir = 0;
     }
     else {
+        /* todo: fps support */
         if (newturn) 
             sp->p_subdir += sp->p_ship.s_turns/(speed*speed);
         else
@@ -1662,6 +1658,7 @@ static void torp_track_target(struct torp *t)
     /* 
      * To prevent the torpedo from tracking unreachable targets:
      * If target is in an arc that the torp might reach, then it is valid. */
+    /* todo: fps support, use of a fuse */
     if ((t->t_turns * t->t_fuse > 127) ||
         (bearing < t->t_turns * t->t_fuse) ||
         (bearing > (256 - t->t_turns * t->t_fuse))) {
@@ -1698,6 +1695,7 @@ static void udtorps(void)
     case TMOVE:
       /*
        * See if the torp is out of time. */
+      /* todo: fps support, use of a fuse */
       if (t->t_fuse-- <= 0)
         break;
 
@@ -1712,6 +1710,7 @@ static void udtorps(void)
 
       /*
        * Move the torp, checking for wall hits  */
+      /* todo: fps support */
       t->t_x += (double) t->t_gspeed * Cos[t->t_dir];
       if (t->t_x < 0) {
         if (!wrap_galaxy) {
@@ -1757,6 +1756,7 @@ static void udtorps(void)
         else
           t->t_x = 0;
       }
+      /* todo: fps support */
       t->t_y += (double) t->t_gspeed * Sin[t->t_dir];
 
       if (t->t_y < 0) {
@@ -1982,14 +1982,14 @@ static void t_explosion(struct torp *torp)
        and the planet is in the team's home space */
 
     if (!(inl_mode)) {
-      if (((tcount[l->pl_owner] == 0) || (NotTmode(context->ticks))) &&
+      if (((tcount[l->pl_owner] == 0) || NotTmode) &&
          (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
          !bot_in_game &&
 #endif
          tm_robots[l->pl_owner] == 0) {
 
-         rescue(l->pl_owner, NotTmode(context->ticks));
+         rescue(l->pl_owner, NotTmode);
 	 /* todo: fps support, use of a fuse */
          tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
       }
@@ -2196,6 +2196,7 @@ static void t_explosion(struct torp *torp)
     } 
   } 
   torp->t_status = TEXPLODE; 
+  /* todo: fps support, use of a fuse */
   torp->t_fuse = 10/TORPFUSE; 
 } 
 
@@ -2710,6 +2711,7 @@ static void udphaser(void)
                 continue;
             case PHMISS:
             case PHHIT2:
+		    /* todo: fps support, use of a fuse */
                 if (j->ph_fuse-- == 1)
                     j->ph_status = PHFREE;
                 break;
@@ -2956,6 +2958,7 @@ static void plfight(void)
       /* Warn owning team */
     if (pl_warning[j->p_planet] <= 0)
     {
+      /* todo: fps support, use of a fuse */
       pl_warning[j->p_planet] = 50/PLFIGHTFUSE; 
       (void) sprintf(buf, "%-3s->%-3s",
                      l->pl_name, teamshort[l->pl_owner]);
@@ -3057,14 +3060,15 @@ static void plfight(void)
        and the planet is in the team's home space */
     
     if (!(inl_mode)) {
-      if (((tcount[l->pl_owner] == 0) || (NotTmode(context->ticks))) && 
+      if (((tcount[l->pl_owner] == 0) || NotTmode) && 
         (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
     !bot_in_game &&
 #endif
         tm_robots[l->pl_owner] == 0) {
 
-        rescue(l->pl_owner, NotTmode(context->ticks));
+        rescue(l->pl_owner, NotTmode);
+	/* todo: fps support, use of a fuse */
         tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
       }
     }
@@ -3255,7 +3259,7 @@ static void beam(void)
 
                             /* out of Tmode?  Terminate.  8/2/91 TC */
 
-                            if (NotTmode(context->ticks)
+                            if (NotTmode
 #ifdef PRETSERVER
                                 && !bot_in_game
 #endif
@@ -3646,6 +3650,7 @@ static void exitDaemon(int sig)
         j->p_whydead = KDAEMON;
         j->p_ntorp = 0;
         j->p_nplasmatorp = 0;
+	/* todo: fps support, use of a fuse */
         j->p_explode = 600/PLAYERFUSE; /* ghost buster was leaving players in */
         if (j->p_process > 1) {
             ERROR(8,("%s: sending SIGTERM\n", j->p_mapchars));
@@ -3943,7 +3948,7 @@ static int checkwin(struct player *winner)
 static int checksafe(struct player *victim)
 {
     if (safe_idle
-        && (NotTmode(context->ticks))
+        && (NotTmode)
         && ((victim->p_flags & PFCLOAK) && (victim->p_flags & PFORBIT)
             && (planets[victim->p_planet].pl_flags & PLHOME))
         && (victim->p_kills == 0.0)
