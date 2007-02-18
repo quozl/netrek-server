@@ -947,7 +947,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
     k->t_damage = sw->sw_damage;
     k->t_gspeed = (attributes & TVECTOR) ? torpGetVectorSpeed(me->p_dir, me->p_speed, course, sw->sw_speed)
                   : sw->sw_speed * WARP1;
-    k->t_fuse = sw->sw_fuse;
+    k->t_fuse = sw->sw_fuse * T_FUSE_SCALE;
     k->t_pldamage = 0;
     k->t_status = TMOVE;
     k->t_type = TPLASMA;
@@ -1006,7 +1006,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       k->t_y = l->pl_y;
       k->t_dir = k->t_gspeed = k->t_war = 0;
       k->t_damage = 1;
-      k->t_fuse = 100;
+      k->t_fuse = 100 * T_FUSE_SCALE;
       k->t_turns = 0;
       k->t_plbombed = l->pl_no;
       k->t_pldamage = 0;
@@ -1121,7 +1121,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       j->t_damage = sw->sw_damage;
       j->t_gspeed = sw->sw_speed * WARP1;
       j->t_war = me->p_war;
-      j->t_fuse = sw->sw_fuse + (random() % 20);
+      j->t_fuse = (sw->sw_fuse + (random() % 20)) * T_FUSE_SCALE;
       j->t_turns = sw->sw_turns;
       break;
     default:

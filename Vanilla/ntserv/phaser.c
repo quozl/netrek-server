@@ -300,7 +300,7 @@ void phaser(u_char course)
 	me->p_nplasmatorp++;
 	target_plasma->t_team=me->p_team;
 	target_plasma->t_war=me->p_hostile;
-	target_plasma->t_fuse+=mine->ph_damage * .25 + 5;
+	target_plasma->t_fuse+=(mine->ph_damage * .25 + 5) * T_FUSE_SCALE;
 	new_warning(UNDEF, "Ping-Pong!");
 	}
      else {
@@ -316,7 +316,7 @@ void phaser(u_char course)
 	me->p_nplasmatorp++;
 	target_plasma->t_team=me->p_team;
 	target_plasma->t_war=me->p_hostile;
-	target_plasma->t_fuse+=mine->ph_damage * .25 + 5;
+	target_plasma->t_fuse+=(mine->ph_damage * .25 + 5) * T_FUSE_SCALE;
 	new_warning(UNDEF, "You deflected the plasma!"); }
    }
 

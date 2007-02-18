@@ -68,6 +68,7 @@ void alarm_setitimer(int reality, int fps)
   udt.it_value.tv_sec = 0;
   udt.it_value.tv_usec = tv_usec;
 
+  fprintf(stderr, "alarm_setitimer: interval timer %d microseconds\n", tv_usec);
   stat = setitimer(ITIMER_REAL, &udt, (struct itimerval *) NULL);
   if (stat == 0) return;
 

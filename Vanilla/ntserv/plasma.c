@@ -88,7 +88,7 @@ void nplasmatorp(u_char course, int attributes)
   k->t_gspeed = (attributes & TVECTOR) 
     ? torpGetVectorSpeed(me->p_dir, me->p_speed, course, myship->s_plasmaspeed)
       : myship->s_plasmaspeed * WARP1;
-  k->t_fuse   = myship->s_plasmafuse;
+  k->t_fuse   = myship->s_plasmafuse * T_FUSE_SCALE;
   k->t_dir    = ((myship->s_type == STARBASE) || 
                  (myship->s_type == ATT)) ? course : me->p_dir;
   k->t_war    = me->p_war;

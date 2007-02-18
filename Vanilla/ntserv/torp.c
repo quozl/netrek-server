@@ -150,7 +150,7 @@ void ntorp(u_char course, int attributes)
   k->t_gspeed = (attributes & TVECTOR) ?
     torpGetVectorSpeed(me->p_dir, me->p_speed, course, myship->s_torpspeed) :
       myship->s_torpspeed * WARP1;
-  k->t_fuse   = myship->s_torpfuse + (random() % 20);
+  k->t_fuse   = (myship->s_torpfuse + (random() % 20)) * T_FUSE_SCALE;
   k->t_dir    = course;
   k->t_war    = me->p_war;
   k->t_team   = me->p_team;

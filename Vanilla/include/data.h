@@ -74,6 +74,7 @@ extern struct ban *bans;
 extern int	oldalert;
 extern int	remap[];
 extern int	udcounter;
+extern int	fps;		/* simulation frames per second */
 extern int	reality;	/* universe simulation updates per second */
 extern int	minskip;	/* minimum reality update skips to client */
 extern int	defskip;	/* default reality update skips to client */

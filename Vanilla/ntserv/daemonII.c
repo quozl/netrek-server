@@ -47,7 +47,6 @@ union semun {
 #endif /*PUCK_FIRST*/
 
 /* todo: fps support */
-int fps = 50;
 #define fuse(X) ((context->frame % (X*fps/reality)) == 0)
 #define seconds_to_frames(X) (X*fps)
 #define frames_to_seconds(X) (X/fps)
@@ -353,7 +352,7 @@ int main(int argc, char **argv)
 
 /* todo: fps support */
 #define PLAYERFUSE      1
-#define TORPFUSE        1
+//#define TORPFUSE        1
 #define PLASMAFUSE      1
 #define PHASERFUSE      1
 #define CLOAKFUSE       2
@@ -707,9 +706,9 @@ static void move()
     if (fuse(PLAYERFUSE)) {
         udplayers();
     }
-    if (fuse(TORPFUSE)) {
+//    if (fuse(TORPFUSE)) {
         udtorps();
-    }
+//    }
     if (fuse(PHASERFUSE)) {
         udphaser();
     }
@@ -985,12 +984,12 @@ static void udplayers_pexplode(struct player *j)
         /* todo: fps support, fuse used for real time */
         struct torp *t;
         for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
-                if (t->t_status == TMOVE && t->t_fuse > 50)
-                        t->t_fuse = 50;
+                if (t->t_status == TMOVE && t->t_fuse > seconds_to_frames(5))
+                        t->t_fuse = seconds_to_frames(5);
         }
         for (t = firstPlasmaOf(j); t <= lastPlasmaOf(j); t++) {
-                if (t->t_status == TMOVE && t->t_fuse > 50)
-                        t->t_fuse = 50;
+                if (t->t_status == TMOVE && t->t_fuse > seconds_to_frames(5))
+                        t->t_fuse = seconds_to_frames(5);
         }
 }
 
@@ -1662,6 +1661,17 @@ static void udcloak(void)
 {
   register int i;
 
+/*
+                     time - - - >
+
+frames at 10fps      .....................................
+keyboard                c                   c
+p_flags & PFCLOAK    0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0
+p_cloakphase         0 0 1 2 3 4 5 6 6 6 6 6 5 4 3 2 1 0 0
+position hidden      0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0
+
+*/
+
   for (i=0; i<MAXPLAYER; i++) {
     if (isAlive(&players[i])) {
       if ((players[i].p_flags & PFCLOAK) && 
@@ -1729,9 +1739,9 @@ static void t_track(struct torp *t)
      * To prevent the torpedo from tracking unreachable targets:
      * If target is in an arc that the torp might reach, then it is valid. */
     /* todo: fps support, use of a fuse */
-    if ((t->t_turns * t->t_fuse > 127) ||
-        (bearing < t->t_turns * t->t_fuse) ||
-        (bearing > (256 - t->t_turns * t->t_fuse))) {
+    if ((t->t_turns * t->t_fuse / T_FUSE_SCALE > 127) ||
+        (bearing < t->t_turns * t->t_fuse / T_FUSE_SCALE) ||
+        (bearing > (256 - t->t_turns * t->t_fuse / T_FUSE_SCALE ))) {
       range_sq = dx*dx + dy*dy;
       if (range_sq < min_range_sq) {
         min_range_sq = range_sq;
@@ -1755,9 +1765,9 @@ static void t_track(struct torp *t)
 static void t_move(struct torp *t)
 {
         /* todo: fps support */
-        t->t_x += (double) t->t_gspeed * Cos[t->t_dir];
+        t->t_x += (double) t->t_gspeed * Cos[t->t_dir] / T_FUSE_SCALE;
         /* todo: fps support */
-        t->t_y += (double) t->t_gspeed * Sin[t->t_dir];
+        t->t_y += (double) t->t_gspeed * Sin[t->t_dir] / T_FUSE_SCALE;
 }
 
 static int t_check_wall(struct torp *t)
@@ -1905,14 +1915,18 @@ static void udtorps(void)
                                 break; /* fall through to torp slot free */
 
                         /* tracking torps change direction */
-                        if (t->t_turns > 0)
-                                t_track(t);
+                        if (t->t_fuse % T_FUSE_SCALE == 0)
+                                if (t->t_turns > 0)
+                                        t_track(t);
                 
                         /* move the torp, checking for wall hits */
                         t_move(t);
                         if (t_check_wall(t)) {
                                 t_hit_wall(t);
                         }
+
+                        /* do rest of work on torp at normal rate */
+                        if (t->t_fuse % T_FUSE_SCALE != 0) continue;
 
                         /* wobble the torp, changing direction */
                         if (t->t_attribute & TWOBBLE)
@@ -2243,7 +2257,7 @@ static void t_explosion(struct torp *torp)
   } 
   torp->t_status = TEXPLODE; 
   /* todo: fps support, use of a fuse */
-  torp->t_fuse = 10/TORPFUSE; 
+  torp->t_fuse = 10*T_FUSE_SCALE; 
 } 
 
 #ifndef LTD_STATS

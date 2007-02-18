@@ -113,7 +113,7 @@ static void conquer_plasma_explode()
 	}
 	for (k = firstPlasma; k <= lastPlasma; k++, k++, pn++) {
 		k->t_status = TEXPLODE;
-		k->t_fuse = 10/TORPFUSE; 
+		k->t_fuse = 10 / TORPFUSE * T_FUSE_SCALE; 
 	}
 }
 

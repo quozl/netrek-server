@@ -74,7 +74,7 @@ struct queuewait {
 /* End of waitq related stuff */
 
 struct status {
-    int		active;
+    int		active;         /* unused */
     u_char	tourn;		/* Tournament mode? */
     /* These stats only updated during tournament mode */
     u_int	armsbomb, planets, kills, losses, time;
@@ -514,7 +514,8 @@ struct torp {
   int t_turns;      /* Rate of change of direction if tracking */
   int t_damage;     /* Explosion damage for direct hit */
   int t_gspeed;     /* Moving speed, in galactic coordinate units */
-  int t_fuse;       /* Ticks remaining in current state */
+  int t_fuse;       /* frames remaining in current state */
+#define T_FUSE_SCALE (fps/10)
   u_char t_dir;     /* Direction the torp is currently going */
   u_char t_war;     /* Set of enemy teams */
   u_char t_team;    /* Set of owning team (singleton) */
