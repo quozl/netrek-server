@@ -72,9 +72,7 @@ static void udplayers(void);
 static void udplayerpause(void);
 static void changedir(struct player *sp);
 static void udcloak(void);
-static void torp_track_target(struct torp *t);
 static void udtorps(void);
-static int near(struct torp *t);
 static void t_explosion(struct torp *torp);
 static void p_explosion(struct player *player, int whydead, int whodead);
 #ifndef LTD_STATS
@@ -1680,7 +1678,7 @@ static void udcloak(void)
 /* 
  * Find nearest hostile vessel and turn toward it
  */
-static void torp_track_target(struct torp *t)
+static void t_track(struct torp *t)
 {
   int heading, bearing;
   int dx, dy, range;
@@ -1754,144 +1752,115 @@ static void torp_track_target(struct torp *t)
   }
 }
 
-static void udtorps(void)
+static void t_move(struct torp *t)
 {
-  struct torp *t;
+        /* todo: fps support */
+        t->t_x += (double) t->t_gspeed * Cos[t->t_dir];
+        /* todo: fps support */
+        t->t_y += (double) t->t_gspeed * Sin[t->t_dir];
+}
 
-  /*
-   * Update all torps AND all plasmas; they are in the same array: */
-  for (t = firstTorp; t <= lastPlasma; t++) {
-    switch (t->t_status) {
-    case TFREE:
-      continue;
-    case TMOVE:
-      /*
-       * See if the torp is out of time. */
-      /* todo: fps support, use of a fuse */
-      if (t->t_fuse-- <= 0)
-        break;
+static int t_check_wall(struct torp *t)
+{
+        int hit = 0;
 
-      /*
-       * Change direction for tracking torps  */
-      if (t->t_turns > 0)
-        torp_track_target(t);
-                
-#define DO_WALL_HIT(torp) (torp)->t_status = TDET; \
-                          (torp)->t_whodet = (torp)->t_owner; \
-                          t_explosion(torp)
-
-      /*
-       * Move the torp, checking for wall hits  */
-      /* todo: fps support */
-      t->t_x += (double) t->t_gspeed * Cos[t->t_dir];
-      if (t->t_x < 0) {
-        if (!wrap_galaxy) {
-          t->t_x = 0;
-          DO_WALL_HIT(t);
-#ifdef LTD_STATS
-          /* update torp hit wall stat */
-          switch(t->t_type) {
-            case TPHOTON:
-              if (status->tourn)
-                ltd_update_torp_wall(&(players[t->t_owner]));
-              break;
-            case TPLASMA:
-              if (status->tourn)
-                ltd_update_plasma_wall(&(players[t->t_owner]));
-              break;
-          }
-#endif
-          continue;
+        if (t->t_x < 0) {
+                if (!wrap_galaxy) {
+                        t->t_x = 0;
+                        hit++;
+                }
+                else
+                        t->t_x = GWIDTH;
+        } else if (t->t_x > GWIDTH) {
+                if (!wrap_galaxy) {
+                        t->t_x = GWIDTH;
+                        hit++;
+                }
+                else
+                        t->t_x = 0;
         }
-        else
-          t->t_x = GWIDTH;
-      }
-      else if (t->t_x > GWIDTH) {
-        if (!wrap_galaxy) {
-          t->t_x = GWIDTH;
-          DO_WALL_HIT(t);
-#ifdef LTD_STATS
-          /* update torp hit wall stat */
-          switch(t->t_type) {
-            case TPHOTON:
-              if (status->tourn)
-                ltd_update_torp_wall(&(players[t->t_owner]));
-              break;
-            case TPLASMA:
-              if (status->tourn)
-                ltd_update_plasma_wall(&(players[t->t_owner]));
-              break;
-          }
-#endif
-          continue;
-        }
-        else
-          t->t_x = 0;
-      }
-      /* todo: fps support */
-      t->t_y += (double) t->t_gspeed * Sin[t->t_dir];
 
-      if (t->t_y < 0) {
-        if (!wrap_galaxy) {
-          t->t_y = 0;
-          DO_WALL_HIT(t);
-#ifdef LTD_STATS
-          /* update torp hit wall stat */
-          switch(t->t_type) {
-            case TPHOTON:
-              if (status->tourn)
-                ltd_update_torp_wall(&(players[t->t_owner]));
-              break;
-            case TPLASMA:
-              if (status->tourn)
-                ltd_update_plasma_wall(&(players[t->t_owner]));
-              break;
-          }
-#endif
-          continue;
+        if (t->t_y < 0) {
+                if (!wrap_galaxy) {
+                        t->t_y = 0;
+                        hit++;
+                }
+                else
+                        t->t_y = GWIDTH;
+        } else if (t->t_y > GWIDTH) {
+                if (!wrap_galaxy) {
+                        t->t_y = GWIDTH;
+                        hit++;
+                }
+                else
+                        t->t_y = 0;
         }
-        else
-          t->t_y = GWIDTH;
-      }
-      else if (t->t_y > GWIDTH) {
-        if (!wrap_galaxy) {
-          t->t_y = GWIDTH;
-          DO_WALL_HIT(t);
-#ifdef LTD_STATS
-          /* update torp hit wall stat */
-          switch(t->t_type) {
-            case TPHOTON:
-              if (status->tourn)
-                ltd_update_torp_wall(&(players[t->t_owner]));
-              break;
-            case TPLASMA:
-              if (status->tourn)
-                ltd_update_plasma_wall(&(players[t->t_owner]));
-              break;
-          }
-#endif
-          continue;
-        }
-        else
-          t->t_y = 0;
-      }
-#undef DO_WALL_HIT
 
-      if (t->t_attribute & TWOBBLE) {
+        return hit;
+}
+
+static void t_hit_wall(struct torp *t)
+{
+        t->t_status = TDET;
+        t->t_whodet = t->t_owner;
+        t_explosion(t);
+
+#ifdef LTD_STATS
+        /* update torp hit wall stat */
+        switch(t->t_type) {
+        case TPHOTON:
+                if (status->tourn)
+                        ltd_update_torp_wall(&(players[t->t_owner]));
+                break;
+        case TPLASMA:
+                if (status->tourn)
+                        ltd_update_plasma_wall(&(players[t->t_owner]));
+                break;
+        }
+#endif
+}
+
+static void t_wobble(struct torp *t)
+{
 #ifdef STURGEON
-        /* mines spin in a constant position */
-        if (sturgeon && t->t_spinspeed)
-          t->t_dir = (t->t_dir + t->t_spinspeed) % 256;
-        else
-          t->t_dir += (random() % 3) - 1;
-#else
-        t->t_dir += (random() % 3) - 1;
+	/* mines spin in a constant position */
+	if (sturgeon && t->t_spinspeed) {
+		t->t_dir = (t->t_dir + t->t_spinspeed) % 256;
+		return;
+	}
 #endif
-      }
+	t->t_dir += (random() % 3) - 1;
+}
 
-      if (near(t)) {
+/* see if there is someone close enough to explode for */
+static int t_near(struct torp *t)
+{
+        int dx, dy;
+        struct player *j;
+        
+        for (j = firstPlayer; j <= lastPlayer; j++) {
+                if (j->p_status != PALIVE)
+                        continue;
+                if (t->t_owner == j->p_no)
+                        continue;
+                if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
+                        continue;
+                dx = t->t_x - j->p_x;
+                if ((dx < -EXPDIST) || (dx > EXPDIST))
+                        continue;
+                dy = t->t_y - j->p_y;
+                if ((dy < -EXPDIST) || (dy > EXPDIST))
+                        continue;
+                if (dx*dx + dy*dy <= EXPDIST * EXPDIST)
+                        return 1;
+        }
+        return 0;
+}
+    
+
+static void t_hit_ship_credit(struct torp *t)
+{
 #ifdef LTD_STATS
-        /* if near(t) returns 1, it hit a player, update stats */
         switch(t->t_type) {
           case TPHOTON:
             if (status->tourn)
@@ -1903,67 +1872,80 @@ static void udtorps(void)
             break;
         }
 #endif
-        t_explosion(t);
-      }
-      continue;
-    case TDET:
-      t_explosion(t);
-      continue;
-    case TEXPLODE:
-      if (t->t_fuse-- > 0)
-        continue;
-      break;
-    case TOFF:
-#ifdef STURGEON
-      /* detting your own torps may do damage */
-      if (sturgeon && players[t->t_owner].p_upgradelist[UPG_DETDMG]) {
-        t->t_status = TDET;
-        t->t_damage /= 4;
-        t->t_whodet = players[t->t_owner].p_no;
-        t_explosion(t);
-      }
-#endif
-      break;
-#if 1
-    default:                    /* Shouldn't happen */
-      break;
-#endif
-    }
-
-    t->t_status = TFREE;
-    switch (t->t_type) {
-      case TPHOTON: players[t->t_owner].p_ntorp--; break;
-      case TPLASMA: players[t->t_owner].p_nplasmatorp--; break;
-    }
-  }
 }
 
-
-/* See if there is someone close enough to explode for */
-static int near(struct torp *t)
+static void t_off(struct torp *t)
 {
-  int dx, dy;
-  struct player *j;
-
-  for (j = firstPlayer; j <= lastPlayer; j++) {
-    if (j->p_status != PALIVE)
-      continue;
-    if (t->t_owner == j->p_no)
-      continue;
-    if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
-      continue;
-    dx = t->t_x - j->p_x;
-    if ((dx < -EXPDIST) || (dx > EXPDIST))
-      continue;
-    dy = t->t_y - j->p_y;
-    if ((dy < -EXPDIST) || (dy > EXPDIST))
-      continue;
-    if (dx*dx + dy*dy <= EXPDIST * EXPDIST)
-      return 1;
-    }
-  return 0;
+#ifdef STURGEON
+        /* detting your own torps may do damage */
+        if (sturgeon && players[t->t_owner].p_upgradelist[UPG_DETDMG]) {
+                t->t_status = TDET;
+                t->t_damage /= 4;
+                t->t_whodet = players[t->t_owner].p_no;
+                t_explosion(t);
+        }
+#endif
 }
-    
+
+static void udtorps(void)
+{
+        struct torp *t;
+
+        /* update all torps and plasmas; they are in the same array */
+        for (t = firstTorp; t <= lastPlasma; t++) {
+                switch (t->t_status) {
+
+                case TFREE: /* this is an empty torp slot, skip it */
+                        continue;
+
+                case TMOVE: /* this is a moving torp */
+                        /* is torp out of time? */
+                        /* todo: fps support, use of a fuse */
+                        if (t->t_fuse-- <= 0)
+                                break; /* fall through to torp slot free */
+
+                        /* tracking torps change direction */
+                        if (t->t_turns > 0)
+                                t_track(t);
+                
+                        /* move the torp, checking for wall hits */
+                        t_move(t);
+                        if (t_check_wall(t)) {
+                                t_hit_wall(t);
+                        }
+
+                        /* wobble the torp, changing direction */
+                        if (t->t_attribute & TWOBBLE)
+                                t_wobble(t);
+
+                        /* is torp position near enough to hit a ship? */
+                        if (t_near(t)) {
+                                t_hit_ship_credit(t);
+                                t_explosion(t);
+                        }
+                        continue;
+
+                case TDET: /* this is a detonating torp */
+                        t_explosion(t);
+                        continue;
+
+                case TEXPLODE: /* this is an exploding torp */
+                        if (t->t_fuse-- > 0)
+                                continue;
+                        break;
+
+                case TOFF: /* this is an owner-detonated torp */
+                        t_off(t);
+                        break; /* fall through to torp slot free */
+                }
+
+                t->t_status = TFREE; /* free torp slot */
+                switch (t->t_type) {
+                case TPHOTON: players[t->t_owner].p_ntorp--; break;
+                case TPLASMA: players[t->t_owner].p_nplasmatorp--; break;
+                }
+        }
+}
 
 /* trigger a ship explosion */
 static void p_explosion(struct player *player, int why, int who)
