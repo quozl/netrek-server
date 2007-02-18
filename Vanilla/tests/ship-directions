@@ -1,5 +1,25 @@
-for x in `seq 0 255`; do
-	tools/setship 0 \
-		x 50000 y 50000 dir 128 speed 8 \
-		sleep 6 speed 0 sleep 5 get
+#!/bin/sh
+
+# test script to produce x/y coordinates from moving a ship from centre
+# of galactic in each direction using each warp speed
+
+for speed in `seq 1 6|tac`; do
+	for dir in `seq 0 255`; do
+		echo -n "${speed} "
+		tools/setship 0 \
+			x 50000 y 50000 dir ${dir} speed ${speed} \
+			sleep 32 speed 0 sleep 6 get
+	done
 done
+
+exit
+
+# gnuplot
+
+set key off
+set output "2007-02-19-ship-directions.png"
+set terminal png size 1024,1024
+set size square
+
+plot "< egrep ^1 2007-02-19-ship-directions.log" using 9:11, "< egrep ^2 2007-02-19-ship-directions.log" using 9:11, "< egrep ^3 2007-02-19-ship-directions.log" using 9:11, "< egrep ^4 2007-02-19-ship-directions.log" using 9:11, "< egrep ^5 2007-02-19-ship-directions.log" using 9:11, "< egrep ^6 2007-02-19-ship-directions.log" using 9:11
+
