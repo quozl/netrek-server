@@ -515,7 +515,7 @@ struct torp {
   int t_damage;     /* Explosion damage for direct hit */
   int t_gspeed;     /* Moving speed, in galactic coordinate units */
   int t_fuse;       /* frames remaining in current state */
-#define T_FUSE_SCALE (fps/10)
+#define T_FUSE_SCALE TPF
   u_char t_dir;     /* Direction the torp is currently going */
   u_char t_war;     /* Set of enemy teams */
   u_char t_team;    /* Set of owning team (singleton) */

@@ -68,6 +68,7 @@ static int check_scummers(int);
 static void move();
 static void udplayersight(void);
 static void udplayers(void);
+static void udships(void);
 static void udplayerpause(void);
 static void changedir(struct player *sp);
 static void udcloak(void);
@@ -350,9 +351,7 @@ int main(int argc, char **argv)
    UPDATE units (0.10 seconds, currently.)
 */
 
-/* todo: fps support */
 #define PLAYERFUSE      1
-//#define TORPFUSE        1
 #define PLASMAFUSE      1
 #define PHASERFUSE      1
 #define CLOAKFUSE       2
@@ -703,12 +702,11 @@ static void move()
     signal_puck();
 #endif /*PUCK_FIRST */
 
+    udships();
     if (fuse(PLAYERFUSE)) {
         udplayers();
     }
-//    if (fuse(TORPFUSE)) {
-        udtorps();
-//    }
+    udtorps();
     if (fuse(PHASERFUSE)) {
         udphaser();
     }
@@ -981,7 +979,6 @@ static void udplayers_pexplode(struct player *j)
         
         /* Reduce any torp or plasma timers longer than 5 seconds,
            mainly for ATT torps/plasmas, and sturgeon weapons */
-        /* todo: fps support, fuse used for real time */
         struct torp *t;
         for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
                 if (t->t_status == TMOVE && t->t_fuse > seconds_to_frames(5))
@@ -995,9 +992,12 @@ static void udplayers_pexplode(struct player *j)
 
 static void udplayers_palive_move_in_orbit(struct player *j)
 {
-        /* todo: fps support */
         j->p_dir += 2;
         j->p_desdir = j->p_dir;
+}
+
+static void udships_palive_move_in_orbit(struct player *j)
+{
         j->p_x = planets[j->p_planet].pl_x + ORBDIST
                 * Cos[(u_char) (j->p_dir - (u_char) 64)];
         j->p_y = planets[j->p_planet].pl_y + ORBDIST
@@ -1005,6 +1005,10 @@ static void udplayers_palive_move_in_orbit(struct player *j)
 }
 
 static void udplayers_palive_move_in_dock(struct player *j)
+{
+}
+
+static void udships_palive_move_in_dock(struct player *j)
 {
         j->p_x = players[j->p_dock_with].p_x + 
                  DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
@@ -1091,11 +1095,15 @@ static void udplayers_palive_move_in_space(struct player *j)
                         j->p_speed = j->p_ship.s_maxspeed;
         }
         
-        /* todo: fps support */
-        j->p_x += (double) (j->p_speed * WARP1) * Cos[j->p_dir];
-        j->p_y += (double) (j->p_speed * WARP1) * Sin[j->p_dir];
+}
+
+static void udships_palive_move_in_space(struct player *j)
+{
+        j->p_x += (double) (j->p_speed * WARP1) * Cos[j->p_dir] / TPF;
+        j->p_y += (double) (j->p_speed * WARP1) * Sin[j->p_dir] / TPF;
         
-        /* Bounce off the side of the galaxy */
+        /* ship hit wall, wrap or bounce */
+
         if (j->p_x < 0) {
                 if (!wrap_galaxy) {
                         j->p_x = -j->p_x;
@@ -1104,7 +1112,7 @@ static void udplayers_palive_move_in_space(struct player *j)
                         else
                                 j->p_dir = j->p_desdir = 64 - (j->p_dir - 192);
                 } else 
-                        j->p_x = GWIDTH;
+                        j->p_x += GWIDTH;
         } else if (j->p_x > GWIDTH) {
                 if (!wrap_galaxy) {
                         j->p_x = GWIDTH - (j->p_x - GWIDTH);
@@ -1113,8 +1121,10 @@ static void udplayers_palive_move_in_space(struct player *j)
                         else
                                 j->p_dir = j->p_desdir = 192 - (j->p_dir - 64);
                 } else 
-                        j->p_x = 0;
-        } if (j->p_y < 0) {
+                        j->p_x -= GWIDTH;
+        }
+
+        if (j->p_y < 0) {
                 if (!wrap_galaxy) {
                         j->p_y = -j->p_y;
                         if (j->p_dir == 0)
@@ -1122,7 +1132,7 @@ static void udplayers_palive_move_in_space(struct player *j)
                         else
                                 j->p_dir = j->p_desdir = 128 - j->p_dir;
                 } else 
-                        j->p_y = GWIDTH;
+                        j->p_y += GWIDTH;
         } else if (j->p_y > GWIDTH) {
                 if (!wrap_galaxy) {
                         j->p_y = GWIDTH - (j->p_y - GWIDTH);
@@ -1131,9 +1141,39 @@ static void udplayers_palive_move_in_space(struct player *j)
                         else
                                 j->p_dir = j->p_desdir = 0 - (j->p_dir - 128);
                 } else 
-                        j->p_y = 0;
+                        j->p_y -= GWIDTH;
                 
         }
+}
+
+static void udships_palive(struct player *j)
+{
+        if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
+                /* move player in orbit */
+                udships_palive_move_in_orbit(j);
+        } else if (!(j->p_flags & PFDOCK)) {
+                /* move player through space */
+                udships_palive_move_in_space(j);
+        } else if (j->p_flags & PFDOCK) {
+                /* move player in dock */
+                udships_palive_move_in_dock(j);
+        }
+}
+
+static void udships()
+{
+    int i;
+    struct player *j;
+
+    for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
+
+        switch (j->p_status) {
+            case PEXPLODE:
+            case PALIVE:
+                udships_palive(j);
+                break;
+        } /* end switch */
+    }
 }
 
 static void udplayers_palive_update_stats(struct player *j)
@@ -1312,10 +1352,10 @@ static void udplayers_palive_tractor(struct player *j)
                 dir = 1;
                 if (j->p_flags & PFPRESS) dir = -1;
                 /* change in position is tractor strength over mass */
-                /* todo: fps support */
+                /* todo: fps support, tractor pulses at 10 fps */
                 j->p_x += dir * cosTheta * halfforce/(j->p_ship.s_mass);
                 j->p_y += dir * sinTheta * halfforce/(j->p_ship.s_mass);
-                /* todo: fps support */
+                /* todo: fps support, tractor pulses at 10 fps */
                 players[j->p_tractor].p_x -= dir * cosTheta *
                         halfforce/(players[j->p_tractor].p_ship.s_mass);
                 players[j->p_tractor].p_y -= dir * sinTheta *
@@ -1764,9 +1804,7 @@ static void t_track(struct torp *t)
 
 static void t_move(struct torp *t)
 {
-        /* todo: fps support */
         t->t_x += (double) t->t_gspeed * Cos[t->t_dir] / T_FUSE_SCALE;
-        /* todo: fps support */
         t->t_y += (double) t->t_gspeed * Sin[t->t_dir] / T_FUSE_SCALE;
 }
 
@@ -1910,7 +1948,6 @@ static void udtorps(void)
 
                 case TMOVE: /* this is a moving torp */
                         /* is torp out of time? */
-                        /* todo: fps support, use of a fuse */
                         if (t->t_fuse-- <= 0)
                                 break; /* fall through to torp slot free */
 
