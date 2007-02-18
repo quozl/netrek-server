@@ -20,3 +20,4 @@ int is_local(const struct player *p);
 int is_only_one_ship_type_allowed(int *type);
 char *my_metaserver_type();
 int is_guest(char *name);
+struct player *p_no(int i);

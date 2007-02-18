@@ -241,3 +241,9 @@ int is_guest(char *name)
   if (!strcmp(name, "Guest")) return 1;
   return 0;
 }
+
+/* convert a player number to a player struct pointer */
+struct player *p_no(int i)
+{
+  return &players[i];
+}

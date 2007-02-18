@@ -4,14 +4,9 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "util.h"
 
 /* starbase bay functions */
-
-/* convert a player number to a player struct pointer */
-static struct player *p_no(int i)
-{
-  return &players[i];
-}
 
 /* convert a docked ship player to the base they are docked to */
 struct player *bay_owner(struct player *me)
