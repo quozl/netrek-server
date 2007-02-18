@@ -1,0 +1,5 @@
+for x in `seq 0 255`; do
+	tools/setship 0 \
+		x 50000 y 50000 dir 128 speed 8 \
+		sleep 6 speed 0 sleep 5 get
+done
