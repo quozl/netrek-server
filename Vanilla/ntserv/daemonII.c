@@ -610,6 +610,14 @@ static void move()
       return;
     }
 
+    if (context->frame_test_mode) {
+      if (!context->frame_test_counter) {
+        status->gameup |= GU_PAUSED;
+        return;
+      }
+      context->frame_test_counter--;
+    }
+
     if (++context->frame == dietime) {/* no player for 1 minute. kill self */
         blog_game_over(&context->start, status);
         if (opt_debug) {

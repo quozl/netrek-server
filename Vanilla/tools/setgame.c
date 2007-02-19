@@ -89,5 +89,33 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
+    if (!strcmp(argv[i], "no-test-mode")) {
+      context->frame_test_mode = 0;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "set-test-counter")) {
+      if (++i == argc) return 0;
+      context->frame_test_counter = atoi(argv[i]);
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "test-mode")) {
+      context->frame_test_mode = 1;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "wait-for-pause")) {
+      while (status->gameup & GU_PAUSED) sleep(1);
+      goto state_0;
+    }
+
+    /* expected use,
+       [set up static test environment]
+       pause test-mode set-test-counter n
+       [set up dynamic test environment]
+       resume wait-for-pause
+       [examine result] */
+
     goto state_0;
 }
