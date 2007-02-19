@@ -20,6 +20,15 @@ set key off
 set output "2007-02-19-ship-directions.png"
 set terminal png size 1024,1024
 set size square
+set grid
 
 plot "< egrep ^1 2007-02-19-ship-directions.log" using 9:11, "< egrep ^2 2007-02-19-ship-directions.log" using 9:11, "< egrep ^3 2007-02-19-ship-directions.log" using 9:11, "< egrep ^4 2007-02-19-ship-directions.log" using 9:11, "< egrep ^5 2007-02-19-ship-directions.log" using 9:11, "< egrep ^6 2007-02-19-ship-directions.log" using 9:11
+
+plot [10000:90000] [10000:90000] \
+"< egrep ^6 2007-02-18-ship-directions.log" using 9:11, \
+"< egrep ^6 2007-02-19-ship-directions.log" using 9:11, \
+"< egrep ^5 2007-02-18-ship-directions.log" using 9:11, \
+"< egrep ^5 2007-02-19-ship-directions.log" using 9:11
+"< egrep ^4 2007-02-18-ship-directions.log" using 9:11, \
+"< egrep ^4 2007-02-19-ship-directions.log" using 9:11
 

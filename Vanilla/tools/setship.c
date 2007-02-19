@@ -126,6 +126,13 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
+    if (!strcmp(argv[i], "show-torpedo-position")) {
+      if (k != NULL) {
+        printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);
+      }
+      goto state_1;
+    }
+
     if (!strcmp(argv[i], "show-torpedo-position-and-destroy")) {
       if (k != NULL) {
         printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);

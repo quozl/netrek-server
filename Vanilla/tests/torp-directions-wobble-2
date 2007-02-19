@@ -3,14 +3,17 @@
 # test script to produce x/y coordinates from moving a torp from centre
 # of galactic in one direction with wobble
 
-for dir in `seq 0 100`; do
-    tools/setship 1 x 50000 y 50000 dir ${dir} fire-test-torpedo 64 \
+for dir in `seq 60 68`; do
+    for seq in `seq 0 50`; do
+	Y=`echo "(${dir}-60)*10000+10000"|bc`
+    tools/setship 1 x 50000 y ${Y} dir ${dir} fire-test-torpedo ${dir} \
         sleep 1 show-torpedo-position \
         sleep 1 show-torpedo-position \
         sleep 1 show-torpedo-position \
         sleep 1 show-torpedo-position \
         sleep 1 show-torpedo-position \
         sleep 1 show-torpedo-position-and-destroy
+    done
 done
 
 exit
