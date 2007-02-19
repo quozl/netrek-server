@@ -117,13 +117,13 @@ int ip_hide(char *ip) {
 
 /* global mute, default others :ita to individual, team and all ignore */
 int ip_mute(char *ip) {
-  if (ip == NULL) return 0;
+  if (ip == NULL || ip[0] == '\0') return 0;
   return flag_test(name_etc("mute", ip));
 }
 
 /* global ignore, default others :ita to individual ignore */
 int ip_ignore(char *ip) {
-  if (ip == NULL) return 0;
+  if (ip == NULL || ip[0] == '\0') return 0;
   return flag_test(name_etc("ignore", ip));
 }
 
