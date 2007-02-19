@@ -3,6 +3,22 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+<wc2z> Team A: Starts with 3/4 of the players and 20 planets Team B: Starts with 1/4 of the players and 5 plantes but when tehy kill a player of team A it swithces team to team B. of course the starting distributing might have to be adjusted
+
+<Quozl> Jerub: go ahead.
+<Jerub> Quozl: entire galaxy starts off as neutral, every player starts with 1 kill and 2 armies.
+<Quozl> ... ;-)
+<Jerub> Quozl: most planets after 20 players wins.
+<Jerub> er 20 minutes.
+<Jerub> possible twists:
+<Quozl> Jerub: that sounds a little bit familiar. 
+<Jerub>  - only 5 lives.
+<Jerub>  - respwan positioning would be interesting to balance.
+<Quozl> Reminds me of Go.
+<Jerub> why does it sound familiar?
+<Jerub> oh, right.
+
+
 	- flexible frames per second support (todo: fps support), add
           stricter ntserv vs daemon lock-stepping, analyse daemon
           performance using gettimeofday to judge how long it takes to
@@ -14,6 +30,10 @@ List of things to do in the future
           client, perhaps lower for observers, guarantee 25 fps for
           bases if there is limitation, rework all time and motion
           math.
+
+	  test scripting, a command line server robot that does
+nothing by itself, use tools to set position, direction, speed, and
+then evaluate resultant position after n updates.
 
 	- factorise message insertion, and maintenance of mc_current,
           as it is distributed all over the code.

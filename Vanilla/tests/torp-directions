@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# test script to produce x/y coordinates from moving a torp from centre
+# of galactic in each direction 
+
+for dir in `seq 0 255`; do
+    tools/setship 1 x 50000 y 50000 dir ${dir} fire-test-torpedo ${dir} sleep 6 show-torpedo-position-and-destroy
+done
+
+exit

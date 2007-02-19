@@ -28,6 +28,8 @@ void get(char *us, char *name, struct player *pl)
   printf("\n");
 }
 
+struct torp *k = NULL;
+
 int main(int argc, char **argv)
 {
     int i, player, verbose = 0;
@@ -97,6 +99,38 @@ int main(int argc, char **argv)
       me->p_desspeed = atoi(argv[i]);
       me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
       me->p_flags &= ~(PFPLOCK | PFPLLOCK);
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "fire-test-torpedo")) {
+      if (++i == argc) return 0;
+      struct ship *myship = &me->p_ship;
+      for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)
+        if (k->t_status == TFREE)
+          break;
+      me->p_ntorp++;
+      k->t_status = TMOVE;
+      k->t_type = TPLASMA;
+      k->t_attribute = TOWNERSAFE | TDETTEAMSAFE;
+      k->t_owner = me->p_no;
+      k->t_x = me->p_x;
+      k->t_y = me->p_y;
+      k->t_turns  = myship->s_torpturns;
+      k->t_damage = 0;
+      k->t_gspeed = myship->s_torpspeed * WARP1;
+      k->t_fuse   = 500;
+      k->t_dir    = atoi(argv[i]);
+      k->t_war    = me->p_war;
+      k->t_team   = me->p_team;
+      k->t_whodet = NODET;
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "show-torpedo-position-and-destroy")) {
+      if (k != NULL) {
+        printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);
+        k->t_status = TOFF;
+      }
       goto state_1;
     }
 
