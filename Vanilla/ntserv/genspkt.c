@@ -322,7 +322,7 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 /* Flags we get to know about players who are seen */
 #define FLAGMASK   (PFSHIELD | INVISOMASK)
 
-    int mask;
+    int mask, masked;
     int tractor = ((F_show_all_tractors || f_many_self) && pl->p_flags&PFTRACT)?
                       (pl->p_tractor|0x40):0;
 
@@ -338,14 +338,14 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
     } else
 	mask = INVISOMASK;
 
-    if ((ntohl(flags->flags)&mask) == (pl->p_flags&mask) &&
-        flags->tractor==tractor)
-	/* Nothing has changed, don't send a packet */
-	return FALSE;
+    masked = htonl(pl->p_flags & mask);
+    if (flags->flags == masked && flags->tractor == tractor)
+        /* Nothing has changed, don't send a packet */
+        return FALSE;
 
-    flags->type=SP_FLAGS;
-    flags->pnum=pl->p_no;
-    flags->flags=htonl(mask & pl->p_flags);
+    flags->type = SP_FLAGS;
+    flags->pnum = pl->p_no;
+    flags->flags = masked;
     flags->tractor = tractor;
 
     sendClientPacket(flags);
