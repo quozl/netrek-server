@@ -1,4 +1,10 @@
 #!/bin/sh
+
+for file in config.guess config.sub ltmain.sh;
+do
+    [ -e $file ] && rm $file
+done
+
 aclocal
 libtoolize --copy
 autoconf
