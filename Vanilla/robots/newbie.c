@@ -291,7 +291,11 @@ void checkmess()
                 break;
         }
     }
-
+    while (oldmctl!=mctl->mc_current) {
+        oldmctl++;
+        if (oldmctl==MAXMESSAGE) oldmctl=0;
+        robohelp(me, oldmctl, roboname);
+    }
 }
 
 /* assuming this gets called once a second... */

@@ -763,15 +763,7 @@ void do_msg_check(void)
     while (oldmctl!=mctl->mc_current) {
 	oldmctl++;
 	if (oldmctl >= MAXMESSAGE || oldmctl < 0) oldmctl=0;
-	if (messages[oldmctl].m_flags & MINDIV) {
-	    if (messages[oldmctl].m_recpt == me->p_no)
-		check_command(&messages[oldmctl]);
-
-	} else if (messages[oldmctl].m_flags & MALL) {
-	    if (strstr(messages[oldmctl].m_data, "help") != NULL)
-		messOne(255,roboname,messages[oldmctl].m_from,
-                   "If you want help from me, send me the message 'help'.");
-	}
+	robohelp(me, oldmctl, roboname);
     }
 }
 
