@@ -1,16 +1,18 @@
 #!/bin/sh
 
 # test script to produce x/y coordinates from moving a torp from centre
-# of galactic in each direction 
+# of galactic in each direction.
 
 for dir in `seq 0 255`; do
-    tools/setship 1 x 50000 y 50000 dir ${dir} fire-test-torpedo ${dir} \
-	sleep 1 show-torpedo-position \
-	sleep 1 show-torpedo-position \
-	sleep 1 show-torpedo-position \
-	sleep 1 show-torpedo-position \
-	sleep 1 show-torpedo-position \
-	sleep 1 show-torpedo-position-and-destroy
+    tools/setship 1 x 50000 y 50000 dir ${dir} \
+	no-wobble fire-test-torpedo ${dir} \
+	sleep 1 show-test-torpedo-position \
+	sleep 1 show-test-torpedo-position \
+	sleep 1 show-test-torpedo-position \
+	sleep 1 show-test-torpedo-position \
+	sleep 1 show-test-torpedo-position \
+	sleep 1 show-test-torpedo-position \
+	destroy-test-torpedo
 done
 
 exit
@@ -22,3 +24,4 @@ set terminal png size 1024,1024
 set size square
 set grid
 plot [35000:65000] [35000:65000] "2007-02-19-torp-directions-wobble.log" using 4:6
+exit

@@ -29,6 +29,7 @@ void get(char *us, char *name, struct player *pl)
 }
 
 struct torp *k = NULL;
+int t_attribute = TOWNERSAFE | TDETTEAMSAFE;
 
 int main(int argc, char **argv)
 {
@@ -102,6 +103,16 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
+    if (!strcmp(argv[i], "wobble")) {
+      t_attribute |= TWOBBLE;
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "no-wobble")) {
+      t_attribute &= ~TWOBBLE;
+      goto state_1;
+    }
+
     if (!strcmp(argv[i], "fire-test-torpedo")) {
       if (++i == argc) return 0;
       struct ship *myship = &me->p_ship;
@@ -111,7 +122,7 @@ int main(int argc, char **argv)
       me->p_ntorp++;
       k->t_status = TMOVE;
       k->t_type = TPLASMA;
-      k->t_attribute = TOWNERSAFE | TDETTEAMSAFE;
+      k->t_attribute = t_attribute;
       k->t_owner = me->p_no;
       k->t_x = me->p_x;
       k->t_y = me->p_y;
@@ -126,16 +137,15 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "show-torpedo-position")) {
+    if (!strcmp(argv[i], "show-test-torpedo-position")) {
       if (k != NULL) {
         printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);
       }
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "show-torpedo-position-and-destroy")) {
+    if (!strcmp(argv[i], "destroy-test-torpedo")) {
       if (k != NULL) {
-        printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);
         k->t_status = TOFF;
       }
       goto state_1;
