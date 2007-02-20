@@ -251,19 +251,19 @@ struct player *p_no(int i)
 /* cause a ship to be constrained in a box (x,y)-(x,y) */
 void p_x_y_box(struct player *pl, int p_x_min, int p_y_min, int p_x_max, int p_y_max)
 {
-  pl->p_x_min = p_x_min << 8;
-  pl->p_x_max = p_x_max << 8;
-  pl->p_y_min = p_y_min << 8;
-  pl->p_y_max = p_y_max << 8;
+  pl->p_x_min = p_x_min << SPB;
+  pl->p_x_max = p_x_max << SPB;
+  pl->p_y_min = p_y_min << SPB;
+  pl->p_y_max = p_y_max << SPB;
 }
 
 /* reset constraint to whole galactic */
 void p_x_y_unbox(struct player *pl)
 {
   pl->p_x_min = 0;
-  pl->p_x_max = GWIDTH << 8;
+  pl->p_x_max = GWIDTH << SPB;
   pl->p_y_min = 0;
-  pl->p_y_max = GWIDTH << 8;
+  pl->p_y_max = GWIDTH << SPB;
 }
 
 /* request new coordinates in unsynchronised fashion */
@@ -273,8 +273,8 @@ void p_x_y_set(struct player *pl, int p_x, int p_y)
   if (p_y < 0) p_y = 0;
   if (p_x > GWIDTH) p_x = GWIDTH;
   if (p_y > GWIDTH) p_y = GWIDTH;
-  pl->p_x_input = p_x << 8;
-  pl->p_y_input = p_y << 8;
+  pl->p_x_input = p_x << SPB;
+  pl->p_y_input = p_y << SPB;
   pl->p_x_y_set++;
   /* note: request not obeyed until ship is !(PFDOCK|PFORBIT) */
 }
@@ -290,8 +290,8 @@ void p_x_y_commit(struct player *j)
 /* convert changed p_x to internal scaled representation */
 void p_x_y_to_internal(struct player *j)
 {
-  j->p_x_internal = j->p_x << 8;
-  j->p_y_internal = j->p_y << 8;
+  j->p_x_internal = j->p_x << SPB;
+  j->p_y_internal = j->p_y << SPB;
 }
 
 /* move one ship over the top of another (use case: transwarp) */

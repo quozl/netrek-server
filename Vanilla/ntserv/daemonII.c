@@ -1010,12 +1010,12 @@ static void udplayers_palive_move_in_orbit(struct player *j)
 
 static void udships_palive_move_in_orbit(struct player *j)
 {
-        j->p_x_internal = planets[j->p_planet].pl_x * 256 + 256 * ORBDIST
+        j->p_x_internal = planets[j->p_planet].pl_x * SPM + SPM * ORBDIST
                 * Cos[(u_char) (j->p_dir - (u_char) 64)];
-        j->p_y_internal = planets[j->p_planet].pl_y * 256 + 256 * ORBDIST
+        j->p_y_internal = planets[j->p_planet].pl_y * SPM + SPM * ORBDIST
                 * Sin[(u_char) (j->p_dir - (u_char) 64)];
-        j->p_x = j->p_x_internal >> 8;
-        j->p_y = j->p_y_internal >> 8;
+        j->p_x = j->p_x_internal >> SPB;
+        j->p_y = j->p_y_internal >> SPB;
 }
 
 static void udplayers_palive_move_in_dock(struct player *j)
@@ -1025,11 +1025,11 @@ static void udplayers_palive_move_in_dock(struct player *j)
 static void udships_palive_move_in_dock(struct player *j)
 {
         j->p_x_internal = players[j->p_dock_with].p_x_internal +
-                 256*DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
+                 SPM*DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
         j->p_y_internal = players[j->p_dock_with].p_y_internal +
-                 256*DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
-        j->p_x = j->p_x_internal >> 8;
-        j->p_y = j->p_y_internal >> 8;
+                 SPM*DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
+        j->p_x = j->p_x_internal >> SPB;
+        j->p_y = j->p_y_internal >> SPB;
 }
 
 static void udplayers_palive_move_in_space(struct player *j)
@@ -1120,9 +1120,9 @@ static void udships_palive_move_in_space(struct player *j)
 
         /* calculate new coordinates given current speed and direction */
         j->p_x_internal +=
-                (double) (256 * j->p_speed * WARP1) * Cos[j->p_dir] / TPF;
+                (double) (SPM * j->p_speed * WARP1) * Cos[j->p_dir] / TPF;
         j->p_y_internal +=
-                (double) (256 * j->p_speed * WARP1) * Sin[j->p_dir] / TPF;
+                (double) (SPM * j->p_speed * WARP1) * Sin[j->p_dir] / TPF;
 
         /* ship hit wall, wrap or bounce */
         if (j->p_x_internal < j->p_x_min) {
@@ -1169,8 +1169,8 @@ static void udships_palive_move_in_space(struct player *j)
                         j->p_y_internal = j->p_y_min + dy;
         }
 
-        j->p_x = j->p_x_internal >> 8;
-        j->p_y = j->p_y_internal >> 8;
+        j->p_x = j->p_x_internal >> SPB;
+        j->p_y = j->p_y_internal >> SPB;
 }
 
 static void udships_palive(struct player *j)

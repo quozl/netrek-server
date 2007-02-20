@@ -136,6 +136,8 @@ because they have initialisation of variables dependent on UPDATE. */
 #define UPDATE 100000	/* Update time is 100000 micro-seconds */
 #endif
 #define TPF (fps/10)	/* ticks per frame */
+#define SPM 256		/* scaled position multiplier */
+#define SPB 8 		/* scaled position bits */
 #define AUTOQUIT 60	/* auto logout in 60 secs */
 #define VACANT -1       /* indicates vacant port on a starbase */
 #define DOCKDIST 600
