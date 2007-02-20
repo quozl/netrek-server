@@ -18,6 +18,7 @@
 #include "xsg_defs.h"
 #include "struct.h"
 #include "localdata.h"
+#include "util.h"
 
 struct obtype *gettarget();
 static char buf[BUFSIZ];
@@ -426,8 +427,7 @@ int x, y;
 	if (move_target->o_type == PLAYERTYPE) {
 	    if (players[move_target->o_num].p_flags & PFORBIT)
 		players[move_target->o_num].p_flags ^= PFORBIT;
-	    players[move_target->o_num].p_x = g_x;
-	    players[move_target->o_num].p_y = g_y;
+	    p_x_y_set(&players[move_target->o_num], g_x, g_y);
 	} else {
 	    planets[move_target->o_num].pl_x = g_x;
 	    planets[move_target->o_num].pl_y = g_y;

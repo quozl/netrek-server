@@ -31,6 +31,7 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "newbiedefs.h"
+#include "util.h"
 
 int debug=0;
 
@@ -140,8 +141,9 @@ main(argc, argv)
 #define POSITIONX 55000
 #define POSITIONY 50000
 
-    me->p_x = POSITIONX;                 /* displace to on overlooking position */
-    me->p_y = POSITIONY;                 /* maybe we should just make it fight? */
+    /* displace to on overlooking position */
+    /* maybe we should just make it fight? */
+    p_x_y_set(me, POSITIONX, POSITIONY);
     me->p_hostile = 0;
     me->p_swar = 0;
     me->p_war = 0;
@@ -323,12 +325,10 @@ static int checkpos(void)
 
     /* stopped for sometime now */
     if ( moving==0 && stopped > 15 ) {
-	/* move us back to overlooking position */
-	if ( me->p_x != POSITIONX )
-	    me->p_x = POSITIONX;
-	if ( me->p_y != POSITIONY )
-	    me->p_y = POSITIONY;
-	stopped=0; /*do we need to reset this? */
+      /* move us back to overlooking position */
+      if (me->p_x != POSITIONX || me->p_y != POSITIONY)
+        p_x_y_set(me, POSITIONX, POSITIONY);
+        stopped=0; /*do we need to reset this? */
     }
 
     return 1;

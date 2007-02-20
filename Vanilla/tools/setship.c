@@ -7,6 +7,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "util.h"
 
 static void usage(void)
 {
@@ -23,8 +24,7 @@ void get(char *us, char *name, struct player *pl)
   printf("%s %s", us, name);
   printf(" speed %d", pl->p_speed);
   printf(" dir %d", pl->p_dir);
-  printf(" x %d", pl->p_x);
-  printf(" y %d", pl->p_y);
+  printf(" position %d %d", pl->p_x, pl->p_y);
   printf("\n");
 }
 
@@ -74,15 +74,13 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "x")) {
+    if (!strcmp(argv[i], "position")) {
+      int p_x, p_y;
       if (++i == argc) return 0;
-      players[player].p_x = atoi(argv[i]);
-      goto state_1;
-    }
-
-    if (!strcmp(argv[i], "y")) {
+      p_x = atoi(argv[i]);
       if (++i == argc) return 0;
-      players[player].p_y = atoi(argv[i]);
+      p_y = atoi(argv[i]);
+      p_x_y_set(&players[player], p_x, p_y);
       goto state_1;
     }
 
@@ -147,6 +145,22 @@ int main(int argc, char **argv)
     if (!strcmp(argv[i], "destroy-test-torpedo")) {
       if (k != NULL) {
         k->t_status = TOFF;
+      }
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "monitor-coordinates")) {
+      for (;;) {
+	printf("p_x %X p_y %X p_x_internal %X p_y_internal %X\n", me->p_x, me->p_y, me->p_x_internal, me->p_y_internal);
+	usleep(20000);
+      }
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "monitor-docking")) {
+      for (;;) {
+	printf("p_flags & PFDOCK %X p_dock_with %X p_dock_bay %X\n", me->p_flags & PFDOCK, me->p_dock_with, me->p_dock_bay);
+	usleep(20000);
       }
       goto state_1;
     }

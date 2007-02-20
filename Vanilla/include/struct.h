@@ -394,8 +394,17 @@ struct player {
     char p_longname[NAME_LEN+6];/* Name plus (mapchars); i.e.  "Wreck (R0)" */
     char p_mapchars[3];		/* Cache for map window image, i.e. "R0" */
     struct ship p_ship;		/* Personal ship statistics */
-    int p_x;
-    int p_y;
+    int p_x;			/* normal coordinates */
+    int p_y;			/* daemon: write, others: read */
+    int p_x_internal;		/* shifted coordinates internal to daemon */
+    int p_y_internal;		/* daemon: write, others: read */
+    int p_x_input;		/* new requested coordinates */
+    int p_y_input;		/* daemon: read, others: write */
+    int p_x_y_set;		/* new requested coordinates are set up */
+    int p_x_min;		/* flight bounding box, for confine */
+    int p_y_min;		/* (defaults to galaxy dimensions) */
+    int p_x_max;
+    int p_y_max;
     u_char p_dir;	/* Real direction */
     u_char p_desdir;	/* desired direction */
     int p_subdir;		/* fraction direction change */

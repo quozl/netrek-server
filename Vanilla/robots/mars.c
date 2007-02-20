@@ -125,8 +125,9 @@ char **argv;
 
     me->p_pos = -1;		     /* So robot stats don't get saved */
     me->p_flags |= PFROBOT;	     /* Mark as a robot */
-    me->p_x = 50000;                 /* displace to on overlooking position */
-    me->p_y = 5000;                  /* maybe we should just make it fight? */
+    /* displace to on overlooking position */
+    /* maybe we should just make it fight? */
+    p_x_y_set(me, 50000, 5000);
 
     alarm_init();
     if (!debug)

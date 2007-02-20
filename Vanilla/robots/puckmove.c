@@ -312,26 +312,27 @@ void rmove(void)
         if ((faceoff % (PERSEC)) == 0) do_msg_check();
 	faceoff--;
 	if (faceoff == 0) {
-	    int i;
+	    int i, x, y;
 	    do_war();		/* open hostilities */
 	    do_offsides();
 	    for (i = 0; i <= MAXTEAM; i++) {
 		currp[i] = -1; lastp[i] = -1;
 	    }
 	    messAll(me->p_no,roboname,"<thunk!>");
-	    me->p_x = 45000 + random()%10000; /* reappear */
+	    x = 45000 + random()%10000; /* reappear */
 #ifdef FO_BIAS
 	    if (scores[KLI] >= (scores[ORI]+5)) faceoffbias = 1;
 	    if (scores[ORI] >= (scores[KLI]+5)) faceoffbias = -1;
-	    me->p_y = R_MID + FACEOFF_HELP * faceoffbias;
+	    y = R_MID + FACEOFF_HELP * faceoffbias;
 #else /*FO_BIAS */
-	    me->p_y = R_MID;
+	    y = R_MID;
 #endif /*FO_BIAS */
 	    me->p_speed = 0;	/* *** BAV *** */
             me->p_desspeed = 0;
             me->p_subspeed = 0;
 	    lasty = R_MID;	/* avoid boing problems */
-            lastx = me->p_x;
+            lastx = x;
+	    p_x_y_set(me, x, y);
 	    shotby = -1;	/* to find winner of faceoff */
 	}
 	else if ((faceoff % (10*PERSEC)) == 0) {
@@ -454,10 +455,12 @@ void rmove(void)
 
     if (me->p_x < RINK_LEFT) {
 	me->p_x = RINK_LEFT + (RINK_LEFT - me->p_x);
+	p_x_y_to_internal(me);
 	me->p_dir = me->p_desdir = 64 - (me->p_dir - 192);
 	shotby = -2;
     } else if (me->p_x > RINK_RIGHT) {
 	me->p_x = RINK_RIGHT - (me->p_x - RINK_RIGHT);
+	p_x_y_to_internal(me);
 	me->p_dir = me->p_desdir = 192 - (me->p_dir - 64);
 	shotby = -2;
     }
@@ -470,12 +473,14 @@ void rmove(void)
 	    if (me->p_speed > 0)
 		messAll(anncer->p_no,roboname,"Boing!  Off right side of goal.");
 	    me->p_x = G_RGT + (G_RGT - me->p_x);
+	    p_x_y_to_internal(me);
 	    me->p_dir = me->p_desdir = 64 - (me->p_dir - 192);
 	    shotby = -2;
 	} else if ((me->p_x >= G_LFT) && (lastx <= G_LFT)) {
 	    if (me->p_speed > 0)
 		messAll(anncer->p_no,roboname,"Boing!  Off left side of goal.");
 	    me->p_x = G_LFT - (me->p_x - G_LFT);
+	    p_x_y_to_internal(me);
 	    me->p_dir = me->p_desdir = 192 - (me->p_dir - 64);
 	    shotby = -2;
 	}
@@ -486,12 +491,14 @@ void rmove(void)
 		messAll(anncer->p_no,roboname,"Boing!  Off back of Kli goal.");
 	    me->p_dir = me->p_desdir = 0 - (me->p_dir - 128);
 	    me->p_y = KLI_E - (me->p_y - KLI_E); 
+	    p_x_y_to_internal(me);
 	    shotby = -2;
 	} else if ((me->p_y < ORI_E) && (lasty >= ORI_E)) {
 	    if (me->p_speed > 0)
 		messAll(anncer->p_no,roboname,"Boing!  Off back of Ori goal.");
 	    me->p_dir = me->p_desdir = 128 - me->p_dir; 
 	    me->p_y = ORI_E + (ORI_E - me->p_y);
+	    p_x_y_to_internal(me);
 	    shotby = -2;
 	}
     }
@@ -699,6 +706,7 @@ void do_teleport_home(void)
 	j->p_y = planets[startplanet].pl_y + (random() % (2*DISPLACE) - DISPLACE);
 	if (j->p_x >= RINK_LEFT && j->p_x <= RINK_RIGHT)
 	    j->p_x = planets[startplanet].pl_x + (random() % (2*DISPLACE) - DISPLACE);
+	p_x_y_to_internal(me);
 
 	j->p_speed = 0;
 	j->p_desspeed = 0;
@@ -982,6 +990,7 @@ void place_anncer(void)
       anncer->p_desspeed = 0;
       anncer->p_x = RINK_LEFT/4;
       anncer->p_y = R_MID;
+      p_x_y_to_internal(anncer);
 }
 
 void place_sitout(int who)
@@ -998,12 +1007,14 @@ void place_sitout(int who)
 #ifdef SITOUT_HURTS
        j->p_y = track->t_y = KLI_B + (random() % (2*DISPLACE) - DISPLACE);
 #endif /*SITOUT_HURTS */
+       p_x_y_to_internal(j);
     }
     else if (j->p_team == ORI){
        j->p_x = track->t_x = GWIDTH - SITOUT_X;
 #ifdef SITOUT_HURTS
        j->p_y = track->t_y = ORI_B + (random() % (2*DISPLACE) - DISPLACE);
 #endif /*SITOUT_HURTS*/
+       p_x_y_to_internal(j);
     }
     else 
        return;  /*Not ORI, not KLI, so do nothing... Weird*/
@@ -1194,6 +1205,7 @@ void do_faceoff(void)
     me->p_desspeed = 0;
     me->p_x = RINK_LEFT;	/* *** BAV *** */
     me->p_y = R_MID;
+    p_x_y_to_internal(me);
     place_anncer();
     if (debug)
 	faceoff = 5;
@@ -1287,6 +1299,7 @@ void player_maint(void)
 		    j->p_x = track->t_x + ((random() % DXDISPLACE) + DXOFFSET);
 		/* and shake it all around */
 		j->p_y = track->t_y + random()%(2*DYDISPLACE) - DYDISPLACE;
+		p_x_y_to_internal(j);
 	    }
 	}
 
@@ -1334,8 +1347,10 @@ void player_bounce(void)
         /* Hit/bounce off the boards */
         if (j->p_x < RINK_LEFT) {
            j->p_x = RINK_LEFT;
+           p_x_y_to_internal(j);
         } else if (j->p_x > RINK_RIGHT) {
            j->p_x = RINK_RIGHT;
+           p_x_y_to_internal(j);
         }
 #endif
 
@@ -1348,18 +1363,24 @@ void player_bounce(void)
 
     	   if (track->t_x >= G_RGT) {
                j->p_x = G_RGT;         /*Hits right side of goal*/
+               p_x_y_to_internal(j);
 	   } else if (track->t_x <= G_LFT) {
                j->p_x = G_LFT;         /*Hits left side of goal*/
+               p_x_y_to_internal(j);
 	   }
 
            if ((j->p_y > KLI_E) && (track->t_y <= KLI_E)) {
                j->p_y = KLI_E;         /*Hits back of Kli goal*/
+               p_x_y_to_internal(j);
 	   } else if ((j->p_y < ORI_E) && (track->t_y >= ORI_E)) {
                j->p_y = ORI_E;         /*Hits back of Ori goal*/
+               p_x_y_to_internal(j);
 	   } else if ((j->p_y < KLI_G) && (track->t_y >= KLI_G)) {
                j->p_y = KLI_G;         /*Hits front of Kli goal*/
+               p_x_y_to_internal(j);
 	   } else if ((j->p_y > ORI_G) && (track->t_y <= ORI_G)) {
                j->p_y = ORI_G;         /*Hits front of Ori goal*/
+               p_x_y_to_internal(j);
 	   }
 
         }  /*End big inside goal if */
@@ -1431,6 +1452,7 @@ void penalty_offsides(int team)
 
    if (team == ORI)      me->p_y = (R_MID + KLI_B)/2;
    else                  me->p_y = (R_MID + ORI_B)/2;
+   p_x_y_to_internal(me);
   
    me->p_speed=me->p_desspeed=0;
 }

@@ -19,6 +19,7 @@
 #include "planets.h"
 #include "data.h"
 #include "proto.h"
+#include "util.h"
 
 static void CoolServerIdea(void);
 static void CloseUpShop(void);
@@ -336,6 +337,7 @@ static void CloseUpShop2(void)
 
 static void CloseUpShop() {
   int i, m, dx[MAXPLANETS], dy[MAXPLANETS], t = 600;
+  int x1, y1, x2, y2;
 
   for(i=0; i<MAXPLANETS; i++) {
     dx[i] = (planets[i].pl_x - 50000)/t;
@@ -343,10 +345,22 @@ static void CloseUpShop() {
   }
 
   for(m=0; m<t; m++) {
+    x1 = y1 = GWIDTH; x2 = y2 = 0;
     for(i=0; i<MAXPLANETS; i++) {
-      planets[i].pl_x -= dx[i];
-      planets[i].pl_y -= dy[i];
+      struct planet *p = &planets[i];
+      p->pl_x -= dx[i];
+      p->pl_y -= dy[i];
+      if (p->pl_x < x1) x1 = p->pl_x;
+      if (p->pl_x > x2) x2 = p->pl_x;
+      if (p->pl_y < y1) y1 = p->pl_y;
+      if (p->pl_y > y2) y2 = p->pl_y;
     }
+
+    /* confine players to shrunken universe */
+    if (m < (t-100)) for(i=0; i<MAXPLAYER; i++) {
+      p_x_y_box(&players[i], x1, y1, x2, y2);
+    }
+
     if (m == (t-100)) {
       for(i=0; i<MAXPLANETS; i++) {
 	planets[i].pl_flags = 0;

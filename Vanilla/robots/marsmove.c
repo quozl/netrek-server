@@ -38,6 +38,7 @@
 #include "proto.h"
 #include "roboshar.h"
 #include "marsdefs.h"
+#include "util.h"
 
 
 #undef DOGDEBUG              /* debugging compiler option, too much */
@@ -692,30 +693,29 @@ void do_teleport_arena(int ano, struct player* j, int position)
 
     if (j->p_status == PALIVE)
       {
+	int x, y;
 
 	if (ano == 0)
 	  {
-	    j->p_y = planets[STARTPLANET].pl_y
-	      + (random() % (2*DISPLACE) - DISPLACE);
-
-	    j->p_x = planets[STARTPLANET].pl_x 
-	      + (random() % (2*DISPLACE) - DISPLACE);
+	    x = planets[STARTPLANET].pl_x + (random() % (2*DISPLACE)-DISPLACE);
+	    y = planets[STARTPLANET].pl_y + (random() % (2*DISPLACE)-DISPLACE);
 	  }
 	else
 	  {
 #ifdef DOG_RANDOM
-	    j->p_x = a->a_x + (2 * position - 1) * (10000 + (random() % 4500));
-	    j->p_y = a->a_y - (2 * position - 1) * (random() % 9000);
+	    x = a->a_x + (2 * position - 1) * (10000 + (random() % 4500));
+	    y = a->a_y - (2 * position - 1) * (random() % 9000);
 #else
-	    j->p_x = a->a_x + (2 * position - 1) * 9000;
-	    j->p_y = a->a_y - (2 * position - 1) * 6000;
+	    x = a->a_x + (2 * position - 1) * 9000;
+	    y = a->a_y - (2 * position - 1) * 6000;
 #endif
 	  }
+	p_x_y_set(j, x, y);
 	
 	smileon(j);
 
-	track->t_x = j->p_x;
-	track->t_y = j->p_y;
+	track->t_x = x;
+	track->t_y = y;
       }
 
     track->t_arena = ano;
@@ -1714,73 +1714,7 @@ void player_bounce(void)
 	      case TPLASMA: j->p_nplasmatorp--; break;
 	    }
 	  }
-
-#ifdef WALL_BOUNCE
-        /* Hit/bounce off the boards */
-        if (j->p_x < a->a_left) 
-	  {      
-	    j->p_flags &= ~PFORBIT;
-	    if (j->p_dir == 192)
-	      j->p_dir = j->p_desdir = 64;
-	    else
-	      j->p_dir = j->p_desdir = 64 - (j->p_dir - 192);
-
-	    j->p_x = a->a_left;
-	  } 
-	else if (j->p_x > a->a_right) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    if (j->p_dir == 64)
-	      j->p_dir = j->p_desdir = 192;
-	    else
-	      j->p_dir = j->p_desdir = 192 - (j->p_dir - 64);
-
-	    j->p_x = a->a_right;
-	  }
-        if (j->p_y < a->a_top) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    if (j->p_dir == 0)
-	      j->p_dir = j->p_desdir = 128;
-	    else
-	      j->p_dir = j->p_desdir = 128 - j->p_dir;
-
-	    j->p_y = a->a_top;
-	  } 
-	else if (j->p_y > a->a_bottom) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    if (j->p_dir == 128)
-	      j->p_dir = j->p_desdir = 0;
-	    else
-	      j->p_dir = j->p_desdir = 128 - j->p_dir;
-
-	    j->p_y = a->a_bottom;
-	  }
-#else
-        /* Bounce - and stick */
-        if (j->p_x < a->a_left) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    j->p_x = a->a_left;
-	  } 
-	else if (j->p_x > a->a_right) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    j->p_x = a->a_right;
-	  }
-        if (j->p_y < a->a_top) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    j->p_y = a->a_top;
-	  } 
-	else if (j->p_y > a->a_bottom) 
-	  {
-	    j->p_flags &= ~PFORBIT;
-	    j->p_y = a->a_bottom;
-	  }
-#endif
-
+	p_x_y_box(j, a->a_left, a->a_top, a->a_right, a->a_bottom);
     } /*end for loop*/
 
 }
@@ -1788,6 +1722,13 @@ void player_bounce(void)
 
 void exitRobot(void)
 {
+    int i;
+    struct player *j;
+
+    for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
+        p_x_y_unbox(j);
+    }
+
     if (me != NULL && me->p_team != ALLTEAM) {
 	if (target >= 0) {
 	    messAll(255,roboname, "I'll be back.");

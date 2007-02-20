@@ -135,24 +135,19 @@ int main(int argc, char **argv)
     case 't': /* teleport */
       switch(argv[2][1]) {
       case 'f':
-	players[player].p_x = planets[0].pl_x;
-	players[player].p_y = planets[0].pl_y;
+	p_x_y_set(&players[player], planets[0].pl_x, planets[0].pl_y);
 	break;
       case 'r':
-	players[player].p_x = planets[10].pl_x;
-	players[player].p_y = planets[10].pl_y;
+	p_x_y_set(&players[player], planets[10].pl_x, planets[10].pl_y);
 	break;
       case 'k':
-	players[player].p_x = planets[20].pl_x;
-	players[player].p_y = planets[20].pl_y;
+	p_x_y_set(&players[player], planets[20].pl_x, planets[20].pl_y);
 	break;
       case 'o':
-	players[player].p_x = planets[30].pl_x;
-	players[player].p_y = planets[30].pl_y;
+	p_x_y_set(&players[player], planets[30].pl_x, planets[30].pl_y);
 	break;
       case 'c':
-	players[player].p_x = GWIDTH/2;
-	players[player].p_y = GWIDTH/2;
+	p_x_y_set(&players[player], GWIDTH/2, GWIDTH/2);
 	break;
       default:
 	printf("Valid teleports: frkoc.\n");

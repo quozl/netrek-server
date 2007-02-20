@@ -603,9 +603,10 @@ static void move()
     }
 
     if (ispaused){ /* Game is paused */
-      if (fuse(PLAYERFUSE))
+      if (fuse(PLAYERFUSE)) {
         udplayerpause();
-      if (status->gameup & GU_CONQUER) conquer_update();
+        if (status->gameup & GU_CONQUER) conquer_update();
+      }
       signal_servers();
       return;
     }
@@ -845,6 +846,9 @@ static void udplayerpause(void) {
                                 /* 2 = ghostbust during pause */
     j = &players[i];
 
+    /* adopt new coordinates if requested */
+    if (j->p_x_y_set) p_x_y_commit(j);
+
     switch(j->p_status) {
       case PFREE:       /* reset ghostbuster and continue */
         j->p_ghostbuster = 0;
@@ -1006,10 +1010,12 @@ static void udplayers_palive_move_in_orbit(struct player *j)
 
 static void udships_palive_move_in_orbit(struct player *j)
 {
-        j->p_x = planets[j->p_planet].pl_x + ORBDIST
+        j->p_x_internal = planets[j->p_planet].pl_x * 256 + 256 * ORBDIST
                 * Cos[(u_char) (j->p_dir - (u_char) 64)];
-        j->p_y = planets[j->p_planet].pl_y + ORBDIST
+        j->p_y_internal = planets[j->p_planet].pl_y * 256 + 256 * ORBDIST
                 * Sin[(u_char) (j->p_dir - (u_char) 64)];
+        j->p_x = j->p_x_internal >> 8;
+        j->p_y = j->p_y_internal >> 8;
 }
 
 static void udplayers_palive_move_in_dock(struct player *j)
@@ -1018,10 +1024,12 @@ static void udplayers_palive_move_in_dock(struct player *j)
 
 static void udships_palive_move_in_dock(struct player *j)
 {
-        j->p_x = players[j->p_dock_with].p_x + 
-                 DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
-        j->p_y = players[j->p_dock_with].p_y + 
-                 DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
+        j->p_x_internal = players[j->p_dock_with].p_x_internal +
+                 256*DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
+        j->p_y_internal = players[j->p_dock_with].p_y_internal +
+                 256*DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
+        j->p_x = j->p_x_internal >> 8;
+        j->p_y = j->p_y_internal >> 8;
 }
 
 static void udplayers_palive_move_in_space(struct player *j)
@@ -1107,65 +1115,75 @@ static void udplayers_palive_move_in_space(struct player *j)
 
 static void udships_palive_move_in_space(struct player *j)
 {
-        j->p_x += (double) (j->p_speed * WARP1) * Cos[j->p_dir] / TPF;
-        j->p_y += (double) (j->p_speed * WARP1) * Sin[j->p_dir] / TPF;
-        
-        /* ship hit wall, wrap or bounce */
+        /* adopt new coordinates if requested */
+        if (j->p_x_y_set) p_x_y_commit(j);
 
-        if (j->p_x < 0) {
+        /* calculate new coordinates given current speed and direction */
+        j->p_x_internal +=
+                (double) (256 * j->p_speed * WARP1) * Cos[j->p_dir] / TPF;
+        j->p_y_internal +=
+                (double) (256 * j->p_speed * WARP1) * Sin[j->p_dir] / TPF;
+
+        /* ship hit wall, wrap or bounce */
+        if (j->p_x_internal < j->p_x_min) {
+                int dx = j->p_x_min - j->p_x_internal;
                 if (!wrap_galaxy) {
-                        j->p_x = -j->p_x;
+                        j->p_x_internal += 2 * dx;
                         if (j->p_dir == 192)
                                 j->p_dir = j->p_desdir = 64;
                         else
                                 j->p_dir = j->p_desdir = 64 - (j->p_dir - 192);
                 } else 
-                        j->p_x += GWIDTH;
-        } else if (j->p_x > GWIDTH) {
+                        j->p_x_internal = j->p_x_max - dx;
+        } else if (j->p_x_internal > j->p_x_max) {
+                int dx = j->p_x_internal - j->p_x_max;
                 if (!wrap_galaxy) {
-                        j->p_x = GWIDTH - (j->p_x - GWIDTH);
+                        j->p_x_internal -= 2 * dx;
                         if (j->p_dir == 64)
                                 j->p_dir = j->p_desdir = 192;
                         else
                                 j->p_dir = j->p_desdir = 192 - (j->p_dir - 64);
                 } else 
-                        j->p_x -= GWIDTH;
+                        j->p_x_internal = j->p_x_min + dx;
         }
 
-        if (j->p_y < 0) {
+        if (j->p_y_internal < j->p_y_min) {
+                int dy = j->p_y_min - j->p_y_internal;
                 if (!wrap_galaxy) {
-                        j->p_y = -j->p_y;
+                        j->p_y_internal += 2 * dy;
                         if (j->p_dir == 0)
                                 j->p_dir = j->p_desdir = 128;
                         else
                                 j->p_dir = j->p_desdir = 128 - j->p_dir;
                 } else 
-                        j->p_y += GWIDTH;
-        } else if (j->p_y > GWIDTH) {
+                        j->p_y_internal = j->p_y_max - dy;
+        } else if (j->p_y_internal > j->p_y_max) {
+                int dy = j->p_y_internal - j->p_y_max;
                 if (!wrap_galaxy) {
-                        j->p_y = GWIDTH - (j->p_y - GWIDTH);
+                        j->p_y_internal -= 2 * dy;
                         if (j->p_dir == 128)
                                 j->p_dir = j->p_desdir = 0;
                         else
                                 j->p_dir = j->p_desdir = 0 - (j->p_dir - 128);
                 } else 
-                        j->p_y -= GWIDTH;
-                
+                        j->p_y_internal = j->p_y_min + dy;
         }
+
+        j->p_x = j->p_x_internal >> 8;
+        j->p_y = j->p_y_internal >> 8;
 }
 
 static void udships_palive(struct player *j)
 {
-        if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
-                /* move player in orbit */
-                udships_palive_move_in_orbit(j);
-        } else if (!(j->p_flags & PFDOCK)) {
-                /* move player through space */
-                udships_palive_move_in_space(j);
-        } else if (j->p_flags & PFDOCK) {
-                /* move player in dock */
+        if (j->p_flags & PFDOCK) {
                 udships_palive_move_in_dock(j);
+                return;
         }
+        if (j->p_flags & PFORBIT) {
+                udships_palive_move_in_orbit(j);
+                return;
+        }
+        udships_palive_move_in_space(j);
 }
 
 static void udships()
@@ -1174,7 +1192,6 @@ static void udships()
     struct player *j;
 
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
-
         switch (j->p_status) {
             case PEXPLODE:
             case PALIVE:
@@ -1363,11 +1380,13 @@ static void udplayers_palive_tractor(struct player *j)
                 /* todo: fps support, tractor pulses at 10 fps */
                 j->p_x += dir * cosTheta * halfforce/(j->p_ship.s_mass);
                 j->p_y += dir * sinTheta * halfforce/(j->p_ship.s_mass);
+                p_x_y_to_internal(j);
                 /* todo: fps support, tractor pulses at 10 fps */
                 players[j->p_tractor].p_x -= dir * cosTheta *
                         halfforce/(players[j->p_tractor].p_ship.s_mass);
                 players[j->p_tractor].p_y -= dir * sinTheta *
                         halfforce/(players[j->p_tractor].p_ship.s_mass);
+                p_x_y_to_internal(&players[j->p_tractor]);
         } else {
                 j->p_flags &= ~(PFTRACT | PFPRESS);
         }     
@@ -2732,6 +2751,7 @@ static void udsurrend(void)
             j->p_flags &= ~(PFPLOCK | PFPLLOCK);
             j->p_x = -100000;         /* place me off the tactical */
             j->p_y = -100000;
+            p_x_y_to_internal(j);
         }
     }
 #endif /* OBSERVERS */

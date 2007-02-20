@@ -138,8 +138,9 @@ main(argc, argv)
 
     me->p_pos = -1;                              /* So robot stats don't get saved */
     me->p_flags |= (PFROBOT | PFCLOAK);          /* Mark as a robot and hide it */
-    me->p_x = -100000;                           /* don't appear in the galaxy */
-    me->p_y = -100000;
+    
+    /* don't appear in the galaxy */
+    p_x_y_set(me, -100000, -100000);
     me->p_hostile = 0;
     me->p_swar = 0;
     me->p_war = 0;

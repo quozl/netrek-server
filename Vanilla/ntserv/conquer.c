@@ -7,6 +7,7 @@
 #include "proto.h"
 #include "daemon.h"
 #include "conquer.h"
+#include "util.h"
 
 /* conquest gloating parade */
 
@@ -133,28 +134,25 @@ static void conquer_ships_ring()
 		dx = j->p_x - x;
 		dy = j->p_y - y;
 		if (abs(dx) < 50) {
-			j->p_x = x;
-			j->p_y = y;
+			p_x_y_set(j, x, y);
 		} else {
-			j->p_x = j->p_x - (dx / 10);
-			j->p_y = j->p_y - (dy / 10);
+			p_x_y_set(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
 		}
 	}
-
-
 }
 
 /* force the ring of ships into final position */
 static void conquer_parade()
 {
-	int n, h, k;
+	int n, h, k, x, y;
 	struct player *j;
 
 	n = conquer_count_players();
 	for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
-		conquer_ring_coordinates(j, k++, n, &j->p_x, &j->p_y);
+		conquer_ring_coordinates(j, k++, n, &x, &y);
+		p_x_y_set(j, x, y);
 		j->p_speed = 0;
 	}
 }

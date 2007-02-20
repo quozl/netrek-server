@@ -13,21 +13,6 @@
 #include "localdata.h"
 
 /*
-** Provide the angular distance between two angles.
-*/
-angdist(x, y)
-unsigned char x, y;
-{
-    register unsigned char res;
-
-    if (x>y) res=x-y;
-    else res=y-x;
-    if (res > 128)
-	return(256 - (int) res);
-    return((int) res);
-}
-
-/*
 ** Find the object nearest mouse.  Returns a pointer to an
 ** obtype structure.  This is used for info and locking on.
 **

@@ -131,6 +131,7 @@ static int dock(struct player *base)
   me->p_desdir    = me->p_dir;
   me->p_x         = base->p_x + DOCKDIST * Cos[dir_from_base];
   me->p_y         = base->p_y + DOCKDIST * Sin[dir_from_base];
+  p_x_y_to_internal(me);
   me->p_speed     = 0;
   me->p_desspeed  = 0;
 #ifdef SB_TRANSWARP

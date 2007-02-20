@@ -16,6 +16,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "sturgeon.h"
+#include "util.h"
 
 /* file scope prototypes */
 static u_char newcourse(int x, int y);
@@ -559,7 +560,7 @@ static void auto_features(void)
 	    }
 #ifdef SB_TRANSWARP
 	if ((dist < 2*DOCKDIST) && (me->p_flags & PFTWARP)){
-	    me->p_x = pl->p_x; me->p_y = pl->p_y;
+	    p_x_y_join(me, pl);
 	    me->p_flags &= ~(PFPLOCK);
 	    me->p_flags &= ~(PFTWARP);
 #ifdef SB_CALVINWARP

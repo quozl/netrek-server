@@ -298,18 +298,6 @@ numShips(owner)
 	return (num);
 }
 
-realNumShips(owner)
-{
-	int		i, num = 0;
-	struct player	*p;
-
-	for (i = 0, p = players; i < MAXPLAYER; i++, p++)
-		if (p->p_status != PFREE && 
-		    p->p_team == owner)
-			num++;
-	return (num);
-}
-
 deadTeam(owner)
 int owner;
 /* The team is dead if it has no planets and cannot coup it's home planet */

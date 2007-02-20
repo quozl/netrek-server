@@ -252,38 +252,25 @@ inl_freeze(void)
 
 }
 
-static void
-inl_confine_deorbit(struct player *j)
-{
-  if (j->p_flags & PFORBIT) {
-    j->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
-  }
-}
-
 void
 inl_confine(void)
 {
   struct player *j;
 
-  for (j = firstPlayer; j <= lastPlayer; j++)
-    {
-      if (j->p_x < cbounds[j->p_team][0]) {
-	inl_confine_deorbit(j);
-	j->p_x = cbounds[j->p_team][0];
-      }
-      if (j->p_y < cbounds[j->p_team][1]) {
-	inl_confine_deorbit(j);
-	j->p_y = cbounds[j->p_team][1];
-      }
-      if (j->p_x > cbounds[j->p_team][2]) {
-	inl_confine_deorbit(j);
-	j->p_x = cbounds[j->p_team][2];
-      }
-      if (j->p_y > cbounds[j->p_team][3]) {
-	inl_confine_deorbit(j);
-	j->p_y = cbounds[j->p_team][3];
-      }
-    }
+  for (j = firstPlayer; j <= lastPlayer; j++) {
+    p_x_y_box(j, cbounds[j->p_team][0], cbounds[j->p_team][1],
+                 cbounds[j->p_team][2], cbounds[j->p_team][3]);
+  }
+}
+
+void
+inl_unconfine(void)
+{
+  struct player *j;
+
+  for (j = firstPlayer; j <= lastPlayer; j++) {
+    p_x_y_unbox(j);
+  }
 }
 
 typedef struct playerlist {
@@ -440,7 +427,7 @@ inlmove()
   /***** Start The Code Here *****/
 
 #ifdef INLDEBUG
-  ERROR(2,("Enter inlsmove\n"));
+  ERROR(2,("Enter inlmove\n"));
 #endif
 
   inl_stat.ticks++;
@@ -453,6 +440,8 @@ inlmove()
 
   if (inl_stat.flags & S_CONFINE)
     inl_confine();
+  else
+    inl_unconfine();
 
   if (!(inl_stat.flags & (S_TOURNEY | S_OVERTIME)) ||
       (inl_stat.flags & S_FREEZE )) {
