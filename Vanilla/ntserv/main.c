@@ -220,7 +220,6 @@ int main(int argc, char **argv)
      * It is kind of a hack, but should be harmless.
      */
     p_x_y_set(me, -100000, -100000);
-    p_x_y_unbox(me);
     me->p_team=0;
     updateSelf(FALSE);	/* so he gets info on who he is */
     			/* updateSelf(TRUE) shouldn't be necessary */

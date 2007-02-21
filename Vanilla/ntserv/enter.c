@@ -140,10 +140,11 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	    startplanet=tno*10 + random() % 10;
 	    if (startplanets[startplanet]) break;
 	}
-	p_x_y_set(me,
-		  planets[startplanet].pl_x + (random() % 10000) - 5000,
-		  planets[startplanet].pl_y + (random() % 10000) - 5000);
+	p_x_y_go(me,
+		 planets[startplanet].pl_x + (random() % 10000) - 5000,
+		 planets[startplanet].pl_y + (random() % 10000) - 5000);
     }
+    p_x_y_unbox(me);
     me->p_ntorp = 0;
     me->p_cloakphase = 0;
     me->p_nplasmatorp = 0;
@@ -301,9 +302,9 @@ static void placeIndependent(void)
 
     failures = 0;
     while (failures < 10) {	/* don't try too hard to get them in */
-	p_x_y_set(me,
-		  GWIDTH/2 + (random() % INDEP) - INDEP/2, /* middle 9th of */
-		  GWIDTH/2 + (random() % INDEP) - INDEP/2); /* galaxy */
+	p_x_y_go(me,
+		 GWIDTH/2 + (random() % INDEP) - INDEP/2, /* middle 9th of */
+		 GWIDTH/2 + (random() % INDEP) - INDEP/2); /* galaxy */
 	good = 1;
 	for (i = 0, p = players; i < MAXPLAYER; i++, p++)
 	    if ((p->p_status != PFREE) && (p != me)) {

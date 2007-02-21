@@ -248,6 +248,16 @@ struct player *p_no(int i)
   return &players[i];
 }
 
+/* set coordinates for a new ship that is not yet alive */
+void p_x_y_go(struct player *pl, int p_x, int p_y)
+{
+  pl->p_x = p_x;
+  pl->p_y = p_y;
+  pl->p_x_internal = spi(p_x);
+  pl->p_y_internal = spi(p_y);
+  pl->p_x_y_set = 0;
+}
+
 /* cause a ship to be constrained in a box (x,y)-(x,y) */
 void p_x_y_box(struct player *pl, int p_x_min, int p_y_min, int p_x_max, int p_y_max)
 {

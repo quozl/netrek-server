@@ -233,7 +233,6 @@ char **argv;
 
     robonameset(me);  /* set the robot@nowhere fields */
 
-    p_x_y_unbox(me);
     if (target >= 0)		/* hack 7/27/91 TC */
 	enter(team, target, pno, class, pseudo); /* was BATTLESHIP 8/9/91 TC */
     else
