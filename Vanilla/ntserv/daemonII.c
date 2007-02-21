@@ -614,6 +614,7 @@ static void move()
     if (context->frame_test_mode) {
       if (!context->frame_test_counter) {
         status->gameup |= GU_PAUSED;
+        context->frame_test_mode = 0;
         return;
       }
       context->frame_test_counter--;

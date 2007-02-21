@@ -7,6 +7,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "util.h"
 
 static void usage(void)
 {

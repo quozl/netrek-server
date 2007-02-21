@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     }
 
     if (!strcmp(argv[i], "wait-for-pause")) {
-      while (status->gameup & GU_PAUSED) sleep(1);
+      while (!(status->gameup & GU_PAUSED)) usleep(20000);
       goto state_0;
     }
 
@@ -116,6 +116,19 @@ int main(int argc, char **argv)
        [set up dynamic test environment]
        resume wait-for-pause
        [examine result] */
+
+    if (!strcmp(argv[i], "show-context")) {
+      printf("daemon: %d\n", context->daemon);
+      printf("frame: %d\n", context->frame);
+      printf("frame_tourn_start: %d\n", context->frame_tourn_start);
+      printf("frame_tourn_end: %d\n", context->frame_tourn_end);
+      printf("frame_test_mode: %d\n", context->frame_test_mode);
+      printf("frame_test_counter: %d\n", context->frame_test_counter);
+      printf("quorum[2]: %d %d\n", context->quorum[0], context->quorum[1]);
+      printf("blog_pickup_game_full: %d\n", context->blog_pickup_game_full);
+      printf("blog_pickup_queue_full: %d\n", context->blog_pickup_queue_full);
+      goto state_0;
+    }
 
     goto state_0;
 }

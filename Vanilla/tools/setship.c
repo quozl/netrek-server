@@ -15,6 +15,15 @@ static void usage(void)
 Usage: setship SLOT get\n\
        setship SLOT COMMAND [COMMAND ...]\n\
 \n\
+position x y                move ship to x y coordinate\n\
+dir n                       set course to n (0-255)\n\
+speed n                     set speed to n (0-maxwarp)\n\
+wobble                      set next torp standard wobble\n\
+no-wobble                   set next torp without wobble\n\
+fire-test-torpedo n         fire torp in direction n\n\
+show-test-torpedo-position  show position of first torpedo owned\n\
+destroy-test-torpedo        detonate torpedo\n\
+sleep n                     sleep for n seconds\n\
 ");
 }
 
