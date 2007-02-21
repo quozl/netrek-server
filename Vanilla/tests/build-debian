@@ -17,11 +17,12 @@ cd $BUILDROOT/Vanilla
 # build configure
 sh autogen.sh
 
-# configure
-./configure
-
-# build all
-make package
+# Build debian arch, noarch, and source packages using fakeroot
+dpkg-buildpackage -sa -rfakeroot
+if [ $? -ne 0 ]; then
+  echo "Error: Build failure"
+  exit 1
+fi
 
 # report success
 echo success
