@@ -6,6 +6,7 @@
 #include "data.h"
 #include "proto.h"
 #include "sturgeon.h"
+#include "util.h"
 
 #ifdef STURGEON
 

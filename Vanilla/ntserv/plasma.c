@@ -9,6 +9,7 @@
 #include "data.h"
 #include "proto.h"
 #include "sturgeon.h"
+#include "util.h"
 
 /*
  * See torp.c for comments; in essence this code is an exact copy of that

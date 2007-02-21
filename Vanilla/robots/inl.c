@@ -29,6 +29,7 @@
 #include "roboshar.h"
 #include "ltd_stats.h"
 #include "blog.h"
+#include "util.h"
 
 /*
 

@@ -24,6 +24,7 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "marsdefs.h"
+#include "util.h"
 
 #define DOG_STATS	".dog_players"
 

@@ -10,6 +10,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "util.h"
 
 int torpGetVectorSpeed(u_char pdir, int pspeed, u_char  tdir, int tspeed)
 {

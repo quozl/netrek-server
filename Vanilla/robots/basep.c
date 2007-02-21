@@ -31,6 +31,7 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "basepdefs.h"
+#include "util.h"
 
 int debug=0;
 int nb_robots=0;
