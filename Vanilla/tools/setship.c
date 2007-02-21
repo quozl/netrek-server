@@ -37,8 +37,17 @@ void get(char *us, char *name, struct player *pl)
   printf("\n");
 }
 
-struct torp *k = NULL;
+struct torp *t_find(struct player *me, int status)
+{
+  struct torp *k = NULL;
+  for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)
+    if (k->t_status == status)
+      break;
+  return k;
+}
+
 int t_attribute = TOWNERSAFE | TDETTEAMSAFE;
+int t_torpspeed = -1;
 
 int main(int argc, char **argv)
 {
@@ -120,12 +129,16 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
+    if (!strcmp(argv[i], "torp-speed")) {
+      if (++i == argc) return 0;
+      t_torpspeed = atoi(argv[i]);
+      goto state_1;
+    }
+
     if (!strcmp(argv[i], "fire-test-torpedo")) {
       if (++i == argc) return 0;
       struct ship *myship = &me->p_ship;
-      for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)
-        if (k->t_status == TFREE)
-          break;
+      struct torp *k = t_find(me, TFREE);
       me->p_ntorp++;
       k->t_status = TMOVE;
       k->t_type = TPLASMA;
@@ -135,7 +148,8 @@ int main(int argc, char **argv)
       k->t_y = me->p_y;
       k->t_turns  = myship->s_torpturns;
       k->t_damage = 0;
-      k->t_gspeed = myship->s_torpspeed * WARP1;
+      k->t_gspeed = (t_torpspeed == -1 ? myship->s_torpspeed : t_torpspeed)
+                    * WARP1;
       k->t_fuse   = 500;
       k->t_dir    = atoi(argv[i]);
       k->t_war    = me->p_war;
@@ -145,6 +159,7 @@ int main(int argc, char **argv)
     }
 
     if (!strcmp(argv[i], "show-test-torpedo-position")) {
+      struct torp *k = t_find(me, TMOVE);
       if (k != NULL) {
         printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);
       }
@@ -152,6 +167,7 @@ int main(int argc, char **argv)
     }
 
     if (!strcmp(argv[i], "destroy-test-torpedo")) {
+      struct torp *k = t_find(me, TMOVE);
       if (k != NULL) {
         k->t_status = TOFF;
       }
@@ -160,16 +176,16 @@ int main(int argc, char **argv)
 
     if (!strcmp(argv[i], "monitor-coordinates")) {
       for (;;) {
-	printf("p_x %X p_y %X p_x_internal %X p_y_internal %X\n", me->p_x, me->p_y, me->p_x_internal, me->p_y_internal);
-	usleep(20000);
+        printf("p_x %X p_y %X p_x_internal %X p_y_internal %X\n", me->p_x, me->p_y, me->p_x_internal, me->p_y_internal);
+        usleep(20000);
       }
       goto state_1;
     }
 
     if (!strcmp(argv[i], "monitor-docking")) {
       for (;;) {
-	printf("p_flags & PFDOCK %X p_dock_with %X p_dock_bay %X\n", me->p_flags & PFDOCK, me->p_dock_with, me->p_dock_bay);
-	usleep(20000);
+        printf("p_flags & PFDOCK %X p_dock_with %X p_dock_bay %X\n", me->p_flags & PFDOCK, me->p_dock_with, me->p_dock_bay);
+        usleep(20000);
       }
       goto state_1;
     }
