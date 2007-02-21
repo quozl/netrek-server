@@ -190,6 +190,23 @@
                                                      rather than the start */
 #define REVERSED_HOSTNAMES
 
+                                /*  IP_CHECK_DNS     - Do full reverse/forward
+                                                     lookup on IP addreses
+                                                     to check for matching
+                                                     DNS entries, and make
+                                                     mismatches show in a
+                                                     'WHOIS'/'@' query */
+#define IP_CHECK_DNS
+#ifdef IP_CHECK_DNS
+                               /*  IP_CHECK_DNS_VERBOSE
+                                                     - Announce to ALL when a
+                                                     player's host does not
+                                                     forward resolve, and
+                                                     show what the IP
+                                                     resolved to */
+#undef IP_CHECK_DNS_VERBOSE
+#endif
+
                                 /*  INL_RESOURCES  - Use INL resources */
 #define INL_RESOURCES
 

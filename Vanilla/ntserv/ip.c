@@ -20,9 +20,12 @@ pid_t pid;
 void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
 {
     struct in_addr addr;
-    struct hostent *reverse, *forward;
+    struct hostent *reverse;
+#ifdef IP_CHECK_DNS
+    struct hostent *forward;
     char fwdhost[MAXHOSTNAMESIZE];
-    
+#endif
+
     /* resolve the host name in a new process */
     pid = fork();
     if (pid != 0) return;
@@ -38,7 +41,7 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
         strncpy(p_dns_hostname, ip, len - 1);
         _exit(1);
     }
-    
+
     /* Resolve the FQDN from the IP address */
     reverse = gethostbyaddr((char *)&addr, sizeof(addr), AF_INET);
     if (reverse == NULL) {
@@ -48,7 +51,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
         strncpy(p_dns_hostname, ip, len - 1);
         _exit(1);
     }
-    
+
+#ifdef IP_CHECK_DNS
     /* Resolve the IP from the FQDN resolved above and store the text string in fwdhost */
     if (!(forward = gethostbyname(reverse->h_name)) || !inet_ntop(AF_INET, forward->h_addr_list[0], fwdhost, MAXHOSTNAMESIZE)
         || strncmp(ip, fwdhost, len - 1)) {
@@ -60,12 +64,14 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
         /* This is a soft error */
         _exit(0);
     }
-    
-    /* Display the resolved reverse in both full_hostname and dns_hostname if the resolved forward matches */
+#endif
+
+    /* Display the resolved reverse in both full_hostname and dns_hostname if the resolved forward matches
+       or if IP_CHECK_DNS is disabled */
     strncpy(p_full_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
     strncpy(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
     ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
-    /* DNS is actually set up correctly! */
+    /* DNS is actually set up correctly! (If we're using IP_CHECK_DNS, otherwise it may not be.) */
     _exit(0);
 }
 

@@ -626,13 +626,34 @@ int bouncePingStats(int from)
 
 int bounceWhois(int from)
 {
-  if (whitelisted) {
-    bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
-  } else {
-    bounce(from, "%s is %s (%s@%s)", me->p_mapchars, me->p_name, me->p_login, me->p_full_hostname);
-    bounce(from, "%s at %s (DNS: %s)", me->p_mapchars, me->p_ip, me->p_dns_hostname);
-  }
-  return 1;
+    char msgbuf[255];
+
+    if (whitelisted) {
+        bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
+    } else {
+        snprintf(msgbuf, 255, "%s is %s (%s@%s)", me->p_mapchars, me->p_name, me->p_login, me->p_full_hostname);
+        if (strlen(msgbuf) > MSGTEXT_LEN) {
+            bounce(from, "%s is %s:", me->p_mapchars, me->p_name);
+            /* There is a slight possibility of this still being cut off with a really long username and hostname,
+               but let's not send TOO many lines. The missing end chars will be in the playerlist anyways. */
+            bounce(from, "(%s@%s)", me->p_login, me->p_full_hostname);
+        } else
+            bounce(from, msgbuf);
+#ifdef IP_CHECK_DNS
+        if (strcmp(me->p_full_hostname, me->p_dns_hostname)) {
+            snprintf(msgbuf, 255, "[DNS Mismatch] %s resolves to %s", me->p_mapchars, me->p_dns_hostname);
+            if (strlen(msgbuf) > MSGTEXT_LEN) {
+                bounce(from, "[DNS Mismatch] %s resolves to:", me->p_mapchars);
+                bounce(from, me->p_dns_hostname);
+            }
+            else
+                bounce(from, msgbuf);
+        }
+        else
+#endif
+        bounce(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
+    }
+    return 1;
 }
 
 

@@ -244,15 +244,22 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	} else {
 	/* new-style join message 4/13/92 TC */
 	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
-	        "%s %.16s is now %2.2s (%.16s@%.32s)", 
+	        "%s %.16s is now %2.2s (%.16s@%s%.32s)", 
 		ranks[me->p_stats.st_rank].name, 
 		me->p_name, 
 		me->p_mapchars, 
 		me->p_login,
+#ifdef IP_CHECK_DNS
+        (!whitelisted && !is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname)) ? "=" : "",
+#else
+        "",
+#endif
 		me->p_full_hostname);
-	  if (!is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname))
+#ifdef IP_CHECK_DNS_VERBOSE
+	  if (!whitelisted && !is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname))
     	    pmessage(0, MALL, "GOD->ALL",
-		"[DNS Mismatch] %s resolves to \'%s\'.", me->p_mapchars, me->p_dns_hostname);
+		"[DNS Mismatch] %s is %s", me->p_mapchars, me->p_dns_hostname);
+#endif
 	}
 
 	lastrank = mystats->st_rank;

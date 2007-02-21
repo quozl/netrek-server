@@ -27,10 +27,12 @@
 #define RSA_VERSION	"RSA v2.0 SERVER"
 #define KEY_SIZE	32
 #endif
-#define MSG_LEN		80
+#define MSG_LEN		80 /* Length of message buffer */
+#define MSGPREFIX_LEN	10 /* Length of "xx->xx" text including spaces */
+#define MSGTEXT_LEN	(MSG_LEN - MSGPREFIX_LEN - 1) /* Maximum text length minus prefix and \0 */
 #define NAME_LEN	16
 #define KEYMAP_LEN	96
-#define ADMIN_PASS_LEN	MSG_LEN-20
+#define ADMIN_PASS_LEN	(MSG_LEN - 20)
 
 #ifdef MATH_ERR_CHECK
 #   define MATH_ERR_CHECK(v)            \
