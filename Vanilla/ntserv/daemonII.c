@@ -354,7 +354,7 @@ int main(int argc, char **argv)
 #define PLAYERFUSE      1
 #define PLASMAFUSE      1
 #define PHASERFUSE      1
-#define CLOAKFUSE       2
+#define CLOAKFUSE       1
 #define TEAMFUSE        5
 #define PLFIGHTFUSE     5
 #define SIGHTFUSE       5
@@ -1732,11 +1732,13 @@ static void udcloak(void)
 /*
                      time - - - >
 
+In the following figure, ! represents 10, @ represents 11
+
 frames at 10fps      .....................................
 keyboard                c                   c
-p_flags & PFCLOAK    0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0
-p_cloakphase         0 0 1 2 3 4 5 6 6 6 6 6 5 4 3 2 1 0 0
-position hidden      0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0
+p_flags & PFCLOAK    0000111111111111111111110000000000000
+p_cloakphase         0000123456789!@@@@@@@@@@!987654321000
+position hidden      0000000000000011111111110000000000000
 
 */
 

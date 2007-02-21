@@ -91,7 +91,7 @@
 #define WINSIDE 500     /* Size of strategic and tactical windows */
 #define BORDER 4        /* border width for option windows */
 #define PSEUDOSIZE 16
-#define CLOAK_PHASES 7  /* number of drawing phases in a cloak engage/disengage */
+#define CLOAK_PHASES 12  /* number of drawing phases in a cloak engage/disengage */
 #define NUMRANKS 9
 
 #define SURREND 4
