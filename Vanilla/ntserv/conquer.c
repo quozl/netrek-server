@@ -97,6 +97,8 @@ static void conquer_plasma_ring()
 			* Cos[(u_char) (k->t_dir - (u_char) 64)];
 		k->t_y = planets[conquer_planet].pl_y + radius
 			* Sin[(u_char) (k->t_dir - (u_char) 64)];
+		k->t_x_internal = spi(k->t_x);
+		k->t_y_internal = spi(k->t_y);
 		k->t_turns = k->t_damage = k->t_gspeed = k->t_fuse = 1;
 		k->t_war = players[conquer_player].p_war;
 		k->t_team = players[conquer_player].p_team;

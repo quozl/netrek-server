@@ -81,8 +81,7 @@ void nplasmatorp(u_char course, int attributes)
   k->t_type = TPLASMA;
   k->t_attribute = attributes;
   k->t_owner = me->p_no;
-  k->t_x = me->p_x;
-  k->t_y = me->p_y;
+  t_x_y_set(k, me->p_x, me->p_y);
   k->t_turns = myship->s_plasmaturns;
   k->t_damage = myship->s_plasmadamage;
   k->t_gspeed = (attributes & TVECTOR) 

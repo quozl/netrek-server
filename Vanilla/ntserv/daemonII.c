@@ -1783,10 +1783,10 @@ static void t_track(struct torp *t)
     /*
      * Before doing the fancy computations, don't bother exploring the
      * tracking of any player more distant than our current target.   */
-    dx = t->t_x - j->p_x;
+    dx = spo(t->t_x_internal - j->p_x_internal);
     if ((dx >= range) || (dx <= -range))
       continue;
-    dy = t->t_y - j->p_y;
+    dy = spo(t->t_y_internal - j->p_y_internal);
     if ((dy >= range) || (dy <= -range))
       continue;
     
@@ -1832,44 +1832,51 @@ static void t_track(struct torp *t)
 
 static void t_move(struct torp *t)
 {
-        t->t_x += (double) t->t_gspeed * Cos[t->t_dir] / T_FUSE_SCALE;
-        t->t_y += (double) t->t_gspeed * Sin[t->t_dir] / T_FUSE_SCALE;
+        t->t_x_internal += (double) (SPM * t->t_gspeed) * Cos[t->t_dir] / TPF;
+        t->t_y_internal += (double) (SPM * t->t_gspeed) * Sin[t->t_dir] / TPF;
+        t->t_x = spo(t->t_x_internal);
+        t->t_y = spo(t->t_y_internal);
 }
 
 static int t_check_wall(struct torp *t)
 {
         int hit = 0;
+        int sgw = spi(GWIDTH);
 
-        if (t->t_x < 0) {
+        if (t->t_x_internal < 0) {
                 if (!wrap_galaxy) {
-                        t->t_x = 0;
+                        t->t_x_internal = 0;
                         hit++;
+                } else {
+                        t->t_x_internal = sgw;
                 }
-                else
-                        t->t_x = GWIDTH;
-        } else if (t->t_x > GWIDTH) {
+                t->t_x = spo(t->t_x_internal);
+        } else if (t->t_x_internal > sgw) {
                 if (!wrap_galaxy) {
-                        t->t_x = GWIDTH;
+                        t->t_x_internal = sgw;
                         hit++;
+                } else {
+                        t->t_x_internal = 0;
                 }
-                else
-                        t->t_x = 0;
+                t->t_x = spo(t->t_x_internal);
         }
 
-        if (t->t_y < 0) {
+        if (t->t_y_internal < 0) {
                 if (!wrap_galaxy) {
-                        t->t_y = 0;
+                        t->t_y_internal = 0;
                         hit++;
+                } else {
+                        t->t_y_internal = sgw;
                 }
-                else
-                        t->t_y = GWIDTH;
-        } else if (t->t_y > GWIDTH) {
+                t->t_y = spo(t->t_y_internal);
+        } else if (t->t_y_internal > sgw) {
                 if (!wrap_galaxy) {
-                        t->t_y = GWIDTH;
+                        t->t_y_internal = sgw;
                         hit++;
+                } else {
+                        t->t_y_internal = 0;
                 }
-                else
-                        t->t_y = 0;
+                t->t_y = spo(t->t_y_internal);
         }
 
         return hit;
@@ -1921,10 +1928,10 @@ static int t_near(struct torp *t)
                         continue;
                 if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
                         continue;
-                dx = t->t_x - j->p_x;
+                dx = spo(t->t_x_internal - j->p_x_internal);
                 if ((dx < -EXPDIST) || (dx > EXPDIST))
                         continue;
-                dy = t->t_y - j->p_y;
+                dy = spo(t->t_y_internal - j->p_y_internal);
                 if ((dy < -EXPDIST) || (dy > EXPDIST))
                         continue;
                 if (dx*dx + dy*dy <= EXPDIST * EXPDIST)
@@ -2154,10 +2161,10 @@ static void t_explosion(struct torp *torp)
     /*
      * This player is not safe, and will be affected if close enough.
      * Check the range.    */
-    dx = torp->t_x - j->p_x;
+    dx = spo(torp->t_x_internal - j->p_x_internal);
     if ((dx < -damdist) || (dx > damdist))
       continue;
-    dy = torp->t_y - j->p_y;
+    dy = spo(torp->t_y_internal - j->p_y_internal);
     if ((dy < -damdist) || (dy > damdist))
       continue;
     dist = dx*dx + dy*dy;
@@ -2321,8 +2328,7 @@ static void t_explosion(struct torp *torp)
     } 
   } 
   torp->t_status = TEXPLODE; 
-  /* todo: fps support, use of a fuse */
-  torp->t_fuse = 10*T_FUSE_SCALE; 
+  torp->t_fuse = 10 * T_FUSE_SCALE; 
 } 
 
 #ifndef LTD_STATS

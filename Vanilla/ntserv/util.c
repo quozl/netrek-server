@@ -302,3 +302,11 @@ void p_x_y_join(struct player *j, struct player *pl)
   j->p_x_internal = pl->p_x_internal;
   j->p_y_internal = pl->p_y_internal;
 }
+
+void t_x_y_set(struct torp *k, int t_x, int t_y)
+{
+  k->t_x = t_x;
+  k->t_y = t_y;
+  k->t_x_internal = spi(t_x);
+  k->t_y_internal = spi(t_y);
+}

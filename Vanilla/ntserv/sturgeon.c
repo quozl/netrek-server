@@ -953,8 +953,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
     k->t_type = TPLASMA;
     k->t_attribute = attributes;
     k->t_owner = me->p_no;
-    k->t_x = me->p_x;
-    k->t_y = me->p_y;
+    t_x_y_set(k, me->p_x, me->p_y);
     k->t_dir    = ((myship->s_type == STARBASE) ||
                   (myship->s_type == ATT)) ? course : me->p_dir;
     k->t_war    = me->p_war;
@@ -1002,8 +1001,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       k->t_type = TPLASMA;
       k->t_owner = me->p_no;
       k->t_team = me->p_team;
-      k->t_x = l->pl_x;
-      k->t_y = l->pl_y;
+      t_x_y_set(k, l->pl_x, l->pl_y);
       k->t_dir = k->t_gspeed = k->t_war = 0;
       k->t_damage = 1;
       k->t_fuse = 100 * T_FUSE_SCALE;
@@ -1016,8 +1014,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       if (rnd < 5) {                                  /* uh oh... */
         new_warning(UNDEF,"Nuke explodes in bomb bay!");
         destroyed = 0;
-        k->t_x = me->p_x;
-        k->t_y = me->p_y;
+        t_x_y_set(k, me->p_x, me->p_y);
         k->t_damage = sw->sw_damage * 10;
       }
       else if (rnd < 10) {
@@ -1115,8 +1112,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
         j->t_spinspeed = 0;
       j->t_owner = me->p_no;
       j->t_team = me->p_team;
-      j->t_x = me->p_x;
-      j->t_y = me->p_y;
+      t_x_y_set(j, me->p_x, me->p_y);
       j->t_dir = course;
       j->t_damage = sw->sw_damage;
       j->t_gspeed = sw->sw_speed * WARP1;

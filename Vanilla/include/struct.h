@@ -522,6 +522,8 @@ struct torp {
   int t_owner;      /* Owning player number */	
   int t_x;          /* X Location  */
   int t_y;          /* Y Location  */
+  int t_x_internal; /* scaled X Location  */
+  int t_y_internal; /* scaled Y Location  */
   int t_turns;      /* Rate of change of direction if tracking */
   int t_damage;     /* Explosion damage for direct hit */
   int t_gspeed;     /* Moving speed, in galactic coordinate units */

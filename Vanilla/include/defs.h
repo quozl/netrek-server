@@ -140,6 +140,8 @@ because they have initialisation of variables dependent on UPDATE. */
 #define TPF (fps/10)	/* ticks per frame */
 #define SPM 256		/* scaled position multiplier */
 #define SPB 8 		/* scaled position bits */
+#define spi(x) ((x) << SPB)	/* convert in to scaled position */
+#define spo(x) ((x) >> SPB)	/* convert out from scaled position */
 #define AUTOQUIT 60	/* auto logout in 60 secs */
 #define VACANT -1       /* indicates vacant port on a starbase */
 #define DOCKDIST 600
