@@ -13,6 +13,7 @@
 #include "proto.h"
 #include "alarm.h"
 #include "roboshar.h"
+#include "util.h"
 
 extern int redrawall;		/* maint: missing "extern" 6/22/92 TC */
 extern int lastm;		/* maint: missing "extern" 6/22/92 TC */
@@ -232,6 +233,7 @@ char **argv;
 
     robonameset(me);  /* set the robot@nowhere fields */
 
+    p_x_y_unbox(me);
     if (target >= 0)		/* hack 7/27/91 TC */
 	enter(team, target, pno, class, pseudo); /* was BATTLESHIP 8/9/91 TC */
     else
