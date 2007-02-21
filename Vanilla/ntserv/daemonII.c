@@ -1015,8 +1015,8 @@ static void udships_palive_move_in_orbit(struct player *j)
                 * Cos[(u_char) (j->p_dir - (u_char) 64)];
         j->p_y_internal = planets[j->p_planet].pl_y * SPM + SPM * ORBDIST
                 * Sin[(u_char) (j->p_dir - (u_char) 64)];
-        j->p_x = j->p_x_internal >> SPB;
-        j->p_y = j->p_y_internal >> SPB;
+        j->p_x = spo(j->p_x_internal);
+        j->p_y = spo(j->p_y_internal);
 }
 
 static void udplayers_palive_move_in_dock(struct player *j)
@@ -1029,8 +1029,8 @@ static void udships_palive_move_in_dock(struct player *j)
                  SPM*DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
         j->p_y_internal = players[j->p_dock_with].p_y_internal +
                  SPM*DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
-        j->p_x = j->p_x_internal >> SPB;
-        j->p_y = j->p_y_internal >> SPB;
+        j->p_x = spo(j->p_x_internal);
+        j->p_y = spo(j->p_y_internal);
 }
 
 static void udplayers_palive_move_in_space(struct player *j)
@@ -1170,8 +1170,8 @@ static void udships_palive_move_in_space(struct player *j)
                         j->p_y_internal = j->p_y_min + dy;
         }
 
-        j->p_x = j->p_x_internal >> SPB;
-        j->p_y = j->p_y_internal >> SPB;
+        j->p_x = spo(j->p_x_internal);
+        j->p_y = spo(j->p_y_internal);
 }
 
 static void udships_palive(struct player *j)
@@ -2328,7 +2328,7 @@ static void t_explosion(struct torp *torp)
     } 
   } 
   torp->t_status = TEXPLODE; 
-  torp->t_fuse = 10 * T_FUSE_SCALE; 
+  torp->t_fuse = 10 * T_FUSE_SCALE;
 } 
 
 #ifndef LTD_STATS
