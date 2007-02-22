@@ -1027,6 +1027,12 @@ int end_tourney()
     if (rename(PlayerFile, name) != 0)
       ERROR(1,("Rename of player file failed.\n"));
 
+#ifdef PLAYER_INDEX
+    sprintf(name, "%s.index", PlayerFile);
+    if (unlink(name) != 0)
+      ERROR(1,("Unlink of player index file failed.\n"));
+#endif
+
     sprintf(name, "%s.%d", PlFile, (int) tv.tv_sec);
     if (rename(PlFile, name) != 0)
       ERROR(1,("Rename of planet file failed.\n"));
