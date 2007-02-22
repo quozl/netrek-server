@@ -236,7 +236,7 @@ int closeUdpConn(void);
 void forceShutdown(int s);
 
 /* startrobot.c */
-void practice_robo(void);
+int practice_robo(void);
 
 /* sysdefaults.c */
 void readsysdefaults(void);

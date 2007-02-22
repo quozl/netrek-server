@@ -514,6 +514,7 @@ struct statentry {
 #define TOWNTEAMSAFE   0x008  /* Don't damage owner's team */
 #define TDETTERSAFE    0x010  /* Don't damage detting player */
 #define TDETTEAMSAFE   0x020  /* Don't damage detting player's team */
+#define TPRACTICE      0x040  /* Don't damage practice robots */
 
 struct torp {
   int t_status;     /* State information */

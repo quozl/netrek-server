@@ -12,7 +12,7 @@
 #include "data.h"
 #include "proto.h"
 
-void practice_robo(void)
+int practice_robo(void)
 {
     char *arg1;
     register int i;
@@ -26,7 +26,7 @@ void practice_robo(void)
 	if (j == me)
 	    continue;
 	new_warning(84,"Can't send in practice robot with other players in the game.");
-	return;
+	return 0;
     }
 
     if ((int)fork() == 0) {
@@ -51,8 +51,8 @@ void practice_robo(void)
 		arg1 = "-Tf";
 	}
 	execl(Robot, "robot", arg1, "-p", "-f", "-h", (char *) NULL);
-	/* If we get here, we are hosed anyway */
 	_exit(1);
     }
+    return 1;
 }
 

@@ -2148,6 +2148,10 @@ static void t_explosion(struct torp *torp)
       if ((torp->t_attribute & TOWNTEAMSAFE) && (torp->t_team == j->p_team))
         continue;
     }
+    if (j->p_flags & PFPRACTR) {
+      if (torp->t_attribute & TPRACTICE)
+        continue;
+    }
     if (torp->t_status == TDET) {
       if (j->p_no == torp->t_whodet) {
         if (torp->t_attribute & TDETTERSAFE)

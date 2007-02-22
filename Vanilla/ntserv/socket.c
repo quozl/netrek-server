@@ -1226,37 +1226,13 @@ static void handleOrbitReq(struct orbit_cpacket *packet)
 
 static void handlePractrReq(struct practr_cpacket *packet)
 {
-    int i;
-    struct player	*j;
-
-    for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
-	if (j->p_status != PALIVE)
-	    continue;
-	if (j == me)
-	    continue;
-
-	/*
-	 * if we reached here there are other players in the game, therefore
-	 * practice_robo would fail.
-	 */
-
+    if (practice_robo()) return;
 #ifdef SB_TRANSWARP
-	if (twarpMode) {
-	    handleTranswarp();
-	    return;
-	}
-#endif
+    if (twarpMode) {
+        handleTranswarp();
+        return;
     }
-
-    /*
-     * if we reach here there are no other players in the game and we can
-     * start a practice robot
-     */
-
-    practice_robo();
-
-    /* get rid of annoying compiler warning */
-    if (packet) return;
+#endif
 }
 
 static void handleBombReq(struct bomb_cpacket *packet)

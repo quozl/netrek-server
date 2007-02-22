@@ -289,7 +289,7 @@ void rmove()
 /*	    if (debug)
 		ERROR(1,( "%d) firing torps\n", me->p_no));*/
 	    for (burst = 0; (burst < 3) && (me->p_ntorp < MAXTORP); burst++) {
-		ntorp(enemy_buf->e_tcourse, TMOVE);
+		ntorp(enemy_buf->e_tcourse, TWOBBLE | TOWNERSAFE | TDETTEAMSAFE | TPRACTICE);
 	    }
 	}
     }
@@ -946,7 +946,7 @@ int do_repair()
     dx = abs(me->p_x - l->pl_x);
     dy = abs(me->p_y - l->pl_y);
 
-    if (me->p_damage > 0) {
+    if (me->p_damage > 0 || me->p_fuel < 2000) {
 	if (me->p_war & l->pl_owner) {
 	    if (l->pl_armies > 0) {
 		if ((dx < PFIREDIST) && (dy < PFIREDIST)) {
