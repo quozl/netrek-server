@@ -485,6 +485,7 @@ struct player {
     short p_special;
     struct specialweapon p_weapons[NUMSPECIAL];
 #endif
+    int p_inlcaptain;           /* Player is an INL captain */
 };
 
 struct statentry {

@@ -271,6 +271,8 @@ int main(int argc, char **argv)
       me->p_weapons[i].sw_number = 0;
 #endif
 
+    me->p_inlcaptain = 0;
+
     STRNCPY(me->p_login, login, NAME_LEN);
     me->p_login[NAME_LEN - 1] = '\0';
 

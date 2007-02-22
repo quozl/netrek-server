@@ -1496,7 +1496,8 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 	    balance+=3;
 	return;
     }
-    balance+=3;
+    if (!inl_mode || !me->p_inlcaptain)
+        balance+=3;
 #ifdef CONTINUUM
     if (me->p_status == POBSERV) {
 	if (!whitelisted) balance+=20;
