@@ -549,15 +549,6 @@ static void auto_features(void)
 	    dist = hypot((double) (me->p_x - pl->p_x),
 		(double) (me->p_y - pl->p_y));
 
-#if defined(SB_TRANSWARP) && defined(SB_CALVINWARP)
-            if (!(me->p_flags & PFTWARP))
-#endif
-	    if (dist-(DOCKDIST/2) < (11500 * me->p_speed * me->p_speed) /
-		    me->p_ship.s_decint) {
-		if (me->p_desspeed > 2) {
-		    set_speed(me->p_desspeed-1);
-		}
-	    }
 #ifdef SB_TRANSWARP
 	if ((dist < 2*DOCKDIST) && (me->p_flags & PFTWARP)){
 	    p_x_y_join(me, pl);

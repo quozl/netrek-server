@@ -72,6 +72,9 @@ static void udships(void);
 static void udplayerpause(void);
 static void changedir(struct player *sp);
 static void udcloak(void);
+#ifdef SB_TRANSWARP
+static void udtwarp(void);
+#endif
 static void udtorps(void);
 static void t_explosion(struct torp *torp);
 static void p_explosion(struct player *player, int whydead, int whodead);
@@ -355,6 +358,9 @@ int main(int argc, char **argv)
 #define PLASMAFUSE      1
 #define PHASERFUSE      1
 #define CLOAKFUSE       1
+#ifdef SB_TRANSWARP
+#define TWARPFUSE       1
+#endif
 #define TEAMFUSE        5
 #define PLFIGHTFUSE     5
 #define SIGHTFUSE       5
@@ -723,6 +729,11 @@ static void move()
     if (fuse(CLOAKFUSE)) {
         udcloak();
     }
+#ifdef SB_TRANSWARP
+    if (fuse(TWARPFUSE)) {
+        udtwarp();
+    }
+#endif
 
     signal_servers();
 
@@ -1040,15 +1051,10 @@ static void udplayers_palive_move_in_space(struct player *j)
         if ((j->p_dir != j->p_desdir) && (j->p_status != PEXPLODE))
                 changedir(j);
         
-        /* Alter speed */
 #ifdef SB_TRANSWARP
-        if (j->p_flags & PFTWARP) {
-                if ((j->p_speed *= 2)>(j->p_desspeed))
-                        j->p_speed = j->p_desspeed;
-                j->p_fuel -= (int)((j->p_ship.s_warpcost * j->p_speed) * 0.8);
-                j->p_etemp += j->p_ship.s_maxspeed;
-        } else { /* not transwarping */
+        if (!(j->p_flags & PFTWARP))  /* not transwarping */
 #endif
+        {
 #ifdef NEW_ETEMP
                 if (j->p_flags & PFENG)
                         maxspeed = 1;
@@ -1093,23 +1099,21 @@ static void udplayers_palive_move_in_space(struct player *j)
                                 j->p_etemp += .7*(j->p_speed * bays);
                         }
                 }
-#ifdef SB_TRANSWARP
-        }
-#endif                  
         
-        if (j->p_desspeed > j->p_speed) {
-                j->p_subspeed += j->p_ship.s_accint;
-        }
-        if (j->p_desspeed < j->p_speed)
-                j->p_subspeed -= j->p_ship.s_decint;
+                if (j->p_desspeed > j->p_speed) {
+                        j->p_subspeed += j->p_ship.s_accint;
+                }
+                if (j->p_desspeed < j->p_speed)
+                        j->p_subspeed -= j->p_ship.s_decint;
         
-        if (j->p_subspeed / 1000) {
-                j->p_speed += j->p_subspeed / 1000;
-                j->p_subspeed %= 1000;
-                if (j->p_speed < 0)
-                        j->p_speed = 0;
-                if (j->p_speed > j->p_ship.s_maxspeed)
-                        j->p_speed = j->p_ship.s_maxspeed;
+                if (j->p_subspeed / 1000) {
+                        j->p_speed += j->p_subspeed / 1000;
+                        j->p_subspeed %= 1000;
+                        if (j->p_speed < 0)
+                                j->p_speed = 0;
+                        if (j->p_speed > j->p_ship.s_maxspeed)
+                                j->p_speed = j->p_ship.s_maxspeed;
+                }
         }
         
 }
@@ -1754,7 +1758,43 @@ position hidden      0000000000000011111111110000000000000
     }
   }
 }
-    
+
+#ifdef SB_TRANSWARP
+static void udtwarp(void)
+{
+  struct player *pl;
+  register int i;
+  int dist;
+
+  for (i=0; i<MAXPLAYER; i++) {
+    if (isAlive(&players[i])) {
+      if (players[i].p_flags & PFTWARP) {
+        /* Accelerate if needed */
+        if ( (players[i].p_speed *= 2) > (players[i].p_desspeed) )
+          players[i].p_speed = players[i].p_desspeed;
+        /* Deduct fuel and raise etemp */
+        players[i].p_fuel -= (int)((players[i].p_ship.s_warpcost * players[i].p_speed) * 0.8);
+        players[i].p_etemp += players[i].p_ship.s_maxspeed;
+        /* Decelerate if needed */
+#ifndef SB_CALVINWARP
+        pl = &players[players[i].p_playerl];
+        if (pl->p_ship.s_type == STARBASE) {
+          dist = hypot((double) (players[i].p_x - pl->p_x),
+                (double) (players[i].p_y - pl->p_y));
+
+          if (dist-(DOCKDIST/2) < (11500 * players[i].p_speed * players[i].p_speed) /
+            players[i].p_ship.s_decint) {
+            if (players[i].p_desspeed > 2)
+              players[i].p_desspeed--;
+          }
+        }
+#endif
+      }
+    }
+  }
+}
+#endif
+
 /* 
  * Find nearest hostile vessel and turn toward it
  */
