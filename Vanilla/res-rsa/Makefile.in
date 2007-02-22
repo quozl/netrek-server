@@ -115,7 +115,7 @@ distclean:	reallyclean
 install:
 
 depend:;	touch .depend
-		@makedepend -f.depend $(CFLAGS) $(GMP_INC) $(RSA_LIBSRC) \
+		@makedepend -f.depend $(CFLAGS) $(CPPFLAGS) $(GMP_INC) $(RSA_LIBSRC) \
 			$(RSA_GMPSRC) $(MKKEY_SRC)
 
 rmdependencies:
