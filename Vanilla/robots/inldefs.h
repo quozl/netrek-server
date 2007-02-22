@@ -109,6 +109,10 @@ typedef struct _inl_stat {
         int	extratime;
 	int	score_mode;
 	double	weighted_divisor;
+	int swap[2];			/* two slots to be traded */
+	int swapnum;			/* number of slots to trade in pending
+	                                   trade request */
+	int swapteam;			/* team requesting current trade */
 } Inl_stats;
 
 

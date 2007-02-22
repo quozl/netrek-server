@@ -15,6 +15,7 @@
 #include "proto.h"
 #include "roboshar.h"
 #include "inldefs.h"
+#include "util.h"
 
 extern Inl_stats inl_stat;
 extern Team	 inl_teams[];
@@ -396,6 +397,187 @@ int do_gametime(comm,mess)
   return 0;
 }
 
+static void trade_reset(void)
+{
+    inl_stat.swap[0] = inl_stat.swap[1] = -1;
+    inl_stat.swapnum = 0;
+    inl_stat.swapteam = -1;
+}
+
+int do_trade(comm,mess)
+char *comm;
+struct message *mess;
+{
+    int who;
+    int swap[2];
+    int i;
+    struct player *p0, *p1;
+    int us, them; /* inl_teams[n] 0 and 1, FED and ROM */
+    int us_b, them_b; /* bitmasks of us and them */
+    int num = 0; /* swap one slot or two? */
+
+    who = mess->m_from;
+
+    if ((us = check_player(who, 1)) == NONE) return 0;
+    them = !us;
+    us_b = 1 << (inl_teams[us].side - 1);
+    them_b = 1 << (inl_teams[them].side - 1);
+
+    for (i = 0; i < 2; i++)
+        if ((inl_stat.swap[i] != -1) &&
+            (players[inl_stat.swap[i]].p_status != PALIVE)) {
+            pmessage(who, MALL, inl_from,
+                     "Pending slot %c is no longer active. Trade reset.",
+                     slot_char(inl_stat.swap[i]));
+            trade_reset();
+            return 0;                
+        }
+
+    if (!strcasecmp(comm, "TRADE")) {
+        if (!inl_stat.swapnum)
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "There is no player trade in progress.");
+        else {
+            if (inl_stat.swapnum == 1)
+                pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                         "%s (%s) requests slot %c to be traded.",
+                         inl_teams[inl_stat.swapteam].t_name,
+                         inl_teams[inl_stat.swapteam].name,
+                         slot_char(inl_stat.swap[0]));
+            else
+                pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                         "%s (%s) requests slots %c and %c to be traded.",
+                         inl_teams[inl_stat.swapteam].t_name,
+                         inl_teams[inl_stat.swapteam].name,
+                         slot_char(inl_stat.swap[0]),
+                         slot_char(inl_stat.swap[1]));         
+        }
+        return 1;
+    }
+    comm += 6;
+
+    if (!strcasecmp(comm, "RESET")) {
+        if (!inl_stat.swapnum)
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "There is no player trade in progress.");
+        else {
+            pmessage(who, MALL, inl_from,
+                     "%s (%s) has declined the proposed trade. Trade reset.",
+                     inl_teams[us].t_name, inl_teams[us].name);
+
+            trade_reset();
+        }
+        return 1;
+    }
+
+    if (strlen(comm) == 1) {
+        if ((swap[0] = slot_num(comm[0])) == -1)
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "Illegal slot '%c' in trade request.", comm[0]);
+        else
+            num = 1;
+    } else if ((strlen(comm) == 3) && (comm[1] == ' ')) {
+        if ((swap[0] = slot_num(comm[0])) == -1)
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "Illegal slot '%c' in trade request.", comm[0]);
+        else if ((swap[1] = slot_num(comm[2])) == -1)
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "Illegal slot '%c' in trade request.", comm[2]);
+        else
+            num = 2;
+    } else
+        pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                 "Please specify 'TRADE', 'TRADE <slot 1> [slot 2]', or 'TRADE RESET'.");
+    if (!num)
+        return 0;
+
+    p0 = &players[swap[0]];
+    p1 = (num == 2) ? &players[swap[1]] : NULL;
+
+    if (!isAlive(p0) || (p1 && !isAlive(p1))) {
+        pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                 "Slot %c is not alive or is an observer and can't be traded.",
+                 isAlive(p0) ? slot_char(swap[1]) : slot_char(swap[0]));
+        return 0;
+    }
+
+    if (num == 2)
+    {
+        if (swap[0] == swap[1]) {
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "Please specify two different slots to trade.");
+            return 0;        
+        }
+        
+        if (p0->p_team == p1->p_team) {
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "You can't trade two players on the same team!");
+            return 0;        
+        }
+    }
+    
+    for (i = 0; i < num; i++)
+        if ((swap[i] == inl_teams[us].captain) ||
+            (swap[i] == inl_teams[them].captain)) {
+            pmessage(who, MINDIV, addr_mess(who, MINDIV),
+                     "Slot %c is a captain and can't be traded.",
+                     slot_char(swap[i]));
+            return 0;
+        }
+
+    if (!inl_stat.swapnum || (inl_stat.swapteam == us)) {
+        if (num == 1)
+            pmessage(who, MALL, inl_from,
+                     "%s (%s) requests slot %c to be traded.%s",
+                     inl_teams[us].t_name, inl_teams[us].name,
+                     slot_char(swap[0]),
+                     inl_stat.swapteam == us ? " Previous request reset." : "");
+        else
+            pmessage(who, MALL, inl_from,
+                     "%s (%s) requests slots %c and %c to be traded.%s",
+                     inl_teams[us].t_name, inl_teams[us].name,
+                     slot_char(swap[0]), slot_char(swap[1]),
+                     inl_stat.swapteam == us ? " Previous request reset." : "");
+
+        inl_stat.swapnum = num;
+        inl_stat.swapteam = us;
+        inl_stat.swap[0] = swap[0];
+        if (num == 2)
+            inl_stat.swap[1] = swap[1];
+        return 1;
+    } else if ((num == 1) && (inl_stat.swapnum == 1)) {
+        if (swap[0] == inl_stat.swap[0]) {
+            pmessage(who, MALL, inl_from,
+                     "Trade of player %s is approved. Please join your new team.",
+                     p0->p_mapchars);
+            change_team(swap[0], p0->p_team == us_b ? them_b :
+                us_b, p0->p_team == us_b ? us_b : them_b);
+
+            trade_reset();
+            return 1;
+        }
+    }
+    else if ((num == 2) && (inl_stat.swapnum == 2)) {
+        if (((swap[0] == inl_stat.swap[0]) && (swap[1] == inl_stat.swap[1])) ||
+            ((swap[0] == inl_stat.swap[1]) && (swap[1] == inl_stat.swap[0]))) {
+            pmessage(who, MALL, inl_from,
+                     "Trade of players %s and %s is approved. Please join your new teams.",
+                     p0->p_mapchars, p1->p_mapchars);
+            i = (p0->p_team == us_b);
+            change_team(swap[i], us_b, them_b);
+            change_team(swap[!i], them_b, us_b);
+
+            trade_reset();
+            return 1;
+        }
+    }
+
+    do_trade("TRADE", mess);
+    pmessage(who, MINDIV, addr_mess(who, MINDIV),
+             "Please send yourself 'TRADE RESET' if you wish to decline.");
+
+    return 1;
+}
 
 int do_army(comm,mess)
      char *comm;

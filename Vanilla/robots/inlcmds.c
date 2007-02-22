@@ -33,6 +33,7 @@ extern int do_restart();
 extern int do_free();
 extern int do_gametime();
 extern int do_army();
+extern int do_trade();
 extern int do_timeout();
 extern int do_confine();
 extern int do_cscore();
@@ -83,6 +84,10 @@ struct command_handler_2 inl_commands[] = {
     C_PR_CAPTAIN | C_PR_PREGAME,
     "Sets regulation/overtime length. Ex: 'GAMETIME 90 30'",
     (void (*)()) do_gametime },			/* GAMETIME */
+  { "TRADE",
+    C_PR_CAPTAIN,
+    "Trade one/two slots. Ex: 'TRADE a 3', 'TRADE RESET'",
+    (void (*)()) do_trade },				/* TRADE */
   { "ARMY",
     C_PR_CAPTAIN | C_PR_PREGAME,
     "Set starting armies.  Ex: 'ARMY 17'",

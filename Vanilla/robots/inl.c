@@ -125,7 +125,10 @@ Inl_stats inl_stat = {
   0,			/* overtime */
   0,			/* extratime */
   0,			/* score_mode */
-  0.0			/* weighted_divisor */
+  0.0,			/* weighted_divisor */
+  {-1, -1},		/* swap */
+  0,			/* swapnum */
+  -1			/* swapteam */
 };
 
 Inl_countdown inl_countdown =
