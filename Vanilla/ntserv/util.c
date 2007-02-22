@@ -4,6 +4,7 @@
 
 #define _GNU_SOURCE
 
+#include <stdio.h>
 #include <string.h>
 #include "copyright.h"
 #include "config.h"
@@ -246,16 +247,6 @@ int is_guest(char *name)
 struct player *p_no(int i)
 {
   return &players[i];
-}
-
-/* set coordinates for a new ship that is not yet alive */
-void p_x_y_go(struct player *pl, int p_x, int p_y)
-{
-  pl->p_x = p_x;
-  pl->p_y = p_y;
-  pl->p_x_internal = spi(p_x);
-  pl->p_y_internal = spi(p_y);
-  pl->p_x_y_set = 0;
 }
 
 /* cause a ship to be constrained in a box (x,y)-(x,y) */

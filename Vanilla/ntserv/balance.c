@@ -36,7 +36,6 @@ static void moveallmsg(int p_no, int ours, int theirs, int p_value)
 static void move(int p_no, int ours, int theirs)
 {
   struct player *k = &players[p_no];
-  int queue;
     
   if ( k->p_team != ours ) {
     pmessage(k->p_no, MINDIV, addr_mess(k->p_no,MINDIV),
@@ -50,35 +49,7 @@ static void move(int p_no, int ours, int theirs)
   printf("Balance: %16s (%s) is to join the %s\n", 
 	 k->p_name, k->p_mapchars, team_name(ours));
   
-  /* cope with a balance during INL pre-game, if we don't shift players who
-     are on the QU_HOME or QU_AWAY queues then the queue masks will force
-     them to join the team they were on anyway. */
-  queue = ( ours == FED ) ? QU_HOME : QU_AWAY;
-  if (k->w_queue != QU_PICKUP && k->w_queue != queue) {
-    queues[k->w_queue].free_slots++;
-    k->w_queue = queue;
-    queues[k->w_queue].free_slots--;
-  }  
-  
-  k->p_hostile |= theirs;
-  k->p_swar    |= theirs;
-  k->p_hostile &= ~ours;
-  k->p_swar    &= ~ours;
-  k->p_war      = (k->p_hostile | k->p_swar);
-  k->p_team     =  ours;
-  sprintf(k->p_mapchars, "%c%c", teamlet[k->p_team], shipnos[p_no]);
-  sprintf(k->p_longname, "%s (%s)", k->p_name, k->p_mapchars);
-  
-  k->p_status = PEXPLODE;
-  k->p_whydead = KPROVIDENCE; /* should be KTOURNSTART? */
-  if (k->p_ship.s_type == STARBASE)
-    k->p_explode = 2 * SBEXPVIEWS;
-  else
-    k->p_explode = 10;
-  k->p_ntorp = 0;
-  k->p_nplasmatorp = 0;
-  k->p_hostile = (FED | ROM | ORI | KLI);
-  k->p_war     = (k->p_hostile | k->p_swar);
+  change_team(p_no, ours, theirs);
 }
 
 /*

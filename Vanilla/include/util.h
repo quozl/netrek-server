@@ -28,4 +28,3 @@ void p_x_y_set(struct player *pl, int p_x, int p_y);
 void p_x_y_commit(struct player *j);
 void p_x_y_to_internal(struct player *j);
 void p_x_y_join(struct player *j, struct player *pl);
-void t_x_y_set(struct torp *k, int t_x, int t_y);
