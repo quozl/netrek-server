@@ -2399,6 +2399,18 @@ sendFeature(struct feature_spacket *packet)
     packet->value = htonl(packet->value);
     sendClientPacket((CVOID) packet);
 }
+
+void
+sendFeatureFps()
+{
+    struct feature_spacket fp;
+    memset(&fp, 0, sizeof(struct feature_spacket));
+    fp.type = SP_FEATURE;
+    fp.feature_type = 'S';
+    fp.value = htonl(fps);
+    strcpy(fp.name, "FPS");
+    sendClientPacket(&fp);
+}
 #endif /* FEATURE_PACKETS */
 
 /*

@@ -2189,12 +2189,14 @@ static void handleOggV(struct oggv_cpacket *packet)
 static void handleFeature(struct feature_cpacket *cpacket)
 {
     struct feature_spacket       spacket;
+    int was = F_client_feature_packets;
 
     F_client_feature_packets = 1;        /* XX */
 
     cpacket->value = ntohl(cpacket->value);
     getFeature(cpacket, &spacket);
     sendFeature(&spacket);
+    if (!was) sendFeatureFps();
 }
 
 #endif /* FEATURE_PACKETS */
