@@ -76,9 +76,9 @@ extern int	remap[];
 extern int	udcounter;
 extern int	fps;		/* simulation frames per second */
 extern int	reality;	/* universe simulation updates per second */
-extern int	minskip;	/* minimum reality update skips to client */
-extern int	defskip;	/* default reality update skips to client */
-extern int	maxskip;	/* maximum reality update skips to client */
+extern int	minups;		/* minimum client updates per second */
+extern int	defups;		/* default client updates per second */
+extern int	maxups;		/* maximum client updates per second */
 extern int	messpend;
 extern int	lastcount;
 extern int	mdisplayed;

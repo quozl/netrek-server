@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "copyright.h"
 #include "config.h"
 #include "defs.h"
@@ -382,4 +383,51 @@ void t_x_y_set(struct torp *k, int t_x, int t_y)
   k->t_y = t_y;
   k->t_x_internal = spi(t_x);
   k->t_y_internal = spi(t_y);
+}
+
+int p_ups_set(struct player *me, int ups)
+{
+  int skip;
+
+  /* keep requested updates per second within sysdef limits */
+  if (ups < minups) ups = minups;
+  if (ups > maxups) ups = maxups;
+  if (ups > fps) ups = fps;
+
+  /*
+  Convert to a skip count then back to an updates per second that
+  corresponds to the skip count, using integer math ... so we choose
+  the fastest possible update rate that evenly divides into the
+  server's frames per second.
+
+  For example, at 50 server frames per second, the updates per second
+  rates are as follows:
+
+  fps = 50, ups = 50, therefore skip = 1
+  fps = 50, ups = 25, therefore skip = 2
+  fps = 50, ups = 10, therefore skip = 5
+  fps = 50, ups =  1, therefore skip = 50
+  */
+
+  skip = fps / ups;
+  ups = fps / skip;
+
+  /* if there is no effective change, do nothing */
+  if ((me->p_skip == skip) && (me->p_ups == ups)) return 0;
+
+  /* store the change */
+  me->p_skip = skip;
+  me->p_ups = ups;
+
+  if (me->p_flags & PFPRACTR) return 1;
+#ifdef SHORT_THRESHOLD
+  /* I need the number of updates for the threshold handling  HW 93 */
+  if (send_threshold != 0) { /* We need to recompute the threshold */
+    actual_threshold = send_threshold / ups;
+    if (actual_threshold < 60) { /* my low value */
+      actual_threshold = 60; /* means: 1 SP_S_PLAYER+SP_S_YOU+36 bytes */
+    }
+  }
+#endif
+  return 1;
 }

@@ -195,8 +195,8 @@ int main(int argc, char **argv)
 
     me = &players[pno];
 
-    me->p_process = getpid ();
-    me->p_timerdelay = defskip;
+    me->p_process = getpid();
+    p_ups_set(me, defups);
     strncpy(me->p_ip, host, sizeof(me->p_ip));
 
     me->p_mapchars[0] = 'X';

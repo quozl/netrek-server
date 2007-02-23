@@ -2411,6 +2411,18 @@ sendFeatureFps()
     strcpy(fp.name, "FPS");
     sendClientPacket(&fp);
 }
+
+void
+sendFeatureUps()
+{
+    struct feature_spacket fp;
+    memset(&fp, 0, sizeof(struct feature_spacket));
+    fp.type = SP_FEATURE;
+    fp.feature_type = 'S';
+    fp.value = htonl(me->p_ups);
+    strcpy(fp.name, "UPS");
+    sendClientPacket(&fp);
+}
 #endif /* FEATURE_PACKETS */
 
 /*

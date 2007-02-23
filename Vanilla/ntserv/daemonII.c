@@ -231,7 +231,8 @@ int main(int argc, char **argv)
         players[i].p_stats.st_tticks=1;
 #endif
         players[i].p_no=i;
-        players[i].p_timerdelay = defskip;
+        players[i].p_ups = defups;
+        players[i].p_skip = 1;
         MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
     }
 
@@ -4798,51 +4799,39 @@ static void signal_puck(void)
 }
 #endif /*PUCK_FIRST*/
 
-/*
- * The minor problem here is that the only client update speeds that
- * make sense are 10, 5, 3, 2, 1.
- */
-
 static void signal_servers(void)
 {
-  register int i, t;
-  register struct player *j;
-  static int counter;           /* need our own counter */
+    int i, t;
+    struct player *j;
+    static int counter;
 
-  counter++;
+    counter++;
 
-  for (i = 0, j = players; i < MAXPLAYER; i++, j++)
-    {
-      if (!j->p_status)
-        continue;
-      if (j->p_process <= 1)
-        continue;
+    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j->p_status == PFREE) continue;
+        if (j->p_process <= 1) continue;
 
 #ifdef PUCK_FIRST
-      if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
-          strcmp(j->p_name, "Puck") == 0)
-      {
-          continue; 
-      }
+        if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
+            strcmp(j->p_name, "Puck") == 0) {
+            continue; 
+        }
 #endif /*PUCK_FIRST*/
 
-      t = j->p_timerdelay;
-      if (!t)                   /* paranoia */
-        t = 5;
+        t = j->p_skip;
+        if (!t) t = 5; /* paranoia */
 
-      /* adding 'i' to 'counter' allows us to "interleave" update signals to
-         the ntserv processes: at 5 u/s, 1/2 the processes are signalled on
-         every update, at 2 u/s, 1/5 are signalled, etc.  (Of course, if
-         everyone is at 10 u/s we have to signal them all every time) */
+        /* adding i to counter interleaves update signals to the
+         ntserv processes: at 25 ups, 1/2 the processes are signalled
+         on every update, at 10 ups, 1/5 are signalled, etc.  (Of
+         course, if everyone is at 50 ups we have to signal them all
+         every time) */
 
-      if (t == 1 /*skip mod */  || (((counter + i) % t) == 0))
-        {
-          if (alarm_send(j->p_process) < 0)
-            {
-              /* if the ntserv process died what are we doing here? */
-              if (errno == ESRCH) {
-                ERROR(1,("daemonII/signal_servers: slot %d ntserv missing\n", i)); 
-                freeslot(j);
+        if (t == 1 || (((counter + i) % t) == 0)) {
+            if (alarm_send(j->p_process) < 0) {
+                if (errno == ESRCH) {
+                    ERROR(1,("daemon: signal_servers: slot %d missing\n", i)); 
+                    freeslot(j);
                 }
             }
         }

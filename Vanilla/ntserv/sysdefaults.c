@@ -62,9 +62,10 @@ void readsysdefaults(void)
     twarpSpeed = 60;
 #endif
     reality = 10;
-    minskip = 10;
-    maxskip = 1;
-    defskip = 5;
+    fps = 50;
+    maxups = fps;
+    minups = 1;
+    defups = maxups;
     start_robot = NO_ROBOT;
     strcpy(Motd,N_MOTD);
 
@@ -162,11 +163,6 @@ void readsysdefaults(void)
       killer=0;		/* disable iggy for game	*/
       surrenderStart=0;
     }
-
-    /* convert frequencies to cycle times (microseconds) and skip counts */
-    minskip = 1000000 / minskip / UPDATE;
-    maxskip = 1000000 / maxskip / UPDATE;
-    defskip = 1000000 / defskip / UPDATE;
 
     fclose(f);
 }

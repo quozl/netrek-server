@@ -463,7 +463,8 @@ struct player {
     int  p_pkls_c_s;           /* packet loss (client to server) */
     int  p_pkls_s_c;           /* packet loss (server to client) */
 #endif
-    int p_timerdelay;           /* updates per second */
+    int p_ups;                  /* updates per second */
+    int p_skip;                 /* frames to skip between updates */
     pid_t p_process;            /* process id number */
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) ||  defined(PRETSERVER)
     /* robot ogger variables */

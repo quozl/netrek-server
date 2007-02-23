@@ -38,15 +38,6 @@ EJECT_VOTE_ONLY_IF_QUEUE=0
 #	(requires EJECT_VOTE_ENABLE=1)
 EJECT_VOTE_VICIOUS=0
 #
-#	Mininum client update rate per second
-MINUPDATE=1
-#
-#	Maximum client update rate per second
-MAXUPDATE=10
-#
-#	Default client update rate per second
-DEFUPDATE=10
-#
 #       Reality updates per second
 #	(Warning: intended for testing only, as changing this disturbs
 #	reaction times of players and they learn the new rate, resulting
@@ -58,6 +49,15 @@ REALITY=10
 #	in the universe, and the basis of the update rate observed by
 #	clients.  Was 10 from 1986, was 50 from 2007)
 FPS=50
+#
+#	Mininum client update rate per second
+MINUPS=1
+#
+#	Maximum client update rate per second
+MAXUPS=50
+#
+#	Default client update rate per second
+DEFUPS=25
 #
 # 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
 #	(We need more twinks, don't turn this on lightly)

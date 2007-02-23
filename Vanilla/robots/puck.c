@@ -153,7 +153,7 @@ char **argv;
 
     status->gameup |= GU_PUCK;
     me->p_process = getpid();
-    me->p_timerdelay = HOWOFTEN; 
+    p_ups_set(me, 10 / HOWOFTEN);
     anncer->p_process = 0;  /* Announcer will not be signalled by DS */
 
     /* allows robots to be forked by the daemon -- Evil ultrix bullshit */

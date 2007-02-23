@@ -72,37 +72,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     /* Alert client about new ship stats */
     sndShipCap();
 
-    /* Limit client updates if needed */
 #ifndef ROBOT
-#ifdef FASTER_SB_MAXUPDATES
-    if (s_type != STARBASE)   /* Allow SB's 10 ups/sec regardless of minskip */
-      if (me->p_timerdelay < minskip)  me->p_timerdelay = minskip;
-    if (me->p_timerdelay > maxskip) me->p_timerdelay = maxskip;
-
-#ifdef SHORT_THRESHOLD
-    /* I need the number of updates for the threshold handling  HW 93 */
-    numupdates = (int) (10 / me->p_timerdelay);
-    if ( send_threshold != 0) { /* We need to recompute the threshold */
-        actual_threshold = send_threshold / numupdates;
-        if ( actual_threshold < 60 ) { /* my low value */
-             actual_threshold = 60;
-             /* means: 1 SP_S_PLAYER+SP_S_YOU+36 bytes */
-             /*new_warning(UNDEF,
-                         "Threshold set to %d .  %d / Update(Server limit!)",
-                         numupdates * 60, 60);
-                         */
-        }
-        /*
-        else {
-             new_warning(UNDEF,
-                         "Threshold set to %d .  %d / Update.",
-                         send_threshold , actual_threshold);
-        }
-        */
-    }
-#endif
-
-#endif /* of FASTER_SB_MAXUPDATES */
+    p_ups_set(me, defups);
 #endif /* of #ifndef ROBOT */
 
     /* Check if can use plasma torpedoes */

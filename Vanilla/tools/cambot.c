@@ -277,7 +277,7 @@ main(int argc, char *argv[])
      * create a bogus player struct to prevent seg faults */
     me = &cambot_me;
     MZERO(me, sizeof(struct player));
-    me->p_timerdelay = 10/PERSEC;
+    p_ups_set(me, fps);
 
     /* Add setup packets now */
     sendFeature(&Many_Self_F);
@@ -286,15 +286,7 @@ main(int argc, char *argv[])
     SIGNAL(SIGINT, cleanup);
     SIGNAL(SIGTERM, cleanup);
 
-    udt.it_interval.tv_sec = 0;        /* Robots move PERSEC times/sec */
-    udt.it_interval.tv_usec = 1000000 / PERSEC;
-
-    udt.it_value.tv_sec = 1;
-    udt.it_value.tv_usec = 0;
-    if (setitimer(ITIMER_REAL, &udt, 0) < 0) {
-	perror("setitimer");
-	exit(1);
-    }
+    alarm_setitimer(reality, fps);
 
     /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
     SIGSETMASK(0);

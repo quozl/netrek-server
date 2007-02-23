@@ -1948,32 +1948,15 @@ static void handleReset(struct resetstats_cpacket *packet)
 
 static void handleUpdatesReq(struct updates_cpacket *packet)
 {
-    /* the client sends how often he would like to receive a packet */
-    /* in microseconds.  This is converted to an update rate */
-
-    me->p_timerdelay = ntohl(packet->usecs) / 100000;
-
-#ifdef FASTER_SB_MAXUPDATES
-    if (me->p_ship.s_type != STARBASE)   /* Allow SB's 10 ups/sec */
-#endif
-	if (me->p_timerdelay < minskip)  me->p_timerdelay = minskip;
-    if (me->p_timerdelay > maxskip) me->p_timerdelay = maxskip;
-
-#ifdef SHORT_THRESHOLD
-/* I need the number of updates for the threshold handling  HW 93 */
-    numupdates = (int) (10 / me->p_timerdelay);
-    if ( send_threshold != 0) { /* We need to recompute the threshold */
-        actual_threshold = send_threshold / numupdates;
-        if ( actual_threshold < 60 ) { /* my low value */
-	    actual_threshold = 60; /* means: 1 SP_S_PLAYER+SP_S_YOU+36 bytes */
-	    new_warning(UNDEF, "Threshold set to %d .  %d / Update(Server limit!)", numupdates * 60, 60);
-        }
-        else {
-	    new_warning(UNDEF, "Threshold set to %d .  %d / Update.",send_threshold , actual_threshold);
-        }
+    /* the client sends how often he would like to receive a packet in
+    microseconds ... which is converted to an integer rate in updates
+    per second */
+    int ups = 1000000 / ntohl(packet->usecs);
+    if (p_ups_set(me, ups)) {
+#ifdef FEATURE_PACKETS
+        sendFeatureUps();
+#endif /* FEATURE_PACKETS */
     }
-#endif
-
 }
 
 static void logmessage(char *string)
@@ -1982,7 +1965,7 @@ static void logmessage(char *string)
 
     fp=fopen(LogFileName, "a");
     if (fp) {
-	fprintf(fp, "%s\n", string);
+	fprintf(fp, "%s\n",string);
 	fclose(fp);
     }
 }

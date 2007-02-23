@@ -384,11 +384,12 @@ because they have initialisation of variables dependent on UPDATE. */
 
 #endif /* LTD_STATS */
 
-/* This macro allows us to time things based upon the SIGALRM signal.
- * Given a number of 1/5 seconds, it will return the number of SIGALRMs we
- *  will receive in that period.
+/*
+ * Time things based upon the SIGALRM signal.
+ * Given a number of one fifth seconds, it will return the number of
+ * SIGALRMs we will receive in that period.
  */
-#define efticks(x) (((x)*2)/me->p_timerdelay)
+#define efticks(x) (((x)*(fps/5))/me->p_skip)
 
 /*
  * UDP control stuff

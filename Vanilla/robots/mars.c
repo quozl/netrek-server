@@ -142,7 +142,7 @@ char **argv;
 
     status->gameup |= GU_DOG;
     me->p_process = getpid();
-    me->p_timerdelay = HOWOFTEN; 
+    p_ups_set(me, 10 / HOWOFTEN);
 
     /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
     SIGSETMASK(0);

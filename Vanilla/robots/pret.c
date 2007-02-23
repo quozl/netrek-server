@@ -161,7 +161,7 @@ main(argc, argv)
     queues[QU_PICKUP_OBS].q_flags ^= QU_REPORT;
 
     me->p_process = getpid();
-    me->p_timerdelay = HOWOFTEN; 
+    p_ups_set(me, 10 / HOWOFTEN);
 
     /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
     SIGSETMASK(0);

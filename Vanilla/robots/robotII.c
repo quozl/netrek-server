@@ -258,15 +258,9 @@ char **argv;
     alarm_init();
 
     config();
-    if (practice) {
-      myskip = 10;    /* practice robot moves every 10 server cycles */
-    }  
-    else{
-      myskip = 5;     /* other robots move every 5 server cycles */
-    }
 
     me->p_process = getpid();
-    me->p_timerdelay = myskip; 
+    p_ups_set(me, practice ? 1 : 2);
 
     /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
     SIGSETMASK(0);
