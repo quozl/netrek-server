@@ -53,6 +53,12 @@ DEFUPDATE=10
 #	in a performance decline in normal mode).
 REALITY=10
 #
+#	Frames per second
+#	(The number of times per second the daemon wakes to move objects
+#	in the universe, and the basis of the update rate observed by
+#	clients.  Was 10 from 1986, was 50 from 2007)
+FPS=50
+#
 # 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
 #	(We need more twinks, don't turn this on lightly)
 CLUE=0

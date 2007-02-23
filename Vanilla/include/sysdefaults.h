@@ -202,6 +202,8 @@ struct sysdef_keywords {
     "Ship characteristics" 	},
   { "REALITY",		SYSDEF_INT,	&reality,
     "Reality updates per second" },
+  { "FPS",		SYSDEF_INT,	&fps,
+    "Frames per second (10 from 1986, 50 from 2007)" },
   { "MAXUPDATE",	SYSDEF_INT,	&minskip,
     "Maximum client updates per second" },
   { "DEFUPDATE",	SYSDEF_INT,	&defskip,
@@ -277,5 +279,6 @@ ADMIN_PASSWORD
 DDRANK
 GARANK
 BLOGGING
+FPS
 
 */
