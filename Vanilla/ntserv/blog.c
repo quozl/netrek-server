@@ -82,7 +82,8 @@ void blog_game_over(struct status *was, struct status *is)
   np = (is->planets - was->planets);
   if (np < 1) return;
 
-  hours = (is->time - was->time) / (1000000 / reality) / 60.0 / 60.0;
+  /* BUG: 50 fps change impacts */
+  hours = (is->time - was->time) / (1000000 / distortion) / 60.0 / 60.0;
   blog_printf("daemon", "Game over\n\n"
               "Players have left, %d planets taken, %d armies bombed, "
               "%d deaths, %d kills, over %.1f hours of t-mode play.\n",

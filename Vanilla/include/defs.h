@@ -389,7 +389,7 @@ because they have initialisation of variables dependent on UPDATE. */
  * Given a number of one fifth seconds, it will return the number of
  * SIGALRMs we will receive in that period.
  */
-#define efticks(x) (((x)*(fps/5))/me->p_skip)
+#define efticks(x) (((x)*(fps/5))/me->p_fpu)
 
 /*
  * UDP control stuff

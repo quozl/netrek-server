@@ -38,11 +38,12 @@ EJECT_VOTE_ONLY_IF_QUEUE=0
 #	(requires EJECT_VOTE_ENABLE=1)
 EJECT_VOTE_VICIOUS=0
 #
-#       Reality updates per second
+#	Time distortion constant
 #	(Warning: intended for testing only, as changing this disturbs
 #	reaction times of players and they learn the new rate, resulting
-#	in a performance decline in normal mode).
-REALITY=10
+#       in a performance decline in normal mode ... is also useful in
+#       controlled player environments for teaching).
+DISTORTION=10
 #
 #	Frames per second
 #	(The number of times per second the daemon wakes to move objects

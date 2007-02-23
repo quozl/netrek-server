@@ -286,7 +286,7 @@ main(int argc, char *argv[])
     SIGNAL(SIGINT, cleanup);
     SIGNAL(SIGTERM, cleanup);
 
-    alarm_setitimer(reality, fps);
+    alarm_setitimer(distortion, fps);
 
     /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
     SIGSETMASK(0);

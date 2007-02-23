@@ -61,7 +61,7 @@ void readsysdefaults(void)
     twarpMode = 0;
     twarpSpeed = 60;
 #endif
-    reality = 10;
+    distortion = 10;
     fps = 50;
     maxups = fps;
     minups = 1;

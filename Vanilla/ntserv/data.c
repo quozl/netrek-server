@@ -27,7 +27,7 @@ int	oldalert = PFGREEN;	/* Avoid changing more than we have to */
 
 int	remap[9] = { 0, 1, 2, -1, 3, -1, -1, -1, 4 };
 int	fps;		/* simulation frames per second */
-int	reality;	/* reality updates per second */
+int	distortion;	/* time distortion constant, 10 is normal */
 int	minups;		/* minimum client updates per second */
 int	defups;		/* default client updates per second */
 int	maxups;		/* maximum client updates per second */

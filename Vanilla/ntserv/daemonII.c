@@ -47,7 +47,7 @@ union semun {
 #endif /*PUCK_FIRST*/
 
 /* todo: fps support */
-#define fuse(X) ((context->frame % (X*fps/reality)) == 0)
+#define fuse(X) ((context->frame % (X*fps/distortion)) == 0)
 #define seconds_to_frames(X) (X*fps)
 #define frames_to_seconds(X) (X/fps)
 #define TOURNEXTENSION 15       /* Tmode gone for 15 seconds 8/26/91 TC */
@@ -232,7 +232,7 @@ int main(int argc, char **argv)
 #endif
         players[i].p_no=i;
         players[i].p_ups = defups;
-        players[i].p_skip = 1;
+        players[i].p_fpu = 1;
         MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
     }
 
@@ -326,7 +326,7 @@ int main(int argc, char **argv)
     pinit();
 
     alarm_init();
-    alarm_setitimer(reality, fps);
+    alarm_setitimer(distortion, fps);
 
     check_load();
 
@@ -594,7 +594,7 @@ static void political_end(int message)
 static void move()
 {
     static int oldmessage;
-    int old_robot, old_reality, old_fps;
+    int old_robot, old_distortion, old_fps;
     static enum ts {
             TS_PICKUP, 
             TS_SCUMMERS,
@@ -606,7 +606,7 @@ static void move()
     if (fuse(QUEUEFUSE)){
         queues_purge();
         solicit(0);
-        bans_age_temporary(QUEUEFUSE/reality);
+        bans_age_temporary(QUEUEFUSE/distortion);
     }
 
     if (ispaused){ /* Game is paused */
@@ -642,7 +642,7 @@ static void move()
         exitDaemon(0);
     }
     old_robot = start_robot;
-    old_reality = reality;
+    old_distortion = distortion;
     old_fps = fps;
     if (update_sys_defaults()) {
         if (chaosmode)
@@ -657,9 +657,9 @@ static void move()
             if (start_robot) fork_robot(start_robot);
         }
 
-        /* allow for change to reality timer */
-        if (old_reality != reality || old_fps != fps)
-            alarm_setitimer(reality, fps);
+        /* allow for change to distortion timer */
+        if (old_distortion != distortion || old_fps != fps)
+            alarm_setitimer(distortion, fps);
 
         /* This message does 2 things:
          * First, it tells the players that the system defaults have in fact
@@ -702,6 +702,7 @@ static void move()
 
     case TS_TOURNAMENT:
             status->tourn = 1;
+            /* BUG: 50 fps change impacts global unduly */
             status->time++;
             context->frame_tourn_end = context->frame;
             if (is_tournament_mode()) break;
@@ -4818,7 +4819,7 @@ static void signal_servers(void)
         }
 #endif /*PUCK_FIRST*/
 
-        t = j->p_skip;
+        t = j->p_fpu;
         if (!t) t = 5; /* paranoia */
 
         /* adding i to counter interleaves update signals to the

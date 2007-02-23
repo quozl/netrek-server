@@ -385,9 +385,9 @@ void t_x_y_set(struct torp *k, int t_x, int t_y)
   k->t_y_internal = spi(t_y);
 }
 
-int p_ups_set(struct player *me, int ups)
+int p_ups_set(struct player *me, int client_ups)
 {
-  int skip;
+  int fpu, ups = client_ups;
 
   /* keep requested updates per second within sysdef limits */
   if (ups < minups) ups = minups;
@@ -396,27 +396,31 @@ int p_ups_set(struct player *me, int ups)
 
   /*
   Convert to a skip count then back to an updates per second that
-  corresponds to the skip count, using integer math ... so we choose
-  the fastest possible update rate that evenly divides into the
-  server's frames per second.
+  corresponds to the skip count, using integer math ... this results
+  in an update rate that is most of the time not what the client asked
+  for, so we will tell the client the update rate that they will get.
+  The client is told the server frame rate, but not how the server
+  implements the update rate.
+
+  TODO: send client the actual rate based on fpu.
 
   For example, at 50 server frames per second, the updates per second
   rates are as follows:
 
-  fps = 50, ups = 50, therefore skip = 1
-  fps = 50, ups = 25, therefore skip = 2
-  fps = 50, ups = 10, therefore skip = 5
-  fps = 50, ups =  1, therefore skip = 50
+  fps = 50, ups = 50, therefore fpu = 1
+  fps = 50, ups = 25, therefore fpu = 2
+  fps = 50, ups = 10, therefore fpu = 5
+  fps = 50, ups =  1, therefore fpu = 50
   */
 
-  skip = fps / ups;
-  ups = fps / skip;
+  fpu = fps / ups;
+  ups = fps / fpu;
 
   /* if there is no effective change, do nothing */
-  if ((me->p_skip == skip) && (me->p_ups == ups)) return 0;
+  if ((me->p_fpu == fpu) && (me->p_ups == ups)) return 0;
 
   /* store the change */
-  me->p_skip = skip;
+  me->p_fpu = fpu;
   me->p_ups = ups;
 
   if (me->p_flags & PFPRACTR) return 1;

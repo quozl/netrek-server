@@ -75,7 +75,7 @@ extern int	oldalert;
 extern int	remap[];
 extern int	udcounter;
 extern int	fps;		/* simulation frames per second */
-extern int	reality;	/* universe simulation updates per second */
+extern int	distortion;	/* time distortion constant, 10 is normal */
 extern int	minups;		/* minimum client updates per second */
 extern int	defups;		/* default client updates per second */
 extern int	maxups;		/* maximum client updates per second */

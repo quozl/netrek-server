@@ -57,10 +57,10 @@ int alarm_send(pid_t pid)
   return kill(pid, SIGALRM);
 }
 
-void alarm_setitimer(int reality, int fps)
+void alarm_setitimer(int distortion, int fps)
 {
   struct itimerval udt;
-  int tv_usec = 1000000 / reality * 10 / fps;
+  int tv_usec = 1000000 / distortion * 10 / fps;
   int stat;
 
   udt.it_interval.tv_sec = 0;
