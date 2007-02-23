@@ -722,6 +722,11 @@ static void move()
     if (fuse(PLAYERFUSE)) {
         udplayers();
     }
+#ifdef SB_TRANSWARP
+    if (fuse(TWARPFUSE)) {
+        udtwarp();
+    }
+#endif
     udtorps();
     if (fuse(PHASERFUSE)) {
         udphaser();
@@ -729,11 +734,6 @@ static void move()
     if (fuse(CLOAKFUSE)) {
         udcloak();
     }
-#ifdef SB_TRANSWARP
-    if (fuse(TWARPFUSE)) {
-        udtwarp();
-    }
-#endif
 
     signal_servers();
 
@@ -1052,70 +1052,67 @@ static void udplayers_palive_move_in_space(struct player *j)
                 changedir(j);
         
 #ifdef SB_TRANSWARP
-        if (!(j->p_flags & PFTWARP))  /* not transwarping */
+        if (j->p_flags & PFTWARP) return; /* udtwarp() to handle ship */
 #endif
-        {
 #ifdef NEW_ETEMP
-                if (j->p_flags & PFENG)
-                        maxspeed = 1;
-                else
+        if (j->p_flags & PFENG)
+                maxspeed = 1;
+        else
 #endif
-                        maxspeed = (j->p_ship.s_maxspeed+2) -
-                                (j->p_ship.s_maxspeed+1)*
-                                ((float)j->p_damage/ (float)(j->p_ship.s_maxdamage));
-                if (j->p_desspeed > maxspeed)
-                        j->p_desspeed = maxspeed;
-                if (j->p_flags & PFENG)
-                        j->p_desspeed = 1;
-                
-                /* Charge for speed */
-                if (j->p_fuel < (j->p_ship.s_warpcost * j->p_speed)) {
-                        /*
-                         * Out of fuel ... set speed to one that uses less fuel
-                         *  than the ship's reactor generates (if necessary).
-                         */
-                        if (j->p_ship.s_recharge/j->p_ship.s_warpcost <
-                            j->p_speed) {
-                                j->p_desspeed = j->p_ship.s_recharge/j->p_ship.s_warpcost + 2;
-                                /* Above incantation is a magic formula ... (hack). */
-                                if (j->p_desspeed > j->p_ship.s_maxspeed)
-                                        j->p_desspeed = j->p_ship.s_maxspeed - 1;
-                        } else {
-                                j->p_desspeed = j->p_speed;
-                        }
-                        j->p_fuel = 0;
+                maxspeed = (j->p_ship.s_maxspeed+2) -
+                        (j->p_ship.s_maxspeed+1)*
+                        ((float)j->p_damage/ (float)(j->p_ship.s_maxdamage));
+        if (j->p_desspeed > maxspeed)
+                j->p_desspeed = maxspeed;
+        if (j->p_flags & PFENG)
+                j->p_desspeed = 1;
+
+        /* Charge for speed */
+        if (j->p_fuel < (j->p_ship.s_warpcost * j->p_speed)) {
+                /*
+                 * Out of fuel ... set speed to one that uses less fuel
+                 *  than the ship's reactor generates (if necessary).
+                 */
+                if (j->p_ship.s_recharge/j->p_ship.s_warpcost <
+                    j->p_speed) {
+                        j->p_desspeed = j->p_ship.s_recharge/j->p_ship.s_warpcost + 2;
+                        /* Above incantation is a magic formula ... (hack). */
+                        if (j->p_desspeed > j->p_ship.s_maxspeed)
+                                j->p_desspeed = j->p_ship.s_maxspeed - 1;
                 } else {
-                        j->p_fuel -= (j->p_ship.s_warpcost * j->p_speed);
-                        j->p_etemp += j->p_speed;
-                        
-                        /* Charge SB's for mass of docked vessels ... */
-                        if (j->p_ship.s_type == STARBASE) {
-                                int bays = 0;
-                                for (k=0; k<NUMBAYS; k++)
-                                        if(j->p_bays[k] != VACANT) {
-                                                j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
-                                                bays++;
-                                        }
-                                j->p_etemp += .7*(j->p_speed * bays);
-                        }
+                        j->p_desspeed = j->p_speed;
                 }
-        
-                if (j->p_desspeed > j->p_speed) {
-                        j->p_subspeed += j->p_ship.s_accint;
-                }
-                if (j->p_desspeed < j->p_speed)
-                        j->p_subspeed -= j->p_ship.s_decint;
-        
-                if (j->p_subspeed / 1000) {
-                        j->p_speed += j->p_subspeed / 1000;
-                        j->p_subspeed %= 1000;
-                        if (j->p_speed < 0)
-                                j->p_speed = 0;
-                        if (j->p_speed > j->p_ship.s_maxspeed)
-                                j->p_speed = j->p_ship.s_maxspeed;
+                j->p_fuel = 0;
+        } else {
+                j->p_fuel -= (j->p_ship.s_warpcost * j->p_speed);
+                j->p_etemp += j->p_speed;
+
+                /* Charge SB's for mass of docked vessels ... */
+                if (j->p_ship.s_type == STARBASE) {
+                        int bays = 0;
+                        for (k=0; k<NUMBAYS; k++)
+                                if(j->p_bays[k] != VACANT) {
+                                        j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
+                                        bays++;
+                                }
+                        j->p_etemp += .7*(j->p_speed * bays);
                 }
         }
         
+        if (j->p_desspeed > j->p_speed) {
+                j->p_subspeed += j->p_ship.s_accint;
+        }
+        if (j->p_desspeed < j->p_speed)
+                j->p_subspeed -= j->p_ship.s_decint;
+        
+        if (j->p_subspeed / 1000) {
+                j->p_speed += j->p_subspeed / 1000;
+                j->p_subspeed %= 1000;
+                if (j->p_speed < 0)
+                        j->p_speed = 0;
+                if (j->p_speed > j->p_ship.s_maxspeed)
+                        j->p_speed = j->p_ship.s_maxspeed;
+        }
 }
 
 static void udships_palive_move_in_space(struct player *j)
@@ -1762,36 +1759,33 @@ position hidden      0000000000000011111111110000000000000
 #ifdef SB_TRANSWARP
 static void udtwarp(void)
 {
-  struct player *pl;
-  register int i;
-  int dist;
+    int i, dist;
+    struct player *j, *k;
 
-  for (i=0; i<MAXPLAYER; i++) {
-    if (isAlive(&players[i])) {
-      if (players[i].p_flags & PFTWARP) {
-        /* Accelerate if needed */
-        if ( (players[i].p_speed *= 2) > (players[i].p_desspeed) )
-          players[i].p_speed = players[i].p_desspeed;
-        /* Deduct fuel and raise etemp */
-        players[i].p_fuel -= (int)((players[i].p_ship.s_warpcost * players[i].p_speed) * 0.8);
-        players[i].p_etemp += players[i].p_ship.s_maxspeed;
-        /* Decelerate if needed */
+    for (i=0; i<MAXPLAYER; i++) {
+        j = &players[i];
+        if (j->p_status != PALIVE) continue;
+        if (!(j->p_flags & PFTWARP)) continue;
+        /* ship is alive and in transwarp, accelerate if needed */
+        if ((j->p_speed *= 2) > (j->p_desspeed))
+            j->p_speed = j->p_desspeed;
+        /* deduct fuel and raise etemp */
+        j->p_fuel -= (int)((j->p_ship.s_warpcost * j->p_speed) * 0.8);
+        j->p_etemp += j->p_ship.s_maxspeed;
 #ifndef SB_CALVINWARP
-        pl = &players[players[i].p_playerl];
-        if (pl->p_ship.s_type == STARBASE) {
-          dist = hypot((double) (players[i].p_x - pl->p_x),
-                (double) (players[i].p_y - pl->p_y));
+        /* decelerate if needed */
+        k = &players[j->p_playerl];
+        if (k->p_ship.s_type == STARBASE) {
+            dist = hypot((double) (j->p_x - k->p_x),
+                         (double) (j->p_y - k->p_y));
 
-          if (dist-(DOCKDIST/2) < (11500 * players[i].p_speed * players[i].p_speed) /
-            players[i].p_ship.s_decint) {
-            if (players[i].p_desspeed > 2)
-              players[i].p_desspeed--;
-          }
+            if ((dist-(DOCKDIST/2) < (11500 * j->p_speed * j->p_speed) /
+                j->p_ship.s_decint) && j->p_desspeed > 2) {
+                    j->p_desspeed--;
+            }
         }
 #endif
-      }
     }
-  }
 }
 #endif
 

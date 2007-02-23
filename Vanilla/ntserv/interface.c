@@ -33,6 +33,9 @@ void set_speed(int speed)
     } else if (speed < 0) {
 	speed=0;
     }
+    /* note: possibly a bug, if speed requested is above maximum, then
+    the code above momentarily sets p_desspeed to s_maxspeed, yet code
+    below sets p_desspeed to speed regardless. */
     me->p_desspeed = speed;
     bay_release(me);
     me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
