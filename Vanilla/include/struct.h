@@ -486,6 +486,7 @@ struct player {
     struct specialweapon p_weapons[NUMSPECIAL];
 #endif
     int p_inlcaptain;           /* Player is an INL captain */
+    /* add initialisation of new variables in enter(), or ntserv main() */
 };
 
 struct statentry {

@@ -180,9 +180,13 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) 
       j->voting[me->p_no] = -1;
 
+    me->p_inlcaptain = 0;
+
     /* join message stuff */
     sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);
     sprintf(me->p_longname, "%s (%s)", me->p_name, me->p_mapchars);	    
+
+    /* add initialisation of struct player entries above */
 
     if (lastteam != tno || lastrank != mystats->st_rank) {
 
