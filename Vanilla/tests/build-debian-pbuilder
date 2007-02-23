@@ -43,8 +43,11 @@ ls -l ${DEBIAN_PACKAGE}_${DEBIAN_VERSION}.{tar.gz,dsc}
 mv ${DEBIAN_PACKAGE}_${DEBIAN_VERSION}.{tar.gz,dsc} \
     ${NETREK_SERVER_VANILLA_PBUILDER_ROOT}
 
+# pbuilder looks for dsc in current directory
+cd ${NETREK_SERVER_VANILLA_PBUILDER_ROOT}
+
 # build the source package
-for DISTRIBUTION in sarge etch; do
+for DISTRIBUTION in etch; do
     sudo pbuilder build --configfile \
 	${NETREK_SERVER_VANILLA_PBUILDER_ROOT}/pbuilder/${DISTRIBUTION}/rc \
 	${DEBIAN_PACKAGE}_${DEBIAN_VERSION}.dsc
