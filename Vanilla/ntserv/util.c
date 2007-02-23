@@ -249,6 +249,78 @@ struct player *p_no(int i)
   return &players[i];
 }
 
+/*
+ **  Move a player to the specified team, if they are not yet there.
+ **  Make them peaceful with the new team, and hostile/at war with the
+ **  other team.
+ */
+void change_team(int p_no, int ours, int theirs)
+{
+    struct player *k = &players[p_no];
+    int queue;
+
+    if (k->w_queue != QU_PICKUP)
+    {
+        queue = ( ours == FED ) ? QU_HOME : QU_AWAY;
+        queues[k->w_queue].free_slots++;
+        k->w_queue = queue;
+        queues[k->w_queue].free_slots--;
+    }
+
+    k->p_hostile |= theirs;
+    k->p_swar    |= theirs;
+    k->p_hostile &= ~ours;
+    k->p_swar    &= ~ours;
+    k->p_war      = (k->p_hostile | k->p_swar);
+    k->p_team     =  ours;
+    sprintf(k->p_mapchars, "%c%c", teamlet[k->p_team], shipnos[p_no]);
+    sprintf(k->p_longname, "%s (%s)", k->p_name, k->p_mapchars);
+
+    k->p_status = PEXPLODE;
+    k->p_whydead = TOURNSTART;
+    if (k->p_ship.s_type == STARBASE)
+        k->p_explode = 2 * SBEXPVIEWS;
+    else
+        k->p_explode = 10;
+    k->p_ntorp = 0;
+    k->p_nplasmatorp = 0;
+    k->p_hostile = (FED | ROM | ORI | KLI);
+    k->p_war     = (k->p_hostile | k->p_swar);
+}
+
+char slot_char(int slotnum)
+{
+    /* Numbered slot */
+    if ((slotnum >= 0) && (slotnum < 10))
+        return('0' + slotnum);
+    /* Alphabetical slot */
+    if ((slotnum >= 10) && (slotnum < MAXPLAYER) && (slotnum < 36))
+        return('a' + slotnum - 10);
+    /* Valid slot, but higher than 'z' */
+    if ((slotnum >= 36) && (slotnum < MAXPLAYER))
+        return('?');
+    return -1;
+}
+
+int slot_num(char slot)
+{
+    if ((slot >= '0') && (slot <= '9'))
+        return(slot - '0');
+    if ((tolower(slot) >= 'a') && (tolower(slot) <= 'z'))
+        return(tolower(slot) - 'a' + 10);
+    return -1;
+}
+
+/* set coordinates for a new ship that is not yet alive */
+void p_x_y_go(struct player *pl, int p_x, int p_y)
+{
+  pl->p_x = p_x;
+  pl->p_y = p_y;
+  pl->p_x_internal = spi(p_x);
+  pl->p_y_internal = spi(p_y);
+  pl->p_x_y_set = 0;
+}
+
 /* cause a ship to be constrained in a box (x,y)-(x,y) */
 void p_x_y_box(struct player *pl, int p_x_min, int p_y_min, int p_x_max, int p_y_max)
 {
