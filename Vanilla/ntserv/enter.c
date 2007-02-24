@@ -24,6 +24,7 @@
 
 static void auto_peace(void);
 static void placeIndependent(void);
+static int align_ship(void);
 
 /* Enter the game */
 
@@ -94,8 +95,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	    }
     }
     me->p_transwarp = PFGREEN|PFYELLOW|PFRED;
-    me->p_dir = 0;
-    me->p_desdir = 0;
+    me->p_dir = align_ship();
+    me->p_desdir = me->p_dir;
     me->p_speed = 0;
     me->p_desspeed = 0;
     me->p_subspeed = 0;
@@ -295,4 +296,36 @@ static void placeIndependent(void)
 	if (good) return;
     }
     ERROR(2,("Couldn't place the bot successfully.\n"));
+}
+
+static int align_ship(void)
+{
+    int teamoppose, heading;
+
+    if ((teamoppose = team_opposing(me->p_team)) == 0)
+	heading = 0;
+    else { /* face opponent's space */
+	switch (me->p_team) {
+	    case FED:
+		if (teamoppose == ROM) heading = 0;
+		else heading = 64;
+		break;
+	    case ROM:
+		if (teamoppose == KLI) heading = 64;
+		else heading = 128;
+		break;
+	    case KLI:
+		if (teamoppose == ORI) heading = 128;
+		else heading = 192;
+		break;
+	    case ORI:
+		if (teamoppose == FED) heading = 192;
+		else heading = 0;
+		break;
+	    default:
+		heading = 0;
+		break;
+	}
+    }
+    return heading;
 }
