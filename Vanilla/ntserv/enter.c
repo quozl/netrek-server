@@ -46,27 +46,27 @@ static u_char face_enemy(void)
     struct planet *planet_other;
     u_char dir;
 
-    /* determine the team that is the enemy, if none return default */
+    /* determine the team that is the enemy */
     team_other = team_opposing(me->p_team);
     if (team_other == NOBODY) {
-        ERROR(5,("face_enemy: no opposing team to face.\n"));
-        return 0;
+        /* if no opposing team, face centre of galactic */
+        x = GWIDTH/2;
+        y = GWIDTH/2;
+        ERROR(5,("face_enemy: no opposing team to face, facing centre\n"));
+    } else {
+        /* team opposes, face one of the enemy home worlds */
+        planet_other = pick_starting_planet(team_other);
+        x = planet_other->pl_x;
+        y = planet_other->pl_y;
+        ERROR(5,("face_enemy: team %s enemy %s set course for planet %s.\n",
+                 team_name(me->p_team), team_name(team_other),
+                 planet_other->pl_name));
     }
 
-    /* identify one of the enemy home worlds */
-    planet_other = pick_starting_planet(team_other);
-
-    /* face in that direction, modulus 32 (45 degrees) */
-    x = planet_other->pl_x;
-    y = planet_other->pl_y;
-
+    /* calculate course, modulus 32 (45 degrees) */
     dir = ((u_char) nint(atan2((double) (x - me->p_x),
                                (double) (me->p_y - y))
                          / 3.14159 * 128.0 / 32.0) * 32);
-
-    ERROR(5,("face_enemy: team %s enemy %s planet %s set direction %d.\n",
-            team_name(me->p_team), team_name(team_other),
-            planet_other->pl_name, dir));
     return dir;
 }
 
