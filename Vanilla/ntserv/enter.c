@@ -24,13 +24,51 @@
 
 static void auto_peace(void);
 static void placeIndependent(void);
-static int align_ship(void);
 
 /* Enter the game */
 
 #if defined (ONCHECK) && !defined(ROBOT)
 static int first_time = 1;
 #endif
+
+static struct planet *pick_starting_planet(int p_team)
+{
+    int i, tno = team_no(p_team);
+    for (;;) {
+        i = tno * 10 + random() % 10;
+        if (startplanets[i]) return &planets[i];
+    }
+}
+
+static u_char face_enemy(void)
+{
+    int team_other, x, y;
+    struct planet *planet_other;
+    u_char dir;
+
+    /* determine the team that is the enemy, if none return default */
+    team_other = team_opposing(me->p_team);
+    if (team_other == NOBODY) {
+        ERROR(5,("face_enemy: no opposing team to face.\n"));
+        return 0;
+    }
+
+    /* identify one of the enemy home worlds */
+    planet_other = pick_starting_planet(team_other);
+
+    /* face in that direction, modulus 32 (45 degrees) */
+    x = planet_other->pl_x;
+    y = planet_other->pl_y;
+
+    dir = ((u_char) nint(atan2((double) (x - me->p_x),
+                               (double) (me->p_y - y))
+                         / 3.14159 * 128.0 / 32.0) * 32);
+
+    ERROR(5,("face_enemy: team %s enemy %s planet %s set direction %d.\n",
+            team_name(me->p_team), team_name(team_other),
+            planet_other->pl_name, dir));
+    return dir;
+}
 
 /* change 5/10/91 TC -- if tno == 4, independent */
 /*                         tno == 5, Terminator  */
@@ -45,7 +83,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     static int lastteam= -1;
     static int lastrank= -1;
     char addrbuf[10];
-    int startplanet;
+    struct planet *starting_planet;
     int i;
 
     /* Use local variables, not the globals */
@@ -95,26 +133,22 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	    }
     }
     me->p_transwarp = PFGREEN|PFYELLOW|PFRED;
-    me->p_dir = align_ship();
-    me->p_desdir = me->p_dir;
     me->p_speed = 0;
     me->p_desspeed = 0;
     me->p_subspeed = 0;
     if ((tno == 4) || (tno == 5) || (me->w_queue == QU_GOD_OBS) ) { 
-      /* change 5/10/91 TC new case, indep */
-      /* change 1/05/00 CYV new case, god obs */
-	me->p_team = 0;
-	placeIndependent();	/* place away from others 1/23/92 TC */
-    }
-    else {
-	me->p_team = (1 << tno);
-	for (;;) {
-	    startplanet=tno*10 + random() % 10;
-	    if (startplanets[startplanet]) break;
-	}
-	p_x_y_go(me,
-		 planets[startplanet].pl_x + (random() % 10000) - 5000,
-		 planets[startplanet].pl_y + (random() % 10000) - 5000);
+        /* change 5/10/91 TC new case, indep */
+        /* change 1/05/00 CYV new case, god obs */
+        me->p_team = 0;
+        placeIndependent();     /* place away from others 1/23/92 TC */
+        me->p_dir = me->p_desdir = 0;
+    } else {
+        me->p_team = (1 << tno);
+        starting_planet = pick_starting_planet(me->p_team);
+        p_x_y_go(me,
+                 starting_planet->pl_x + (random() % 10000) - 5000,
+                 starting_planet->pl_y + (random() % 10000) - 5000);
+        me->p_dir = me->p_desdir = face_enemy();
     }
     p_x_y_unbox(me);
     me->p_ntorp = 0;
@@ -296,36 +330,4 @@ static void placeIndependent(void)
 	if (good) return;
     }
     ERROR(2,("Couldn't place the bot successfully.\n"));
-}
-
-static int align_ship(void)
-{
-    int teamoppose, heading;
-
-    if ((teamoppose = team_opposing(me->p_team)) == 0)
-	heading = 0;
-    else { /* face opponent's space */
-	switch (me->p_team) {
-	    case FED:
-		if (teamoppose == ROM) heading = 0;
-		else heading = 64;
-		break;
-	    case ROM:
-		if (teamoppose == KLI) heading = 64;
-		else heading = 128;
-		break;
-	    case KLI:
-		if (teamoppose == ORI) heading = 128;
-		else heading = 192;
-		break;
-	    case ORI:
-		if (teamoppose == FED) heading = 192;
-		else heading = 0;
-		break;
-	    default:
-		heading = 0;
-		break;
-	}
-    }
-    return heading;
 }

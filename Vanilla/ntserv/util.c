@@ -92,7 +92,6 @@ int realNumShips(int owner)
 /* find out who the other T mode team is.  Its not the team I'm on */
 /* LTD stats needs to know who the enemy is to determine what zone */
 /* a player is in.  Time in each zone is kept track of in LTD      */
-/* tno == my current team                                          */
 
 void setEnemy(int myteam, struct player *me)
 {
@@ -110,6 +109,7 @@ void setEnemy(int myteam, struct player *me)
   }
   
   me->p_hist.enemy_team = other_team;
+  /* BUG: this should use team_opposing() instead */
 
 }
 
@@ -172,13 +172,23 @@ void orbit_release_by_planet(struct planet *pl) {
   }
 }
 
-/* given a team number, return the team number of the opposing team */
+/* given a team mask, return the team mask of the opposing team */
 int team_opposing(int team)
 {
   if (!status->tourn) return NOBODY;
   if (team == context->quorum[0]) return context->quorum[1];
   if (team == context->quorum[1]) return context->quorum[0];
   return NOBODY;
+}
+
+/* given a team mask, return the team number */
+int team_no(int team)
+{
+    if (team == FED) return 0;
+    if (team == ROM) return 1;
+    if (team == KLI) return 2;
+    if (team == ORI) return 3;
+    return -1;
 }
 
 /* return either me or the observed me */

@@ -13,6 +13,7 @@ char *team_name(int team);
 char *team_verb(int team);
 char *team_code(int team);
 int team_find(char *name);
+int team_no(int team);
 int team_opposing(int team);
 struct player *my();
 int is_robot(const struct player *pl);
