@@ -13,7 +13,7 @@
 #include "proto.h"
 
 #define MIN_INITIAL_SPEED 2
-#define TRANSWARP_SPEED 60
+#define MAX_TRANSWARP_SPEED 60
 
 #ifdef SB_TRANSWARP
 
@@ -118,10 +118,13 @@ int handleTranswarp(void)
    me->p_flags &= ~(PFPLOCK|PFPLLOCK|PFDOCK);
    me->p_flags |= (PFSHIELD | PFTWARP | PFPLOCK);
    /*
-   me->p_desspeed = (twarpSpeed) ? twarpSpeed : TRANSWARP_SPEED;
+   me->p_desspeed = (twarpSpeed) ? twarpSpeed : MAX_TRANSWARP_SPEED;
    */
 
    me->p_desspeed = 5 * me->p_ship.s_maxspeed;
+   /* Sanity check on speed, mostly for ATT */
+   if (me->p_desspeed > MAX_TRANSWARP_SPEED)
+      me->p_desspeed = MAX_TRANSWARP_SPEED;
    maxspeed =  5 * ((me->p_ship.s_maxspeed + 2) -
 	       (int)( (me->p_ship.s_maxspeed + 1) *
                ((float) me->p_damage / (float) (me->p_ship.s_maxdamage))));
