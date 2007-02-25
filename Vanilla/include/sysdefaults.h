@@ -106,6 +106,8 @@ struct sysdef_keywords {
     "Rank required to refit to Starbase"	 	},
   { "SBPLANETS",	SYSDEF_INT,	&sbplanets,
     "Minimum planets for Starbase"			},
+  { "SBORBIT",          SYSDEF_INT,	&sborbit,
+    "Allow bases to orbit enemy planets"		},
   { "CHAOS",		SYSDEF_INT,	&chaosmode,
     "Enable CHAOS mode" 				},
 #ifdef SNAKEPATROL
@@ -280,5 +282,6 @@ DDRANK
 GARANK
 BLOGGING
 FPS
+SBORBIT
 
 */

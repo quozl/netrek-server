@@ -234,14 +234,12 @@ void orbit(void)
     if (dx*dx + dy*dy > ENTORBDIST*ENTORBDIST)
       continue;
 
-    /*
-     * Bases cannot orbit non-owned planets except in BASE WARS! mode.  */
-#ifndef BASE_WARS
-    if ((me->p_ship.s_type == STARBASE) && (!(me->p_team & l->pl_owner))) {
-      new_warning(80, "Central Command regulations prohibits you from orbiting foreign planets");
-      return;
+    if (!sborbit) {
+      if ((me->p_ship.s_type == STARBASE) && (!(me->p_team & l->pl_owner))) {
+        new_warning(80, "Central Command regulations prohibits you from orbiting foreign planets");
+        return;
+      }
     }
-#endif
 
     /*
      * A successful orbit!

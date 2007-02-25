@@ -132,6 +132,9 @@ SBRANK=3
 #	Planets needed to take out starbase
 SBPLANETS=5
 #
+#	Bases can orbit enemy planets (0 = no, 1 = yes)
+SBORBIT=0
+#
 # 	Use Chaos mode (0 = no, 1 = yes)
 CHAOS=0
 #
