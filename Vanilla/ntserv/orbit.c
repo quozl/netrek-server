@@ -236,7 +236,7 @@ void orbit(void)
 
     if (!sborbit) {
       if ((me->p_ship.s_type == STARBASE) && (!(me->p_team & l->pl_owner))) {
-        new_warning(80, "Central Command regulations prohibits you from orbiting foreign planets");
+        new_warning(80, "Central Command regulations prohibit you from orbiting foreign planets");
         return;
       }
     }
