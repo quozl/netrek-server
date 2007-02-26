@@ -220,6 +220,9 @@ int main(int argc, char **argv)
      * It is kind of a hack, but should be harmless.
      */
     p_x_y_set(me, -100000, -100000);
+    p_x_y_commit(me);
+    me->p_x = spo(me->p_x_internal);
+    me->p_y = spo(me->p_y_internal);
     me->p_team=0;
     updateSelf(FALSE);	/* so he gets info on who he is */
     			/* updateSelf(TRUE) shouldn't be necessary */
@@ -351,6 +354,9 @@ int main(int argc, char **argv)
 	/* give the player the motd and find out which team he wants */
     if (me->p_status != PALIVE) {
 	p_x_y_set(me, -100000, -100000);
+ 	p_x_y_commit(me);
+	me->p_x = spo(me->p_x_internal);
+	me->p_y = spo(me->p_y_internal);
 	updateSelf(FALSE);	/* updateSelf(TRUE) isn't necessary */
 	updateShips();
 	teamPick= -1;

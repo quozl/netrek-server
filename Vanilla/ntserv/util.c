@@ -353,10 +353,6 @@ void p_x_y_unbox(struct player *pl)
 /* request new coordinates in unsynchronised fashion */
 void p_x_y_set(struct player *pl, int p_x, int p_y)
 {
-  if (p_x < 0) p_x = 0;
-  if (p_y < 0) p_y = 0;
-  if (p_x > GWIDTH) p_x = GWIDTH;
-  if (p_y > GWIDTH) p_y = GWIDTH;
   pl->p_x_input = spi(p_x);
   pl->p_y_input = spi(p_y);
   pl->p_x_y_set++;
