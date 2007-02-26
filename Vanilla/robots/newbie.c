@@ -849,6 +849,7 @@ static void cleanup(int unused)
     queues[QU_NEWBIE_OBS].q_flags &= ~(QU_REPORT | QU_OPEN);
     queues[QU_PICKUP].q_flags |= (QU_REPORT | QU_OPEN);
     queues[QU_PICKUP_OBS].q_flags |= (QU_REPORT | QU_OPEN);
+    status->gameup &= ~GU_GAMEOK;
     exitRobot();
 }
 
