@@ -111,10 +111,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     /* Alert client about new ship stats */
     sndShipCap();
 
-#ifndef ROBOT
-    p_ups_set(me, defups);
-#endif /* of #ifndef ROBOT */
-
     /* Check if can use plasma torpedoes */
     if (s_type != STARBASE && s_type != ATT && (
 #ifdef STURGEON  /* force plasmas -> upgrade feature */
