@@ -57,7 +57,9 @@ MINUPS=1
 #	Maximum client update rate per second
 MAXUPS=50
 #
-#	Default client update rate per second
+#       Default client update rate per second
+#       (Clients may or may not send a CP_UPDATES request during startup.
+#       If they do not this is the default rate they are provided with.)
 DEFUPS=25
 #
 # 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
