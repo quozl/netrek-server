@@ -7,6 +7,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "util.h"
 
 static void usage(void)
 {
@@ -138,7 +139,7 @@ int main(int argc, char **argv)
       printf("frame_test_counter: %d\n", context->frame_test_counter);
       printf("quorum[2]: %d %d (%s vs %s)\n",
              context->quorum[0], context->quorum[1],
-             team_code(context->quorum[0]), team_code(context->quorum[1]);
+             team_code(context->quorum[0]), team_code(context->quorum[1]));
       printf("blog_pickup_game_full: %d\n", context->blog_pickup_game_full);
       printf("blog_pickup_queue_full: %d\n", context->blog_pickup_queue_full);
       goto state_0;

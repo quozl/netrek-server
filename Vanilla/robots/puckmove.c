@@ -207,7 +207,7 @@ void rmove(void)
     anncer->p_ghostbuster = 0;     /* keep ghostbuster away */
 
     /* If the game is paused, do very little */
-    if (ispaused){
+    if (status->gameup & GU_PAUSED) {
 	pauseticks++;
 	if ((pauseticks % (PERSEC)) == 0) do_msg_check();
 	if ((pauseticks % (10*PERSEC)) == 0)

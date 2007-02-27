@@ -351,11 +351,11 @@ void p_x_y_unbox(struct player *pl)
 }
 
 /* request new coordinates in unsynchronised fashion */
-void p_x_y_set(struct player *pl, int p_x, int p_y)
+void p_x_y_set(struct player *j, int p_x, int p_y)
 {
-  pl->p_x_input = spi(p_x);
-  pl->p_y_input = spi(p_y);
-  pl->p_x_y_set++;
+  j->p_x_input = spi(p_x);
+  j->p_y_input = spi(p_y);
+  j->p_x_y_set++;
   /* note: request not obeyed until ship is !(PFDOCK|PFORBIT) */
 }
 

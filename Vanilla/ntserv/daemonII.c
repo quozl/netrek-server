@@ -46,7 +46,9 @@ union semun {
 #endif /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
 #endif /*PUCK_FIRST*/
 
-/* todo: fps support */
+/* fuse macro, true every so often, relative to frames per second and
+time distortion value, only valid outside pause (since context->frame
+must be incremented), base rate is in ticks and not frames */
 #define fuse(X) ((context->frame % (X*fps/distortion)) == 0)
 #define seconds_to_frames(X) (X*fps)
 #define frames_to_seconds(X) (X/fps)
@@ -352,7 +354,8 @@ int main(int argc, char **argv)
 }
 
 /* These specify how often special actions will take place in
-   UPDATE units (0.10 seconds, currently.)
+   UPDATE units (0.10 seconds, currently.) independent of frame rate
+   So 1 means at 10 per second.  Only valid out of pause.
 */
 
 #define PLAYERFUSE      1
@@ -609,11 +612,15 @@ static void move()
         bans_age_temporary(QUEUEFUSE/distortion);
     }
 
-    if (ispaused){ /* Game is paused */
-      if (fuse(PLAYERFUSE)) {
+    /* during a pause or conquer parade */
+    if (status->gameup & GU_PAUSED) {
+      static int cycle = 0;
+      /* run player and conquer parade at ten times per second */
+      if (cycle++ % (fps / 10) == 0) {
         udplayerpause();
         if (status->gameup & GU_CONQUER) conquer_update();
       }
+      /* but continue to signal player processes at their chosen rate */
       signal_servers();
       return;
     }

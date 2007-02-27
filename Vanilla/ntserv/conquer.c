@@ -15,20 +15,18 @@ static int conquer_player;	/* player number that won	*/
 static int conquer_planet;	/* planet they won at		*/
 static int conquer_timer;	/* countdown timer		*/
 
-#define CONQUER_TIMER_BEGIN	100	/* total parade length in 1/10th
-					   seconds */
+#define CONQUER_TIMER_BEGIN	100	/* total parade length in ticks	*/
 #define CONQUER_TIMER_DECLOAK	 90	/* threshold to decloak all	*/
 #define CONQUER_TIMER_PARADE	 40	/* threshold to complete parade	*/
 #define CONQUER_TIMER_GOODBYE	 10	/* threshold to say goodbye	*/
 
-#define CONQUER_RING_RADIUS	  5	/* orbital radius of ring	*/
+#define CONQUER_RING_RADIUS       5     /* orbital radius of ring       */
+#define CONQUER_RING_MOVE_STEPS  10     /* number of steps to arrive    */
 
-/* total bandwidth cost is 2000 bytes per second per slot over ten seconds 
-   if update rate is 10 updates/sec */
+/* total bandwidth cost is 2000 bytes per second per slot over ten seconds */
 
 /* borrowed from daemonII.c until we find a better place */
 #define TORPFUSE 1
-#define PLASMAFUSE 1
 #define PLAYERFUSE 1
 
 /* force decloak and visibility of all ships */
@@ -82,8 +80,8 @@ static void conquer_plasma_ring()
 {
 	struct torp *k;
 	int np = 0, pn = 0;
-	int radius = ((CONQUER_TIMER_BEGIN * fps / 10) - conquer_timer) 
-		* CONQUER_RING_RADIUS * ORBDIST / (CONQUER_TIMER_BEGIN * fps / 10);
+	int radius = (CONQUER_TIMER_BEGIN - conquer_timer) 
+		* CONQUER_RING_RADIUS * ORBDIST / CONQUER_TIMER_BEGIN;
 
 	for (k = firstPlasma; k <= lastPlasma; k++, k++) {
 		np++;
@@ -137,14 +135,15 @@ static void conquer_ships_ring()
 		conquer_ring_coordinates(j, k++, n, &x, &y);
 		dx = j->p_x - x;
 		dy = j->p_y - y;
-		if (abs(dx) < 50) {
-			p_x_y_set(j, x, y);
+		if ((abs(dx) + abs(dy)) < 100) {
+			/* close enough to click into final position */
+			p_x_y_go(j, x, y);
 		} else {
-			p_x_y_set(j, j->p_x - (dx / fps), j->p_y - (dy / fps));
+			/* move in steps into ring position */
+			p_x_y_go(j,
+				 j->p_x - (dx / CONQUER_RING_MOVE_STEPS),
+				 j->p_y - (dy / CONQUER_RING_MOVE_STEPS));
 		}
-		p_x_y_commit(j);
-		j->p_x = spo(j->p_x_internal);
-		j->p_y = spo(j->p_y_internal);
 	}
 }
 
@@ -159,10 +158,7 @@ static void conquer_parade()
 		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
 		conquer_ring_coordinates(j, k++, n, &x, &y);
-		p_x_y_set(j, x, y);
-		p_x_y_commit(j);
-		j->p_x = spo(j->p_x_internal);
-		j->p_y = spo(j->p_y_internal);
+		p_x_y_go(j, x, y);
 		j->p_speed = 0;
 	}
 }
@@ -219,17 +215,17 @@ static void conquer_end()
 void conquer_update()
 {
 	conquer_timer--;
-	if (conquer_timer == CONQUER_TIMER_DECLOAK * fps / 10) {
+	if (conquer_timer == CONQUER_TIMER_DECLOAK) {
 		conquer_decloak();
 		conquer_deplasma();
 	}
-	if (conquer_timer < CONQUER_TIMER_DECLOAK * fps / 10) {
+	if (conquer_timer < CONQUER_TIMER_DECLOAK) {
 		conquer_plasma_ring();
 		conquer_ships_ring();
 	}
-	if (conquer_timer == CONQUER_TIMER_PARADE * fps / 10)
+	if (conquer_timer == CONQUER_TIMER_PARADE)
 		conquer_parade();
-	if (conquer_timer == CONQUER_TIMER_GOODBYE * fps / 10)
+	if (conquer_timer == CONQUER_TIMER_GOODBYE)
 		pmessage(0, MALL, "GOD->ALL", "Goodbye.");
 	if (conquer_timer > 0) return;
 	status->gameup &= ~(GU_PAUSED|GU_CONQUER);
@@ -246,7 +242,7 @@ void conquer_begin(struct player *winner)
 	status->gameup |= GU_CONQUER|GU_PAUSED;
 	conquer_player = winner->p_no;
 	conquer_planet = winner->p_planet;
-	conquer_timer = CONQUER_TIMER_BEGIN * fps / 10;
+	conquer_timer = CONQUER_TIMER_BEGIN;
 #endif
 }
 

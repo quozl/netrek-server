@@ -105,7 +105,6 @@ struct context {
 #define GU_CHAOS 4
 #define chaos ((status->gameup) & GU_CHAOS)
 #define GU_PAUSED 8
-#define ispaused ((status->gameup) & GU_PAUSED)
 #define GU_INROBOT 16			/* INL robot is present	*/
 #define inl_mode ((status->gameup) & GU_INROBOT)
 #define GU_NEWBIE 32			/* Newbie robot is present */
