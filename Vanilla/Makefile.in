@@ -21,7 +21,7 @@ include $(CONFIG)
 
 all: null $(PMAKE) \
 	do_library do_server do_listener do_robots do_robotd \
-	do_utilities do_rsa_utilities do_xsg do_pledit @GUM@
+	do_utilities do_rsa_utilities @GUM@
 
 minimal: null $(PMAKE) \
 	do_library do_server do_listener do_robots do_robotd \
@@ -32,11 +32,8 @@ depend: system.mk
 	cd robots;    $(MAKE) depend
 	cd newstartd; $(MAKE) depend
 	cd tools;     $(MAKE) depend
-	cd pledit;    $(MAKE) depend
 	cd keycomp;   $(MAKE) depend
 	cd sequencer; $(MAKE) depend
-	cd xsg;       $(MAKE) depend
-	cd pledit;    $(MAKE) depend
 	-@if [ -f res-rsa/Makefile ]; then \
 		(cd res-rsa; $(MAKE) depend) \
 	fi
@@ -109,10 +106,8 @@ clean:
 	fi
 	cd newstartd; $(MAKE) clean
 	cd tools;     $(MAKE) clean
-	cd pledit;    $(MAKE) clean
 	cd sequencer; $(MAKE) clean
 	cd keycomp;   $(MAKE) clean
-	cd xsg;       $(MAKE) clean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
 	fi
@@ -127,10 +122,8 @@ reallyclean:
 	fi
 	cd newstartd; $(MAKE) reallyclean
 	cd tools;     $(MAKE) reallyclean
-	cd pledit;    $(MAKE) reallyclean
 	cd sequencer; $(MAKE) reallyclean
 	cd keycomp;   $(MAKE) reallyclean
-	cd xsg;       $(MAKE) reallyclean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
 		$(MAKE) reallyclean; \
@@ -161,9 +154,7 @@ installbin: all
 	fi
 	cd tools;     $(MAKE) install DESTDIR=$(DESTDIR)
 	cd keycomp;   $(MAKE) install DESTDIR=$(DESTDIR)
-	cd pledit;    $(MAKE) install DESTDIR=$(DESTDIR)
 	cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
-	cd xsg;       $(MAKE) install DESTDIR=$(DESTDIR)
 
 install: installbin
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(BINDIR) $(DESTDIR)$(SYSCONFDIR) $(DESTDIR)$(LOCALSTATEDIR)
@@ -179,10 +170,8 @@ rmdependencies:
 	cd robots;    $(MAKE) rmdependencies
 	cd newstartd; $(MAKE) rmdependencies
 	cd tools;     $(MAKE) rmdependencies
-	cd pledit;    $(MAKE) rmdependencies
 	cd keycomp;   $(MAKE) rmdependencies
 	cd sequencer; $(MAKE) rmdependencies
-	cd xsg;       $(MAKE) rmdependencies
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "      cd res-rsa; make rmdependencies"; \
 		$(MAKE) rmdependencies; \
@@ -204,7 +193,7 @@ dist:
 	config.guess install-sh name.c $(NAME)/
         # subdirectories
 	cp -rp docs gum include keycomp motd newstartd ntserv php \
-	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
+	res-rsa robotd robots sequencer tools $(NAME)/
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
 	cp -p debian/README.Debian debian/changelog debian/control \
