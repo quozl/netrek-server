@@ -54,8 +54,8 @@ int main(int argc, char **argv)
     int i, player, verbose = 0;
     struct player *me;
 
-    openmem(0);
     if (argc == 1) { usage(); return 1; }
+    openmem(0);
 
     i = 1;
 

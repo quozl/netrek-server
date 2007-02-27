@@ -15,9 +15,21 @@ Usage: setgame COMMAND [COMMAND ...]\n\
 \n\
 COMMAND is one of:\n\
 \n\
-pause         pause the game\n\
-resume        resume the game after a pause\n\
-terminate     terminate the game\n\
+pause               pause the game\n\
+resume              resume the game after a pause\n\
+terminate           terminate the game\n\
+wait-for-terminate  wait for the game to terminate\n\
+set-test-counter n  set the number of frames to step in test mode\n\
+test-mode           turn on test mode\n\
+wait-for-pause      wait until a pause occurs\n\
+no-test-mode        turn off test mode\n\
+show-context        show the context structure\n\
+\n\
+In test mode the simulation engine will decrement the frame counter\n\
+defined by set-test-counter and pause the game when the counter\n\
+reaches zero.  To use it, set up what you need, then pause, test-mode,\n\
+set-test-counter, set up what you want to measure, resume,\n\
+wait-for-pause, then measure what you want to.\n\
 ");
 }
 
@@ -53,8 +65,8 @@ int main(int argc, char **argv)
 {
     int i, verbose = 0;
 
-    openmem(0);
     if (argc == 1) { usage(); return 1; }
+    openmem(0);
 
     i = 0;
 
@@ -124,7 +136,9 @@ int main(int argc, char **argv)
       printf("frame_tourn_end: %d\n", context->frame_tourn_end);
       printf("frame_test_mode: %d\n", context->frame_test_mode);
       printf("frame_test_counter: %d\n", context->frame_test_counter);
-      printf("quorum[2]: %d %d\n", context->quorum[0], context->quorum[1]);
+      printf("quorum[2]: %d %d (%s vs %s)\n",
+             context->quorum[0], context->quorum[1],
+             team_code(context->quorum[0]), team_code(context->quorum[1]);
       printf("blog_pickup_game_full: %d\n", context->blog_pickup_game_full);
       printf("blog_pickup_queue_full: %d\n", context->blog_pickup_queue_full);
       goto state_0;

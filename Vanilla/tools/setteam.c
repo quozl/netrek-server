@@ -75,8 +75,8 @@ int main(int argc, char **argv)
 {
     int i, team, verbose = 0;
 
-    openmem(0);
     if (argc == 1) { usage(); return 1; }
+    openmem(0);
 
     i = 1;
 
