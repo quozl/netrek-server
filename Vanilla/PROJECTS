@@ -3,6 +3,35 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- show damage of other ships, for the fish and oyster mode,
+          but also has use-cases for newbie mode, for robots, and for
+          friendly ships in a normal game, according to configuration.
+
+	  SCAN ... if 0 does not send any information.  Overrides all
+	  other SCAN prefix options below.  Default off.
+
+	  SCAN_AUTO_TACTICAL ... if 1 provides automatic scan for
+	  every ship in tactical as the data changes.  Expected on for
+	  newbie servers.  Default on.
+
+	  SCAN_AUTO_GALACTIC ... if 1 provides automatic scan for
+	  every ship not on tactical as the data changes.  Default
+	  off.
+
+	  SCAN_FRIENDLY ... if 1 sends information about enemy ships,
+	  according to war, peace, hostility settings.  Expected to be
+	  turned on by illumunated server administrators.  Default on.
+
+	  SCAN_HOSTILE ... if 1 sends information about enemy ships,
+	  according to war, peace, hostility settings.  Default on.
+
+	  SCAN_ROBOTS ... if 1 sends information about robot ships,
+	  intended for educational use.  Expected to be turned on by
+	  illuminated server administrators.  Default on.
+
+	  SCAN_OUT_OF_TOURN_ONLY ... if 1 sends information only if
+	  status->tourn is false.  Default on.
+
 	- scenario game, team A: Starts with 3/4 of the players and 20
           planets, Team B: Starts with 1/4 of the players and 5
           planets but when they kill a player of team A it switches
