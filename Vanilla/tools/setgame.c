@@ -23,6 +23,7 @@ wait-for-terminate  wait for the game to terminate\n\
 set-test-counter n  set the number of frames to step in test mode\n\
 test-mode           turn on test mode\n\
 wait-for-pause      wait until a pause occurs\n\
+single-step         do one simulation step during a pause\n\
 no-test-mode        turn off test mode\n\
 show-context        show the context structure\n\
 \n\
@@ -129,6 +130,23 @@ int main(int argc, char **argv)
        [set up dynamic test environment]
        resume wait-for-pause
        [examine result] */
+
+    if (!strcmp(argv[i], "single-step")) {
+      if (!(status->gameup & GU_PAUSED)) {
+        fprintf(stderr, "setgame: single-step: only valid during GU_PAUSED\n");
+        exit(1);
+      }
+      if (context->frame_test_mode) {
+        fprintf(stderr, "setgame: single-step: only valid "
+                "if not already in test mode\n");
+        exit(1);
+      }
+      context->frame_test_counter = 1;
+      context->frame_test_mode = 1;
+      status->gameup &= ~GU_PAUSED;
+      while (!(status->gameup & GU_PAUSED)) usleep(20000);
+      goto state_0;
+    }
 
     if (!strcmp(argv[i], "show-context")) {
       printf("daemon: %d\n", context->daemon);

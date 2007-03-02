@@ -40,6 +40,7 @@
 #include "sigpipe.h"
 #include "ltd_stats.h"
 #include "ip.h"
+#include "util.h"
 
 #ifdef OOPS
 #ifdef MIPSEL

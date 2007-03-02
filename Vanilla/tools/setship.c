@@ -27,16 +27,6 @@ sleep n                     sleep for n seconds\n\
 ");
 }
 
-/* display everything known about a planet in command line format */
-void get(char *us, char *name, struct player *pl)
-{
-  printf("%s %s", us, name);
-  printf(" speed %d", pl->p_speed);
-  printf(" dir %d", pl->p_dir);
-  printf(" position %d %d", pl->p_x, pl->p_y);
-  printf("\n");
-}
-
 struct torp *t_find(struct player *me, int status)
 {
   struct torp *k = NULL;
@@ -82,8 +72,12 @@ int main(int argc, char **argv)
  state_1:
     if (++i == argc) return 0;
     
-    if (!strcmp(argv[i], "get")) {
-      get(argv[0], argv[1], me);
+    if (!strcmp(argv[i], "show-position")) {
+      printf("frame %d", context->frame);
+      printf(" speed %d", me->p_speed);
+      printf(" dir %d", me->p_dir);
+      printf(" position %d %d", me->p_x, me->p_y);
+      printf("\n");
       goto state_1;
     }
 
@@ -116,6 +110,11 @@ int main(int argc, char **argv)
       me->p_desspeed = atoi(argv[i]);
       me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
       me->p_flags &= ~(PFPLOCK | PFPLLOCK);
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "wait-for-stop")) {
+      while (me->p_speed) usleep(20000);
       goto state_1;
     }
 
