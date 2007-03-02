@@ -1729,7 +1729,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 	return;
     }
     group |= packet->group;
-    pmessage2(packet->indiv, group, addrbuf, me->p_no,"%s",packet->mesg);
+    pmessage2(packet->indiv, group, addrbuf, me->p_no, "%s", packet->mesg);
 #ifdef CHECKMESG
     if(checkmessage){
 	if(check_mesgs(packet))

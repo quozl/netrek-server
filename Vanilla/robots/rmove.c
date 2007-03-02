@@ -220,7 +220,7 @@ void rmove()
 		sprintf(towhom, " %s->%s",
 			players[me->p_no].p_mapchars,
 			players[enemy->p_no].p_mapchars);
-		pmessage2(enemy->p_no, MINDIV,towhom,me->p_no,
+		pmessage2(enemy->p_no, MINDIV, towhom, me->p_no, "%s",
 			robo_message(enemy));
 	    }
 	    else if (target >= 0 && !quiet) {

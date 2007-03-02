@@ -45,7 +45,7 @@ void new_warning(int index, const char *fmt, ...) {
     char from_str[9]="WRN->\0\0\0";
 
     strcat(from_str, me->p_mapchars);
-    pmessage2(0, 0, from_str, me->p_no, temp);
+    pmessage2(0, 0, from_str, me->p_no, "%s", temp);
   }
 
 #endif /* CHECKMESG */
