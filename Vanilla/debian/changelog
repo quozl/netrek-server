@@ -1,3 +1,47 @@
+netrek-server-vanilla (2.12.1-0) unstable; urgency=low
+
+  * fix message format string vulnerability
+
+ -- James Cameron <quozl@us.netrek.org>  Fri,  2 Mar 2007 18:35:36 +1100
+
+netrek-server-vanilla (2.12.0-2) unstable; urgency=low
+
+  * Created debconf template to ask the user if they want to start
+    netrekd on boot
+  * Added debconf template to display error if chown fails in postinst
+    script
+  * Removed de-register from postrm, dh_installinit/cdbs automatically
+    takes care of removing init.d files
+  * Added db_purge to postrm,just as a safety measure, debhelper
+    should take care of this.
+  * Started framework for i18n support in the debconf templates
+
+ -- Robert J. Tanner <tanner@real-time.com>  Fri, 29 Dec 2006 14:23:13 -0600
+
+netrek-server-vanilla (2.12.0-1) unstable; urgency=low
+
+  * Clean up of control file to make linda and lintian happy
+  * Upgrade to Standards-Version: 3.7.2
+  * Small change to extended description
+  * Conversion of rules to cdbs
+  * The common licenses (GPL, BSD, Artistic, etc) have been moved from
+    /usr/doc/copyright to /usr/share/common-licenses. Copyright files
+    should be updated
+  * trekon uses #!/bin/csh. The Debian policy for scripts explicitly
+    warns against using csh and tcsh as scripting languages.
+  * Renamed init to netrek-server-vanilla.init to work with cdbs
+  * Added debian/manpages and created netrekd.1, Debian policy
+    requires all binaries to have a manpage.
+  * setpath is a shellscript missing magic cookie, added #!/bin/sh to
+    comply with Debian policy
+  * The postrm de-registers an /etc/init.d script which has not been
+    registered in the postinst script before. Comments in the postinst
+    ask for a debconf configuration option. Commenting out the
+    de-register to make lintian happy.
+  * Added symlink between netrekd.1 and newstartd.1 manpages
+
+ -- Robert J. Tanner <tanner@real-time.com>  Tue, 26 Dec 2006 22:05:07 -0600
+
 netrek-server-vanilla (2.12.0-0) unstable; urgency=low
 
   * begin
