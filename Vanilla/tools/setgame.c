@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <signal.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -77,6 +78,20 @@ int main(int argc, char **argv)
 
     if (!strcmp(argv[i], "verbose")) {
       verbose++;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "restart")) {
+      int pid = context->daemon;
+      if (pid < 2) {
+        fprintf (stderr, "setgame: context->daemon invalid\n");
+        exit(1);
+      }
+      if (kill (pid, SIGHUP) != 0) {
+        perror("setgame: kill");
+        exit (1);
+      }
+      if (verbose) say("Game restarted");
       goto state_0;
     }
 

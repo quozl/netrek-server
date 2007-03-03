@@ -218,7 +218,10 @@ int main(int argc, char **argv)
         }
 
     readsysdefaults();
-    if (opt_restart) goto restart;
+    if (opt_restart) {
+        ERROR(1,("daemon: warm start\n"));
+        goto restart;
+    }
     
     ERROR(1,("daemon: cold start\n"));
     context->daemon = getpid();
@@ -343,7 +346,10 @@ int main(int argc, char **argv)
         if (sig_restart) {
             ERROR(1,("daemon: pid %d received SIGHUP for restart, "
                      "exec'ing\n", getpid()));
-            execl(argv[0], argv[0], "--restart", NULL);
+            execl(Daemon, "netrek-daemon", "--restart", NULL);
+            perror(Daemon);
+            ERROR(1,("daemon: pid %d gave up on restart\n", getpid()));
+            sig_restart = 0;
         }
         if (opt_debug) {
             if (!(++x % 50))
