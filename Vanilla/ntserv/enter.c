@@ -52,15 +52,11 @@ static u_char face_enemy(void)
         /* if no opposing team, face centre of galactic */
         x = GWIDTH/2;
         y = GWIDTH/2;
-        ERROR(5,("face_enemy: no opposing team to face, facing centre\n"));
     } else {
         /* team opposes, face one of the enemy home worlds */
         planet_other = pick_starting_planet(team_other);
         x = planet_other->pl_x;
         y = planet_other->pl_y;
-        ERROR(5,("face_enemy: team %s enemy %s set course for planet %s.\n",
-                 team_name(me->p_team), team_name(team_other),
-                 planet_other->pl_name));
     }
 
     /* calculate course, modulus 32 (45 degrees) */
