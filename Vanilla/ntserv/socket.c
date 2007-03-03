@@ -2181,7 +2181,10 @@ static void handleFeature(struct feature_cpacket *cpacket)
     cpacket->value = ntohl(cpacket->value);
     getFeature(cpacket, &spacket);
     sendFeature(&spacket);
-    if (!was) sendFeatureFps();
+    if (!was) {
+        sendFeatureFps();
+        sendFeatureUps();
+    }
 }
 
 #endif /* FEATURE_PACKETS */

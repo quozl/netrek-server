@@ -2419,7 +2419,7 @@ sendFeatureUps()
     memset(&fp, 0, sizeof(struct feature_spacket));
     fp.type = SP_FEATURE;
     fp.feature_type = 'S';
-    fp.value = htonl(me->p_ups);
+    fp.value = htonl(me == NULL ? defups : me->p_ups);
     strcpy(fp.name, "UPS");
     sendClientPacket(&fp);
 }
