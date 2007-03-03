@@ -40,13 +40,13 @@ for a in `seq ${ATTEMPTS}`; do
 	lib/tools/setgame single-step
 	lib/tools/setship 0 show-position >> ${FILE_LOG}
     done
-    lib/tools/setship 0 speed 3
-    for x in `seq 300`; do
+    lib/tools/setship 0 speed 4
+    for x in `seq 200`; do
 	lib/tools/setgame single-step
 	lib/tools/setship 0 show-position >> ${FILE_LOG}
     done
-    lib/tools/setplanet ear be-orbited-by 0
-    for x in `seq 300`; do
+    lib/tools/setship 0 lock-planet ear
+    for x in `seq 200`; do
 	lib/tools/setgame single-step
 	lib/tools/setship 0 show-position >> ${FILE_LOG}
     done

@@ -118,6 +118,21 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
+    if (!strcmp(argv[i], "lock-planet")) {
+      if (++i == argc) return 0;
+      struct planet *pl = planet_find(argv[i]);
+      /* lock on, from lock_planet() in interface.c */
+      me->p_flags |= PFPLLOCK;
+      me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+      me->p_planet = pl->pl_no;
+      goto state_1;
+    }
+
+    if (!strcmp(argv[i], "wait-for-orbit")) {
+      while (!(me->p_flags & PFORBIT)) usleep(20000);
+      goto state_1;
+    }
+
     if (!strcmp(argv[i], "wobble")) {
       t_attribute |= TWOBBLE;
       goto state_1;

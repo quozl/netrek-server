@@ -9,6 +9,8 @@ void setEnemy(int myteam, struct player *me);
 #endif /* LTD_STATS */
 int find_slot_by_host(char *host, int j);
 int mprintf(char *format, ...);
+struct planet *planet_find(char *name);
+struct planet *planet_by_number(char *name);
 char *team_name(int team);
 char *team_verb(int team);
 char *team_code(int team);
@@ -22,6 +24,7 @@ int is_only_one_ship_type_allowed(int *type);
 char *my_metaserver_type();
 int is_guest(char *name);
 struct player *p_no(int i);
+struct player *player_by_number(char *name);
 void p_x_y_box(struct player *pl, int p_x_min, int p_y_min, int p_x_max, int p_y_max);
 void p_x_y_unbox(struct player *pl);
 void p_x_y_go(struct player *pl, int p_x, int p_y);

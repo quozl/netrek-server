@@ -5,6 +5,7 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "copyright.h"
@@ -129,6 +130,30 @@ int find_slot_by_host(char *host, int j)
     p++;
   }
   return -1;
+}
+
+/* find a planet by name */
+struct planet *planet_find(char *name)
+{
+  int i, count = 0, match = 0;
+
+  for(i=0; i<MAXPLANETS; i++) {
+    if (!strncasecmp(name, planets[i].pl_name, strlen(name))) {
+      match = i;
+      count++;
+    }
+  }
+  if (count == 1) return &planets[match];
+  return NULL;
+}
+
+/* find a planet by number */
+struct planet *planet_by_number(char *name)
+{
+  int i = atoi(name);
+  if (i < 0) return NULL;
+  if (i > (MAXPLANETS-1)) return NULL;
+  return &planets[i];
 }
 
 char *team_name(int team) {
@@ -257,6 +282,21 @@ int is_guest(char *name)
 /* convert a player number to a player struct pointer */
 struct player *p_no(int i)
 {
+  return &players[i];
+}
+
+/* convert a text player number to a player struct pointer */
+struct player *player_by_number(char *name)
+{
+  int i = atoi(name);
+  if ((i == 0) && (name[0] != '0')) {
+    char c = name[0];
+    if (c >= 'a' && c <= 'z')
+      i = c - 'a' + 10;
+    else
+      return NULL;
+  }
+  if (i >= MAXPLAYER) return NULL;
   return &players[i];
 }
 

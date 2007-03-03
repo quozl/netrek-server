@@ -74,44 +74,6 @@ static void say(const char *fmt, ...)
   va_end(args);
 }
 
-/* find a planet by name */
-static struct planet *planet_find(char *name)
-{
-  int i, count = 0, match = 0;
-
-  for(i=0; i<MAXPLANETS; i++) {
-    if (!strncasecmp(name, planets[i].pl_name, strlen(name))) {
-      match = i;
-      count++;
-    }
-  }
-  if (count == 1) return &planets[match];
-  return NULL;
-}
-
-/* find a planet by number */
-static struct planet *planet_by_number(char *name)
-{
-  int i = atoi(name);
-  if (i < 0) return NULL;
-  if (i > (MAXPLANETS-1)) return NULL;
-  return &planets[i];
-}
-
-static struct player *player_by_number(char *name)
-{
-  int i = atoi(name);
-  if ((i == 0) && (name[0] != '0')) {
-    char c = name[0];
-    if (c >= 'a' && c <= 'z')
-      i = c - 'a' + 10;
-    else
-      return NULL;
-  }
-  if (i >= MAXPLAYER) return NULL;
-  return &players[i];
-}
-
 /* display a planet flag */
 static void get_flag(char *name, int mask, struct planet *pl)
 {
