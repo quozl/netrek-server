@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# test script to produce x/y coordinates for each frame of a ship leaving
+# and then orbiting a planet
+
+set -e
+
+LIBDIR=/usr/local/games/netrek-server-vanilla
+cd ${LIBDIR}
+
+# reset galaxy
+lib/tools/setgalaxy r 2>/dev/null 1>/dev/null
+
+# make all planets visible to all teams
+for x in `seq 0 39`; do lib/tools/setplanet $x reveal; done
+
+# move ear to centre and flatten to one army
+lib/tools/setplanet ear y 50000 x 50000 armies 1
+
+# move test slot to an orbit position and stop it moving
+lib/tools/setship 0 speed 0 wait-for-stop position 49200 50000 sleep 1
+
+# pause 
+lib/tools/setgame pause
+
+# orbit earth
+lib/tools/setplanet ear be-orbited-by 0
+
+# invent a file name for the text
+DATE=`date +%s`
+FILE_LOG=/tmp/orbit-entry-${DATE}.log
+FILE_PNG=/tmp/orbit-entry-${DATE}.png
+
+# number of orbit entry and departure attempts
+ATTEMPTS=10
+
+for a in `seq ${ATTEMPTS}`; do
+
+    for x in `seq 40`; do
+	lib/tools/setgame single-step
+	lib/tools/setship 0 show-position >> ${FILE_LOG}
+    done
+    lib/tools/setship 0 speed 3
+    for x in `seq 300`; do
+	lib/tools/setgame single-step
+	lib/tools/setship 0 show-position >> ${FILE_LOG}
+    done
+    lib/tools/setplanet ear be-orbited-by 0
+    for x in `seq 300`; do
+	lib/tools/setgame single-step
+	lib/tools/setship 0 show-position >> ${FILE_LOG}
+    done
+done
+
+lib/tools/setgame resume
+
+echo ${FILE_LOG}
+
+gnuplot <<EOF
+set output "${FILE_PNG}"
+set terminal png size 1024,1024
+set size square
+set xlabel "simulation frame"
+set ylabel "galaxy coordinate"
+set y2label "direction"
+set y2tics
+set title "orbit entry test, number ${DATE}"
+set grid
+# frame 21205 speed 0 dir 84 position 50341 49276
+#   1     2     3   4  5   6    7       8     9
+plot \
+"${FILE_LOG}" using 2:8 title "x", \
+"${FILE_LOG}" using 2:9 title "y", \
+"${FILE_LOG}" using 2:6 axis x1y2 title "direction"
+exit
+EOF
+
+echo ${FILE_PNG}
