@@ -266,8 +266,7 @@ void orbit(void)
     me->p_flags |= PFORBIT;
     me->p_dir    = dir + 64;
     me->p_desdir = dir + 64;
-    me->p_x      = l->pl_x + ORBDIST * Cos[dir];
-    me->p_y      = l->pl_y + ORBDIST * Sin[dir];
+    p_x_y_go(me, l->pl_x + ORBDIST * Cos[dir], l->pl_y + ORBDIST * Sin[dir]);
     me->p_speed  = me->p_desspeed = 0;
     me->p_planet = l->pl_no;
     return;

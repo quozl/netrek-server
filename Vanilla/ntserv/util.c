@@ -322,7 +322,7 @@ int slot_num(char slot)
     return -1;
 }
 
-/* set coordinates for a new ship that is not yet alive */
+/* set coordinates for a new ship, caller should be synchronised to daemon */
 void p_x_y_go(struct player *pl, int p_x, int p_y)
 {
   pl->p_x = p_x;

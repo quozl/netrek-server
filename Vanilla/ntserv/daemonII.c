@@ -1025,12 +1025,11 @@ static void udplayers_pexplode(struct player *j)
 
 static void udplayers_palive_move_in_orbit(struct player *j)
 {
+        /* every major update, at the 10 fps rate, manage the orbital
+        direction and reset the ship coordinates to what they should
+        be for the new position in orbit */
         j->p_dir += 2;
         j->p_desdir = j->p_dir;
-}
-
-static void udships_palive_move_in_orbit(struct player *j)
-{
         j->p_x_internal = planets[j->p_planet].pl_x * SPM + SPM * ORBDIST
                 * Cos[(u_char) (j->p_dir - (u_char) 64)];
         j->p_y_internal = planets[j->p_planet].pl_y * SPM + SPM * ORBDIST
@@ -1039,12 +1038,26 @@ static void udships_palive_move_in_orbit(struct player *j)
         j->p_y = spo(j->p_y_internal);
 }
 
+static void udships_palive_move_in_orbit(struct player *j)
+{
+        /* every minor update, at whatever fps is set, travel at warp
+        two along a straight-line segment of the orbital path */
+        j->p_x_internal +=
+                (double) (SPM * 2 * WARP1) * Cos[j->p_dir] / TPF;
+        j->p_y_internal +=
+                (double) (SPM * 2 * WARP1) * Sin[j->p_dir] / TPF;
+        j->p_x = spo(j->p_x_internal);
+        j->p_y = spo(j->p_y_internal);
+}
+
 static void udplayers_palive_move_in_dock(struct player *j)
 {
+        /* nothing needs to be done */
 }
 
 static void udships_palive_move_in_dock(struct player *j)
 {
+        /* keep position synchronised with base docking port */
         j->p_x_internal = players[j->p_dock_with].p_x_internal +
                  SPM*DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
         j->p_y_internal = players[j->p_dock_with].p_y_internal +
