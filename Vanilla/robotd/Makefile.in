@@ -107,7 +107,7 @@ robot: $(R_OBJS) $(INPUT)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o robot $(R_OBJS) $(INPUT) $(LIBS) $(EXTRALIBS)
 
 install:	robot
-	-mkdir $(DESTDIR)$(LIBDIR)/og
+	-mkdir -p $(DESTDIR)$(LIBDIR)/og
 	cp robot $(DESTDIR)$(LIBDIR)/og/robot
 	if [ -d ${srcdir}/og -a `ls -a ${srcdir}/og | wc -l ` != 2 ]; then cp ${srcdir}/og/* $(DESTDIR)$(LIBDIR)/og/; fi
 
