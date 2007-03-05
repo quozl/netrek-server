@@ -548,29 +548,42 @@ static void auto_features(void)
 	if (pl->p_ship.s_type == STARBASE) {
 	    dist = hypot((double) (me->p_x - pl->p_x),
 		(double) (me->p_y - pl->p_y));
+#if defined(SB_TRANSWARP)
+	    if (!(me->p_flags & PFTWARP)) {
+#endif
+	        if (dist-(DOCKDIST/2) < (11500 * me->p_speed * me->p_speed) /
+		        me->p_ship.s_decint) {
+		    if (me->p_desspeed > 2) {
+		        set_speed(me->p_desspeed-1);
+		    }
+	        }
+#if defined(SB_TRANSWARP)
+	    }
+#endif
 
 #ifdef SB_TRANSWARP
-	if ((dist < 2*DOCKDIST) && (me->p_flags & PFTWARP)){
-	    p_x_y_join(me, pl);
-	    me->p_flags &= ~(PFPLOCK);
-	    me->p_flags &= ~(PFTWARP);
+	    if ((dist < 2*DOCKDIST) && (me->p_flags & PFTWARP)){
+	        p_x_y_join(me, pl);
+	        me->p_flags &= ~(PFPLOCK);
+	        me->p_flags &= ~(PFTWARP);
 #ifdef SB_CALVINWARP
-            if (!(pl->p_flags & PFDOCKOK) ||
-                ((pl->p_flags & PFPRESS) &&
-                 (pl->p_tractor == me->p_no))) ;
-            else {
+                if (!(pl->p_flags & PFDOCKOK) ||
+                    ((pl->p_flags & PFPRESS) &&
+                     (pl->p_tractor == me->p_no))) ;
+                else {
 #endif
 
-	    me->p_speed=2;
-	    orbit();
+	            me->p_speed=2;
+	            orbit();
 #ifdef SB_CALVINWARP
-            }
+                }
 #endif
-	} else
+	    } else {
 #endif
-	    if ((dist < DOCKDIST) && (me->p_speed <= 2))  {
-		me->p_flags &= ~PFPLOCK;
-		orbit();
+	        if ((dist < DOCKDIST) && (me->p_speed <= 2))  {
+		    me->p_flags &= ~PFPLOCK;
+		    orbit();
+	        }
 	    }
 	}
 	if (me->p_flags & PFPLOCK) {
