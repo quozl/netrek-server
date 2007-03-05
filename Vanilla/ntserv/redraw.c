@@ -584,7 +584,9 @@ static void auto_features(void)
 		    me->p_flags &= ~PFPLOCK;
 		    orbit();
 	        }
+#ifdef SB_TRANSWARP
 	    }
+#endif
 	}
 	if (me->p_flags & PFPLOCK) {
 	    course = newcourse(pl->p_x, pl->p_y);
