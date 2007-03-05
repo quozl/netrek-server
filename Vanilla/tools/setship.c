@@ -39,22 +39,30 @@ struct torp *t_find(struct player *me, int status)
 int t_attribute = TOWNERSAFE | TDETTEAMSAFE;
 int t_torpspeed = -1;
 
-int main(int argc, char **argv)
+int setship(char *cmds)
 {
+
+
+    char *token;
+    const char delimiters[] = " ";
+    token = strtok (cmds, delimiters);
+    
     int i, player, verbose = 0;
     struct player *me;
 
-    if (argc == 1) { usage(); return 1; }
+    
+    if ( !token  ) { usage(); return 1; }
+
     openmem(0);
 
     i = 1;
 
  state_0:
     /* check for ship identifier */
-
-  player=atoi(argv[1]);
-  if ((player == 0) && (*argv[1] != '0')) {
-    char c = *argv[1];
+  //token = NULL;
+  player = atoi(token);
+  if ( (player == 0) && ( token[0] != '0')) {
+    char c = token[0];
     if (c >= 'a' && c <= 'z')
       player = c - 'a' + 10;
     else {
@@ -62,6 +70,7 @@ int main(int argc, char **argv)
     exit(1);
     }
   }
+
   if (player >= MAXPLAYER) {
     printf("MAXPLAYER is set to %d, and you want %d?\n", 
 	   MAXPLAYER, player);
@@ -70,9 +79,10 @@ int main(int argc, char **argv)
   me = &players[player];
 
  state_1:
-    if (++i == argc) return 0;
+ 
+    if(!(token = strtok (NULL, delimiters))) return 0;
     
-    if (!strcmp(argv[i], "show-position")) {
+    if (!strcmp(token, "show-position")) {
       printf("frame %d", context->frame);
       printf(" speed %d", me->p_speed);
       printf(" dir %d", me->p_dir);
@@ -81,76 +91,76 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "verbose")) {
+    if (!strcmp(token, "verbose")) {
       verbose++;
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "position")) {
+    if (!strcmp(token, "position")) {
       int p_x, p_y;
-      if (++i == argc) return 0;
-      p_x = atoi(argv[i]);
-      if (++i == argc) return 0;
-      p_y = atoi(argv[i]);
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      p_x = atoi(token);
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      p_y = atoi(token);
       p_x_y_set(&players[player], p_x, p_y);
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "dir")) {
-      if (++i == argc) return 0;
-      players[player].p_dir = atoi(argv[i]);
-      me->p_desdir = atoi(argv[i]);
+    if (!strcmp(token	, "dir")) {
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      players[player].p_dir = atoi(token);
+      me->p_desdir = atoi(token);
       bay_release(me);
       me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "speed")) {
-      if (++i == argc) return 0;
-      me->p_desspeed = atoi(argv[i]);
+    if (!strcmp(token, "speed")) {
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      me->p_desspeed = atoi(token);
       me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
       me->p_flags &= ~(PFPLOCK | PFPLLOCK);
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "wait-for-stop")) {
+    if (!strcmp(token, "wait-for-stop")) {
       while (me->p_speed) usleep(20000);
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "lock-planet")) {
-      if (++i == argc) return 0;
-      struct planet *pl = planet_find(argv[i]);
-      /* lock on, from lock_planet() in interface.c */
+    if (!strcmp(token, "lock-planet")) {
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      struct planet *pl = planet_find(token);
+      //* lock on, from lock_planet() in interface.c 
       me->p_flags |= PFPLLOCK;
       me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
       me->p_planet = pl->pl_no;
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "wait-for-orbit")) {
+    if (!strcmp(token, "wait-for-orbit")) {
       while (!(me->p_flags & PFORBIT)) usleep(20000);
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "wobble")) {
+    if (!strcmp(token, "wobble")) {
       t_attribute |= TWOBBLE;
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "no-wobble")) {
+    if (!strcmp(token, "no-wobble")) {
       t_attribute &= ~TWOBBLE;
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "torp-speed")) {
-      if (++i == argc) return 0;
-      t_torpspeed = atoi(argv[i]);
+    if (!strcmp(token, "torp-speed")) {
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      t_torpspeed = atoi(token);
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "fire-test-torpedo")) {
-      if (++i == argc) return 0;
+    if (!strcmp(token, "fire-test-torpedo")) {
+      if(!(token = strtok (NULL, delimiters))) return 0;
       struct ship *myship = &me->p_ship;
       struct torp *k = t_find(me, TFREE);
       me->p_ntorp++;
@@ -164,14 +174,14 @@ int main(int argc, char **argv)
       k->t_gspeed = (t_torpspeed == -1 ? myship->s_torpspeed : t_torpspeed)
                     * WARP1;
       k->t_fuse   = 500;
-      k->t_dir    = atoi(argv[i]);
+      k->t_dir    = atoi(token);
       k->t_war    = me->p_war;
       k->t_team   = me->p_team;
       k->t_whodet = NODET;
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "show-test-torpedo-position")) {
+    if (!strcmp(token, "show-test-torpedo-position")) {
       struct torp *k = t_find(me, TMOVE);
       if (k != NULL) {
         printf("torp %d x %d y %d\n", k->t_dir, k->t_x, k->t_y);
@@ -179,7 +189,7 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "destroy-test-torpedo")) {
+    if (!strcmp(token, "destroy-test-torpedo")) {
       struct torp *k = t_find(me, TMOVE);
       if (k != NULL) {
         k->t_status = TOFF;
@@ -187,15 +197,15 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "monitor-coordinates")) {
+    if (!strcmp(token, "monitor-coordinates")) {
       for (;;) {
         printf("p_x %X p_y %X p_x_internal %X p_y_internal %X\n", me->p_x, me->p_y, me->p_x_internal, me->p_y_internal);
-        usleep(20000);
+        								
       }
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "monitor-docking")) {
+    if (!strcmp(token, "monitor-docking")) {
       for (;;) {
         printf("p_flags & PFDOCK %X p_dock_with %X p_dock_bay %X\n", me->p_flags & PFDOCK, me->p_dock_with, me->p_dock_bay);
         usleep(20000);
@@ -203,11 +213,35 @@ int main(int argc, char **argv)
       goto state_1;
     }
 
-    if (!strcmp(argv[i], "sleep")) {
-      if (++i == argc) return 0;
-      sleep(atoi(argv[i]));
+    if (!strcmp(token, "sleep")) {
+      if(!(token = strtok (NULL, delimiters))) return 0;
+      sleep(atoi(token));
       goto state_1;
     }
 
     goto state_0;
+}
+
+
+int main(int argc, char **argv)
+{
+  int i, j, k;
+  int cmdLen = 0;
+  char *cmdStr;
+  i=0;
+  for(j=1;j<argc;j++){
+    for(k=0;k<strlen(argv[j]);k++) { cmdLen++; }
+    if(j != (argc-1)) { cmdLen++; }
+  }
+
+  cmdStr = malloc(cmdLen);
+
+  i=0;
+  for(j=1;j<argc;j++){
+    for(k=0;k<strlen(argv[j]);k++)
+      cmdStr[i++] = argv[j][k];
+    if(j != (argc-1)) { cmdStr[i++] = ' '; }
+  }
+  setship(cmdStr);
+  exit(0);
 }
