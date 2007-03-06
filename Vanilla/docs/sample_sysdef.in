@@ -9,9 +9,6 @@
 #       work, if password is left as "password", it will NOT be accepted)
 ADMIN_PASSWORD=password
 #
-#	Maximum number of duplicate connections from a single IP address
-DUPLICATES=3
-#
 #	Enable voting by players
 VOTING=0
 #
@@ -102,6 +99,24 @@ SHOWSYSDEF=1
 #
 # 	make planets move around (0 = no, 1 = yes)
 PLANET_MOVE=0
+#
+#	Maximum number of duplicate connections from a single IP address
+#	(Connections that arrive above this number are given a special
+#	queue response and do not enter the game or wait queue.  This limits
+#	the number of players who can play behind a single IP address NAT
+#	implementation.)
+DUPLICATES=3
+#
+#	Have the server check for t-mode scummers.
+#	(A t-mode scummer is an IP address that has more than one client
+#	running, however it is hard to tell if the IP address might represent
+#	a NAT gateway with several real players behind it.  This parameter
+#	sets the number of scummers that may exist before the server goes
+#	into TS_SCUMMERS mode.  The best value is one below TOURN.  Setting it
+#	above TOURN defeats the check.  Setting it above DUPLICATES is
+#	pointless.  Setting it to zero disables the check.
+#	Reference: ntserv/daemonII.c check_scummers)
+CHECKSCUM=3
 #
 # 	number of players per team for t-mode
 TOURN=4
@@ -201,11 +216,8 @@ PLANETS=00,10,20,30
 # 	Use binary confirmation (0 = no, 1 = RSA, 2 = RSA and reserved.c)
 CONFIRM=0
 #
-#	For use with config.h's NEWMASK define. restrict diagnol games.
+#	For use with config.h's NEWMASK define. restrict diagonal games.
 NODIAG=1
-#
-#	Have the server check for t-mode scummers. 
-CHECKSCUM=1
 #
 # 	Allow UDP connections (0 = no, 1 = yes)
 UDP=1
