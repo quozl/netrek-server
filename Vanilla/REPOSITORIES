@@ -1,21 +1,15 @@
 developers
 
-http://james.tooraweenah.com/darcs/netrek-server/
-http://trinket.thorne.id.au/~stephen/netrek-server/
-http://netrek.warped.us/public-server/
-http://karthik.com/darcs/netrek-server/
-http://bazaar.eqenchanters.org/netrek-server/
-http://www.ninjatronics.com/darcs/netrek-server
+http://james.tooraweenah.com/darcs/netrek-server/       James Cameron
+http://trinket.thorne.id.au/~stephen/netrek-server/     Stephen Thorne
+http://netrek.warped.us/public-server/                  Bill Balcerski
+http://karthik.com/darcs/netrek-server/                 Karthik Arumugham
+http://bazaar.eqenchanters.org/netrek-server/           Bob Tanner
+http://www.ninjatronics.com/darcs/netrek-server/        William U. Clark
 
 project
 
 http://netrek.org/repos/netrek-server/
-
-private push targets
-
-quozl@giskard.tooraweenah.com:/var/www/tooraweenah.com/james/darcs/netrek-server
-quozl@sage.real-time.com:darcs/netrek-server-inl
-quozl@sage.real-time.com:darcs/netrek-server-continuum
 
 web references
 
