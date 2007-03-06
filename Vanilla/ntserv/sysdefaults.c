@@ -57,10 +57,8 @@ void readsysdefaults(void)
 #ifdef MINES
     mines = 0;			/* added 8/3/95 JRP */
 #endif
-#ifdef SB_TRANSWARP
     twarpMode = 0;
     twarpSpeed = 60;
-#endif
     distortion = 10;
     fps = 50;
     maxups = fps;

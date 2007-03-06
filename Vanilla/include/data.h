@@ -246,11 +246,8 @@ extern int  ping_ghostbust_interval; /* in ping_freq, when to ghostbust
                                         if allowed */
 #endif
 
-#ifdef SB_TRANSWARP
 extern int twarpMode;       /* isae - SB transwarp */
 extern int twarpSpeed;     /* isae - Warp speed */
-#endif
-
 extern int send_short;
 extern int send_threshold;
 extern int actual_threshold;

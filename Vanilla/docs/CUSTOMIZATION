@@ -71,8 +71,6 @@ that can change the server.
 	RCD - Support Reciever variable distresses. (Saves on a lot of network
 		traffic).
 
-	SB_TRANSWARP - Transwarp capability.
-
 	FLAT_BONUS - 5x bonus for killing last army on a planet 
 
 	BASEPRACTICE - Base training server. (Need special robots, see 

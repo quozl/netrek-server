@@ -33,7 +33,6 @@
 void de_lock(struct player *me)
 {
   me->p_flags   &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
-#ifdef SB_TRANSWARP
   /* upon arrival at a base, during a dock attempt, if the dock fails,
   and we were transwarping in, force a refit delay for five
   seconds. */
@@ -42,7 +41,6 @@ void de_lock(struct player *me)
     me->p_flags |= PFREFITTING;
     rdelay       = me->p_updates + 50;
   }
-#endif
 }
 
 /*
@@ -134,15 +132,13 @@ static int dock(struct player *base)
   p_x_y_to_internal(me);
   me->p_speed     = 0;
   me->p_desspeed  = 0;
-#ifdef SB_TRANSWARP
-  /* Should never happen, as PFTWARP is unset once player reaches 2*DOCKDIST from base during
-     auto_features() routine */
+  /* Should never happen, as PFTWARP is unset once player reaches
+     2*DOCKDIST from base during auto_features() routine */
   if (me->p_flags & PFTWARP){
     me->p_flags &= ~PFTWARP;
     me->p_flags |= PFREFITTING;
     rdelay       = me->p_updates + 50;
   }
-#endif
 
   bay_claim(base, me, bay_no);
 

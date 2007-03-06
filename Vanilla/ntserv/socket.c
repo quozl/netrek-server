@@ -1111,9 +1111,7 @@ static int doRead(int asock)
                            || (me->p_status == POBSERV)
 #endif 
                            || !(me->p_flags & (PFWAR|PFREFITTING
-#ifdef SB_TRANSWARP
 					       | PFTWARP
-#endif
 		     )))) || 
 		*bufptr==CP_RESETSTATS || *bufptr==CP_UPDATES ||
 		*bufptr==CP_OPTIONS || *bufptr==CP_RESERVED ||
@@ -1228,12 +1226,10 @@ static void handleOrbitReq(struct orbit_cpacket *packet)
 static void handlePractrReq(struct practr_cpacket *packet)
 {
     if (practice_robo()) return;
-#ifdef SB_TRANSWARP
     if (twarpMode) {
         handleTranswarp();
         return;
     }
-#endif
 }
 
 static void handleBombReq(struct bomb_cpacket *packet)

@@ -144,12 +144,10 @@ struct sysdef_keywords {
   { "PING_GHOSTBUST_INTERVAL", SYSDEF_INT, &ping_ghostbust_interval,
     "Interval without pings before ghostbust"		},
 #endif /* PING */
-#ifdef SB_TRANSWARP
   { "TRANSWARP",	SYSDEF_INT,	&twarpMode,
     "Enable transwarp to Starbase" },
   { "WARPSPEED",	SYSDEF_INT,	&twarpSpeed,
     "Transwarp equivalent warp speed" },
-#endif /* SB_TRANSWARP */
   { "VECTOR",		SYSDEF_INT,	&vectortorps,
     "Vector torps (unimplemented)" },
   { "START_ARMIES",	SYSDEF_INT,	&top_armies,

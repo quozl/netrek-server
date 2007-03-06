@@ -250,9 +250,7 @@ int torpGetVectorSpeed(u_char pdir, int pspeed, u_char tdir, int speed);
 void ntorp(u_char course, int attributes);
 
 /* transwarp.c */
-#ifdef SB_TRANSWARP
 int handleTranswarp(void);
-#endif
 
 /* warning.c */
 void new_warning(int index, const char *fmt, ...);

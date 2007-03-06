@@ -658,17 +658,12 @@ static void sendConfigMsg(void)
     sendMotdLine(buf);
 #endif
 
-#ifdef SB_TRANSWARP
    sprintf(buf, "%-30s: ", "SB Transwarp");
    if (twarpMode)
       strcat(buf, "Yes");
    else
       strcat(buf, "No");
    sendMotdLine(buf);
-#else
-   sprintf(buf, "%-30s: No", "SB Transwarp");
-   sendMotdLine(buf);
-#endif
 
    sprintf(buf, "%-30s: %d", "Surrender Counter", surrenderStart);
    sendMotdLine(buf);

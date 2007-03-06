@@ -305,9 +305,9 @@ DD PLASMADAMAGE 85
 DD MAXFUEL 7500
 BB TORPCOST 320
 BB PHASERCOST 945
-!	Warpcost should ONLY be defined with SB_TRANSWARP define && TRANSWARP
+!	Warpcost should ONLY be defined when TRANSWARP=1
 SB WARPCOST 20
-!	Recharge should ONLY be defined with SB_TRANSWARP define && TRANSWARP
+!	Recharge should ONLY be defined when TRANSWARP=1
 SB RECHARGE 45
 !	MaxWpnTemp should ONLY be defined when non-chaos mode.
 SB MAXWPNTEMP 1500

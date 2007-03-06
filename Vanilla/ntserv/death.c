@@ -21,10 +21,7 @@ void death(void)
     sigpipe_suspend(SIGALRM);
 
     me->p_status = POUTFIT;             /* Stop the ghost buster */
-
-#ifdef SB_TRANSWARP
     me->p_flags &= ~PFTWARP;
-#endif
 
     switch(me->p_whydead) {
     case KTORP:

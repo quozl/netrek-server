@@ -303,9 +303,6 @@
                                 /* NEED_EXIT       - For systems that need exit                                                     defined */
 #define NEED_EXIT
 
-                                /* SB_TRANSWARP    - starbase transwarp */
-#define SB_TRANSWARP
-
 				/* SB_CALVINWARP   - calvin style transwarp */
 #undef  SB_CALVINWARP
 

@@ -15,8 +15,6 @@
 #define MIN_INITIAL_SPEED 2
 #define MAX_TRANSWARP_SPEED 60
 
-#ifdef SB_TRANSWARP
-
 int handleTranswarp(void)
 {
    struct player  *j;
@@ -136,6 +134,3 @@ int handleTranswarp(void)
    
    return (1);
 }
-
-#endif
-

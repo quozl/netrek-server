@@ -74,9 +74,7 @@ static void udships(void);
 static void udplayerpause(void);
 static void changedir(struct player *sp);
 static void udcloak(void);
-#ifdef SB_TRANSWARP
 static void udtwarp(void);
-#endif
 static void udtorps(void);
 static void t_explosion(struct torp *torp);
 static void p_explosion(struct player *player, int whydead, int whodead);
@@ -368,9 +366,7 @@ int main(int argc, char **argv)
 #define PLASMAFUSE      1
 #define PHASERFUSE      1
 #define CLOAKFUSE       1
-#ifdef SB_TRANSWARP
 #define TWARPFUSE       1
-#endif
 #define TEAMFUSE        5
 #define PLFIGHTFUSE     5
 #define SIGHTFUSE       5
@@ -737,11 +733,9 @@ static void move()
     if (fuse(PLAYERFUSE)) {
         udplayers();
     }
-#ifdef SB_TRANSWARP
     if (fuse(TWARPFUSE)) {
         udtwarp();
     }
-#endif
     udtorps();
     if (fuse(PHASERFUSE)) {
         udphaser();
@@ -1079,9 +1073,7 @@ static void udplayers_palive_move_in_space(struct player *j)
         if ((j->p_dir != j->p_desdir) && (j->p_status != PEXPLODE))
                 changedir(j);
         
-#ifdef SB_TRANSWARP
         if (j->p_flags & PFTWARP) return; /* udtwarp() to handle ship */
-#endif
 #ifdef NEW_ETEMP
         if (j->p_flags & PFENG)
                 maxspeed = 1;
@@ -1784,7 +1776,6 @@ position hidden      0000000000000011111111110000000000000
   }
 }
 
-#ifdef SB_TRANSWARP
 static void udtwarp(void)
 {
     int i, dist;
@@ -1815,7 +1806,6 @@ static void udtwarp(void)
 #endif
     }
 }
-#endif
 
 /* 
  * Find nearest hostile vessel and turn toward it

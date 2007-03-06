@@ -160,10 +160,7 @@ struct context {
 #define PFSEEN		0x2000000	/* seen by enemy on galactic map? */
 /*#define PFCYBORG	0x4000000	a cyborg? 7/27/91 TC */
 #define PFOBSERV        0x8000000       /* for observers */
-
-#ifdef SB_TRANSWARP
 #define PFTWARP	       0x40000000	/* isae -- SB transwarp */
-#endif
 
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) ||  defined(PRETSERVER)
 #define PFBPROBOT      0x80000000
