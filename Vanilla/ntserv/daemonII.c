@@ -1677,7 +1677,9 @@ static void udplayers(void)
 #ifdef OBSERVERS
             case POBSERV:
                 udplayers_pobserv(j);
+#ifdef OBS_EMPTY_SERVER
                 nfree++;                /* count slot toward empty server */
+#endif OBS_EMPTY_SERVER
                 continue;
 #endif  /* OBSERVERS */
             case PDEAD:
