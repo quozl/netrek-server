@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "`date` $1 $0 $2 $3" >> var/admin.log
-tools/xtkill $2 e
+echo "`date` $1 `basename $0` $2 $3" >> $LOCALSTATEDIR/admin.log
+$LIBDIR/tools/xtkill $2 e

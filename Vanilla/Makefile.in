@@ -135,7 +135,7 @@ distclean: clean reallyclean rmdependencies
 maintainer-clean: distclean
 	@echo 'This command is intended for maintainers to use; it'
 	@echo 'deletes files that may need special tools to rebuild.'
-	rm -f Makefile */Makefile
+	rm -f Makefile */Makefile */*/Makefile
 	rm -rf */.depend
 	rm -rf autom4te.cache conf*.dir
 	rm -f config.* configure libtool ltmain.sh aclocal.m4 system.mk
@@ -153,6 +153,7 @@ installbin: all
 		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install DESTDIR=$(DESTDIR); \
 	fi
 	cd tools;     $(MAKE) install DESTDIR=$(DESTDIR)
+	cd tools/admin; $(MAKE) install DESTDIR=$(DESTDIR)
 	cd keycomp;   $(MAKE) install DESTDIR=$(DESTDIR)
 	cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
 

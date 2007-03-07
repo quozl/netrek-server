@@ -538,7 +538,7 @@ AC_OUTPUT(system.mk Makefile ntserv/Makefile tools/Makefile
 	keycomp/Makefile xsg/Makefile pledit/Makefile robotd/Makefile
 	docs/Makefile tools/no_geno_timer tools/geno_timer
 	docs/sample_geno_timer_crontab docs/sample_sysdef
-	tools/setpath tools/setpath.csh)
+	tools/setpath tools/setpath.csh tools/admin/Makefile)
 
 if test "x$GUM" = xdo_gum; then
 ifdef([AC_OUTPUT_SUBDIRS],[], [AC_DEFUN([AC_OUTPUT_SUBDIRS],[subdirs=$1; _AC_OUTPUT_SUBDIRS])])

@@ -1,0 +1,23 @@
+# Change CONFIG to the .mk file that matches your system
+
+CONFIG = ../system.mk
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+# Do Not Change anything below this line. It should be setup in config
+
+include ../$(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+ADMINDIR= $(LIBDIR)/tools/admin
+
+EXECS =	ban free kill quit reset
+
+all: $(EXECS)
+
+install: $(EXECS) 
+	mkdir -p $(DESTDIR)$(ADMINDIR)
+	$(INSTALLPROG) $(INSTALLOPTS) $(EXECS) $(ADMINDIR)

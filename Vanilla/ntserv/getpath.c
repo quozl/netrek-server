@@ -153,4 +153,10 @@ void setpath()
     exit(1);
   }
   free(new);
+  
+  /* export the directory paths for use by external scripts */
+  setenv("BINDIR", BINDIR, 1);
+  setenv("LIBDIR", LIBDIR, 1);
+  setenv("SYSCONFDIR", SYSCONFDIR, 1);
+  setenv("LOCALSTATEDIR", LOCALSTATEDIR, 1);
 }
