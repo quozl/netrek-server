@@ -20,6 +20,8 @@
 #include "sturgeon.h"
 #include "util.h"
 
+#define DNSBL_WARN_WEBSITE "http://psychosis.net/exploits/"
+
 /* file scope prototypes */
 
 static void auto_peace(void);
@@ -80,7 +82,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     static int lastrank= -1;
     char addrbuf[10];
     struct planet *starting_planet;
-    int i;
+    int i, join;
 
     /* Use local variables, not the globals */
     struct player *me = &players[pno], *j;
@@ -99,6 +101,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     STRNCPY(me->p_name, name, NAME_LEN);
     me->p_name[NAME_LEN - 1] = '\0';
     getship(myship, s_type);
+    join = (lastteam == -1);
 
 #ifdef STURGEON
     if (sturgeon) sturgeon_hook_enter(me, s_type, tno);
@@ -262,6 +265,52 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	  if (!whitelisted && !is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname))
     	    pmessage(0, MALL, "GOD->ALL",
 		"[DNS Mismatch] %s is %s", me->p_mapchars, me->p_dns_hostname);
+#endif
+#ifdef DNSBL_CHECK
+      if ((me->sorbsproxy && (me->sorbsproxy != 8)) || me->njablproxy) {
+#ifdef DNSBL_PROXY_MUTE
+          mute = 1;
+#endif
+#ifdef DNSBL_SHOW
+          pmessage(0, MALL, "GOD->ALL",
+                       "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.", me->p_mapchars, me->p_ip);
+          if (join) {
+              if (me->xblproxy)
+                  pmessage(0, MALL, "GOD->ALL",
+                           "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)", me->p_mapchars);
+              if (me->sorbsproxy)
+                  pmessage(0, MALL, "GOD->ALL",
+                           "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
+                           (me->sorbsproxy & 1) == 1 ? "HTTP" : "", (me->sorbsproxy & 3) == 3 ? "|" : "",
+                           (me->sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->sorbsproxy & 6) == 6 ? "|" : "",
+                           (me->sorbsproxy & 4) == 4 ? "MISC" : "");
+              if (me->njablproxy)
+                  pmessage(0, MALL, "GOD->ALL",
+                           "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
+          }
+#endif
+      }
+      else if (join) {
+#ifdef DNSBL_WARN_VERBOSE
+          if (me->xblproxy)
+              pmessage(0, MALL, "GOD->ALL",
+                       "[VulnCheck] %s is on the Spamhaus XBL (Possible infected system)", me->p_mapchars);
+          if (me->sorbsproxy)
+              pmessage(0, MALL, "GOD->ALL",
+                       "[VulnCheck] %s is on the SORBS Web list (Possible infected system)", me->p_mapchars);
+#endif
+#ifdef DNSBL_WARN
+          if (me->xblproxy)
+              bounce(me->p_no, "Your IP address was found on the Spamhaus XBL list.");
+          if (me->sorbsproxy)
+              bounce(me->p_no, "Your IP address was found on the SORBS Web/Vulnerability list.");
+          if (me->xblproxy || me->sorbsproxy) {
+              bounce(me->p_no, "Your computer may be infected with a virus or other malware.");
+              bounce(me->p_no, "Please visit %s for further help.", DNSBL_WARN_WEBSITE);
+              bounce(me->p_no, "If you have any questions, please ask the server admin.");
+          }
+#endif
+      }
 #endif
 	}
 

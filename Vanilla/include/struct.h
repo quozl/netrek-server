@@ -454,6 +454,9 @@ struct player {
     int w_queue;		/* Waitqueue of my team */
     char p_full_hostname[MAXHOSTNAMESIZE];	/* reverse lookup of p_ip */
     char p_dns_hostname[MAXHOSTNAMESIZE];	/* forward lookup of above */
+    int xblproxy;
+    int sorbsproxy;
+    int njablproxy;
 #ifdef PING
     int  p_avrt;               /* average round trip time */
     int  p_stdv;               /* standard deviation in round trip time */

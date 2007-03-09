@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -17,7 +18,90 @@
 
 pid_t pid;
 
-void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
+#define XBLDOMAIN "xbl.spamhaus.org"
+#define SORBSDOMAIN "dnsbl.sorbs.net"
+#define NJABLDOMAIN "dnsbl.njabl.org"
+
+static int xbltest(char *ip)
+{
+    char *ipbuf = strdup(ip);
+    char **ipptr = &ipbuf;
+    int ipf[4], i;
+    char dnshost[256];
+
+    for (i = 0; i < 4; i++)
+        ipf[i] = atoi(strsep(ipptr, "."));
+    sprintf(dnshost, "%d.%d.%d.%d.%s", ipf[3], ipf[2], ipf[1], ipf[0], XBLDOMAIN);
+    free(ipbuf);
+
+    return (int)(gethostbyname(dnshost) != 0);
+}
+
+static int njabltest(char *ip)
+{
+    char *ipbuf = strdup(ip);
+    char **ipptr = &ipbuf;
+    int ipf[4], i;
+    char dnshost[256];
+    struct hostent *njabl;
+
+    for (i = 0; i < 4; i++)
+        ipf[i] = atoi(strsep(ipptr, "."));
+    sprintf(dnshost, "%d.%d.%d.%d.%s", ipf[3], ipf[2], ipf[1], ipf[0], NJABLDOMAIN);
+    free(ipbuf);
+
+    if ((njabl = gethostbyname(dnshost)) && (njabl->h_addr_list[0][3] == 9))
+        return 1;
+    else
+        return 0;
+}
+
+static int sorbstest(char *ip)
+{
+    char *ipbuf = strdup(ip);
+    char **ipptr = &ipbuf;
+    int ipf[4], i;
+    char dnshost[256];
+    struct hostent *sorbs;
+    int proxy = 0, proxyadd = 1;
+
+    for (i = 0; i < 4; i++)
+        ipf[i] = atoi(strsep(ipptr, "."));
+    sprintf(dnshost, "%d.%d.%d.%d.%s", ipf[3], ipf[2], ipf[1], ipf[0], SORBSDOMAIN);
+    free(ipbuf);
+
+    if ((sorbs = gethostbyname(dnshost)))
+        for (i = 0; sorbs->h_addr_list[i]; i++) {
+            if ((sorbs->h_addr_list[i][3] >= 2) && (sorbs->h_addr_list[i][3] <= 4)) {
+                proxy |= proxyadd;
+                proxyadd *= 2;
+            }
+            if (sorbs->h_addr_list[i][3] == 7)
+                proxy |= 8;
+        }
+    return proxy;
+}
+
+static void dnsbl_lookup(char *ip, int *xblproxy, int *sorbsproxy, int *njablproxy)
+{
+    if (xblproxy) {
+        if ((*xblproxy = xbltest(ip)))
+            ERROR(2,("DNSBL Hit (XBL): %s\n", ip));
+    }
+    
+    if (sorbsproxy) {
+        if ((*sorbsproxy = sorbstest(ip)))
+            ERROR(2,("DNSBL Hit (SORBS): %s [%d]\n", ip, *sorbsproxy));
+    }
+    
+    if (njablproxy) {
+        if ((*njablproxy = njabltest(ip)))
+            ERROR(2,("DNSBL Hit (NJABL): %s\n", ip));
+    }    
+}
+
+void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
+               int *xblproxy, int *sorbsproxy, int *njablproxy, int len)
 {
     struct in_addr addr;
     struct hostent *reverse;
@@ -32,6 +116,10 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname, int len)
 
     /* ignore alarms */
     alarm_prevent_inheritance();
+
+#ifdef DNSBL_CHECK
+    dnsbl_lookup(ip, xblproxy, sorbsproxy, njablproxy);
+#endif
 
     /* Pack IP text string into binary */
     if (inet_aton(ip, &addr) == 0) {
