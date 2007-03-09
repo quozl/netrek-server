@@ -56,6 +56,7 @@ int freeslot(struct player *who)
 int pickslot(int w_queue)
 {
     int i;
+    int altslot;
 
     /* Ensure that the queue is open */
     if (!(queues[w_queue].q_flags & QU_OPEN)) return (-2);
@@ -68,7 +69,16 @@ int pickslot(int w_queue)
 	return (-1);
     }
 
-    for (i=queues[w_queue].low_slot; i<queues[w_queue].high_slot; i++) {
+    for (altslot = i = queues[w_queue].alt_lowslot ?
+         queues[w_queue].alt_lowslot : 0;; i++) {
+        
+        /* Allocate slots 8 - f for ROM before allocating lower slots */
+        if (i == queues[w_queue].high_slot) {
+            if (!altslot)
+                break;
+            i = altslot = 0;
+            continue;
+        }
 
         /* avoid allocating slot t unless flags say we can */
         if (i == 29 && !(queues[w_queue].q_flags & QU_TOK)) continue;

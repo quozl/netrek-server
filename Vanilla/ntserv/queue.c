@@ -55,6 +55,7 @@ int queues_init(void)
 	queues[i].max_slots  = 0;
 	queues[i].tournmask  = NOBODY;
 	queues[i].low_slot   = 0;
+	queues[i].alt_lowslot = 0;
 	queues[i].high_slot  = 0;
 	queues[i].first      = -1;
 	queues[i].last       = -1;
@@ -84,14 +85,15 @@ int queues_init(void)
     queues[QU_HOME].max_slots  = (MAXPLAYER - TESTERS) / 2;
     queues[QU_HOME].tournmask  = FED;
     queues[QU_HOME].low_slot   = 0;
-    queues[QU_HOME].high_slot  = (MAXPLAYER - TESTERS) / 2;
+    queues[QU_HOME].high_slot  = MAXPLAYER - TESTERS;
     queues[QU_HOME].q_flags    = QU_REPORT;
     queue_setname(QU_HOME,"home");
 
     queues[QU_AWAY].free_slots = 0; /* Off by default, inlbot gives 8 */
     queues[QU_AWAY].max_slots  = (MAXPLAYER - TESTERS) / 2;
     queues[QU_AWAY].tournmask  = ROM;
-    queues[QU_AWAY].low_slot   = (MAXPLAYER - TESTERS) / 2;
+    queues[QU_AWAY].low_slot   = 0;
+    queues[QU_AWAY].alt_lowslot = 8;
     queues[QU_AWAY].high_slot  = MAXPLAYER - TESTERS;
     queues[QU_AWAY].q_flags    = QU_REPORT;
     queue_setname(QU_AWAY,"away");
