@@ -706,7 +706,7 @@ void do_teleport_home(void)
 	j->p_y = planets[startplanet].pl_y + (random() % (2*DISPLACE) - DISPLACE);
 	if (j->p_x >= RINK_LEFT && j->p_x <= RINK_RIGHT)
 	    j->p_x = planets[startplanet].pl_x + (random() % (2*DISPLACE) - DISPLACE);
-	p_x_y_to_internal(me);
+	p_x_y_to_internal(j);
 
 	j->p_speed = 0;
 	j->p_desspeed = 0;
@@ -1074,6 +1074,7 @@ void do_offsides(void)
 		else if (j->p_team == ORI)
 		    startplanet = 30;
 		j->p_y = planets[startplanet].pl_y + (random() % (2*DISPLACE) - DISPLACE);
+		p_x_y_to_internal(j);
 	    }
 	}
     }
