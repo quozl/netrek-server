@@ -75,7 +75,7 @@ static void sturgeon_special_begin(struct player *me)
 void sturgeon_hook_enter(struct player *me, int s_type, int tno)
 {
   char addrbuf[10], buf[80];
-  int i;
+  int i, team;
 
   /* Remove upgrades for bases */
   if (s_type == STARBASE) {
@@ -150,7 +150,11 @@ void sturgeon_hook_enter(struct player *me, int s_type, int tno)
     me->p_weapons[11].sw_number = -1;
     me->p_special = 11;
   }
-  me->p_team = (1 << tno);
+  /* Get team (needed for starbase enter messages) */
+  if ((tno == 4) || (tno == 5) || (me->w_queue == QU_GOD_OBS))
+    team = 0;
+  else
+    team = (1 << tno);
   /* SB gets unlimited pseudoplasma, type 5 plasma, and suicide drones */
   if (s_type == STARBASE) {
     me->p_weapons[0].sw_number = -1;
@@ -158,7 +162,7 @@ void sturgeon_hook_enter(struct player *me, int s_type, int tno)
     me->p_weapons[10].sw_number = -1;
     me->p_special = 10;
     sprintf(buf, "%s (%c%c) is now a Starbase",
-            me->p_name, teamlet[me->p_team], shipnos[me->p_no]);
+            me->p_name, teamlet[team], shipnos[me->p_no]);
     strcpy(addrbuf, "GOD->ALL");
     pmessage(0, MALL, addrbuf, buf);
   }
