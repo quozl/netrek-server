@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -v
+
+LIBDIR=/usr/local/games/netrek-server-vanilla
+cd ${LIBDIR}
+
+# start two clients, slot 0 and 1
+
+# <modemhero> yes, sit 1 ship directly on top of a planet, say earth
+lib/tools/setplanet ear x 50000 y 50000
+lib/tools/setship 0 speed 0 wait-for-stop position 50000 50000
+
+# <modemhero> have a 2nd ship flying warp 1 doing a flyby straight
+# over earth, or maybe put it in orbit
+lib/tools/setship 1 speed 0 wait-for-stop position 45000 50000
+lib/tools/setship 1 speed 1 dir 92
+#lib/tools/setplanet ear be-orbited-by 1
+
+# <modemhero> while 2nd ship is doing flyby or in orbit, have ship 1
+# turn repeatedly but not move
+# <modemhero> orbitting will suffice, just tested it to be sure
+for x in `seq 1 255`; do
+    lib/tools/setship 0 dir $x
+    sleep 0.1
+done
+lib/tools/setship 1 speed 0 wait-for-stop
+
+# <modemhero> and do this whiel receiving 50 updates/sec, i'm
+# repeating it on continuum now..of course i can't use cow but i
+# imagine the effect will be the same..i can sorta repeat it using cow
+# 2.02..but the effect is more dramatic at 50 fps
+# <modemhero> problem being that planet is redrawn 50 times/sec due to
+# the orbitter (ship 2), and ship 2 is also redrawn 50 times/sec
+# because it's moving, but ship 1 is redrawn much less frequently if
+# it's turning
