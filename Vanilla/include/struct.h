@@ -18,7 +18,7 @@ struct pqueue {        /* A player queue */
     int    tournmask;  /* Teams this queue can enter into */
     int    low_slot;   /* The lowest slot this queue can use */
     int    high_slot;  /* The highest slot +1 this queue can use */
-    int    prefer;     /* prefered starting slot during findslot */
+    int    alt_lowslot; /* Alternate low slot for ROM ordering in INL mode */
     int    first;      /* The waiting person at the top of the queue */
     int    last;       /* The waiting person at the end of the queue */
     u_int  count;
