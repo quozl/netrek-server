@@ -34,3 +34,6 @@ lib/tools/setship 1 speed 0 wait-for-stop
 # the orbitter (ship 2), and ship 2 is also redrawn 50 times/sec
 # because it's moving, but ship 1 is redrawn much less frequently if
 # it's turning
+
+# <modemhero> well the symptom, from this shell script, is FO blinking
+# in and out on the galaxy map
