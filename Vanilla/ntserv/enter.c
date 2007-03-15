@@ -262,29 +262,33 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 #endif
 		me->p_full_hostname);
 #ifdef IP_CHECK_DNS_VERBOSE
-	  if (!whitelisted && !is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname))
-    	    pmessage(0, MALL, "GOD->ALL",
-		"[DNS Mismatch] %s is %s", me->p_mapchars, me->p_dns_hostname);
+          if (!whitelisted && !is_robot(me) &&
+              strcmp(me->p_full_hostname, me->p_dns_hostname))
+            pmessage(0, MALL, "GOD->ALL",
+                "[DNS Mismatch] %s is %s", me->p_mapchars, me->p_dns_hostname);
 #endif
 #ifdef DNSBL_CHECK
-      if ((me->sorbsproxy && (me->sorbsproxy != 8)) || me->njablproxy) {
+      if ((me->p_sorbsproxy && (me->p_sorbsproxy != 8)) || me->p_njablproxy) {
 #ifdef DNSBL_PROXY_MUTE
           mute = 1;
 #endif
 #ifdef DNSBL_SHOW
           pmessage(0, MALL, "GOD->ALL",
-                       "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.", me->p_mapchars, me->p_ip);
+                   "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.",
+                   me->p_mapchars, me->p_ip);
           if (join) {
-              if (me->xblproxy)
+              if (me->p_xblproxy)
                   pmessage(0, MALL, "GOD->ALL",
-                           "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)", me->p_mapchars);
-              if (me->sorbsproxy)
+                           "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)",
+                           me->p_mapchars);
+              if (me->p_sorbsproxy)
                   pmessage(0, MALL, "GOD->ALL",
-                           "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
-                           (me->sorbsproxy & 1) == 1 ? "HTTP" : "", (me->sorbsproxy & 3) == 3 ? "|" : "",
-                           (me->sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->sorbsproxy & 6) == 6 ? "|" : "",
-                           (me->sorbsproxy & 4) == 4 ? "MISC" : "");
-              if (me->njablproxy)
+                           "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)",
+                           me->p_mapchars,
+                           (me->p_sorbsproxy & 1) == 1 ? "HTTP" : "", (me->p_sorbsproxy & 3) == 3 ? "|" : "",
+                           (me->p_sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->p_sorbsproxy & 6) == 6 ? "|" : "",
+                           (me->p_sorbsproxy & 4) == 4 ? "MISC" : "");
+              if (me->p_njablproxy)
                   pmessage(0, MALL, "GOD->ALL",
                            "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
           }
@@ -292,19 +296,19 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
       }
       else if (join) {
 #ifdef DNSBL_WARN_VERBOSE
-          if (me->xblproxy)
+          if (me->p_xblproxy)
               pmessage(0, MALL, "GOD->ALL",
                        "[VulnCheck] %s is on the Spamhaus XBL (Possible infected system)", me->p_mapchars);
-          if (me->sorbsproxy)
+          if (me->p_sorbsproxy)
               pmessage(0, MALL, "GOD->ALL",
                        "[VulnCheck] %s is on the SORBS Web list (Possible infected system)", me->p_mapchars);
 #endif
 #ifdef DNSBL_WARN
-          if (me->xblproxy)
+          if (me->p_xblproxy)
               bounce(me->p_no, "Your IP address was found on the Spamhaus XBL list.");
-          if (me->sorbsproxy)
+          if (me->p_sorbsproxy)
               bounce(me->p_no, "Your IP address was found on the SORBS Web/Vulnerability list.");
-          if (me->xblproxy || me->sorbsproxy) {
+          if (me->p_xblproxy || me->p_sorbsproxy) {
               bounce(me->p_no, "Your computer may be infected with a virus or other malware.");
               bounce(me->p_no, "Please visit %s for further help.", DNSBL_WARN_WEBSITE);
               bounce(me->p_no, "If you have any questions, please ask the server admin.");

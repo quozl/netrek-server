@@ -230,8 +230,10 @@ int main(int argc, char **argv)
     /* reverse lookup hostname from ip address */
     /* clear the host name to indicate work in progress */
     strcpy(me->p_full_hostname, "");
-    me->xblproxy = me->sorbsproxy = me->njablproxy = 0;
-    ip_lookup(host, me->p_full_hostname, me->p_dns_hostname, &me->xblproxy, &me->sorbsproxy, &me->njablproxy, sizeof(me->p_full_hostname));
+    me->p_xblproxy = me->p_sorbsproxy = me->p_njablproxy = 0;
+    ip_lookup(host, me->p_full_hostname, me->p_dns_hostname,
+              &me->p_xblproxy, &me->p_sorbsproxy, &me->p_njablproxy,
+              sizeof(me->p_full_hostname));
 
     /* Get login name */
     strcpy(login, "unknown");

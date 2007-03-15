@@ -18,6 +18,7 @@
 
 pid_t pid;
 
+#ifdef DNSBL_CHECK
 #define XBLDOMAIN "xbl.spamhaus.org"
 #define SORBSDOMAIN "dnsbl.sorbs.net"
 #define NJABLDOMAIN "dnsbl.njabl.org"
@@ -31,7 +32,8 @@ static int xbltest(char *ip)
 
     for (i = 0; i < 4; i++)
         ipf[i] = atoi(strsep(ipptr, "."));
-    sprintf(dnshost, "%d.%d.%d.%d.%s", ipf[3], ipf[2], ipf[1], ipf[0], XBLDOMAIN);
+    sprintf(dnshost, "%d.%d.%d.%d.%s",
+            ipf[3], ipf[2], ipf[1], ipf[0], XBLDOMAIN);
     free(ipbuf);
 
     return (int)(gethostbyname(dnshost) != 0);
@@ -47,7 +49,8 @@ static int njabltest(char *ip)
 
     for (i = 0; i < 4; i++)
         ipf[i] = atoi(strsep(ipptr, "."));
-    sprintf(dnshost, "%d.%d.%d.%d.%s", ipf[3], ipf[2], ipf[1], ipf[0], NJABLDOMAIN);
+    sprintf(dnshost, "%d.%d.%d.%d.%s",
+            ipf[3], ipf[2], ipf[1], ipf[0], NJABLDOMAIN);
     free(ipbuf);
 
     if ((njabl = gethostbyname(dnshost)) && (njabl->h_addr_list[0][3] == 9))
@@ -67,12 +70,14 @@ static int sorbstest(char *ip)
 
     for (i = 0; i < 4; i++)
         ipf[i] = atoi(strsep(ipptr, "."));
-    sprintf(dnshost, "%d.%d.%d.%d.%s", ipf[3], ipf[2], ipf[1], ipf[0], SORBSDOMAIN);
+    sprintf(dnshost, "%d.%d.%d.%d.%s",
+            ipf[3], ipf[2], ipf[1], ipf[0], SORBSDOMAIN);
     free(ipbuf);
 
     if ((sorbs = gethostbyname(dnshost)))
         for (i = 0; sorbs->h_addr_list[i]; i++) {
-            if ((sorbs->h_addr_list[i][3] >= 2) && (sorbs->h_addr_list[i][3] <= 4)) {
+            if ((sorbs->h_addr_list[i][3] >= 2) &&
+                (sorbs->h_addr_list[i][3] <= 4)) {
                 proxy |= proxyadd;
                 proxyadd *= 2;
             }
@@ -82,7 +87,8 @@ static int sorbstest(char *ip)
     return proxy;
 }
 
-static void dnsbl_lookup(char *ip, int *xblproxy, int *sorbsproxy, int *njablproxy)
+static void dnsbl_lookup(char *ip, int *xblproxy, int *sorbsproxy,
+                         int *njablproxy)
 {
     if (xblproxy) {
         if ((*xblproxy = xbltest(ip)))
@@ -99,6 +105,7 @@ static void dnsbl_lookup(char *ip, int *xblproxy, int *sorbsproxy, int *njablpro
             ERROR(2,("DNSBL Hit (NJABL): %s\n", ip));
     }    
 }
+#endif
 
 void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
                int *xblproxy, int *sorbsproxy, int *njablproxy, int len)

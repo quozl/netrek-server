@@ -657,16 +657,21 @@ int bounceWhois(int from)
 #endif
         bounce(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
 #ifdef DNSBL_SHOW
-        if ((me->sorbsproxy && (me->sorbsproxy != 8)) || me->njablproxy) {
-            bounce(from, "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.", me->p_mapchars, me->p_ip);
-            if (me->xblproxy)
-                bounce(from, "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)", me->p_mapchars);
-            if (me->sorbsproxy)
+        if ((me->p_sorbsproxy && (me->p_sorbsproxy != 8)) ||
+            me->p_njablproxy) {
+            bounce(from,
+                   "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.",
+                   me->p_mapchars, me->p_ip);
+            if (me->p_xblproxy)
+                bounce(from,
+                       "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)",
+                       me->p_mapchars);
+            if (me->p_sorbsproxy)
                 bounce(from, "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
-                       (me->sorbsproxy & 1) == 1 ? "HTTP" : "", (me->sorbsproxy & 3) == 3 ? "|" : "",
-                       (me->sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->sorbsproxy & 6) == 6 ? "|" : "",
-                       (me->sorbsproxy & 4) == 4 ? "MISC" : "");
-            if (me->njablproxy)
+                       (me->p_sorbsproxy & 1) == 1 ? "HTTP" : "", (me->p_sorbsproxy & 3) == 3 ? "|" : "",
+                       (me->p_sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->p_sorbsproxy & 6) == 6 ? "|" : "",
+                       (me->p_sorbsproxy & 4) == 4 ? "MISC" : "");
+            if (me->p_njablproxy)
                 bounce(from, "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
         }
 #endif

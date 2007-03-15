@@ -1,6 +1,6 @@
 /* ip.c */
 void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
-               int *xblproxy, int *sorbsproxy, int *njablproxy, int len);
+               int *p_xblproxy, int *p_sorbsproxy, int *p_njablproxy, int len);
 void ip_waitpid();
 int ip_whitelisted(char *ip);
 int ip_hide(char *ip);

@@ -190,49 +190,34 @@
                                                      rather than the start */
 #define REVERSED_HOSTNAMES
 
-                                /*  IP_CHECK_DNS     - Do full reverse/forward
-                                                       lookup on IP addreses
-                                                       to check for matching
-                                                       DNS entries, and make
-                                                       mismatches show in a
-                                                       'WHOIS'/'@' query */
-#define IP_CHECK_DNS
+#define IP_CHECK_DNS            /*  IP_CHECK_DNS - Do full reverse/forward
+                                lookup on IP addreses to check for matching
+                                DNS entries, and make mismatches show in a
+                                'WHOIS'/'@' query */
 #ifdef IP_CHECK_DNS
-                               /*  IP_CHECK_DNS_VERBOSE
-                                                     - Announce to ALL when a
-                                                       player's host does not
-                                                       forward resolve, and
-                                                       show what the IP
-                                                       resolved to */
-#undef IP_CHECK_DNS_VERBOSE
+#undef IP_CHECK_DNS_VERBOSE     /*  IP_CHECK_DNS_VERBOSE - Announce to ALL
+                                when a player's host does not forward resolve,
+                                and show what the IP resolved to */
 #endif
 
-#undef DNSBL_CHECK
-                                /*  DNSBL_CHECK      - Check player's IP against
-                                                       public DNS blacklists to
-                                                       detect open proxies as
-                                                       well as possibly
-                                                       infected computers. */
+#undef DNSBL_CHECK              /*  DNSBL_CHECK - Check player's IP against
+                                public DNS blacklists to detect open proxies
+                                as well as possibly infected computers. */
 
 #ifdef DNSBL_CHECK
-#undef DNSBL_SHOW               /*  DNSBL_SHOW     - Show possible proxies to
-                                                     ALL and in WHOIS,
-                                                     otherwise just log it */
+#undef DNSBL_SHOW               /*  DNSBL_SHOW - Show possible proxies to ALL
+                                and in WHOIS, otherwise just log it */
 
-#define DNSBL_PROXY_MUTE        /*  DNSBL_PROXY_MUTE
-                                                   - Automatically mute hosts
-                                                     that are detected as
-                                                     possible open proxies */
+#define DNSBL_PROXY_MUTE        /*  DNSBL_PROXY_MUTE - Automatically mute
+                                hosts that are detected as possible open
+                                proxies */
 
-#define DNSBL_WARN              /*  DNSBL_WARN     - Warn players who appear
-                                                     on the infected host
-                                                     lists with a private
-                                                     message */
+#define DNSBL_WARN              /*  DNSBL_WARN - Warn players who appear on
+                                the infected host lists with a private
+                                message */
 
-#undef DNSBL_WARN_VERBOSE      /*  DNSBL_WARN_VERBOSE
-                                                   - Alert all players of
-                                                     a possibly infected
-                                                     host */
+#undef DNSBL_WARN_VERBOSE       /*  DNSBL_WARN_VERBOSE - Alert all players of
+                                a possibly infected host */
 #endif
 
                                 /*  INL_RESOURCES  - Use INL resources */
