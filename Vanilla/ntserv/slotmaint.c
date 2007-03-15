@@ -46,6 +46,48 @@ int freeslot(struct player *who)
     return retvalue;
 }
 
+/* check for reasons why a slot should not be allocated */
+static int verboten(int w_queue, int i)
+{
+    /* avoid allocating slot t unless flags say we can */
+    return (i == 29 && !(queues[w_queue].q_flags & QU_TOK));
+}
+
+static int grabslot(int w_queue, int i)
+{
+    int j;
+
+    players[i].p_status = POUTFIT;      /* possible race code */
+
+    /* Set up the player struct now */
+    players[i].p_no          = i;
+    players[i].p_team        = NOBODY;
+    players[i].p_ghostbuster = 0;
+    players[i].p_flags       = 0;
+    players[i].w_queue       = w_queue;
+    players[i].p_pos         = -1;
+    MZERO(&players[i].p_stats, sizeof(struct stats));
+#ifdef LTD_STATS
+    ltd_reset(&players[i]);
+#else
+    players[i].p_stats.st_tticks=1;
+#endif /* LTD_STATS */
+    for (j=0; j<95; j++) {
+      players[i].p_stats.st_keymap[j]=j+32;
+    }
+    players[i].p_stats.st_keymap[95]=0;
+    players[i].p_stats.st_flags=ST_INITIAL;
+    players[i].p_process     = 0;
+    MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
+#ifdef OBSERVERS
+    if (queues[w_queue].q_flags & QU_OBSERVER) Observer++;
+#endif
+    /* Update the queue info */
+    queues[w_queue].free_slots--;
+    queues[w_queue].enter_sem = 1;      /* give back control */
+    return i;
+}
+
 /* 
  * Pick and allocate an empty slot.
  * returns: The slot number
@@ -56,73 +98,36 @@ int freeslot(struct player *who)
 int pickslot(int w_queue)
 {
     int i;
-    int altslot;
 
     /* Ensure that the queue is open */
-    if (!(queues[w_queue].q_flags & QU_OPEN)) return (-2);
+    if (!(queues[w_queue].q_flags & QU_OPEN)) return -2;
 
-    if (queues[w_queue].enter_sem-- < 1) return (-1);
+    if (queues[w_queue].enter_sem-- < 1) return -1;
     /* ASSERT: enter_sem <= 0, so no one else can enter */
 
-    if (queues[w_queue].free_slots <= 0){  /* no free slots */
-	queues[w_queue].enter_sem = 1;     /* give back control */
-	return (-1);
+    if (queues[w_queue].free_slots <= 0) {  /* no free slots */
+        queues[w_queue].enter_sem = 1;      /* give back control */
+        return -1;
     }
 
-    for (altslot = i = queues[w_queue].alt_lowslot ?
-         queues[w_queue].alt_lowslot : 0;; i++) {
-        
-        /* Allocate slots 8 - f for ROM before allocating lower slots */
-        if (i == queues[w_queue].high_slot) {
-            if (!altslot)
-                break;
-            i = altslot = 0;
-            continue;
+    /* try the slots from the prefered slot to the highest slot of the queue */
+    /* (in case of INL trading, try slots 8 - f for away first) */
+    if (queues[w_queue].prefer)
+        for (i = queues[w_queue].prefer; i < queues[w_queue].high_slot; i++) {
+            if (players[i].p_status == PFREE) {
+                if (verboten(w_queue, i)) continue;
+                return grabslot(w_queue, i);
+            }
         }
 
-        /* avoid allocating slot t unless flags say we can */
-        if (i == 29 && !(queues[w_queue].q_flags & QU_TOK)) continue;
-
-	if (players[i].p_status == PFREE) {     /* We have free slot */
-	    int j;
-
-	    players[i].p_status = POUTFIT;      /* possible race code */
-
-	    /* Set up the player struct now */
-	    players[i].p_no          = i;
-	    players[i].p_team        = NOBODY;
-	    players[i].p_ghostbuster = 0;
-	    players[i].p_flags       = 0;
-	    players[i].w_queue       = w_queue;
-	    players[i].p_pos         = -1;
-	    MZERO(&players[i].p_stats, sizeof(struct stats));  
-#ifdef LTD_STATS
-
-            ltd_reset(&players[i]);
-
-#else
-
-	    players[i].p_stats.st_tticks=1;
-
-#endif /* LTD_STATS */
-
-	    for (j=0; j<95; j++) {
-		players[i].p_stats.st_keymap[j]=j+32;
-	    }
-	    players[i].p_stats.st_keymap[95]=0;
-	    players[i].p_stats.st_flags=ST_INITIAL;
-	    players[i].p_process     = 0;
-	    MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
-#ifdef OBSERVERS
-	    if (queues[w_queue].q_flags & QU_OBSERVER) Observer++;
-#endif
-	    /* Update the queue info */
-	    queues[w_queue].free_slots--;
-	    queues[w_queue].enter_sem = 1;      /* give back control */
-	    return(i);
-	}
+    /* try all the slots allocated to the queue */
+    for (i = queues[w_queue].low_slot; i < queues[w_queue].high_slot; i++) {
+        if (players[i].p_status == PFREE) {
+            if (verboten(w_queue, i)) continue;
+            return grabslot(w_queue, i);
+        }
     }
 
     queues[w_queue].enter_sem = 1;              /* give back control */
-    return (-1);
+    return -1;
 }
