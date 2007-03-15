@@ -57,7 +57,6 @@ int queues_init(void)
 	queues[i].low_slot   = 0;
 	queues[i].prefer     = 0;
 	queues[i].high_slot  = 0;
-	queues[i].alt_highslot = 0;
 	queues[i].first      = -1;
 	queues[i].last       = -1;
     	queues[i].count      = 0;
@@ -86,8 +85,8 @@ int queues_init(void)
     queues[QU_HOME].max_slots  = (MAXPLAYER - TESTERS) / 2;
     queues[QU_HOME].tournmask  = FED;
     queues[QU_HOME].low_slot   = 0;
+    queues[QU_HOME].prefer     = 0;
     queues[QU_HOME].high_slot  = MAXPLAYER - TESTERS;
-    queues[QU_HOME].alt_highslot = 8;
     queues[QU_HOME].q_flags    = QU_REPORT;
     queue_setname(QU_HOME,"home");
 

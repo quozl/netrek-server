@@ -11,6 +11,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "util.h"
 
 /* 
  *  Free a slot that was allocated with pickslot.
@@ -53,9 +54,12 @@ static int verboten(int w_queue, int i)
     return (i == 29 && !(queues[w_queue].q_flags & QU_TOK));
 }
 
-static int grabslot(int w_queue, int i)
+static int pickslot_action(int w_queue, int i)
 {
     int j;
+
+    if (players[i].p_status != PFREE) return 0;
+    if (verboten(w_queue, i)) return 0;
 
     players[i].p_status = POUTFIT;      /* possible race code */
 
@@ -84,8 +88,29 @@ static int grabslot(int w_queue, int i)
 #endif
     /* Update the queue info */
     queues[w_queue].free_slots--;
-    queues[w_queue].enter_sem = 1;      /* give back control */
-    return i;
+    return 1;
+}
+
+/* scan a queue, calling an action function for each slot until the
+action function returns non-zero, at which point the slot number is
+returned, or -1 if no call to an action function returned non-zero */
+static int scanqueue(int w_queue, int (*action)(int w_queue, int i))
+{
+    int i;
+
+    /* try the slots from the prefered slot to the highest slot of the queue */
+    /* (in case of INL trading, try slots 8 - f for away first) */
+    if (queues[w_queue].prefer)
+        for (i = queues[w_queue].prefer; i < queues[w_queue].high_slot; i++) {
+            if ((*action)(w_queue, i)) return i;
+        }
+
+    /* try all the slots allocated to the queue */
+    for (i = queues[w_queue].low_slot; i < queues[w_queue].high_slot; i++) {
+        if ((*action)(w_queue, i)) return i;
+    }
+
+    return -1;
 }
 
 /* 
@@ -110,24 +135,41 @@ int pickslot(int w_queue)
         return -1;
     }
 
-    /* try the slots from the prefered slot to the highest slot of the queue */
-    /* (in case of INL trading, try slots 8 - f for away first) */
-    if (queues[w_queue].prefer)
-        for (i = queues[w_queue].prefer; i < queues[w_queue].high_slot; i++) {
-            if (players[i].p_status == PFREE) {
-                if (verboten(w_queue, i)) continue;
-                return grabslot(w_queue, i);
-            }
-        }
+    i = scanqueue(w_queue, pickslot_action);
+    queues[w_queue].enter_sem = 1;      /* give back control */
+    return i;
+}
 
-    /* try all the slots allocated to the queue */
-    for (i = queues[w_queue].low_slot; i < queues[w_queue].high_slot; i++) {
-        if (players[i].p_status == PFREE) {
-            if (verboten(w_queue, i)) continue;
-            return grabslot(w_queue, i);
-        }
-    }
+static int slots_free_count;
 
-    queues[w_queue].enter_sem = 1;              /* give back control */
-    return -1;
+static int slots_free_action(int w_queue, int i)
+{
+    if (players[i].p_status == PFREE) slots_free_count++;
+    return 0;
+}
+
+/* return a count of slots open for use in a given queue */
+int slots_free(int w_queue)
+{
+    slots_free_count = 0;
+    scanqueue(w_queue, slots_free_action);
+    return slots_free_count;
+}
+
+static int slots_playing_count;
+
+static int slots_playing_action(int w_queue, int i)
+{
+    if (players[i].p_status == PFREE) return 0;
+    if (is_robot(&players[i])) return 0;
+    slots_playing_count++;
+    return 0;
+}
+
+/* return a count of slots playing in a given queue */
+int slots_playing(int w_queue)
+{
+  slots_playing_count = 0;
+  scanqueue(w_queue, slots_playing_action);
+  return slots_playing_count;
 }

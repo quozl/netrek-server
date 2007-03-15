@@ -268,15 +268,8 @@ void solicit(int force)
 	queue = QU_PICKUP;
 
       /* count the slots free to new logins, and the slots taken */
-      for (j = (queues[queue].alt_lowslot ? queues[queue].alt_lowslot : queues[queue].low_slot);
-           j < (queues[queue].alt_highslot ? queues[queue].alt_highslot : queues[queue].high_slot);
-           j++)
-      {
-	if (players[j].p_status == PFREE || is_robot(&players[j]))
-	  nfree++;
-	else
-	  nplayers++;
-      }
+      nfree = slots_free(queue);
+      nplayers = slots_playing(queue);
       
       ERROR(7,("before: nfree=%d nplayers=%d gamefull=%d\n", nfree, nplayers, gamefull));
 
