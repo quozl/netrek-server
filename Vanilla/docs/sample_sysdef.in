@@ -192,6 +192,9 @@ NO_UNWARRING_BOMBING=1
 #	Turn off messaging for observers
 OBSERVER_MUTING=0
 #
+#	Whether observers on an empty server will keep the game alive.
+OBSERVER_KEEPS_GAME_ALIVE=0
+#
 # 	Use topgun mode (0 = no, 1 = yes)
 TOPGUN=0
 #

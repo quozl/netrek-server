@@ -415,6 +415,7 @@ int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 #ifdef OBSERVERS
 int observer_muting = 0;
+int observer_keeps_game_alive = 0;
 #endif
 int whitelisted = 0;
 int blacklisted = 0;

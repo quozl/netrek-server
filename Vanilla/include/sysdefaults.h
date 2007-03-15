@@ -217,6 +217,8 @@ struct sysdef_keywords {
 #ifdef OBSERVERS
   { "OBSERVER_MUTING",   SYSDEF_INT,     &observer_muting,
     "Turn off messaging for observers"			},
+  { "OBSERVER_KEEPS_GAME_ALIVE",   SYSDEF_INT,     &observer_keeps_game_alive,
+    "Whether an observer slot is counted for keeping game alive" },
 #endif
   { "VOTING",		SYSDEF_INT,	&voting,
     "Enable voting"			},
@@ -281,5 +283,6 @@ GARANK
 BLOGGING
 FPS
 SBORBIT
+OBSERVER_KEEPS_GAME_ALIVE
 
 */

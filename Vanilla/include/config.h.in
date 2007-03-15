@@ -353,15 +353,6 @@
 
                                 /* OBSERVERS       - allow players to watch */
 #define OBSERVERS
-                                /* OBS_EMPTY_SERVER
-                                                   - consider observers the
-                                                     same as empty slots
-                                                     for purposes of
-                                                     killing the daemon if
-                                                     there are no players */
-#ifdef OBSERVERS
-#undef OBS_EMPTY_SERVER
-#endif
 
 #define NODOCK          /* NODOCK allow per-slot docking priveledges */
 
