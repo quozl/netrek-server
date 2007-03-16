@@ -17,6 +17,7 @@
 #include INC_UNISTD
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 #include "salt.h"
 
 /* support for timing requires glib, not expected to remain */
@@ -238,9 +239,10 @@ int newplayer(struct statentry *player)
 
   ERROR(8,("db.c: newplayer: adding '%s'\n", player->name));
 
+  lock_on(LOCK_PLAYER_ADD); /* race: two players might be added at once */
   fd = open(PlayerFile, O_RDWR|O_CREAT, 0644);
-  if (fd < 0) return -1;
-  if ((offset = lseek(fd, 0, SEEK_END)) < 0) return -1;
+  if (fd < 0) goto failed_unlock;
+  if ((offset = lseek(fd, 0, SEEK_END)) < 0) goto failed_close;
   ERROR(8,("db.c: newplayer: lseek gave offset '%d'\n", offset));
 
   position = offset / sizeof(struct statentry);
@@ -248,13 +250,14 @@ int newplayer(struct statentry *player)
     ERROR(1,("db.c: newplayer: SEEK_END not multiple of struct statentry, truncating down\n"));
     offset = position * sizeof(struct statentry);
     ERROR(8,("db.c: newplayer: truncated offset '%d'\n", offset));
-    if ((offset = lseek(fd, offset, SEEK_SET)) < 0) return -1;
+    if ((offset = lseek(fd, offset, SEEK_SET)) < 0) goto failed_close;
   }
   write(fd, (char *) player, sizeof(struct statentry));
   close(fd);
+  lock_off(LOCK_PLAYER_ADD);
 
   ERROR(8,("db.c: newplayer: sizeof '%d' offset '%d' position '%d'\n", 
-	   sizeof(struct statentry), offset, position));
+           sizeof(struct statentry), offset, position));
 
 #ifdef PLAYER_INDEX
   /* do not create an index entry until the character name is reused,
@@ -262,4 +265,10 @@ int newplayer(struct statentry *player)
 #endif
 
   return position;
+
+failed_close:
+  close(fd);
+failed_unlock:
+  lock_off(LOCK_PLAYER_ADD);
+  return -1;
 }

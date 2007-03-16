@@ -498,7 +498,8 @@ because they have initialisation of variables dependent on UPDATE. */
 #define MAXLOCKS       32       /* number of locks to be allocated        */
 #define LOCK_PICKSLOT   0       /* prevent PFREE to POUTFIT race          */
 #define LOCK_SETGAME    1       /* general purpose setgame tool lock      */
+#define LOCK_PLAYER_ADD 2       /* player database growth file lock       */
 
-#define NLOCKS          2       /* number of locks with a defined purpose */
+#define NLOCKS          3       /* number of locks with a defined purpose */
 
 #endif /* _h_defs */

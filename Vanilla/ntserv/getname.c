@@ -167,9 +167,6 @@ static void handleLogin(void)
 	for (i=0; i<95; i++) {
 	    player.stats.st_keymap[i]=i+32;
 	}
-	/* race condition: Two new players joining at once
-	 * can screw up the database.
-	 */
 	if ((entries = newplayer(&player)) < 0) {
 	  sendClientLogin(NULL);
 	} else {
