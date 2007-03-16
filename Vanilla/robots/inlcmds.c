@@ -85,7 +85,7 @@ struct command_handler_2 inl_commands[] = {
     "Sets regulation/overtime length. Ex: 'GAMETIME 90 30'",
     (void (*)()) do_gametime },			/* GAMETIME */
   { "TRADE",
-    C_PR_CAPTAIN,
+    C_PR_CAPTAIN | C_PR_PREGAME,
     "Trade one/two slots. Ex: 'TRADE a 3', 'TRADE RESET'",
     (void (*)()) do_trade },				/* TRADE */
   { "ARMY",
