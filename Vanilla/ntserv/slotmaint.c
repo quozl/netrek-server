@@ -12,6 +12,7 @@
 #include "struct.h"
 #include "data.h"
 #include "util.h"
+#include "proto.h"
 
 /* 
  *  Free a slot that was allocated with pickslot.

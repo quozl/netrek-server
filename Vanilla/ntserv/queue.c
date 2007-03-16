@@ -6,6 +6,7 @@
 #include "struct.h"
 #include "data.h"
 #include "ip.h"
+#include "proto.h"
 
 /*
  * queue.c:  Wait queue handling routines
@@ -224,14 +225,19 @@ int queue_add(int w_queue)
     /* Ensure that the queue is open */
     if (!(queues[w_queue].q_flags & QU_OPEN)) return -1;
 
-    /* Possible race code */
-    for (i=0; i< MAXWAITING; i++){
-	if (waiting[i].inuse == 0) break;
+    /* race: another ntserv may try to allocate a queue entry at same time */
+    lock_on(LOCK_QUEUE_ADD);
+    for (i=0;i<MAXWAITING;i++){
+        if (waiting[i].inuse == 0) break;
     }
 
-    if (i == MAXWAITING) return -1;
+    if (i == MAXWAITING) {
+        lock_off(LOCK_QUEUE_ADD);
+        return -1;
+    }
 
     waiting[i].inuse = 1;
+    lock_off(LOCK_QUEUE_ADD);
     lwait = &(waiting[i]);
 
     /* If I am the first, do special thing */

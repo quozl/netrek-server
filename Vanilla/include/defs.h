@@ -499,6 +499,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #define LOCK_PICKSLOT   0       /* prevent PFREE to POUTFIT race          */
 #define LOCK_SETGAME    1       /* general purpose setgame tool lock      */
 #define LOCK_PLAYER_ADD 2       /* player database growth file lock       */
+#define LOCK_QUEUE_ADD  3       /* adding an incoming connection to queue */
 
 #define NLOCKS          3       /* number of locks with a defined purpose */
 
