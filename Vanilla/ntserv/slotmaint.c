@@ -61,7 +61,13 @@ static int pickslot_action(int w_queue, int i)
     if (players[i].p_status != PFREE) return 0;
     if (verboten(w_queue, i)) return 0;
 
+    lock_on(LOCK_PICKSLOT);
+    if (players[i].p_status != PFREE) {
+      lock_off(LOCK_PICKSLOT);
+      return 0;
+    }
     players[i].p_status = POUTFIT;      /* possible race code */
+    lock_off(LOCK_PICKSLOT);
 
     /* Set up the player struct now */
     players[i].p_no          = i;

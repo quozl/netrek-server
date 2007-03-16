@@ -163,6 +163,10 @@ int do_check_command(struct message *mess);
 int openmem(int trystart);
 int setupmem(void);
 int removemem(void);
+void lock_show(int lock);
+void lock_off(int lock);
+void lock_on(int lock);
+void lock_on_nowait(int lock);
 
 /* orbit.c */
 void orbit(void);

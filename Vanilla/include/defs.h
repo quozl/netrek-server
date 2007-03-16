@@ -494,4 +494,11 @@ because they have initialisation of variables dependent on UPDATE. */
 /* for t-mode messaging, change this according to political environment */
 #define WARMONGER "George W. Bush"
 
+/* openmem, lock functions */
+#define MAXLOCKS       32       /* number of locks to be allocated        */
+#define LOCK_PICKSLOT   0       /* prevent PFREE to POUTFIT race          */
+#define LOCK_SETGAME    1       /* general purpose setgame tool lock      */
+
+#define NLOCKS          2       /* number of locks with a defined purpose */
+
 #endif /* _h_defs */

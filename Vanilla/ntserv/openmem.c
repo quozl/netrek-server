@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
 #include <errno.h>
 #include <signal.h>
 #include "defs.h"
@@ -132,6 +133,73 @@ static void setup_memory(struct memory *sharedMemory)
     bans = sharedMemory->bans;
 }
 
+static int semid;
+
+static void setupsem()
+{
+  /* create the semaphore set */
+  semid = semget(PKEY, MAXLOCKS, 0600 | IPC_CREAT);
+  if (semid == -1) {
+    perror("setupsem: semget (IPC_CREAT)");
+    semid = semget(PKEY, MAXLOCKS, 0600);
+    if (semid == -1) {
+      perror("setupsem: semget");
+    }
+  }
+
+  /* initialise semaphore to 1 (unlocked) */
+  union semun { int val; struct semid_ds *buf; ushort *array; } semun;
+  semun.val = 1;
+  int i;
+  for (i=0; i<MAXLOCKS; i++) {
+    int stat = semctl(semid, i, SETVAL, semun);
+    if (stat == -1) perror("setupsem: semctl");
+  }
+}
+
+static void opensem()
+{
+  semid = semget(PKEY, MAXLOCKS, 0600);
+  if (semid == -1) {
+    perror("opensem: semget");
+  }
+}
+
+static void removesem()
+{
+  int stat = semctl(semid, 0, IPC_RMID);
+  if (stat == -1) perror("removesem: semctl (IPC_RMID)");
+}
+
+void lock_show(int lock)
+{
+  int stat = semctl(semid, lock, GETVAL);
+  if (stat == -1) perror("lock_show: semctl"); else
+    fprintf(stderr, "lock_show: lock=%d value=%d (%s)\n", lock, stat,
+            stat ? "unlocked" : "LOCKED");
+}
+
+void lock_off(int lock)
+{
+  struct sembuf sb = {lock, 1, SEM_UNDO};
+  int stat = semop(semid, &sb, 1);
+  if (stat == -1) perror("lock_off (post): semop (+1)");
+}
+
+void lock_on(int lock)
+{
+  struct sembuf sb = {lock, -1, SEM_UNDO};
+  int stat = semop(semid, &sb, 1);
+  if (stat == -1) perror("lock_on: semop (-1)");
+}
+
+void lock_on_nowait(int lock)
+{
+  struct sembuf sb = {lock, -1, SEM_UNDO | IPC_NOWAIT};
+  int stat = semop(semid, &sb, 1);
+  if (stat == -1) perror("lock_on_nowait: semop (-1)");
+}
+
 /*ARGSUSED*/
 int openmem(int trystart)
 {
@@ -165,6 +233,7 @@ int openmem(int trystart)
 	exit(1);
     }
     setup_memory(sharedMemory);
+    opensem();
     return 1;
 }
 
@@ -203,11 +272,12 @@ int setupmem(void) {
     MZERO((void *) sharedMemory, sizeof (struct memory));
 
     setup_memory(sharedMemory);
-
+    setupsem();
     return 1;
 }
 
 int removemem(void) {
+  removesem();
   if (shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0) < 0) {
     perror("removemem");
     return 0;

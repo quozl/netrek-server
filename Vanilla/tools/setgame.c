@@ -178,5 +178,34 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
+    if (!strcmp(argv[i], "lock-on")) {
+      lock_on(LOCK_SETGAME);
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "lock-off")) {
+      lock_off(LOCK_SETGAME);
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "lock-show")) {
+      lock_show(LOCK_SETGAME);
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "lock-dump")) {
+      int i;
+      for (i=0; i<NLOCKS; i++) {
+        lock_show(i);
+      }
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "sleep")) {
+      if (++i == argc) return 0;
+      sleep(atoi(argv[i]));
+      goto state_0;
+    }
+
     goto state_0;
 }
