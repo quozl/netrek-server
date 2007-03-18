@@ -143,7 +143,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
         p_x_y_go(me,
                  starting_planet->pl_x + (random() % 10000) - 5000,
                  starting_planet->pl_y + (random() % 10000) - 5000);
-        me->p_dir = me->p_desdir = face_enemy();
+        /* Keep the old heading 0 mode in INL games */
+        me->p_dir = me->p_desdir = (inl_mode ? 0 : face_enemy());
     }
     p_x_y_unbox(me);
     me->p_ntorp = 0;
