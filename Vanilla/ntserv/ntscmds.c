@@ -1143,7 +1143,7 @@ void do_admin(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "admin: player %s forced to quit.", two);
   } else if (!strcmp(one, "kill")) {
     if (them == NULL) return;
-    sprintf(command, "%s/admin/kill %s %c", LIBDIR, p->p_full_hostname, them->p_mapchars[1]);
+    sprintf(command, "%s/tools/admin/kill %s %c", LIBDIR, p->p_full_hostname, them->p_mapchars[1]);
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s killed.", two);
   } else if (!strcmp(one, "free")) {
