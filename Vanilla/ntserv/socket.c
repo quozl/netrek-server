@@ -1471,14 +1471,14 @@ static void handleMessageReq(struct mesg_cpacket *packet)
     time_t thistime;
     int group=0;
 
+    if (mute
 #ifdef OBSERVERS
-    if (me->p_status == POBSERV) {
-	if (mute || observer_muting) {
-	    new_warning(86,"Be quiet");
-	    return;
-	}
-    }
+        || observer_muting
 #endif
+        ) {
+        new_warning(86, "Be quiet");
+        return;
+    }
 
     /* Some random code to make sure the player doesn't get carried away 
      *  about the number of messages he sends.  After all, he could try to 
