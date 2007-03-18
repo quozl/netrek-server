@@ -10,7 +10,7 @@ libtoolize --copy
 autoconf
 cd res-rsa && autoconf && cd ..
 chmod +x tools/mktrekon
-chmod +x tools/admin/*
+cd tools/admin && chmod +x `grep ^EXECS Makefile.in | cut -d '=' -f 2` && cd ../..
 chmod +x debian/rules debian/postinst debian/postrm
 chmod +x debian/netrek-server-vanilla.init
 chmod +x tests/build
