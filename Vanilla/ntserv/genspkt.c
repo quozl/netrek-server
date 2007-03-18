@@ -1452,7 +1452,7 @@ updatePhasers(void)
 	    pl->p_x < me->p_x - SCALE*WINSIDE/2 ||
 	    pl->p_y < me->p_y - SCALE*WINSIDE/2)
 #ifdef OBSERVERS
-	    && (!F_full_weapon_resolution && me->p_status != POBSERV)
+	    && ((F_full_weapon_resolution && me->p_status == POBSERV) ? 0: 1)
 #endif
 	) {
 	    sndPhaser(ph, phs, phase, i, UPDT_LITTLE);
