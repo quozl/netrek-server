@@ -48,7 +48,7 @@ DISTORTION=10
 #	clients.  Was 10 from 1986, was 50 from 2007)
 FPS=50
 #
-#	Mininum client update rate per second
+#	Minimum client update rate per second
 MINUPS=1
 #
 #	Maximum client update rate per second
