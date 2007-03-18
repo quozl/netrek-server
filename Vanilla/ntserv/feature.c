@@ -55,6 +55,7 @@ struct feature_var feature_vars[] = {
    { "SHOW_ALL_TRACTORS",	&F_show_all_tractors},
    { "SP_GENERIC_32",		&F_sp_generic_32},
    { "FULL_DIRECTION_RESOLUTION",	&F_full_direction_resolution},
+   { "FULL_WEAPON_RESOLUTION",	&F_full_weapon_resolution},
    { NULL, NULL },
 };
 

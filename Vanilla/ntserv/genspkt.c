@@ -1358,8 +1358,13 @@ updateTorps(void)
 
 	/*
 	 * If it's my torp, send info on it regardless of position;
-	 * my client needs the info to accurately display number of torps. */
-	if (myTorp(t)) {
+	 * my client needs the info to accurately display number of torps.
+	 * Also allow observer support to show all torps */
+	if (myTorp(t)
+#ifdef OBSERVERS
+	    || (F_full_weapon_resolution && me->p_status == POBSERV)
+#endif
+	) {
 	    sndTorp(tpi, tp, t, i, UPDT_ALL);
 	    continue;
 	}
@@ -1395,8 +1400,13 @@ updatePlasmas(void)
 	 t<=lastPlasma; i++, t++, tpi++, tp++) {
 	/*
 	 * If it's my torp, send info on it regardless of position;
-	 * my client needs the info to accurately display number of torps. */
-	if (myTorp(t)) {
+	 * my client needs the info to accurately display number of torps.
+	 * Also allow observer support to show all torps */
+	if (myTorp(t)
+#ifdef OBSERVERS
+	    || (F_full_weapon_resolution && me->p_status == POBSERV)
+#endif
+        ) {
 	    sndPlasma(tpi, tp, t, i, UPDT_ALL);
 	    continue;
 	}
@@ -1437,10 +1447,14 @@ updatePhasers(void)
     for (i = 0, ph = clientPhasers,phs = client_s_Phasers,
 	     phase = phasers, pl = players; 
 	 i < MAXPLAYER; i++, ph++, phs++, phase++, pl++) { 
-	if (pl->p_y > me->p_y + SCALE*WINSIDE/2 ||
+	if ((pl->p_y > me->p_y + SCALE*WINSIDE/2 ||
 	    pl->p_x > me->p_x + SCALE*WINSIDE/2 ||
 	    pl->p_x < me->p_x - SCALE*WINSIDE/2 ||
-	    pl->p_y < me->p_y - SCALE*WINSIDE/2) {
+	    pl->p_y < me->p_y - SCALE*WINSIDE/2)
+#ifdef OBSERVERS
+	    && (!F_full_weapon_resolution && me->p_status != POBSERV)
+#endif
+	) {
 	    sndPhaser(ph, phs, phase, i, UPDT_LITTLE);
 	} else {
 	    if (phase->ph_status==PHHIT) {

@@ -346,6 +346,7 @@ extern int F_19flags;
 extern int F_show_all_tractors;
 extern int F_sp_generic_32;
 extern int F_full_direction_resolution;
+extern int F_full_weapon_resolution;
 
 extern char Cambot[FNAMESIZE];
 extern char Cambot_out[FNAMESIZE];

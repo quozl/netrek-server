@@ -640,7 +640,10 @@ void updateClient(void)
 	updateSelf(FALSE);
 	updatePhasers();
 	updateShips();
-	SupdateTorps();
+	if (F_full_weapon_resolution)
+	    updateTorps();
+	else
+	    SupdateTorps();
 	updatePlanets();
 	updateMessages();
 	/* EXPERIMENT:  Don't inflate large packet with non-crucial stuff  S_P2 */

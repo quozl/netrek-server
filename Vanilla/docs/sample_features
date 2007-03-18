@@ -67,6 +67,9 @@ SHIP_CAP              S       ON
 SP_GENERIC_32         S       ON
 # use SP_PLAYER w/ short packets
 FULL_DIRECTION_RESOLUTION     S       ON
+# Show self torps beyond tactical, and show all weapons
+# for observers
+FULL_WEAPON_RESOLUTION        S       ON
 # Show tractors and pressors for all players' ships.  Regardless of the
 # setting here, this will be turned on for observers.
 SHOW_ALL_TRACTORS     S       OFF
