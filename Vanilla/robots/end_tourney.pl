@@ -37,21 +37,36 @@ $statboys = "statboys\@csua.berkeley.edu";
 $mailprog = "/usr/lib/sendmail";
 $tickspersec = 10;
 
+# Enter your local time zone here, standard time
+$tz = "EST";
+# Enter your local time zone here, daylight savings time (if applicable)
+$tzdst = "EDT";
+
+# Edit this to point to a valid key.html key file
+$keyloc = "http://stats.psychosis.net/key.html";
+
 # Uncomment this if you want pwstats to be automatically dropped in a
 # directory.  This should be a FULL UNIX DIRECTORY PATHNAME, without
 # a trailing slash.
+# This is for keeping a local stats archive in addition to the stats
+# that auto-archive.pl sends to http://www.netrek.org/stats/.
 #
-#$dropdir = "/ls/home/tom/public_html/results";
+#$dropdir = "/home/karthik/public_html/clue";
 #
 # Uncomment this if $dropdir is defined and stats should be dumped
 # into subdirectories within $dropdir.
 #
-#$dropsub = 1;
+$dropsub = 1;
 #
 # Uncomment this to use a more readable form for dropdir entries.
 #
-#$newdrop = 1;
+$newdrop = 1;
+
 #
+
+if ($keyloc) {
+    $key = "<font size=+1><a href=$keyloc>(View Key)</a></font>";
+}
 
 foreach $argument ( @ARGV ) {
     if ( $argument eq "-register" ) {
@@ -66,12 +81,35 @@ if ( $id ) {
     $logfile = "INL_log." . $id;
     $outputfile = "pwstats." . $id . ".html";
     $cambotfile = "cambot.pkt." . $id;
+    $endtime = $id;
 } else { 
     $inputfile = "ltd_dump.txt";
     $logfile = "INL_log";
     $outputfile = "pwstats.html";
     $cambotfile = "cambot.pkt";
+    $endtime = time;
 }
+
+@months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+@weekdays = qw(Sun Mon Tue Wed Thu Fri Sat Sun);
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($endtime);
+if ($hour < 12) {
+    $ampm = "AM";
+} else {
+    $hour = $hour - 12;
+    $ampm = "PM";
+}
+if ($hour == 0) {
+    $hour = 12;
+}
+if ($min < 10) {
+    $min = "0${min}";
+}
+if ($isdst) {
+    $tz = $tzdst;
+}
+$endtimestr = "<b>$weekdays[$wday] $months[$mon] $mday ". ($year + 1900) .
+    "</b> at <b>$hour:$min $ampm $tz</b>";
 
 system("./tools/ltd_dump `./tools/getpath --localstatedir`/players." . $id . " > $inputfile");
 
@@ -85,6 +123,7 @@ select(STDOUT); $| = 1;
 
 $homecurrentplanets=10;
 $awaycurrentplanets=10;
+$neuts=0;
 
 &parselog;
 &parsestats;
@@ -105,7 +144,6 @@ if ( $dropdir ) {
     if ( -d $dropdir ) {
 	if ( $dropsub ) {
 	    if ($newdrop) {
-	    	$neuts = 20 - $homecurrentplanets - $awaycurrentplanets;
 		if ($neuts == 0) {
     	    	    $dirpath = "$dropdir/$hometeam -vs- $awayteam ($homecurrentplanets-$awaycurrentplanets)";
     	    	} else {
@@ -124,6 +162,7 @@ if ( $dropdir ) {
 	    umask 022;
 	    system("mkdir \"$dirpath\"");
 	    system("cp $outputfile \"$dirpath/pwstats.html\"");
+	    system("ln -s \"$dirpath/pwstats.html\" \"$dirpath/index.html\"");
 	    system("gzip -9c $logfile > \"$dirpath/INL_log.gz\"");
 	    system("gzip -9c $inputfile > \"$dirpath/ltd_dump.txt.gz\"");
 	    if ( -f $cambotfile ) {
@@ -170,8 +209,9 @@ sub computescore {
 	    $awaycurrentplanets += $tpt;
 	    $homecurrentplanets -= $tpd;
 	}
+	$neuts = 20 - $homecurrentplanets - $awaycurrentplanets;
 	if ( $debug > 1 ) {
-	    print "Score: $homescore, $awayscore\n";
+	    print "Score: $homescore, $awayscore, $neuts\n";
 	}
     }
 
@@ -296,28 +336,17 @@ close INPUT;
 sub printstdout {
     # Prints a plain text summary of stats so the server can pipe it to
     # stdout on the clients
+    # This is deprecated due to most clients being run without visible stdout
 
 format STDOUT =
 @<<<<<<<<<<<<<<< @>>> @>>> @>>> @>>> @>>> @>>>
 $name, $tpt, $tpd, $tab, $tek, $def, $acc
 .
 
-    $winner = 0;
-
-    if ( $awayscore > $homescore ) {
-	if ( $awayscore - $homescore > 2 ) {
-	    print "FINAL SCORE: $awayteam defeats $hometeam, ${awayscore}-$homescore\n\n";
-	    $winner = 1;
-	}
+    if ($neuts) {
+        print "FINAL SCORE: $hometeam -vs- $awayteam, ${homecurrentplanets}-${awaycurrentplanets}-${neuts}\n\n";
     } else {
-	if ( $homescore - $awayscore > 2 ) {
-	    print "FINAL SCORE: $hometeam defeats $awayteam, ${homescore}-$awayscore\n\n";
-	    $winner = 1;
-	}
-    }
-
-    if ( ! $winner ) {
-	print "FINAL SCORE: $hometeam draws $awayteam, ${homescore}-$awayscore\n\n"; 
+        print "FINAL SCORE: $hometeam -vs- $awayteam, ${homecurrentplanets}-${awaycurrentplanets}\n\n";
     }
 
     print "\nPLAYER STATS for $hometeam\n";
@@ -370,35 +399,37 @@ sub printstats {
     # After the log has been wholly parsed, get the information
     # (mostly from the %stat hash) and print it.
 
+if ($neuts) {
+    $planetscore = "${homecurrentplanets}-${awaycurrentplanets}-${neuts}";
+} else {
+    $planetscore = "${homecurrentplanets}-${awaycurrentplanets}";
+}
 print OUTPUT  <<END;
 <BODY BGCOLOR="#FFFFFF" TEXT="#111100" LINK="#112299" ALINK="AA0000"
 VLINK="#BB7711">
 
-<title>PWstats: $awayteam ($awayrace) at $hometeam ($homerace)</title>
+<title>PWStats: $hometeam ($homerace) -vs- $awaytem ($awayrace)</title>
 
 <center>
-<h2>PWstats: $awayteam ($awayrace) at $hometeam ($homerace)</h2>
-
-<table>
-<tr><th valign=center rowspan=2><font size=+3>FINAL SCORE: 
-END
-
-if ( $awayscore > $homescore ) {
-    print OUTPUT  <<END;
-<td><font size=+2>$awayteam ($awayrace) ${th}<font size=+2>$awayscore
-<tr><td><font size=+2>$hometeam ($homerace) ${th}<font size=+2>$homescore
+<font size=+1>Game Ended: $endtimestr</font>
+<br><br>
+<table border cellpadding=2>
+<tr>${th}<font size=+2>Home Team</font></th>${th}<font size=+2>Away Team</font></th></tr>
+<tr><td><font size=+1><b>$hometeam</b></font> <font color=#444444 size=+1>($homerace)</font></td><td><font size=+1><b>$awayteam</b></font> <font color=#444444 size=+1>($awayrace)</font></td></tr>
 </table>
-</center>
+<br>
+    <table><tr><th><font size=+3>FINAL SCORE:&nbsp;</font></th>$th<font size=+3>$planetscore</font></th></tr></table>
+<table><tr><td>Scoring Mode: <b>Planet Count</b> (11-8-1 or 8-11-1 required for victory)</td></tr></table>
 END
 
+if ($homecurrentplanets <= 8) {
+    print OUTPUT "<h2>$awayteam (Away) <u>-defeats-</u> $hometeam (Home)!</h2>";
+} elsif ($awaycurrentplanets <= 8) {
+    print OUTPUT "<h2>$hometeam (Home) <u>-defeats-</u> $awayteam (Away)!</h2>";
 } else {
-    print OUTPUT  <<END;
-<td><font size=+2>$hometeam ($homerace) ${th}<font size=+2>$homescore
-<tr><td><font size=+2>$awayteam ($awayrace) ${th}<font size=+2>$awayscore
-</table>
-</center>
-END
+    print OUTPUT "<h2>$hometeam (Home) <u>-ties-</u> $awayteam (Away).</h2>";
 }
+print OUTPUT "</center>";
 
 # Change all undef values to 0's for printing
 
@@ -427,13 +458,17 @@ $count=1;
 
 print OUTPUT  <<END;
 
-<h3>Player Stats</h3>
+<p>
+<font size=+1>Download:</font> <a href=ltd_dump.txt.gz>LTD Stats</a>&nbsp;|&nbsp;
+<a href=INL_log.gz>INL Log</a>&nbsp;|&nbsp;<a href=cambot.pkt.gz>Game Recording (Cambot)</a>
+<p>
+<font size=+2>Player Stats</font> $key
 
 <h4>Home Team</h4>
 
 <table border cellpadding=4>
     <tr>${th}Name${th}Minutes${th}tpd${th}tpt${th}tpb${th}tab
-    ${th}tad/tac/%ad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
+    ${th}tad/tac/pad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
 
 <tr>
 
@@ -497,7 +532,7 @@ ${th}$home{acc}
 
 <table border cellpadding=4>
     <tr>${th}Name${th}Minutes${th}tpd${th}tpt${th}tpb${th}tab
-    ${th}tad/tac/%ad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
+    ${th}tad/tac/pad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
 
 END
 
@@ -565,7 +600,7 @@ print OUTPUT  <<END;
 
 <table border cellpadding=4>
     <tr>${th}Name${th}Minutes${th}tpd${th}tpt${th}tpb${th}tab
-    ${th}tad/tac/%ad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
+    ${th}tad/tac/pad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
 
 <tr>
 END
@@ -582,7 +617,7 @@ print OUTPUT <<END;
 
 <table border cellpadding=4>
     <tr>${th}Name${th}Min ${th}tpd${th}tpt${th}tpb${th}tab
-    ${th}tad/tac/%ad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
+    ${th}tad/tac/pad${th}cak${th}eao${th}eck${th}pck${th}tek${th}def${th}acc
 
 END
 
@@ -597,7 +632,7 @@ print OUTPUT <<END;
 
 <h3>Starbase Stats</h3>
 <table border cellpadding=4>
-    <tr>${th}Name ${th}Min ${th}tek ${th}def ${th}tad/tac/%ad ${th}cak
+    <tr>${th}Name ${th}Min ${th}tek ${th}def ${th}tad/tac/pad ${th}cak
 END
 
     foreach $player (sort keys %stat) {
