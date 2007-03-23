@@ -50,8 +50,8 @@ union semun {
 time distortion value, only valid outside pause (since context->frame
 must be incremented), base rate is in ticks and not frames */
 #define fuse(X) ((context->frame % (X*fps/distortion)) == 0)
-#define seconds_to_frames(X) (X*fps)
-#define frames_to_seconds(X) (X/fps)
+#define seconds_to_frames(X) ((X)*fps)
+#define frames_to_seconds(X) ((X)/fps)
 #define TOURNEXTENSION 15       /* Tmode gone for 15 seconds 8/26/91 TC */
 #define NotTmode (!(status->tourn) && (frames_to_seconds(context->frame - context->frame_tourn_end) > TOURNEXTENSION))
 
