@@ -781,6 +781,7 @@ void sendClientPacket(void *void_packet)
         case SP_PING:
 #endif
 	case SP_UDP_REPLY:	/* only reply when COMM_UDP is SWITCH_VERIFY */
+	case SP_GENERIC_32:
 	    /* these are non-critical updates; send them via UDP */
 	    V_UDPDIAG(("Sending type %d\n", (int)packet->type));
 	    size=sizes[(int)packet->type];
