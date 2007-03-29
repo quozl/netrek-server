@@ -130,6 +130,7 @@ extern int	dead_warp;
 extern int	surrenderStart;
 extern int	sbplanets;
 extern int	sborbit;
+extern int	restrict_3rd_drop;
 extern int	restrict_bomb;
 extern int	no_unwarring_bombing;
 

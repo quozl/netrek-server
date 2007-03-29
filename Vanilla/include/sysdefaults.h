@@ -210,6 +210,8 @@ struct sysdef_keywords {
     "Default client updates per second" },
   { "MINUPS",		SYSDEF_INT,	&maxups,
     "Minimum client updates per second" },
+  { "RESTRICT_3RD_DROP",	SYSDEF_INT,	&restrict_3rd_drop,
+    "No 3rd space dropping"				},
   { "RESTRICT_BOMB",	SYSDEF_INT,	&restrict_bomb,
     "No bombing out of t-mode"				},
   { "NO_UNWARRING_BOMBING",	SYSDEF_INT,	&no_unwarring_bombing,
@@ -284,5 +286,6 @@ BLOGGING
 FPS
 SBORBIT
 OBSERVER_KEEPS_GAME_ALIVE
+RESTRICT_3RD_DROP
 
 */

@@ -183,6 +183,9 @@ PINGPONG_PLASMA=0
 #  Maximum number of Starbases allowed in Chaos mode
 MAX_CHAOS_BASES=2
 #
+#  Disallow dropping on 3rd space planets (1 = no dropping)
+RESTRICT_3RD_DROP=0
+#
 #  Disallow bombing out of t-mode (1 = no bombing)
 RESTRICT_BOMB=1
 #

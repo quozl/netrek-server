@@ -79,6 +79,7 @@ int	dead_warp=0;		/* use warp 14 for death detection */
 int	surrenderStart=1;	/* # of planets to start surrender counter */
 int	sbplanets=5;		/* # of planets to get a base */
 int	sborbit=0;		/* Disallow bases to orbit enemy planets */
+int	restrict_3rd_drop=0;	/* Disallow dropping on 3rd space planets */
 int	restrict_bomb=1;        /* Disallow bombing outside of T-Mode */
 int	no_unwarring_bombing=1; /* No 3rd space bombing */
 

@@ -178,15 +178,13 @@ void beam_down(void)
         return;
     }
 
-#ifdef PRETSERVER
-    if(pre_t_mode && me->p_flags & PFORBIT) {
+    if(restrict_3rd_drop && me->p_flags & PFORBIT) {
         owner = planets[me->p_planet].pl_owner;
-        if(bot_in_game && realNumShips(owner) == 0 && owner != NOBODY) {
-            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets. Sorry Bill.");
+        if(realNumShips(owner) == 0 && owner != NOBODY) {
+            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets.");
             return;
         }
     }
-#endif
 
     if (me->p_flags & PFDOCK) {
         if (me->p_team != players[me->p_dock_with].p_team) {
