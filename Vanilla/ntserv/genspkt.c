@@ -339,7 +339,8 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 	mask = INVISOMASK;
 
     masked = htonl(pl->p_flags & mask);
-    if (flags->flags == masked && flags->tractor == tractor)
+    if (flags->flags == masked && flags->tractor == tractor
+	&& !F_full_direction_resolution)
         /* Nothing has changed, don't send a packet */
         return FALSE;
 
@@ -1245,12 +1246,10 @@ updateShips(void)
 		}
 		/* Mark shield and cloak as updated, so they won't be resent
 		   again with a flags packet. */
-		if (!F_full_direction_resolution) {
-		    oldflags = ntohl(flags->flags);
-		    oldflags &= ~(PFSHIELD|PFCLOAK);
-		    oldflags |= pl->p_flags&(PFSHIELD|PFCLOAK);
-		    flags->flags = htonl(oldflags);
-		}
+		oldflags = ntohl(flags->flags);
+		oldflags &= ~(PFSHIELD|PFCLOAK);
+		oldflags |= pl->p_flags&(PFSHIELD|PFCLOAK);
+		flags->flags = htonl(oldflags);
 #ifdef OBSERVERS
 	    }
 #endif
