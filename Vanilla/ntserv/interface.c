@@ -180,7 +180,9 @@ void beam_down(void)
 
     if(restrict_3rd_drop && me->p_flags & PFORBIT) {
         owner = planets[me->p_planet].pl_owner;
-        if(realNumShips(owner) == 0 && owner != NOBODY) {
+        if(realNumShips(owner) == 0 && owner != NOBODY
+          && !(me->p_team & planets[me->p_planet].pl_flags)
+          && !(team_opposing(me->p_team) & planets[me->p_planet].pl_flags)) {
             new_warning(UNDEF,"You may not drop on 3rd and 4th space planets. Sorry Bill.");
             return;
         }
