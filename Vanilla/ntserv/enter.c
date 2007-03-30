@@ -48,6 +48,9 @@ static u_char face_enemy(void)
     struct planet *planet_other;
     u_char dir;
 
+    /* in INL games keep classic behaviour */
+    if (inl_mode) return 0;
+
     /* determine the team that is the enemy */
     team_other = team_opposing(me->p_team);
     if (team_other == NOBODY) {
@@ -143,8 +146,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
         p_x_y_go(me,
                  starting_planet->pl_x + (random() % 10000) - 5000,
                  starting_planet->pl_y + (random() % 10000) - 5000);
-        /* Keep the old heading 0 mode in INL games */
-        me->p_dir = me->p_desdir = (inl_mode ? 0 : face_enemy());
+        me->p_dir = me->p_desdir = face_enemy();
     }
     p_x_y_unbox(me);
     me->p_ntorp = 0;

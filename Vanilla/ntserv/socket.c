@@ -1473,7 +1473,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 
     if (mute
 #ifdef OBSERVERS
-        || observer_muting
+        || (observer_muting && (me->p_status == POBSERV))
 #endif
         ) {
         new_warning(86, "Be quiet");
