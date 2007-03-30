@@ -1357,8 +1357,8 @@ updateTorps(void)
 
 	/*
 	 * If it's my torp, send info on it regardless of position;
-	 * my client needs the info to accurately display number of torps.
-	 * Also allow observer support to show all torps */
+	 * helps clients to display number of torps in flight, and allows
+	 * observers to show all torps */
 	if (myTorp(t)
 #ifdef OBSERVERS
 	    || (F_full_weapon_resolution && me->p_status == POBSERV)
@@ -1397,10 +1397,6 @@ updatePlasmas(void)
 
     for (i=0, t=firstPlasma, tpi=clientPlasmasInfo, tp=clientPlasmas; 
 	 t<=lastPlasma; i++, t++, tpi++, tp++) {
-	/*
-	 * If it's my torp, send info on it regardless of position;
-	 * my client needs the info to accurately display number of torps.
-	 * Also allow observer support to show all torps */
 	if (myTorp(t)
 #ifdef OBSERVERS
 	    || (F_full_weapon_resolution && me->p_status == POBSERV)
@@ -1447,9 +1443,9 @@ updatePhasers(void)
 	     phase = phasers, pl = players; 
 	 i < MAXPLAYER; i++, ph++, phs++, phase++, pl++) { 
 	if ((pl->p_y > me->p_y + SCALE*WINSIDE/2 ||
-	    pl->p_x > me->p_x + SCALE*WINSIDE/2 ||
-	    pl->p_x < me->p_x - SCALE*WINSIDE/2 ||
-	    pl->p_y < me->p_y - SCALE*WINSIDE/2)
+	     pl->p_x > me->p_x + SCALE*WINSIDE/2 ||
+	     pl->p_x < me->p_x - SCALE*WINSIDE/2 ||
+	     pl->p_y < me->p_y - SCALE*WINSIDE/2)
 #ifdef OBSERVERS
 	    && ((F_full_weapon_resolution && me->p_status == POBSERV) ? 0: 1)
 #endif

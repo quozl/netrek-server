@@ -181,7 +181,7 @@ void beam_down(void)
     if(restrict_3rd_drop && me->p_flags & PFORBIT) {
         owner = planets[me->p_planet].pl_owner;
         if(realNumShips(owner) == 0 && owner != NOBODY) {
-            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets.");
+            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets. Sorry Bill.");
             return;
         }
     }
