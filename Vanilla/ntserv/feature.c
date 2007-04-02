@@ -53,6 +53,7 @@ struct feature_var feature_vars[] = {
    { "SHIP_CAP",		&F_ship_cap},
    { "DEAD_WARP",		&dead_warp },
    { "SHOW_ALL_TRACTORS",	&F_show_all_tractors},
+   { "SHOW_ARMY_COUNT",		&F_show_army_count},
    { "SP_GENERIC_32",		&F_sp_generic_32},
    { "FULL_DIRECTION_RESOLUTION",	&F_full_direction_resolution},
    { "FULL_WEAPON_RESOLUTION",	&F_full_weapon_resolution},

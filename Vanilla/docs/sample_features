@@ -72,6 +72,8 @@ FULL_WEAPON_RESOLUTION        S       ON
 # Show tractors and pressors for all players' ships.  Regardless of the
 # setting here, this will be turned on for observers.
 SHOW_ALL_TRACTORS     S       OFF
+# army counts next to planets
+SHOW_ARMY_COUNT       S       ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.

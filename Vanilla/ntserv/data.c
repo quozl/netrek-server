@@ -414,6 +414,7 @@ int F_full_direction_resolution = 0;	/* Use SP_PLAYER instead of
 					 * SP_S_PLAYER */
 int F_full_weapon_resolution = 0;	/* Send certain weapons data
 					 * beyond tactical range */
+int F_show_army_count = 0;		/* army count by planet */
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 #ifdef OBSERVERS
