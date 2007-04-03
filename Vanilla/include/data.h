@@ -350,6 +350,7 @@ extern int F_full_direction_resolution;
 extern int F_full_weapon_resolution;
 extern int F_show_army_count;
 extern int F_show_other_speed;
+extern int F_show_cloakers;
 
 extern char Cambot[FNAMESIZE];
 extern char Cambot_out[FNAMESIZE];

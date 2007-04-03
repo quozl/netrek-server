@@ -416,6 +416,7 @@ int F_full_weapon_resolution = 0;	/* Send certain weapons data
 					 * beyond tactical range */
 int F_show_army_count = 0;		/* army count by planet */
 int F_show_other_speed = 0;		/* show other player's speed */
+int F_show_cloakers = 0;		/* show other cloakers on tactical */
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 #ifdef OBSERVERS

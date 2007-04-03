@@ -76,6 +76,8 @@ SHOW_ALL_TRACTORS     S       OFF
 SHOW_ARMY_COUNT       S       ON
 # show other player's speed
 SHOW_OTHER_SPEED      S       OFF
+# show other cloakers on tactical map
+SHOW_CLOAKERS         S       OFF
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
