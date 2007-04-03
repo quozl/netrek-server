@@ -198,7 +198,7 @@ dist:
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
 	cp -p debian/README.Debian debian/changelog debian/control \
-	debian/copyright debian/init debian/postinst debian/rules \
+	debian/copyright debian/*.init debian/postinst debian/rules \
 	$(NAME)/debian
         # packaging subdirectories (rpm)
 	cp -rp rpm $(NAME)/
