@@ -74,6 +74,8 @@ FULL_WEAPON_RESOLUTION        S       ON
 SHOW_ALL_TRACTORS     S       OFF
 # army counts next to planets
 SHOW_ARMY_COUNT       S       ON
+# show other player's speed
+SHOW_OTHER_SPEED      S       OFF
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
