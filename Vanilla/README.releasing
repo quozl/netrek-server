@@ -46,10 +46,6 @@ tests/build
 # tag the release
 darcs tag $VS
 
-# temporary: propogate changes to CVS and tag in CVS
-cvs tag -F $VL
-cvs tag -F v_release
-
 # build the distribution file from pristine darcs sources
 cd /tmp
 rm -rf release

@@ -200,6 +200,7 @@ dist:
 	cp -p debian/README.Debian debian/changelog debian/control \
 	debian/copyright debian/*.init debian/postinst debian/rules \
 	$(NAME)/debian
+	cp -pr debian/po $(NAME)/debian
         # packaging subdirectories (rpm)
 	cp -rp rpm $(NAME)/
         # strip out surplus
