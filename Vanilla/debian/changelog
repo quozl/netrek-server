@@ -1,3 +1,9 @@
+netrek-server-vanilla (2.13.0-0) unstable; urgency=low
+
+  * release
+
+ -- James Cameron <quozl@us.netrek.org>  Tue,  3 Apr 2007 18:23:49 +1000
+
 netrek-server-vanilla (2.12.1-0) unstable; urgency=low
 
   * fix message format string vulnerability

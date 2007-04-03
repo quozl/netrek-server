@@ -1,3 +1,64 @@
+2.13.0: released 2007-04-03
+
+summary
+- core change from 10 to 50 frames per second
+- refinements made as a result of clue games
+- increase in weapon and ship direction information given to clients
+- fix transwarp at one update per second bug
+- fix several race conditions
+
+clue game support
+- updates and fixes for pwstats [arumugham]
+- add TRADE command [arumugham]
+- fix admin commands [arumugham]
+- add INL guest motd [arumugham]
+
+messaging
+- allow muting of any slot, not just observers [arumugham]
+- allow excessive messaging from captains [arumugham]
+- fix mute for unresolved IP addresses [balcerski]
+
+game design
+- fix spelling of Cassiopeia as pointed out by pog [arumugham]
+- fix transwarp at one update per second bug [cameron]
+- option to restrict dropping on unrepresented third space [balcerski]
+- ships enter facing enemy team [balcerski]
+- option to allow bases to orbit enemy planets [balcerski]
+- practice robot torps made safe for other practice robots [cameron]
+
+core
+- change from 10 to 50 simulation frames per second [cameron, north, et al]
+- fix race condition on slot allocation [cameron]
+- fix race condition on queue entry allocation [cameron]
+- fix race condition on player database growth [cameron]
+- add option to terminate game if only observers present [cameron]
+- fix restart feature [cameron]
+
+infrastructure
+- generic lock implementation using semaphores [cameron]
+- add setship test script support program [cameron]
+- add orbit entry, orbit path, ship and torp flight test scripts [cameron]
+- add simulation single-step feature in setgame test program [cameron]
+
+client protocol changes
+- FULL_DIRECTION_RESOLUTION [balcerski]
+- FULL_WEAPON_RESOLUTION [balcerski]
+- GENERIC_32 [cameron, balcerski]
+- reverse host name checking against DNS [arumugham]
+- ip address checking against block lists [arumugham]
+- FPS [cameron]
+- UPS [cameron]
+
+metaserver protocol changes
+- report correct player count [arumugham]
+
+packaging
+- debian build test scripts [cameron]
+- debian build fixes [tanner]
+- remove files before running libtoolize [thorne]
+- fix maintainer-clean target [arumugham]
+- MAC OS X compile fix [arumugham]
+
 2.12.1: released 2007-03-02
 
 - fixes format string security vulnerability when EVENTLOG=1
