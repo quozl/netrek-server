@@ -1136,6 +1136,7 @@ static int doRead(int asock)
 
 		*bufptr==CP_SOCKET || *bufptr==CP_BYE) {
 		if (me && me->p_flags & PFSELFDEST
+		    && *bufptr != CP_PLANET
 #ifdef PING /* don't let it undo self destruct */
 		    && *bufptr != CP_PING_RESPONSE
 #endif
