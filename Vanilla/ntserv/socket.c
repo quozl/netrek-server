@@ -1331,7 +1331,9 @@ static void handlePlanReq(struct planet_cpacket *packet)
         if ( plan->pl_info != packet->info
              || plan->pl_armies != ntohl(packet->armies)
              || plan->pl_owner != packet->owner
-             || plan->pl_flags != (int) ntohs(packet->flags)) {
+             || (plan->pl_flags & PLFLAGMASK) !=
+                (int) (ntohs(packet->flags) & PLFLAGMASK)) {
+            pl = calloc(1, sizeof(struct planet_spacket));
             pl->type=SP_PLANET;
             pl->pnum=plan->pl_no;
             pl->info=plan->pl_info;
@@ -1339,6 +1341,7 @@ static void handlePlanReq(struct planet_cpacket *packet)
             pl->armies=htonl(plan->pl_armies);
             pl->owner=plan->pl_owner;
             sendClientPacket(pl);
+            free(pl);
             context->cp_planet_miss++;
         } else {
             context->cp_planet_hits++;
