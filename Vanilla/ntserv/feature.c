@@ -59,6 +59,7 @@ struct feature_var feature_vars[] = {
    { "SP_GENERIC_32",		&F_sp_generic_32},
    { "FULL_DIRECTION_RESOLUTION",	&F_full_direction_resolution},
    { "FULL_WEAPON_RESOLUTION",	&F_full_weapon_resolution},
+   { "CHECK_PLANETS",		&F_check_planets},
    { NULL, NULL },
 };
 

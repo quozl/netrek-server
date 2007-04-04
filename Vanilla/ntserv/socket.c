@@ -83,6 +83,7 @@ static void handleOutfit(struct outfit_cpacket *packet);
 static void handleLoginReq(struct login_cpacket *packet);
 static void handlePlasmaReq(struct plasma_cpacket *packet);
 static void handleWarReq(struct war_cpacket *packet);
+static void handlePlanReq(struct planet_cpacket *packet);
 static void handlePlanlockReq(struct planlock_cpacket *packet);
 static void handlePlaylockReq(struct playlock_cpacket *packet);
 static void handleDetMReq(struct det_mytorp_cpacket *packet);
@@ -188,7 +189,7 @@ struct packet_handler handlers[] = {
 #else
     { 0, NULL },					   /* 37 */
 #endif
-    { 0, NULL },					   /* 38 */
+    { sizeof(struct planet_cpacket), handlePlanReq },	   /* CP_PLANET */
     { 0, NULL },					   /* 39 */
     { 0, NULL },					   /* 40 */
     { 0, NULL },					   /* 41 */
@@ -1313,6 +1314,33 @@ static void handlePlasmaReq(struct plasma_cpacket *packet)
 static void handleWarReq(struct war_cpacket *packet)
 {
     declare_war(packet->newmask, 1);
+}
+
+static void handlePlanReq(struct planet_cpacket *packet)
+{
+#define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP|PLCORE)
+
+    struct planet *l;
+    struct planet_spacket *pl;
+
+    if (!F_check_planets) return;
+    if (packet->pnum < 0 || packet->pnum > MAXPLANETS) return;
+
+    l = &planets[packet->pnum];
+
+    if (l->pl_info & me->p_team) {
+        if ( l->pl_info != packet->info
+             || l->pl_armies != packet->armies
+             || l->pl_owner != packet->owner ) {
+            pl->type=SP_PLANET;
+            pl->pnum=l->pl_no;
+            pl->info=l->pl_info;
+            pl->flags=htons((short) (l->pl_flags & PLFLAGMASK));
+            pl->armies=htonl(l->pl_armies);
+            pl->owner=l->pl_owner;
+            sendClientPacket(pl);
+        }
+    }
 }
 
 static void handlePlanlockReq(struct planlock_cpacket *packet)

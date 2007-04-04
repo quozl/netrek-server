@@ -414,6 +414,8 @@ int F_full_direction_resolution = 0;	/* Use SP_PLAYER instead of
 					 * SP_S_PLAYER */
 int F_full_weapon_resolution = 0;	/* Send certain weapons data
 					 * beyond tactical range */
+int F_check_planets = 0;		/* allow client to confirm
+					 * planet info is correct */
 int F_show_army_count = 0;		/* army count by planet */
 int F_show_other_speed = 0;		/* show other player's speed */
 int F_show_cloakers = 0;		/* show other cloakers on tactical */

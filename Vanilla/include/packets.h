@@ -126,6 +126,7 @@
 #define CP_UDP_REQ	35		/* request UDP on/off */
 #define CP_SEQUENCE	36		/* sequence # packet */
 #define CP_RSA_KEY	37		/* handles binary verification */
+#define CP_PLANET	38		/* synchronizes planet info */
 
 #ifdef PING
 #define CP_PING_RESPONSE        42              /* client response */
@@ -565,6 +566,15 @@ struct orbit_cpacket {
     char state;		/* on/off */
     char pad1;
     char pad2;
+};
+
+struct planet_cpacket
+{
+    char type;		/* CP_PLANET */
+    char pnum;
+    char owner;
+    char info;
+    int armies;
 };
 
 struct planlock_cpacket {
