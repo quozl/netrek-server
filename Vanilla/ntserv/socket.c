@@ -1330,7 +1330,8 @@ static void handlePlanReq(struct planet_cpacket *packet)
     if (plan->pl_info & me->p_team) {
         if ( plan->pl_info != packet->info
              || plan->pl_armies != ntohl(packet->armies)
-             || plan->pl_owner != packet->owner ) {
+             || plan->pl_owner != packet->owner
+             || plan->pl_flags != (int) ntohs(packet->flags)) {
             pl->type=SP_PLANET;
             pl->pnum=plan->pl_no;
             pl->info=plan->pl_info;

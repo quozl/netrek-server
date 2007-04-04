@@ -574,6 +574,7 @@ struct planet_cpacket
     char pnum;
     char owner;
     char info;
+    short flags;
     int armies;
 };
 
