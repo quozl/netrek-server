@@ -1319,27 +1319,28 @@ static void handleWarReq(struct war_cpacket *packet)
 
 static void handlePlanReq(struct planet_cpacket *packet)
 {
-#define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP|PLCORE)
-
-    struct planet *l;
+    struct planet *plan;
     struct planet_spacket *pl;
 
     if (!F_check_planets) return;
     if (packet->pnum < 0 || packet->pnum > MAXPLANETS) return;
 
-    l = &planets[packet->pnum];
+    plan = &planets[packet->pnum];
 
-    if (l->pl_info & me->p_team) {
-        if ( l->pl_info != packet->info
-             || l->pl_armies != packet->armies
-             || l->pl_owner != packet->owner ) {
+    if (plan->pl_info & me->p_team) {
+        if ( plan->pl_info != packet->info
+             || plan->pl_armies != ntohl(packet->armies)
+             || plan->pl_owner != packet->owner ) {
             pl->type=SP_PLANET;
-            pl->pnum=l->pl_no;
-            pl->info=l->pl_info;
-            pl->flags=htons((short) (l->pl_flags & PLFLAGMASK));
-            pl->armies=htonl(l->pl_armies);
-            pl->owner=l->pl_owner;
+            pl->pnum=plan->pl_no;
+            pl->info=plan->pl_info;
+            pl->flags=htons((short) (plan->pl_flags & PLFLAGMASK));
+            pl->armies=htonl(plan->pl_armies);
+            pl->owner=plan->pl_owner;
             sendClientPacket(pl);
+            context->cp_planet_miss++;
+        } else {
+            context->cp_planet_hits++;
         }
     }
 }

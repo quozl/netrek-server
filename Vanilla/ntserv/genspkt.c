@@ -778,10 +778,6 @@ int sndPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
 inline static int
 updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 {
-
-#define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP|PLCORE)
-
-
     if (howmuch == UPDT_ALL) {
 	if ( pl->info != plan->pl_info
 	     || pl->armies != htonl(plan->pl_armies)

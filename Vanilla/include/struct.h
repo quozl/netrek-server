@@ -96,6 +96,8 @@ struct context {
     int blog_pickup_game_full;
     int blog_pickup_queue_full;
     struct status start;        /* status copy at time of daemon cold start */
+    int cp_planet_hits;         /* planet data mismatch stats counters */
+    int cp_planet_miss;
 };
 
 
@@ -578,6 +580,7 @@ struct phaser {
 #define PLCOUP 0x200		/* Coup has occured */
 #define PLCHEAP 0x400		/* Planet was taken from undefended team */
 #define PLCORE 0x800		/* A core world planet */
+#define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP|PLCORE)
 
 struct planet {
     int pl_no;

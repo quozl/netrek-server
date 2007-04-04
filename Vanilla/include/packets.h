@@ -126,7 +126,7 @@
 #define CP_UDP_REQ	35		/* request UDP on/off */
 #define CP_SEQUENCE	36		/* sequence # packet */
 #define CP_RSA_KEY	37		/* handles binary verification */
-#define CP_PLANET	38		/* synchronizes planet info */
+#define CP_PLANET	38		/* cross-check planet info */
 
 #ifdef PING
 #define CP_PING_RESPONSE        42              /* client response */

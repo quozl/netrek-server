@@ -69,7 +69,7 @@ SP_GENERIC_32         S       ON
 FULL_DIRECTION_RESOLUTION     S       ON
 # Show own torps beyond tactical, and show all weapons for observers
 FULL_WEAPON_RESOLUTION        S       ON
-# allow client to confirm planet info is correct
+# allow client to confirm planet info is correct, reduces need for updateall
 CHECK_PLANETS         S       ON
 # Show tractors and pressors for all players' ships.  Regardless of the
 # setting here, this will be turned on for observers.
