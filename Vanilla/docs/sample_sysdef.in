@@ -159,6 +159,9 @@ CHAOS=0
 #	Use Sturgeon mode (0 = no, 1 = yes)
 STURGEON=0
 #
+#	Allow special weapons (nukes, drones, mines, plasmas 1-5)
+STURGEON_SPECWEAP=1
+#
 #	Maximum number of kills that can be spent on upgrades.
 #	(0 = no limit)
 STURGEON_MAXUPGRADES=100

@@ -273,6 +273,11 @@ static void sturgeon_weapon_switch()
   char buf[80];
   int t = me->p_special;
 
+  if (!sturgeon_specweap) {
+    new_warning(UNDEF, "Special weapons have been disabled.");
+    return;
+  }
+
   if (t < 0) {
     new_warning(UNDEF, "This ship is not equipped with special weapons.");
     return;
@@ -586,9 +591,17 @@ int sturgeon_hook_set_speed(int speed)
             case 4: pmessage(me->p_no, MINDIV, addrbuf,"Weapons: 0=abort, 1=phaser dmg, 2=torp speed, 3=torp fuse, 4=cooling");
                     me->p_upgrading = 4;
                     break;
-            case 5: pmessage(me->p_no, MINDIV, addrbuf,"Special: 0=abort, 1=plasmas, 2=nukes, 3=drones, 4=mines, 5=inventory");
-                    me->p_upgrading = 5;
-                    break;
+            case 5: if (sturgeon_specweap) {
+                        pmessage(me->p_no, MINDIV, addrbuf,"Special: 0=abort, 1=plasmas, 2=nukes, 3=drones, 4=mines, 5=inventory");
+                        me->p_upgrading = 5;
+                        break;
+                    }
+                    else {
+                        pmessage(me->p_no, MINDIV, addrbuf,"Special weapons have been disabled.");
+                        me->p_flags &= ~(PFREFIT);
+                        me->p_upgrading = 0;
+                        break;
+                    }
             case 6: pmessage(me->p_no, MINDIV, addrbuf,"One time: 0=abort, 1=fire while cloaked, 2=det own for damage");
                     me->p_upgrading = 6;
                     break;
