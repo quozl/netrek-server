@@ -65,11 +65,24 @@ LITE_SOUNDS           C       ON
 SHIP_CAP              S       ON
 # generic packets
 SP_GENERIC_32         S       ON
-# use SP_PLAYER w/ short packets
+# Despite using short packets, show full direction resolution for
+# ships.  The same information for players is already included in the
+# original packet format.  When a client requests this feature, the
+# average data rate to the client will increase, because the short
+# packet format for ships is turned off.
 FULL_DIRECTION_RESOLUTION     S       ON
-# Show own torps beyond tactical, and show all weapons for observers
+# Despite using short packets, show own torps beyond tactical for
+# players, and show all weapons to observers.  The same information
+# for players is already included in the original packet format.  When
+# a client requests this feature, the average data rate to the client
+# will increase, because the short packet format for torps is turned off.
 FULL_WEAPON_RESOLUTION        S       ON
-# allow client to confirm planet info is correct, reduces need for updateall
+# Adds support for CP_PLANET, which is a request from client for the
+# server to check if the client's knowledge of a planet needs
+# updating.  The server issues an SP_PLANET in reply if an update is
+# needed.  Reduces effect of packet loss by enforcing state.  Reduces
+# need for the player to request an update of planets.  The client is
+# entitled to request updates whenever it wishes.
 CHECK_PLANETS         S       ON
 # Show tractors and pressors for all players' ships.  Regardless of the
 # setting here, this will be turned on for observers.

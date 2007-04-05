@@ -130,6 +130,16 @@ http://vanilla.netrek.org/
 # - select file from incoming
 # Bob Tanner gets notified and builds RPMs
 
+# sf.net upload
+ftp -n upload.sourceforge.net <<EOF
+user anonymous quozl@us.netrek.org
+cd incoming
+passive
+hash
+put netrek-server-vanilla-${VS}.tar.gz
+EOF
+
+
 # freshmeat announcement
 
 Note from Dave Ahn ...

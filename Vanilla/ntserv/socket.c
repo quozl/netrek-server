@@ -1325,7 +1325,7 @@ static void handlePlanReq(struct planet_cpacket *packet)
     if (!F_check_planets) return;
     if (packet->pnum < 0 || packet->pnum > MAXPLANETS) return;
 
-    plan = &planets[packet->pnum];
+    plan = &planets[(int) packet->pnum];
 
     if (plan->pl_info & me->p_team) {
         if ( plan->pl_info != packet->info
