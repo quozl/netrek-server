@@ -264,16 +264,17 @@ WARPSPEED=60
 #       Basepractice Server
 BASEPRACTICE=0
 #
-#ROBOTHOST=myrtle
+#	Host to which to connect with robots
+ROBOTHOST=127.0.0.1
 #
 #    Newbie Server
 NEWBIE=0
 #
-#    Target number that sets the minimum number of total players (robots + humans)
-#    that is maintained at all times.  If there are less humans than this number,
-#    the rest of the slots will be filled with robots until this number of slots is
-#    reached.  If there are an equal number or more huamans than this number, there
-#    will be no robots in game.
+#	Target number that sets the minimum number of total players (robots
+#	+ humans) that is maintained at all times.  If there are less humans
+#	than this number, the rest of the slots will be filled with robots
+#	until this number of slots is reached.  If there are an equal number
+#	or more huamans than this number, there will be no robots in game.
 MIN_NEWBIE_SLOTS=12
 #
 #    Maximum number of newbie server players to allow at once
