@@ -4,7 +4,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <sys/file.h>
 #include <math.h>
 #include <sys/ipc.h>

@@ -3,7 +3,6 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <setjmp.h>
 #include <sys/file.h>
 #include <math.h>
 #include <sys/ipc.h>

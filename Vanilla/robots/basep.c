@@ -15,7 +15,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <sys/file.h>
 #include <sys/wait.h>
 #include <sys/ipc.h>

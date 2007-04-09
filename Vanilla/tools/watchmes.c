@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <sys/file.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
