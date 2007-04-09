@@ -379,15 +379,23 @@ static void stop_a_robot(void)
     if(debugTarget != -1 && debugLevel == 3) {
         messOne(255, roboname, debugTarget, "Stopping from %d", teamToStop);
     }
-    /* Nuke robot from the team with the fewest humans. */
-    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-        if (j->p_status == PFREE)
-            continue;
-        if (j->p_flags & PFROBOT)
-            continue;
 
-        /* If he's at the MOTD we'll get him next time. */
-        if (j->p_team == teamToStop && j->p_status == PALIVE && is_robot(j)) {
+    /* remove a robot, first check for robots not carrying */
+    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j->p_status != PALIVE) continue;
+        if (j->p_team != teamToStop) continue;
+        if (j->p_armies) continue;
+        if (is_robot(j)) {
+            stop_this_bot(j);
+            return;
+        }
+    }
+
+    /* then ignore the risk of them carrying */
+    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j->p_status != PALIVE) continue;
+        if (j->p_team != teamToStop) continue;
+        if (is_robot(j)) {
             stop_this_bot(j);
             return;
         }
