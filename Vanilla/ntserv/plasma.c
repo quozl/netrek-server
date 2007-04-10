@@ -24,7 +24,7 @@ void nplasmatorp(u_char course, int attributes)
   struct torp *k;
 
 #ifdef STURGEON
-  if (sturgeon && sturgeon_specweap) {
+  if (sturgeon && sturgeon_special_weapons) {
     sturgeon_nplasmatorp(course, attributes);
     return;
   }

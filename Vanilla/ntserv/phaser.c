@@ -224,13 +224,13 @@ void phaser(u_char course)
 
   if (pstatus == PHMISS) {
 #ifdef STURGEON
-    /* Client needs to know end coordinate if s_phaserdamage changes, as
-       in sturgeon */
+    /* s_phaserdamage varies, which varies end coordinate
+    of a phaser miss, so we must calculate the coordinate */
     if (sturgeon) {
       mine->ph_x = me->p_x + (int) (PHASEDIST * me->p_ship.s_phaserdamage /
-			100 * Cos[course]);
+                        100 * Cos[course]);
       mine->ph_y = me->p_y + (int) (PHASEDIST * me->p_ship.s_phaserdamage /
-			100 * Sin[course]);
+                        100 * Sin[course]);
     }
 #endif
     new_warning(37, "Phaser missed.");

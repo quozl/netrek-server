@@ -385,7 +385,7 @@ extern int blogging;
 #define SPECPHAS 4
 #define SPECMINE 5
 extern int sturgeon;
-extern int sturgeon_specweap;
+extern int sturgeon_special_weapons;
 extern int sturgeon_maxupgrades;
 extern int sturgeon_extrakills;
 extern int sturgeon_planetupgrades;

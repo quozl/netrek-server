@@ -243,7 +243,7 @@ struct sysdef_keywords {
 #ifdef STURGEON
   { "STURGEON",			SYSDEF_INT,	&sturgeon,
     "Use kills to buy ship upgrades" },
-  { "STURGEON_SPECWEAP",	SYSDEF_INT,	&sturgeon_specweap,
+  { "STURGEON_SPECIAL_WEAPONS",	SYSDEF_INT,	&sturgeon_special_weapons,
     "Allow special type weapons like nukes, drones, and mines" },
   { "STURGEON_MAXUPGRADES",	SYSDEF_INT,	&sturgeon_maxupgrades,
     "# of kills worth of upgrades that can be purchased" },

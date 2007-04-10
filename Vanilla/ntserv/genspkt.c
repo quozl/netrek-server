@@ -764,9 +764,9 @@ int sndPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
 	     && i < 64
 #endif
 #ifdef STURGEON
- 	     /* Sturgeon phasers can vary from default length, need
-	        to send the end coordinate which requires long packet */
-	     && ((sturgeon && ph->status == PHMISS) ? 0 : 1)
+             /* Sturgeon phasers can vary from default length, need
+                to send the end coordinate, so avoid short packet */
+             && ((sturgeon && ph->status == PHMISS) ? 0 : 1)
 #endif
 	    )
 	    addVPhaser(ph, phs, phase, i, howmuch);

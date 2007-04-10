@@ -273,7 +273,7 @@ static void sturgeon_weapon_switch()
   char buf[80];
   int t = me->p_special;
 
-  if (!sturgeon_specweap) {
+  if (!sturgeon_special_weapons) {
     new_warning(UNDEF, "Special weapons have been disabled.");
     return;
   }
@@ -591,13 +591,13 @@ int sturgeon_hook_set_speed(int speed)
             case 4: pmessage(me->p_no, MINDIV, addrbuf,"Weapons: 0=abort, 1=phaser dmg, 2=torp speed, 3=torp fuse, 4=cooling");
                     me->p_upgrading = 4;
                     break;
-            case 5: if (sturgeon_specweap) {
+            case 5: if (sturgeon_special_weapons) {
                         pmessage(me->p_no, MINDIV, addrbuf,"Special: 0=abort, 1=plasmas, 2=nukes, 3=drones, 4=mines, 5=inventory");
                         me->p_upgrading = 5;
                         break;
                     }
                     else {
-                        pmessage(me->p_no, MINDIV, addrbuf,"Special weapons have been disabled.");
+                        pmessage(me->p_no, MINDIV, addrbuf,"Special weapons are disabled.");
                         me->p_flags &= ~(PFREFIT);
                         me->p_upgrading = 0;
                         break;

@@ -1594,7 +1594,8 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                             sprintf(buf2, "inf");
                         strcat(buf, buf2);
                         pmessage(me->p_no, MINDIV, addrbuf, buf);
-                        sprintf(buf, "Special Weapons: %s", sturgeon_specweap ? "on" : "off");
+                        sprintf(buf, "Special Weapons: %s", 
+                                sturgeon_special_weapons ? "on" : "off");
                         pmessage(me->p_no, MINDIV, addrbuf, buf);
                         return;
                 }

@@ -441,7 +441,7 @@ int blogging=1;
 
 #ifdef STURGEON
 int sturgeon = 0;
-int sturgeon_specweap = 1;
+int sturgeon_special_weapons = 1;
 int sturgeon_maxupgrades = 100;
 int sturgeon_extrakills = 0;
 int sturgeon_planetupgrades = 0;
