@@ -481,3 +481,23 @@ int p_ups_set(struct player *me, int client_ups)
 #endif
   return 1;
 }
+
+/* This function checks to see if a player is safe from damage. 
+   Requires SAFE_IDLE sysdef option to be on, and player to be cloaked
+   on a homeworld, not in t-mode, with 0 kills, and maximum fuel,
+   shields and hull.
+*/
+int checksafe(struct player *victim)
+{
+    if (safe_idle
+        && (!status->tourn)
+        && ((victim->p_flags & PFCLOAK) && (victim->p_flags & PFORBIT)
+            && (planets[victim->p_planet].pl_flags & PLHOME))
+        && (victim->p_kills == 0.0)
+        && (victim->p_fuel == victim->p_ship.s_maxfuel)
+        && (victim->p_shield == victim->p_ship.s_maxshield)
+        && (victim->p_damage == 0))
+        return 1;
+    else
+        return 0;
+}

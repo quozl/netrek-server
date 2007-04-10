@@ -37,3 +37,4 @@ char slot_char(int slotnum);
 int slot_num(char slot);
 void t_x_y_set(struct torp *k, int t_x, int t_y);
 int p_ups_set(struct player *me, int ups);
+int checksafe(struct player *victim);

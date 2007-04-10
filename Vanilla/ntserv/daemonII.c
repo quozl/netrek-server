@@ -103,7 +103,6 @@ static void exitDaemon(int sig);
 static void save_planets(void);
 static void checkgen(int loser, struct player *winner);
 static int checkwin(struct player *winner);
-static int checksafe(struct player *victim);
 static void ghostmess(struct player *victim, char *reason);
 static void saveplayer(struct player *victim);
 static void rescue(int team, int target);
@@ -4133,26 +4132,6 @@ static int checkwin(struct player *winner)
         }
     }
     return 0;
-}
-
-/* This function checks to see if a player is safe from damage. 
-   Requires SAFE_IDLE sysdef option to be on, and player to be cloaked
-   on a homeworld, not in t-mode, with 0 kills, and maximum fuel,
-   shields and hull.
-*/
-static int checksafe(struct player *victim)
-{
-    if (safe_idle
-        && (NotTmode)
-        && ((victim->p_flags & PFCLOAK) && (victim->p_flags & PFORBIT)
-            && (planets[victim->p_planet].pl_flags & PLHOME))
-        && (victim->p_kills == 0.0)
-        && (victim->p_fuel == victim->p_ship.s_maxfuel)
-        && (victim->p_shield == victim->p_ship.s_maxshield)
-        && (victim->p_damage == 0))
-        return 1;
-    else
-        return 0;
 }
 
 static void ghostmess(struct player *victim, char *reason)
