@@ -194,7 +194,7 @@ dist:
 	config.guess install-sh name.c $(NAME)/
         # subdirectories
 	cp -rp docs gum include keycomp motd newstartd ntserv php \
-	res-rsa robotd robots sequencer tools $(NAME)/
+	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
 	cp -p debian/README.Debian debian/changelog debian/control \

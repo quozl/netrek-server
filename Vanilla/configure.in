@@ -535,7 +535,7 @@ fi
 
 AC_OUTPUT(system.mk Makefile ntserv/Makefile tools/Makefile
 	sequencer/Makefile newstartd/Makefile robots/Makefile
-	keycomp/Makefile xsg/Makefile pledit/Makefile robotd/Makefile
+	keycomp/Makefile robotd/Makefile
 	docs/Makefile tools/no_geno_timer tools/geno_timer
 	docs/sample_geno_timer_crontab docs/sample_sysdef
 	tools/setpath tools/setpath.csh tools/admin/Makefile)
