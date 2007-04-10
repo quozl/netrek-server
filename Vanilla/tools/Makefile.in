@@ -26,7 +26,7 @@ SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
 	${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
 	${srcdir}/mergescores.c \
 	${srcdir}/newscores.c ${srcdir}/planets.c ${srcdir}/players.c \
-	${srcdir}/scores.c ${srcdir}/setgalaxy.c ${srcdir}/showgalaxy.c \
+	${srcdir}/scores.c ${srcdir}/setgalaxy.c \
 	${srcdir}/stat.c ${srcdir}/trimscores.c ${srcdir}/watchmes.c \
 	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c \
 	${srcdir}/nuke.c ${srcdir}/metaget.c \
@@ -39,7 +39,7 @@ SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
 
 EXECS =	ban getpath blotpassword loadchecker mess message newscores planets players \
 	scores \
-        setgalaxy showgalaxy stat trimscores watchmes xtkill \
+        setgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
         ntpasswd ltd_dump ltd_convert nuke trekon metaget \
 	setgame setplanet setteam setship
@@ -80,7 +80,6 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) nuke $(DESTDIR)$(LIBDIR)/tools/nuke
 	$(INSTALLPROG) $(INSTALLOPTS) scores $(DESTDIR)$(LIBDIR)/tools/scores
 	$(INSTALLPROG) $(INSTALLOPTS) setgalaxy $(DESTDIR)$(LIBDIR)/tools/setgalaxy
-	$(INSTALLPROG) $(INSTALLOPTS) showgalaxy $(DESTDIR)$(LIBDIR)/tools/showgalaxy
 	$(INSTALLPROG) $(INSTALLOPTS) stat $(DESTDIR)$(LIBDIR)/tools/stat
 	$(INSTALLPROG) $(INSTALLOPTS) trimscores $(DESTDIR)$(LIBDIR)/tools/trimscores
 	$(INSTALLPROG) $(INSTALLOPTS) watchmes $(DESTDIR)$(LIBDIR)/tools/watchmes
