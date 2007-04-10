@@ -763,6 +763,11 @@ int sndPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
 #if MAXPLAYER >= 65
 	     && i < 64
 #endif
+#ifdef STURGEON
+ 	     /* Sturgeon phasers can vary from default length, need
+	        to send the end coordinate which requires long packet */
+	     && ((sturgeon && ph->status == PHMISS) ? 0 : 1)
+#endif
 	    )
 	    addVPhaser(ph, phs, phase, i, howmuch);
 	else
