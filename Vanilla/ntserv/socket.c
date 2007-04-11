@@ -683,18 +683,13 @@ void updateClient(void)
 #ifdef PING
     /* NOTE: this must be the last thing we do before flushing
        the socket buffer. */
-    if(ping && (repCount % efticks(5*ping_freq) == 0) && testtime == 0 && 
+    if (ping && (repCount % efticks(5*ping_freq) == 0) && testtime == 0 && 
        /* these checks are here to make sure we don't ping from the
 	  updateClient call in death().  The reason is that savestats()
 	  can take > 100ms, invalidating the next ping lag calc */
-       (me->p_status == PALIVE
-#ifdef OBSERVERS
-	|| me->p_status == POBSERV
+       (me->p_status == PALIVE || me->p_status == POBSERV))
+        sendClientPing();                /* ping.c */
 #endif
-	   ))
-	sendClientPing();                /* ping.c */
-#endif
-
     flushSockBuf();
     repCount++;
 }
@@ -1111,13 +1106,9 @@ static int doRead(int asock)
 #endif
 	if (handlers[(int)*bufptr].handler != NULL) {
 	    if (((FD_ISSET(*bufptr, &inputMask)) &&
-		 (me==NULL 
-#ifdef OBSERVERS
-                           || (me->p_status == POBSERV)
-#endif 
-                           || !(me->p_flags & (PFWAR|PFREFITTING
-					       | PFTWARP
-		     )))) || 
+		 (me==NULL || (me->p_status == POBSERV) ||
+		  !(me->p_flags & (PFWAR|PFREFITTING|PFTWARP)
+			  ))) || 
 		*bufptr==CP_RESETSTATS || *bufptr==CP_UPDATES ||
 		*bufptr==CP_OPTIONS || *bufptr==CP_RESERVED ||
 #ifdef PING 			/* ping response always valid */
@@ -1507,11 +1498,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
     time_t thistime;
     int group=0;
 
-    if (mute
-#ifdef OBSERVERS
-        || (observer_muting && (me->p_status == POBSERV))
-#endif
-        ) {
+    if (mute || (observer_muting && (me->p_status == POBSERV))) {
         new_warning(86, "Be quiet");
         return;
     }

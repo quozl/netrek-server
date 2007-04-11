@@ -416,10 +416,8 @@ static int is_tournament_mode(void)
 
     for (i=0, p=players; i<MAXPLAYER; i++, p++) {
         if (((p->p_status != PFREE) &&
-#ifdef OBSERVERS
              /* don't count observers for Tmode 06/09/95 JRP */
              (p->p_status != POBSERV)) &&
-#endif
              /* don't count robots for Tmode 10/31/91 TC */
             !(p->p_flags & PFROBOT)) {
                 count[p->p_team]++;
@@ -456,9 +454,7 @@ static int check_scummers(int verbose)
       num=0;
       if (me->p_status == PFREE) continue;
       if (is_robot(me)) continue;
-#ifdef OBSERVERS
       if (me->p_status == POBSERV) continue;
-#endif
 #ifdef LTD_STATS
       if (ltd_ticks(me, LTD_TOTAL) != 0)
 #else
@@ -469,9 +465,7 @@ static int check_scummers(int verbose)
           struct player *them = &players[j];
           if (them->p_status == PFREE) continue;
 	  if (is_robot(them)) continue;
-#ifdef OBSERVERS
           if (them->p_status == POBSERV) continue;
-#endif
 #ifdef LTD_STATS
           if (ltd_ticks(them, LTD_TOTAL) != 0)
 #else
@@ -1627,11 +1621,9 @@ static void udplayers_palive(struct player *j)
         }
 
         /* If player is actually dead, don't do anything below ... */
-        if (j->p_status == PEXPLODE || j->p_status == PDEAD
-#ifdef OBSERVERS
-            ||  j->p_status == POBSERV
-#endif
-                )
+        if (j->p_status == PEXPLODE ||
+            j->p_status == PDEAD ||
+            j->p_status == POBSERV)
                 return;
 
         udplayers_palive_update_stats(j);
@@ -1665,13 +1657,11 @@ static void udplayers(void)
                 nfree++;                /* count slot toward empty server */
                 j->p_ghostbuster = 0;   /* stop from hosing new players */
                 continue;
-#ifdef OBSERVERS
             case POBSERV:
                 udplayers_pobserv(j);
-                /* count slot toward empty server */
+                /* count observer slot toward empty server */
                 if (!observer_keeps_game_alive) nfree++;
                 continue;
-#endif  /* OBSERVERS */
             case PDEAD:
                 udplayers_pdead(j);
                 continue;
@@ -2701,17 +2691,13 @@ static void udsurrend(void)
     for (i = 0, j = &players[0]; i < MAXPLAYER; i++, j++) {
         if ((j->p_status == PALIVE) &&
             !(j->p_flags & PFROBOT) &&
-#ifdef OBSERVERS
             (j->p_status != POBSERV) &&
-#endif
             (j->p_team != NOBODY) &&
             (realNumShips(j->p_team) < tournplayers) &&
             (random()%5 == 0))
             rescue(TERMINATOR, j->p_no);
     }
 
-
-#ifdef OBSERVERS
     /* 
      * Bump observers of non-Tmode races to selection screen to choose
      * T mode teams
@@ -2728,7 +2714,6 @@ static void udsurrend(void)
             p_x_y_to_internal(j);
         }
     }
-#endif /* OBSERVERS */
 
     for (t = 0; t <= MAXTEAM; t++) { /* maint: was "<" 6/22/92 TC */
         /* "suspend" countdown if less than Tmode players */
@@ -3991,10 +3976,8 @@ static void ghostmess(struct player *victim, char *reason)
     pmessage(0, MALL, "GOD->ALL",
         "%s was kill %0.2f for the GhostBusters, %s",
         victim->p_longname, ghostkills, reason);
-#ifdef OBSERVERS
     /* if ghostbusting an observer do not attempt carried army rescue */
     if (victim->p_status == POBSERV) return;
-#endif
     if (victim->p_armies > 0) {
         k = 10*(remap[victim->p_team]-1);
         if (k >= 0 && k <= 30) for (i=0; i<10; i++) {

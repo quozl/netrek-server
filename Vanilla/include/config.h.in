@@ -360,9 +360,6 @@
 #undef CLUE2
 #define DOGFIGHT
 
-                                /* OBSERVERS       - allow players to watch */
-#define OBSERVERS
-
 #define NODOCK          /* NODOCK allow per-slot docking priveledges */
 
 #define NOTRANSWARP	/* NOTRANSWARP	- allow starbase to set transwarp

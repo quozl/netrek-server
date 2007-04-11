@@ -92,12 +92,10 @@ int main(int argc, char **argv)
 		argv++; 
 		argc--; 
 		break;
-#ifdef OBSERVERS
 	    case 'O':
 		Observer = 1;
 		clueVerified = 1;
 		break;
-#endif
 	    case 'd':
 		host = *argv;
 		argc--;
@@ -351,73 +349,68 @@ int main(int argc, char **argv)
 #endif /* LTD_STATS */
 
     for (;;) {
-	/* give the player the motd and find out which team he wants */
-    if (me->p_status != PALIVE) {
-	p_x_y_go(me, -100000, -100000);
-	updateSelf(FALSE);	/* updateSelf(TRUE) isn't necessary */
-	updateShips();
-	teamPick= -1;
-	flushSockBuf();
-	getEntry(&team, &s_type);
-	repCount=0;		/* Make sure he gets an update immediately */
-    }
-    if (team == -1) {
-	exitGame();
-    }
-    if(CheckBypass(login,host,Bypass_File)==TRUE)
-      bypassed=1;
-    else bypassed=0;
+        /* give the player the motd and find out which team he wants */
+        if (me->p_status != PALIVE) {
+            p_x_y_go(me, -100000, -100000);
+            updateSelf(FALSE);  /* updateSelf(TRUE) isn't necessary */
+            updateShips();
+            teamPick= -1;
+            flushSockBuf();
+            getEntry(&team, &s_type);
+            repCount=0;         /* Make sure he gets an update immediately */
+        }
+        if (team == -1) {
+            exitGame();
+        }
+        bypassed = (CheckBypass(login,host,Bypass_File) == TRUE);
 
+        if (indie) team = 4;    /* force to independent 8/28/91 TC */
+        redrawall = 1;
 
-    if (indie) team = 4;	/* force to independent 8/28/91 TC */
-    redrawall = 1;
+        for (i = 0; i <= MAX_CP_PACKETS; i++)
+            FD_SET (i, &inputMask);     /* Allow all input now */
 
-    for (i = 0; i <= MAX_CP_PACKETS; i++)
-	FD_SET (i, &inputMask);	/* Allow all input now */
-
-    enter(team, 0, pno, s_type, pseudo);
+        enter(team, 0, pno, s_type, pseudo);
    
 #ifndef DEBUG
-    for (i = 1; i < NSIG; i++) {
-	SIGNAL(i, SIG_IGN);
-    }
+        /* ignore all signals */
+        for (i = 1; i < NSIG; i++) SIGNAL(i, SIG_IGN);
 #endif   
 
-/* +++ 2.6pl2 kantner@hot.caltech.edu 22-NOV-1994 09:46:00.74 */
-    /*
-    **  The daemon sends ntserv a SIGTERM after the slot is freed during a
-    **  ghostbust.  Without this line the SIGTERM does nothing.  The slot is
-    **  marked free, but really isn't.  Someone else joins the slot, and a
-    **  copilot is formed.
-    */
-    SIGNAL(SIGTERM, forceShutdown);
-/* --- */
-    SIGNAL(SIGILL, SIG_DFL);		/* since illegal instruction is
-					   so rare this is an useful one to
-					   use to make core files for debugging
-					   ie.  kill -SIGILL <process #> */
-#ifdef OBSERVERS
-    if (Observer) {
-	me->p_status = POBSERV;     /* put observer in game */
-        new_warning(UNDEF,"Lock onto a teammate or planet to see the action.");
-        pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
-		 "Lock onto a teammate or planet to see the action.");
-	/* Check if observer is muted */
-	if (observer_muting && !whitelisted) {
-	  mute = 1;
-	  pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
-		   "Policy: observers may not speak.");
-	}
-      }
-    else
-#endif
-    me->p_status = PALIVE;			/* Put player in game */
-    me->p_ghostbuster = 0;
-    bans_check();
+        /*
+        **  The daemon sends ntserv a SIGTERM after the slot is freed
+        **  during a ghostbust.  Without this line the SIGTERM does
+        **  nothing.  The slot is marked free, but really isn't.
+        **  Someone else joins the slot, and a copilot is formed.
+        */
+        SIGNAL(SIGTERM, forceShutdown);
+        /*
+        **  Since illegal instruction is so rare this is an useful one
+        **  to use to make core files for debugging
+        */
+        SIGNAL(SIGILL, SIG_DFL);
 
-    /* Get input until the player quits or dies */
-    living++;
-    while (living) input();
+        if (!Observer) {
+            me->p_status = PALIVE;                  /* Put player in game */
+        } else {
+            me->p_status = POBSERV;     /* put observer in game */
+            new_warning(UNDEF,
+                        "Lock onto a teammate or planet to see the action.");
+            pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
+                     "Lock onto a teammate or planet to see the action.");
+            /* Check if observer is muted */
+            if (observer_muting && !whitelisted) {
+              mute = 1;
+              pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
+                       "Policy: observers may not speak.");
+            }
+        }
+        me->p_ghostbuster = 0;
+        bans_check();
+        
+        /* Get input until the player quits or dies */
+        living++;
+        while (living) input();
     }
 }
 

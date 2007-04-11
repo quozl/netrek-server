@@ -187,13 +187,11 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
 
   who = mess->m_from;
 
-#ifdef OBSERVERS
   if (players[who].p_status == POBSERV)
   {
     bounce(who, "Sorry, observers can't vote");
     return 0;
   }
-#endif
 
   if (votes[num].tag & C_PLAYER)
   {
@@ -246,11 +244,9 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
     if ((votes[num].tag & C_VC_TEAM) && (j->p_team != players[who].p_team))
       continue; 
 
-#ifdef OBSERVERS
     /* Also skip observers */
     if (j->p_status == POBSERV)
       continue;
-#endif
 
     pcount++;
 

@@ -90,9 +90,7 @@ static int pickslot_action(int w_queue, int i)
     players[i].p_stats.st_flags=ST_INITIAL;
     players[i].p_process     = 0;
     MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
-#ifdef OBSERVERS
     if (queues[w_queue].q_flags & QU_OBSERVER) Observer++;
-#endif
     /* Update the queue info */
     queues[w_queue].free_slots--;
     return 1;

@@ -130,9 +130,7 @@ struct context {
 #define PDEAD 		   0x0004
 /* Status value for paradise's t-mode queue feature
 #define PTQUEUE		   0x0005 */
-#ifdef OBSERVERS
 #define POBSERV		   0x0006           /* not really dead, but observer. */
-#endif
 
 /* bit masks of p_flags */
 #define PFSHIELD	   0x0001

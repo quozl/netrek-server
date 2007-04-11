@@ -120,11 +120,7 @@ char	*version;
 #endif
 
 int	why_dead=0;
-
-#ifdef OBSERVERS
 int	Observer=0;
-#endif
-
 int	SBhours=0;
 
 int	testtime= -1;
@@ -419,10 +415,8 @@ int F_show_other_speed = 0;		/* show other player's speed */
 int F_show_cloakers = 0;		/* show other cloakers on tactical */
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
-#ifdef OBSERVERS
 int observer_muting = 0;
 int observer_keeps_game_alive = 0;
-#endif
 int whitelisted = 0;
 int blacklisted = 0;
 int ignored[MAXPLAYER];

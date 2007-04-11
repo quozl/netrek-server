@@ -102,7 +102,6 @@ static void handleLogin(void)
 	return;
     }
 
-#ifdef OBSERVERS
     /* mark the observer with special flag */
     if (Observer) {
 	int x = strlen (namePick);
@@ -114,7 +113,6 @@ static void handleLogin(void)
 	    namePick[x + 2] = '\0';
 	}
     }
-#endif
 
     hourratio=1;
 

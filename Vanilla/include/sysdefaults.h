@@ -214,12 +214,10 @@ struct sysdef_keywords {
     "No bombing out of t-mode"				},
   { "NO_UNWARRING_BOMBING",	SYSDEF_INT,	&no_unwarring_bombing,
     "No 3rd space bombing"				},
-#ifdef OBSERVERS
   { "OBSERVER_MUTING",   SYSDEF_INT,     &observer_muting,
     "Turn off messaging for observers"			},
   { "OBSERVER_KEEPS_GAME_ALIVE",   SYSDEF_INT,     &observer_keeps_game_alive,
     "Whether an observer slot is counted for keeping game alive" },
-#endif
   { "VOTING",		SYSDEF_INT,	&voting,
     "Enable voting"			},
   { "BAN_VOTE_ENABLE",	SYSDEF_INT,	&ban_vote_enable,

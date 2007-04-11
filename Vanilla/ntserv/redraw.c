@@ -85,9 +85,7 @@ void intrupt(void)
 	exitGame();
     }
 
-#ifdef OBSERVERS
     if (!Observer || me->p_status == PEXPLODE)
-#endif
     {
 	if (me->p_status == PEXPLODE || me->p_status == PDEAD) {
 	    FD_ZERO(&inputMask);
@@ -97,7 +95,6 @@ void intrupt(void)
 	    death();
             return;
 	}
-       
     }
 
     if (clue) {
@@ -115,10 +112,9 @@ void intrupt(void)
     updateClient();
 }
 
-#ifdef OBSERVERS
-    /* observer is usually status POBSERV which is sort of like PDEAD */
-    /* may get set to PDEAD or PEXPLODE by daemon events. deal with */
-    /* those cases  reasonably gracefully */
+/* observer is usually status POBSERV which is sort of like PDEAD */
+/* may get set to PDEAD or PEXPLODE by daemon events. deal with */
+/* those cases  reasonably gracefully */
 
 static void check_observs(void)
 {
@@ -262,7 +258,6 @@ static void check_observs(void)
 
     return;
 }
-#endif /* OBSERVERS */
 
 
 
@@ -277,10 +272,8 @@ static void auto_features(void)
     u_char course;
     int troop_capacity=0;
 
-#ifdef OBSERVERS
     check_observs();
     if (!living) return;
-#endif
 
     if (me->p_flags & PFSELFDEST) {
 	if ((me->p_updates >= selfdest) ||
@@ -408,12 +401,11 @@ static void auto_features(void)
 	}
     }
 
-#ifdef OBSERVERS
     /* Use person observed for kills if we are an observer */
-    if(Observer && (me->p_flags&PFPLOCK)) pl = &players[me->p_playerl];
+    if (Observer && (me->p_flags & PFPLOCK))
+        pl = &players[me->p_playerl];
     else
-#endif
-    pl = me;	/* Not observer, just use my kills */
+        pl = me;	/* Not observer, just use my kills */
 
     troop_capacity = (int)((float)((int)(pl->p_kills*100)/100.0) * (myship->s_type == ASSAULT?3:2));
     if (myship->s_type == STARBASE || troop_capacity > myship->s_maxarmies)
@@ -500,11 +492,7 @@ static void auto_features(void)
 	if ((me->p_damage == 0) && (me->p_shield == me->p_ship.s_maxshield))
 	    me->p_flags &= ~PFREPAIR;
     }
-    if ((me->p_flags & PFPLOCK) 
-#ifdef OBSERVERS
-		&& (!Observer)
-#endif
-	) {/* set course to player x */
+    if ((me->p_flags & PFPLOCK) && (!Observer)) { /* set course to player x */
 	int dist;
 
 	pl = &players[me->p_playerl];
@@ -586,11 +574,7 @@ static void auto_features(void)
 	        set_course(course);
 	}
     }
-    if ((me->p_flags & PFPLLOCK) 
-#ifdef OBSERVERS
-		&& (!Observer)
-#endif
-	) {/* set course to planet x */
+    if ((me->p_flags & PFPLLOCK) && (!Observer) ) { /* set course to planet */
 	int dist;
 
 	pln = &planets[me->p_planet];

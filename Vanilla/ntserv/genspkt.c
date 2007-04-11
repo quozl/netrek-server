@@ -326,18 +326,15 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
     int tractor = ((F_show_all_tractors || f_many_self) && pl->p_flags&PFTRACT)?
                       (pl->p_tractor|0x40):0;
 
-#ifdef OBSERVERS
     if (!f_many_self && pl->p_status == POBSERV) {
-    	mask = PFOBSERV;	/* All we need to know about observers. */
-	tractor = 0;
-    } else
-#endif
-    if (howmuch == UPDT_ALL) {
-	mask = FLAGMASK;
-	if(F_show_all_tractors || f_many_self) mask |= PFTRACT|PFPRESS;
-    } else
-	mask = INVISOMASK;
-
+        mask = PFOBSERV;        /* All we need to know about observers. */
+        tractor = 0;
+    } else if (howmuch == UPDT_ALL) {
+        mask = FLAGMASK;
+        if (F_show_all_tractors || f_many_self) mask |= PFTRACT|PFPRESS;
+    } else {
+        mask = INVISOMASK;
+    }
     masked = htonl(pl->p_flags & mask);
     if (flags->flags == masked && flags->tractor == tractor
 	&& !F_full_direction_resolution)
@@ -353,55 +350,24 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
     return (TRUE);
 }
 
-int sndPStatus( struct pstatus_spacket *pstatus, struct player *pl)
+static int observed_status(struct player *pl)
 {
-    if (pstatus->status != pl->p_status) {
-	/* We update the location of people whose status has changed.
-	 * (like if they just re-entered...)
-	 */
-#ifdef OBSERVERS
-	int pobserv = 0;
-#endif
-	pstatus->type=SP_PSTATUS;
-	pstatus->pnum=pl->p_no;
-	pstatus->status=pl->p_status;
-#ifdef OBSERVERS
-	/* Some clients do not know about POBSERV, so we mask it into a
-	   known status ... for observers we tell them they are alive,
-	   but for everybody else we say they are outfitting.  Quozl */
-	if (pl->p_status == POBSERV) {
-	    if (pl == me) 
-		pstatus->status = PALIVE;
-	    else
-		pstatus->status = POUTFIT;
-	    pobserv = 1;
-	}
-#endif
-	/* S_P2 */
-#if 0
-	if ( send_short < 2
-#ifdef OBSERVERS
-	     || pobserv
-#endif
-	     || pl->p_no > 31
-	     || pl->p_flags & PFROBOT
-	     || pstatus->status != PALIVE
-	     || pstatus->status != PEXPLODE
-	     || pstatus->status != PDEAD)
+    if (pl->p_status != POBSERV) return pl->p_status;
+    return (pl == me) ? PALIVE : POUTFIT;
+}
 
-/* WTF?  This if always tests true??? */
-/* Agreed.  My compiler warns of this too, so I've added "#if 0" to
- * avoid the warning.  quozl@us.netrek.org */
-#endif
-	    sendClientPacket(pstatus);
-	if (dead_warp) dead_warp = 1;
-#ifdef OBSERVERS
-	if (pobserv)
-	    pstatus->status = POBSERV;
-#endif
-	return(TRUE);
+int sndPStatus (struct pstatus_spacket *pstatus, struct player *pl)
+{
+    int ostatus = observed_status(pl);
+    if (pstatus->status != ostatus) {
+        pstatus->type = SP_PSTATUS;
+        pstatus->pnum = pl->p_no;
+        pstatus->status = ostatus;
+        sendClientPacket(pstatus);
+        if (dead_warp) dead_warp = 1;
+        return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 int updtPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
@@ -1209,14 +1175,10 @@ updateShips(void)
 	/* S_P2 new flag sampling */
 	if (send_short > 1) {
 	    u_int oldflags;
-#ifdef OBSERVERS
 	    /* Skip observers' flags, unless I am the observer. */
 	    if (pl->p_status != POBSERV || pl == me) {
-#endif
 		switch(pl->p_status){
-#ifdef OBSERVERS
 		case POBSERV:
-#endif
 		case PALIVE: /* huh, we must work */
 		    highest_active_player = i;
 		    if(pl->p_flags & PFCLOAK){
@@ -1245,9 +1207,7 @@ updateShips(void)
 		oldflags &= ~(PFSHIELD|PFCLOAK);
 		oldflags |= pl->p_flags&(PFSHIELD|PFCLOAK);
 		flags->flags = htonl(oldflags);
-#ifdef OBSERVERS
 	    }
-#endif
 	}
 
 	if (sndPStatus(pstatus, pl)) {
@@ -1265,9 +1225,7 @@ updateShips(void)
 
 	if ( (hiddenenemy && pl->p_team != me->p_team
 	      && !(pl->p_flags & PFSEEN) && status->tourn)
-#ifdef OBSERVERS
 	     || (pl->p_status == POBSERV && pl != me)
-#endif
 	    ) {
 
 	    /* Player is invisible, send limited flags information,
@@ -1355,9 +1313,7 @@ updateTorps(void)
 	 * helps clients to display number of torps in flight, and allows
 	 * observers to show all torps */
 	if (myTorp(t)
-#ifdef OBSERVERS
 	    || (F_full_weapon_resolution && me->p_status == POBSERV)
-#endif
 	) {
 	    sndTorp(tpi, tp, t, i, UPDT_ALL);
 	    continue;
@@ -1393,9 +1349,7 @@ updatePlasmas(void)
     for (i=0, t=firstPlasma, tpi=clientPlasmasInfo, tp=clientPlasmas; 
 	 t<=lastPlasma; i++, t++, tpi++, tp++) {
 	if (myTorp(t)
-#ifdef OBSERVERS
 	    || (F_full_weapon_resolution && me->p_status == POBSERV)
-#endif
         ) {
 	    sndPlasma(tpi, tp, t, i, UPDT_ALL);
 	    continue;
@@ -1441,9 +1395,7 @@ updatePhasers(void)
 	     pl->p_x > me->p_x + SCALE*WINSIDE/2 ||
 	     pl->p_x < me->p_x - SCALE*WINSIDE/2 ||
 	     pl->p_y < me->p_y - SCALE*WINSIDE/2)
-#ifdef OBSERVERS
 	    && ((F_full_weapon_resolution && me->p_status == POBSERV) ? 0: 1)
-#endif
 	) {
 	    sndPhaser(ph, phs, phase, i, UPDT_LITTLE);
 	} else {

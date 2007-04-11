@@ -534,12 +534,10 @@ int do_generic_vote(char *comm, int who)
 
     if (!(num = check_listing(comm)) ) return 0;
 
-#ifdef OBSERVERS
     if (players[who].p_status == POBSERV) {
       bounce(who,"Sorry, Observers can't vote");
       return 0;
     }
-#endif
 
     if ( votes[num].tag & VC_GLOG ){
       if (glog_open() == 0) {	/* Log votes for God to see */
@@ -592,15 +590,8 @@ int do_generic_vote(char *comm, int who)
 	if ((votes[num].tag & VC_TEAM) && (j->p_team != players[who].p_team))
 	    continue; 
 
-#ifdef OBSERVERS
 	/* Also skip observers */
 	if (j->p_status == POBSERV) continue;
-#endif
-
-#ifdef OBSERVERS
-	/* Also skip observers */
-	if (j->p_status == POBSERV) continue;
-#endif
 
         pcount++;
         if (i==who) {

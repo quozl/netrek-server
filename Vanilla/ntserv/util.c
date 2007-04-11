@@ -79,9 +79,7 @@ int realNumShips(int owner)
 
     for (i = 0, p = players; i < MAXPLAYER; i++, p++)
         if (p->p_status != PFREE && 
-#ifdef OBSERVERS
             p->p_status != POBSERV &&
-#endif
             !(p->p_flags & PFROBOT) &&
             p->p_team == owner)
                 num++;
@@ -219,10 +217,8 @@ int team_no(int team)
 /* return either me or the observed me */
 struct player *my()
 {
-#ifdef OBSERVERS
   if (Observer && (me->p_flags & PFPLOCK))
     return &players[me->p_playerl];
-#endif
   return me;
 }
 

@@ -164,12 +164,7 @@ extern char *version;
 #endif
 
 extern int why_dead;
-
-#ifdef OBSERVERS
 extern int Observer;
-#endif
-
-
 extern int SBhours;
 
 #ifdef CHECKMESG
@@ -359,10 +354,8 @@ extern char Cambot_out[FNAMESIZE];
 
 extern int mute;
 extern int remoteaddr;		/* inet address in net format */
-#ifdef OBSERVERS
 extern int observer_muting;
 extern int observer_keeps_game_alive;
-#endif
 extern int whitelisted;
 extern int blacklisted;
 

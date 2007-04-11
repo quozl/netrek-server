@@ -74,10 +74,8 @@ void getEntry(int *team, int *stype)
 		case PALIVE:
 		    me->p_ghostbuster=0;
 		    break;
-#ifdef OBSERVERS
                 case POBSERV:
                   me->p_status = PDEAD;
-#endif
 		case PDEAD:
 		    me->p_explode=600;
 		    break;
@@ -96,10 +94,8 @@ void getEntry(int *team, int *stype)
 		    case PALIVE:
 			me->p_ghostbuster=1000000; 
 			break;
-#ifdef OBSERVERS
                     case POBSERV:
                       me->p_status = PDEAD;
-#endif
 		    case PDEAD:
 			me->p_explode=0;
 			break;
@@ -343,7 +339,7 @@ static int tournamentMask(int team, int w_queue)
     /*
      * First, make sure observers pick a t-mode team
      */
-    if (queues[w_queue].q_flags&QU_OBSERVER){
+    if (queues[w_queue].q_flags & QU_OBSERVER){
      if (team == ALLTEAM || ((team & (il | inl)) == 0))  /* initial entry case */
         return (il | inl); 
      else if (deadTeam(team))                            /* must have been on one of those two? */

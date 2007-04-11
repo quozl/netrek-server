@@ -905,13 +905,11 @@ void do_nodock(char *comm, struct message *mess)
       return;
     }
   
-#ifdef OBSERVERS
   if (p->p_status == POBSERV)
     {
       pmessage(whofrom, MINDIV, addr, "dock: Observers cannot change dock permissions");
       return;
     }
-#endif
 
   who = strtok(comm, " ");
   if ( who == NULL)
@@ -978,12 +976,10 @@ void do_transwarp(char *comm, struct message *mess)
     return;
   }
   
-#ifdef OBSERVERS
   if (p->p_status == POBSERV) {
     pmessage(whofrom, MINDIV, addr, "transwarp: observers may not do this");
     return;
   }
-#endif
 
   what = strtok(comm, " ");
   if (what == NULL) return;

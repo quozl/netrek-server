@@ -217,12 +217,8 @@ void savestats(void)
     int fd;
 
     if (me->p_pos < 0) return;
-
-#ifdef OBSERVERS
     /* Do not save stats for observers.  This is corrupting the DB. -da */
     if (Observer) return;
-#endif
-
     fd = open(PlayerFile, O_WRONLY, 0644);
     if (fd >= 0) {
 	me->p_stats.st_lastlogin = time(NULL);
