@@ -47,7 +47,7 @@ makebuilddir/netrek-server-vanilla::
 	fi
 	if [ ! -x res-rsa/configure ]; then \
 		(cd res-rsa; autoconf) ;\
-    fi
+	fi
 
 clean::
 	rm -f config.status
