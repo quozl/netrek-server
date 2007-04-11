@@ -163,9 +163,7 @@ extern int robot_pid;
 extern char *version;
 #endif
 
-#ifdef CHAIN_REACTION
 extern int why_dead;
-#endif
 
 #ifdef OBSERVERS
 extern int Observer;

@@ -890,11 +890,9 @@ int updtMessageSMessage(struct message *cur)
 		((cur->args[4] & 16) << 11);
 	    swarning(KILLARGS,(u_char)(tmp & 0xff),
 		     (u_char)((tmp >> 8) & 0xff));
-#ifdef CHAIN_REACTION
 	    if (why_dead) {
 		swarning(KILLARGS2,(u_char)cur->args[5],0);
 	    }
-#endif
 	    tmp= (u_char)(cur->args[2] |
 			  ((cur->args[4] & 12)<< 4));
 	    swarning(DMKILL,(u_char)(cur->args[1]
@@ -907,11 +905,9 @@ int updtMessageSMessage(struct message *cur)
     case KILLARGS2: /* Only to help the compiler */
 	break;
     case DMKILLP:
-#ifdef CHAIN_REACTION
 	if (why_dead) {
 	    swarning(KILLARGS2,(u_char)cur->args[5],(u_char)cur->args[4]);
 	}
-#endif
 	swarning(DMKILLP, (u_char)cur->args[1], (u_char)cur->args[2]);
 	return(TRUE);
     case DMBOMB:
@@ -927,11 +923,9 @@ int updtMessageSMessage(struct message *cur)
     case DGHOSTKILL:
 	if(cur->args[2] < 64000){
 	    swarning(KILLARGS,(u_char)(cur->args[2] & 0xff), (u_char)((cur->args[2] >> 8) & 0xff));
-#ifdef CHAIN_REACTION
 	    if (why_dead) {
 		swarning(KILLARGS2,(u_char)cur->args[5],0);
 	    }
-#endif
 	    swarning(DGHOSTKILL, (u_char)cur->args[1], 0);
 	    return(TRUE);
 	}

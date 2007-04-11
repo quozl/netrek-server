@@ -80,11 +80,7 @@ static void t_explosion(struct torp *torp);
 static void p_explosion(struct player *player, int whydead, int whodead);
 #ifndef LTD_STATS
 static void loserstats(int pl);
-#ifdef CHAIN_REACTION
 static void killerstats(int cl, int pl, struct player *victim);
-#else
-static void killerstats(int pl, struct player *victim);
-#endif /* CHAIN_REACTION */
 static void checkmaxkills(int pl);
 #endif /* LTD_STATS */
 static void army_track(int type, void *who, void *what, int num);
@@ -106,12 +102,8 @@ static int checkwin(struct player *winner);
 static void ghostmess(struct player *victim, char *reason);
 static void saveplayer(struct player *victim);
 static void rescue(int team, int target);
-#ifdef CHAIN_REACTION
 static void killmess(struct player *victim, struct player *credit_killer,
                      struct player *k, int whydead);
-#else
-static void killmess(struct player *victim, struct player *k);
-#endif
 static void reaper(int sig);
 static void reaper_start();
 static void addTroops(int loser, int winner);
@@ -2173,9 +2165,7 @@ static void t_explosion(struct torp *torp)
   int dx, dy, dist;
   int damage, damdist;
   struct player *j;
-#ifdef CHAIN_REACTION
   struct player *k;
-#endif
 
 #ifdef STURGEON
   if (sturgeon && torp->t_pldamage > 0) {
@@ -2284,7 +2274,6 @@ static void t_explosion(struct torp *torp)
       /* 
        * Check for kill:  */
       if (j->p_damage >= j->p_ship.s_maxdamage) {
-#ifdef CHAIN_REACTION
         if ((torp->t_whodet != NODET) 
             && (torp->t_whodet != j->p_no) 
             && (players[(int)torp->t_whodet].p_team != j->p_team))
@@ -2340,48 +2329,6 @@ static void t_explosion(struct torp *torp)
                  ((torp->t_type == TPHOTON) ? KTORP2 : KPLASMA2) 
                  : j->p_whydead);
 
-#else /* CHAIN_REACTION */
-        p_explosion(j, t_whydead(torp), torp->t_owner);
-
-#ifndef LTD_STATS
-
-        killerstats(torp->t_owner, j);
-
-#endif /* LTD_STATS */
-        players[torp->t_owner].p_kills += 1.0 + 
-          j->p_armies * 0.1 + j->p_kills * 0.1;
-#ifdef STURGEON
-        if (sturgeon && sturgeon_extrakills)
-          players[torp->t_owner].p_kills += j->p_upgrades * 0.15;
-#endif
-
-#ifndef LTD_STATS       /* ltd_update_kills checks for max kills */
-
-        checkmaxkills(torp->t_owner);
-        loserstats(j->p_no);
-
-#endif /* LTD_STATS */
-
-#ifdef LTD_STATS
-
-        /* torp->t_owner = actual killer = credit killer
-           j = victim */
-
-        if (status->tourn) {
-
-          status->kills++;
-          status->losses++;
-
-          ltd_update_kills(&(players[torp->t_owner]),
-                           &(players[torp->t_owner]), j);
-          ltd_update_deaths(j, k);
-
-        }
-
-#endif /* LTD_STATS */
-
-        killmess(j, &players[torp->t_owner]);
-#endif /* CHAIN_REACTION */
       } 
     } 
   } 
@@ -2413,8 +2360,6 @@ static void loserstats(int pl)
         }
     }
 }
-
-#ifdef CHAIN_REACTION
 
 static void killerstats(int cl, int pl, struct player *victim)
 {
@@ -2452,42 +2397,6 @@ static void killerstats(int cl, int pl, struct player *victim)
       }
    }
 }
-
-#else /* CHAIN_REACTION */
-
-static void killerstats(int pl, struct player *victim)
-{
-    struct player *dude;
-
-    dude= &players[pl];
-
-    if (dude->p_ship.s_type == STARBASE) {
-        if (status->tourn
-#ifdef BASEPRACTICE
-            || practice_mode
-#endif
-            )
-        dude->p_stats.st_sbkills++;
-        dude->p_stats.st_armsbomb += 5 * victim->p_armies;
-    } else {
-        if (status->tourn) {
-            dude->p_stats.st_tkills++;
-            status->kills++;
-#ifdef NO_CHUNG_CREDIT
-            if (dude->p_team != victim->p_team) {
-#endif
-                dude->p_stats.st_tarmsbomb += 5 * victim->p_armies;
-                status->armsbomb += 5 * victim->p_armies;
-#ifdef NO_CHUNG_CREDIT
-            }
-#endif
-        } else {
-            dude->p_stats.st_kills++;
-            dude->p_stats.st_armsbomb += 5 * victim->p_armies;
-        }
-    }
-}
-#endif /* CHAIN_REACTION */
 
 #endif /* LTD_STATS */
 
@@ -2941,23 +2850,12 @@ static void udphaser(void)
 #endif
 
 #ifndef LTD_STATS
-#ifdef CHAIN_REACTION
-
                             killerstats(i, i, victim);
                             checkmaxkills(i);
                             killmess(victim, &players[i], &players[i],
                                      KPHASER);
 
-#else /* CHAIN_REACTION */
-
-                            killerstats(i, victim);
-                            checkmaxkills(i);
-                            killmess(victim, &players[i]);
-
-#endif /* CHAIN_REACTION */
-
                             loserstats(j->ph_target);
-
 #endif /* LTD_STATS */
 
 #ifdef LTD_STATS
@@ -2974,18 +2872,8 @@ static void udphaser(void)
                               ltd_update_deaths(victim, &players[i]);
 
                             }
-
-#ifdef CHAIN_REACTION
-
                             killmess(victim, &players[i], &players[i],
                                      KPHASER);
-
-#else /* CHAIN_REACTION */
-
-                            killmess(victim, &players[i]);
-
-#endif /* CHAIN_REACTION */
-
 #endif /* LTD_STATS */
 
                         }
@@ -3075,10 +2963,8 @@ static void pldamageplayer(struct player *j)
       arg[2] = l->pl_no;
       arg[3] = 0;
       arg[4] = j->p_armies;
-#ifdef CHAIN_REACTION
       strcat(buf,"   [planet]");
       arg[5] = KPLANET;
-#endif
       pmessage(0, MALL | MKILLP, "GOD->ALL", buf);
 
 #ifdef LTD_STATS
@@ -3639,9 +3525,7 @@ static void blowup(struct player *sh)
     int dx, dy, dist;
     int damage;
     register struct player *j;
-#ifdef CHAIN_REACTION /* isae - chain reaction */
     register struct player *k;
-#endif
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
         if (j->p_status != PALIVE)
             continue;
@@ -3707,7 +3591,6 @@ static void blowup(struct player *sh)
                 j->p_damage += damage;
             }
             if (j->p_damage >= j->p_ship.s_maxdamage) {
-#ifdef CHAIN_REACTION
                 if ((j->p_no != sh->p_whodead) && (j->p_team != players[sh->p_whodead].p_team)
                     && (sh->p_whydead == KSHIP ||  sh->p_whydead == KTORP ||
                         sh->p_whydead == KPHASER || sh->p_whydead == KPLASMA))
@@ -3761,48 +3644,6 @@ static void blowup(struct player *sh)
 #endif /* LTD_STATS */
 
                 killmess(j, k, sh, (k->p_no == sh->p_no)? KSHIP : KSHIP2);
-#else /* CHAIN_REACTION */
-                p_explosion(j, KSHIP, sh->p_no);
-
-                sh->p_kills += 1.0 + 
-                  j->p_armies * 0.1 + j->p_kills * 0.1;
-#ifdef STURGEON
-                if (sturgeon && sturgeon_extrakills)
-                  sh->p_kills += j->p_upgrades * 0.15;
-#endif
-
-#ifndef LTD_STATS
-
-                killerstats(sh->p_no, j);
-                checkmaxkills(sh->p_no);
-                loserstats(i);
-
-#endif /* LTD_STATS */
-
-#ifdef LTD_STATS
-
-                if (status->tourn) {
-
-                  status->kills++;
-                  status->losses++;
-
-                  /* sh = killer to be credited
-                     sh = killer that did the damage
-                     j = victim */
-
-                  ltd_update_kills(sh, sh, j);
-
-                  /* j = victim
-                     sh = killer that was credited */
-
-                  ltd_update_deaths(j, sh);
-
-                }
-#endif /* LTD_STATS */
-
-                killmess(j, sh);
-
-#endif /* CHAIN REACTION */
             }
         }
     }
@@ -4218,26 +4059,14 @@ char *whydeadmess[] = {
 /*
  *
  */
-#ifdef CHAIN_REACTION
 static void killmess(struct player *victim, struct player *credit_killer,
               struct player *k, int whydead)
-#else
-static void killmess(struct player *victim, struct player *k)
-#endif
 {
     char *why;
     char kills[20];
 
-#ifndef CHAIN_REACTION
-    struct player *credit_killer;
-    int whydead;
-
-    whydead = victim->p_whydead;
-    credit_killer = k;
-#else
     if (credit_killer->p_team == k->p_team)
       credit_killer = k;
-#endif
 
     why = whydeadmess[whydead];
 

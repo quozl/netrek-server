@@ -68,10 +68,8 @@ struct sysdef_keywords {
     "Invent a message when armies die in flight"	},
   { "CHECKSCUM",	SYSDEF_INT,	&check_scum,
     "Check for multiple clients from same IP address"	},
-#ifdef CHAIN_REACTION
   { "WHYMESS",		SYSDEF_INT,	&whymess,
     "When a ship explodes, indicate why"		},
-#endif
   { "MAX_POP",		SYSDEF_INT,	&max_pop,
     "Maximum army population on a planet outside T-Mode" },
   { "SHOWSYSDEF",	SYSDEF_INT,	&show_sysdef,

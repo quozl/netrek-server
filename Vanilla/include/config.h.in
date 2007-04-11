@@ -169,10 +169,6 @@
                                                      12 hours */
 #undef AUTOMOTD
 
-                                /*  CHAIN_REACTION - Don't give credit for
-                                                     chain reactions */
-#define CHAIN_REACTION
-
                                 /*  CHECKMESG      - Check for god messages
                                                      and/or log all messages */
 #define CHECKMESG

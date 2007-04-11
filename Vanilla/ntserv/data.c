@@ -119,9 +119,7 @@ int	robot_pid = 0;
 char	*version;
 #endif
 
-#ifdef CHAIN_REACTION
 int	why_dead=0;
-#endif
 
 #ifdef OBSERVERS
 int	Observer=0;

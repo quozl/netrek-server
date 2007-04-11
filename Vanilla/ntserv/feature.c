@@ -40,9 +40,7 @@ struct feature_var {
 
 struct feature_var feature_vars[] = {
    { "FEATURE_PACKETS",		&F_client_feature_packets },
-#ifdef CHAIN_REACTION
    { "WHY_DEAD",		&why_dead },
-#endif
    { "SBHOURS",			&SBhours },
    { "SELF_8FLAGS",		&F_self_8flags},
    { "19FLAGS", 		&F_19flags},

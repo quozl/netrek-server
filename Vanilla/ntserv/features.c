@@ -19,13 +19,9 @@
 
 static void config_features(char *features)
 {
-	/* Only one option right now that depends on version */
-
-#ifdef CHAIN_REACTION
 	if (!strcmp(features,"WHY_DEAD")) {
 	    why_dead = 1;
 	}
-#endif
 
 #ifdef RCD
 	if (!strcmp(features,"RC_DISTRESS")) {
