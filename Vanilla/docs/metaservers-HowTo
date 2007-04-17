@@ -7,7 +7,7 @@ metaserver for players.
 
 It works like this;
 
-	- you set up a metaservers file with the addresses of the
+	- you set up an etc/metaservers file with the addresses of the
 	  metaservers that should be kept informed,
 	
 	- when new players arrive on your server, a packet is sent to
@@ -15,9 +15,10 @@ It works like this;
 	
 	- periodically, the metaservers are told about current status.
 
-The format of the file is a series of space delimited fields interpreted
-using fscanf().  Very primitive.  The code looks for the file in the
-configuration directory SYSCONFDIR.  The file name is metaservers.
+The format of the file is a series of space delimited fields
+interpreted using fscanf().  Very primitive.  The code looks for the
+file in the configuration directory SYSCONFDIR, which by default is
+etc/.  The file name is metaservers.
 
 The order and format of the fields is described in ntserv/solicit.c
 
