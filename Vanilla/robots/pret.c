@@ -75,6 +75,7 @@ static void save_armies(struct player *p);
 static void resetPlanets(void);
 static void checkPreTVictory();
 static int num_humans(int team);
+static int num_humans_alive();
 static int totalPlayers();
  
 static void
@@ -253,12 +254,16 @@ void checkmess()
 
     /* Start a robot */
     if ((ticks % ROBOCHECK) == 0) {
-        int next_team = 0;
-        num_players(&next_team);
 
-        if (totalRobots(0) < PT_ROBOTS && totalPlayers() < PT_MAX_WITH_ROBOTS && realT == 0)
+        if (num_humans_alive() > 0 &&
+            totalRobots(0) < PT_ROBOTS &&
+            totalPlayers() < PT_MAX_WITH_ROBOTS &&
+            realT == 0)
         {
-            if(debugTarget != -1) {
+            int next_team = 0;
+            num_players(&next_team);
+
+            if (debugTarget != -1) {
                 messOne(255, roboname, debugTarget, "Starting a robot");
                 messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
                         totalRobots(0), num_humans(0));
@@ -357,6 +362,25 @@ static int num_humans(int team)
                 messOne(255, roboname, debugTarget, "%d: NOT Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
+        }
+   }
+   return count;
+}
+
+static int num_humans_alive()
+{
+   int i;
+   struct player *j;
+   int count = 0;
+
+   for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j == me) continue;
+        if (j->p_status != PALIVE)
+            continue;
+        if (j->p_flags & PFROBOT)
+            continue;
+        if (!is_robot(j)) {
+            count++;
         }
    }
    return count;
