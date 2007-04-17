@@ -70,7 +70,7 @@ static int totalRobots(int team);
 static void exitRobot(void);
 static char * namearg(void);
 static int num_players(int *next_team);
-static void stop_this_bot(struct player * p);
+static void stop_this_bot(struct player * p, char *why);
 static void save_armies(struct player *p);
 static void resetPlanets(void);
 static void checkPreTVictory();
@@ -316,6 +316,7 @@ static int totalPlayers()
    int count = 0;
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j == me) continue;
         if (j->p_status == PFREE)
             continue;
         if (j->p_flags & PFROBOT)
@@ -334,6 +335,7 @@ static int num_humans(int team)
    int count = 0;
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+        if (j == me) continue;
         if (j->p_status == PFREE)
             continue;
         if (j->p_flags & PFROBOT)
@@ -365,6 +367,7 @@ static void stop_a_robot(void)
     int i;
     struct player *j;
     int teamToStop;
+    char *why = " to make room for a human player.";
 
     if(debugTarget != -1 && debugLevel == 3) {
         messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
@@ -384,8 +387,9 @@ static void stop_a_robot(void)
         if (j->p_status != PALIVE) continue;
         if (j->p_team != teamToStop) continue;
         if (j->p_armies) continue;
+        if (j == me) continue;
         if (is_robot(j)) {
-            stop_this_bot(j);
+            stop_this_bot(j, why);
             return;
         }
     }
@@ -394,8 +398,9 @@ static void stop_a_robot(void)
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status != PALIVE) continue;
         if (j->p_team != teamToStop) continue;
+        if (j == me) continue;
         if (is_robot(j)) {
-            stop_this_bot(j);
+            stop_this_bot(j, why);
             return;
         }
     }
@@ -414,7 +419,8 @@ static int totalRobots(int team)
             continue;
         if (j->p_status == POBSERV)
             continue;
-        if(team != 0 && j->p_team != team)
+        if (j == me) continue;
+        if (team != 0 && j->p_team != team)
             continue;
 
         if (is_robot(j))
@@ -424,7 +430,7 @@ static int totalRobots(int team)
    return count;
 }
 
-static void stop_this_bot(struct player *p)
+static void stop_this_bot(struct player *p, char *why)
 {
     p->p_ship.s_type = STARBASE;
     p->p_whydead=KQUIT;
@@ -433,8 +439,8 @@ static void stop_this_bot(struct player *p)
     p->p_whodead=0;
 
     pmessage(0, MALL, "Kathy->ALL", 
-        "Robot %s (%2s) was ejected to make room for a human player.",
-        p->p_name, p->p_mapchars);
+        "Robot %s (%2s) was ejected%s",
+        p->p_name, p->p_mapchars, why);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
 }
 
@@ -469,7 +475,7 @@ num_players(int *next_team)
 
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status != PFREE && j->p_status != POBSERV &&
-            !(j->p_flags & PFROBOT))
+            !(j->p_flags & PFROBOT) && j != me)
             {
                 team_count[j->p_team]++;
                 c++;
@@ -558,28 +564,23 @@ start_a_robot(char *team)
 
 static void cleanup(int unused)
 {
-    register struct player *j;
-    register int i, retry;
+    struct player *j;
+    int i, retry;
 
     do {
         /* terminate all robots */
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-            if ((j->p_status == PALIVE) && is_robot(j))
-                stop_this_bot(j);
+            if ((j->p_status == PALIVE) && j != me && is_robot(j))
+                stop_this_bot(j, " because Kathy is cleaning up.");
         }
 
         USLEEP(2000000); 
         retry=0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-            if ((j->p_status != PFREE) && is_robot(j))
+            if ((j->p_status != PFREE) && j != me && is_robot(j))
                 retry++;
         }
     } while (retry);            /* Some robots havn't terminated yet */
-
-    for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
-        if ((j->p_status != PALIVE) || (j == me)) continue;
-        getship(&(j->p_ship), j->p_ship.s_type);
-    }
 
     obliterate(1,KPROVIDENCE, 1);
     status->gameup &= ~GU_PRET;
@@ -676,6 +677,7 @@ static void obliterate(int wflag, char kreason, int killRobots)
             continue;
         if ((j->p_flags & PFROBOT) && killRobots == 0)
             continue;
+        if (j == me) continue;
         j->p_status = PEXPLODE;
         j->p_whydead = kreason;
         if (j->p_ship.s_type == STARBASE)
