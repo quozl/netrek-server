@@ -22,7 +22,7 @@ struct sysdef_array sysdefplanets =
 #define SYSDEF_FLOAT	1	/* a simple float value		*/
 #define SYSDEF_CHAR	2	/* a string value		*/
 #define SYSDEF_ARRAY	3	/* an array of flags to be set	*/
-#define SYSDEF_ROBOT	4	/* start_robot is to be set	*/
+#define SYSDEF_ROBOT	4	/* manager_type is to be set	*/
 #define SYSDEF_SHIP	5	/* shipvals is to be called	*/
 #define SYSDEF_NOTHING	6	/* unimplemented type, ignore	*/
 #define SYSDEF_END	-1	/* marks end of keyword table	*/

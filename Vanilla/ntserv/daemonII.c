@@ -297,7 +297,7 @@ int main(int argc, char **argv)
    }
 #endif
 
-   if (start_robot) fork_robot(start_robot);
+   if (manager_type) fork_robot(manager_type);
 
  restart:
 
@@ -584,7 +584,7 @@ static void political_end(int message)
 static void move()
 {
     static int oldmessage;
-    int old_robot, old_distortion, old_fps;
+    int old_manager_type, old_distortion, old_fps;
     static enum ts {
             TS_PICKUP, 
             TS_SCUMMERS,
@@ -635,7 +635,7 @@ static void move()
         }
         exitDaemon(0);
     }
-    old_robot = start_robot;
+    old_manager_type = manager_type;
     old_distortion = distortion;
     old_fps = fps;
     if (update_sys_defaults()) {
@@ -643,12 +643,13 @@ static void move()
             status->gameup |= GU_CHAOS;
         else
             status->gameup &= ~GU_CHAOS;
-        if (old_robot != start_robot) {
-            if (robot_pid) {             /* Terminate old Robot */
-                kill(robot_pid,SIGINT); 
-                robot_pid=0;
+        if (old_manager_type != manager_type) {
+            if (manager_pid) {
+                kill(manager_pid, SIGINT);
+                ERROR(8,("daemon: kill manager pid %d\n", manager_pid));
+                manager_pid = 0;
             }
-            if (start_robot) fork_robot(start_robot);
+            if (manager_type) fork_robot(manager_type);
         }
 
         /* allow for change to distortion timer */
@@ -4156,7 +4157,7 @@ static void rescue(int team, int target)
     u_int argc = 0;
     int pid;
 
-    if ((pid = vfork()) == 0) {
+    if ((pid = fork()) == 0) {
         if (!opt_debug) {
             (void) close(0);
             (void) close(1);
@@ -4202,9 +4203,8 @@ static void rescue(int team, int target)
         fflush(stderr);
         _exit(1);                /* NBT exit just in case a robot couldn't
                                     be started                              */
-    }
-    else if (opt_debug) {
-            ERROR(1,( "Forking robot: pid is %d\n", pid));
+    } else {
+        ERROR(8,( "daemon: forked rescue robot pid %d\n", pid));
     }
 }
 
@@ -4415,9 +4415,9 @@ static void displayBest(FILE *conqfile, int team, int type)
 
 static void fork_robot(int robot)
 {
-   if ((robot_pid=vfork()) == 0) {
+   if ((manager_pid = fork()) == 0) {
       alarm_prevent_inheritance();
-      switch(robot) {
+      switch (robot) {
         case NO_ROBOT: break;
 #ifdef BASEPRACTICE
         case BASEP_ROBOT:
@@ -4451,9 +4451,11 @@ static void fork_robot(int robot)
                 execl(Inl, "inl", (char *) NULL);
                 perror(Inl);
                 break;
-        default: ERROR(1,( "Unknown Robot: %d\n", robot ));
+        default: ERROR(1,("daemon: unknown robot: %d\n", robot ));
       }
       _exit(1);
+   } else {
+      ERROR(8,( "daemon: forked game manager pid %d\n", manager_pid));
    }
 }
 

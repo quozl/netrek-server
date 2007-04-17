@@ -112,8 +112,8 @@ int     loggod=0;
 int   eventlog=0;
 #endif
 
-int	start_robot = 0;
-int	robot_pid = 0;
+int	manager_type = 0;
+int	manager_pid = 0;
 
 #ifdef FEATURES
 char	*version;

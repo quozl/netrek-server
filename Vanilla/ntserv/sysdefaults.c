@@ -64,7 +64,7 @@ void readsysdefaults(void)
     maxups = fps;
     minups = 1;
     defups = maxups;
-    start_robot = NO_ROBOT;
+    manager_type = NO_ROBOT;
     strcpy(Motd,N_MOTD);
 
     getshipdefaults();
@@ -113,7 +113,7 @@ void readsysdefaults(void)
 		    break;
 		case SYSDEF_ROBOT:
 		    /* cast from pointer to integer of different size [ok] */
-		    if (atoi(s)) start_robot = (int) sysdef_keywords[j].p;
+		    if (atoi(s)) manager_type = (int) sysdef_keywords[j].p;
 		    break;
 		case SYSDEF_SHIP:
 		    shipdefs (atoi(s),f);
@@ -146,14 +146,14 @@ void readsysdefaults(void)
     if (ping_ghostbust_interval <= 0) ping_ghostbust_interval = 1;
 
 #ifdef BASEPRACTICE
-    if (start_robot == BASEP_ROBOT) {
+    if (manager_type == BASEP_ROBOT) {
       binconfirm=0;	/* allow robots to join	*/
       sbrank=0;		/* no SB restriction	*/
       check_scum=0;
     }
 #endif
 
-    if (start_robot == INL_ROBOT) {
+    if (manager_type == INL_ROBOT) {
       tournplayers=1;
       ddrank=0;		/* no DD restriction		*/
       garank=0;		/* no GA restriction		*/

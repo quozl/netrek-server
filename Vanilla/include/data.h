@@ -156,8 +156,8 @@ extern int RSA_Client;
 extern char testdata[16];
 #endif
 
-extern int start_robot;
-extern int robot_pid;
+extern int manager_type;
+extern int manager_pid;
 
 #ifdef FEATURES
 extern char *version;
