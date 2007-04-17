@@ -241,12 +241,12 @@ int main(int argc, char **argv)
     }
     else {
       if (plfd < 0) {
-        ERROR(1,( "No planet file.  Restarting galaxy\n"));
+        ERROR(1,("daemon: no planet file, restarting galaxy\n"));
         doResources();
       }
       else {
         if (read(plfd, (char *) planets, sizeof(pdata)) != sizeof(pdata)) {
-            ERROR(1,("Planet file wrong size.  Restarting galaxy\n"));
+            ERROR(1,("daemon: planet file wrong size, restarting galaxy\n"));
             doResources();
         }
         (void) close(plfd);
@@ -255,12 +255,12 @@ int main(int argc, char **argv)
 
     glfd = open(Global, O_RDWR, 0744);
     if (glfd < 0) {
-        ERROR(1,( "No global file.  Resetting all stats\n"));
+        ERROR(1,("daemon: no global file, resetting stats\n"));
         MZERO((char *) status, sizeof(struct status));
     } else {
         if (read(glfd, (char *) status, sizeof(struct status)) != 
             sizeof(struct status)) {
-            ERROR(1,( "Global file wrong size.  Resetting all stats\n"));
+            ERROR(1,("daemon: global file wrong size, resetting stats\n"));
             MZERO((char *) status, sizeof(struct status));
         }
         (void) close(glfd);
@@ -312,7 +312,7 @@ int main(int argc, char **argv)
     }
     else 
     {
-        ERROR(1,("Unable to get puck semaphore."));
+        ERROR(1,("daemon: unable to get puck semaphore."));
     }
 #endif /*PUCK_FIRST*/
 
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
         }
         if (opt_debug) {
             if (!(++x % 50))
-                ERROR(1,("Mark %d\n", x));
+                ERROR(1,("daemon: mark %d\n", x));
             if (x > 10000) x = 0;                       /* safety measure */
         }
     }
@@ -485,7 +485,7 @@ static int check_scummers(int verbose)
             pmessage(0,MALL,"GOD->ALL","They have been noted for god to review.");
             pmessage(0,MALL,"GOD->ALL", "*****************************************");
             if ((fp = fopen (Scum_File,"a"))==NULL) {
-                ERROR(1,("Unable to open scum file.\n"));
+                ERROR(1,("daemon: unable to open scum file.\n"));
                 return 1;
             }
             fprintf(fp,"POSSIBLE T-MODE SCUMMERS FOUND!!! (slots %d and %d) ",i,who);
@@ -624,12 +624,12 @@ static void move()
     if (++context->frame == dietime) {/* no player for 1 minute. kill self */
         blog_game_over(&context->start, status);
         if (opt_debug) {
-            ERROR(1,("Ho hum.  1 minute, no activity...\n"));
+            ERROR(1,("daemon: ho hum, no activity...\n"));
         }
         else {
-            ERROR(3,("Self-destructing the daemon!\n"));
+            ERROR(3,("daemon: self-destructing\n"));
 #ifdef SELF_RESET /* isae -- reset the galaxy when the daemon dies */
-            ERROR(3,( "Resetting the galaxy!\n"));
+            ERROR(3,("daemon: resetting galaxy!\n"));
             doResources();
 #endif
         }
@@ -872,7 +872,7 @@ static void udplayerpause(void) {
     }
 
     if (++(j->p_ghostbuster) > GHOSTTIME) {
-      ERROR(4,("daemonII/udplayerpause: %s: ship ghostbusted (wd=%d)\n", 
+      ERROR(4,("daemon/udplayerpause: %s: ship ghostbusted (wd=%d)\n", 
                    j->p_mapchars, j->p_whydead));
       ghostmess(j, "no ping in pause");
       j->p_status = PDEAD;
@@ -885,11 +885,12 @@ static void udplayerpause(void) {
       j->p_ghostbuster = 0;
 
       saveplayer(j);
-      ERROR(8,("daemonII/udplayerpause: %s: sending SIGTERM to %d\n", 
+      ERROR(8,("daemon/udplayerpause: %s: sending SIGTERM to %d\n", 
                j->p_mapchars, j->p_process));
 
       if (kill (j->p_process, SIGTERM) < 0)
-        ERROR(1,("daemonII/udplayerpause:  kill failed!\n"));
+        ERROR(1,("daemon/udplayerpause: kill(%d, SIGTERM) failed!\n",
+                 j->p_process));
 
       /* let's be safe */
       freeslot(j);
@@ -919,7 +920,7 @@ static void udplayers_poutfit(struct player *j)
         }
 
         if (++(j->p_ghostbuster) > outfitdelay) {
-                ERROR(4,("%s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n", 
+                ERROR(4,("daemon: %s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n", 
                          j->p_mapchars, j->p_ghostbuster,
                          outfitdelay, j->p_whydead));
                 if (j->p_whydead == KGHOST) {
@@ -929,12 +930,12 @@ static void udplayers_poutfit(struct player *j)
                 }
                 saveplayer(j);
                 if (j->p_process > 1) {
-                        ERROR(8,("%s: sending SIGTERM to %d\n",
+                        ERROR(8,("daemon: %s: sending SIGTERM to %d\n",
                                  j->p_mapchars, j->p_process));
                         if (kill (j->p_process, SIGTERM) < 0)
-                                ERROR(1,("daemonII/udplayers: kill failed!\n"));
+                                ERROR(1,("daemon/udplayers: kill failed!\n"));
                 } else {
-                        ERROR(1,("daemonII/udplayers:  bad p_process!\n"));
+                        ERROR(1,("daemon/udplayers: bad p_process!\n"));
                         freeslot(j);
                 }
         }
@@ -1324,7 +1325,7 @@ static void udplayers_palive_check_ghostbuster(struct player *j)
 {
         if (++(j->p_ghostbuster) > GHOSTTIME) {
                 p_explosion(j, KGHOST, j->p_no);
-                ERROR(4,("daemonII/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
+                ERROR(4,("daemon/udplayers: %s: ship ghostbusted (gb=%d,gt=%d)\n", j->p_mapchars, j->p_ghostbuster, GHOSTTIME));
         }
 }
 
@@ -3643,7 +3644,7 @@ static void exitDaemon(int sig)
     if (sig) HANDLE_SIG(sig,exitDaemon);
     if (sig!=SIGINT) {
         if(sig) {
-            ERROR(2,("exitDaemon: got signal %d\n", sig));
+            ERROR(2,("daemon: got signal %d\n", sig));
             fflush(stderr);
         }
 
@@ -3654,7 +3655,7 @@ static void exitDaemon(int sig)
             return;
 
         if (sig) {
-            ERROR(1,( "exitDaemon: going down on signal %d\n", sig));
+            ERROR(1,( "daemon: going down on signal %d\n", sig));
             fflush(stderr);
         }
     }
@@ -3671,10 +3672,9 @@ static void exitDaemon(int sig)
         j->p_whydead = KDAEMON;
         j->p_ntorp = 0;
         j->p_nplasmatorp = 0;
-	/* todo: fps support, use of a fuse */
         j->p_explode = 600/PLAYERFUSE; /* ghost buster was leaving players in */
         if (j->p_process > 1) {
-            ERROR(8,("%s: sending SIGTERM\n", j->p_mapchars));
+            ERROR(8,("daemon: %s: sending SIGTERM\n", j->p_mapchars));
             (void) kill (j->p_process, SIGTERM);
         }
     }
@@ -3688,12 +3688,12 @@ static void exitDaemon(int sig)
     sleep(2);
 #endif
     if (!removemem())
-        ERROR(1,("exitDaemon: cannot removed shared memory segment"));
+        ERROR(1,("daemon: cannot removed shared memory segment"));
 
 #ifdef PUCK_FIRST
     if(pucksem_id != -1)
         if (semctl(pucksem_id, 0, IPC_RMID, pucksem_arg) == -1)
-          ERROR(1,("exitDaemon: cannot remove puck semaphore"));
+          ERROR(1,("daemon: cannot remove puck semaphore"));
 #endif /*PUCK_FIRST*/
 
     switch(sig){
@@ -4217,7 +4217,8 @@ static void reaper(int sig)
     int pid, status;
 
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        if (opt_debug) ERROR(1,("reaper: pid is %d (status: %d)\n", pid, status));
+        ERROR(1,("daemon: child process %d terminated with status %d\n",
+                 pid, status));
     }
 }
 
@@ -4593,7 +4594,7 @@ static void signal_puck(void)
             {
                 if (errno == ESRCH) 
                 {
-                    ERROR(1,("daemonII/signal_puck: slot %d missing\n", i));
+                    ERROR(1,("daemon/signal_puck: slot %d missing\n", i));
                     freeslot(j);
                 }
             }
