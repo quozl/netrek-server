@@ -169,7 +169,7 @@ main(argc, argv)
     team1 = (random()%2) ? FED : KLI;
     team2 = (random()%2) ? ROM : ORI;
 
-    me->p_status = PALIVE;              /* Put robot in game */
+    me->p_status = POBSERV;              /* Put robot in game */
     resetPlanets();
 
     while ((status->gameup) & GU_GAMEOK) {
@@ -188,7 +188,7 @@ void checkmess()
     static int time_in_T = 0;
 
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
-    if (me->p_status != PALIVE){  /*So I'm not alive now...*/
+    if (me->p_status != POBSERV){  /*So I'm not alive now...*/
         ERROR(2,("ERROR: Kathy died??\n"));
         cleanup(0);   /*Kathy is dead for some unpredicted reason like xsg */
     }
@@ -574,7 +574,7 @@ static void cleanup(int unused)
                 stop_this_bot(j, " because Kathy is cleaning up.");
         }
 
-        USLEEP(2000000); 
+        USLEEP(2000000);
         retry=0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
             if ((j->p_status != PFREE) && j != me && is_robot(j))
@@ -582,7 +582,7 @@ static void cleanup(int unused)
         }
     } while (retry);            /* Some robots havn't terminated yet */
 
-    obliterate(1,KPROVIDENCE, 1);
+    obliterate(1, KPROVIDENCE, 1);
     status->gameup &= ~GU_PRET;
     queues[QU_PRET_PLR].q_flags ^= QU_REPORT;
     queues[QU_PRET_OBS].q_flags ^= QU_REPORT;
