@@ -488,6 +488,7 @@ struct player {
     struct specialweapon p_weapons[NUMSPECIAL];
 #endif
     int p_inlcaptain;           /* Player is an INL captain */
+    int p_ip_duplicates;        /* ignore this slot for duplicate ip check */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
 

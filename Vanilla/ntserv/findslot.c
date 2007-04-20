@@ -27,6 +27,7 @@ static int playing_count_by_ip(int w_queue) {
     if (is_robot(&players[i])) continue;
     /* if we want a pickup slot, ignore any observer slot we have */
     if (w_queue == QU_PICKUP && players[i].p_status == POBSERV) continue;
+    if (players[i].p_ip_duplicates) continue;
     if (strcmp(players[i].p_ip, ip) == 0) j++;
   }
   return j;

@@ -473,8 +473,10 @@ static int check_scummers(int verbose)
 #endif
           {
             if (strcmp(me->p_ip, them->p_ip) == 0) {
+              if (!them->p_ip_duplicates) {
                 who=j;
                 num++;
+              }
             }
           }
         }

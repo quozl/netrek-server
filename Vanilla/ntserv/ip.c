@@ -221,6 +221,21 @@ int ip_hide(char *ip) {
   return flag_test(name_etc("hide", ip));
 }
 
+/* duplicates, whether to allow multiple connections from this ip */
+int ip_duplicates(char *ip) {
+  return flag_test(name_etc("duplicates", ip));
+}
+
+/* duplicates, allow them */
+void ip_duplicates_set(char *ip) {
+  return flag_set(name_etc("duplicates", ip));
+}
+
+/* duplicates, deny them */
+void ip_duplicates_clear(char *ip) {
+  return flag_clear(name_etc("duplicates", ip));
+}
+
 /* global mute, default others :ita to individual, team and all ignore */
 int ip_mute(char *ip) {
   if (ip == NULL || ip[0] == '\0') return 0;

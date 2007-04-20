@@ -1130,7 +1130,26 @@ void do_admin(char *comm, struct message *mess)
     }
   }
 
-  if (!strcmp(one, "mute")) {
+  if (!strcmp(one, "duplicates")) {
+    if (them == NULL) return;
+    if (!strcmp(them->p_ip, "127.0.0.1")) {
+      pmessage(who, MINDIV, addr,
+               "admin: cannot tweak duplicates for hidden ip or local slots");
+      /* instead, manually touch ${SYSCONFDIR}/ip/duplicates/127.0.0.1 */
+      return;
+    }
+    if (them->p_ip_duplicates) {
+      ip_duplicates_clear(them->p_ip);
+      them->p_ip_duplicates = 0;
+      pmessage(who, MINDIV, addr, "admin: duplicates flag cleared for %s",
+               them->p_ip);
+    } else {
+      ip_duplicates_set(them->p_ip);
+      them->p_ip_duplicates = 1;
+      pmessage(who, MINDIV, addr, "admin: duplicates flag set for %s",
+               them->p_ip);
+    }
+  } else if (!strcmp(one, "mute")) {
     pmessage(who, MINDIV, addr, "admin: erm, send 'em a \"mute on\"");
   } else if (!strcmp(one, "quit")) {
     if (them == NULL) return;

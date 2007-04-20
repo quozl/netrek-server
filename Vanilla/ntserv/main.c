@@ -303,6 +303,8 @@ int main(int argc, char **argv)
 
     logEntry(); /* moved down to get login/monitor 2/12/92 TMC */
 
+    me->p_ip_duplicates = ip_duplicates(me->p_ip) ||
+                          ip_duplicates(me->p_full_hostname);
     whitelisted = ip_whitelisted(me->p_ip);
     if (whitelisted) {
       strcpy(me->p_full_hostname, "hidden");
