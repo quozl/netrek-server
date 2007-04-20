@@ -216,7 +216,7 @@ void checkmess()
     /* Check to see if we should start adding bots again */
     if ((ticks % ROBOCHECK) == 0) {
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
-            messAll(255,roboname,"Pre-t Entertainment starting back up.");
+            messAll(255,roboname,"Pre-T entertainment starting back up.");
             realT = 0;
         }
 
