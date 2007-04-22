@@ -34,6 +34,7 @@ static void Usage(void)
       C(lock, surrender -- set it)  (to 6 minutes (debugging aid))\n\
       L(oss adjust, SB (-1))        (in case you toast an SB accidentally)\n\
       R(obot obliterate)            (like obliterate, but only for robots)\n\
+      r(epair)                      (Full repair [shields + hull + fuel])\n\
 ");
   exit(1);
 }
@@ -290,6 +291,13 @@ int main(int argc, char **argv)
 #else
       players[player].p_stats.st_sblosses--;
 #endif
+      break;
+    case 'r':           /* repair ship */
+      players[player].p_shield = players[player].p_ship.s_maxshield;
+      players[player].p_damage = 0;
+      players[player].p_etemp = 0;
+      players[player].p_wtemp = 0;
+      players[player].p_fuel = players[player].p_ship.s_maxfuel;
       break;
     default:
       Usage();
