@@ -22,5 +22,9 @@ int main(int argc, char **argv)
     printf("%s\n", LOCALSTATEDIR);
     return 0;
   }
+  if (!strcmp(argv[1], "--help")) {
+    printf("Usage: %s [--libdir] [--sysconfdir] [--localstatedir]\n", argv[0]);
+    return 0;
+  }
   return 1;
 }
