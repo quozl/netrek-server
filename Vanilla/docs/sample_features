@@ -88,7 +88,7 @@ CHECK_PLANETS         S       ON
 # setting here, this will be turned on for observers.
 SHOW_ALL_TRACTORS     S       OFF
 # army counts next to planets
-SHOW_ARMY_COUNT       S       ON
+SHOW_ARMY_COUNT       S       OFF
 # show other player's speed
 SHOW_OTHER_SPEED      S       OFF
 # show other cloakers on tactical map
