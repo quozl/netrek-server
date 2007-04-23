@@ -93,6 +93,12 @@ SHOW_ARMY_COUNT       S       OFF
 SHOW_OTHER_SPEED      S       OFF
 # show other cloakers on tactical map
 SHOW_CLOAKERS         S       OFF
+# allow turning via keyboard
+TURN_KEYS             S       ON
+# Allow clients to show the range at which enemy ships can see you as a circle
+# on the galactic map.  This information can be derived by the client by
+# mimicing the function udplayersight() in daemonII.c.
+SHOW_VISIBILITY_RANGE         S       ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.

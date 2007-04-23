@@ -58,6 +58,8 @@ struct feature_var feature_vars[] = {
    { "FULL_DIRECTION_RESOLUTION",	&F_full_direction_resolution},
    { "FULL_WEAPON_RESOLUTION",	&F_full_weapon_resolution},
    { "CHECK_PLANETS",		&F_check_planets},
+   { "TURN_KEYS",		&F_turn_keys},
+   { "SHOW_VISIBILITY_RANGE",	&F_show_visibility_range},
    { NULL, NULL },
 };
 

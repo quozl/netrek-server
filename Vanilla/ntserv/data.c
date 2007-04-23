@@ -413,6 +413,9 @@ int F_check_planets = 0;		/* allow client to confirm
 int F_show_army_count = 0;		/* army count by planet */
 int F_show_other_speed = 0;		/* show other player's speed */
 int F_show_cloakers = 0;		/* show other cloakers on tactical */
+int F_turn_keys = 0;			/* use keyboard to turn */
+int F_show_visibility_range = 0;	/* allow client to show range at
+					 * which enemies can see self */
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 int observer_muting = 0;
