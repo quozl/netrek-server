@@ -26,6 +26,17 @@ and configure the server to deal with these.  It will accept an alternate path
 to the directory into which the server is to be installed.  This is called
 LIBDIR and defaults to /usr/local/games/netrek
 
+In some cases it has been reported that the configure script is unable to
+locate the GNU DBM library and development headers.  This is normally the
+case when the library and headers are installed in a non-standard location.
+To resolve this you must pass an additional set of arguments to the configure
+script; these arguments are specified as:
+
+CFLAGS=-I/path/to/gdbm/headers LDFLAGS=/path/to/gdbm/libs ./configure
+
+as always you can specify "--prefix=/path/to/install/to" or any other
+configure arguments to the end of the above line.
+
 Configure will make two files for the server to deal with the differences. 
 These are config.h and system.mk.  
 
@@ -44,19 +55,25 @@ Once everything is compiled and installed you may wish to edit the server
 configuration files for your requirements.  Here are some of the files and what
 they do:
 
-	.sysdef 	- tunable parameters
-	.time		- playable/clue hours in it
-	.banned		- list of players that are banned from server
-	.clue-bypass	- list of players that don't have to go through
+	sysdef 		- tunable parameters
+	ports		- specifies ports used to connect to this server
+	time		- playable/clue hours in it
+	banned		- list of players that are banned from server
+	bypass		- list of players that are allowed on an RSA server
+			  if playing with a non-RSA client.
+	clue-bypass	- list of players that don't have to go through
 			  clue checking
-	.conquer	- server's conquest stats output
-	.features	- list of special features allowed at the server
+	conquer		- server's conquest stats output
+	features	- list of special features allowed at the server
 			  that some clients might have. Some of these
-			  features may be considered 'borgish'.
-	.motd		- This is the information about the server for the
-			  players.
-	.motd_clue	- Another motd for clue playing hours.
-	.reserved	- RSA public/global key listing for verification
+			  features may be considered 'borgish'
+	motd		- this is the information about the server for the
+			  players
+	motd_clue	- another motd for clue playing hours
+	reserved	- RSA public/global key listing for verification
+
+These files are located in the "etc" sub-directory of the directory you
+installed the server into.
 
 If the install worked then go to the installation directory. There are two
 programs that should be running all the time.  They are:
