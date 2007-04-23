@@ -909,7 +909,6 @@ static void udplayers_poutfit(struct player *j)
                 outfitdelay = LOGINTIME;
                 break;
         case KQUIT:
-        case KPROVIDENCE:
         case KBADBIN:
                 outfitdelay = GHOSTTIME;
                 break;
