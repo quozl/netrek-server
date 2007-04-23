@@ -72,8 +72,9 @@ they do:
 	motd_clue	- another motd for clue playing hours
 	reserved	- RSA public/global key listing for verification
 
-These files are located in the "etc" sub-directory of the directory you
-installed the server into.
+Normally, these files are located in the "etc" sub-directory of the
+directory you installed the server into.  But you can also configure
+the source with --sysconfdir to place them somewhere else.
 
 If the install worked then go to the installation directory. There are two
 programs that should be running all the time.  They are:
