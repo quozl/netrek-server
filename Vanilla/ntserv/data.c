@@ -456,4 +456,4 @@ double adderupgradecost[]= { 0.0, 0.2, 0.5, 0.1, 1.5, 1.0, 0.1, 0.1, 0.5, 1.5,
 int starbase_rebuild_time = 30;
 
 /* size of most recent UDP buffer, for debug purposes */
-lastudpsize = 0;
+int lastudpsize = 0;
