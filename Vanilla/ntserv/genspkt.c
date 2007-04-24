@@ -1469,7 +1469,9 @@ static int parseQuery(struct message *msg)
 	return bounceSBStats(msg->m_from);
 	if (*cchar == '@' && *(cchar+1) == '\0')
 	return bounceWhois(msg->m_from);
-
+    /* UDP stats */
+    if (strcmp(cchar, "udpstats")==0)
+        return bounceUDPStats(msg->m_from);
     /* DEBUG */
     if (strcmp(cchar, "debug")==0){
 	char	  buf[80];

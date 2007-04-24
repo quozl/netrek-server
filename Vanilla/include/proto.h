@@ -153,6 +153,7 @@ int bounceSBStats(int from);
 #ifdef PING
 int bouncePingStats(int from);
 #endif
+int bounceUDPStats(int from);
 #ifdef RSA
 int bounceRSAClientType(int from);
 #endif

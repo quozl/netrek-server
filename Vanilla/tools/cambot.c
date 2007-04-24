@@ -46,6 +46,7 @@ int bounceSBStats(int from) {return 0;}
 int bouncePingStats(int from) {return 0;}
 int bounceSessionStats(int from) {return 0;}
 int bounceWhois(int from) {return 0;}
+int bounceUDPStats(int from) {return 0;}
 #ifdef RSA
 int bounceRSAClientType (int from) { if (from) ; return 0; }
 #endif

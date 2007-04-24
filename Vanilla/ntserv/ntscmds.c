@@ -624,6 +624,15 @@ int bouncePingStats(int from)
 }
 #endif
 
+int bounceUDPStats(int from)
+{
+    bounce(from,
+        "%c%c last UDP update size: %d",
+        me->p_mapchars[0], me->p_mapchars[1],
+        lastudpsize);
+    return 1;
+}
+
 int bounceWhois(int from)
 {
     char msgbuf[255];

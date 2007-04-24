@@ -648,11 +648,12 @@ void updateClient(void)
 	updatePlanets();
 	updateMessages();
 	/* EXPERIMENT:  Don't inflate large packet with non-crucial stuff  S_P2 */
-	if(F_full_direction_resolution || SizeOfUDPUpdate() < 60)
+	lastudpsize = SizeOfUDPUpdate();
+	if(F_full_direction_resolution || lastudpsize < 60)
 	    updateStatus(TRUE);
 	else
 	    updateStatus(FALSE);  /* Update only if status->torn changes */
-	if(F_full_direction_resolution || SizeOfUDPUpdate() < 75)
+	if(F_full_direction_resolution || lastudpsize < 75)
 	    updatePlayerStats();
     } else {
 	updateTorps();
