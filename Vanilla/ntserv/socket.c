@@ -653,12 +653,11 @@ void updateClient(void)
 	updatePlanets();
 	updateMessages();
 	/* EXPERIMENT:  Don't inflate large packet with non-crucial stuff  S_P2 */
-	lastudpsize = SizeOfUDPUpdate();
-	if(F_full_direction_resolution || lastudpsize < MAXSIZEFORSTATUS)
+	if(F_full_direction_resolution || SizeOfUDPUpdate() < MAXSIZEFORSTATUS)
 	    updateStatus(TRUE);
 	else
 	    updateStatus(FALSE);  /* Update only if status->torn changes */
-	if(F_full_direction_resolution || lastudpsize < MAXSIZEFORPSTATS)
+	if(F_full_direction_resolution || SizeOfUDPUpdate() < MAXSIZEFORPSTATS)
 	    updatePlayerStats();
     } else {
 	updateTorps();
@@ -673,6 +672,7 @@ void updateClient(void)
 	updatePlayerStats();
     }
 
+    lastudpsize = SizeOfUDPUpdate();
     if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==buf)) {
 	/* We sent nothing!  We better send something to wake him */
 	updateSelf(TRUE);
