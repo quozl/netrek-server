@@ -292,7 +292,7 @@ void checkmess()
                 realT = 1;
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
-                obliterate(1,KPROVIDENCE, 0);
+                obliterate(0, KPROVIDENCE, 0);
                 resetPlanets();
             }
         }
@@ -639,7 +639,7 @@ static void checkPreTVictory() {
 
     if(winner > 0) {
         messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
-        obliterate(1,KPROVIDENCE, 0);
+        obliterate(0, KPROVIDENCE, 0);
         resetPlanets();
     }
 }
@@ -776,15 +776,13 @@ static void obliterate(int wflag, char kreason, int killRobots)
     for (j = firstPlayer; j<=lastPlayer; j++) {
         if (j->p_status == PFREE)
             continue;
+        if (j->p_status == POBSERV)
+            continue;
         if ((j->p_flags & PFROBOT) && killRobots == 0)
             continue;
         if (j == me) continue;
-        j->p_status = PEXPLODE;
-        j->p_whydead = kreason;
-        if (j->p_ship.s_type == STARBASE)
-            j->p_explode = 2 * SBEXPVIEWS ;
-        else
-            j->p_explode = 10 ;
+	j->p_armies = 0;
+	j->p_kills = 0;
         j->p_ntorp = 0;
         j->p_nplasmatorp = 0;
         if (wflag == 1)
