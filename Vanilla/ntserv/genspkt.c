@@ -27,6 +27,7 @@
 #define TRUE 1
 
 /* file scope prototypes */
+static void updateFlags(void);
 static void updateVPlayer(struct player_spacket *p);
 static void sendVPlayers(void);
 void sendVPlanets(void);
@@ -336,8 +337,7 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
         mask = INVISOMASK;
     }
     masked = htonl(pl->p_flags & mask);
-    if (flags->flags == masked && flags->tractor == tractor
-	&& !F_full_direction_resolution)
+    if (flags->flags == masked && flags->tractor == tractor)
         /* Nothing has changed, don't send a packet */
         return FALSE;
 
@@ -348,6 +348,54 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
 
     sendClientPacket(flags);
     return (TRUE);
+}
+
+/* This function is activated for clients using the F_newflags feature packet,
+   and is used to send all player's critical flags (cloak and shield) and
+   status (PALIVE or not) every update for those using SP_PLAYER, which lacks
+   the improved short packets flag handling used in SP_S_PLAYER packets.  This
+   information is stored in the n_flags[i] array, similiar to how it is set in
+   updateShips() for those using S_P2.  The packet format is designed to be
+   compatable with how clients would handle a short packets flags header, see
+   new_flags() in any COW-derived client. */
+void updateFlags(void)
+{
+    struct player *pl;
+    struct newflags_spacket *newflags;
+    int i, j, new = 0;
+
+    newflags = calloc(1, sizeof(struct newflags_spacket));
+
+    /* Only support for players 0-15, can always send a 2nd
+       packet for players 16-31 if the # of players is ever
+       increased.  Clients only process 16 players per 
+       new_flags() call.  */
+    for(i=0, j=0, pl=players; i < 16 && i < MAXPLAYER; i++, j += 2, pl++) {
+	switch(pl->p_status){
+	    case PALIVE:
+		if(pl->p_flags & PFCLOAK)
+		    n_flags[i] = 1;
+		else if(pl->p_flags & PFSHIELD)
+		    n_flags[i] = 2;
+		else
+		    n_flags[i] = 3;
+		break;
+	    /* case POBSERV:
+		Observer support would go here */
+	    case PEXPLODE:
+	    case PDEAD:
+ 		n_flags[i] = 0;
+		break;
+	    default: /* Treat as dead */
+ 		n_flags[i] = 0;
+		break;
+	}
+	new = new | ((unsigned int)n_flags[i] << j);
+    }
+    newflags->type = SP_NEWFLAGS;
+    newflags->flags = (long) htonl(new);
+    sendClientPacket(newflags);
+    free(newflags);
 }
 
 static int observed_status(struct player *pl)
@@ -1295,6 +1343,14 @@ updateShips(void)
     /* S_P2 */
     if(send_short > 1)
 	sendVKills();
+
+    if (F_newflags) {
+	if (send_short) {
+	    if (F_full_direction_resolution)
+		updateFlags();
+	}
+	else updateFlags();
+    }
 }
 
 void
