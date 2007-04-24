@@ -79,8 +79,8 @@
 /* variable length packets */
 #define VPLAYER_SIZE    4
 #define TOTAL_SPACKETS  62
-#define SP2SHORTVERSION 11      /* other number blocks, like UDP Version */
-#define OLDSHORTVERSION 10      /* S_P2 */
+#define SP2SHORTVERSION 11      /* S_P2 */
+#define OLDSHORTVERSION 10      /* Short packets version 1 */
 
 /* 51-54 unused */
 
