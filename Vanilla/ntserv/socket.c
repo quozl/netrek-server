@@ -607,6 +607,11 @@ int isClientDead(void)
 void updateClient(void)
 {
 
+    int MAXSIZEFORSTATUS, MAXSIZEFORPSTATS;
+
+    MAXSIZEFORSTATUS = 60 + (F_sp_generic_32 ? SP_GENERIC_32 : 0);
+    MAXSIZEFORPSTATS = 75 + (F_sp_generic_32 ? SP_GENERIC_32 : 0);
+
 #ifdef SHORT_THRESHOLD
     static int skip = 0;	/* If skip is set we skip next update */
     /* This can halve your updates */
@@ -649,11 +654,11 @@ void updateClient(void)
 	updateMessages();
 	/* EXPERIMENT:  Don't inflate large packet with non-crucial stuff  S_P2 */
 	lastudpsize = SizeOfUDPUpdate();
-	if(F_full_direction_resolution || lastudpsize < 60)
+	if(F_full_direction_resolution || lastudpsize < MAXSIZEFORSTATUS)
 	    updateStatus(TRUE);
 	else
 	    updateStatus(FALSE);  /* Update only if status->torn changes */
-	if(F_full_direction_resolution || lastudpsize < 75)
+	if(F_full_direction_resolution || lastudpsize < MAXSIZEFORPSTATS)
 	    updatePlayerStats();
     } else {
 	updateTorps();
