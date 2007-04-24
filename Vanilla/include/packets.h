@@ -64,6 +64,7 @@
 #endif
 
 #define SP_GENERIC_32	32		/* 32 byte generic, see struct */
+#define SP_NEWFLAGS	33		/* Critical flag handling */
 #define SP_SHIP_CAP	39		/* Handles server ship mods */
 
 #define SP_S_TORP       47              /* variable length torp packet */
@@ -973,6 +974,11 @@ struct generic_32_spacket {
     packet.version = GENERIC_32_VERSION;
     if (sizeof(struct generic_32_spacket) != GENERIC_32_LENGTH) abort();
 */
+
+struct newflags_spacket {
+    char	type;		/* SP_NEWFLAGS */
+    int 	flags;
+};
 
 #ifdef FEATURE_PACKETS
 

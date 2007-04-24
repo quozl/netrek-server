@@ -72,7 +72,7 @@ int sizes[TOTAL_SPACKETS] = {
     0,						/* 31 */
 #endif
     sizeof(struct generic_32_spacket),		/* SP_GENERIC_32 */
-    0,						/* 33 */
+    sizeof(struct newflags_spacket),		/* SP_NEWFLAGS */
     0,						/* 34 */
     0,						/* 35 */
     0,						/* 36 */
