@@ -216,13 +216,13 @@ void checkmess()
     /* Check to see if we should start adding bots again */
     if ((ticks % ROBOCHECK) == 0) {
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
-            messAll(255,roboname,"Pre-T entertainment starting back up.");
+            messAll(255,roboname,"**** Pre-T Entertainment starting back up. ***");
             realT = 0;
         }
 
         if (num_humans(0) < 8 && realT) {
             if((no_bots % 60) == 0) {
-                messAll(255,roboname,"Pre-T entertainment will start in %d minutes if T-mode doesn't return...",
+                messAll(255,roboname,"Pre-T Entertainment will start in %d minutes if T-mode doesn't return...",
                         (((300<time_in_T)?300:time_in_T)-no_bots)/60);
             }
             no_bots += ROBOCHECK / PERSEC;
