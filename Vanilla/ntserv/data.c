@@ -455,5 +455,5 @@ double adderupgradecost[]= { 0.0, 0.2, 0.5, 0.1, 1.5, 1.0, 0.1, 0.1, 0.5, 1.5,
 /* starbase rebuild time first implemented by TC in 1992-04-15 */
 int starbase_rebuild_time = 30;
 
-/* size of most recent UDP buffer, for debug purposes */
-int lastudpsize = 0;
+/* size of most recent UDP packet sent, for use by udpstats command */
+int last_udp_size = 0;

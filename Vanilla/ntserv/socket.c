@@ -606,11 +606,9 @@ int isClientDead(void)
 
 void updateClient(void)
 {
-
-    int MAXSIZEFORSTATUS, MAXSIZEFORPSTATS;
-
-    MAXSIZEFORSTATUS = 60 + (F_sp_generic_32 ? SP_GENERIC_32 : 0);
-    MAXSIZEFORPSTATS = 75 + (F_sp_generic_32 ? SP_GENERIC_32 : 0);
+    int cost_generic_32 = (F_sp_generic_32 ? SP_GENERIC_32 : 0);
+    int threshold_1 = 60 + cost_generic_32;
+    int threshold_2 = 75 + cost_generic_32;
 
 #ifdef SHORT_THRESHOLD
     static int skip = 0;	/* If skip is set we skip next update */
@@ -653,11 +651,11 @@ void updateClient(void)
 	updatePlanets();
 	updateMessages();
 	/* EXPERIMENT:  Don't inflate large packet with non-crucial stuff  S_P2 */
-	if(F_full_direction_resolution || SizeOfUDPUpdate() < MAXSIZEFORSTATUS)
+	if(F_full_direction_resolution || SizeOfUDPUpdate() < threshold_1)
 	    updateStatus(TRUE);
 	else
 	    updateStatus(FALSE);  /* Update only if status->torn changes */
-	if(F_full_direction_resolution || SizeOfUDPUpdate() < MAXSIZEFORPSTATS)
+	if(F_full_direction_resolution || SizeOfUDPUpdate() < threshold_2)
 	    updatePlayerStats();
     } else {
 	updateTorps();
@@ -672,7 +670,7 @@ void updateClient(void)
 	updatePlayerStats();
     }
 
-    lastudpsize = SizeOfUDPUpdate();
+    last_udp_size = SizeOfUDPUpdate();
     if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==buf)) {
 	/* We sent nothing!  We better send something to wake him */
 	updateSelf(TRUE);

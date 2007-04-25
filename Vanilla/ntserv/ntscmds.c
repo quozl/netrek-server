@@ -626,10 +626,8 @@ int bouncePingStats(int from)
 
 int bounceUDPStats(int from)
 {
-    bounce(from,
-        "%c%c last UDP update size: %d bytes",
-        me->p_mapchars[0], me->p_mapchars[1],
-        lastudpsize);
+    bounce(from, "%c%c last UDP update size: %d bytes",
+           me->p_mapchars[0], me->p_mapchars[1], last_udp_size);
     return 1;
 }
 

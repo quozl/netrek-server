@@ -1467,13 +1467,13 @@ static int parseQuery(struct message *msg)
 #endif
     if (*cchar == '^' && *(cchar+1) == '\0')
 	return bounceSBStats(msg->m_from);
-	if (*cchar == '@' && *(cchar+1) == '\0')
+    if (*cchar == '@' && *(cchar+1) == '\0')
 	return bounceWhois(msg->m_from);
-    /* UDP stats */
-    if (strcmp(cchar, "udpstats")==0)
-        return bounceUDPStats(msg->m_from);
+    if (strcmp(cchar, "udpstats") == 0)
+	return bounceUDPStats(msg->m_from);
+
     /* DEBUG */
-    if (strcmp(cchar, "debug")==0){
+    if (strcmp(cchar, "debug") == 0){
 	char	  buf[80];
 	sprintf(buf, "dumpshmem > %s.dump.%d", login, getpid());
 	if(fork() == 0){
