@@ -17,6 +17,7 @@
 #include "solicit.h"
 #include "config.h"
 #include "util.h"
+#include "slotmaint.h"
 
 /* our copy of metaservers file */
 static struct metaserver metaservers[MAXMETASERVERS];

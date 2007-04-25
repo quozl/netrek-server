@@ -12,6 +12,7 @@
 #include "proto.h"
 #include "roboshar.h"
 #include "util.h"
+#include "slotmaint.h"
 
 
 #define SIZEOF(s)		(sizeof (s) / sizeof (*(s)))

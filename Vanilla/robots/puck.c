@@ -23,6 +23,7 @@
 #include "roboshar.h"
 #include "puckmove.h"
 #include "util.h"
+#include "slotmaint.h"
 
 #ifdef PUCK_FIRST 
 #include <sys/sem.h> 

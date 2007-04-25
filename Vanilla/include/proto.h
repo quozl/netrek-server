@@ -211,12 +211,6 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
                            struct reserved_cpacket *cpacket,
                            char *server, int pno);
 
-/* slotmaint.c */
-int freeslot(struct player *who);
-int pickslot(int w_queue);
-int slots_free(int w_queue);
-int slots_playing(int w_queue);
-
 /* smessage.c */
 void bounce(int bounceto, const char *, ...);
 void lmessage(const char *fmt, ...);

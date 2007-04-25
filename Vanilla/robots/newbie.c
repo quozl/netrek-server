@@ -31,6 +31,7 @@
 #include "roboshar.h"
 #include "newbiedefs.h"
 #include "util.h"
+#include "slotmaint.h"
 
 int debug=0;
 

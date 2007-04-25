@@ -16,6 +16,7 @@
 #include "roboshar.h"
 #include "inldefs.h"
 #include "util.h"
+#include "slotmaint.h"
 
 extern Inl_stats inl_stat;
 extern Team	 inl_teams[];

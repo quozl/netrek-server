@@ -14,6 +14,7 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "util.h"
+#include "slotmaint.h"
 
 extern int redrawall;		/* maint: missing "extern" 6/22/92 TC */
 extern int lastm;		/* maint: missing "extern" 6/22/92 TC */
@@ -64,7 +65,6 @@ char **argv;
     int pno;
     int class;			    /* ship class 8/9/91 TC */
     
-    int myskip;                     /* How often robot gets to move */
     char pseudo[PSEUDOSIZE]; /* was a global 9/30/94/ MK */
     
     class = SGALAXY;	

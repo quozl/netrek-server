@@ -25,6 +25,7 @@
 #include "roboshar.h"
 #include "marsdefs.h"
 #include "util.h"
+#include "slotmaint.h"
 
 #define DOG_STATS	".dog_players"
 

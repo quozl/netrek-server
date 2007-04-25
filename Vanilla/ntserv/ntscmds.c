@@ -21,6 +21,8 @@
 #include "gencmds.h"
 #include "proto.h"
 #include "util.h"
+#include "ip.h"
+#include "slotmaint.h"
 
 void do_player_eject(int who, int player, int mflags, int sendto);
 void do_player_ban(int who, int player, int mflags, int sendto);

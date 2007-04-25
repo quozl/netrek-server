@@ -26,6 +26,7 @@
 #include "proto.h"
 #include "ip.h"
 #include "util.h"
+#include "slotmaint.h"
 
 #ifndef TRUE
 #define TRUE 1

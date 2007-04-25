@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include "defs.h"
+#include <string.h>
 #include INC_STRINGS
 #include INC_FCNTL
 #include "struct.h"
@@ -191,8 +192,8 @@ void motdlist(void)
 
     for (count=0; count<key_count; count++) {
       for (scan=0; scan<groupcount; scan++) {
-	if (!strcmp(key_list[count].client_type,
-		    key_list[groups[scan][0]].client_type)) {
+	if (!strcmp((char *)key_list[count].client_type,
+		    (char *)key_list[groups[scan][0]].client_type)) {
 		groups[scan][groupnum[scan]++]= count;
 		found=1;
 		break;
@@ -315,7 +316,7 @@ void convert(void)
           if (strlen(buffer) > KEY_SIZE)
                   printf("Client type must be less than %d characters.\n",KEY_SIZE);
       } while (strlen(buffer) > KEY_SIZE);
-      strcpy(key_list[count].client_type,buffer);
+      strcpy((char *)key_list[count].client_type,buffer);
 
       do {
           printf("Enter architecture/OS: ");
@@ -323,7 +324,7 @@ void convert(void)
           if (strlen(buffer) > KEY_SIZE)
                   printf("Architecture field must be less than %d characters.\n",KEY_SIZE);
       } while (strlen(buffer) > KEY_SIZE);
-      strcpy(key_list[count].architecture,buffer);
+      strcpy((char *)key_list[count].architecture,buffer);
 
 
       do {
@@ -392,7 +393,7 @@ void modifykey(char *number)
     if (strlen(type)==0)
 	printf ("Client type not modified.\n");
     else
-        strcpy(key_list[num].client_type,type);
+        strcpy((char *)key_list[num].client_type,type);
 
     do {
 	printf("Arch/OS: %s\n", key_list[num].architecture);
@@ -404,7 +405,7 @@ void modifykey(char *number)
     if (strlen(type)==0)
 	printf ("Arch/OS not modified.\n");
     else
-    	strcpy(key_list[num].architecture,type);
+    	strcpy((char *)key_list[num].architecture,type);
 
     savekeys();
 
@@ -520,7 +521,7 @@ void addkey(char *name)
         if (strlen(type) > KEY_SIZE)
                 printf("Client type must be less than %d characters.\n",KEY_SIZE);
     } while (strlen(type) > KEY_SIZE);
-    strcpy(key_list[key_count].client_type,type);
+    strcpy((char *)key_list[key_count].client_type,type);
 
     do {
         printf("Enter architecture/OS:");
@@ -528,7 +529,7 @@ void addkey(char *name)
         if (strlen(type) > KEY_SIZE)
                 printf("Architecture field must be less than %d characters.\n",KEY_SIZE);
     } while (strlen(type) > KEY_SIZE);
-    strcpy(key_list[key_count].architecture,type);
+    strcpy((char *)key_list[key_count].architecture,type);
 
 
     close(fd);

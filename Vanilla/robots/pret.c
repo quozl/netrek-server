@@ -32,6 +32,7 @@
 #include "pretdefs.h"
 #include "util.h"
 #include "planets.h"
+#include "slotmaint.h"
 
 int debug=0;
 

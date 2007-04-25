@@ -31,6 +31,7 @@
 #include "roboshar.h"
 #include "basepdefs.h"
 #include "util.h"
+#include "slotmaint.h"
 
 int debug=0;
 int nb_robots=0;

@@ -6,6 +6,7 @@
 #include "data.h"
 #include "proto.h"
 #include "util.h"
+#include "slotmaint.h"
 
 static void Usage(void);
 static void _pmessage(char *str, int recip, int group);

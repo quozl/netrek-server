@@ -13,6 +13,7 @@
 #include "data.h"
 #include "util.h"
 #include "proto.h"
+#include "slotmaint.h"
 
 /* 
  *  Free a slot that was allocated with pickslot.

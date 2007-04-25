@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #ifdef RSA
+#include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <sys/types.h>
@@ -361,7 +362,7 @@ comp_key(fi, err)
       *err = 1;
       return NULL;
    }
-   strncpy(key->client_type, obuf, 31);
+   strncpy((char *)key->client_type, obuf, 31);
    key->client_type[31] = '\0';
 
    if(!kgetstr(ibuf, ARCH_TYPE_FIELD, obuf)){
@@ -370,7 +371,7 @@ comp_key(fi, err)
       *err = 1;
       return NULL;
    }
-   strncpy(key->architecture, obuf, 31);
+   strncpy((char *)key->architecture, obuf, 31);
    key->architecture[31] = '\0';
 
    if(!kgetstr(ibuf, CLASS_FIELD, obuf)){

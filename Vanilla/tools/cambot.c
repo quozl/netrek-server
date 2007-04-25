@@ -15,6 +15,8 @@
 #include "packets.h"
 #include "proto.h"
 #include "genspkt.h"
+#include "alarm.h"
+#include "util.h"
 
 #define UPDT_ALL 0
 #define UPDT_MOST 1

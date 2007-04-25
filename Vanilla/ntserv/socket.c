@@ -41,6 +41,8 @@
 #include "ltd_stats.h"
 #include "ip.h"
 #include "util.h"
+#include "genspkt.h"
+#include "slotmaint.h"
 
 #ifdef OOPS
 #ifdef MIPSEL

@@ -21,6 +21,7 @@
 #include "alarm.h"
 #include "blog.h"
 #include "util.h"
+#include "slotmaint.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL

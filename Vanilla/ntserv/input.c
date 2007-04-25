@@ -24,6 +24,7 @@
 #include "proto.h"
 #include "sigpipe.h"
 #include "packets.h"
+#include "slotmaint.h"
 
 #define GHOSTTIME       (30 * 1000000 / UPDATE) /* 30 secs */
 

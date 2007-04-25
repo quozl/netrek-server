@@ -39,6 +39,7 @@
 #include "roboshar.h"
 #include "marsdefs.h"
 #include "util.h"
+#include "slotmaint.h"
 
 
 #undef DOGDEBUG              /* debugging compiler option, too much */
