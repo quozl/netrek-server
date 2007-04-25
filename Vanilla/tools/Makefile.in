@@ -111,7 +111,7 @@ sortdb: sortdb.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} sortdb.o
 
 ntpasswd: ntpasswd.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(OBJS) $(LIBCRYPT)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(OBJS) $(LIBCRYPT) -lgdbm
 
 loadchecker: loadchecker.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} loadchecker.o $(OBJS) $(LIBS)

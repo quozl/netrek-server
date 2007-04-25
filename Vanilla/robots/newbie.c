@@ -187,7 +187,6 @@ main(argc, argv)
     SIGSETMASK(0);
 
     me->p_status = PALIVE;              /* Put robot in game */
-
     while ((status->gameup) & GU_GAMEOK) {
         alarm_wait_for();
         checkmess();

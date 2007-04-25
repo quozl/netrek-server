@@ -25,8 +25,8 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
-#include "salt.h"
 #include "util.h"
+#include "db.h"
 
 #define streq(a,b) (strcmp((a),(b)) == 0)
 
@@ -54,7 +54,6 @@ static void handleLogin(void)
     static int position= -1;
     int i;
     int entries;
-    saltbuf sb;
     char newpass[NAME_LEN];
 
     *namePick='\0';
@@ -151,10 +150,7 @@ static void handleLogin(void)
     /* A new guy? */
     if ((position == -1) && !lockout()) {
 	strcpy(player.name, namePick);
-	/* Linux: compiler warnings with -Wall here, as crypt is in unistd.h
-	   but needs _XOPEN_SOURCE defined, which then breaks lots of other
-	   things such as u_int. - Quozl */
-	strcpy(player.password, (char *) crypt(passPick, salt(namePick, sb)));
+	strcpy(player.password, crypt_player(passPick, namePick));
 	MZERO(&player.stats, sizeof(struct stats));
 #ifdef LTD_STATS
         ltd_reset_struct(player.stats.ltd);
@@ -178,22 +174,22 @@ static void handleLogin(void)
     }
 
     /* An actual login attempt */
-    strcpy(newpass, (char *) crypt(passPick, salt(player.name, sb)));
+    strcpy(newpass, crypt_player(passPick, player.name));
     if (lockout() ||
 	(!streq(player.password, newpass) &&
-	 !streq(player.password, (char *) crypt(passPick, player.password)))) {
+	 !streq(player.password, crypt_player_raw(passPick, player.password)))) {
 	    sendClientLogin(NULL);
 	    flushSockBuf();
-	    ERROR(8,("handleLogin: password-failure namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, (char *) crypt(passPick, player.password)));
+	    ERROR(8,("handleLogin: password-failure namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, crypt_player_raw(passPick, player.password)));
 	    return;
     }
-    ERROR(8,("handleLogin: password-success namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, (char *) crypt(passPick, player.password)));
+    ERROR(8,("handleLogin: password-success namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, crypt_player_raw(passPick, player.password)));
     sendClientLogin(&player.stats);
     strcpy(me->p_name, namePick);
     me->p_pos=position;
     MCOPY(&player.stats, &(me->p_stats), sizeof(struct stats));
     if (!streq(player.password, newpass)) {
-	/* update db if we were misuing crypt() */
+	/* update db if we were misusing crypt() */
 	strcpy(player.password, newpass);
 	savepass(&player);
     }

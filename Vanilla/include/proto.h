@@ -38,6 +38,8 @@ void coup(void);
 int findplayer(char *namePick, struct statentry *player);
 void savestats(void);
 int newplayer(struct statentry *player);
+char *crypt_player_raw(const char *password, const char *name);
+char *crypt_player(const char *password, const char *name);
 void changepassword(char *passPick);
 void savepass(const struct statentry *);
 

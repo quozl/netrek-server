@@ -3,7 +3,6 @@
  */
 #include "copyright.h"
 #include "config.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -13,6 +12,7 @@
 #ifdef PLAYER_INDEX
 #include <gdbm.h>
 #endif
+#include <crypt.h>
 #include "defs.h"
 #include INC_UNISTD
 #include "struct.h"
@@ -203,12 +203,19 @@ void savepass(const struct statentry* se)
     }
 }
 
+char *crypt_player_raw(const char *password, const char *name) {
+  return crypt(password, name);
+}
+
+char *crypt_player(const char *password, const char *name) {
+  saltbuf sb;
+  return crypt(password, salt(name, sb));
+}
+
 void changepassword (char *passPick)
 {
-  saltbuf sb;
   struct statentry se;
-  /* implicitly defined on linux, anyone know where to find it? */
-  strcpy(se.password, (char *) crypt(passPick, salt(me->p_name, sb)));
+  strcpy(se.password, crypt_player(passPick, me->p_name));
   savepass(&se);
 }
 

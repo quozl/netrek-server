@@ -18,7 +18,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "salt.h"
+#include "proto.h"
 
 /*
  * ---------------------------------------------------------------------------
@@ -590,7 +590,6 @@ struct status *glp;
     int ival = 0;
     float fval = 0.0;
     char *sval = '\0';
-    saltbuf sb;
 
     strcpy(oldpw, sep->password);
 
@@ -720,7 +719,7 @@ escape_hit:
 
     if (strcmp(sep->password, oldpw)) {
 	/* password changed, so recompute encrypted version */
-	strcpy(sep->password, crypt(sep->password, salt(sep->name, sb)));
+	strcpy(sep->password, crypt_player(sep->password, sep->name));
     }
 }
 

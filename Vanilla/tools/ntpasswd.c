@@ -5,9 +5,6 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
-#include "salt.h"
-
-char *crypt(const char* key, const char* salt);
 
 /* Search for player by name, leaving f positioned at start of
  * player's entry.  Returns 0 on error.
@@ -45,7 +42,6 @@ int main(int argc, const char** argv)
 {
 	FILE* f;
 	struct statentry player;
-	saltbuf sb;
 	const char* name;
 	const char* password;
 	
@@ -73,7 +69,7 @@ int main(int argc, const char** argv)
 	}
 	/* we could be zeroing the password... */
 	memset(player.password, 0, sizeof(player.password));
-	strcpy(player.password, crypt(password, salt(name, sb)));
+	strcpy(player.password, crypt_player(password, name));
 	if (fseek(f, offsetof(struct statentry, password), SEEK_CUR) == -1) {
 		perror("fseek");
 		fclose(f);
