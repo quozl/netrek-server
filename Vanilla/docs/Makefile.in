@@ -76,6 +76,7 @@ install: $(DOCS)
 	if [ ! -f $(DESTDIR)$(SYSCONFDIR)/blosxom.conf ]; then \
 		$(INSTALLDATA) ${srcdir}/sample_blosxom.conf		$(DESTDIR)$(SYSCONFDIR)/blosxom.conf ; \
 	fi
+	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/duplicates
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/whitelist
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/hide
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/mute
