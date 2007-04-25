@@ -347,7 +347,7 @@ extern int F_show_other_speed;
 extern int F_show_cloakers;
 extern int F_turn_keys;
 extern int F_show_visibility_range;
-extern int F_newflags;
+extern int F_flags_all;
 
 extern char Cambot[FNAMESIZE];
 extern char Cambot_out[FNAMESIZE];

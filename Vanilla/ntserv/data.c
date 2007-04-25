@@ -416,8 +416,7 @@ int F_show_cloakers = 0;		/* show other cloakers on tactical */
 int F_turn_keys = 0;			/* use keyboard to turn */
 int F_show_visibility_range = 0;	/* allow client to show range at
 					 * which enemies can see self */
-int F_newflags = 0;			/* send critical flags if using 
-					 * SP_PLAYER instead of SP_S_PLAYER */
+int F_flags_all = 0;			/* SP_FLAGS_ALL packet may be sent */
 int mute = 0;
 int remoteaddr = -1;		/* inet address in net format */
 int observer_muting = 0;

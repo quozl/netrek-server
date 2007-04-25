@@ -60,7 +60,7 @@ struct feature_var feature_vars[] = {
    { "CHECK_PLANETS",		&F_check_planets},
    { "TURN_KEYS",		&F_turn_keys},
    { "SHOW_VISIBILITY_RANGE",	&F_show_visibility_range},
-   { "SP_NEWFLAGS",		&F_newflags},
+   { "SP_FLAGS_ALL",		&F_flags_all},
    { NULL, NULL },
 };
 

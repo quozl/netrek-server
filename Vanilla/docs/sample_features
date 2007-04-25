@@ -99,9 +99,9 @@ TURN_KEYS             S       ON
 # on the galactic map.  This information can be derived by the client by
 # mimicing the function udplayersight() in daemonII.c.
 SHOW_VISIBILITY_RANGE         S       ON
-# Flag packet that sends critical flags every update for those who
-# use SP_PLAYER instead of SP_S_PLAYER.
-SP_NEWFLAGS           S       ON
+# Flag packet that sends all players' flags every update
+# for those who use SP_PLAYER instead of SP_S_PLAYER.
+SP_FLAGS_ALL            S       ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
