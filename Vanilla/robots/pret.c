@@ -781,8 +781,8 @@ static void obliterate(int wflag, char kreason, int killRobots)
         if ((j->p_flags & PFROBOT) && killRobots == 0)
             continue;
         if (j == me) continue;
-	j->p_armies = 0;
-	j->p_kills = 0;
+        j->p_armies = 0;
+        j->p_kills = 0;
         j->p_ntorp = 0;
         j->p_nplasmatorp = 0;
         if (wflag == 1)
