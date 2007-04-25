@@ -214,10 +214,6 @@ main(argc, argv)
   reset_inl(0);
 
   alarm_setitimer(distortion, fps);
-
-  /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
-  SIGSETMASK(0);
-
   while ((status->gameup) & GU_GAMEOK) {
     alarm_wait_for();
     inlmove();

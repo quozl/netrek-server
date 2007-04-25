@@ -262,9 +262,6 @@ char **argv;
     me->p_process = getpid();
     p_ups_set(me, practice ? 1 : 2);
 
-    /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
-    SIGSETMASK(0);
-
     if (team == 4) { 
 	int count = 0;
 	for (i = 0; i < MAXPLAYER; i++) {

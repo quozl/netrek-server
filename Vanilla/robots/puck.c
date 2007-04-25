@@ -158,9 +158,6 @@ char **argv;
     p_ups_set(me, 10 / HOWOFTEN);
     anncer->p_process = 0;  /* Announcer will not be signalled by DS */
 
-    /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
-    SIGSETMASK(0);
-
     me->p_status = PALIVE;		/* Put robot in game */
     anncer->p_status = PALIVE;
     do_faceoff();

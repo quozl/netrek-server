@@ -144,10 +144,6 @@ char **argv;
     status->gameup |= GU_DOG;
     me->p_process = getpid();
     p_ups_set(me, 10 / HOWOFTEN);
-
-    /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
-    SIGSETMASK(0);
-
     me->p_status = PALIVE;		/* Put robot in game */
     init_mars();
     while ((status->gameup) & GU_GAMEOK) {

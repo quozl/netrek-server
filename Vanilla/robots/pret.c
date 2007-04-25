@@ -166,9 +166,6 @@ main(argc, argv)
     me->p_process = getpid();
     p_ups_set(me, 10 / HOWOFTEN);
 
-    /* allows robots to be forked by the daemon -- Evil ultrix bullshit */
-    SIGSETMASK(0);
-
     /* set up team1 and team2 so we're not always playing rom/fed */
     team1 = (random()%2) ? FED : KLI;
     team2 = (random()%2) ? ROM : ORI;
