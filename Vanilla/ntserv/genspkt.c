@@ -1370,7 +1370,11 @@ updateTorps(void)
 
 	/* 
 	 * Not my torp.
-	 * If not in view, only send limited information   */
+	 * If not in view, only send limited information
+	 * Full weapon resolution torps are skipped, they are instead
+	 * sent via SupdateTorps */
+	if (F_full_weapon_resolution)
+	    continue;
 	if ((t->t_y > me->p_y + SCALE*WINSIDE/2) ||
 	    (t->t_y < me->p_y - SCALE*WINSIDE/2) ||
 	    (t->t_x > me->p_x + SCALE*WINSIDE/2) ||
@@ -1900,6 +1904,10 @@ void SupdateTorps(void)
 #endif
 
 	    if (torp->t_owner==me->p_no) {
+		/* With full weapon resolution, self torps sent via
+		   updateTorps */
+		if (F_full_weapon_resolution)
+		    continue;
 		if (torp->t_war!=tpi->war ||
 		    torp->t_status!=tpi->status) {
 		    if (torp->t_war == tpi->war){ 

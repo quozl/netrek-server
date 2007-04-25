@@ -646,8 +646,10 @@ void updateClient(void)
 	updateSelf(FALSE);
 	updatePhasers();
 	updateShips();
-	if (F_full_weapon_resolution)
+	if (F_full_weapon_resolution) {
+	    SupdateTorps();
 	    updateTorps();
+	}
 	else
 	    SupdateTorps();
 	updatePlanets();
