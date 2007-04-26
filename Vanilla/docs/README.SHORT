@@ -4,13 +4,314 @@ Otherwise it's an standard bronco.final server.
 Two patches are applied: a) pop patch from Brian Paulsen
 			 b) The better input.c from Tedd Hadley
 
-SHORT_PACKETS programmed by Tedd Hadley and Heiko Wengler.
+			    SHORT PACKETS
 
-Send suggestions or bug reports to
+	     Definition and implementation of short packets
 
-	hw@plato.Chemietechnik.Uni-Dortmund.DE
+----------------------------------------------------------------------
+
+From: hw@plato.chemietechnik.uni-dortmund.de (Heiko Wengler)
+Subject: SHORT_PACKETS README (from the coder)
+Date: 24 May 1993 14:49:13 GMT
+
+Hello!	Here is the Readme to SHORT_PACKETS.  You need a new client and
+the server must have SHORT_PACKETS to play withit.  The actual client
+informations how you can switch SHORT_PACKETS on could be wrong.
+
+Short Packets Code by Tedd Hadley and Heiko Wengler.
+Send bugreports to hw@plato.Chemietechnik.Uni-Dortmund.DE.
+
+Extra feature:	',' puts up a menu ('network' for your .xtrekrc) with 
+1 toggle options and 1 integer entry field and two new keys: 
+'-' updateSmall	gives you an update of all weapons+Planets+Kills.(<400 bytes) 
+    'UpdateMiddle' is updateAll without the Stats. (< 700 bytes)
+-=' 'UpdateAll' (<2200 bytes) (orig. UpdateAll (4192 bytes max.))
+
+MENU:
+
+[Don't] Receive variable and short packets	(1)
+Receive threshold:				(2)
+Done
+
+(1) Variable and short packets.	 This tells the server to send several
+new types of packets instead of the original types.  The technical
+details follow at the end.
+
+(2) Receive threshold.	This is complete experimental.	If a non-zero
+threshold is specified the server tries to not overload the connection.
+This option could be not implemented in the server.  You should give as
+a threshold the number of bytes per second you wanna give from your
+bandwith.  For example if you set the threshold to 500 bytes. And you
+are playing with 5 updates/sec. You have a threshold of 500/updates =
+100bytes/update. The server checks after every update if he wrote more
+than the limit. If yes the server skips your next update and you get a
+warning from your client.  This can actually halve your Updates/sec. Not
+more. (Eg if you play with 5 updates it 'slows' you down to 3 updates.)
+Minimum limit per update is 60 bytes. (Threshold = 60 * updates then.)
+If you set it to 0 Server ends testing.
+
+If you wanna calculate your bandwith requirements you should count the
+tcp/ip overhead of 64 bytes to the actual data.	 For example if you
+wanna play with a 9600 Baud modem.  You have a bandwith of 1200 bytes.
+you can subtract 200 bytes for client-server communication.  So you have
+1000 bytes to play with.  With 5 updates you need under tcp/ip
+(5*64=)320 bytes for headers.  You have then ~650 bytes for serverdata.
+That means you should set the threshold to 650 bytes. (130 bytes per
+update are much.  All playermovement(16 players) + SP_S_YOU + 16 Torps).
+I do not think that you ever get 16 player packets in one update.  That
+leaves you with some more "weaponsdata" :-).  If you have another
+protocol you must compute the overhead by yourself.  And any limit
+smaller than 500 bytes/update means that after an UpdateAll the next
+update is skipped.
+
+
+Implementation overview:
+
+Variable and short packet justification:  The three largest contributors 
+to netrek bandwidth are the packets SP_PLAYER (all player movement), 
+SP_YOU (information relating to your ship statistics, and your status)
+and SP_TORP (torp movement).  In one test I got these statistics:
+
+   SP_PLAYER:	   2407 K
+   SP_YOU:	   1408 K
+   SP_TORP:	   1118 K
+   SP_STATS:	   262 K
+   SP_FLAGS:	   148 K
+   SP_WARNING:	   139 K
+   SP_TORP_INFO:   90 K
+   SP_MESSAGE:	   82 K,
+   ... (the remaining packets account for about 50K)
+
+Without much doubt, the first three (SP_PLAYER, SP_YOU, SP_TORP) contribute 
+most of the overhead. So...
+
+NEW PACKETS:
+   
+   ORIGINAL		SIZE (bytes)	NEW		SIZE (bytes)
+   --------------------------------------------------------------
+   SP_PLAYER		12		SP_S_PLAYER	4	(**)
+   SP_YOU		32		SP_S_YOU	12
+					SP_S_YOU_SS	12
+   SP_TORP		12		SP_S_TORP	~4	(***)
+   SP_TORP_INFO		8		SP_S_TORPINFO	1	
+   SP_PLANET		12		SP_S_PLANET	6	(*)
+   SP_MESSAGE		84		SP_S_MESSAGE	8-76
+   SP_WARNING		84		SP_S_WARNING	4
+
+(*) variable packets, each packet containing 2 bytes of type & length
+information and some number of 6-byte entries, 
+(**) variable packets, each packet containing 4 (or 12) bytes of type & length
+information and some number of 4-byte entries,
+(***) The torp packet is really a packet container for 9 bit pixel-
+coordinates.
+
+SP_S_TORP_INFO is added to a SP_S_TORP packet if needed.  (More tech
+info at the end.)
+
+Notice that the reduction in network traffic is very close to 40-75% of
+the original.
+
+Excerpt from packets.h:
+#ifdef SHORT_PACKETS
+#define SP_S_REPLY	40	/* reply to send-short request */
+#define SP_S_MESSAGE	41	/* var. Message Packet */
+#define SP_S_WARNING	42	/* Warnings with 4  Bytes */
+#define SP_S_YOU	43	/* hostile,armies,whydead,etc .. */
+#define SP_S_YOU_SS	44	/* your ship status */
+#define SP_S_PLAYER	45	/* variable length player packet */
+#define SP_S_TORP	47	/* variable length torp packet */
+#define SP_S_TORP_INFO	48	/* SP_S_TORP with TorpInfo */
+#define SP_S_8_TORP	49	/* optimized SP_S_TORP */
+#define SP_S_PLANET	50	/* see SP_PLANET */
+#endif
+and client:
+#define CP_S_REQ	43	/* Req to server over tcp */
+#define CP_S_THRS	44
+#define CP_S_MESSAGE	45	/* vari. Message Packet */
+#define CP_S_RESERVED	46
+#define CP_S_DUMMY	47
+
+SP_S_PLAYER:
+byte	bit description
+-----------------------
+0	0-4 player number, 5 local or galactic, 6 = 9. x-bit, 7 9. y-bit 
+1	0-3 speed, 4-7 direction of ship
+2	0-7 low 8 bits from X-Pixelcoordinate
+3	0-7 low 8 bits from Y-Pixelcoordinate 
+
+SP_S_TORP:
+byte	range
+-----------------------
+0	0-7 Packettype
+1	0-7 Bitset describing which torps are in this packet.
+2	0-7 Torpnumber of first torp( num*8=torpnumber)
+3	A number of 9 Bit pairs. Each describing one torp.
+	(The 9 bit numbers are the torpcoordinates in pixel-coordinates.)
+	All rounded up to 4 byte boundaries.
+
+SP_S_YOU and SP_S_YOU_SS are the result of dividing SP_YOU into two
+packets.  Most of the time, SP_YOU gets sent because ship status has
+changed, i.e. damage, fuel, or shields.	 The remaining information,
+hostile, swar, armies, and flags are not needed as often.  Therefore it
+makes sense to split SP_YOU into two packets:
+      
+struct youshort_spacket {	/* SP_S_YOU */
+     char	type;
+     char	pnum;
+     char	hostile;
+     char	swar;
+
+     char	armies;
+     char	whydead;
+     char	whodead;
+     char	pad1;
+
+     unsigned	flags;
+};
+
+and
+
+struct youss_spacket {		/* SP_S_YOU_SS */
+     char	type;
+     char	pad1;
+
+     unsigned short	damage;
+     unsigned short	shield;
+     unsigned short	fuel;
+     unsigned short	etemp;
+     unsigned short	wtemp;
+};
+
+The new SP_S_PLANET: all info as in the old packet but only 255 armies.
+struct planet_s_spacket {	/* body of SP_S_PLANET	*/		
+    char pnum;
+    char owner;
+    char info;
+    uchar armies;		/* more than 255 Armies ? ...  */
+    short flags;
+};
+
+SP_S_WARNING:
+struct warning_s_spacket {	/* SP_S_WARNING */
+    char type;
+    uchar  whichmessage;
+    char  argument, argument2;	/* for phaser etc ... */
+};
+Instead of sending the strings I send only an index into an string
+array.  This works also for all weapons warnings with arguments (like
+phaser).  e.g. old phaserpacket (16) + SP_WARNING = 100 bytes, now only
+20.
+
+SP_S_TORP:
+struct torp_s_spacket {
+     char type;		/* SP_S_TORP */
+     uchar bitset;	/* bit=1 that torp is in packet */
+     uchar whichtorps;	/* Torpnumber of first torp / 8 */
+     uchar data[18];	/* For every torp 2*9 bit coordinates */
+     char pad1;		/* To get long word alignment */
+     char pad2;
+     char pad3;
+};   
+
+SP_S_TORP_INFO:
+struct torp_s_spacket {
+     char type;		/* SP_S_TORP */
+     uchar bitset;	/* bit=1 that torp is in packet */
+     uchar whichtorps;	/* Torpnumber of first torp / 8 */
+     uchar infobitset;	/* second bitset with TorpInfo */
+     uchar data[18];	/* For every torp 2*9 bit coordinates */
+     uchar tinfo[10];	/* Torp Info data, each 1 byte with 4 bits torpwar */
+			/* And 4 bits of status information. */
+};
+
+You get the torpnumber for a torp with: 
+torpnumber = whichtorps * 8 + (index in bitset.)
+With this method you can encode 8 torpnumbers with 16 bit.
+
+TorpInfo: TFREE and TMOVE are encoded in the bitset ( bitset = 1 -> TMOVE,
+	  bitset = 0 -> TFREE) if there is no TORPINFO data byte.
+
+
+SP_S_MESSAGE:
+struct mesg_s_spacket {
+    char type;		/* SP_S_MESSAGE */
+    uchar m_flags;
+    uchar m_recpt;
+    uchar m_from;
+    uchar length;	/* Length of whole packet */
+    char mesg;
+    char pad2;
+    char pad3;
+    char pad[76];
+};
+The server sends all messages with SP_S_MESSAGE. SP_S_MESSAGE is like
+the old SP_MESSAGE with 2 differences:
+a) The header is 1 byte longer. ( A length field.)
+b) The server removes the message header ( "GOD->All") and sends only
+   as much bytes as the message is long. ( I think most messages should
+   be under 16 bytes. (eg. "a++ @TAU" = 16 bytes with 2 pad bytes.)
+   If you wanna test something in a SP_S_MESSAGE with an SP_MESSAGE
+   pointer you should search at packet->mesg[1]. 
+   packet->mesg[0] is the lenghtfield.
+
+
+I changed in the server:
+packets.h	added SHORT_PACKETS	
+data.h		added send_short vari.
+defs.h		added endless defines.
+struct.h	IMPORTANT!!, made 'struct message' bigger. All
+		programs that work on the shared mem must be
+		recompiled!!!
+Now the c files:
+coup.c		changed all warnings. (To spwarning()).
+getentry.c	changed all warnings.
+interface.c	changed all warnings.
+orbit.c		changed all warnings.
+phaser.c	changed all warnings.
+plasma.c	changed all warnings.
+redraw.c	changed all warnings.
+torp.c		changed all warnings.
+smessage.c	added DINVALID flag to pmessage
+		and pmessage2.
+warning.c	implemented short message sendings 
+		of warnings.
+daemonII.c	implemented SHORT_DAEMON messages.
+		( Killmess, Planetmessages.)
+data.c		added global send_short variable.
+startdaemon.c	changed one warning.
+socket.c	Look at all SHORT_PACKETS code. 
+*** Changed functions: updateClient, updatePlanets, updateMessages, 
+		updateShips,forceUpdate
+		IMPORTANT: changed the meaning of handleDetMReq.
+		If the routine gets one det Req it dets all torps.
+		Changed most warnings.
+The order in which the server updates the client in updateClient is now 
+important. (SupdateTorps (the new torproutine) must be after updateShips.)
+
+Client:	socket.c , data.c 
+
+-- All coordinates are in the clientcoordinatesystem. (0-499 = 9 Bits)
+-- UpdateAll: The client resets all weapon info by himself.
+	      The server sends only active weapons data.
+	      ( torps that fly around or a player phasers you.)
+	      The weapons are always cleared. 
+
+Limitations: Only 64 Players can be send with SP_S_PLAYER.	 
+	     Ships are send with only 16 directions. 
+	     MAXSPEED of ships is warp 15. (Within the SHORT_PACKETS limits.)
+
+Future features:
+a) 'compression' of client-server packets. ( Have an idea for 50% reduction.)
+b) message compression. ( Details must be hashed out.)
+c) Player should be able to stop some warning messages. ( Like the 8 Torps
+   limit warning. Really useless.)
 
 Bye
 	Heiko Wengler
-	21.05.93 9pm 
+	hw@plato.Chemietechnik.Uni-Dortmund.DE
+
+------------------------------
+
+End of SHORT PACKETS
+********************
 
