@@ -67,7 +67,7 @@ Team	inl_teams[INLTEAM+1] = {
     NONE,		/* who is captain */
     HOMETEAM,		/* Race flag */
     NOT_CHOOSEN,	/* index into side array */
-    17,			/* armies requested to start with */
+    12,			/* armies requested to start with */
     INL_REGULATION,	/* requested length of game */
     INL_OVERTIME,	/* requested length of overtime */
     0,			/* team flags */
@@ -83,7 +83,7 @@ Team	inl_teams[INLTEAM+1] = {
     NONE,		/* who is captain */
     AWAYTEAM,		/* Race flag */
     NOT_CHOOSEN,	/* index into side array */
-    17,			/* armies requested to start with */
+    12,			/* armies requested to start with */
     INL_REGULATION,	/* requested length of game */
     INL_OVERTIME,	/* requested length of overtime */
     0,			/* team flags */
@@ -115,7 +115,7 @@ char	*roboname = "INL";
 char	*inl_from = {"INL->ALL"};
 
 Inl_stats inl_stat = {
-  17,			/* start_armies */
+  12,			/* start_armies */
   1,			/* change */
   S_PREGAME,		/* flags */
   0,			/* ticks */
