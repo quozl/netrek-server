@@ -2155,7 +2155,6 @@ void updatePlayerStats(void)
     struct stats_spacket   *stats;
     struct stats_s_spacket *s_stats = &singleStats;
     struct player          *pl;
-    static int		   lastrep=0;
     static int		   lastpno=MAXPLAYER; 
 
     /* Variables for stats */
@@ -2166,8 +2165,7 @@ void updatePlayerStats(void)
     int    my_tkills, my_tlosses, my_tarmsbomb, my_tplanets, my_tticks;
 
     /* Wait at least 1 second before sending another stats packet */
-    if((repCount - lastrep) < efticks(5)) return;
-    lastrep = repCount;
+    if(repCount % efticks(5) != 0) return;
 
     /* Look for the next non-empty non-observer slot */
     for(i=1;i<=MAXPLAYER;i++) {
