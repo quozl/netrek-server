@@ -4466,7 +4466,6 @@ static void fork_robot(int robot)
 
 #define AGRI_LIMIT 3
 
-#ifdef INL_RESOURCES /* isae -- INL planet resources */
 /* the four close planets to the home planet */
 static int core_planets[4][4] =
 {{ 7, 9, 5, 8,},
@@ -4535,38 +4534,6 @@ void doResources(void)
     }
   }
 }
-#else
-void doResources(void)
-{
-    int i;
-    int agricount[4];
-    do {
-        MCOPY(pdata, planets, sizeof(pdata)); /* bug, was before do 2/12/92 TMC */
-        for (i = 0; i< 40; i++) {
-            planets[i].pl_armies = top_armies;
-        }
-        agricount[0] = 0;
-        agricount[1] = 0;
-        agricount[2] = 0;
-        agricount[3] = 0;
-
-        for (i = 0; i < 40; i++) {
-            /*  if (planets[i].pl_flags & PLHOME)
-                planets[i].pl_flags |= (PLREPAIR|PLFUEL|PLAGRI);*/
-            if (random() % 4 == 0)
-                planets[i].pl_flags |= PLREPAIR;
-            if (random() % 2 == 0)
-                planets[i].pl_flags |= PLFUEL;
-            if (random() % 8 == 0) {
-                planets[i].pl_flags |= PLAGRI; agricount[i/10]++;
-            }
-        }
-    } while ((agricount[0] > AGRI_LIMIT) || /* bug: used && 1/23/92 TC */
-             (agricount[1] > AGRI_LIMIT) ||
-             (agricount[2] > AGRI_LIMIT) ||
-             (agricount[3] > AGRI_LIMIT));
-}
-#endif /* INL_RESOURCES */
 
 #ifdef PUCK_FIRST
 void do_nuttin (int sig) { }

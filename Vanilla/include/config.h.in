@@ -216,9 +216,6 @@
                                 a possibly infected host */
 #endif
 
-                                /*  INL_RESOURCES  - Use INL resources */
-#define INL_RESOURCES
-
                                 /*  INL_POP        - Use INL style planet
                                                      popping scheme */
 #define INL_POP
