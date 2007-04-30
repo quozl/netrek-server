@@ -292,6 +292,11 @@ void checkmess()
                 messAll(255,roboname,"Resetting for real T-mode!");
                 obliterate(0, KPROVIDENCE, 0);
                 resetPlanets();
+		status->gameup &= ~GU_PRET;
+		queues[QU_PRET_PLR].q_flags ^= QU_REPORT;
+		queues[QU_PRET_OBS].q_flags ^= QU_REPORT;
+		queues[QU_PICKUP].q_flags |= QU_REPORT;
+		queues[QU_PICKUP_OBS].q_flags |= QU_REPORT;
             }
         }
     }
