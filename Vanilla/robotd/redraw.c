@@ -52,6 +52,9 @@ keep_reading:
        * We haven't heard from server for 3 secs... Strategy:  send a
        * useless packet to "ping" server.
        */
+      /* If server is dead, just give up */
+      if (isServerDead())
+         exitRobot(0);
       if(!pollmode){
 	 int	now = time(NULL)-3;
 	 mprintf("sending wakeup packet at %s", ctime(&now));
