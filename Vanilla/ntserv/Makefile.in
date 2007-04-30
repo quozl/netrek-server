@@ -121,12 +121,6 @@ uninstall:
 	-cd $(XTREKDIR); rm -f daemonII .motd .sysdef; rm -rf slots
 	-cd $(LIBDIR); rm -f ntserv ; rm -rf slots
 
-# parallel compiling in DYNIX:
-# uncomment and then /bin/make -P21 parallel
-#parallel: c.o.parallel ntserv daemonII nuke xtkill
-
-#c.o.parallel: & $(R_OBJS) $(D_OBJS) nuke.c xtkill.c
-
 install: ntserv daemonII 
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
