@@ -12,7 +12,6 @@
 #ifdef PLAYER_INDEX
 #include <gdbm.h>
 #endif
-#include <crypt.h>
 #include "defs.h"
 #include INC_UNISTD
 #include "struct.h"
