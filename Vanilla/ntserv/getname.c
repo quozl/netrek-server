@@ -26,7 +26,6 @@
 #include "packets.h"
 #include "proto.h"
 #include "util.h"
-#include "db.h"
 
 #define streq(a,b) (strcmp((a),(b)) == 0)
 
