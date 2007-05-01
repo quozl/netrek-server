@@ -1,4 +1,3 @@
-#	$Id: INSTALL.INL,v 1.1 2005/03/21 05:23:33 jerub Exp $	
 Instructions for installing the Vanilla Netrek Server as an INL Server
 
 Summary
@@ -8,7 +7,7 @@ Summary
 	1)  type "./configure --prefix=dir --with-inl" where dir is from step 0
 	2)  type "make install"
 	3)  ensure no conflict in ports with your pickup server if any
-	4)  "./netrekd" to start the server
+	4)  "bin/netrekd" to start the server
 	5)  use a client to connect to the server on port 4566/4577
 	6)  list home/away ports on metaserver (optional)
 	7)  modify auto-archive.pl and end_tourney.pl scripts as necessary
@@ -27,7 +26,7 @@ peculiar to installing the INL Server mode.
 
 3) If you have a pickup server, you must be sure to remove all the INL
 ports from the ports file in the pickup server's directory, and
-restart newstartd if you made a material change.  You must also remove
+restart netrekd if you made a material change.  You must also remove
 the pickup and player list ports from the ports file of the INL
 server.  If you don't do this, the symptom is a failure of the netrekd
 process to get going.

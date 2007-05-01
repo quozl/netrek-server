@@ -66,7 +66,7 @@ void setpkey(int nkey)
 {
   char ev[32];
   pkey = nkey;
-  sprintf(ev, "NETREK_PKEY=%d", nkey);
+  sprintf(ev, "PKEY=%d", nkey);
   if (putenv(ev) != 0) {
     perror("setpkey: putenv");
   }
@@ -81,7 +81,7 @@ int getpkey()
 /* initialise shared memory key from environment variables */
 static void initpkey()
 {
-  char *ev = getenv("NETREK_PKEY");
+  char *ev = getenv("PKEY");
   if (ev == NULL) return;
   pkey = atoi(ev);
   if (pkey < 1) pkey = PKEY;
@@ -138,10 +138,10 @@ static int semid;
 static void setupsem()
 {
   /* create the semaphore set */
-  semid = semget(PKEY, MAXLOCKS, 0600 | IPC_CREAT);
+  semid = semget(pkey, MAXLOCKS, 0600 | IPC_CREAT);
   if (semid == -1) {
     perror("setupsem: semget (IPC_CREAT)");
-    semid = semget(PKEY, MAXLOCKS, 0600);
+    semid = semget(pkey, MAXLOCKS, 0600);
     if (semid == -1) {
       perror("setupsem: semget");
     }
@@ -159,7 +159,7 @@ static void setupsem()
 
 static void opensem()
 {
-  semid = semget(PKEY, MAXLOCKS, 0600);
+  semid = semget(pkey, MAXLOCKS, 0600);
   if (semid == -1) {
     perror("opensem: semget");
   }

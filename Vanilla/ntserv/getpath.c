@@ -30,83 +30,101 @@ main() must call getpath().
 
 */
 
+struct getpath_directories {
+  char *bindir, *libdir, *sysconfdir, *localstatedir;
+};
+
+struct getpath_directories *getpath_getenv()
+{
+  static struct getpath_directories g;
+
+  /* inherit directory names from environment */
+  g.bindir = getenv("BINDIR");
+  g.libdir = getenv("LIBDIR");
+  g.sysconfdir = getenv("SYSCONFDIR");
+  g.localstatedir = getenv("LOCALSTATEDIR");
+
+  /* default them to source configured values */
+  if (g.bindir == NULL) g.bindir = BINDIR;
+  if (g.libdir == NULL) g.libdir = LIBDIR;
+  if (g.sysconfdir == NULL) g.sysconfdir = SYSCONFDIR;
+  if (g.localstatedir == NULL) g.localstatedir = LIBDIR;
+
+  return &g;
+}
+
 void getpath()
 {
-#define MAXPATH 256
-   char libdir[MAXPATH], sysconfdir[MAXPATH], localstatedir[MAXPATH];
+  struct getpath_directories *g = getpath_getenv();
+  int x = FNAMESIZE - 1;
 
-   /* define the directory names */
-   snprintf(libdir, MAXPATH-1, "%s", LIBDIR);
-   snprintf(sysconfdir, MAXPATH-1, "%s", SYSCONFDIR);
-   snprintf(localstatedir, MAXPATH-1, "%s", LOCALSTATEDIR);
-
-   /* define the file names */
-   sprintf(Global,"%s/%s",localstatedir,N_GLOBAL);
-   sprintf(Scores,"%s/%s",localstatedir,N_SCORES);
-   sprintf(PlFile,"%s/%s",localstatedir,N_PLFILE);
-   sprintf(Motd_Path,"%s/",sysconfdir);
-   sprintf(Daemon,"%s/%s",libdir,N_DAEMON);
-   sprintf(Robot,"%s/%s",libdir,N_ROBOT);
-   sprintf(LogFileName,"%s/%s",localstatedir,N_LOGFILENAME);
-   sprintf(PlayerFile,"%s/%s",localstatedir,N_PLAYERFILE);
-   sprintf(PlayerIndexFile,"%s/%s",localstatedir,N_PLAYERINDEXFILE);
-   sprintf(ConqFile,"%s/%s",localstatedir,N_CONQFILE);
-   sprintf(SysDef_File,"%s/%s",sysconfdir,N_SYSDEF_FILE);
-   sprintf(Time_File,"%s/%s",sysconfdir,N_TIME_FILE);
-   sprintf(Clue_Bypass,"%s/%s",sysconfdir,N_CLUE_BYPASS);
-   sprintf(Banned_File,"%s/%s",sysconfdir,N_BANNED_FILE);
-   sprintf(Scum_File,"%s/%s",localstatedir,N_SCUM_FILE);
-   sprintf(Error_File,"%s/%s",localstatedir,N_ERROR_FILE);
-   sprintf(Bypass_File,"%s/%s",sysconfdir,N_BYPASS_FILE);
+  /* define the file names */
+  snprintf(Global,x,"%s/%s",g->localstatedir,N_GLOBAL);
+  snprintf(Scores,x,"%s/%s",g->localstatedir,N_SCORES);
+  snprintf(PlFile,x,"%s/%s",g->localstatedir,N_PLFILE);
+  snprintf(Motd_Path,x,"%s/",g->sysconfdir);
+  snprintf(Daemon,x,"%s/%s",g->libdir,N_DAEMON);
+  snprintf(Robot,x,"%s/%s",g->libdir,N_ROBOT);
+  snprintf(LogFileName,x,"%s/%s",g->localstatedir,N_LOGFILENAME);
+  snprintf(PlayerFile,x,"%s/%s",g->localstatedir,N_PLAYERFILE);
+  snprintf(PlayerIndexFile,x,"%s/%s",g->localstatedir,N_PLAYERINDEXFILE);
+  snprintf(ConqFile,x,"%s/%s",g->localstatedir,N_CONQFILE);
+  snprintf(SysDef_File,x,"%s/%s",g->sysconfdir,N_SYSDEF_FILE);
+  snprintf(Time_File,x,"%s/%s",g->sysconfdir,N_TIME_FILE);
+  snprintf(Clue_Bypass,x,"%s/%s",g->sysconfdir,N_CLUE_BYPASS);
+  snprintf(Banned_File,x,"%s/%s",g->sysconfdir,N_BANNED_FILE);
+  snprintf(Scum_File,x,"%s/%s",g->localstatedir,N_SCUM_FILE);
+  snprintf(Error_File,x,"%s/%s",g->localstatedir,N_ERROR_FILE);
+  snprintf(Bypass_File,x,"%s/%s",g->sysconfdir,N_BYPASS_FILE);
 
 #ifdef RSA
-   sprintf(RSA_Key_File,"%s/%s",sysconfdir,N_RSA_KEY_FILE);
+  snprintf(RSA_Key_File,x,"%s/%s",g->sysconfdir,N_RSA_KEY_FILE);
 #endif
 
 #ifdef AUTOMOTD
-   sprintf(MakeMotd,"%s/motd/%s",localstatedir,N_MAKEMOTD);
+  snprintf(MakeMotd,x,"%s/motd/%s",g->localstatedir,N_MAKEMOTD);
 #endif
 
 #ifdef CHECKMESG
-   sprintf(MesgLog,"%s/%s",localstatedir,N_MESGLOG);
-   sprintf(GodLog,"%s/%s",localstatedir,N_GODLOG);
+  snprintf(MesgLog,x,"%s/%s",g->localstatedir,N_MESGLOG);
+  snprintf(GodLog,x,"%s/%s",g->localstatedir,N_GODLOG);
 #endif
 
 #ifdef FEATURES
-   sprintf(Feature_File,"%s/%s",sysconfdir,N_FEATURE_FILE);
+  snprintf(Feature_File,x,"%s/%s",g->sysconfdir,N_FEATURE_FILE);
 #endif
 
 #ifdef ONCHECK
-   sprintf(On_File,"%s/%s",sysconfdir,N_ON_FILE);
+  snprintf(On_File,x,"%s/%s",g->sysconfdir,N_ON_FILE);
 #endif
 
 #ifdef BASEPRACTICE
-   sprintf(Basep,"%s/%s",libdir,N_BASEP);
+  snprintf(Basep,x,"%s/%s",g->libdir,N_BASEP);
 #endif
 
 #ifdef NEWBIESERVER
-   sprintf(Newbie,"%s/%s",libdir,N_NEWBIE);
+  snprintf(Newbie,x,"%s/%s",g->libdir,N_NEWBIE);
 #endif
 
 #ifdef PRETSERVER
-   sprintf(PreT,"%s/%s",libdir,N_PRET);
+  snprintf(PreT,x,"%s/%s",g->libdir,N_PRET);
 #endif
 
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
-   sprintf(Robodir,"%s/%s",libdir,N_ROBODIR);
+  snprintf(Robodir,x,"%s/%s",g->libdir,N_ROBODIR);
 #endif
 
 #ifdef DOGFIGHT
-   sprintf(Mars,"%s/%s",libdir,N_MARS);
+  snprintf(Mars,x,"%s/%s",g->libdir,N_MARS);
 #endif
-   sprintf(Puck,"%s/%s",libdir,N_PUCK);
-   sprintf(Inl,"%s/%s",libdir,N_INL);
-   sprintf(Access_File,"%s/%s",sysconfdir,N_ACCESS_FILE);
-   sprintf(NoCount_File,"%s/%s",sysconfdir,N_NOCOUNT_FILE);
-   sprintf(Prog,"%s/%s",libdir,N_PROG);
-   sprintf(LogFile,"%s/%s",localstatedir,N_LOGFILE);
-   sprintf(Cambot,"%s/%s",libdir,N_CAMBOT);
-   sprintf(Cambot_out,"%s/%s",libdir,N_CAMBOT_OUT);
+  snprintf(Puck,x,"%s/%s",g->libdir,N_PUCK);
+  snprintf(Inl,x,"%s/%s",g->libdir,N_INL);
+  snprintf(Access_File,x,"%s/%s",g->sysconfdir,N_ACCESS_FILE);
+  snprintf(NoCount_File,x,"%s/%s",g->sysconfdir,N_NOCOUNT_FILE);
+  snprintf(Prog,x,"%s/%s",g->libdir,N_PROG);
+  snprintf(LogFile,x,"%s/%s",g->localstatedir,N_LOGFILE);
+  snprintf(Cambot,x,"%s/%s",g->libdir,N_CAMBOT);
+  snprintf(Cambot_out,x,"%s/%s",g->libdir,N_CAMBOT_OUT);
 }
 
 void setpath()
@@ -154,9 +172,11 @@ void setpath()
   }
   free(new);
   
+  struct getpath_directories *g = getpath_getenv();
+
   /* export the directory paths for use by external scripts */
-  setenv("BINDIR", BINDIR, 1);
-  setenv("LIBDIR", LIBDIR, 1);
-  setenv("SYSCONFDIR", SYSCONFDIR, 1);
-  setenv("LOCALSTATEDIR", LOCALSTATEDIR, 1);
+  setenv("BINDIR", g->bindir, 1);
+  setenv("LIBDIR", g->libdir, 1);
+  setenv("SYSCONFDIR", g->sysconfdir, 1);
+  setenv("LOCALSTATEDIR", g->localstatedir, 1);
 }

@@ -1,4 +1,3 @@
-#	$Id: INSTALL,v 1.1 2005/03/21 05:23:33 jerub Exp $	
 Instructions for installing the Vanilla Netrek Server
 
 Summary
@@ -9,7 +8,7 @@ Summary
             (default path is /usr/local/games/netrek)
 	2)  type "make install",
 	3)  "cd" to the path you gave, or /usr/local/games/netrek,
-	4)  "./netrekd" to start the server,
+	4)  "bin/netrekd" to start the server,
 	5)  use a client to connect to the server.
 
 Details
@@ -96,16 +95,51 @@ See docs/metaservers-HowTo for soliciting players via the metaservers.
 
 For assistance, write to netrek-dev@us.netrek.org.
 
-Running two servers on one machine
-----------------------------------
 
-1) Copy entire Vanilla tree into a new folder, and rerun ./configure using
-the new path.
-2) Edit include/defs.h and change PKEY to a different value, so the servers
-operate in different shared memory segments.
-3) If running one of the bot servers (newbie, pret, etc) change any defined
-ports in the *defs header files so they don't overlap with the ports used
-in the first server.
-4) Edit etc/ports file so that no ports overlap between the two servers.  For
-example, increment all ports by 10000.
-5) Make clean and recompile.
+Running two servers on one host, same binaries
+----------------------------------------------
+
+1.  build the server as usual, to the point of "make install",
+
+2.  duplicate the etc/ and var/ tree, once per virtual server,
+
+	cd /usr/local/games/netrek
+	cp -pr etc etc.inl
+	cp -pr var var.inl
+
+3.  configure each etc tree to use separate IP addresses or port numbers,
+
+4.  start each server with a unique PKEY and SYSCONFDIR,
+
+	PKEY=128 netrekd
+	SYSCONFDIR=/usr/local/games/netrek/etc.inl \
+	LOCALSTATEDIR=/usr/local/games/netrek/var.inl \
+	PKEY=129 netrekd
+
+	
+Running two servers on one host, different binaries
+---------------------------------------------------
+
+1.  obtain another copy of the source tree,
+
+2.  re-run configure using different install paths, for example:
+
+	./configure --prefix=/usr/local/games/netrek-inl
+
+3.  edit include/defs.h and change the default PKEY to a different
+    value, so the servers operate in different shared memory segments.
+
+4.  edit docs/sample_ports file to use different ports or IP addresses
+    than the original server, (this becomes etc/ports),
+
+5.  change PORT in the robots/*defs.h files to match docs/sample_ports,
+
+6.  compile and install, for example:
+
+	make
+	make install
+
+7.  start, for example:
+
+	cd /usr/local/games/netrek-inl
+	bin/netrekd
