@@ -391,5 +391,7 @@ extern double adderupgradecost[];
 #endif
 extern int starbase_rebuild_time;
 extern int last_udp_size;
+extern int ip_check_dns;
+extern int ip_check_dns_verbose;
 
 #endif /* _h_data */

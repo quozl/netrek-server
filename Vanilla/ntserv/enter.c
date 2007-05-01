@@ -258,18 +258,13 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_name, 
 		me->p_mapchars, 
 		me->p_login,
-#ifdef IP_CHECK_DNS
-        (!whitelisted && !is_robot(me) && strcmp(me->p_full_hostname, me->p_dns_hostname)) ? "=" : "",
-#else
-        "",
-#endif
+		(ip_check_dns && !whitelisted && !is_robot(me)
+		    && strcmp(me->p_full_hostname, me->p_dns_hostname)) ? "=" : "",
 		me->p_full_hostname);
-#ifdef IP_CHECK_DNS_VERBOSE
-          if (!whitelisted && !is_robot(me) &&
-              strcmp(me->p_full_hostname, me->p_dns_hostname))
-            pmessage(0, MALL, "GOD->ALL",
-                "[DNS Mismatch] %s is %s", me->p_mapchars, me->p_dns_hostname);
-#endif
+	  if (ip_check_dns && ip_check_dns_verbose && !whitelisted && !is_robot(me) &&
+	      strcmp(me->p_full_hostname, me->p_dns_hostname))
+	    pmessage(0, MALL, "GOD->ALL", "[DNS Mismatch] %s is %s",
+		  me->p_mapchars, me->p_dns_hostname);
 #ifdef DNSBL_CHECK
       if ((me->p_sorbsproxy && (me->p_sorbsproxy != 8)) || me->p_njablproxy) {
 #ifdef DNSBL_PROXY_MUTE

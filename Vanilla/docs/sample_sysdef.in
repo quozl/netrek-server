@@ -118,6 +118,14 @@ DUPLICATES=3
 #	Reference: ntserv/daemonII.c check_scummers)
 CHECKSCUM=3
 #
+#	Do full reverse/forward lookup on IP addreses to check for matching
+#	DNS entries, and make mismatches show in a 'WHOIS'/'@ (0 = no, 1 = yes)
+IP_CHECK_DNS=1
+#
+#	Announce to ALL when a player's host does not forward resolve, and show
+#	what the IP resolved to.  Requires IP_CHECK_DNS=1 (0 = no, 1 = yes).
+IP_CHECK_DNS_VERBOSE=0
+#
 # 	number of players per team for t-mode
 TOURN=4
 #

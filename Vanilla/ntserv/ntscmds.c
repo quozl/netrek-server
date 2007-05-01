@@ -651,8 +651,7 @@ int bounceWhois(int from)
             bounce(from, "(%s@%s)", me->p_login, me->p_full_hostname);
         } else
             bounce(from, msgbuf);
-#ifdef IP_CHECK_DNS
-        if (strcmp(me->p_full_hostname, me->p_dns_hostname)) {
+        if (ip_check_dns && strcmp(me->p_full_hostname, me->p_dns_hostname)) {
             snprintf(msgbuf, 255, "[DNS Mismatch] %s resolves to %s", 
                      me->p_mapchars, me->p_dns_hostname);
             if (strlen(msgbuf) > MSGTEXT_LEN) {
@@ -663,8 +662,7 @@ int bounceWhois(int from)
                 bounce(from, msgbuf);
         }
         else
-#endif
-        bounce(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
+            bounce(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
 #ifdef DNSBL_SHOW
         if ((me->p_sorbsproxy && (me->p_sorbsproxy != 8)) ||
             me->p_njablproxy) {

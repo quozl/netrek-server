@@ -68,6 +68,10 @@ struct sysdef_keywords {
     "Invent a message when armies die in flight"	},
   { "CHECKSCUM",	SYSDEF_INT,	&check_scum,
     "Check for multiple clients from same IP address"	},
+  { "IP_CHECK_DNS",	SYSDEF_INT,	&ip_check_dns,
+    "Reverse/forward lookup on IP addresses"		},
+  { "IP_CHECK_DNS_VERBOSE",	SYSDEF_INT,	&ip_check_dns_verbose,
+    "Message to ALL board on IP/DNS mismatch"		},
   { "WHYMESS",		SYSDEF_INT,	&whymess,
     "When a ship explodes, indicate why"		},
   { "MAX_POP",		SYSDEF_INT,	&max_pop,
@@ -285,5 +289,6 @@ FPS
 SBORBIT
 OBSERVER_KEEPS_GAME_ALIVE
 RESTRICT_3RD_DROP
+IP_CHECK_DNS*
 
 */

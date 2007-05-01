@@ -112,10 +112,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
 {
     struct in_addr addr;
     struct hostent *reverse;
-#ifdef IP_CHECK_DNS
     struct hostent *forward;
     char fwdhost[MAXHOSTNAMESIZE];
-#endif
 
     /* resolve the host name in a new process */
     pid = fork();
@@ -147,12 +145,11 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
         _exit(1);
     }
 
-#ifdef IP_CHECK_DNS
     /* Resolve the IP from the FQDN resolved above and store the text
        string in fwdhost */
-    if (!(forward = gethostbyname(reverse->h_name)) ||
+    if (ip_check_dns && (!(forward = gethostbyname(reverse->h_name)) ||
         !inet_ntop(AF_INET, forward->h_addr_list[0], fwdhost, MAXHOSTNAMESIZE)
-        || strncmp(ip, fwdhost, len - 1)) {
+        || strncmp(ip, fwdhost, len - 1))) {
         /* Display the IP in full_hostname and the resolved reverse in
             dns_hostname if the reverse does not forward resolve to an
             IP or if the forward resolution does not match the
@@ -164,7 +161,6 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
         _exit(0);
     }
     /* if this test works, then DNS is set up correctly */
-#endif
 
     /* Display the resolved reverse in both full_hostname and
        dns_hostname if the resolved forward matches or if IP_CHECK_DNS

@@ -458,3 +458,6 @@ int starbase_rebuild_time = 30;
 
 /* size of most recent UDP packet sent, for use by udpstats command */
 int last_udp_size = 0;
+
+int ip_check_dns = 0;
+int ip_check_dns_verbose = 0;

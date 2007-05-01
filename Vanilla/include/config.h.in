@@ -186,16 +186,6 @@
                                                      rather than the start */
 #define REVERSED_HOSTNAMES
 
-#define IP_CHECK_DNS            /*  IP_CHECK_DNS - Do full reverse/forward
-                                lookup on IP addreses to check for matching
-                                DNS entries, and make mismatches show in a
-                                'WHOIS'/'@' query */
-#ifdef IP_CHECK_DNS
-#undef IP_CHECK_DNS_VERBOSE     /*  IP_CHECK_DNS_VERBOSE - Announce to ALL
-                                when a player's host does not forward resolve,
-                                and show what the IP resolved to */
-#endif
-
 #undef DNSBL_CHECK              /*  DNSBL_CHECK - Check player's IP against
                                 public DNS blacklists to detect open proxies
                                 as well as possibly infected computers. */
