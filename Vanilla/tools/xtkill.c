@@ -32,6 +32,7 @@ static void Usage(void)
       H(ack)                        (cripple, puckify, and freeze player)\n\
       a(rmies increment)[n]         (+6 armies, or set to n)\n\
       u(p shields)                  (raise player's shields)\n\
+      d(own shields)                (lower player's shields)\n\
       C(lock, surrender -- set it)  (to 6 minutes (debugging aid))\n\
       L(oss adjust, SB (-1))        (in case you toast an SB accidentally)\n\
       R(obot obliterate)            (like obliterate, but only for robots)\n\
@@ -274,6 +275,9 @@ int main(int argc, char **argv)
     case 'u':           /* raise shields */
       players[player].p_flags |= PFSHIELD;
       players[player].p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+      break;
+    case 'd':           /* lower shields */
+      players[player].p_flags &= ~(PFSHIELD);
       break;
     case 'R':		/* robot kill? */
       if (players[player].p_flags & PFROBOT) {
