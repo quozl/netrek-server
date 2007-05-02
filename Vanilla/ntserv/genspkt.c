@@ -27,7 +27,7 @@
 #define TRUE 1
 
 /* file scope prototypes */
-static void updateFlagsAll(void);
+static void updateFlagsAll(int offset);
 static void updateVPlayer(struct player_spacket *p);
 static void sendVPlayers(void);
 void sendVPlanets(void);
@@ -356,17 +356,16 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
    updateShips() for those using S_P2.  The packet format is designed to be
    compatable with how clients would handle a short packets flags header, see
    new_flags() in any COW-derived client. */
-void updateFlagsAll(void)
+void updateFlagsAll(int offset)
 {
     struct player *pl;
     struct flags_all_spacket flags_all;
     int i, j, new = 0;
 
     flags_all.type = SP_FLAGS_ALL;
-    flags_all.offset = 0;
-
-    for (i=flags_all.offset, j=flags_all.offset*2, pl=players;
-         i < 16 && i < MAXPLAYER;
+    flags_all.offset = offset;
+    for (i=flags_all.offset, j=0, pl=players;
+         i < (16 + flags_all.offset) && i < MAXPLAYER;
          i++, j += 2, pl++) {
         switch (pl->p_status) {
             case PALIVE:
@@ -1342,10 +1341,17 @@ updateShips(void)
 
     if (F_flags_all) {
 	if (send_short) {
-	    if (F_full_direction_resolution)
-		updateFlagsAll();
+	    if (F_full_direction_resolution) {
+		updateFlagsAll(0);
+		if (highest_active_player > 15)
+		    updateFlagsAll(16);
+	    }
 	}
-	else updateFlagsAll();
+	else {
+	    updateFlagsAll(0);
+	    if (highest_active_player > 15)
+		updateFlagsAll(16);
+	}
     }
 }
 
