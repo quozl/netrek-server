@@ -119,7 +119,7 @@ DUPLICATES=3
 CHECKSCUM=3
 #
 #	Do full reverse/forward lookup on IP addreses to check for matching
-#	DNS entries, and make mismatches show in a 'WHOIS'/'@ (0 = no, 1 = yes)
+#	DNS entries, and make mismatches show in a 'WHOIS'/'@' (0 = no, 1 = yes)
 IP_CHECK_DNS=1
 #
 #	Announce to ALL when a player's host does not forward resolve, and show
