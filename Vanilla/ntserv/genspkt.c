@@ -364,9 +364,10 @@ void updateFlagsAll(int offset)
 
     flags_all.type = SP_FLAGS_ALL;
     flags_all.offset = offset;
-    for (i=flags_all.offset, j=0, pl=players;
-         i < (16 + flags_all.offset) && i < MAXPLAYER;
-         i++, j += 2, pl++) {
+    for (i=flags_all.offset * 16, j=0;
+         i < (flags_all.offset + 1) * 16 && i < MAXPLAYER;
+         i++, j += 2) {
+        pl = &players[i];
         switch (pl->p_status) {
             case PALIVE:
                 if (pl->p_flags & PFCLOAK)
@@ -1344,13 +1345,13 @@ updateShips(void)
 	    if (F_full_direction_resolution) {
 		updateFlagsAll(0);
 		if (highest_active_player > 15)
-		    updateFlagsAll(16);
+		    updateFlagsAll(1);
 	    }
 	}
 	else {
 	    updateFlagsAll(0);
 	    if (highest_active_player > 15)
-		updateFlagsAll(16);
+		updateFlagsAll(1);
 	}
     }
 }
