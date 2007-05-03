@@ -158,10 +158,6 @@ main(argc, argv)
 #endif
 
     status->gameup |= GU_PRET;
-    queues[QU_PRET_PLR].q_flags |= QU_REPORT;
-    queues[QU_PRET_OBS].q_flags |= QU_REPORT;
-    queues[QU_PICKUP].q_flags ^= QU_REPORT;
-    queues[QU_PICKUP_OBS].q_flags ^= QU_REPORT;
 
     me->p_process = getpid();
     p_ups_set(me, 10 / HOWOFTEN);
@@ -293,10 +289,6 @@ void checkmess()
                 obliterate(0, KPROVIDENCE, 0);
                 resetPlanets();
 		status->gameup &= ~GU_PRET;
-		queues[QU_PRET_PLR].q_flags ^= QU_REPORT;
-		queues[QU_PRET_OBS].q_flags ^= QU_REPORT;
-		queues[QU_PICKUP].q_flags |= QU_REPORT;
-		queues[QU_PICKUP_OBS].q_flags |= QU_REPORT;
             }
         }
     }
@@ -613,10 +605,6 @@ static void cleanup(int unused)
 
     obliterate(1, KPROVIDENCE, 1);
     status->gameup &= ~GU_PRET;
-    queues[QU_PRET_PLR].q_flags ^= QU_REPORT;
-    queues[QU_PRET_OBS].q_flags ^= QU_REPORT;
-    queues[QU_PICKUP].q_flags |= QU_REPORT;
-    queues[QU_PICKUP_OBS].q_flags |= QU_REPORT;
     exitRobot();
 }
 
