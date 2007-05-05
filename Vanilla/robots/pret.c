@@ -80,6 +80,7 @@ static int num_humans(int team);
 static int num_humans_alive();
 static int totalPlayers();
 static void doResources(void);
+static void terminate(void);
  
 static void
 reaper(int sig)
@@ -119,7 +120,7 @@ main(argc, argv)
     readsysdefaults();
     alarm_init();
     if (!debug)
-        SIGNAL(SIGINT, cleanup);
+        SIGNAL(SIGINT, terminate);
 
     class = STARBASE;
     target = -1;                /* no target 7/27/91 TC */
@@ -583,7 +584,7 @@ start_a_robot(char *team)
     status->gameup |= GU_BOT_IN_GAME;
 }
 
-static void cleanup(int unused)
+static void cleanup(int terminate)
 {
     struct player *j;
     int i, retry;
@@ -605,7 +606,13 @@ static void cleanup(int unused)
 
     obliterate(1, KPROVIDENCE, 1);
     status->gameup &= ~GU_PRET;
-    exitRobot();
+    if (terminate)
+        exitRobot();
+}
+
+/* terminate is called as a signal handler and is a wrapper for cleanup() */
+static void terminate () {
+	cleanup (1);
 }
 
 /* a pre-t victory is when one team is up by 3 planets */
