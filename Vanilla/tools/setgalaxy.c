@@ -24,17 +24,14 @@
 static void CoolServerIdea(void);
 static void CloseUpShop(void);
 static void doINLResources(void);
-static void doResources(void);
 
-static int agricount[4] = { 0, 0, 0, 0};
 #define AGRI_LIMIT	3
 
 static void usage(void)
 {
     printf("   usage:\n");
     printf("   setgalaxy l              restore planet locations\n");
-    printf("   setgalaxy r (num)        standard reset of galaxy\n");
-    printf("   setgalaxy t (num)        tourney reset of galaxy - equal agris\n");
+    printf("   setgalaxy t              reset of galaxy - equal agris\n");
     printf("   setgalaxy f              flatten all planets to 1 army\n");
     printf("   setgalaxy F (num)        top out all planets at (num) armies\n");
     printf("   setgalaxy n <num>:<str>  rename planet <num> to <str>\n");
@@ -59,13 +56,13 @@ int main(int argc, char **argv)
 	int num;
 	char name[NAME_LEN];
 	if (sscanf(argv[2], "%d:%[^\n]", &num, name)==2) {
-	    if ((num >= 0) && (num <= 39)) {
+	    if ((num >= 0) && (num <= (MAXPLANETS-1))) {
 		printf("Renaming planet #%d to %s.\n", num, name);
 		strcpy(planets[num].pl_name, name);
 		planets[num].pl_namelen = strlen(name);
 		planets[num].pl_flags |= PLREDRAW;
 	    } else {
-		printf("Planet number must be in range (0-39).\n");
+		printf("Planet number must be in range (0-%d).\n", MAXPLANETS-1);
 		return 1;
 	    }
 	    return 0;
@@ -95,7 +92,7 @@ int main(int argc, char **argv)
     }
 
     if (*argv[1] == 'f') { /* flatten planets */
-	for (i = 0; i < 40; i++) {
+	for (i = 0; i < MAXPLANETS; i++) {
 	    planets[i].pl_armies = 1;
 	}
 	printf("All planets set to 1 army.\n");
@@ -103,35 +100,19 @@ int main(int argc, char **argv)
     }
 
     if (*argv[1] == 'F') { /* top out planets */
-	for (i = 0; i < 40; i++) {
+	for (i = 0; i < MAXPLANETS; i++) {
 	    planets[i].pl_armies = top_armies;
 	}
 	printf("All planets set to %d armies.\n",top_armies);
 	return 0;
     }
 
-    if (*argv[1] == 't') { /* tourney reset resources, owners */
+    if (*argv[1] == 't' || *argv[1] == 'r') { /* tourney reset resources, owners */
 	MCOPY(pdata, planets, sizeof(pdata));
-	for (i = 0; i < 40; i++) {
+	for (i = 0; i < MAXPLANETS; i++) {
 	    planets[i].pl_armies = top_armies;
 	}
 	doINLResources();
-	/* reset the SB construction and surrender countdown immediately */
-	for (i = 0; i <= MAXTEAM; i++) {
-	  teams[i].s_turns = 0;
-	  teams[i].s_surrender = 0;
-	}
-	return 0;
-    }
-
-    if (*argv[1] == 'r') { /* reset resources, owners */
-	MCOPY(pdata, planets, sizeof(pdata));
-	for (i = 0; i < 40; i++) {
-	    planets[i].pl_armies = top_armies;
-	}
-	doResources();
-	printf("Agri counts: %d/%d/%d/%d.\n", agricount[0],
-	       agricount[1], agricount[2], agricount[3]);
 	/* reset the SB construction and surrender countdown immediately */
 	for (i = 0; i <= MAXTEAM; i++) {
 	  teams[i].s_turns = 0;
@@ -207,34 +188,6 @@ static void doINLResources(void)
       planets[core_planets[i][k]].pl_flags |= PLFUEL;
     }
   }
-}
-
-
-static void doResources(void)
-{
-    int i;
-
-    do {
-        agricount[0] = 0;
-        agricount[1] = 0;
-        agricount[2] = 0;
-        agricount[3] = 0;
-
-      for (i = 0; i < 40; i++) {
-          /*  if (planets[i].pl_flags & PLHOME)
-              planets[i].pl_flags |= (PLREPAIR|PLFUEL|PLAGRI);*/
-          if (random() % 4 == 0)
-              planets[i].pl_flags |= PLREPAIR;
-          if (random() % 2 == 0)
-              planets[i].pl_flags |= PLFUEL;
-          if (random() % 8 == 0) {
-              planets[i].pl_flags |= PLAGRI; agricount[i/10]++;
-          }
-        }
-    } while ((agricount[0] > AGRI_LIMIT) || /* bug: used && 1/23/92 TC */
-           (agricount[1] > AGRI_LIMIT) ||
-           (agricount[2] > AGRI_LIMIT) ||
-           (agricount[3] > AGRI_LIMIT));
 }
 
 static void CoolServerIdea(void)
