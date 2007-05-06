@@ -172,14 +172,8 @@ static void conquer_ships_explode()
 
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
-#ifdef NEWBIESERVER
-		/* Don't kill newbie robot. */
-		if (newbie_mode && j->p_flags & PFROBOT) continue;
-#endif
-#ifdef PRETSERVER
-		/* Don't kill pre-T robot. */
-		if (pre_t_mode && j->p_flags & PFROBOT) continue;
-#endif
+		/* Don't kill robots on geno */
+		if (j->p_flags & PFROBOT) continue;
 		j->p_status = PEXPLODE;
 		j->p_whydead = KWINNER;
 		j->p_whodead = conquer_player;
