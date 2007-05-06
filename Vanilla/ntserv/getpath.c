@@ -48,7 +48,7 @@ struct getpath_directories *getpath_getenv()
   if (g.bindir == NULL) g.bindir = BINDIR;
   if (g.libdir == NULL) g.libdir = LIBDIR;
   if (g.sysconfdir == NULL) g.sysconfdir = SYSCONFDIR;
-  if (g.localstatedir == NULL) g.localstatedir = LIBDIR;
+  if (g.localstatedir == NULL) g.localstatedir = LOCALSTATEDIR;
 
   return &g;
 }
