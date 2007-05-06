@@ -604,7 +604,7 @@ static void cleanup(int terminate)
         }
     } while (retry);            /* Some robots havn't terminated yet */
 
-    obliterate(1, KPROVIDENCE, 1);
+    obliterate(0, KPROVIDENCE, 1);
     status->gameup &= ~GU_PRET;
     if (terminate)
         exitRobot();
