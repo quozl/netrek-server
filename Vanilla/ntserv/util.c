@@ -79,7 +79,7 @@ int realNumShips(int owner)
 
     for (i = 0, p = players; i < MAXPLAYER; i++, p++)
         if (p->p_status != PFREE && 
-            p->p_status != POBSERV &&
+            !is_observer(p) &&
             !(p->p_flags & PFROBOT) &&
             p->p_team == owner)
                 num++;
