@@ -325,7 +325,7 @@ static int totalPlayers()
             continue;
         if (j->p_flags & PFROBOT)
             continue;
-        if (j->p_status == POBSERV)
+        if (is_observer(j))
             continue;
         count++;
    }

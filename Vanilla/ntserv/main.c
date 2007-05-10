@@ -202,6 +202,8 @@ int main(int argc, char **argv)
     me->p_mapchars[1] = shipnos[pno];
     me->p_mapchars[2] = '\0';
     me->p_whydead=KLOGIN;
+    if (queues[w_queue].q_flags & QU_OBSERVER)
+        me->p_flags |= PFOBSERV;
 
     myship = &me->p_ship;
     mystats = &me->p_stats;

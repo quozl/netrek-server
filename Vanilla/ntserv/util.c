@@ -186,7 +186,7 @@ void orbit_release_by_planet(struct planet *pl) {
   for (i=0; i<MAXPLAYER; i++) {
     struct player *me = &players[i];
     if (me->p_status & PFREE) continue;
-    if (me->p_flags & PFOBSERV) continue;
+    if (is_observer(me)) continue;
     if (me->p_flags & PFORBIT) {
       if (me->p_planet == pl->pl_no) {
 	me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
