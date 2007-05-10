@@ -42,10 +42,7 @@ struct pqueue {        /* A player queue */
 #define  QU_NEWBIE_BOT 10   /* Newbie server robots */
 #define  QU_NEWBIE_OBS 11   /* Newbie server observers */
 #define  QU_NEWBIE_DMN 12   /* Newbie server daemon */
-#define  QU_PRET_PLR   13   /* Pre-T server players */
-#define  QU_PRET_BOT   14   /* Pre-T server robots */
-#define  QU_PRET_OBS   15   /* Pre-T server observers */
-#define  QU_PRET_DMN   16   /* Pre-T server daemon */
+#define  QU_PRET_DMN   13   /* Pre-T server daemon */
 /*
  * Queue flag definitions.
  */

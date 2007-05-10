@@ -175,30 +175,6 @@ int queues_init(void)
     queue_setname(QU_NEWBIE_DMN, "newbie daemon");
 #endif
 #ifdef PRETSERVER
-    queues[QU_PRET_PLR].free_slots = MAXPLAYER - TESTERS;
-    queues[QU_PRET_PLR].max_slots = MAXPLAYER - TESTERS;
-    queues[QU_PRET_PLR].tournmask = ALLTEAM;
-    queues[QU_PRET_PLR].low_slot = 0;
-    queues[QU_PRET_PLR].high_slot = MAXPLAYER - TESTERS;
-    queues[QU_PRET_PLR].q_flags = QU_OPEN|QU_RESTRICT;
-    queue_setname(QU_PRET_PLR, "preT player");
-
-    queues[QU_PRET_BOT].free_slots = MAXPLAYER - TESTERS;
-    queues[QU_PRET_BOT].max_slots = MAXPLAYER - TESTERS;
-    queues[QU_PRET_BOT].tournmask = ALLTEAM;
-    queues[QU_PRET_BOT].low_slot = (MAXPLAYER - TESTERS) / 2;
-    queues[QU_PRET_BOT].high_slot = MAXPLAYER - (TESTERS / 2);
-    queues[QU_PRET_BOT].q_flags = QU_OPEN;
-    queue_setname(QU_PRET_BOT, "preT robot");
-
-    queues[QU_PRET_OBS].free_slots = (MAXPLAYER - TESTERS) / 2 - 1;
-    queues[QU_PRET_OBS].max_slots = (MAXPLAYER - TESTERS) / 2 - 1;
-    queues[QU_PRET_OBS].tournmask = ALLTEAM;
-    queues[QU_PRET_OBS].low_slot = MAXPLAYER - (TESTERS / 2);
-    queues[QU_PRET_OBS].high_slot = MAXPLAYER - 1;
-    queues[QU_PRET_OBS].q_flags = QU_OPEN|QU_RESTRICT|QU_OBSERVER;
-    queue_setname(QU_PRET_OBS, "preT observer");
-
     queues[QU_PRET_DMN].free_slots = 1;
     queues[QU_PRET_DMN].max_slots = 1;
     queues[QU_PRET_DMN].tournmask = ALLTEAM;

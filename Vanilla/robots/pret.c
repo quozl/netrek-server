@@ -215,6 +215,7 @@ void checkmess()
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
             messAll(255,roboname,"**** Pre-T Entertainment starting back up. ***");
             realT = 0;
+            status->gameup |= GU_PRET;
         }
 
         if (num_humans(0) < 8 && realT) {

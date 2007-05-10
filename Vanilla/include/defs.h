@@ -76,7 +76,7 @@
 /* see ntserv/ntscmds.c for voting array */
 
 #if defined(NEWBIESERVER) || defined(PRETSERVER)
-#define MAXQUEUE 17	/* Number of different  waitqueues */
+#define MAXQUEUE 14	/* Number of different  waitqueues */
 #else
 #define MAXQUEUE 9
 #endif
