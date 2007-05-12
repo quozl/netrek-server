@@ -236,7 +236,7 @@ int packetsReceived[NUM_PACKETS+1] = { 0 };
 int packetsSent[NUM_SIZES+1] = { 0 };
 
 #define BUFSIZE 16738
-#define UDPBUFSIZE 768			/* (tweakable; should be under 1300) */
+#define UDPBUFSIZE 1024			/* (tweakable; should be under 1300) */
 static char buf[BUFSIZE];		/* Socket buffer */
 static char udpbuf[UDPBUFSIZE];		/* UDP socket buffer */
 static char *bufptr=buf;
