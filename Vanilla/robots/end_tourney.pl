@@ -80,7 +80,7 @@ if ( $id ) {
     $inputfile = "ltd_dump.txt." . $id;
     $logfile = "INL_log." . $id;
     $outputfile = "pwstats." . $id . ".html";
-    $cambotfile = "cambot.pkt." . $id;
+    $cambotfile = "cambot." . $id . ".pkt";
     $endtime = $id;
 } else { 
     $inputfile = "ltd_dump.txt";
