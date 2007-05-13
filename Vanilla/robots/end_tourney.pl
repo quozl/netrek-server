@@ -163,8 +163,8 @@ if ( $dropdir ) {
 	    system("mkdir \"$dirpath\"");
 	    system("cp $outputfile \"$dirpath/pwstats.html\"");
 	    system("ln -s \"$dirpath/pwstats.html\" \"$dirpath/index.html\"");
-	    system("gzip -9c $logfile > \"$dirpath/INL_log.gz\"");
-	    system("gzip -9c $inputfile > \"$dirpath/ltd_dump.txt.gz\"");
+	    system("cp $logfile \"$dirpath/INL_log.txt\"");
+	    system("cp $inputfile \"$dirpath/ltd_dump.txt\"");
 	    if ( -f $cambotfile ) {
 	    	system("gzip -9c $cambotfile > \"$dirpath/cambot.pkt.gz\"");
 	    }
@@ -459,8 +459,8 @@ $count=1;
 print OUTPUT  <<END;
 
 <p>
-<font size=+1>Download:</font> <a href=ltd_dump.txt.gz>LTD Stats</a>&nbsp;|&nbsp;
-<a href=INL_log.gz>INL Log</a>&nbsp;|&nbsp;<a href=cambot.pkt.gz>Game Recording (Cambot)</a>
+<font size=+1>Download:</font> <a href=ltd_dump.txt>LTD Stats</a>&nbsp;|&nbsp;
+<a href=INL_log.txt>INL Log</a>&nbsp;|&nbsp;<a href=cambot.pkt.gz>Game Recording (Cambot)</a>
 <p>
 <font size=+2>Player Stats</font> $key
 
