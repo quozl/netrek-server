@@ -369,6 +369,7 @@ void updateFlagsAll(int offset)
          i++, j += 2) {
         pl = &players[i];
         switch (pl->p_status) {
+            case POBSERV:
             case PALIVE:
                 if (pl->p_flags & PFCLOAK)
                     n_flags[i] = FLAGS_ALL_CLOAK_ON;
