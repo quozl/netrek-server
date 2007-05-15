@@ -3,6 +3,9 @@ $Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
 
 List of things that are defects
 
+	- robots are not recognising Cas, reported by KaraokeBar, Australia,
+	  2007-05-15
+
 	- Twarping to base docked on base can occassionally cause a
           glitch where both bases head warp 60 off the galaxy map.
 

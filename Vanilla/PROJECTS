@@ -3,6 +3,9 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- strip spaces before parsing robot commands, reported by KaraokeBar,
+	  Australia, 2007-05-15.
+
 	- show damage of other ships, for the fish and oyster mode,
           but also has use-cases for newbie mode, for robots, and for
           friendly ships in a normal game, according to configuration.
