@@ -86,6 +86,19 @@ int realNumShips(int owner)
     return (num);
 }
 
+int realNumShipsBots(int owner)
+{
+    int         i, num = 0;
+    struct player       *p;
+
+    for (i = 0, p = players; i < MAXPLAYER; i++, p++)
+        if (p->p_status != PFREE && 
+            !is_observer(p) &&
+            p->p_team == owner)
+                num++;
+    return (num);
+}
+
 #ifdef LTD_STATS
 
 /* find out who the other T mode team is.  Its not the team I'm on */

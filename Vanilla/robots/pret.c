@@ -497,8 +497,7 @@ num_players(int *next_team)
     team_count[ORI] = 0;
 
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-        if (j->p_status != PFREE && j->p_status != POBSERV &&
-            !(j->p_flags & PFROBOT) && j != me)
+        if (j->p_status != PFREE && j->p_status != POBSERV && j != me)
             {
                 team_count[j->p_team]++;
                 c++;

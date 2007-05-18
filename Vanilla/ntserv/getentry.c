@@ -310,7 +310,11 @@ static int tournamentMask(int team, int w_queue)
      */
 
     for (i = 0; i < NUMTEAM; i++) {
-        if ((np[i] = realNumShips(1 << i)) > largest) {
+        if (pre_t_mode)
+           np[i] = realNumShipsBots(1 << i);
+        else
+           np[i] = realNumShips(1 << i);
+        if (np[i] > largest) {
             nextlargest = largest;
             inl = il;
             largest = np[i];
