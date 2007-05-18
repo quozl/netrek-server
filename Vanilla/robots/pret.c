@@ -158,7 +158,10 @@ main(argc, argv)
     }
 #endif
 
-    status->gameup |= GU_PRET;
+    if (status->tourn)
+        realT = 1;
+    else
+        status->gameup |= GU_PRET;
 
     me->p_process = getpid();
     p_ups_set(me, 10 / HOWOFTEN);
@@ -168,7 +171,8 @@ main(argc, argv)
     team2 = (random()%2) ? ROM : ORI;
 
     me->p_status = POBSERV;              /* Put robot in game */
-    resetPlanets();
+    if (!status->tourn)
+        resetPlanets();
 
     while ((status->gameup) & GU_GAMEOK) {
         alarm_wait_for();
@@ -782,10 +786,10 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
         if (resetShip)
         {
             j->p_kills = 0;
-            j->p_ntorp = 0;
-            j->p_nplasmatorp = 0;
             j->p_ship.s_plasmacost = -1;
         }
+        j->p_ntorp = 0;
+        j->p_nplasmatorp = 0;
         j->p_armies = 0;
         if (wflag == 1)
             j->p_hostile = (FED | ROM | ORI | KLI);         /* angry */
