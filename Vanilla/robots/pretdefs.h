@@ -46,7 +46,7 @@
 #define PERSEC (1000000/UPDATE/HOWOFTEN) /* # of robo calls per second*/
 
 #define ROBOCHECK (1*PERSEC)		/* start or stop a robot */
-#define ROBOEXITWAIT (2*ROBOCHECK)  /* wait between exiting bots so that
+#define ROBOEXITWAIT (3*ROBOCHECK)  /* wait between exiting bots so that
                                        multiple bots don't exit */
 #define SENDINFO  (600*PERSEC)		/* send info to all */
 

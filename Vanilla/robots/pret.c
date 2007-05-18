@@ -64,7 +64,7 @@ static int debugLevel = 0;
 
 static void cleanup(int);
 void checkmess();
-static void obliterate(int wflag, char kreason, int killRobots);
+static void obliterate(int wflag, char kreason, int killRobots, int resetShip);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
 static int is_robots_only(void);
@@ -288,7 +288,7 @@ void checkmess()
                 realT = 1;
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
-                obliterate(0, KPROVIDENCE, 0);
+                obliterate(0, KPROVIDENCE, 0, 0);
                 resetPlanets();
 		status->gameup &= ~GU_PRET;
             }
@@ -604,7 +604,7 @@ static void cleanup(int terminate)
         }
     } while (retry);            /* Some robots havn't terminated yet */
 
-    obliterate(0, KPROVIDENCE, 1);
+    obliterate(0, KPROVIDENCE, 1, 1);
     status->gameup &= ~GU_PRET;
     if (terminate)
         exitRobot();
@@ -637,7 +637,7 @@ static void checkPreTVictory() {
 
     if(winner > 0) {
         messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
-        obliterate(0, KPROVIDENCE, 0);
+        obliterate(0, KPROVIDENCE, 0, 1);
         resetPlanets();
     }
 }
@@ -764,7 +764,7 @@ static void exitRobot(void)
 }
 
 
-static void obliterate(int wflag, char kreason, int killRobots)
+static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
 {
     /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
     struct player *j;
@@ -779,10 +779,14 @@ static void obliterate(int wflag, char kreason, int killRobots)
         if ((j->p_flags & PFROBOT) && killRobots == 0)
             continue;
         if (j == me) continue;
+        if (resetShip)
+        {
+            j->p_kills = 0;
+            j->p_ntorp = 0;
+            j->p_nplasmatorp = 0;
+            j->p_ship.s_plasmacost = -1;
+        }
         j->p_armies = 0;
-        j->p_kills = 0;
-        j->p_ntorp = 0;
-        j->p_nplasmatorp = 0;
         if (wflag == 1)
             j->p_hostile = (FED | ROM | ORI | KLI);         /* angry */
         else if (wflag == 2)
