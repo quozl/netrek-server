@@ -258,10 +258,10 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 		me->p_name, 
 		me->p_mapchars, 
 		me->p_login,
-		(ip_check_dns && !whitelisted && !is_robot(me)
+		(ip_check_dns && !hidden && !is_robot(me)
 		    && strcmp(me->p_full_hostname, me->p_dns_hostname)) ? "=" : "",
 		me->p_full_hostname);
-	  if (ip_check_dns && ip_check_dns_verbose && !whitelisted && !is_robot(me) &&
+	  if (ip_check_dns && ip_check_dns_verbose && !hidden && !is_robot(me) &&
 	      strcmp(me->p_full_hostname, me->p_dns_hostname))
 	    pmessage(0, MALL, "GOD->ALL", "[DNS Mismatch] %s is %s",
 		  me->p_mapchars, me->p_dns_hostname);

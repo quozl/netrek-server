@@ -423,6 +423,7 @@ int observer_muting = 0;
 int observer_keeps_game_alive = 0;
 int whitelisted = 0;
 int blacklisted = 0;
+int hidden = 0;
 int ignored[MAXPLAYER];
 
 int voting=0;

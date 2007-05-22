@@ -361,6 +361,7 @@ extern int observer_muting;
 extern int observer_keeps_game_alive;
 extern int whitelisted;
 extern int blacklisted;
+extern int hidden;
 
 extern int voting;
 extern int ban_vote_enable;

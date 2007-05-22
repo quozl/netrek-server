@@ -309,11 +309,8 @@ int main(int argc, char **argv)
     me->p_ip_duplicates = ip_duplicates(me->p_ip) ||
                           ip_duplicates(me->p_full_hostname);
     whitelisted = ip_whitelisted(me->p_ip);
-    if (whitelisted) {
-      strcpy(me->p_full_hostname, "hidden");
-      strcpy(me->p_monitor, "hidden");
-    }
-    if (ip_hide(me->p_ip)) {
+    hidden = ip_hide(me->p_ip);
+    if (hidden) {
       strcpy(me->p_full_hostname, "hidden");
       strcpy(me->p_monitor, "hidden");
       strcpy(me->p_login, "anonymous");

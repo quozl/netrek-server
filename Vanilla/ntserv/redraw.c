@@ -44,10 +44,11 @@ void intrupt(void)
 	testtime--;
 	if (testtime==0) {
 #if defined(RSA) && defined(SHOW_RSA)
-	  pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
-                    "%s %.16s is not using an RSA client",
-                    ranks[me->p_stats.st_rank].name,
-                      me->p_name);
+          if (!hidden && !whitelisted && !bypassed)
+	      pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
+                        "%s %.16s is not using an RSA client",
+                        ranks[me->p_stats.st_rank].name,
+                          me->p_name);
 #endif
 	  if (bypassed) {                     /* Deal with .bypass entries */
 	    ERROR(3,(".bypass person : %s - logged on\n",me->p_login));

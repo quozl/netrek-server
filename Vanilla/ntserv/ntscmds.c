@@ -637,7 +637,7 @@ int bounceWhois(int from)
 {
     char msgbuf[255];
 
-    if (whitelisted) {
+    if (hidden) {
         bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
     } else {
         snprintf(msgbuf, 255, "%s is %s (%s@%s)", me->p_mapchars, me->p_name,
