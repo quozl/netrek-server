@@ -85,6 +85,10 @@ void phaser(u_char course)
     if ((!(j->p_war & me->p_team)) && 
 	(!(me->p_war & j->p_team)))
       continue;
+      
+    /* Idle ships cannot be phasered */
+    if (checksafe(j))
+        continue;
 
     /*
      * (A, B) is the position of the possible target relative to me. */

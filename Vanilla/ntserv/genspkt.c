@@ -1208,6 +1208,8 @@ updateShips(void)
 	if ( (pl==me) ||
 	     ( !(me->p_flags & PFROBOT) && (me->p_team == NOBODY) ) )
 	    sndHostile(hostile, pl, UPDT_ALL);
+	else if (checksafe(pl))
+	    sndHostile(hostile, pl, UPDT_LEAST);
 	else
 	    sndHostile(hostile, pl, UPDT_MOST);
 
@@ -1271,6 +1273,7 @@ updateShips(void)
 	if ( (hiddenenemy && pl->p_team != me->p_team
 	      && !(pl->p_flags & PFSEEN) && status->tourn)
 	     || (pl->p_status == POBSERV && pl != me)
+	     || (checksafe(pl) && pl != me)
 	    ) {
 
 	    /* Player is invisible, send limited flags information,

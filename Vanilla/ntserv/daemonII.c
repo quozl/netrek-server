@@ -1969,6 +1969,8 @@ static int t_near(struct torp *t)
                         continue;
                 if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
                         continue;
+                if (checksafe(j))
+                         continue;
                 dx = spo(t->t_x_internal - j->p_x_internal);
                 if ((dx < -EXPDIST) || (dx > EXPDIST))
                         continue;
