@@ -79,7 +79,7 @@ int realNumShips(int owner)
 
     for (i = 0, p = players; i < MAXPLAYER; i++, p++)
         if (p->p_status != PFREE && 
-            !is_observer(p) &&
+            !(p->p_flags & PFOBSERV) &&
             !(p->p_flags & PFROBOT) &&
             p->p_team == owner)
                 num++;
@@ -93,7 +93,7 @@ int realNumShipsBots(int owner)
 
     for (i = 0, p = players; i < MAXPLAYER; i++, p++)
         if (p->p_status != PFREE && 
-            !is_observer(p) &&
+            !(p->p_flags & PFOBSERV) &&
             p->p_team == owner)
                 num++;
     return (num);
@@ -199,7 +199,7 @@ void orbit_release_by_planet(struct planet *pl) {
   for (i=0; i<MAXPLAYER; i++) {
     struct player *me = &players[i];
     if (me->p_status & PFREE) continue;
-    if (is_observer(me)) continue;
+    if (me->p_flags & PFOBSERV) continue;
     if (me->p_flags & PFORBIT) {
       if (me->p_planet == pl->pl_no) {
 	me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);

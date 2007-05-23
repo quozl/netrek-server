@@ -160,8 +160,6 @@ struct context {
 #define PFOBSERV        0x8000000       /* for observers */
 #define PFTWARP	       0x40000000	/* isae -- SB transwarp */
 
-#define is_observer(P) ((P)->p_flags & PFOBSERV)
-
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) ||  defined(PRETSERVER)
 #define PFBPROBOT      0x80000000
 #endif

@@ -418,7 +418,7 @@ static int is_tournament_mode(void)
     for (i=0, p=players; i<MAXPLAYER; i++, p++) {
         if (((p->p_status != PFREE) &&
              /* don't count observers for Tmode 06/09/95 JRP */
-             !is_observer(p) &&
+             !(p->p_flags & PFOBSERV) &&
              (p->p_status != POBSERV)) &&
              /* don't count robots for Tmode 10/31/91 TC */
             !(p->p_flags & PFROBOT)) {
