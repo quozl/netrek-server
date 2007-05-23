@@ -88,7 +88,7 @@ void phaser(u_char course)
       
     /* Idle ships cannot be phasered */
     if (checksafe(j))
-        continue;
+      continue;
 
     /*
      * (A, B) is the position of the possible target relative to me. */

@@ -27,61 +27,61 @@ extern int living;
 void intrupt(void)
 {
     if (testtime == -1) {
-	struct reserved_spacket sp;
+        struct reserved_spacket sp;
 
-	/* Give a reasonable period of time to respond to query (and test code
-	   if they need to) */
+        /* Give a reasonable period of time to respond to query (and test code
+           if they need to) */
 #define RSAREPLYTIMER 30
 
 #ifdef RSA
-	RSA_Client = 0;
+        RSA_Client = 0;
 #endif
-	testtime = RSAREPLYTIMER * 10;	
-	makeReservedPacket(&sp);
-	MCOPY(sp.data, testdata, RESERVED_SIZE);
-	sendClientPacket(&sp);
+        testtime = RSAREPLYTIMER * 10;
+        makeReservedPacket(&sp);
+        MCOPY(sp.data, testdata, RESERVED_SIZE);
+        sendClientPacket(&sp);
     } else if (testtime != 0) {
-	testtime--;
-	if (testtime==0) {
+        testtime--;
+        if (testtime==0) {
 #if defined(RSA) && defined(SHOW_RSA)
-          if (!hidden && !whitelisted && !bypassed)
-	      pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
-                        "%s %.16s is not using an RSA client",
-                        ranks[me->p_stats.st_rank].name,
+            if (!hidden && !whitelisted && !bypassed)
+                pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
+                          "%s %.16s is not using an RSA client",
+                          ranks[me->p_stats.st_rank].name,
                           me->p_name);
 #endif
-	  if (bypassed) {                     /* Deal with .bypass entries */
-	    ERROR(3,(".bypass person : %s - logged on\n",me->p_login));
-	    me->p_stats.st_flags |= ST_CYBORG; /* mark for reference */
-	    new_warning(UNDEF,"You are in the .bypass file, be good");
-          } else {
-	    /* User failed to respond to verification query.  Bye! */
-	    if (!binconfirm)
-		me->p_stats.st_flags |= ST_CYBORG; /* mark for reference 7/27/91 TC */
-	    else {
-		me->p_explode = 10;
-		me->p_whydead = KQUIT;
-		me->p_status = PEXPLODE;
-		ERROR(3,("User binary failed to verify\n"));
+            if (bypassed) {                     /* Deal with .bypass entries */
+                ERROR(3,(".bypass person : %s - logged on\n",me->p_login));
+                me->p_stats.st_flags |= ST_CYBORG; /* mark for reference */
+                new_warning(UNDEF,"You are in the .bypass file, be good");
+            } else {
+                /* User failed to respond to verification query.  Bye! */
+                if (!binconfirm)
+                    me->p_stats.st_flags |= ST_CYBORG; /* mark for reference 7/27/91 TC */
+                else {
+                    me->p_explode = 10;
+                    me->p_whydead = KQUIT;
+                    me->p_status = PEXPLODE;
+                    ERROR(3,("User binary failed to verify\n"));
 #ifdef RSA
 #ifdef SHOW_RSA
-		pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
-			"%s %.16s failed to verify",
-			ranks[me->p_stats.st_rank].name,
-                	me->p_name);
+                    pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
+                              "%s %.16s failed to verify",
+                              ranks[me->p_stats.st_rank].name,
+                              me->p_name);
 #endif
-		if (RSA_Client==1)
-		    new_warning(UNDEF,"No customized binaries.  Please use a blessed one.");
-		else if (RSA_Client==2)
-                    new_warning(UNDEF,"Wrong Client Version Number!");
-                else
-		    new_warning(UNDEF,"You need a spiffy new RSA client for this server!");
+                    if (RSA_Client==1)
+                        new_warning(UNDEF,"No customized binaries.  Please use a blessed one.");
+                    else if (RSA_Client==2)
+                        new_warning(UNDEF,"Wrong Client Version Number!");
+                    else
+                        new_warning(UNDEF,"You need a spiffy new RSA client for this server!");
 #else
-		new_warning(UNDEF,"No customized binaries. Please use a blessed one.");
+                    new_warning(UNDEF,"No customized binaries. Please use a blessed one.");
 #endif
-	    }
-	}
-      }
+                }
+            }
+        }
     }
     if (me->p_status == PFREE) {
 	ERROR(1,("intrupt: exitGame() on PFREE (pid %i)\n",getpid()));
