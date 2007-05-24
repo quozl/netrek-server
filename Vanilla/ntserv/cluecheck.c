@@ -229,7 +229,7 @@ void clue_check(void)
     pmessage(0, MALL, "GOD->ALL", 
 	"%s (%2s) was nuked as a warning to read messages.",
         me->p_name, me->p_mapchars);
-    if ((me->p_status != POBSERV) && (me->p_armies>0)) save_armies();
+    if (!(me->p_flags & PFOBSERV) && (me->p_armies>0)) save_armies();
   }
 
   if (!clueVerified && (clueCount > FIVEMINUTES)) {

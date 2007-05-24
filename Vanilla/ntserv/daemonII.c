@@ -3983,7 +3983,7 @@ static void ghostmess(struct player *victim, char *reason)
         "%s was kill %0.2f for the GhostBusters, %s",
         victim->p_longname, ghostkills, reason);
     /* if ghostbusting an observer do not attempt carried army rescue */
-    if (victim->p_status == POBSERV) return;
+    if (victim->p_flags & PFOBSERV) return;
     if (victim->p_armies > 0) {
         k = 10*(remap[victim->p_team]-1);
         if (k >= 0 && k <= 30) for (i=0; i<10; i++) {
