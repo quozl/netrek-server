@@ -24,7 +24,6 @@
 #include "util.h"
 
 /* file scope prototypes */
-static int deadTeam(int owner);
 static int tournamentMask(int team, int w_queue);
 
 
@@ -274,110 +273,117 @@ void getEntry(int *team, int *stype)
 }
 
 /*
- * We never force you to switch unless your team is dead or not in the T group.
- * But we always offer you the option to even things up when your team is
- * two players ahead.  This code does not ensure non-diagonal games,
- * some people like them, especially with two-genocides to conquer
- * set in SYSDEF.
+ * New tournamentMask function, reimplemented from scratch. The old
+ * code was an unreadable mess.
+ * This removes some old junk, and adds new features including diagonal
+ * restrictions on teams with 2 players, and not allowing new players
+ * to join a team with 4 players on it before T mode starts. These
+ * changes are to get people on the right teams faster to get T mode.
+ * Behavior during T mode has not changed from the previous code.
+ *
+ * May 25 2007 -karthik
  */
 
-/*
- * For the initial entry, team is set to ALLTEAM
- */
-
-static int tournamentMask(int team, int w_queue)
+static int tournamentMask(int team, int queue)
 {
-    int i, np[NUMTEAM];
-    int largest = 0, nextlargest = 0, il = 0, inl = 0;
-    int allteams = queues[w_queue].tournmask;
-    int tinydiff;
-
-    /* First, handle any special cases */
-    /* INL guests cannot play and are only here to read the motd */
-    if (inl_mode && !Observer && is_guest(me->p_name)) return 0;
-    /* Is the server closed, or did the daemon die. */
-    if ((!time_access()) || !(status->gameup & GU_GAMEOK)) return 0;
-    /* You must leave */
-    if (mustexit) return 0;
-    /* Special modes */
-    if (chaos || topgun) return (allteams);
-    /* Only continue if the queue has mask restrictions */
-    if (!(queues[w_queue].q_flags&QU_RESTRICT)) return (allteams);
-
-    /*
-     * Observers can watch any team in their queue, but may not
-     * change teams once they have made their selection
-     */
-
-    for (i = 0; i < NUMTEAM; i++) {
-        if (pre_t_mode)
-           np[i] = realNumShipsBots(1 << i);
-        else
-           np[i] = realNumShips(1 << i);
-        if (np[i] > largest) {
-            nextlargest = largest;
-            inl = il;
-            largest = np[i];
-            il = 1 << i;
+    int mask = queues[queue].tournmask;
+    int large[2] = {0, 0};
+    int count[NUMTEAM];
+    int i;
+    
+    /* Handle special cases that disallow all teams */
+    /* INL guests cannot play, but they can read the MOTD and can observe */
+    if ((inl_mode && !Observer && is_guest(me->p_name)) ||
+    /* Restricted server hours */
+        !time_access() ||
+    /* Broken daemon */
+        !(status->gameup & GU_GAMEOK) ||
+    /* Must exit is set */
+        (mustexit))
+        return 0;
+    
+    /* Handle special cases that do other things */
+    /* Chaos or topgun mode */
+    if (chaos || topgun)
+        return mask;
+    /* Queue with no restrictions */
+    if (!(queues[queue].q_flags & QU_RESTRICT))
+        return queues[queue].tournmask;
+    
+    /* Find the two largest teams, include bots in the count if in pre-T mode */
+    memset(count, 0, NUMTEAM * sizeof(int));
+    for (i = 0; i < NUMTEAM; i++)
+    {
+#ifdef PRETSERVER
+        count[i] = (pre_t_mode ? realNumShipsBots(1 << i) : realNumShips(1 << i));
+#else
+        count[i] = realNumShips(1 << i);
+#endif
+        
+        /* Mask out full teams, unless we are on one */
+        if (((count[i] >= 8) || (count[i] >= 4 && pre_t_mode)) && (team != (1 << i)) && !Observer)
+            mask &= ~(1 << i);
+        
+        /* large[0] == largest team, large[1] == second largest team */
+        if (count[i] > count[large[0]])
+        {
+            large[1] = large[0];
+            large[0] = i;
         }
-        else if (np[i] > nextlargest) {
-            nextlargest = np[i];
-            inl = 1 << i;
-        }
-        if (deadTeam(1 << i) || (np[i] >= 8) || (bot_in_game && np[i] >=  4))
-            allteams &= ~ (1 <<i);
+        else if ((count[i] > count[large[1]]) || (large[0] == large[1]))
+            large[1] = i;
     }
-    if (nodiag) {
-      u_int rem = deadTeam(il) ? inl : il;
-      if (((rem <<= 2) & 0xf) == 0)
-               rem >>= 4;
-      allteams &= ~rem; 
-      }
-    if((pre_t_mode && inl == 0) || (!pre_t_mode && !status->tourn))
-      return allteams;
-    /*
-     * We think we are in t-mode and go for re-entry.  
-     * We know the t-mode teams, we think.
-     */
-
-    /*
-     * First, make sure observers pick a t-mode team
-     */
-    if (queues[w_queue].q_flags & QU_OBSERVER){
-     if (team == ALLTEAM || ((team & (il | inl)) == 0))  /* initial entry case */
-        return (il | inl); 
-     else if (deadTeam(team))                            /* must have been on one of those two? */
-        return (allteams & ~il & ~inl);                 /* switch, but not to one of those two? */
-    }   
-
-    /*
-     * Next, make sure players pick a t-mode team that needs players
-     */
-
-    tinydiff = (largest - nextlargest) < 2;
-    if (team == ALLTEAM || ((team & (il | inl)) == 0))  /* initial entry case */
-        return (tinydiff ? allteams & (il | inl) : (inl & allteams ? inl : allteams & ~il));
-    else if (deadTeam(team))                            /* must have been on one of those two? */
-        return (allteams & ~il & ~inl);                 /* switch, but not to opponent */
-    else if (tinydiff || (team == inl))
-        return team;                  /* you are on smaller or small enough team, stay there */
-    else
-        return (team | (allteams & inl ? inl : allteams));       /* you may switch to opponent */
-}
-
-
-static int deadTeam(int owner)
-{
-    int i,num=0;
-    struct planet *p;
-
-    if (!time_access()) return 1; /* 8/2/91 TC */
-    if (planets[remap[owner]*10-10].pl_couptime == 0) return(0);
-    for (i=0, p=planets; i<MAXPLANETS; i++,p++) {
-        if (p->pl_owner & owner) {
-            num++;
-        }
+    
+    /* Disallow diagonals from the 2 largest teams with >= 2 players */
+    if (nodiag)
+        for (i = 0; i < 2; i++)
+            if (count[large[i]] >= 2)
+                switch (1 << large[i])
+                {
+                    case FED:
+                        mask &= ~KLI;
+                        break;
+                    case ROM:
+                        mask &= ~ORI;
+                        break;
+                    case KLI:
+                        mask &= ~FED;
+                        break;
+                    case ORI:
+                        mask &= ~ROM;
+                        break;
+                }
+    
+    /* Allow observers to pick any valid team on initial entry */
+    if ((team == ALLTEAM) && Observer)
+        return mask;
+    
+    /* Prevent new players from joining a team with 4+ players if there is no T mode
+       Existing players get to keep their slot on death */
+    if ((!status->tourn) && (team == ALLTEAM))
+    {
+        if (count[large[0]] >= 4)
+            mask &= ~(1 << large[0]);
+        else if (count[large[1]] >= 4)
+            mask &= ~(1 << large[1]);
+        return mask;
     }
-    if (num!=0) return(0);
-    return(1);
+
+    /* Let existing players switch to a team that's down by 2 or more slots if they are
+       already on one of the two largest teams, otherwise keep them on the same team */
+    if ((team != ALLTEAM) && ((team == (1 << large[0])) || (team == (1 << large[1]))))
+    {
+        if ((team == (1 << large[0])) && ((count[large[1]] + 2) > (count[large[0]])))
+            mask &= ~(1 << large[1]);
+        else if ((team == (1 << large[1])) && ((count[large[0]] + 2) > (count[large[1]])))
+            mask &= ~(1 << large[0]);
+        return mask;
+    }
+
+    /* Let new players or dead 3rd race players join a team that's up by 1 slot or less */
+    if (count[large[0]] > (count[large[1]] + 1))
+        mask &= ~(1 << large[0]);
+    else if (count[large[1]] > (count[large[0]] + 1))
+        mask &= ~(1 << large[1]);
+    return mask;
 }

@@ -4,6 +4,7 @@ int angdist(u_char x, u_char y);
 int nint(double x);
 #endif
 int realNumShips(int owner);
+int realNumShipsBots(int owner);
 #ifdef LTD_STATS
 void setEnemy(int myteam, struct player *me);
 #endif /* LTD_STATS */
