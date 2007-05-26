@@ -24,6 +24,7 @@
 #include "util.h"
 
 /* file scope prototypes */
+static int deadTeam(int owner);
 static int tournamentMask(int team, int w_queue);
 
 
@@ -334,8 +335,9 @@ static int tournamentMask(int team, int queue)
             large[1] = i;
     }
     
-    /* Disallow diagonals from the 2 largest teams with >= 2 players */
-    if (nodiag)
+    /* Disallow diagonals from the 2 largest teams with >= 2 players
+       The sysdef CLASSICTOURN option disables this logic */
+    if (nodiag && (!oldtourn || status->tourn))
         for (i = 0; i < 2; i++)
             if (count[large[i]] >= 2)
                 switch (1 << large[i])
@@ -358,9 +360,15 @@ static int tournamentMask(int team, int queue)
     if ((team == ALLTEAM) && Observer)
         return mask;
     
+    /* Prevent rejoining a team that is dead (e.g. has been genocided); allow joining
+       any race other than the other two largest ones */
+    if (deadTeam(team))
+        return(ALLTEAM & ~(1 << large[0]) & ~(1 << large[1]));
+
     /* Prevent new players from joining a team with 4+ players if there is no T mode
-       Existing players get to keep their slot on death */
-    if ((!status->tourn) && (team == ALLTEAM))
+       Existing players get to keep their slot on death
+       The sysdef CLASSICTOURN option disables this logic */
+    if (!oldtourn && (!status->tourn) && (team == ALLTEAM))
     {
         if (count[large[0]] >= 4)
             mask &= ~(1 << large[0]);
@@ -386,4 +394,20 @@ static int tournamentMask(int team, int queue)
     else if (count[large[1]] > (count[large[0]] + 1))
         mask &= ~(1 << large[1]);
     return mask;
+}
+
+static int deadTeam(int owner)
+{
+    int i,num=0;
+    struct planet *p;
+
+    if (!time_access()) return 1; /* 8/2/91 TC */
+    if (planets[remap[owner]*10-10].pl_couptime == 0) return(0);
+    for (i=0, p=planets; i<MAXPLANETS; i++,p++) {
+        if (p->pl_owner & owner) {
+            num++;
+        }
+    }
+    if (num!=0) return(0);
+    return(1);
 }
