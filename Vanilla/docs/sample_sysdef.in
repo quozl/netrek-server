@@ -133,6 +133,12 @@ TOURN=4
 # 	(0 = no, 1 = yes)
 SAFE_IDLE=1
 #
+#	Whether to emulate old tournamentMask() behavior by removing the
+#	restrictions on joining a diagonal race if 2 players are present on
+#	the opposing diagonal, and remove the logic not allowing teams to
+#	grow past 4 humans before T mode starts.
+CLASSICTOURN=0
+#
 #	Rebuild time of starbase, in minutes
 STARBASE_REBUILD_TIME=30
 #
