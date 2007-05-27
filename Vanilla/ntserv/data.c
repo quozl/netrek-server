@@ -138,6 +138,7 @@ int	chaosmode=0;
 int	topgun=0; /* added 12/9/90 TC */
 int	nodiag=1;
 int	oldtourn=0;
+int	reportmetausers=1;
 int	killer=1; /* added 1/28/93 NBT */
 int	resetgalaxy=0; /* added 2/6/93 NBT */
 int     newturn=0; /* added 1/20/91 TC */

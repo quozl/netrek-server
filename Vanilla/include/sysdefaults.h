@@ -120,6 +120,8 @@ struct sysdef_keywords {
     "Prohibit diagonal games (e.g. ROM vs ORI)"		},
   { "CLASSICTOURN",	SYSDEF_INT,	&oldtourn,
     "Use classic tournament mask mode"			},
+  { "REPORT_USERS",	SYSDEF_INT,	&reportmetausers,
+    "Report users on metaservers"			},
   { "TOPGUN",		SYSDEF_INT,	&topgun,
     "Enable TOPGUN mode"				},
   { "NEWTURN",		SYSDEF_INT,	&newturn,
@@ -292,5 +294,6 @@ SBORBIT
 OBSERVER_KEEPS_GAME_ALIVE
 RESTRICT_3RD_DROP
 IP_CHECK_DNS*
+REPORT_USERS
 
 */

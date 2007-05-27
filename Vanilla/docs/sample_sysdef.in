@@ -209,6 +209,9 @@ OBSERVER_MUTING=0
 #	Whether observers on an empty server will keep the game alive.
 OBSERVER_KEEPS_GAME_ALIVE=0
 #
+#       Whether player counts are listed on the metaservers
+REPORT_USERS=1
+#
 # 	Use topgun mode (0 = no, 1 = yes)
 TOPGUN=0
 #

@@ -298,7 +298,8 @@ void solicit(int force)
 
 
       /* build start of the packet, the server information */
-      sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
+      if (reportmetausers) {
+          sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
 	      /* version */   "b",
 	      /* address */   m->ours,
 	      /* type    */   m->type,
@@ -311,6 +312,21 @@ void solicit(int force)
 	      /* full    */   gamefull ? "y" : "n",
 	      /* comment */   m->comment
 	      );
+      } else {
+          sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
+	      /* version */   "b",
+	      /* address */   m->ours,
+	      /* type    */   m->type,
+	      /* port    */   m->pport,
+	      /* observe */   m->oport,
+	      /* players */   0,
+	      /* free    */   16,
+	      /* t-mode  */   status->tourn ? "y" : "n",
+	      /* RSA     */   isrsa ? "y" : "n",
+	      /* full    */   "n",
+	      /* comment */   m->comment
+	      );
+      }
       here += strlen(here);
       
       /* now append per-player information to the packet */
