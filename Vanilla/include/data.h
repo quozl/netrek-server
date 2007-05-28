@@ -189,8 +189,8 @@ extern int binconfirm;
 extern int chaosmode;
 extern int topgun; /* added 12/9/90 TC */
 extern int nodiag;
-extern int oldtourn;
-extern int reportmetausers;
+extern int classictourn;
+extern int report_users;
 extern int killer; /* added 1/28/93 NBT */
 extern int resetgalaxy; /* added 2/6/93 NBT */
 extern int newturn; /* added 1/20/91 TC */

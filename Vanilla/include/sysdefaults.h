@@ -118,9 +118,9 @@ struct sysdef_keywords {
 #endif
   { "NODIAG",		SYSDEF_INT,	&nodiag,
     "Prohibit diagonal games (e.g. ROM vs ORI)"		},
-  { "CLASSICTOURN",	SYSDEF_INT,	&oldtourn,
+  { "CLASSICTOURN",	SYSDEF_INT,	&classictourn,
     "Use classic tournament mask mode"			},
-  { "REPORT_USERS",	SYSDEF_INT,	&reportmetausers,
+  { "REPORT_USERS",	SYSDEF_INT,	&report_users,
     "Report users on metaservers"			},
   { "TOPGUN",		SYSDEF_INT,	&topgun,
     "Enable TOPGUN mode"				},

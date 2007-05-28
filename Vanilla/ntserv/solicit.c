@@ -298,7 +298,7 @@ void solicit(int force)
 
 
       /* build start of the packet, the server information */
-      if (reportmetausers) {
+      if (report_users) {
           sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
 	      /* version */   "b",
 	      /* address */   m->ours,

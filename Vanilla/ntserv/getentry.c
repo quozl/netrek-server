@@ -311,37 +311,36 @@ static int tournamentMask(int team, int queue)
     if (!(queues[queue].q_flags & QU_RESTRICT))
         return queues[queue].tournmask;
     
-    /* Find the two largest teams, include bots in the count if in pre-T mode */
+    /* Find the two largest teams, include bots in the count if in
+       pre-T mode */
     memset(count, 0, NUMTEAM * sizeof(int));
-    for (i = 0; i < NUMTEAM; i++)
-    {
+    for (i = 0; i < NUMTEAM; i++) {
 #ifdef PRETSERVER
-        count[i] = (pre_t_mode ? realNumShipsBots(1 << i) : realNumShips(1 << i));
+        count[i] = (pre_t_mode ? realNumShipsBots(1 << i) :
+                                 realNumShips(1 << i));
 #else
         count[i] = realNumShips(1 << i);
 #endif
-        
+
         /* Mask out full teams, unless we are on one */
-        if (((count[i] >= 8) || (count[i] >= 4 && pre_t_mode)) && (team != (1 << i)) && !Observer)
+        if (((count[i] >= 8) || (count[i] >= 4 && pre_t_mode)) &&
+            (team != (1 << i)) && !Observer)
             mask &= ~(1 << i);
         
         /* large[0] == largest team, large[1] == second largest team */
-        if (count[i] > count[large[0]])
-        {
+        if (count[i] > count[large[0]]) {
             large[1] = large[0];
             large[0] = i;
-        }
-        else if ((count[i] > count[large[1]]) || (large[0] == large[1]))
+        } else if ((count[i] > count[large[1]]) || (large[0] == large[1]))
             large[1] = i;
     }
     
     /* Disallow diagonals from the 2 largest teams with >= 2 players
        The sysdef CLASSICTOURN option disables this logic */
-    if (nodiag && (!oldtourn || status->tourn))
+    if (nodiag && (!classictourn || status->tourn))
         for (i = 0; i < 2; i++)
             if (count[large[i]] >= 2)
-                switch (1 << large[i])
-                {
+                switch (1 << large[i]) {
                     case FED:
                         mask &= ~KLI;
                         break;
@@ -360,16 +359,16 @@ static int tournamentMask(int team, int queue)
     if ((team == ALLTEAM) && Observer)
         return mask;
     
-    /* Prevent rejoining a team that is dead (e.g. has been genocided); allow joining
-       any race other than the other two largest ones */
+    /* Prevent rejoining a team that is dead (e.g. has been
+       genocided); allow joining any race other than the other two
+       largest ones */
     if (deadTeam(team))
         return(ALLTEAM & ~(1 << large[0]) & ~(1 << large[1]));
 
-    /* Prevent new players from joining a team with 4+ players if there is no T mode
-       Existing players get to keep their slot on death
-       The sysdef CLASSICTOURN option disables this logic */
-    if (!oldtourn && (!status->tourn) && (team == ALLTEAM))
-    {
+    /* Prevent new players from joining a team with 4+ players if
+       there is no T mode.  Existing players get to keep their slot on
+       death.  The sysdef CLASSICTOURN option disables this logic */
+    if (!classictourn && (!status->tourn) && (team == ALLTEAM)) {
         if (count[large[0]] >= 4)
             mask &= ~(1 << large[0]);
         else if (count[large[1]] >= 4)
@@ -377,18 +376,23 @@ static int tournamentMask(int team, int queue)
         return mask;
     }
 
-    /* Let existing players switch to a team that's down by 2 or more slots if they are
-       already on one of the two largest teams, otherwise keep them on the same team */
-    if ((team != ALLTEAM) && ((team == (1 << large[0])) || (team == (1 << large[1]))))
+    /* Let existing players switch to a team that's down by 2 or more
+       slots if they are already on one of the two largest teams,
+       otherwise keep them on the same team */
+    if ((team != ALLTEAM) && ((team == (1 << large[0])) ||
+                              (team == (1 << large[1]))))
     {
-        if ((team == (1 << large[0])) && ((count[large[1]] + 2) > (count[large[0]])))
+        if ((team == (1 << large[0])) &&
+            ((count[large[1]] + 2) > (count[large[0]])))
             mask &= ~(1 << large[1]);
-        else if ((team == (1 << large[1])) && ((count[large[0]] + 2) > (count[large[1]])))
+        else if ((team == (1 << large[1])) &&
+                 ((count[large[0]] + 2) > (count[large[1]])))
             mask &= ~(1 << large[0]);
         return mask;
     }
 
-    /* Let new players or dead 3rd race players join a team that's up by 1 slot or less */
+    /* Let new players or dead 3rd race players join a team that's up
+       by 1 slot or less */
     if (count[large[0]] > (count[large[1]] + 1))
         mask &= ~(1 << large[0]);
     else if (count[large[1]] > (count[large[0]] + 1))
