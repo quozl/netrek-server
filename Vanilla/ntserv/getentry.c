@@ -363,7 +363,15 @@ static int tournamentMask(int team, int queue)
        genocided); allow joining any race other than the other two
        largest ones */
     if (deadTeam(team))
-        return(ALLTEAM & ~(1 << large[0]) & ~(1 << large[1]));
+    {
+        if ((1 << large[0]) == team)
+            mask &= ~(team & (1 << large[1]));
+        else if ((1 << large[1]) == team)
+            mask &= ~(team & (1 << large[0]));
+        else
+            mask &= ~(team & ~(1 << large[0]) & 1 << (large[1]));
+        return mask;
+    }
 
     /* Prevent new players from joining a team with 4+ players if
        there is no T mode.  Existing players get to keep their slot on
@@ -371,7 +379,7 @@ static int tournamentMask(int team, int queue)
     if (!classictourn && (!status->tourn) && (team == ALLTEAM)) {
         if (count[large[0]] >= 4)
             mask &= ~(1 << large[0]);
-        else if (count[large[1]] >= 4)
+        if (count[large[1]] >= 4)
             mask &= ~(1 << large[1]);
         return mask;
     }
