@@ -632,6 +632,9 @@ static void checkPreTVictory() {
     int f, r, k, o, i;
     int winner = -1;
 
+    /* fix a potential issue of invalid resets during a t-mode game */
+    if (status->tourn) return;
+
     /* don't interfere with a real game */
     if(totalRobots(0) == 0) return;
 
