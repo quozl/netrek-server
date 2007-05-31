@@ -133,7 +133,7 @@ char *w_texts[]={
 /*	beam_up()	*/
 "Must be orbiting or docked to beam up.",			/* 44 */
 "Those aren't our men.",					/* 45 */
-"Comm Officer: We're not authorized to beam foriegn troops on board!", /* 46 */
+"Comm Officer: We're not authorized to beam foreign troops on board!", /* 46 */
 /* beam_down() */
 "Must be orbiting or docked to beam down.",			/* 47 */
 "Comm Officer: Starbase refuses permission to beam our troops over.", /* 48 */

@@ -161,7 +161,7 @@ void beam_up(void)
 	}
     } else if (me->p_flags & PFDOCK) {
 	if (me->p_team != players[me->p_dock_with].p_team) {
-            new_warning(46,"Comm Officer: We're not authorized to beam foriegn troops on board!");
+            new_warning(46,"Comm Officer: We're not authorized to beam foreign troops on board!");
 	    return;
 	}
     }

@@ -542,7 +542,7 @@ static void political_begin(int message)
                 pmessage(0, MALL, "GOD->ALL","'Manifest Destiny' becomes motive in galactic superpower conflict!");
                 break;
         case 5:
-                pmessage(0, MALL, "GOD->ALL","Diplomat insults foriegn emperor's mother and fighting breaks out!");
+                pmessage(0, MALL, "GOD->ALL","Diplomat insults foreign emperor's mother and fighting breaks out!");
                 break;
         case 6:
                 pmessage(0, MALL, "GOD->ALL","%s declares self as galactic emperor and chaos breaks out!",
