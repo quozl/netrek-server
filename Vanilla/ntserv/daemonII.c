@@ -1589,7 +1589,8 @@ static void udplayers_palive_set_alert(struct player *j)
                 int dx, dy, dist;
                 if ((players[k].p_status != PALIVE) ||
                     ((!(j->p_war & players[k].p_team)) &&
-                     (!(players[k].p_war & j->p_team)))) {
+                     (!(players[k].p_war & j->p_team))) ||
+                    checksafe(&players[k])) {
                         continue;
                 } else if (j == &players[k]) {
                         continue;
