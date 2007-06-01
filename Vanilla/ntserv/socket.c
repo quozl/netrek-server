@@ -1524,7 +1524,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 	if (balance<0) balance=0;
     }
     lasttime=thistime;
-    if (balance>=15) {
+    if (balance>=15 && !whitelisted) {
 	new_warning(86,"Be quiet");
 	balance+=3;
 	if (status->tourn)
