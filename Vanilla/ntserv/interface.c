@@ -187,6 +187,12 @@ void beam_down(void)
             return;
         }
     }
+    
+    if ((pre_t_mode) && (planets[me->p_planet].pl_flags & PLHOME))
+    {
+        new_warning(UNDEF, "You may not drop on home planets in pre-T mode.");
+        return;
+    }
 
     if (me->p_flags & PFDOCK) {
         if (me->p_team != players[me->p_dock_with].p_team) {
