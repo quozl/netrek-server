@@ -414,7 +414,6 @@ static int deadTeam(int owner)
     struct planet *p;
 
     if (!time_access()) return 1; /* 8/2/91 TC */
-    if (planets[remap[owner]*10-10].pl_couptime == 0) return(0);
     for (i=0, p=planets; i<MAXPLANETS; i++,p++) {
         if (p->pl_owner & owner) {
             num++;
