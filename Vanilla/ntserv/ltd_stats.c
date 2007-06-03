@@ -1241,7 +1241,7 @@ int ltd_can_rank(struct player *p) {
 
   rank = p->p_stats.st_rank + 1;
 
-  if ((defense_rating >= ranks[rank].defense) &&
+  if (((offense_rating >= ranks[rank].offense) || !offense_rank) &&
       ((total_hours > ranks[rank].hours / hourratio &&
         total_rating >= ranks[rank].ratings) ||
        (total_hours < ranks[rank].hours / hourratio &&
@@ -1255,7 +1255,7 @@ int ltd_can_rank(struct player *p) {
 
   rank = p->p_stats.st_rank;
 
-  if ((defense_rating >= ranks[rank].defense &&
+  if (((offense_rating >= ranks[rank].offense || !offense_rank) &&
        total_rating >= ranks[rank].ratings) &&
       total_di >= required_di * 2)
 
@@ -1268,7 +1268,7 @@ int ltd_can_rank(struct player *p) {
   rank = p->p_stats.st_rank - 1;
 
   if (p->p_stats.st_rank > 0 &&
-      (defense_rating >= ranks[rank].defense &&
+      ((offense_rating >= ranks[rank].offense || !offense_rank) &&
        total_rating >= ranks[rank].ratings) &&
       total_di >= required_di * 4)
 
@@ -1281,7 +1281,7 @@ int ltd_can_rank(struct player *p) {
   rank = p->p_stats.st_rank - 2;
 
   if (p->p_stats.st_rank >= 4 &&
-      (defense_rating >= ranks[rank].defense &&
+      ((offense_rating >= ranks[rank].offense || !offense_rank) &&
        total_rating >= ranks[rank].ratings) &&
       total_di >= required_di * 8)
 

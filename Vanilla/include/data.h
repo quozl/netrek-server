@@ -396,5 +396,6 @@ extern int starbase_rebuild_time;
 extern int last_udp_size;
 extern int ip_check_dns;
 extern int ip_check_dns_verbose;
+extern int offense_rank;
 
 #endif /* _h_data */

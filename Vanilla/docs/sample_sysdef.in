@@ -142,6 +142,11 @@ CLASSICTOURN=0
 #	Rebuild time of starbase, in minutes
 STARBASE_REBUILD_TIME=30
 #
+#       Require offense for higher ranks, to allievate the problem of
+#       players who only play when there is much DI to be had. This
+#       makes Commodore require 1.0, Rear Adm 1.2, and Admiral 1.4.
+OFFENSE_RANK=0
+#
 # 	Which ship types are allowed
 SHIPS=SC,DD,CA,BB,AS,SB
 #

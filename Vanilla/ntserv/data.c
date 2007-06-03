@@ -191,9 +191,14 @@ struct rank ranks[NUMRANKS] = {
     { 8.0, 3.0, 0.0, "Commander"},
     {15.0, 4.0, 0.0, "Captain"},
     {20.0, 5.0, 0.0, "Flt. Capt."},
-    {25.0, 6.0, 0.0, "Commodore"},
-    {30.0, 7.0, 0.0, "Rear Adm."},
-    {40.0, 8.0, 0.0, "Admiral"}};
+
+/* change: 6/2/07 KA turn the defense measure into offense
+   to challenge those players who just come in for the
+   initial bombing and planet taking scumming; this is
+   intended to improve team play amongst such players */
+    {25.0, 6.0, 1.0, "Commodore"},
+    {30.0, 7.0, 1.2, "Rear Adm."},
+    {40.0, 8.0, 1.4, "Admiral"}};
 
 int             startTkills, startTlosses, startTarms, startTplanets,
                 startTticks;
@@ -464,3 +469,5 @@ int last_udp_size = 0;
 
 int ip_check_dns = 0;
 int ip_check_dns_verbose = 0;
+
+int offense_rank = 0;

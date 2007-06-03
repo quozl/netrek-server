@@ -260,6 +260,8 @@ struct sysdef_keywords {
 #endif
   { "STARBASE_REBUILD_TIME",	SYSDEF_INT,	&starbase_rebuild_time,
     "Rebuild time of starbase, in minutes." },
+  { "OFFENSE_RANK",             SYSDEF_INT,     &offense_rank,
+    "Enable offense requirements for rank (Commodore = 1.0, Rear Adm = 1.2, Admiral = 1.4)" },
   { "",			SYSDEF_END,	NULL		}
 };
 
@@ -296,5 +298,6 @@ RESTRICT_3RD_DROP
 IP_CHECK_DNS*
 CLASSICTOURN
 REPORT_USERS
+OFFENSE_RANK
 
 */

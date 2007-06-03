@@ -675,7 +675,7 @@ struct obtype {
 };
 
 struct rank {
-    float hours, ratings, defense;
+    float hours, ratings, offense;
     char *name;
 };
 
