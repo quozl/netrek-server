@@ -61,6 +61,8 @@ int team1 = 0;
 int team2 = 0;
 static int debugTarget = -1;
 static int debugLevel = 0;
+static struct planet savedplanets[MAXPLANETS];
+static int galaxysaved = 0;
 
 static void cleanup(int);
 void checkmess();
@@ -81,6 +83,8 @@ static int num_humans_alive();
 static int totalPlayers();
 static void doResources(void);
 static void terminate(void);
+static void savegalaxy(void);
+static void restoregalaxy(void);
  
 static void
 reaper(int sig)
@@ -217,9 +221,13 @@ void checkmess()
     /* Check to see if we should start adding bots again */
     if ((ticks % ROBOCHECK) == 0) {
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
-            messAll(255,roboname,"**** Pre-T Entertainment starting back up. ***");
+            messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
+            savegalaxy();
+            galaxysaved = 1;
+            resetPlanets();
             realT = 0;
             status->gameup |= GU_PRET;
+            time_in_pre_T = 0;
         }
 
         if (num_humans(0) < 8 && realT) {
@@ -293,8 +301,15 @@ void checkmess()
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
                 obliterate(0, KPROVIDENCE, 0, 0);
-                resetPlanets();
-		status->gameup &= ~GU_PRET;
+                if (galaxysaved)
+                {
+                    messAll(255,roboname,"Restoring previous T-mode galaxy.");
+                    restoregalaxy();
+                    galaxysaved = 0;
+                }
+                else
+                    resetPlanets();
+                status->gameup &= ~GU_PRET;
             }
         }
     }
@@ -809,6 +824,17 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
         j->p_war = (j->p_swar | j->p_hostile);
     }
 }
+
+static void savegalaxy(void)
+{
+    MCOPY(planets, savedplanets, sizeof(struct planet) * MAXPLANETS);
+}
+
+static void restoregalaxy(void)
+{
+    MCOPY(savedplanets, planets, sizeof(struct planet) * MAXPLANETS);
+}
+
 #endif  /* PRETSERVER */
 
 
