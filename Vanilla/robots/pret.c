@@ -227,7 +227,6 @@ void checkmess()
             resetPlanets();
             realT = 0;
             status->gameup |= GU_PRET;
-            time_in_pre_T = 0;
         }
 
         if (num_humans(0) < 8 && realT) {
