@@ -14,6 +14,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "ip.h"
 #include "packets.h"
 #include "proto.h"
 #include "blog.h"
