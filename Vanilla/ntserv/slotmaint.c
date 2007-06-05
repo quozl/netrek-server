@@ -162,19 +162,8 @@ int slots_free(int w_queue)
     return slots_free_count;
 }
 
-static int slots_playing_count;
-
-static int slots_playing_action(int w_queue, int i)
-{
-    if (players[i].p_status == PFREE) return 0;
-    if (is_robot(&players[i])) return 0;
-    slots_playing_count++;
-    return 0;
-}
-
-/* Return a count of slots playing in a given queue.
-   This is only used by solicit.c; add special cases to not report
-   slots with no team and not report slots on an overlapping queue. */
+/* Return a count of slots playing in a given queue, but do not report
+   slots with no team, or those in an overlapping queue. */
 int slots_playing(int w_queue)
 {
     int i, count = 0;
