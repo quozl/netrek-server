@@ -127,7 +127,7 @@ static int udp_tx(struct metaserver *m, char *buffer, int length)
 
 void solicit(int force)
 {
-  int i, nplayers=0, nfree=0; 
+  int i, nplayers=0, nfree=0, nplayersall=0;
   char packet[MAXMETABYTES];
   char *fixed_name, *fixed_login; /* name/login stripped of unprintables */
   char *name, *login;             /* name and login guaranteed not blank */
@@ -268,8 +268,9 @@ void solicit(int force)
 
       /* count the slots free to new logins, and the slots taken */
       nfree = slots_free(queue);
-      nplayers = slots_playing(queue);
-      
+      nplayers = slots_playing(queue, 0);
+      nplayersall = slots_playing(queue, 1);
+
       ERROR(7,("before: nfree=%d nplayers=%d gamefull=%d\n", nfree, nplayers, gamefull));
 
       /* Special case: do *not* report anything for INL servers if nplayers=0,
@@ -283,9 +284,10 @@ void solicit(int force)
         continue;
       }
 
-      /* if the free slots are zero, translate it to a queue length */
-      /* and report that the game is full */
-      if (nfree == 0) 
+      /* If the free slots are zero but the game is not actually full,
+         don't report a queue if there are 4 or more entering slots.
+         Workaround to not show a queue if there are many entering slots. */
+      if ((nfree == 0) && ((nplayersall - nplayers) < 4))
       {
 	nfree = -queues[queue].count;
         gamefull++;

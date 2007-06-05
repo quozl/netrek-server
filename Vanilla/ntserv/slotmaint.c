@@ -146,25 +146,21 @@ int pickslot(int w_queue)
     return i;
 }
 
-static int slots_free_count;
-
-static int slots_free_action(int w_queue, int i)
-{
-    if (players[i].p_status == PFREE) slots_free_count++;
-    return 0;
-}
-
 /* return a count of slots open for use in a given queue */
 int slots_free(int w_queue)
 {
-    slots_free_count = 0;
-    scanqueue(w_queue, slots_free_action);
-    return slots_free_count;
+    int i, count = 0;
+
+    for (i = queues[w_queue].low_slot; i < queues[w_queue].high_slot; i++)
+        if (players[i].p_status == PFREE)
+            count++;
+    return count;
 }
 
 /* Return a count of slots playing in a given queue, but do not report
-   slots with no team, or those in an overlapping queue. */
-int slots_playing(int w_queue)
+   slots with no team unless showempty is set, or those in an overlapping
+   queue. */
+int slots_playing(int w_queue, int showempty)
 {
     int i, count = 0;
 
@@ -172,7 +168,7 @@ int slots_playing(int w_queue)
         if ((players[i].p_status != PFREE) &&
             !is_robot(&players[i]) &&
             (players[i].w_queue == w_queue) &&
-            (players[i].p_team != ALLTEAM))
+            ((players[i].p_team != ALLTEAM) || showempty))
             count++;
     return count;
 }
