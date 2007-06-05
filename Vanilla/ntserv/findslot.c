@@ -87,7 +87,8 @@ int findslot(int w_queue)
     }
 
     /* unfair pre-queue if client from same ip address is already queued */
-    if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
+    if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)
+     || (w_queue == QU_NEWBIE_PLR) || (w_queue == QU_NEWBIE_OBS)) {
       for (;;) {
 	int n = waiting_count_by_ip(w_queue);
 	if (n < 1) break;
@@ -103,7 +104,8 @@ int findslot(int w_queue)
     }
 
     /* unfair pre-queue if client from same ip address is already playing */
-    if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)) {
+    if ((w_queue == QU_PICKUP) || (w_queue == QU_PICKUP_OBS)
+     || (w_queue == QU_NEWBIE_PLR) || (w_queue == QU_NEWBIE_OBS)) {
       for (;;) {
 	int n = playing_count_by_ip(w_queue);
 	if (n <= duplicates) break;
