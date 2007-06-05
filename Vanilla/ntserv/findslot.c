@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -46,6 +47,15 @@ static int waiting_count_by_ip(int w_queue) {
     k = waiting[k].next;
   }
   return j;
+}
+
+/* kill all player processes with same ip*/
+static void free_duplicate_ips() {
+  int i;
+  for (i=0; i<MAXPLAYER; i++) {
+    if (strcmp(players[i].p_ip, ip) == 0)
+      kill(players[i].p_process, SIGTERM);
+  }
 }
 
 /*
@@ -108,6 +118,7 @@ int findslot(int w_queue)
 	if (deny_duplicates) {
 	  ip_deny_set(ip);
 	  ERROR(2,("findslot: %s added to denied parties list\n", ip));
+	  free_duplicate_ips();
 	  return -1;
 	}
 	else {
