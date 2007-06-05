@@ -195,6 +195,12 @@ static int flag_test(char *name)
 
 static char name[256];
 
+static char *name_deny(char *ip)
+{
+  snprintf(name, 255, "%s/deny/%s", SYSCONFDIR, ip);
+  return name;
+}
+
 static char *name_etc(char *prefix, char *ip)
 {
   snprintf(name, 255, "%s/ip/%s/%s", SYSCONFDIR, prefix, ip);
@@ -205,6 +211,11 @@ static char *name_var(char *prefix, char *ip)
 {
   snprintf(name, 255, "%s/ip/%s/%s", LOCALSTATEDIR, prefix, ip);
   return name;
+}
+
+/* denied parties list, add to, as a critical defense measure */
+void ip_deny_set(char *ip) {
+  return flag_set(name_deny(ip));
 }
 
 /* whitelist, whether to trust user more */

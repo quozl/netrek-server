@@ -102,6 +102,10 @@ int findslot(int w_queue)
       for (;;) {
 	int n = playing_count_by_ip(w_queue);
 	if (n <= duplicates) break;
+	if (n > 20) {
+	  ip_deny_set(ip);
+	  ERROR(2,("findslot: %s added to denied parties list\n", ip));
+	}
 	if (rep++ % 10 == 1) { sendQueuePacket((short) 1000+n); }
 	if (isClientDead()) { fflush(stderr); exit(0); }
 	if (!(status->gameup & GU_GAMEOK)) { return -1; }
