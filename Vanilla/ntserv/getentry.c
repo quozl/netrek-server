@@ -335,6 +335,17 @@ static int tournamentMask(int team, int queue)
             large[1] = i;
     }
     
+    /* Handle rejoining after a team has been timercided, disallow the
+       old team and disallow the two largest teams (may overlap)
+       Return early so we can't diagonal-mask out all 4 teams */
+    if (deadTeam(team))
+    {
+        mask &= ~team;
+        mask &= ~(1 << large[0]);
+        mask &= ~(1 << large[1]);
+        return mask;
+    }
+
     /* Disallow diagonals from the 2 largest teams with >= 2 players
        The sysdef CLASSICTOURN option disables this logic */
     if (nodiag && (!classictourn || status->tourn))
@@ -358,20 +369,6 @@ static int tournamentMask(int team, int queue)
     /* Allow observers to pick any valid team on initial entry */
     if ((team == ALLTEAM) && Observer)
         return mask;
-    
-    /* Prevent rejoining a team that is dead (e.g. has been
-       genocided); allow joining any race other than the other two
-       largest ones */
-    if (deadTeam(team))
-    {
-        if ((1 << large[0]) == team)
-            mask &= ~(team & (1 << large[1]));
-        else if ((1 << large[1]) == team)
-            mask &= ~(team & (1 << large[0]));
-        else
-            mask &= ~(team & ~(1 << large[0]) & 1 << (large[1]));
-        return mask;
-    }
 
     /* Prevent new players from joining a team with 4+ players if
        there is no T mode.  Existing players get to keep their slot on
