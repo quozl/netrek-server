@@ -668,6 +668,7 @@ static void checkPreTVictory() {
         messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
         obliterate(0, KPROVIDENCE, 0, 1);
         resetPlanets();
+        galaxysaved = 0;
     }
 }
 
