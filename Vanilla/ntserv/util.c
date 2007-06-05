@@ -496,7 +496,7 @@ int p_ups_set(struct player *me, int client_ups)
    on a homeworld, not in t-mode, with 0 kills, and maximum fuel,
    shields and hull.
 */
-int checksafe(struct player *victim)
+int is_idle(struct player *victim)
 {
     if (safe_idle
         && (!status->tourn)

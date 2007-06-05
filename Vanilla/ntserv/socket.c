@@ -1233,7 +1233,7 @@ static void handleOrbitReq(struct orbit_cpacket *packet)
 
 static void handlePractrReq(struct practr_cpacket *packet)
 {
-    if (checksafe(me)) return;
+    if (is_idle(me)) return;
     if (practice_robo()) return;
     if (twarpMode) {
         handleTranswarp();
@@ -1273,7 +1273,7 @@ static void handleCloakReq(struct cloak_cpacket *packet)
 /*ARGSUSED*/
 static void handleDetTReq(struct det_torps_cpacket *packet)
 {
-    if (checksafe(me)) return;
+    if (is_idle(me)) return;
     detothers();
 }
 
@@ -1787,7 +1787,7 @@ static void handleQuitReq(struct quit_cpacket *packet)
     /* 60 seconds to destruct a starbase */
     if (me->p_ship.s_type==STARBASE) selfdest = me->p_updates + 600;
     /* one tenth of that if safe idle */
-    if (checksafe(me)) selfdest = selfdest / 10;
+    if (is_idle(me)) selfdest = selfdest / 10;
     new_warning(90,"Self destruct initiated");
 }
 

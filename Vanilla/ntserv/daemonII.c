@@ -1590,7 +1590,7 @@ static void udplayers_palive_set_alert(struct player *j)
                 if ((players[k].p_status != PALIVE) ||
                     ((!(j->p_war & players[k].p_team)) &&
                      (!(players[k].p_war & j->p_team))) ||
-                    checksafe(&players[k])) {
+                    is_idle(&players[k])) {
                         continue;
                 } else if (j == &players[k]) {
                         continue;
@@ -1970,7 +1970,7 @@ static int t_near(struct torp *t)
                         continue;
                 if (! ((t->t_war & j->p_team) || (t->t_team & j->p_war)))
                         continue;
-                if (checksafe(j))
+                if (is_idle(j))
                         continue;
                 dx = spo(t->t_x_internal - j->p_x_internal);
                 if ((dx < -EXPDIST) || (dx > EXPDIST))
@@ -2178,7 +2178,7 @@ static void t_explosion(struct torp *torp)
 
     /*
      * Check to see if this player is safe for some reason  */
-    if (checksafe(j))
+    if (is_idle(j))
         continue;
     if (j->p_no == torp->t_owner) {
       if (torp->t_attribute & TOWNERSAFE)
@@ -2812,7 +2812,7 @@ static void udphaser(void)
                     victim = player_(j->ph_target);
 
                     /* Check to see if this player is safe for some reason  */
-                    if (checksafe(victim))
+                    if (is_idle(victim))
                         break;
 
                     /* start a war, if necessary */
@@ -3527,7 +3527,7 @@ static void blowup(struct player *sh)
         /* the following keeps people from blowing up on others */
         me = sh;
         /* Check to see if this player is safe for some reason  */
-        if (checksafe(j))
+        if (is_idle(j))
             continue;
         if ((me->p_whydead == KQUIT) && (friendlyPlayer(j)))
             continue;

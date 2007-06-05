@@ -87,7 +87,7 @@ void phaser(u_char course)
       continue;
       
     /* Idle ships cannot be phasered */
-    if (checksafe(j))
+    if (is_idle(j))
       continue;
 
     /*
