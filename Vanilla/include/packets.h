@@ -238,7 +238,7 @@ struct warning_spacket {
     char mesg[MSG_LEN];
 };
 
-struct motd_spacket {
+struct motd_spacket { /* SP_MOTD py-struct "!bxxx80s" #11 */
     char type;		/* SP_MOTD */
     char pad1;
     char pad2;
@@ -662,8 +662,8 @@ struct coup_cpacket {
     char pad3;
 };
 
-struct socket_cpacket {
-    char type;		/* CP_SOCKET */
+struct socket_cpacket { /* CP_SOCKET py-struct "!bbbxI" #27 */
+    char type;
     char version;
     char udp_version;	/* was pad2 */
     char pad3;
@@ -679,8 +679,8 @@ struct options_cpacket {
     char keymap[KEYMAP_LEN];
 };
 
-struct bye_cpacket {
-    char type;		/* CP_BYE */
+struct bye_cpacket { /* CP_BYE py-struct "!bxxx" #29 */
+    char type;
     char pad1;
     char pad2;
     char pad3;

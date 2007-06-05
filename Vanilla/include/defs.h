@@ -27,7 +27,7 @@
 #define RSA_VERSION	"RSA v2.0 SERVER"
 #define KEY_SIZE	32
 #endif
-#define MSG_LEN		80 /* Length of message buffer */
+#define MSG_LEN		80 /* Length of message (critical to protocol) */
 #define MSGPREFIX_LEN	10 /* Length of "xx->xx" text including spaces */
 #define MSGTEXT_LEN	(MSG_LEN - MSGPREFIX_LEN - 1) /* Maximum text length minus prefix and \0 */
 #define NAME_LEN	16
