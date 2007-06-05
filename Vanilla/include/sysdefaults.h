@@ -242,6 +242,8 @@ struct sysdef_keywords {
     "Kill ntserv process to eject, causes some client problems"	},
   { "DUPLICATES",		SYSDEF_INT,	&duplicates,
     "Maximum number of duplicate connections from a single IP" },
+  { "DENY_DUPLICATES",		SYSDEF_INT,	&deny_duplicates,
+    "Send IPs who exceed duplicates to the etc/deny folder" },
   { "BLOGGING",		SYSDEF_INT,	&blogging,
     "Enable blogging of server events" },
 #ifdef STURGEON
@@ -281,7 +283,7 @@ STARBASE_REBUILD_TIME
 STURGEON*
 EJECT_VOTE_*
 BAN_VOTE_*
-DUPLICATES
+*DUPLICATES
 MAX_NEWBIE_*
 NEWBIE_BALANCE_HUMANS
 SAFE_IDLE

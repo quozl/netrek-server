@@ -107,6 +107,10 @@ PLANET_MOVE=0
 #	implementation.)
 DUPLICATES=3
 #
+#	Automatically send any IP addresses who exceed duplicate count to the
+#	etc/deny folder (0 = no, 1 = yes)
+DENY_DUPLICATES=0
+#
 #	Have the server check for t-mode scummers.
 #	(A t-mode scummer is an IP address that has more than one client
 #	running, however it is hard to tell if the IP address might represent
