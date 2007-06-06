@@ -415,13 +415,20 @@ static void stop_a_robot(void)
     int teamToStop, rt;
 
     if(debugTarget != -1 && debugLevel == 3) {
-        messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
-                team1, num_humans(team1), team2, num_humans(team2));
+        messOne(255, roboname, debugTarget, "#1(%d): %d human %d robot  #2(%d): %d human %d robot",
+                team1, num_humans(team1), totalRobots(team1),
+                team2, num_humans(team2), totalRobots(team2));
     }
-    /* Either nuke robot from the team with the fewest humans, or stack humans on
-       1 side, depending on balance setting.  If even, stop robot on team with
-       the most robots.  If still even, stop a robot on a random team. */
-    if (num_humans(team1) < num_humans(team2)) {
+    /* First check if overall player count is imbalanced.  If so, stop robot from team
+       with the most total players (human + robot).  If total number per side is equal,
+       but there are an imbalanced number of humans per side, either nuke robot from the
+       team with the fewest humans, or stack humans on 1 side, depending on balance setting.
+       If both total players and total humans are even, stop a robot on a random team. */
+    if ((num_humans(team1) + totalRobots(team1)) > (num_humans(team2) + totalRobots(team2)))
+        teamToStop = team1;
+    else if ((num_humans(team1) + totalRobots(team1)) > (num_humans(team2) + totalRobots(team2)))
+        teamToStop = team2;
+    else if (num_humans(team1) < num_humans(team2)) {
         if (!newbie_balance_humans && totalRobots(team2) != 0)
             teamToStop = team2;
         else
@@ -434,17 +441,11 @@ static void stop_a_robot(void)
             teamToStop = team2;
     }
     else {
-        if (totalRobots(team1) < totalRobots(team2))
-            teamToStop = team2;
-        else if (totalRobots(team1) > totalRobots(team2))
+        rt = random() % 2;
+        if (rt == 0)
             teamToStop = team1;
-        else {
-            rt = random() % 2;
-            if (rt == 0)
-                teamToStop = team1;
-            else
-                teamToStop = team2;
-       }
+        else
+            teamToStop = team2;
     }
     if(debugTarget != -1 && debugLevel == 3) {
         messOne(255, roboname, debugTarget, "Stopping from %d", teamToStop);
