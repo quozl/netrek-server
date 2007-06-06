@@ -59,8 +59,6 @@ int oldmctl;
 static int realT = 0;
 int team1 = 0;
 int team2 = 0;
-static int debugTarget = -1;
-static int debugLevel = 0;
 static struct planet savedplanets[MAXPLANETS];
 static int galaxysaved = 0;
 
@@ -247,14 +245,15 @@ void checkmess()
 
     /* Stop a robot. */
     if ((ticks % ROBOEXITWAIT) == 0) {
-        if(debugTarget != -1) {
-            messOne(255, roboname, debugTarget, "Total Players: %d  Current bots: %d  Current human players: %d",
+        if(robot_debug_target != -1) {
+            messOne(255, roboname, robot_debug_target,
+                    "Total Players: %d  Current bots: %d  Current human players: %d",
                     totalPlayers(), totalRobots(0), num_humans(0));
         }
         if(totalPlayers() > PT_MAX_WITH_ROBOTS) {
-            if(debugTarget != -1) {
-                messOne(255, roboname, debugTarget, "Stopping a robot");
-                messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
+            if(robot_debug_target != -1) {
+                messOne(255, roboname, robot_debug_target, "Stopping a robot");
+                messOne(255, roboname, robot_debug_target, "Current bots: %d  Current human players: %d",
                         totalRobots(0), num_humans(0));
             }
             stop_a_robot();
@@ -272,9 +271,9 @@ void checkmess()
             int next_team = 0;
             num_players(&next_team);
 
-            if (debugTarget != -1) {
-                messOne(255, roboname, debugTarget, "Starting a robot");
-                messOne(255, roboname, debugTarget, "Current bots: %d  Current human players: %d",
+            if (robot_debug_target != -1) {
+                messOne(255, roboname, robot_debug_target, "Starting a robot");
+                messOne(255, roboname, robot_debug_target, "Current bots: %d  Current human players: %d",
                         totalRobots(0), num_humans(0));
             }
             if (next_team == FED)
@@ -377,14 +376,14 @@ static int num_humans(int team)
         if (!is_robot(j)) {
             /* Found a human. */
             count++;
-            if(debugTarget != -1 && debugLevel == 2) {
-                messOne(255, roboname, debugTarget, "%d: Counting %s (%s %s) as a human",
+            if(robot_debug_target != -1 && robot_debug_level >= 2) {
+                messOne(255, roboname, robot_debug_target, "%d: Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
         }
         else {
-            if(debugTarget != -1 && debugLevel == 2) {
-                messOne(255, roboname, debugTarget, "%d: NOT Counting %s (%s %s) as a human",
+            if(robot_debug_target != -1 && robot_debug_level >= 2) {
+                messOne(255, roboname, robot_debug_target, "%d: NOT Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
         }
@@ -418,8 +417,8 @@ static void stop_a_robot(void)
     int teamToStop;
     char *why = " to make room for a human player.";
 
-    if(debugTarget != -1 && debugLevel == 3) {
-        messOne(255, roboname, debugTarget, "#1(%d): %d  #2(%d): %d",
+    if(robot_debug_target != -1 && robot_debug_level >= 3) {
+        messOne(255, roboname, robot_debug_target, "#1(%d): %d  #2(%d): %d",
                 team1, num_humans(team1), team2, num_humans(team2));
     }
     if(num_humans(team1) < num_humans(team2))
@@ -427,8 +426,8 @@ static void stop_a_robot(void)
     else
         teamToStop = team2;
 
-    if(debugTarget != -1 && debugLevel == 3) {
-        messOne(255, roboname, debugTarget, "Stopping from %d", teamToStop);
+    if(robot_debug_target != -1 && robot_debug_level >= 3) {
+        messOne(255, roboname, robot_debug_target, "Stopping from %d", teamToStop);
     }
 
     /* remove a robot, first check for robots not carrying */

@@ -184,6 +184,10 @@ struct sysdef_keywords {
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,
     "Robot host" },
 #endif
+  { "ROBOT_DEBUG_TARGET",	SYSDEF_INT,	&robot_debug_target,
+    "Slot # to send newbie/pret debug output to" },
+  { "ROBOT_DEBUG_LEVEL",	SYSDEF_INT,	&robot_debug_level,
+    "Level for verbosity of robot debug output" },
   { "HOCKEY",		SYSDEF_ROBOT,	(void *) PUCK_ROBOT,
     "Enable Puck (hockey) robot on startup" },
   { "GALACTIC_SMOOTH",	SYSDEF_INT,	&galactic_smooth,
@@ -300,6 +304,5 @@ RESTRICT_3RD_DROP
 IP_CHECK_DNS*
 CLASSICTOURN
 REPORT_USERS
-OFFENSE_RANK
 
 */

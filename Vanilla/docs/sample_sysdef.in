@@ -319,6 +319,13 @@ PRET=0
 #    Use guest logins instead of random logins
 PRET_GUEST=0
 #
+#	Slot number to send debug output to for newbie and pret process.  -1 turns
+#	this off.
+ROBOT_DEBUG_TARGET=-1
+#
+#	Level of verbosity of debug information (0 is minimum, 3 is maximum)
+ROBOT_DEBUG_LEVEL=0
+#
 #	Hockey Server
 HOCKEY=0
 #

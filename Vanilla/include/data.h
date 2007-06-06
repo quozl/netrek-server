@@ -299,6 +299,8 @@ extern int newbie_balance_humans;
 extern char PreT[FNAMESIZE];
 extern int pret_guest;
 #endif
+extern int robot_debug_target;
+extern int robot_debug_level;
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 extern char Robodir[FNAMESIZE];
 extern char robofile[FNAMESIZE];

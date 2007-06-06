@@ -277,6 +277,8 @@ int max_newbie_players=8;
 char PreT[FNAMESIZE];
 int pret_guest = 0;
 #endif
+int robot_debug_target = -1;
+int robot_debug_level = 0;
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
 char Robodir[FNAMESIZE];
 char robofile[FNAMESIZE];
