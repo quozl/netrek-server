@@ -21,7 +21,7 @@
 
 #define NODET (char)(-1) /* isae - chain reaction case */
 
-#define RESERVED_SIZE	16
+#define RESERVED_SIZE	16 /* critical to protocol */
 
 #ifdef RSA
 #define RSA_VERSION	"RSA v2.0 SERVER"
@@ -30,8 +30,8 @@
 #define MSG_LEN		80 /* Length of message (critical to protocol) */
 #define MSGPREFIX_LEN	10 /* Length of "xx->xx" text including spaces */
 #define MSGTEXT_LEN	(MSG_LEN - MSGPREFIX_LEN - 1) /* Maximum text length minus prefix and \0 */
-#define NAME_LEN	16
-#define KEYMAP_LEN	96
+#define NAME_LEN	16 /* critical to protocol */
+#define KEYMAP_LEN	96 /* critical to protocol */
 #define ADMIN_PASS_LEN	(MSG_LEN - 20)
 
 #ifdef MATH_ERR_CHECK

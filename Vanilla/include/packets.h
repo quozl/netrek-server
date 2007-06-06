@@ -158,39 +158,39 @@
  * These are server --> client packets
  */
 
-struct mesg_spacket {
-    char type;		/* SP_MESSAGE */
+struct mesg_spacket { /* SP_MESSAGE py-struct "!bBBB80s" #1 */
+    char type;
     u_char m_flags;
     u_char m_recpt;
     u_char m_from;
     char mesg[MSG_LEN];
 };
 
-struct plyr_info_spacket {
-    char type;		/* SP_PLAYER_INFO */
+struct plyr_info_spacket { /* SP_PLAYER_INFO py-struct "!bbbb" #2 */
+    char type;
     char pnum;
     char shiptype;	
     char team;
 };
 
-struct kills_spacket {
-    char type;		/* SP_KILLS */
+struct kills_spacket { /* SP_KILLS py-struct "!bbxxI" #3 */
+    char type;
     char pnum;
     char pad1;
     char pad2;
     u_int kills;	/* where 1234=12.34 kills and 0=0.00 kills */
 };
 
-struct player_spacket {
-    char type;		/* SP_PLAYER */
+struct player_spacket { /* SP_PLAYER py-struct "!bbBbll" #4 */
+    char type;
     char pnum;		
     u_char dir;
     char speed;
     LONG x,y;
 };
 
-struct torp_info_spacket {
-    char  type;		/* SP_TORP_INFO */
+struct torp_info_spacket { /* SP_TORP_INFO py-struct "!bbbxhxx" #5 */
+    char  type;
     char  war;		
     char  status;	/* TFREE, TDET, etc... */
     char  pad1;		/* pad needed for cross cpu compatibility */
@@ -198,15 +198,15 @@ struct torp_info_spacket {
     short pad2;
 };
 
-struct torp_spacket {
-    char  type;		/* SP_TORP */
+struct torp_spacket { /* SP_TORP py-struct "!bBhll" #6 */
+    char  type;
     u_char dir;
     short tnum;
     LONG  x,y;
 };
 
-struct phaser_spacket {
-    char type;		/* SP_PHASER */
+struct phaser_spacket { /* SP_PHASER py-struct "!bbbBlll" #7 */
+    char type;
     char pnum;
     char status;	/* PH_HIT, etc... */
     u_char dir;
@@ -214,8 +214,8 @@ struct phaser_spacket {
     LONG target;
 };
 
-struct plasma_info_spacket {
-    char  type;		/* SP_PLASMA_INFO */
+struct plasma_info_spacket { /* SP_PLASMA_INFO py-struct "!bbbxhxx" #8 */
+    char  type;
     char  war;		
     char  status;	/* TFREE, TDET, etc... */
     char  pad1;		/* pad needed for cross cpu compatibility */
@@ -223,8 +223,8 @@ struct plasma_info_spacket {
     short pad2;
 };
 
-struct plasma_spacket {
-    char  type;		/* SP_PLASMA */
+struct plasma_spacket { /* SP_PLASMA py-struct "!bxhll" #9 */
+    char  type;
     char  pad1;
     short pnum;
     LONG  x,y;
@@ -239,15 +239,15 @@ struct warning_spacket {
 };
 
 struct motd_spacket { /* SP_MOTD py-struct "!bxxx80s" #11 */
-    char type;		/* SP_MOTD */
+    char type;
     char pad1;
     char pad2;
     char pad3;
     char line[MSG_LEN];
 };
 
-struct you_spacket {
-    char type;		/* SP_YOU */
+struct you_spacket { /* SP_YOU py-struct "!bbbbbbxxIlllhhhh" #12 */
+    char type;
     char pnum;		/* Guy needs to know this... */
     char hostile;
     char swar;
@@ -271,8 +271,8 @@ struct queue_spacket {
     short pos;
 };
 
-struct status_spacket {
-    char type;		/* SP_STATUS */
+struct status_spacket { /* SP_STATUS py-struct "!bbxxIIIIIL" #14 */
+    char type;
     char tourn;
     char pad1;
     char pad2;
@@ -284,11 +284,11 @@ struct status_spacket {
     U_LONG timeprod;
 };
 
-struct planet_spacket {
-    char  type;		/* SP_PLANET */
+struct planet_spacket { /* SP_PLANET py-struct "!bbbbhxxl" #15 */
+    char  type;
     char  pnum;
     char  owner;
-    char  info;		
+    char  info;
     short flags;
     short pad2;
     LONG  armies;
@@ -319,16 +319,15 @@ struct ping_spacket {
 };      /* 8 bytes */
 #endif
 
-
-struct pickok_spacket {
-    char type;		/* SP_PICKOK */
+struct pickok_spacket { /* SP_PICKOK py-struct "!bbxx" #16 */
+    char type;
     char state;
     char pad2;
     char pad3;
 };
 
-struct login_spacket {
-    char type;		/* SP_LOGIN */
+struct login_spacket { /* SP_LOGIN py-struct "!bbxxl96s" #17*/
+    char type;
     char accept;	/* 1/0 */
     char pad2;
     char pad3;
@@ -336,23 +335,23 @@ struct login_spacket {
     char keymap[KEYMAP_LEN];
 };
 
-struct flags_spacket {
-    char type;		/* SP_FLAGS */
+struct flags_spacket { /* SP_FLAGS py-struct "!bbbxI" #18 */
+    char type;
     char pnum;		/* whose flags are they? */
     char tractor;	/* ATM - visible tractors */
     char pad2;
     u_int flags;
 };
 
-struct mask_spacket {
-    char type;		/* SP_MASK */
+struct mask_spacket { /* SP_MASK py-struct "!bbxx" #19 */
+    char type;
     char mask;
     char pad1;
     char pad2;
 };
 
-struct pstatus_spacket {
-    char type;		/* SP_PSTATUS */
+struct pstatus_spacket { /* SP_PSTATUS py-struct "!bbbx" #20 */
+    char type;
     char pnum;
     char status;
     char pad1;
@@ -365,15 +364,15 @@ struct badversion_spacket {
     char pad3;
 };
 
-struct hostile_spacket {
-    char type;		/* SP_HOSTILE */
+struct hostile_spacket { /* SP_HOSTILE py-struct "!bbbb" #22 */
+    char type;
     char pnum;
     char war;
     char hostile;
 };
 
-struct stats_spacket {
-    char type;		/* SP_STATS */
+struct stats_spacket { /* SP_STATS py-struct "!bbxx13l" #23 */
+    char type;
     char pnum;
     char pad1;
     char pad2;
@@ -392,8 +391,8 @@ struct stats_spacket {
     LONG sbmaxkills;	/* max kills as sb * 100 */
 };
 
-struct plyr_login_spacket {
-    char type;		/* SP_PL_LOGIN */
+struct plyr_login_spacket { /* SP_PL_LOGIN py-struct "!bbbx16s16s16s" #24 */
+    char type;
     char pnum;
     char rank;
     char pad1;
@@ -402,16 +401,16 @@ struct plyr_login_spacket {
     char login[NAME_LEN];
 };
 
-struct reserved_spacket {
-    char type;		/* SP_RESERVED */
+struct reserved_spacket { /* SP_RESERVED py-struct "!bxxx16s" #25 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
     char data[RESERVED_SIZE];
 };
 
-struct planet_loc_spacket {
-    char type;		/* SP_PLANET_LOC */
+struct planet_loc_spacket { /* SP_PLANET_LOC py-struct "!bbxxll16s" #26 */
+    char type;
     char pnum;
     char pad2;
     char pad3;
@@ -475,15 +474,15 @@ struct mesg_cpacket {
     char mesg[MSG_LEN];
 };
 
-struct speed_cpacket {
-    char type;		/* CP_SPEED */
+struct speed_cpacket { /* CP_SPEED py-struct "!bbxx" #2 */
+    char type;
     char speed;		
     char pad1;
     char pad2;
 };
 
-struct dir_cpacket {
-    char type;		/* CP_DIRECTION */
+struct dir_cpacket { /* CP_DIRECTION py-struct "!bBxx" #3 */
+    char type;
     u_char dir;
     char pad1;
     char pad2;
@@ -517,8 +516,8 @@ struct quit_cpacket {
     char pad3;
 };
 
-struct login_cpacket {
-    char type;		/* CP_LOGIN */
+struct login_cpacket { /* CP_LOGIN py-struct '!bbxx16s16s16s' #8 */
+    char type;
     char query;
     char pad2;
     char pad3;
@@ -527,8 +526,8 @@ struct login_cpacket {
     char login[NAME_LEN];
 };
 
-struct outfit_cpacket {
-    char type;		/* CP_OUTFIT */
+struct outfit_cpacket { /* CP_OUTFIT "!bbbx" #9 */
+    char type;
     char team;
     char ship;
     char pad1;
