@@ -51,10 +51,15 @@ static int waiting_count_by_ip(int w_queue) {
 
 /* kill all player processes with same ip*/
 static void free_duplicate_ips() {
-  int i;
+  int i, pid;
   for (i=0; i<MAXPLAYER; i++) {
-    if (strcmp(players[i].p_ip, ip) == 0)
-      kill(players[i].p_process, SIGTERM);
+    if (strcmp(players[i].p_ip, ip) == 0) {
+      pid = players[i].p_process;
+      if (pid != 0) {
+        ERROR(2,("free_duplicate_ips: process %d killed\n", pid));
+        kill(players[i].p_process, SIGTERM);
+      }
+    }
   }
 }
 
