@@ -305,6 +305,8 @@ void marsmove(void)
       ERROR(2,("Exit marsmove 3\n"));
 #endif
 
+    update_sys_defaults();
+
 }  /* End of marsmove, the main dogfight overseeing program */
 
 

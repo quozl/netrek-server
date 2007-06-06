@@ -179,6 +179,7 @@ main(argc, argv)
     while ((status->gameup) & GU_GAMEOK) {
         alarm_wait_for();
         checkmess();
+        update_sys_defaults();
     }
     cleanup(0);
     return 0;

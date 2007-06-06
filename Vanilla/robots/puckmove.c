@@ -651,6 +651,7 @@ void rmove(void)
 	me->p_flags &= ~PFSHIELD; /* shield down */
     }			/* end shootable */
 
+    update_sys_defaults();
 
 }  /* End of rmove, the main puck moving program */
 

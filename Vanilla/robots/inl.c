@@ -430,6 +430,8 @@ inlmove()
   else					/* no com. during countdown */
     checkmess();
 
+  update_sys_defaults();
+
   if (inl_stat.flags & S_CONFINE)
     inl_confine();
   else
