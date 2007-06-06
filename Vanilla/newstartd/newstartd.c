@@ -60,7 +60,7 @@ int debug = 0;		/* programmers' debugging flag			*/
 static int get_connection();
 static int read_portfile(char *);
 static int is_host_denied(char *ip);
-static void deny(void);
+static void deny(char *ip);
 static void statistics(int, char *ip);
 static void process(int, char *ip);
 static void reaper_block();
@@ -309,7 +309,7 @@ int main (int argc, char *argv[])
       /* check this client against denied parties */
       if (is_host_denied(inet_ntoa(addr.sin_addr))) {
 	prog[port_idx].denials++;
-	deny ();
+	deny (inet_ntoa(addr.sin_addr));
 	close (0);
 	continue;
       }
@@ -534,7 +534,7 @@ static int is_host_denied(char *ip)
   return (access(name, F_OK) == 0);
 }
 
-static void deny(void)
+static void deny(char *ip)
 {
   struct badversion_spacket packet;
 
