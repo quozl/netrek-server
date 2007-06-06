@@ -261,7 +261,7 @@ void checkmess()
             else if (next_team == KLI)
                 start_a_robot("-Tk");
             else
-                fprintf(stderr, "Start_a_robot team select (%d) failed.", next_team);
+                fprintf(stderr, "Start_a_robot team select (%d) failed.\n", next_team);
         }
     }
 
@@ -574,6 +574,9 @@ num_players(int *next_team)
         tc++;
         oris=1;
     }
+
+   if(debugTarget != -1 && debugLevel == 2)
+        messOne(255, roboname, debugTarget, "num_players: total team count is %d", tc);
 
     if (tc == 0) { /* no teams yet, join anybody */
         rt = random() % 4;

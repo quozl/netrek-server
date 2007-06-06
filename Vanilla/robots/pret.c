@@ -286,7 +286,7 @@ void checkmess()
             else if (next_team == KLI)
                 start_a_robot("-Tk");
             else
-                fprintf(stderr, "Start_a_robot team select (%d) failed.", next_team);
+                fprintf(stderr, "Start_a_robot team select (%d) failed.\n", next_team);
         }
     }
 
