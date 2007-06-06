@@ -49,7 +49,7 @@ static int waiting_count_by_ip(int w_queue) {
   return j;
 }
 
-/* kill all player processes with same ip*/
+/* kill all player processes with same ip */
 static void free_duplicate_ips() {
   int i, pid;
   for (i=0; i<MAXPLAYER; i++) {
