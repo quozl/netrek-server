@@ -126,12 +126,6 @@ List of things to do in the future
 	- tail waggle effect, necessary?
 	  [work done to fix, by quozl ... in test on continuum]
 
-	- transwarp to base at one update per second ... calculation
-	  of navigational lock is made at update rate not internal rate.
-	  note: Tom Holub would prefer that this fix not affect the
-	  known feature of maxwarp-with-no-fuel = cruising speed + .5
-	  - etemp.
-
 	- docs/tools.doc and tools/README say that trimscores argument
           is a niceness value, but it is actually a harshness value.
 	  usage() in trimscores.c also doesn't match.
@@ -146,6 +140,7 @@ List of things to do in the future
 
 	- vary observer update rate down when not in use, use lock on
 	  player or planet event to increase back.
+	  [perhaps a new sysdef option for UPS for observers?]
 
 	- configure checks for gmp more than once, it should check only
 	  once.  Perhaps it is configure for res-rsa duplicating effort?
