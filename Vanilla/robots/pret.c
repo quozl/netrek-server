@@ -61,6 +61,8 @@ int team1 = 0;
 int team2 = 0;
 static struct planet savedplanets[MAXPLANETS];
 static int galaxysaved = 0;
+time_t savedtime;
+time_t now;
 
 static void cleanup(int);
 void checkmess();
@@ -221,8 +223,10 @@ void checkmess()
     if ((ticks % ROBOCHECK) == 0) {
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
             messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
+            messAll(255,roboname,"*** Galaxy will be restored if T-mode starts again within %d minutes ***", PT_GALAXY_LIFETIME/60);
             savegalaxy();
             galaxysaved = 1;
+            savedtime = time((time_t *) 0);
             resetPlanets();
             realT = 0;
             status->gameup |= GU_PRET;
@@ -302,8 +306,14 @@ void checkmess()
                 obliterate(0, KPROVIDENCE, 0, 0);
                 if (galaxysaved)
                 {
-                    messAll(255,roboname,"Restoring previous T-mode galaxy.");
-                    restoregalaxy();
+                    now = time((time_t *) 0);
+                    if ((now - savedtime) < PT_GALAXY_LIFETIME) {
+                        messAll(255,roboname,"Restoring previous T-mode galaxy.");
+                        restoregalaxy();
+                    } else {
+                        messAll(255,roboname,"Saved T-mode galaxy expired - creating new galaxy");
+                        resetPlanets();
+                    }
                     galaxysaved = 0;
                 }
                 else
