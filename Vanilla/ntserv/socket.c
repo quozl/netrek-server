@@ -1995,6 +1995,8 @@ static void handleUpdatesReq(struct updates_cpacket *packet)
     int ups = 1000000 / ntohl(packet->usecs);
     if (p_ups_set(me, ups)) {
 #ifdef FEATURE_PACKETS
+        /* FIXME: only send this if the client has shown it
+        understands feature packets, by sending us CP_FEATURE */
         sendFeatureUps();
 #endif /* FEATURE_PACKETS */
     }

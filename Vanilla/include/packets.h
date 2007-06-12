@@ -169,7 +169,7 @@ struct mesg_spacket { /* SP_MESSAGE py-struct "!bBBB80s" #1 */
 struct plyr_info_spacket { /* SP_PLAYER_INFO py-struct "!bbbb" #2 */
     char type;
     char pnum;
-    char shiptype;	
+    char shiptype;
     char team;
 };
 
@@ -183,7 +183,7 @@ struct kills_spacket { /* SP_KILLS py-struct "!bbxxI" #3 */
 
 struct player_spacket { /* SP_PLAYER py-struct "!bbBbll" #4 */
     char type;
-    char pnum;		
+    char pnum;
     u_char dir;
     char speed;
     LONG x,y;
@@ -230,8 +230,8 @@ struct plasma_spacket { /* SP_PLASMA py-struct "!bxhll" #9 */
     LONG  x,y;
 };
 
-struct warning_spacket {
-    char type;		/* SP_WARNING */
+struct warning_spacket { /* SP_WARNING py-struct "!bxxx80s" #10 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -265,8 +265,8 @@ struct you_spacket { /* SP_YOU py-struct "!bbbbbbxxIlllhhhh" #12 */
     short whodead;
 };
 
-struct queue_spacket {
-    char type;		/* SP_QUEUE */
+struct queue_spacket { /* SP_QUEUE py-struct "!bxh" #13 */
+    char type;
     char pad1;
     short pos;
 };
@@ -547,15 +547,15 @@ struct practr_cpacket {
     char pad3;
 };
 
-struct shield_cpacket {
-    char type;		/* CP_SHIELD */
+struct shield_cpacket { /* CP_SHIELD py-struct "!bbxx" #12 */
+    char type;
     char state;		/* up/down */
     char pad1;
     char pad2;
 };
 
-struct repair_cpacket {
-    char type;		/* CP_REPAIR */
+struct repair_cpacket { /* CP_REPAIR py-struct "!bbxx" #13 */
+    char type;
     char state;		/* on/off */
     char pad1;
     char pad2;
@@ -578,8 +578,8 @@ struct planet_cpacket
     int armies;
 };
 
-struct planlock_cpacket {
-    char type;		/* CP_PLANLOCK */
+struct planlock_cpacket { /* CP_PLANLOCK py-struct "!bbxx" #15 */
+    char type;
     char pnum;
     char pad1;
     char pad2;
@@ -592,23 +592,23 @@ struct playlock_cpacket {
     char pad2;
 };
 
-struct bomb_cpacket {
-    char type;		/* CP_BOMB */
+struct bomb_cpacket { /* CP_BOMB py-struct "!bbxx" #17 */
+    char type;
     char state;
     char pad1;
     char pad2;
 };
 
-struct beam_cpacket {
-    char type;		/* CP_BEAM */
+struct beam_cpacket { /* CP_BEAM py-struct "!bbxx" #18 */
+    char type;
     char state;
     char pad1; 
     char pad2;
 };
 
-struct cloak_cpacket {
-    char type;		/* CP_CLOAK */
-    char state;		
+struct cloak_cpacket { /* CP_CLOAK py-struct "!bbxx" #19 */
+    char type;
+    char state;
     char pad1;
     char pad2;
 };
@@ -692,8 +692,8 @@ struct dockperm_cpacket {
     char pad3;
 };
 
-struct updates_cpacket {
-    char type;		/* CP_UPDATES */
+struct updates_cpacket { /* CP_UPDATES py-struct "!bxxxI" #31 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -986,7 +986,7 @@ struct flags_all_spacket {
 
 #ifdef FEATURE_PACKETS
 
-struct feature_spacket {                /* SP_FEATURE */
+struct feature_spacket { /* SP_FEATURE py-struct "!bbbbi80s" #60 */
    char                 type;
    char                 feature_type;   /* either 'C' or 'S' */
    char                 arg1,
