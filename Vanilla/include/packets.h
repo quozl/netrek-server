@@ -21,6 +21,50 @@
  * in sync.)
  */
 
+/*
+	general protocol state outline
+
+	starting state
+
+	CP_SOCKET
+	CP_FEATURE, optional, to indicate feature packets are known
+	SP_MOTD
+	SP_FEATURE, only if CP_FEATURE was seen
+	SP_QUEUE, optional, repeats until slot is available
+	SP_YOU, indicates slot number assigned
+
+	login state, player slot status is POUTFIT
+	client shows name and password prompt and accepts input
+
+	CP_LOGIN
+	CP_FEATURE
+	SP_LOGIN
+	SP_YOU
+	SP_PLAYER_INFO
+	various other server packets
+
+	outfit state, player slot status is POUTFIT
+	client shows team selection window
+
+	SP_MASK, sent regularly during outfit
+
+	client accepts team selection input
+	CP_OUTFIT
+	SP_PICKOK, signals server acceptance of alive state
+
+	alive state,
+	server places ship in game and play begins
+
+	SP_PSTATUS, indicates PDEAD state
+	client animates explosion
+
+	SP_PSTATUS, indicates POUTFIT state
+	clients returns to team selection window
+
+	CP_QUIT
+	CP_BYE
+*/
+
 /* packets sent from xtrek server to remote client */
 #define SP_MESSAGE 	1
 #define SP_PLAYER_INFO 	2		/* general player info not elsewhere */
