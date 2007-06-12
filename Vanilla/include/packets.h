@@ -90,7 +90,7 @@
 #endif
 
 /* packets sent from remote client to xtrek server */
-#define CP_MESSAGE      1		/* send a message */
+#define CP_MESSAGE	1		/* send a message */
 #define CP_SPEED	2		/* set speed */
 #define CP_DIRECTION	3		/* change direction */
 #define CP_PHASER	4		/* phaser in a direction */
@@ -100,7 +100,7 @@
 #define CP_LOGIN	8		/* log in (name, password) */
 #define CP_OUTFIT	9		/* outfit to new ship */
 #define CP_WAR		10		/* change war status */
-#define CP_PRACTR	11		/* create practice robot? */
+#define CP_PRACTR	11		/* create practice robot, transwarp */
 #define CP_SHIELD	12		/* raise/lower sheilds */
 #define CP_REPAIR	13		/* enter repair mode */
 #define CP_ORBIT	14		/* orbit planet/starbase */
@@ -326,7 +326,7 @@ struct pickok_spacket { /* SP_PICKOK py-struct "!bbxx" #16 */
     char pad3;
 };
 
-struct login_spacket { /* SP_LOGIN py-struct "!bbxxl96s" #17*/
+struct login_spacket { /* SP_LOGIN py-struct "!bbxxl96s" #17 */
     char type;
     char accept;	/* 1/0 */
     char pad2;
@@ -357,8 +357,8 @@ struct pstatus_spacket { /* SP_PSTATUS py-struct "!bbbx" #20 */
     char pad1;
 };
 
-struct badversion_spacket {
-    char type;		/* SP_BADVERSION */
+struct badversion_spacket { /* SP_BADVERSION py-struct "!bbxx" #21 */
+    char type;
     char why;
     char pad2;
     char pad3;
@@ -466,8 +466,8 @@ struct rsa_key_spacket {
  * These are the client --> server packets
  */
 
-struct mesg_cpacket {
-    char type;		/* CP_MESSAGE */
+struct mesg_cpacket { /* CP_MESSAGE py-struct "!bBBx80s" #1 */
+    char type;
     u_char group;
     u_char indiv;	/* does this break anything? -da */
     char pad1;
@@ -488,29 +488,29 @@ struct dir_cpacket { /* CP_DIRECTION py-struct "!bBxx" #3 */
     char pad2;
 };
 
-struct phaser_cpacket {
-    char type;		/* CP_PHASER */
+struct phaser_cpacket { /* CP_PHASER py-struct "!bBxx" #4 */
+    char type;
     u_char dir;
     char pad1;
     char pad2;
 };
 
-struct plasma_cpacket {
-    char type;		/* CP_PLASMA */
+struct plasma_cpacket { /* CP_PLASMA py-struct "!bBxx" #5 */
+    char type;
     u_char dir;
     char pad1;
     char pad2;
 };
 
-struct torp_cpacket {
-    char type;		/* CP_TORP */
+struct torp_cpacket { /* CP_TORP py-struct "!bBxx" #6 */
+    char type;
     u_char dir;		/* direction to fire torp */
     char pad1;
     char pad2;
 };
 
-struct quit_cpacket {
-    char type;		/* CP_QUIT */
+struct quit_cpacket { /* CP_QUIT py-struct "!bxxx" #7 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -526,22 +526,22 @@ struct login_cpacket { /* CP_LOGIN py-struct '!bbxx16s16s16s' #8 */
     char login[NAME_LEN];
 };
 
-struct outfit_cpacket { /* CP_OUTFIT "!bbbx" #9 */
+struct outfit_cpacket { /* CP_OUTFIT py-struct "!bbbx" #9 */
     char type;
     char team;
     char ship;
     char pad1;
 };
 
-struct war_cpacket {
-    char type;		/* CP_WAR */
+struct war_cpacket { /* CP_WAR py-struct "!bbxx" #10 */
+    char type;
     char newmask;
     char pad1;
     char pad2;
 };
 
-struct practr_cpacket {
-    char type;		/* CP_PRACTR */
+struct practr_cpacket { /* CP_PRACTR py-struct "!bxxx" #11 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -561,21 +561,11 @@ struct repair_cpacket { /* CP_REPAIR py-struct "!bbxx" #13 */
     char pad2;
 };
 
-struct orbit_cpacket {
-    char type;		/* CP_ORBIT */
+struct orbit_cpacket { /* CP_ORBIT py-struct "!bbxx" #14 */
+    char type;
     char state;		/* on/off */
     char pad1;
     char pad2;
-};
-
-struct planet_cpacket
-{
-    char type;		/* CP_PLANET */
-    char pnum;
-    char owner;
-    char info;
-    short flags;
-    int armies;
 };
 
 struct planlock_cpacket { /* CP_PLANLOCK py-struct "!bbxx" #15 */
@@ -585,8 +575,8 @@ struct planlock_cpacket { /* CP_PLANLOCK py-struct "!bbxx" #15 */
     char pad2;
 };
 
-struct playlock_cpacket {
-    char type;		/* CP_PLAYLOCK */
+struct playlock_cpacket { /* CP_PLAYLOCK py-struct "!bbxx" #16 */
+    char type;
     char pnum;
     char pad1;
     char pad2;
@@ -613,49 +603,49 @@ struct cloak_cpacket { /* CP_CLOAK py-struct "!bbxx" #19 */
     char pad2;
 };
 
-struct det_torps_cpacket {
-    char type;		/* CP_DET_TORPS */
+struct det_torps_cpacket { /* CP_DET_TORPS py-struct "!bxxx" #20 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
 };
 
-struct det_mytorp_cpacket {
-    char type;		/* CP_DET_MYTORP */
+struct det_mytorp_cpacket { /* CP_DET_MYTORP py-struct "!bxh" #21 */
+    char type;
     char pad1;
     short tnum;
 };
 
-struct copilot_cpacket {
-    char type;		/* CP_COPLIOT */
+struct copilot_cpacket { /* CP_COPILOT py-struct "!bbxx" #22 */
+    char type;
     char state;
     char pad1;
     char pad2;
 };
 
-struct refit_cpacket {
-    char type;		/* CP_REFIT */
+struct refit_cpacket { /* CP_REFIT py-struct "!bbxx" #23 */
+    char type;
     char ship;
     char pad1;
     char pad2;
 };
 
-struct tractor_cpacket {
-    char type;		/* CP_TRACTOR */
+struct tractor_cpacket { /* CP_TRACTOR py-struct "!bbbx" #24 */
+    char type;
     char state;
     char pnum;
     char pad2;
 };
 
-struct repress_cpacket {
-    char type;		/* CP_REPRESS */
+struct repress_cpacket { /* CP_REPRESS py-struct "!bbbx" #25 */
+    char type;
     char state;
     char pnum;
     char pad2;
 };
 
-struct coup_cpacket {
-    char type;		/* CP_COUP */
+struct coup_cpacket { /* CP_COUP py-struct "!bxxx" #26 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -669,8 +659,8 @@ struct socket_cpacket { /* CP_SOCKET py-struct "!bbbxI" #27 */
     u_int socket;
 };
 
-struct options_cpacket {
-    char type;		/* CP_OPTIONS */
+struct options_cpacket { /* CP_OPTIONS py-struct "!bxxxI96s" #28 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -685,8 +675,8 @@ struct bye_cpacket { /* CP_BYE py-struct "!bxxx" #29 */
     char pad3;
 };
 
-struct dockperm_cpacket {
-    char type;		/* CP_DOCKPERM */
+struct dockperm_cpacket { /* CP_DOCKPERM py-struct "!bbxx" #30 */
+    char type;
     char state;
     char pad2;
     char pad3;
@@ -700,15 +690,15 @@ struct updates_cpacket { /* CP_UPDATES py-struct "!bxxxI" #31 */
     u_int usecs;
 };
 
-struct resetstats_cpacket {
-    char type;		/* CP_RESETSTATS */
+struct resetstats_cpacket { /* CP_RESETSTATS py-struct "!bbxx" #32 */
+    char type;
     char verify;	/* 'Y' - just to make sure he meant it */
     char pad2;
     char pad3;
 };
 
-struct reserved_cpacket {
-    char type;		/* CP_RESERVED */
+struct reserved_cpacket { /* CP_RESERVED py-struct "!bxxx16s16s" #33 */
+    char type;
     char pad1;
     char pad2;
     char pad3;
@@ -716,8 +706,8 @@ struct reserved_cpacket {
     char resp[RESERVED_SIZE];
 };
 
-struct scan_cpacket {		/* ATM */
-    char type;		/* CP_SCAN */
+struct scan_cpacket { /* CP_SCAN py-struct "!bbxx" #34 */
+    char type;
     char pnum;
     char pad1;
     char pad2;
@@ -748,6 +738,16 @@ struct rsa_key_cpacket {
     u_char resp[KEY_SIZE];
 };
 #endif
+
+struct planet_cpacket
+{
+    char type;		/* CP_PLANET */
+    char pnum;
+    char owner;
+    char info;
+    short flags;
+    int armies;
+};
 
 struct shortreq_cpacket {       /* CP_S_REQ */
      char type;
@@ -871,7 +871,7 @@ struct mesg_s_spacket {
 };
 
 struct mesg_s_cpacket {
-    char type;          /* CP_MESSAGE */
+    char type;          /* CP_S_MESSAGE */
     char group;
     char indiv;
     char length; /* Size of whole packet   */
