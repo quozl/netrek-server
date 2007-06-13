@@ -188,9 +188,10 @@ void beam_down(void)
         }
     }
     
-    if ((pre_t_mode) && (planets[me->p_planet].pl_flags & PLHOME))
+    if ((pre_t_mode) && (planets[me->p_planet].pl_flags & PLHOME) &&
+       (planets[me->p_planet].pl_owner != me->p_team))
     {
-        new_warning(UNDEF, "You may not drop on home planets in pre-T mode.");
+        new_warning(UNDEF, "You may not drop on enemy homeworlds in pre-T mode.");
         return;
     }
 
