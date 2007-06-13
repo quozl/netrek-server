@@ -291,6 +291,7 @@ void checkmess()
                 start_a_robot("-Tk");
             else
                 fprintf(stderr, "Start_a_robot team select (%d) failed.\n", next_team);
+            status->gameup |= GU_PRET;
         }
     }
 
