@@ -74,13 +74,20 @@ struct queuewait {
 struct status {
     int		active;         /* unused */
     u_char	tourn;		/* Tournament mode? */
+#if defined(_64BIT) && defined(linux)
+    u_char      pad[3];
+#endif
     /* These stats only updated during tournament mode */
     u_int	armsbomb, planets, kills, losses, time;
     /* Use long for this, so it never wraps */
     double	timeprod;
     int		gameup;
     /* CAUTION, adding to this struct invalidates var/global */
+#if defined(_64BIT) && defined(linux)
+} __attribute__((packed));
+#else
 };
+#endif
 
 struct context {
     int daemon;                 /* pid_t of daemon */
@@ -363,7 +370,11 @@ struct stats {
 # endif /* ROLLING_STATS */
 
 #endif /* LTD_STATS */
+#if defined(_64BIT) && defined(linux)
+} __attribute__((packed));
+#else
 };
+#endif
 
 #define ST_MAPMODE      0x001
 #define ST_NAMEMODE     0x002

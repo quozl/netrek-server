@@ -117,8 +117,11 @@ struct ltd_stats {
                                            torp blow */
     unsigned int plasmaed;		/* number of kills made with a
                                            plamsa */
-  } kills;
-
+#if defined(_64BIT) && defined(linux)
+  } __attribute__((packed)) kills;
+#else
+ } kills;
+#endif
 
   /* How many times have I died in this ship */
 
@@ -301,8 +304,11 @@ struct ltd_stats {
 
   } weapons;
 
+#if defined(_64BIT) && defined(linux)
+} __attribute__((packed));
+#else
 };
-
+#endif
 
 /* LTD history structure - this is needed to calculate the LTD stats
    every tick. */
