@@ -282,3 +282,19 @@ leemy@rpi.edu
 
 If I do a leemy@*.rpi.edu the ban does not work. If the "*" wildcard
 method does not work try this way.
+
+6) Robot configuration
+
+	The newbie and pre-t robots accept commands from players by
+	default.  To prevent potential abuse this feature may be
+	deactivated by editing robotd/defs.h and changing the line:
+
+	#undef BOTS_IGNORE_COMMANDS
+
+	to
+
+	#define BOTS_IGNORE_COMMANDS
+
+	This change will require the bots to be re-compiled and
+	reinstalled.
+

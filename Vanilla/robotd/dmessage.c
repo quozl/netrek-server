@@ -238,6 +238,11 @@ R_ProcMessage(message, flags, from, to, std)
    */
    if (inl && !std) return;
 
+   /* prevent players from giving bots directives to prevent abuse */
+#ifdef BOTS_IGNORE_COMMANDS
+   return;
+#endif
+
    if((flags & MINDIV) || std){
      if(!strcmp(me->p_login, PRE_T_ROBOT_LOGIN)
          && players[from].p_team != players[to].p_team) {

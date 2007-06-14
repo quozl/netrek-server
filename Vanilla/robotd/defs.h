@@ -234,3 +234,6 @@ char *getdefault();
 
 /* compiler defines to tweak robot behavior */
 #define NO_PFORBIT 1 /* activate some code */
+
+/* define this if you do not wish the bots to respond to commands */
+#undef	BOTS_IGNORE_COMMANDS
