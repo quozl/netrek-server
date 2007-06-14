@@ -179,6 +179,8 @@ struct sysdef_keywords {
     "Enable pre T entertainment robot on startup" },
   { "PRET_GUEST",	SYSDEF_INT,	&pret_guest,
     "Use guest logins instead of random logins" },
+  { "PRET_PLANETS",	SYSDEF_INT,	&pret_planets,
+    "Number of planets required to win a round of pre-t entertainment" },
 #endif
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,
@@ -306,5 +308,6 @@ CLASSICTOURN
 REPORT_USERS
 OFFENSE_RANK
 ROBOT_DEBUG_*
+PRET_PLANETS
 
 */

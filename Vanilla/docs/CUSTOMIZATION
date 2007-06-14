@@ -165,6 +165,10 @@ that can change the server.
 
 	PRET_GUEST - (0 or 1) Use 'guest' logins for pre-t robots if set.
 
+	PRET_PLANETS - (1-10) Set win condition for pre-t mode.  This is
+		the number of planets a team must be up by in order to 
+		win a round of pre-t entertainment.
+
 	NEWTURN - (0 or 1) Different turning speeds.
 
 	HIDDEN - (0 or 1) Enemy players that are far away from a friendly ship

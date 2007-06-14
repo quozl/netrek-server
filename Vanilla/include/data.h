@@ -298,6 +298,7 @@ extern int newbie_balance_humans;
 #ifdef PRETSERVER
 extern char PreT[FNAMESIZE];
 extern int pret_guest;
+extern int pret_planets;
 #endif
 extern int robot_debug_target;
 extern int robot_debug_level;

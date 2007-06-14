@@ -276,6 +276,7 @@ int max_newbie_players=8;
 #ifdef PRETSERVER
 char PreT[FNAMESIZE];
 int pret_guest = 0;
+int pret_planets = 3;
 #endif
 int robot_debug_target = -1;
 int robot_debug_level = 0;

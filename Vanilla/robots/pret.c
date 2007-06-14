@@ -652,7 +652,7 @@ static void terminate () {
 	cleanup (1);
 }
 
-/* a pre-t victory is when one team is up by 3 planets */
+/* a pre-t victory is when one team is up by pret_planets planets */
 static void checkPreTVictory() {
     int f, r, k, o, i;
     int winner = -1;
@@ -670,10 +670,10 @@ static void checkPreTVictory() {
        if(planets[i].pl_owner == KLI) k++; 
        if(planets[i].pl_owner == ORI) o++; 
     }
-    if(f>=13) winner = FED;
-    if(r>=13) winner = ROM;
-    if(k>=13) winner = KLI;
-    if(o>=13) winner = ORI;
+    if(f>=10+pret_planets) winner = FED;
+    if(r>=10+pret_planets) winner = ROM;
+    if(k>=10+pret_planets) winner = KLI;
+    if(o>=10+pret_planets) winner = ORI;
 
     if(winner > 0) {
         messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
