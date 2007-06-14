@@ -339,8 +339,8 @@ struct planet_spacket { /* SP_PLANET py-struct "!bbbbhxxl" #15 */
 };
 
 #ifdef PING
-struct ping_cpacket {
-   char                 type;           /* CP_PING_RESPONSE */
+struct ping_cpacket { /* CP_PING_RESPONSE py-struct "!bBbxll" #42 */
+   char                 type;
    u_char	        number;         /* id */
    char                 pingme;         /* if client wants server to ping */
    char                 pad1;
@@ -349,8 +349,8 @@ struct ping_cpacket {
    LONG                 cp_recv;        /* # packets recv from server */
 };      /* 12 bytes */
 
-struct ping_spacket {
-   char			type;           /* SP_PING */
+struct ping_spacket { /* SP_PING py-struct "!bBHBBBB" #46 */
+   char			type;
    u_char		number;         /* id */
    u_short		lag;            /* delay in ms */
 

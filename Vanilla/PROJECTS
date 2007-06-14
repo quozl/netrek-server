@@ -3,6 +3,20 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- RESETRACE, unrepresented race planet logic, initial state
+          all planets neutral, with START_ARMIES armies, on arrival of
+          first member of a race, their space planets are changed from
+          neutral to race ownership with START_ARMIES, on departure of
+          last race member, planets outside the space are released to
+          either neutral with zero armies or the owning race of the
+          space, and planets inside the space are changed to neutral.
+          This could also be gradual.
+
+	  But, if everyone on a losing team leaves, and then comes
+	  back, their planets will have been restored to them.  So
+	  need a sticky ownership and a current ownership?  Or an
+	  owned by race bit mask for each planet.
+
 	- strip spaces before parsing robot commands, reported by KaraokeBar,
 	  Australia, 2007-05-15.
 
