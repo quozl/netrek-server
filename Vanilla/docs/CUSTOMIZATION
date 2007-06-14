@@ -126,6 +126,12 @@ that can change the server.
 
 	TOURN - ( >3 ) Number of players needed on each side for t-mode.
 
+	CLASSICTOURN - (0 or 1) Emulate the old behavior of tournamentMask()
+		by removing the restrictions on joining a diagonal race if 2
+		players are present on the opposing diagonal, and remove the
+		logic not allowing teams to grow past 4 humans before T mode
+		starts.
+
 	SHIPS - ( SC, DD, CA, BB, AS, SB ) Type of ships that are allowed at
 		the server.
 
