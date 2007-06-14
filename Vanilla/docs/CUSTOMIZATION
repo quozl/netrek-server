@@ -146,11 +146,24 @@ that can change the server.
 
 	NO_UNWARRING_BOMBING - Don't allow 3rd space bombing at any time.
 
+	HOCKEY - (0 or 1) Turn on hockey mode.  Mutually exclusive with
+		all other non-standard server modes.
+
+	INL - (0 or 1) Turn on INL (clue game) mode.  Mutually exclusive
+		with all other non-standard server modes.
+
 	CHAOS - (0 or 1) Turn on chaos mode. Ships are more powerful and
-		re-generate faster.
+		re-generate faster.  Mutually exclusive with all other
+		non-standard server modes.
 
 	TOPGUN - (0 or 1) Misc things to make playing harder and only clueful
-		players may like.
+		players may like..  Mutually exclusive with all other non-
+		tandard server modes.
+
+	PRET - (0 or 1) Enable pre-t entertainment mode.  Mutually exclusive
+		with all other non-standard server modes.
+
+	PRET_GUEST - (0 or 1) Use 'guest' logins for pre-t robots if set.
 
 	NEWTURN - (0 or 1) Different turning speeds.
 
