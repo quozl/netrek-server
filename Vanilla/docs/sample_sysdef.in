@@ -323,6 +323,13 @@ PRET_GUEST=0
 #    of planets to win a round of pre-t entertainment
 PRET_PLANETS=3
 #
+#    Save t-mode galaxy during transition from t-mode to pre-t mode
+PRET_SAVE_GALAXY=1
+#
+#    Number of seconds the saved t-mode galaxy is elegible to be restored
+#    if t-mode starts up again.
+PRET_GALAXY_LIFETIME=600
+#
 #	Slot number to send debug output to for newbie and pret process.  -1 turns
 #	this off.
 ROBOT_DEBUG_TARGET=-1

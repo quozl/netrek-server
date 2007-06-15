@@ -277,6 +277,8 @@ int max_newbie_players=8;
 char PreT[FNAMESIZE];
 int pret_guest = 0;
 int pret_planets = 3;
+int pret_save_galaxy = 1;
+int pret_galaxy_lifetime = 600;
 #endif
 int robot_debug_target = -1;
 int robot_debug_level = 0;

@@ -181,6 +181,10 @@ struct sysdef_keywords {
     "Use guest logins instead of random logins" },
   { "PRET_PLANETS",	SYSDEF_INT,	&pret_planets,
     "Number of planets required to win a round of pre-t entertainment" },
+  { "PRET_SAVE_GALAXY",	SYSDEF_INT,	&pret_save_galaxy,
+    "Save t-mode galaxy on transition from t-mode to pre-t mode" },
+  { "PRET_GALAXY_LIFETIME",	SYSDEF_INT,	&pret_galaxy_lifetime,
+    "Number of seconds the saved t-mode galaxy is eligible to be restored" },
 #endif
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,
@@ -309,5 +313,7 @@ REPORT_USERS
 OFFENSE_RANK
 ROBOT_DEBUG_*
 PRET_PLANETS
+PRET_SAVE_GALAXY
+PRET_GALAXY_LIFETIME
 
 */

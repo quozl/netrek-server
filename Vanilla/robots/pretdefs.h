@@ -55,7 +55,5 @@
 #define PT_ROBOTS 7
 #define PT_MAX_WITH_ROBOTS 8
 
-#define PT_GALAXY_LIFETIME 600	/* seconds before saved galaxy expires */
-
 #endif /* _h_pretdefs */
 

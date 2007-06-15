@@ -119,7 +119,7 @@ that can change the server.
 	WHYMESS - (0 or 1) with .mk define CHAIN_REACTION will report how a 
 		player died.
 
-	SHOWSYSDEF - (0 or 1) will show some of the sysdef optiosn on the
+	SHOWSYSDEF - (0 or 1) will show some of the sysdef options on the
 		motd.
 
 	PLANET_MOVE - (0 or 1) Not recommended. Will move the planets around.
@@ -168,6 +168,15 @@ that can change the server.
 	PRET_PLANETS - (1-10) Set win condition for pre-t mode.  This is
 		the number of planets a team must be up by in order to 
 		win a round of pre-t entertainment.
+
+	PRET_SAVE_GALAXY - (0 or 1) If set galaxy is saved on t-mode to
+		pre-t transitions and if t-mode starts again within
+		PRET_GALAXY_LIFETIME seconds the galaxy will be restored
+		when t-mode starts.
+
+	PRET_GALAXY_LIFETIME - (integer seconds) Number of seconds the saved
+		t-mode galaxy is eligible to be restored when t-mode starts
+		again.
 
 	NEWTURN - (0 or 1) Different turning speeds.
 

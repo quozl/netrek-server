@@ -222,11 +222,15 @@ void checkmess()
     /* Check to see if we should start adding bots again */
     if ((ticks % ROBOCHECK) == 0) {
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
-            messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
-            messAll(255,roboname,"*** Galaxy will be restored if T-mode starts again within %d minutes ***", PT_GALAXY_LIFETIME/60);
-            savegalaxy();
-            galaxysaved = 1;
-            savedtime = time((time_t *) 0);
+            if (pret_save_galaxy) {
+                messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
+                messAll(255,roboname,"*** Galaxy will be restored if T-mode starts again within %d minutes ***", pret_galaxy_lifetime/60);
+                savegalaxy();
+                galaxysaved = 1;
+                savedtime = time((time_t *) 0);
+            } else {
+                messAll(255,roboname,"*** Pre-T Entertainment restarting. ***");
+            }
             resetPlanets();
             realT = 0;
             status->gameup |= GU_PRET;
@@ -305,20 +309,22 @@ void checkmess()
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
                 obliterate(0, KPROVIDENCE, 0, 0);
-                if (galaxysaved)
-                {
-                    now = time((time_t *) 0);
-                    if ((now - savedtime) < PT_GALAXY_LIFETIME) {
-                        messAll(255,roboname,"Restoring previous T-mode galaxy.");
-                        restoregalaxy();
-                    } else {
-                        messAll(255,roboname,"Saved T-mode galaxy expired - creating new galaxy");
-                        resetPlanets();
+		if (pret_save_galaxy) {
+                    if (galaxysaved)
+                    {
+                        now = time((time_t *) 0);
+                        if ((now - savedtime) < pret_galaxy_lifetime) {
+                            messAll(255,roboname,"Restoring previous T-mode galaxy.");
+                            restoregalaxy();
+                        } else {
+                            messAll(255,roboname,"Saved T-mode galaxy expired - creating new galaxy");
+                            resetPlanets();
+                        }
+                        galaxysaved = 0;
                     }
-                    galaxysaved = 0;
+                    else
+                        resetPlanets();
                 }
-                else
-                    resetPlanets();
                 status->gameup &= ~GU_PRET;
             }
         }
