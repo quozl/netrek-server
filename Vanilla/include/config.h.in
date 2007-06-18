@@ -315,6 +315,12 @@
                                 /* PRETSERVER      - pre-T bot  support */
 #define PRETSERVER
 
+                                /* PRETKEEPALIVE   - keep pre-T mode going even
+                                                     if there are no humans; this
+                                                     works around a stuck Kathy
+                                                     bug that should be fixed */
+#define PRETKEEPALIVE
+
                                 /* STURGEON        - sturgeon mode support */
 #define STURGEON
 

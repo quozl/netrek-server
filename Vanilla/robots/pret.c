@@ -208,6 +208,7 @@ void checkmess()
 
     ticks++;
 
+#ifndef PRETKEEPALIVE
     /* End the current game if no humans for 60 seconds. */
     if ((ticks % ROBOCHECK) == 0) {
         if (no_humans >= 60)
@@ -218,6 +219,7 @@ void checkmess()
         else
             no_humans = 0;
     }
+#endif
 
     /* Check to see if we should start adding bots again */
     if ((ticks % ROBOCHECK) == 0) {
