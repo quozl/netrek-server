@@ -12,7 +12,7 @@
 CC =		@CC@
 AR =		ar
 RANLIB =	@RANLIB@
-CFLAGS =	-O2
+CFLAGS =	-O2 @CPPFLAGS@
 
 #
 # GMP include dir and library

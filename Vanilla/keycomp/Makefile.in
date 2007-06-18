@@ -17,13 +17,16 @@ INSTALLDATA = @INSTALL_DATA@
 SRCS = ${srcdir}/rsa_keycomp.c ${srcdir}/rsa_key2cap.c $(RANDOMC)
 OBJS = rsa_keycomp.o $(STRDUPO) $(RANDOMO) ../ntserv/libnetrek.a
 
-CFLAGS = $(MOREDEFS) $(FLAGS) -I../include
+CFLAGS = $(MOREDEFS) $(FLAGS) @CPPFLAGS@ -I../include
 
 LINTFLAGS = -habxc $(MOREDEFS) $(FLAGS)
 
 all: $(PMAKE) rsa_keycomp rsa_key2cap
 
 rsa_keycomp: $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(OBJS)
+
+rsa_key2cap: $(OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(OBJS)
 
 dist:

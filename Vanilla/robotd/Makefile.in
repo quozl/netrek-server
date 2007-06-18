@@ -99,7 +99,7 @@ LIBS = @LIBS@
 EXTRALIBS = $(LINKFLAGS)
 
 CC = @CC@
-CFLAGS = @CFLAGS@ -funroll-loops -finline-functions -DATM -DPING -DHAVE_NINT=@HAVE_NINT@
+CFLAGS = @CPPFLAGS@ -funroll-loops -finline-functions -DATM -DPING -DHAVE_NINT=@HAVE_NINT@
 LDFLAGS = @LDFLAGS@ @NINT_LIBS@
 #CFLAGS = -O6 -fomit-frame-pointer -DATM -DPING 
 

@@ -12,7 +12,7 @@ INSTALL = @INSTALL@
 INSTALLPROG = @INSTALL_PROGRAM@
 INSTALLDATA = @INSTALL_DATA@
 
-CFLAGS = $(EXTRAINCS) $(FLAGS) -I../include
+CFLAGS = $(EXTRAINCS) $(FLAGS) @CPPFLAGS@ -I../include
 
 LIBS = $(EXTRALIBS)
 
@@ -199,6 +199,9 @@ setship: setship.o $(OBJS)
 
 ban: ban.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS)
+
+getpath: getpath.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} getpath.o $(OBJS)
 
 trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
 	${srcdir}/mktrekon $(LIBDIR)
