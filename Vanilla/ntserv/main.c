@@ -146,11 +146,13 @@ int main(int argc, char **argv)
     /* Stop permanent bans from proceeding */
     if (ban_noconnect) {
         /* note: etc/bypass is not checked */
-        if ((bans_check_permanent(login, host) == TRUE) ||
-            (bans_check_permanent(login, ip) == TRUE)) {
-            noplay(2);
-            ERROR(2,("ntserv/main.c: premature disconnect of %s due to permanent ban\n", ip));
-            exit(1);
+        if (login && host && ip) {
+            if ((bans_check_permanent(login, host) == TRUE) ||
+                (bans_check_permanent(login, ip) == TRUE)) {
+                noplay(2);
+                ERROR(2,("ntserv/main.c: premature disconnect of %s due to permanent ban\n", ip));
+                exit(1);
+            }
         }
     }
 
