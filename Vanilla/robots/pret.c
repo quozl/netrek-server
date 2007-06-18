@@ -339,7 +339,7 @@ void checkmess()
             messAll(255,roboname,"During Pre-T mode you are permitted to bomb and take planets.");
             messAll(255,roboname,"However, rank and your stats will NOT increase during this time.");
             messAll(255,roboname," ");
-            messAll(255,roboname,"Your team wins if you're up by at least 3 planets.");
+            messAll(255,roboname,"Your team wins if you're up by at least %d planets.", pret_planets);
             messAll(255,roboname," ");
             messAll(255,roboname,"Real t-mode will start as soon as there are a minimum of 4 human");
             messAll(255,roboname,"players per team.  Until then robots will enter and exit to");
