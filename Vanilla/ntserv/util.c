@@ -237,7 +237,9 @@ struct player *my()
 
 int is_robot(const struct player *pl)
 {
+#if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
   if (pl->p_flags & PFBPROBOT) return 1;
+#endif
   if (pl->p_flags & PFROBOT) return 1;
   if (strcasestr(pl->p_login, "robot")) return 1;
   return 0;
