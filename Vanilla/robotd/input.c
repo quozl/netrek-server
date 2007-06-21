@@ -121,7 +121,7 @@ process_stdin()
    v = select(32, &readfd, NULL, NULL, &timeout);
    if(v > 0){
       if(fgets(_buf, 80, stdin) != NULL)
-	 R_ProcMessage(_buf, 0, -1, (unsigned char)-1, (unsigned char)1);
+	 R_ProcMessage(_buf, 0, -1, (unsigned char)-1, (unsigned char)1,0);
    }
    else if(v < 0){
       perror("process_stdin'select");

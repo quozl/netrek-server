@@ -165,7 +165,7 @@ unsigned char flags, from, to;
 {
     /* Message from someone.
       Pass it on to robot for processing */
-    R_ProcMessage(message, flags, from, to, 0);
+    R_ProcMessage(message, flags, from, to, 0, 0);
 }
 
 init_comm()
@@ -182,7 +182,7 @@ init_comm()
       return;
    }
    while(fgets(buf, 78, fi)){
-      R_ProcMessage(buf, 0, -1, (unsigned char)-1, (unsigned char)1);
+      R_ProcMessage(buf, 0, -1, (unsigned char)-1, (unsigned char)1, 1);
    }
    fclose(fi);
 }
@@ -200,11 +200,12 @@ char *string1, *string2;
     return(0);
 }
 
-R_ProcMessage(message, flags, from, to, std)
+R_ProcMessage(message, flags, from, to, std, config)
 
    char			*message;
    unsigned char	flags, from, to;
    int			std;
+   int                  config;	/* if 1 commands are coming from config file */
 {
    char			*m, buf[256];
 
@@ -240,7 +241,8 @@ R_ProcMessage(message, flags, from, to, std)
 
    /* prevent players from giving bots directives to prevent abuse */
 #ifdef BOTS_IGNORE_COMMANDS
-   return;
+   if (!config)
+      return;
 #endif
 
    if((flags & MINDIV) || std){
