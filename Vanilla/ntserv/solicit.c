@@ -259,9 +259,9 @@ void solicit(int force)
       int queue;
       if (newbie_mode)
 	queue = QU_NEWBIE_PLR;
-      else if (inl_mode && strncasecmp( m->ours, "home.", 5 ) == 0 )
+      else if (inl_mode && strncasecmp( m->ours, "home", 4 ) == 0 )
 	queue = QU_HOME;
-      else if (inl_mode && strncasecmp( m->ours, "away.", 5 ) == 0 )
+      else if (inl_mode && strncasecmp( m->ours, "away", 4 ) == 0 )
 	queue = QU_AWAY;
       else
 	queue = QU_PICKUP;
