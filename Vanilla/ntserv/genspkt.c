@@ -2582,7 +2582,8 @@ sendMotdLine(char *line)
    Added wraparound capability (mostly for the compiler options)  DRG Jun 93
    */
     if ((len = strlen(line)) < (MSG_LEN - 1)) { /* no need to wrap around */
-	motdPacket.type=SP_MOTD;
+	memset(&motdPacket, 0, sizeof(struct motd_spacket));
+	motdPacket.type = SP_MOTD;
 	STRNCPY(motdPacket.line, line, MSG_LEN);
 	motdPacket.line[MSG_LEN-1]='\0';
 	sendClientPacket((CVOID) &motdPacket);
@@ -2595,7 +2596,8 @@ sendMotdLine(char *line)
 	for (i=0;i<(int)(((float)(len)/(float)(MSG_LEN-1.0))+0.99);i++) {
 	    ptr1 = dmy; ptr2 = &(line[i*(MSG_LEN-1)]);
 	    for (j=0;j<MSG_LEN-1;j++) *ptr1++ = *ptr2++;
-	    motdPacket.type=SP_MOTD;
+	    memset(&motdPacket, 0, sizeof(struct motd_spacket));
+	    motdPacket.type = SP_MOTD;
 	    STRNCPY(motdPacket.line, dmy, MSG_LEN);
 	    motdPacket.line[MSG_LEN-1]='\0';
 	    sendClientPacket((CVOID) &motdPacket);
