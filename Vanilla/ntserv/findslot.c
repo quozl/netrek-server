@@ -125,8 +125,7 @@ int findslot(int w_queue)
 	  ERROR(2,("findslot: %s added to denied parties list\n", ip));
 	  free_duplicate_ips();
 	  return -1;
-	}
-	else {
+	} else {
 	  if (rep++ % 10 == 1) { sendQueuePacket((short) 1000+n); }
 	}
 	if (isClientDead()) { fflush(stderr); exit(0); }

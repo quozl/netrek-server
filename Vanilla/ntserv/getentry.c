@@ -338,8 +338,7 @@ static int tournamentMask(int team, int queue)
     /* Handle rejoining after a team has been timercided, disallow the
        old team and disallow the two largest teams (may overlap)
        Return early so we can't diagonal-mask out all 4 teams */
-    if (deadTeam(team))
-    {
+    if (deadTeam(team)) {
         mask &= ~team;
         mask &= ~(1 << large[0]);
         mask &= ~(1 << large[1]);

@@ -107,8 +107,8 @@ PLANET_MOVE=0
 #	implementation.)
 DUPLICATES=3
 #
-#	Automatically send any IP addresses who exceed duplicate count to the
-#	etc/deny folder (0 = no, 1 = yes)
+#	Automatically deny any IP addresses who exceed duplicate count by
+#	adding to the etc/deny directory (0 = no, 1 = yes)
 DENY_DUPLICATES=0
 #
 #	Have the server check for t-mode scummers.
