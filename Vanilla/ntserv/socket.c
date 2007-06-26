@@ -2221,6 +2221,7 @@ static void handleFeature(struct feature_cpacket *cpacket)
     F_client_feature_packets = 1;        /* XX */
 
     cpacket->value = ntohl(cpacket->value);
+    memset(&spacket, 0, sizeof(struct feature_spacket));
     getFeature(cpacket, &spacket);
     sendFeature(&spacket);
     if (!was) {
