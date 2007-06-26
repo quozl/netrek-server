@@ -1030,7 +1030,7 @@ struct flags_all_spacket {
 
 #ifdef FEATURE_PACKETS
 
-struct feature_spacket { /* SP_FEATURE py-struct "!bbbbi80s" #60 */
+struct feature_spacket { /* SP_FEATURE py-struct "!bcbbi80s" #60 */
    char                 type;
    char                 feature_type;   /* either 'C' or 'S' */
    char                 arg1,
@@ -1043,7 +1043,7 @@ struct feature_spacket { /* SP_FEATURE py-struct "!bbbbi80s" #60 */
 #endif /* FEATURE_PACKETS */
 
 #ifdef FEATURE_PACKETS
-struct feature_cpacket {                /* CP_FEATURE */
+struct feature_cpacket { /* CP_FEATURE py-struct "!bcbbi80s" #60 */
    char                 type;
    char                 feature_type;   /* either 'C' or 'S' */
    char                 arg1,

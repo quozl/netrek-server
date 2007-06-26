@@ -724,7 +724,7 @@ struct rsa_key {
 #ifdef RCD
 
 /* from BRM struct.h */
-struct distress {
+struct distress { /* py-struct "B7B6B7B4B" */
     u_char sender;
     u_char dam, shld, arms, wtmp, etmp, fuelp, sts;
     u_char wtmpflag, etempflag, cloakflag, distype, macroflag, ttype;
