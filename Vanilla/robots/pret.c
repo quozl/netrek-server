@@ -831,7 +831,8 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
         if (resetShip)
         {
             j->p_kills = 0;
-            j->p_ship.s_plasmacost = -1;
+	    if (j->p_ship.s_type != STARBASE)
+                j->p_ship.s_plasmacost = -1;
         }
         j->p_ntorp = 0;
         j->p_nplasmatorp = 0;
