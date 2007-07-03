@@ -16,7 +16,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "ltd_stats.h"
-
+#include "util.h"
 
 void phaser(u_char course)
 {
