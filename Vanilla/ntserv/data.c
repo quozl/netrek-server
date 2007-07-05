@@ -477,3 +477,8 @@ int ip_check_dns = 0;
 int ip_check_dns_verbose = 0;
 
 int offense_rank = 0;
+
+/* allow whitelisted entries to bypass ignore settings */
+int whitelist_indiv = 0;
+int whitelist_team = 0;
+int whitelist_all = 0;

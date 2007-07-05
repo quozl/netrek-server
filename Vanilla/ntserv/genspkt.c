@@ -1564,6 +1564,9 @@ void updateMessages(void)
     struct mesg_spacket msg;
     int reset_flags = 0;
     int send_msg;
+    struct player * p_temp;
+    int is_whitelisted = 0;
+    int warning_shown = 0;
 
     for (; msgCurrent!=(mctl->mc_current+1) % MAXMESSAGE;
 	 msgCurrent=(msgCurrent+1) % MAXMESSAGE) {
@@ -1603,24 +1606,45 @@ void updateMessages(void)
 
 	    send_msg = FALSE;
 
+            p_temp = p_no(cur->m_from);
+            is_whitelisted = ip_whitelisted(p_temp->p_ip);
+
 	    if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER))
 		send_msg = TRUE;
-	    else if (cur->m_flags & MALL && !(ignored[cur->m_from] & MALL))
-		send_msg = TRUE;
-	    else if (cur->m_flags & MTEAM && !(ignored[cur->m_from] & MTEAM)){
-		send_msg = TRUE;
-	    }
-	    else if (cur->m_flags & MINDIV) {
+	    else if (cur->m_flags & MALL) {
+                if (ignored[cur->m_from] & MALL) {
+                    if (is_whitelisted && whitelist_all)
+                        send_msg = TRUE;
+                } else {
+                    send_msg = TRUE;
+                }
+	    } else if (cur->m_flags & MTEAM) {
+                if (ignored[cur->m_from] & MTEAM) {
+                    if (is_whitelisted && whitelist_team)
+                        send_msg = TRUE;
+                } else {
+                    send_msg = TRUE;
+                }
+	    } else if (cur->m_flags & MINDIV) {
 		int query = 0;
 
 		/* session stats now parsed here.  parseQuery == true */
 		/* means eat message 4/17/92 TC */
 		query = parseQuery(cur);
 		if (!query) {
-		    if (ignored[cur->m_from] & MINDIV)
-			bounce(cur->m_from,
+		    if (ignored[cur->m_from] & MINDIV) {
+                        if (is_whitelisted && whitelist_indiv) {
+                            send_msg = TRUE;
+                            if (!warning_shown) {
+			        bounce(cur->m_from,
+			           "Player is ignoring you but your whitelist entry overrides it.");
+                                warning_shown = 1;
+                            }
+                        } else {
+			    bounce(cur->m_from,
 			       "That player is currently ignoring you.");
-		    else  {
+                        }
+		    } else {
 			send_msg = TRUE;
 		    }
                 }

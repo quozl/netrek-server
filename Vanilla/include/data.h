@@ -403,5 +403,8 @@ extern int last_udp_size;
 extern int ip_check_dns;
 extern int ip_check_dns_verbose;
 extern int offense_rank;
+extern int whitelist_indiv;
+extern int whitelist_team;
+extern int whitelist_all;
 
 #endif /* _h_data */

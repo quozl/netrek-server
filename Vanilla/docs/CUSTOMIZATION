@@ -218,6 +218,12 @@ that can change the server.
 
 	WARPSPEED - (0 or 1) How fast transwap is.	
 
+	WHITELIST_INDIV - (0 or 1) Allow whitelist to overide :i messages
+
+	WHITELIST_TEAM - (0 or 1) Allow whitelist to overide :t messages
+
+	WHITELIST_ALL - (0 or 1) Allow whitelist to overide :a messages
+
 	Dog-Fighter Specific Defines:
 		CONTESTSIZE - ( >0) Number of the contestants needed 
 				    before starting.

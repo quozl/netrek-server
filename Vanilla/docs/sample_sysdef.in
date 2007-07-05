@@ -221,6 +221,15 @@ NO_UNWARRING_BOMBING=1
 #	Turn off messaging for observers
 OBSERVER_MUTING=0
 #
+#	Allow whitelisted users to override player's :i ignore setting
+WHITELIST_INDIV=0
+#
+#	Allow whitelisted users to override player's :t ignore setting
+WHITELIST_TEAM=0
+#
+#	Allow whitelisted users to override player's :a ignore setting
+WHITELIST_ALL=0
+#
 #	Whether observers on an empty server will keep the game alive.
 OBSERVER_KEEPS_GAME_ALIVE=0
 #
