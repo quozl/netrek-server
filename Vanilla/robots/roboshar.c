@@ -170,6 +170,6 @@ void robohelp(struct player *me, int oldmctl, char *roboname)
             !(messages[oldmctl].m_from & MGOD)) {
         if (strstr(messages[oldmctl].m_data, "help") != NULL)
             messOne(255,roboname,messages[oldmctl].m_from,
-               "If you want help from me, send ME the message 'help'.");
+               "If you want help, send YOURSELF the message 'help'.");
     }
 }
