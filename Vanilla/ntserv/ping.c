@@ -136,10 +136,10 @@ void sendClientPing(void)
    packet.type = SP_PING;
    packet.number = (unsigned char) ping_id;
    packet.lag = htons((unsigned short) ping_lag);
-   packet.tloss_sc = (int)tloss_sc;
-   packet.tloss_cs = (int)tloss_cs;
-   packet.iloss_sc = (int)iloss_sc;
-   packet.iloss_cs = (int)iloss_cs;
+   packet.tloss_sc = (int)round(tloss_sc);
+   packet.tloss_cs = (int)round(tloss_cs);
+   packet.iloss_sc = iloss_sc;
+   packet.iloss_cs = iloss_cs;
 
    ping_sent[PITH(ping_id)].time = mstime();
    /*
