@@ -30,9 +30,9 @@ static int u_char_diff(int x, int y);
 static unsigned char ping_id;	/* wraparound expected */
 static int      ping_lag;	/* ping roundtrip delay */
 
-static int      tloss_sc,	/* total packet loss s-c */
-                tloss_cs,	/* total packet loss c-s */
-                iloss_sc,	/* inc. packet loss s-c */
+static double   tloss_sc,	/* total packet loss s-c */
+                tloss_cs;	/* total packet loss c-s */
+static int      iloss_sc,	/* inc. packet loss s-c */
                 iloss_cs;	/* inc. packet loss c-s */
 
 /*
@@ -136,10 +136,10 @@ void sendClientPing(void)
    packet.type = SP_PING;
    packet.number = (unsigned char) ping_id;
    packet.lag = htons((unsigned short) ping_lag);
-   packet.tloss_sc = tloss_sc;
-   packet.tloss_cs = tloss_cs;
-   packet.iloss_sc = iloss_sc;
-   packet.iloss_cs = iloss_cs;
+   packet.tloss_sc = (int)tloss_sc;
+   packet.tloss_cs = (int)tloss_cs;
+   packet.iloss_sc = (int)iloss_sc;
+   packet.iloss_cs = (int)iloss_cs;
 
    ping_sent[PITH(ping_id)].time = mstime();
    /*
@@ -198,7 +198,7 @@ static void calc_loss(int i, struct ping_cpacket *packet)
    }
    /* total loss server-to-client since start of connection */
    tloss_sc = 100 -
-      (int)((100 * (ping_sent[i].packets_sent_at_ping - s_to_c_dropped)) /
+      (double)((100 * (ping_sent[i].packets_sent_at_ping - s_to_c_dropped)) /
       (double)ping_sent[i].packets_sent_at_ping);
 
    /*
@@ -231,7 +231,7 @@ static void calc_loss(int i, struct ping_cpacket *packet)
    }
    /* total loss client-to-server since start of connection */
    tloss_cs = 100 -
-      (int)((100 * (packets_received - c_to_s_dropped)) / 
+      (double)((100 * (packets_received - c_to_s_dropped)) / 
 	    (double)packets_received);
 
    old_s_to_c_dropped = s_to_c_dropped;
@@ -326,8 +326,8 @@ static void update_lag_stats(void)
 
 static void update_loss_stats(void)
 {
-   me->p_pkls_s_c = (char) tloss_sc;
-   me->p_pkls_c_s = (char) tloss_cs;
+   me->p_pkls_s_c = tloss_sc;
+   me->p_pkls_c_s = tloss_cs;
 }
 #endif				/* INL_STATS */
 

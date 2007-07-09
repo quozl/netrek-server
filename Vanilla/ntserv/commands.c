@@ -946,7 +946,7 @@ int bouncePingStats(int from)
     }
     else{
         bounce(from,
-            "%c%c PING stats: Average: %d ms, Stdv: %d ms, Loss: %d%%/%d%% s->c/c->s",
+            "%c%c PING stats: Avg: %d ms, Stdv: %d ms, Loss: %0.1f%/%0.1f%% s->c/c->s",
             me->p_mapchars[0], me->p_mapchars[1],
             me->p_avrt,
             me->p_stdv,

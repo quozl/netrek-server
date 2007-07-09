@@ -469,8 +469,8 @@ struct player {
 #ifdef PING
     int  p_avrt;               /* average round trip time */
     int  p_stdv;               /* standard deviation in round trip time */
-    int  p_pkls_c_s;           /* packet loss (client to server) */
-    int  p_pkls_s_c;           /* packet loss (server to client) */
+    double  p_pkls_c_s;           /* packet loss (client to server) */
+    double  p_pkls_s_c;           /* packet loss (server to client) */
 #endif
     int p_ups;                  /* updates per second */
     int p_fpu;                  /* frames per update (was p_timerdelay) */
