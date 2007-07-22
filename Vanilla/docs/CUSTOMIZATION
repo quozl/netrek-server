@@ -132,6 +132,11 @@ that can change the server.
 		logic not allowing teams to grow past 4 humans before T mode
 		starts.
 
+	REPORT_USERS (0 or 1) Report users on the metaservers if enabled.
+		Disabling this option is useful for bot servers such as
+		base-practice servers so they always report the server
+		as empty.
+
 	SHIPS - ( SC, DD, CA, BB, AS, SB ) Type of ships that are allowed at
 		the server.
 
