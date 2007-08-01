@@ -136,8 +136,8 @@ void sendClientPing(void)
    packet.type = SP_PING;
    packet.number = (unsigned char) ping_id;
    packet.lag = htons((unsigned short) ping_lag);
-   packet.tloss_sc = (int)round(tloss_sc);
-   packet.tloss_cs = (int)round(tloss_cs);
+   packet.tloss_sc = (int) round(tloss_sc);
+   packet.tloss_cs = (int) round(tloss_cs);
    packet.iloss_sc = iloss_sc;
    packet.iloss_cs = iloss_cs;
 
@@ -198,8 +198,8 @@ static void calc_loss(int i, struct ping_cpacket *packet)
    }
    /* total loss server-to-client since start of connection */
    tloss_sc = 100 -
-      (double)((100 * (ping_sent[i].packets_sent_at_ping - s_to_c_dropped)) /
-      (double)ping_sent[i].packets_sent_at_ping);
+      (double) ((100 * (ping_sent[i].packets_sent_at_ping - s_to_c_dropped)) /
+                (double) ping_sent[i].packets_sent_at_ping);
 
    /*
     * at ping time, total packets dropped from client to server NOTE: not
@@ -231,8 +231,8 @@ static void calc_loss(int i, struct ping_cpacket *packet)
    }
    /* total loss client-to-server since start of connection */
    tloss_cs = 100 -
-      (double)((100 * (packets_received - c_to_s_dropped)) / 
-	    (double)packets_received);
+      (double) ((100 * (packets_received - c_to_s_dropped)) /
+                (double) packets_received);
 
    old_s_to_c_dropped = s_to_c_dropped;
    old_c_to_s_dropped = c_to_s_dropped;

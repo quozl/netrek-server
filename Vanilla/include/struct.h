@@ -389,108 +389,108 @@ struct stats {
 
 struct player {
     int p_no;
-    int p_updates;		/* Number of updates ship has survived */
-    int p_status;		/* Player status */
-    u_int p_flags;	        /* Player flags */
+    int p_updates;              /* Number of updates ship has survived */
+    int p_status;               /* Player status */
+    u_int p_flags;              /* Player flags */
     char p_name[NAME_LEN];      /* Player handle, i.e. "Wreck" */
     char p_login[NAME_LEN];     /* Login name of player's account */
-    char p_ip[NAME_LEN];	/* IP address of client in text */
-    char p_monitor[NAME_LEN];	/* Monitor being played on */
+    char p_ip[NAME_LEN];        /* IP address of client in text */
+    char p_monitor[NAME_LEN];   /* Monitor being played on */
     char p_longname[NAME_LEN+6];/* Name plus (mapchars); i.e.  "Wreck (R0)" */
-    char p_mapchars[3];		/* Cache for map window image, i.e. "R0" */
-    struct ship p_ship;		/* Personal ship statistics */
-    int p_x;			/* normal coordinates */
-    int p_y;			/* daemon: write, others: read */
-    int p_x_internal;		/* shifted coordinates internal to daemon */
-    int p_y_internal;		/* daemon: write, others: read */
-    int p_x_input;		/* new requested coordinates */
-    int p_y_input;		/* daemon: read, others: write */
-    int p_x_y_set;		/* new requested coordinates are set up */
-    int p_x_min;		/* flight bounding box, for confine */
-    int p_y_min;		/* (defaults to galaxy dimensions) */
+    char p_mapchars[3];         /* Cache for map window image, i.e. "R0" */
+    struct ship p_ship;         /* Personal ship statistics */
+    int p_x;                    /* normal coordinates */
+    int p_y;                    /* daemon: write, others: read */
+    int p_x_internal;           /* shifted coordinates internal to daemon */
+    int p_y_internal;           /* daemon: write, others: read */
+    int p_x_input;              /* new requested coordinates */
+    int p_y_input;              /* daemon: read, others: write */
+    int p_x_y_set;              /* new requested coordinates are set up */
+    int p_x_min;                /* flight bounding box, for confine */
+    int p_y_min;                /* (defaults to galaxy dimensions) */
     int p_x_max;
     int p_y_max;
-    u_char p_dir;	/* Real direction */
-    u_char p_desdir;	/* desired direction */
-    int p_subdir;		/* fraction direction change */
-    int p_speed;		/* Real speed */
-    short p_desspeed;		/* Desired speed */
-    int p_subspeed;		/* Fractional speed */
-    short p_team;			/* Team I'm on */
-    int p_damage;		/* Current damage */
-    int p_subdamage;		/* Fractional damage repair */
-    int p_shield;		/* Current shield power */
-    int p_subshield;		/* Fractional shield recharge */
-    short p_cloakphase;		/* Drawing stage of cloaking engage/disengage. */
-    short p_ntorp;		/* Number of torps flying */
+    u_char p_dir;               /* real direction */
+    u_char p_desdir;            /* desired direction */
+    int p_subdir;               /* fraction direction change */
+    int p_speed;                /* Real speed */
+    short p_desspeed;           /* Desired speed */
+    int p_subspeed;             /* Fractional speed */
+    short p_team;                       /* Team I'm on */
+    int p_damage;               /* Current damage */
+    int p_subdamage;            /* Fractional damage repair */
+    int p_shield;               /* Current shield power */
+    int p_subshield;            /* Fractional shield recharge */
+    short p_cloakphase;         /* Drawing stage of cloaking engage/disengage. */
+    short p_ntorp;              /* Number of torps flying */
     short p_nplasmatorp;        /* Number of plasma torps active */
-    char p_hostile;		/* Who my torps will hurt */
-    char p_swar;		/* Who am I at sticky war with */
+    char p_hostile;             /* Who my torps will hurt */
+    char p_swar;                /* Who am I at sticky war with */
     char p_war;                 /* (p_hostile | p_swar) */
     signed char p_lastseenby;   /* Player# of player who saw me last */
-    float p_kills;		/* Enemies killed */
-    short p_planet;		/* Planet orbiting or locked onto */
-    short p_playerl;		/* Player locked onto */
-    short p_armies;	
+    float p_kills;              /* Enemies killed */
+    short p_planet;             /* Planet orbiting or locked onto */
+    short p_playerl;            /* Player locked onto */
+    short p_armies;
     int p_fuel;
-    short p_explode;		/* Keeps track of final explosion */
+    short p_explode;            /* Keeps track of final explosion */
     int p_etemp;
     short p_etime;
     int p_wtemp;
     short p_wtime;
-    short p_whydead;		/* Tells you why you died */
-    short p_whodead;		/* Tells you who killed you */
-    struct stats p_stats;	/* player statistics */
+    short p_whydead;            /* Tells you why you died */
+    short p_whodead;            /* Tells you who killed you */
+    struct stats p_stats;       /* player statistics */
 #ifdef LTD_STATS
-    struct ltd_history p_hist;	/* player event history */
+    struct ltd_history p_hist;  /* player event history */
 #endif
-    short p_genoplanets;	/* planets taken since last genocide */
-    short p_genoarmsbomb;	/* armies bombed since last genocide */
-    short p_planets;		/* planets taken this game */
-    short p_armsbomb;		/* armies bombed this game */
+    short p_genoplanets;        /* planets taken since last genocide */
+    short p_genoarmsbomb;       /* armies bombed since last genocide */
+    short p_planets;            /* planets taken this game */
+    short p_armsbomb;           /* armies bombed this game */
     int p_ghostbuster;
 
     /* for starbases, if PFDOCKOK set */
     int p_bays[NUMBAYS];        /* p_no of each docked ship, or VACANT */
 
     /* for ships other than starbases, if p_flags PFDOCK set */
-    int p_dock_with;	        /* p_no of starbase we are docked with */
-    int p_dock_bay;	        /* bay of starbase we are docked with */
+    int p_dock_with;            /* p_no of starbase we are docked with */
+    int p_dock_bay;             /* bay of starbase we are docked with */
 
-    short p_tractor;		/* What player is in tractor lock */
-    int p_pos;			/* My position in the player file */
-    int w_queue;		/* Waitqueue of my team */
-    char p_full_hostname[MAXHOSTNAMESIZE];	/* reverse lookup of p_ip */
-    char p_dns_hostname[MAXHOSTNAMESIZE];	/* forward lookup of above */
+    short p_tractor;            /* What player is in tractor lock */
+    int p_pos;                  /* My position in the player file */
+    int w_queue;                /* Waitqueue of my team */
+    char p_full_hostname[MAXHOSTNAMESIZE];      /* reverse lookup of p_ip */
+    char p_dns_hostname[MAXHOSTNAMESIZE];       /* forward lookup of above */
     /* DNS blacklist flags */
     int p_xblproxy;
     int p_sorbsproxy;
     int p_njablproxy;
 #ifdef PING
-    int  p_avrt;               /* average round trip time */
-    int  p_stdv;               /* standard deviation in round trip time */
-    double  p_pkls_c_s;           /* packet loss (client to server) */
-    double  p_pkls_s_c;           /* packet loss (server to client) */
+    int  p_avrt;                /* average round trip time */
+    int  p_stdv;                /* standard deviation in round trip time */
+    double  p_pkls_c_s;         /* packet loss (client to server) */
+    double  p_pkls_s_c;         /* packet loss (server to client) */
 #endif
     int p_ups;                  /* updates per second */
     int p_fpu;                  /* frames per update (was p_timerdelay) */
     pid_t p_process;            /* process id number */
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) ||  defined(PRETSERVER)
     /* robot ogger variables */
-    int p_df;			/* defense (0 unknown, 1 worst, 100 best) */
-    int p_tg;			/* target+1 */
+    int p_df;                   /* defense (0 unknown, 1 worst, 100 best) */
+    int p_tg;                   /* target+1 */
 #endif
-    time_t voting[PV_TOTAL];	/* voting array */
+    time_t voting[PV_TOTAL];    /* voting array */
     int p_candock;              /* is this player allowed to dock onto SB */
-    int p_cantranswarp;		/* is this player allowed to transwarp to SB  */
-    int p_transwarp;		/* flags base must have to allow transwarp */
-    short p_repair_time;	/* server estimate of repair time in seconds */
+    int p_cantranswarp;         /* is this player allowed to transwarp to SB  */
+    int p_transwarp;            /* flags base must have to allow transwarp */
+    short p_repair_time;        /* server estimate of repair time in seconds */
 #ifdef STURGEON
-    short p_upgrading;		/* Ship is doing upgrading */
-    float p_upgrades;		/* Number of kills devoted to upgrades */
-    float p_rankcredit;		/* Number of bonus kills based on rank that can be used on upgrades */
-    short p_undo_upgrade;	/* Undo next upgrade selected (1 if yes, 0 if no) */
-    short p_free_upgrade;	/* Number of free upgrade that is gained upon a planet take (0 if no upgrade) */
+    short p_upgrading;          /* Ship is doing upgrading */
+    float p_upgrades;           /* Number of kills devoted to upgrades */
+    float p_rankcredit;         /* Number of bonus kills based on rank that can be used on upgrades */
+    short p_undo_upgrade;       /* Undo next upgrade selected (1 if yes, 0 if no) */
+    short p_free_upgrade;       /* Number of free upgrade that is gained upon a planet take (0 if no upgrade) */
     short p_upgradelist[NUMUPGRADES];
     short p_special;
     struct specialweapon p_weapons[NUMSPECIAL];

@@ -1569,21 +1569,21 @@ void updateMessages(void)
     int warning_shown = 0;
 
     for (; msgCurrent!=(mctl->mc_current+1) % MAXMESSAGE;
-	 msgCurrent=(msgCurrent+1) % MAXMESSAGE) {
-	if (msgCurrent>=MAXMESSAGE)
-	    msgCurrent=0;
-	cur = &messages[msgCurrent];
+         msgCurrent=(msgCurrent+1) % MAXMESSAGE) {
+        if (msgCurrent>=MAXMESSAGE)
+            msgCurrent=0;
+        cur = &messages[msgCurrent];
 
-	if ((macroignore && cur->m_flags & MMACRO) 
-	    || (dooshignore && cur->m_from == DOOSHMSG)) {
-	    continue;
-	}
+        if ((macroignore && cur->m_flags & MMACRO)
+            || (dooshignore && cur->m_from == DOOSHMSG)) {
+            continue;
+        }
 
-	if (cur->m_flags & MVALID &&
-	    (cur->m_flags & MALL ||
-	     (cur->m_flags & MTEAM && cur->m_recpt & me->p_team) ||
-	     (cur->m_flags & MINDIV && cur->m_recpt == me->p_no) 
-		)) {	     
+        if (cur->m_flags & MVALID &&
+            (cur->m_flags & MALL ||
+             (cur->m_flags & MTEAM && cur->m_recpt & me->p_team) ||
+             (cur->m_flags & MINDIV && cur->m_recpt == me->p_no)
+                )) {
 
 /* hack for displaying MINDIV && MCONQ messages to stdout on the clients.  
    Clients only show MALL && MCONQ.  but we don't want to send to all.
@@ -1591,97 +1591,96 @@ void updateMessages(void)
    Now, cancel MINDIV and set MALL, for the client's benefit.
    ATH, 11/5/95 */
 
-	    if ((cur->m_flags & MINDIV) && (cur->m_flags & MCONQ)) {
-		cur->m_flags &= ~MINDIV;
-		cur->m_flags |= MALL;
-		reset_flags = 1;
-	    }
-
-            if(send_short && (cur->m_from == 255)) {
-		/* Test if possible to send with SP_S_WARNING */
-		if (updtMessageSMessage(cur)) {
-		    continue;
-		}
+            if ((cur->m_flags & MINDIV) && (cur->m_flags & MCONQ)) {
+                cur->m_flags &= ~MINDIV;
+                cur->m_flags |= MALL;
+                reset_flags = 1;
             }
 
-	    send_msg = FALSE;
+            if(send_short && (cur->m_from == 255)) {
+                /* Test if possible to send with SP_S_WARNING */
+                if (updtMessageSMessage(cur)) {
+                    continue;
+                }
+            }
+
+            send_msg = FALSE;
 
             p_temp = p_no(cur->m_from);
             is_whitelisted = ip_whitelisted(p_temp->p_ip);
 
-	    if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER))
-		send_msg = TRUE;
-	    else if (cur->m_flags & MALL) {
+            if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER))
+                send_msg = TRUE;
+            else if (cur->m_flags & MALL) {
                 if (ignored[cur->m_from] & MALL) {
                     if (is_whitelisted && whitelist_all)
                         send_msg = TRUE;
                 } else {
                     send_msg = TRUE;
                 }
-	    } else if (cur->m_flags & MTEAM) {
+            } else if (cur->m_flags & MTEAM) {
                 if (ignored[cur->m_from] & MTEAM) {
                     if (is_whitelisted && whitelist_team)
                         send_msg = TRUE;
                 } else {
                     send_msg = TRUE;
                 }
-	    } else if (cur->m_flags & MINDIV) {
-		int query = 0;
+            } else if (cur->m_flags & MINDIV) {
+                int query = 0;
 
-		/* session stats now parsed here.  parseQuery == true */
-		/* means eat message 4/17/92 TC */
-		query = parseQuery(cur);
-		if (!query) {
-		    if (ignored[cur->m_from] & MINDIV) {
+                /* session stats now parsed here.  parseQuery == true */
+                /* means eat message 4/17/92 TC */
+                query = parseQuery(cur);
+                if (!query) {
+                    if (ignored[cur->m_from] & MINDIV) {
                         if (is_whitelisted && whitelist_indiv) {
                             send_msg = TRUE;
                             if (!warning_shown) {
-			        bounce(cur->m_from,
-			           "Player is ignoring you but your whitelist entry overrides it.");
+                                bounce(cur->m_from,
+                                   "Player is ignoring you but your whitelist entry overrides it.");
                                 warning_shown = 1;
                             }
                         } else {
-			    bounce(cur->m_from,
-			       "That player is currently ignoring you.");
+                            bounce(cur->m_from,
+                               "That player is currently ignoring you.");
                         }
-		    } else {
-			send_msg = TRUE;
-		    }
+                    } else {
+                        send_msg = TRUE;
+                    }
                 }
-	    }
+            }
 #ifdef CONTINUUM_MUTE_COMMANDS
-	    /* observer muting commands, available to players */
-	    if (send_msg) {
-		char *cchar = &cur->m_data[10];
-		if (!strcasecmp(cchar, "mute on")) {
-		    if (me->p_status == POBSERV) {
-			if (!mute) {
-			    bounce(cur->m_from, "Mute enabled.");
-			    mute = TRUE;
-			}
-			send_msg = FALSE;
-		    }
-		} else 
-		if (!strcasecmp(cchar, "mute off")) {
-		    if (me->p_status == POBSERV) {
-			if (mute) {
-			    bounce(cur->m_from, "Mute disabled.");
-			    mute = FALSE;
-			}
-			send_msg = FALSE;
-		    }
-		}
-	    }
+            /* observer muting commands, available to players */
+            if (send_msg) {
+                char *cchar = &cur->m_data[10];
+                if (!strcasecmp(cchar, "mute on")) {
+                    if (me->p_status == POBSERV) {
+                        if (!mute) {
+                            bounce(cur->m_from, "Mute enabled.");
+                            mute = TRUE;
+                        }
+                        send_msg = FALSE;
+                    }
+                } else if (!strcasecmp(cchar, "mute off")) {
+                    if (me->p_status == POBSERV) {
+                        if (mute) {
+                            bounce(cur->m_from, "Mute disabled.");
+                            mute = FALSE;
+                        }
+                        send_msg = FALSE;
+                    }
+                }
+            }
 #endif
-	    if (send_msg)
-		updtMessage(&msg, cur);
-	}
+            if (send_msg)
+                updtMessage(&msg, cur);
+        }
 /* Put eject message back as MINDIV, so everyone doesn't get it later */
-	if (reset_flags) {
-	    cur->m_flags &= ~MALL;
-	    cur->m_flags |= MINDIV;
-	    reset_flags = 0;
-	}
+        if (reset_flags) {
+            cur->m_flags &= ~MALL;
+            cur->m_flags |= MINDIV;
+            reset_flags = 0;
+        }
     }
 }
 
