@@ -274,6 +274,10 @@ struct sysdef_keywords {
     "Rebuild time of starbase, in minutes." },
   { "OFFENSE_RANK",             SYSDEF_INT,     &offense_rank,
     "Enable offense requirements for rank (Commodore = 1.0, Rear Adm = 1.2, Admiral = 1.4)" },
+  { "SERVER_ADVERTISE_ENABLE",  SYSDEF_INT,     &server_advertise_enable,
+    "Enable the advertising of other servers with players" },
+  { "SERVER_ADVERTISE_FILTER",  SYSDEF_CHAR,    server_advertise_filter,
+    "Filter to apply against server names" },
   { "WHITELIST_INDIV",	SYSDEF_INT,	&whitelist_indiv,
     "Allow whitelisted users to bypass :i ignores." },
   { "WHITELIST_TEAM",	SYSDEF_INT,	&whitelist_team,
@@ -322,6 +326,7 @@ ROBOT_DEBUG_*
 PRET_PLANETS
 PRET_SAVE_GALAXY
 PRET_GALAXY_LIFETIME
+SERVER_ADVERTISE_*
 WHITELIST_INDIV
 WHITELIST_TEAM
 WHITELIST_ALL

@@ -403,6 +403,8 @@ extern int last_udp_size;
 extern int ip_check_dns;
 extern int ip_check_dns_verbose;
 extern int offense_rank;
+extern int server_advertise_enable;
+extern char server_advertise_filter[MSG_LEN];
 extern int whitelist_indiv;
 extern int whitelist_team;
 extern int whitelist_all;

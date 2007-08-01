@@ -22,6 +22,7 @@
 #include "blog.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "advertise.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
@@ -766,6 +767,7 @@ static void move()
     }
     if (fuse(MINUTEFUSE)) {     /* was SURRENDFUSE 4/15/92 TC */
         udsurrend();
+        advertise();
     }
     if (fuse(CHECKLOADFUSE)) {
         check_load(); 

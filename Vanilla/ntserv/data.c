@@ -482,3 +482,6 @@ int offense_rank = 0;
 int whitelist_indiv = 0;
 int whitelist_team = 0;
 int whitelist_all = 0;
+
+int server_advertise_enable = 0;
+char server_advertise_filter[MSG_LEN];

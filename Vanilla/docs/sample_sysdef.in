@@ -296,6 +296,13 @@ TRANSWARP=0
 #	How fast transwarp is.
 WARPSPEED=60
 #
+#	Enable the advertising of other servers with players, to assist
+#	with concentrating the playerbase.
+SERVER_ADVERTISE_ENABLE=0
+#
+#	Filter to apply against server names, as a substring match.
+SERVER_ADVERTISE_FILTER=
+#
 #	Special Motd for Robots
 #MOTD=.motd_basep
 #

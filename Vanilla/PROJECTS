@@ -3,6 +3,13 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- registration, avoid sending SP_PSTATUS for newly logged in
+          slots until after successful authentication.  Prevents
+          attack via username.  Prevents pre-registration attacks.
+
+	- registration, avoid placing ship in game until successful
+          client verification.
+
 	- RESETRACE, unrepresented race planet logic, initial state
           all planets neutral, with START_ARMIES armies, on arrival of
           first member of a race, their space planets are changed from
