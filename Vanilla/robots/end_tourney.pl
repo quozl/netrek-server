@@ -412,6 +412,7 @@ VLINK="#BB7711">
 
 <center>
 <font size=+1>Game Ended: $endtimestr</font>
+<br><br>Warning: The stats code is currently buggy. Planet counts and the winning team may be incorrect.
 <br><br>
 <table border cellpadding=2>
 <tr>${th}<font size=+2>Home Team</font></th>${th}<font size=+2>Away Team</font></th></tr>
