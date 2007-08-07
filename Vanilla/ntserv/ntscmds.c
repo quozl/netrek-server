@@ -731,10 +731,10 @@ void do_time_msg(char *comm, struct message *mess)
       }
       break;
     case 1:
-      pmessage(who, MINDIV, addr, "The %s will have %d minutes left, when players return", team_name(t), teams[t].te_surrender);
+      pmessage(who, MINDIV, addr, "The %s will have %d minutes left when T mode resumes", team_name(t), teams[t].te_surrender);
       break;
     case 2:
-      pmessage(who, MINDIV, addr, "The %s will have %d minutes left, if they lose a planet", team_name(t), teams[t].te_surrender);
+      pmessage(who, MINDIV, addr, "The %s will have %d minutes left if they are down to %d planets", team_name(t), teams[t].te_surrender, surrenderStart);
       break;
   }
 }
