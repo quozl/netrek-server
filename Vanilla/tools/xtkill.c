@@ -234,7 +234,7 @@ int main(int argc, char **argv)
 	players[player].p_armies += 6;
       break;
     case 'C':		/* clock surrender reset */
-      teams[players[player].p_team].s_surrender = 6;
+      teams[players[player].p_team].te_surrender = 6;
       break;
     case 'h':		/* harm */
       players[player].p_shield = 0;

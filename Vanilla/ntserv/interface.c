@@ -571,8 +571,8 @@ void do_refit(int type)
 	}
     }
     if (type == STARBASE && !chaos && !topgun) { /* change TC 12/10/90 */
-	if (teams[me->p_team].s_turns > 0) {
-	  new_warning(UNDEF,"Not constructed yet. %d minutes required for completion",teams[me->p_team].s_turns);
+	if (teams[me->p_team].te_turns > 0) {
+	  new_warning(UNDEF,"Not constructed yet. %d minutes required for completion",teams[me->p_team].te_turns);
 	    return;
 	}
     }

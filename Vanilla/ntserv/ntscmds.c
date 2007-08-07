@@ -708,27 +708,42 @@ void do_genos_query(char *comm, struct message *mess, int who)
 /* ARGSUSED */
 void do_time_msg(char *comm, struct message *mess)
 {
-  int who;
-  int t;
+  int who, t, remaining;
   char *addr;
 
   who = mess->m_from;
   addr = addr_mess(who,MINDIV);
 
-  for (t=0;((t<=MAXTEAM)&&(teams[t].s_surrender==0));t++);
+  for (t=0;((t<=MAXTEAM)&&(teams[t].te_surrender==0));t++);
 
-  if (t>MAXTEAM) {
+  if (t > MAXTEAM) {
     pmessage(who, MINDIV, addr, "No one is considering surrender now.  Go take some planets.");
-  } else {
-    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].s_surrender);
+    return;
+  }
+
+  switch (teams[t].te_surrender_pause) {
+    case 0:
+      remaining = 60 - ((context->frame - teams[t].te_surrender_frame) / fps);
+      if (remaining < 50 && remaining > 0) {
+        pmessage(who, MINDIV, addr, "The %s have %d minutes %d seconds left before they surrender.", team_name(t), teams[t].te_surrender-1, remaining);
+      } else {
+        pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].te_surrender);
+      }
+      break;
+    case 1:
+      pmessage(who, MINDIV, addr, "The %s will have %d minutes left, when players return", team_name(t), teams[t].te_surrender);
+      break;
+    case 2:
+      pmessage(who, MINDIV, addr, "The %s will have %d minutes left, if they lose a planet", team_name(t), teams[t].te_surrender);
+      break;
   }
 }
 
 /* ARGSUSED */
 void do_sbtime_msg(char *comm, struct message *mess)
 {
-  if (teams[players[mess->m_from].p_team].s_turns > 0)
-	pmessage(mess->m_from, MINDIV, addr_mess(mess->m_from, MINDIV), "Starbase construction will be complete in %d minutes.", teams[players[mess->m_from].p_team].s_turns);
+  if (teams[players[mess->m_from].p_team].te_turns > 0)
+	pmessage(mess->m_from, MINDIV, addr_mess(mess->m_from, MINDIV), "Starbase construction will be complete in %d minutes.", teams[players[mess->m_from].p_team].te_turns);
   else
 	pmessage(mess->m_from, MINDIV, addr_mess(mess->m_from, MINDIV), "Your Starbase is available.");
 }

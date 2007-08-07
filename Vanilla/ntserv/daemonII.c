@@ -995,7 +995,7 @@ static void udplayers_pexplode(struct player *j)
                      (j->p_whydead == KPLASMA) ||
                      (j->p_whydead == KPLANET) ||
                      (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
-                        teams[j->p_team].s_turns = starbase_rebuild_time;
+                        teams[j->p_team].te_turns = starbase_rebuild_time;
                         if (j->p_status == PDEAD) blog_base_loss(j);
                 }
         }
@@ -2682,7 +2682,7 @@ static void udsurrend(void)
     /* Decrement SB reconstruction timer code moved here (from udplanets()) */
 
     for (i = 0; i <= MAXTEAM; i++) {
-        (teams[i].s_turns--);
+        teams[i].te_turns--;
     }
 
     /* Coup timer moved here (from udplanets()) */
@@ -2727,15 +2727,21 @@ static void udsurrend(void)
 
     for (t = 0; t <= MAXTEAM; t++) { /* maint: was "<" 6/22/92 TC */
         /* "suspend" countdown if less than Tmode players */
-        if ((teams[t].s_surrender == 0) || (realNumShips(t) < tournplayers))
+        if ((teams[t].te_surrender == 0) || (realNumShips(t) < tournplayers)) {
+            teams[t].te_surrender_pause = TE_SURRENDER_PAUSE_ON_TOURN;
             continue;
+        }
 
         /* also if team has more than surrenderStart planets */
-        if (teams[t].s_plcount > surrenderStart)
+        if (teams[t].te_plcount > surrenderStart) {
+            teams[t].te_surrender_pause = TE_SURRENDER_PAUSE_ON_PLANETS ;
             continue;
+        }
 
-        teams[t].s_surrender--;
-        if (teams[t].s_surrender == 0) {
+        teams[t].te_surrender_pause = TE_SURRENDER_PAUSE_OFF;
+        teams[t].te_surrender--;
+        teams[t].te_surrender_frame = context->frame;
+        if (teams[t].te_surrender == 0) {
 
             /* terminate race t */
 
@@ -2779,12 +2785,16 @@ static void udsurrend(void)
             
         }                       /* end if */
         else {                  /* surrender countdown */
-            if ((teams[t].s_surrender % 5) == 0) {
+            if ((teams[t].te_surrender % 5) == 0) {
                 pmessage(0, MALL, " ", " ");
+            }
+            if ((teams[t].te_surrender % 5) == 0 ||
+                teams[t].te_surrender < 5) {
                 pmessage(0, MALL, "GOD->ALL", "The %s %s %d minutes remaining.",
                         team_name(t), team_verb(t),
-                        teams[t].s_surrender);
-
+                        teams[t].te_surrender);
+            }
+            if ((teams[t].te_surrender % 5) == 0) {
                 pmessage(0, MALL, "GOD->ALL", "%d planets will sustain the empire.  %d suspends countdown.",
                         SURREND, surrenderStart+1);
                 pmessage(0, MALL, " ", " ");
@@ -3806,10 +3816,10 @@ static void checkgen(int loser, struct player *winner)
     if (inl_mode) return;
 
     for (i = 0; i <= MAXTEAM; i++) /* maint: was "<" 6/22/92 TC */
-        teams[i].s_plcount = 0;
+        teams[i].te_plcount = 0;
 
     for (i = 0, l = &planets[i]; i < MAXPLANETS; i++, l++) {
-        teams[l->pl_owner].s_plcount++; /* for now, recompute here */
+        teams[l->pl_owner].te_plcount++; /* for now, recompute here */
 /*      if (l->pl_owner == loser)
             return;*/
         if (((l->pl_flags & ALLTEAM) == loser) && (l->pl_flags & PLHOME))
@@ -3818,8 +3828,8 @@ static void checkgen(int loser, struct player *winner)
 
     /* check to initiate surrender */
 
-    if ((teams[loser].s_surrender == 0) &&
-        (teams[loser].s_plcount == surrenderStart)) {
+    if ((teams[loser].te_surrender == 0) &&
+        (teams[loser].te_plcount == surrenderStart)) {
         /* shorter for borgs? */
         /* start the clock 1/27/92 TC */
         int minutes = binconfirm ? SURRLENGTH : SURRLENGTH*2/3;
@@ -3837,12 +3847,14 @@ static void checkgen(int loser, struct player *winner)
                 SURREND);
         pmessage(0, MALL, " ", " ");
 
-        teams[loser].s_surrender = minutes;
+        teams[loser].te_surrender = minutes;
+        teams[loser].te_surrender_frame = context->frame;
     }
 
-    if (teams[loser].s_plcount > 0) return;
+    if (teams[loser].te_plcount > 0) return;
 
-    teams[loser].s_surrender = 0;       /* stop the clock */
+    teams[loser].te_surrender = 0;       /* stop the clock */
+    teams[loser].te_surrender_frame = context->frame;
 
             /* Give extra credit for neutralizing last planet! */
     winner->p_genoplanets++;
@@ -3917,10 +3929,10 @@ static int checkwin(struct player *winner)
     /* let the inl robot check for geno if in INL mode */
     if (inl_mode) return 0;
 
-    teams[0].s_plcount = 0;
+    teams[0].te_plcount = 0;
     for (i = 0; i < 4; i++) {
         team[1<<i] = 0;
-        teams[1<<i].s_plcount = 0;
+        teams[1<<i].te_plcount = 0;
     }
     
     /* count the number of home systems owned by one team */
@@ -3929,7 +3941,7 @@ static int checkwin(struct player *winner)
             teamtemp[ORI] = 0;
 
         for (h = 0, l = &planets[i*10]; h < 10; h++, l++) {
-            teams[l->pl_owner].s_plcount++;
+            teams[l->pl_owner].te_plcount++;
             teamtemp[l->pl_owner]++;
         }
 
@@ -3943,20 +3955,21 @@ static int checkwin(struct player *winner)
 
     /* check to end surrender */
 
-    if ((teams[winner->p_team].s_surrender > 0) &&
-             (teams[winner->p_team].s_plcount == SURREND)) {
+    if ((teams[winner->p_team].te_surrender > 0) &&
+             (teams[winner->p_team].te_plcount == SURREND)) {
         blog_printf("racial", "%s recovered\n\n"
                     "The %s %s prevented collapse of the empire, "
                     "they now have %d planets.",
                     team_name(winner->p_team),
                     team_name(winner->p_team), team_verb(winner->p_team),
-                    teams[winner->p_team].s_plcount);
+                    teams[winner->p_team].te_plcount);
         pmessage(0, MALL, " ", " ");
         pmessage(0, MALL, "GOD->ALL",
                 "The %s %s prevented collapse of the empire.",
                 team_name(winner->p_team), team_verb(winner->p_team));
         pmessage(0, MALL, " ", " ");
-        teams[winner->p_team].s_surrender = 0; /* stop the clock */
+        teams[winner->p_team].te_surrender = 0; /* stop the clock */
+        teams[winner->p_team].te_surrender_frame = context->frame;
     }
 
     for (i = 0; i < 4; i++) {

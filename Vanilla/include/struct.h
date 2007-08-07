@@ -239,9 +239,14 @@ struct specialweapon {
 #endif
 
 struct team {
-    int s_turns;		/* turns till another starbase is legal */
-    int s_surrender;		/* minutes until this team surrenders */
-    int s_plcount;		/* how many planets this team owns */
+    int te_turns;		/* turns till another starbase is legal */
+    int te_surrender;		/* minutes until this team surrenders */
+    int te_surrender_frame;	/* frame number of last update to above */
+    int te_surrender_pause;	/* whether surrender counter is paused */
+#define TE_SURRENDER_PAUSE_OFF 0
+#define TE_SURRENDER_PAUSE_ON_TOURN 1
+#define TE_SURRENDER_PAUSE_ON_PLANETS 2
+    int te_plcount;		/* how many planets this team owns */
     /* FIXME: global change s_ prefix to te_ prefix */
 };
 

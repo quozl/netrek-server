@@ -50,6 +50,6 @@ int main()
 	armies[0], armies[1], armies[2], armies[4], armies[8]);
     printf("Surrender clock:\n");
     printf("IND: %d  FED: %d  ROM: %d  KLI: %d  ORI: %d\n",
-	teams[0].s_surrender, teams[1].s_surrender, teams[2].s_surrender, teams[4].s_surrender, teams[8].s_surrender);
+	teams[0].te_surrender, teams[1].te_surrender, teams[2].te_surrender, teams[4].te_surrender, teams[8].te_surrender);
     return 1;		/* satisfy lint */
 }

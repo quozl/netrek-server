@@ -193,8 +193,8 @@ static void conquer_galaxy_reset()
 
 	doResources();
 	for (i = 0; i <= MAXTEAM; i++) {
-		teams[i].s_turns = 0;
-		teams[i].s_surrender = 0;
+		teams[i].te_turns = 0;
+		teams[i].te_surrender = 0;
 	}
 }
 

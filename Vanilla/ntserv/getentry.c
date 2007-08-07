@@ -189,9 +189,9 @@ void getEntry(int *team, int *stype)
                 }
             }
 	    if (shipPick==STARBASE) {
-		if (teams[1<<teamPick].s_turns > 0 && !chaos && !topgun) {
+		if (teams[1<<teamPick].te_turns > 0 && !chaos && !topgun) {
 
-		    new_warning(UNDEF,"Not constructed yet. %d minutes required for completion",teams[1<<teamPick].s_turns);
+		    new_warning(UNDEF,"Not constructed yet. %d minutes required for completion",teams[1<<teamPick].te_turns);
 		    sendPickokPacket(0);
 		    teamPick= -1;
 		    continue;

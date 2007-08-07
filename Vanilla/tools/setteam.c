@@ -58,8 +58,8 @@ static void say(const char *fmt, ...)
 void get(char *us, char *name, struct team *te)
 {
   printf("%s %s", us, name);
-  printf(" reconstruction %d", te->s_turns);
-  printf(" surrender %d", te->s_surrender);
+  printf(" reconstruction %d", te->te_turns);
+  printf(" surrender %d", te->te_surrender);
   printf("\n");
 }
 
@@ -112,13 +112,13 @@ int main(int argc, char **argv)
       if (++i == argc) return 0;
       if (verbose) say("%s starbase reconstruction timer reset to %s", 
 		       team_name(team), argv[i]);
-      teams[team].s_turns = atoi(argv[i]);
+      teams[team].te_turns = atoi(argv[i]);
       goto state_1;
     }
 
     if (!strcmp(argv[i], "reconstruct")) {
       if (++i == argc) return 0;
-      teams[team].s_turns = -1;
+      teams[team].te_turns = -1;
       if (verbose) say("%s starbase reconstruction timer reset", 
 		       team_name(team));
       goto state_1;
@@ -128,24 +128,24 @@ int main(int argc, char **argv)
       if (++i == argc) return 0;
       if (verbose) say("%s surrender timer reset to %s", 
 		       team_name(team), argv[i]);
-      teams[team].s_surrender = atoi(argv[i]);
+      teams[team].te_surrender = atoi(argv[i]);
       goto state_1;
     }
 
     if (!strcmp(argv[i], "bust")) {
-      if (teams[team].s_surrender > 0) {
+      if (teams[team].te_surrender > 0) {
 	if (verbose) say("%s suffer an economic downturn, surrender timer lowered", 
 		       team_name(team));
-	teams[team].s_surrender = teams[team].s_surrender / 2;
+	teams[team].te_surrender = teams[team].te_surrender / 2;
       }
       goto state_1;
     }
 
     if (!strcmp(argv[i], "boom")) {
-      if (teams[team].s_surrender > 0) {
+      if (teams[team].te_surrender > 0) {
 	if (verbose) say("%s economic boom, surrender timer raised", 
 		       team_name(team));
-	teams[team].s_surrender = teams[team].s_surrender * 2;
+	teams[team].te_surrender = teams[team].te_surrender * 2;
       }
       goto state_1;
     }

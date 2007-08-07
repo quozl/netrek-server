@@ -62,7 +62,7 @@ void doResources(int startup)
   /* this is all over the place :-) */
   for (i = 0; i <= MAXTEAM; i++)
     {
-      teams[i].s_turns = 0;
+      teams[i].te_turns = 0;
     }
   if (startup)
     {

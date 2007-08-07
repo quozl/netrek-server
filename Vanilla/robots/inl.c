@@ -371,18 +371,18 @@ checkgeno()
     int loser, winner;
 
     for (i = 0; i <= MAXTEAM; i++) /* maint: was "<" 6/22/92 TC */
-        teams[i].s_plcount = 0;
+        teams[i].te_plcount = 0;
 
     for (i = 0, l = &planets[i]; i < MAXPLANETS; i++, l++) {
-        teams[l->pl_owner].s_plcount++; /* for now, recompute here */
+        teams[l->pl_owner].te_plcount++; /* for now, recompute here */
     }
 
-    if (teams[inl_teams[HOME].side].s_plcount == 0) 
+    if (teams[inl_teams[HOME].side].te_plcount == 0) 
       {
 	loser = HOME;
 	winner = AWAY;
       }
-    else if (teams[inl_teams[AWAY].side].s_plcount == 0)
+    else if (teams[inl_teams[AWAY].side].te_plcount == 0)
            {       
 	     loser = AWAY;
 	     winner = HOME;
@@ -1596,7 +1596,7 @@ void doResources(int startup)
   /* this is all over the fucking place :-) */
   for (i = 0; i <= MAXTEAM; i++)
     {
-      teams[i].s_turns = 0;
+      teams[i].te_turns = 0;
     }
   if (startup)
     {

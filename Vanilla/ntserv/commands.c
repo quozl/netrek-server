@@ -991,12 +991,12 @@ int do_time_msg(char *comm, struct message *mess)
   who = mess->m_from;
   addr = addr_mess(who,MINDIV);
 
-  for (t=0;((t<=MAXTEAM)&&(teams[t].s_surrender==0));t++);
+  for (t=0;((t<=MAXTEAM)&&(teams[t].te_surrender==0));t++);
 
   if (t>MAXTEAM) {
     pmessage(who, MINDIV, addr, "No one is considering surrender now.  Go take some planets.");
   } else {
-    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].s_surrender);
+    pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].te_surrender);
   }
   return 0;
 }
