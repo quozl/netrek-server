@@ -1564,7 +1564,7 @@ void updateMessages(void)
     struct mesg_spacket msg;
     int reset_flags = 0;
     int send_msg;
-    struct player * p_temp;
+    struct player *p_from;
     int is_whitelisted = 0;
     int warning_shown = 0;
 
@@ -1606,8 +1606,12 @@ void updateMessages(void)
 
             send_msg = FALSE;
 
-            p_temp = p_no(cur->m_from);
-            is_whitelisted = ip_whitelisted(p_temp->p_ip);
+            if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER)) {
+                is_whitelisted = 0;
+            } else {
+                p_from = p_no(cur->m_from);
+                is_whitelisted = ip_whitelisted(p_from->p_ip);
+            }
 
             if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER))
                 send_msg = TRUE;
