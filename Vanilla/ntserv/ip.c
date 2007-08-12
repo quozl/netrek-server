@@ -323,9 +323,10 @@ void ip_ignore_initial(struct player *me)
     if (i == me->p_no) continue;
     int mode = ip_ignore_ip(me->p_ip, players[i].p_ip);
     if (ip_ignore(players[i].p_ip)) { mode |= MALL; }
-    if (ip_mute(players[i].p_ip)) { mode |= MALL | MTEAM | MINDIV; }
     ignored[i] = mode;
   }
+  if (ip_mute(me->p_ip))
+      mute = 1;
 }
 
 /* called on login by others, to recall saved state */
