@@ -578,7 +578,7 @@ static void political_end(int message)
                 pmessage(0, MALL, "GOD->ALL","'Manifest Destiny is no longer a fad.' says influential philosopher.");
                 break;
         case 5:
-                pmessage(0, MALL, "GOD->ALL","Diplomat apologizes to foreign emperor's mother and invasion is stopped!");
+                pmessage(0, MALL, "GOD->ALL","Diplomat apologizes to emperor's mother and invasion is stopped!");
                 break;
         case 6:
                 pmessage(0, MALL, "GOD->ALL","%s is locked up and order returns to the galaxy!",
