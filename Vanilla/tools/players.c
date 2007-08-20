@@ -15,7 +15,7 @@ extern int openmem(int);
 
 int mode = 0;
 static char *ships[] = {"SC", "DD", "CA", "BB", "AS", "SB"};
-static char *statnames[] = {"F", "O", "A", "E", "D"};
+static char *statnames[] = {"F", "O", "A", "E", "D", "Q", "V"};
 static int fd = 1;        /* stdout for non-socket connections */
 
 /* forward function declarations */
