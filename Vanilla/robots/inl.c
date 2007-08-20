@@ -1108,7 +1108,7 @@ void reset_inl(int is_end_tourney)
     inl_teams[c].flags = 0;		/* reset all flags */
   }
 
-  inl_stat.start_armies = 17;
+  inl_stat.start_armies = 12;
   inl_stat.change = 1;
   inl_stat.flags = S_PREGAME;
   inl_stat.ticks = 0;
@@ -1125,7 +1125,7 @@ void reset_inl(int is_end_tourney)
   inl_teams[HOME].captain = NONE;
   inl_teams[HOME].side = HOMETEAM;
   inl_teams[HOME].side_index = NOT_CHOOSEN;
-  inl_teams[HOME].start_armies = 17;
+  inl_teams[HOME].start_armies = 12;
   inl_teams[HOME].time = INL_REGULATION;
   inl_teams[HOME].overtime = INL_OVERTIME;
   inl_teams[HOME].flags = 0;
@@ -1142,7 +1142,7 @@ void reset_inl(int is_end_tourney)
   inl_teams[AWAY].captain = NONE;
   inl_teams[AWAY].side = AWAYTEAM;
   inl_teams[AWAY].side_index = NOT_CHOOSEN;
-  inl_teams[AWAY].start_armies = 17;
+  inl_teams[AWAY].start_armies = 12;
   inl_teams[AWAY].time = INL_REGULATION;
   inl_teams[AWAY].overtime = INL_OVERTIME;
   inl_teams[AWAY].flags = 0;
