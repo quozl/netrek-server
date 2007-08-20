@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	break;
 
       case 'v':
-	output("pid   pl avrt std in ou who\n");
+	output("pid   pl avrt std   in   ou who\n");
 	break;
 
       default:
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
             fixed_name = name_fix(players[i].p_name);
 	    output("%5d %2s "
 #ifdef PING
-		   "%4d %3d %2.0f %2.0f "
+		   "%4d %3d %4.1f %4.1f "
 #endif
 		   "%s:%s@%s %c",
 		   players[i].p_process,
