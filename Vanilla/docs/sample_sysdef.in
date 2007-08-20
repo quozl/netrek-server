@@ -146,7 +146,7 @@ CLASSICTOURN=0
 #	Rebuild time of starbase, in minutes
 STARBASE_REBUILD_TIME=30
 #
-#       Require offense for higher ranks, to allievate the problem of
+#       Require offense for higher ranks, to alleviate the problem of
 #       players who only play when there is much DI to be had. This
 #       makes Commodore require 1.0, Rear Adm 1.2, and Admiral 1.4.
 OFFENSE_RANK=0
@@ -200,22 +200,22 @@ STURGEON_PLANETUPGRADES=0
 #	Only lose most expensive upgrade on death (0 = no, 1 = yes)
 STURGEON_LITE=0
 #
-#  Use "wrap around" style galaxy (0 = no, 1 = yes)
+#       Use "wrap around" style galaxy (0 = no, 1 = yes)
 WRAP_GALAXY=0
 #
-#  Use "Ping-Pong" plasma mode (0 = no, 1 = yes)
+#       Use "Ping-Pong" plasma mode (0 = no, 1 = yes)
 PINGPONG_PLASMA=0
 #
-#  Maximum number of Starbases allowed in Chaos mode
+#       Maximum number of Starbases allowed in Chaos mode
 MAX_CHAOS_BASES=2
 #
-#  Disallow dropping on 3rd space planets (1 = no dropping)
+#       Disallow dropping on 3rd space planets (1 = no dropping)
 RESTRICT_3RD_DROP=1
 #
-#  Disallow bombing out of t-mode (1 = no bombing)
+#       Disallow bombing out of t-mode (1 = no bombing)
 RESTRICT_BOMB=1
 #
-#  Disallow 3rd space bombing (1 = no bombing)
+#       Disallow 3rd space bombing (1 = no bombing)
 NO_UNWARRING_BOMBING=1
 #
 #	Turn off messaging for observers
@@ -322,11 +322,11 @@ NEWBIE=0
 #	or more huamans than this number, there will be no robots in game.
 MIN_NEWBIE_SLOTS=12
 #
-#    Maximum number of newbie server players to allow at once
+#       Maximum number of newbie server players to allow at once
 MAX_NEWBIE_PLAYERS=8
 #
-#    Keep number of humans per team balanced (1 = balance,
-#    0 = fill one side entirely with humans first)
+#       Keep number of humans per team balanced (1 = balance,
+#       0 = fill one side entirely with humans first)
 NEWBIE_BALANCE_HUMANS=1
 #
 #    Pre T-mode Entertainment (maintains 4 on 4 with robots) 
@@ -356,7 +356,8 @@ ROBOT_DEBUG_LEVEL=0
 #	Hockey Server
 HOCKEY=0
 #
-#	Cause galactic to be updated at same rate as tactical (needed for hockey).
+#       Cause galactic to be updated at same rate as tactical
+#       (needed for hockey).
 GALACTIC_SMOOTH=1
 #
 #	Enable INL server mode.
