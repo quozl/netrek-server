@@ -135,7 +135,7 @@ int main(int argc, char **argv)
             fixed_name = name_fix(players[i].p_name);
 	    output("%5d %2s "
 #ifdef PING
-		   "%4d %3d %2d %2d "
+		   "%4d %3d %2.0f %2.0f "
 #endif
 		   "%s:%s@%s %c",
 		   players[i].p_process,
