@@ -261,14 +261,12 @@ su -c "ln -sf /usr/share/games/netrek/gum/pixmaps /usr/games/netrek/tools/pixmap
 %config /usr/games/netrek/.motd_clue
 %config /usr/games/netrek/motd_clue_logo.MASTER
 %config /usr/games/netrek/motd_basep_logo.MASTER
-%config /usr/games/netrek/motd_inlguest_logo.MASTER
 %config /usr/games/netrek/.sysdef
 %config /usr/games/netrek/.motd
 %config /usr/games/netrek/motd_logo.MASTER
 %config /usr/games/netrek/.ports
 %config /usr/games/netrek/.time
 %config /usr/games/netrek/.motd_basep
-%config /usr/games/netrek/.motd_inlguest
 %config /usr/games/netrek/.tourn.map
 %config /usr/games/netrek/.nocount
 %config /usr/games/netrek/.banned
