@@ -289,7 +289,6 @@ because they have initialisation of variables dependent on UPDATE. */
 
 #define N_INL		"inl"
 #define INL_ROBOT	4
-#define N_MOTD_INLGUEST	"motd_inlguest"
 
 #define N_CAMBOT	"cambot"
 #define N_CAMBOT_OUT	"cambot.pkt"
