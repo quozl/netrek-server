@@ -35,7 +35,6 @@
 #ifdef BASEPRACTICE
 #define MOTDBASEPLOGO	"motd_basep_logo.MASTER"
 #endif
-#define MOTDINLGUESTLOGO	"motd_inlguest_logo.MASTER"
 #define CLASSES		"inl,standard,standard2"
 #define EXCLUDE		NULL
 #define INFO		"info.MASTER"
@@ -344,7 +343,6 @@ int main(int argc, char **argv)
 #ifdef BASEPRACTICE
 			    makemotd(N_MOTD_BASEP,MOTDBASEPLOGO); /* Base prac */
 #endif
-			    makemotd(N_MOTD_INLGUEST,MOTDINLGUESTLOGO); /* INL guests */
 			}
 		    }
 		}
