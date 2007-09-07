@@ -106,24 +106,24 @@ struct context {
 
 
 /* The following defines are for gameup field */
-#define GU_GAMEOK 1
-#define GU_PRACTICE 2			/* Basepractice robot is present */
+#define GU_GAMEOK 0x1
+#define GU_PRACTICE 0x2			/* Basepractice robot is present */
 #define practice_mode ((status->gameup) & GU_PRACTICE)
-#define GU_CHAOS 4
+#define GU_CHAOS 0x4
 #define chaos ((status->gameup) & GU_CHAOS)
-#define GU_PAUSED 8
-#define GU_INROBOT 16			/* INL robot is present	*/
+#define GU_PAUSED 0x8
+#define GU_INROBOT 0x10			/* INL robot is present	*/
 #define inl_mode ((status->gameup) & GU_INROBOT)
-#define GU_NEWBIE 32			/* Newbie robot is present */
+#define GU_NEWBIE 0x20			/* Newbie robot is present */
 #define newbie_mode ((status->gameup) & GU_NEWBIE)
-#define GU_PRET 64			/* Pre-t robot is present */
+#define GU_PRET 0x40			/* Pre-t robot is present */
 #define pre_t_mode ((status->gameup) & GU_PRET)
-#define GU_BOT_IN_GAME 128		/* Pre-t robot + bots are present */
+#define GU_BOT_IN_GAME 0x80		/* Pre-t robot + bots are present */
 #define bot_in_game ((status->gameup) & GU_BOT_IN_GAME)
-#define GU_CONQUER 256			/* conquest parade in progress	*/
-#define GU_PUCK 512			/* Hockey robot is present */
+#define GU_CONQUER 0x100		/* conquest parade in progress	*/
+#define GU_PUCK 0x200			/* Hockey robot is present */
 #define hockey_mode ((status->gameup) & GU_PUCK)
-#define GU_DOG 1024			/* Dogfight robot is present */
+#define GU_DOG 0x400			/* Dogfight robot is present */
 #define dogfight_mode ((status->gameup) & GU_DOG)
 
 /* values of p_status */
