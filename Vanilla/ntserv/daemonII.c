@@ -23,6 +23,7 @@
 #include "util.h"
 #include "slotmaint.h"
 #include "advertise.h"
+#include "draft.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
@@ -364,6 +365,7 @@ int main(int argc, char **argv)
 #define PLFIGHTFUSE     5
 #define SIGHTFUSE       5
 #define BEAMFUSE        8       /* scott 8/25/90 -- was 10 */
+#define DRAFTFUSE       20
 #define PMOVEFUSE       300      /* planet movement fuse 07/26/95 JRP */
 #define QUEUEFUSE       600     /* cleanup every 60 seconds */
 #ifdef INL_POP
@@ -748,6 +750,10 @@ static void move()
     }
     if (fuse(BEAMFUSE)) {
         beam();
+    }
+
+    if (fuse(DRAFTFUSE)) {
+        if (status->gameup & GU_INL_DRAFT) inl_draft_update();
     }
 
     if (planet_move && fuse(PMOVEFUSE)) {
