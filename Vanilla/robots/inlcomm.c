@@ -717,7 +717,7 @@ int do_captain(comm,mess)
   if (inl_teams[num].captain == NONE)
     {
       inl_teams[num].captain = who;
-      players[who].p_inlcaptain = 1;
+      players[who].p_inl_captain = 1;
       pmessage(0, MALL, inl_from, "%s (%s) is captain of %s team.",
 	       players[who].p_name,
 	       players[inl_teams[num].captain].p_mapchars,
@@ -761,7 +761,7 @@ int do_uncaptain(comm,mess)
   if ((num = check_player(who, 1)) == NONE) return 0;
 
   inl_teams[num].captain = NONE;
-  players[who].p_inlcaptain = 0;
+  players[who].p_inl_captain = 0;
   pmessage(0, MALL, inl_from, "%s (%s) relinquishes captain control of %s team.",
 	   players[who].p_name, players[who].p_mapchars, inl_teams[num].name);
 

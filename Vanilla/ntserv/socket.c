@@ -1531,7 +1531,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 	    balance+=3;
 	return;
     }
-    if (!inl_mode || !me->p_inlcaptain)
+    if (!inl_mode || !me->p_inl_captain)
         balance+=3;
 #ifdef CONTINUUM
     if (me->p_status == POBSERV) {
