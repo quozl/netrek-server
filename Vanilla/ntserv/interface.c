@@ -254,12 +254,11 @@ void lock_planet(int planet)
     me->p_flags |= PFPLLOCK;
     me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
     me->p_planet = planet;
-    if(send_short) {
-                swarning(LOCKPLANET_TEXT, (u_char) planet, 0);
+    if (send_short) {
+        swarning(LOCKPLANET_TEXT, (u_char) planet, 0);
+    } else {
+        new_warning(UNDEF,"Locking onto %s", planets[planet].pl_name);
     }
-    else {
-    new_warning(UNDEF,"Locking onto %s", planets[planet].pl_name);
-     }
 }
 
 void lock_player(int player)

@@ -22,52 +22,52 @@ int handleTranswarp(void)
 
    if (!twarpMode) {
       new_warning(UNDEF, "Sorry, transwarp mode is not active.", -1);
-      return (0);
+      return 0;
    }
    if (me->p_status != PALIVE)
-      return (0);
+      return 0;
    if (!me->p_cantranswarp) {
       new_warning(UNDEF, "Starbase refuses transwarping from us in particular, captain!", -1);
-      return (0);
+      return 0;
    }
    if (!me->p_candock) {
       new_warning(UNDEF, "Starbase refuses docking from us in particular, captain!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_flags & PFENG) {
       new_warning(UNDEF, "Engine temperature is too high to initiate transwarp!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_ship.s_type == STARBASE && !chaosmode) {
       new_warning(UNDEF, "Starbases are not allowed to transwarp, captain!", -1);
-      return (0);
+      return 0;
    }
    j = &players[me->p_playerl];
    if (!(me->p_flags & PFPLOCK) ||
        ((me->p_flags & PFPLOCK) && (j->p_ship.s_type != STARBASE))) {
       new_warning(UNDEF, "You're not locked on to a starbase!", -1);
-      return (0);
+      return 0;
    }
    if (!(me->p_flags & PFGREEN)) {
 	new_warning(UNDEF, "OSHA safety regulations prohibit transwarp near enemy ships.", -1);
-	return (0);
+	return 0;
    }
    if (j->p_status != PALIVE) {
       new_warning(UNDEF, "The starbase has been destroyed!", -1);
-      return (0);
+      return 0;
    }
    if (j->p_flags & PFTWARP) {
       new_warning(UNDEF, "Cannot transwarp to a ship already in transwarp, captain!", -1);
-      return (0);
+      return 0;
    }
    if (!((!(j->p_war & me->p_team)) &&
 	 (!(me->p_war & j->p_team)))) {
       new_warning(UNDEF, "Transwarp request rejected by battle computers, captain!", -1);
-      return (0);
+      return 0;
    }
    if (!(j->p_flags & PFDOCKOK)) {
       new_warning(UNDEF, "Starbase refusing all docking permission captain!", -1);
-      return (0);
+      return 0;
    }
    if (!(j->p_transwarp & (j->p_flags ^ PFSHIELD))) {
       char *reason = "";
@@ -82,31 +82,31 @@ int handleTranswarp(void)
          reason = "Starbase refusing transwarp, captain!"; break;
       }
       new_warning(UNDEF, reason, -1);
-      return (0);
+      return 0;
    }
    if (me->p_speed > MIN_INITIAL_SPEED) {
       new_warning(UNDEF, "We cannot exceed warp 2 to initiate transwarp, captain!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_flags & PFREPAIR) {
       new_warning(UNDEF, "Vessel under repair, cannot initiate transwarp!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_flags & PFCLOAK) {
       new_warning(UNDEF, "We're not allowed to transwarp while cloaked, captain!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_flags & PFORBIT) {
       new_warning(UNDEF, "We can't transwarp while orbiting, captain!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_damage > (int) (me->p_ship.s_maxdamage / 3)) {
       new_warning(UNDEF, "Our ship's condition makes it impossible to tranwswarp, captain!", -1);
-      return (0);
+      return 0;
    }
    if (me->p_fuel < (int) (me->p_ship.s_maxfuel / 2)) {
       new_warning(UNDEF, "Too low on fuel, cannot initiate transwarp!", -1);
-      return (0);
+      return 0;
    }
    new_warning(UNDEF, "Transwarp initiated, all systems are DOWN meanwhile!", -1);
 
