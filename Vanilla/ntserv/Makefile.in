@@ -15,7 +15,7 @@ INSTALLDATA = @INSTALL_DATA@
 
 L_OBJS = advertise.o alarm.o balance.o bans.o bay.o blog.o \
 	coup.o \
-	data.o db.o detonate.o distress.o \
+	data.o db.o detonate.o distress.o draft.o \
 	enter.o \
 	feature.o features.o \
 	gencmds.o genspkt.o getpath.o getship.o glog.o \
@@ -32,21 +32,21 @@ L_OBJS = advertise.o alarm.o balance.o bans.o bay.o blog.o \
 
 #	ntserv object files
 
-R_OBJS =    cluecheck.o coup.o db.o death.o detonate.o enter.o \
-	    findslot.o  getentry.o  getname.o  getship.o  input.o \
-	    interface.o  main.o  orbit.o  phaser.o  plasma.o  redraw.o \
-	    reserved.o  sintab.o  socket.o  genspkt.o  smessage.o  \
-	    startrobot.o  sysdefaults.o  timecheck.o  torp.o  util.o  \
-	    warning.o ping.o $(RANDOMO) $(STRDUPO) features.o \
-	    distress.o transwarp.o gencmds.o ntscmds.o openmem.o feature.o \
-	    queue.o slotmaint.o rsa_key.o ltd_stats.o libnetrek.a
+R_OBJS =    cluecheck.o death.o \
+	    findslot.o getentry.o getname.o input.o \
+	    main.o redraw.o \
+	    reserved.o  \
+	    timecheck.o  \
+	    $(RANDOMO) $(STRDUPO) \
+	    ntscmds.o \
+	    queue.o libnetrek.a
 
 
 #	daemonII object files
 
-D_OBJS =    daemonII.o  sintab.o  sysdefaults.o  slotmaint.o \
-	    util.o  $(RANDOMO) getship.o smessage.o  queue.o \
-	    wander2.o openmem.o solicit.o ltd_stats.o conquer.o \
+D_OBJS =    daemonII.o \
+	    $(RANDOMO) queue.o \
+	    wander2.o solicit.o conquer.o \
 	    libnetrek.a
 
 #	Src files
