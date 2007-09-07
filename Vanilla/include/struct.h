@@ -125,6 +125,7 @@ struct context {
 #define hockey_mode ((status->gameup) & GU_PUCK)
 #define GU_DOG 0x400			/* Dogfight robot is present */
 #define dogfight_mode ((status->gameup) & GU_DOG)
+#define GU_INL_DRAFT 0x800
 
 /* values of p_status */
 #define PFREE 		   0x0000
@@ -501,9 +502,19 @@ struct player {
     struct specialweapon p_weapons[NUMSPECIAL];
 #endif
     int p_inlcaptain;           /* Player is an INL captain */
+    int p_inl_draft;            /* Player navigation restricted by INL draft */
     int p_ip_duplicates;        /* ignore this slot for duplicate ip check */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
+
+/* INL draft states for p_inl_draft */
+#define INL_DRAFT_OFF            0 /* not involved */
+#define INL_DRAFT_MOVING_TO_POOL 1 /* in transit to pool */
+#define INL_DRAFT_CAPTAIN_UP     2 /* captain with right to select */
+#define INL_DRAFT_CAPTAIN_DOWN   3 /* captain without right to select */
+#define INL_DRAFT_POOLED         4 /* in pool of players to be chosen */
+#define INL_DRAFT_MOVING_TO_PICK 5 /* has been chosen, in transit to team */
+#define INL_DRAFT_PICKED         6 /* has been chosen by a captain */
 
 struct statentry {
     char name[NAME_LEN], password[NAME_LEN];
