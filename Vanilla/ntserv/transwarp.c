@@ -20,6 +20,7 @@ int handleTranswarp(void)
    struct player  *j;
    int		  maxspeed;
 
+   if (me->p_inl_draft != INL_DRAFT_OFF) return 0;
    if (!twarpMode) {
       new_warning(UNDEF, "Sorry, transwarp mode is not active.", -1);
       return 0;

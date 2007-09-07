@@ -500,6 +500,7 @@ int p_ups_set(struct player *me, int client_ups)
 */
 int is_idle(struct player *victim)
 {
+    if (victim->p_inl_draft != INL_DRAFT_OFF) return 1;
     if (safe_idle
         && (!status->tourn)
         && ((victim->p_flags & PFCLOAK) && (victim->p_flags & PFORBIT)

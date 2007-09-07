@@ -185,6 +185,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
       j->voting[me->p_no] = -1;
 
     me->p_inlcaptain = 0;
+    me->p_inl_draft = INL_DRAFT_OFF;
 
     /* join message stuff */
     sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);

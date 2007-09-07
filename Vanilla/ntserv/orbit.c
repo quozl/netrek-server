@@ -162,6 +162,8 @@ void orbit(void)
   u_char dir;
   LONG dx, dy;
 
+  if (me->p_inl_draft != INL_DRAFT_OFF) return;
+
   /*
    * Make sure ship is going slowly enough to orbit: */
   if (me->p_speed > ORBSPEED) {

@@ -28,6 +28,7 @@ void set_speed(int speed)
 #ifdef STURGEON
     if (sturgeon && !sturgeon_hook_set_speed(speed)) return;
 #endif
+    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (speed > me->p_ship.s_maxspeed) {
 	me->p_desspeed = me->p_ship.s_maxspeed;
     } else if (speed < 0) {
@@ -43,6 +44,8 @@ void set_speed(int speed)
 
 void set_course(u_char dir)
 {
+    if (me->p_inl_draft == INL_DRAFT_MOVING_TO_POOL) return;
+    if (me->p_inl_draft == INL_DRAFT_MOVING_TO_PICK) return;
     me->p_desdir = dir;
     bay_release(me);
     me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
@@ -238,6 +241,7 @@ void cloak(void)
 
 void cloak_on(void)
 {
+    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     me->p_flags |= PFCLOAK;
     me->p_flags &= ~(PFTRACT | PFPRESS);
 }
@@ -249,6 +253,7 @@ void cloak_off(void)
 
 void lock_planet(int planet)
 {
+    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (planet<0 || planet>=MAXPLANETS) return;
 
     me->p_flags |= PFPLLOCK;
@@ -263,6 +268,11 @@ void lock_planet(int planet)
 
 void lock_player(int player)
 {
+    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+        inl_draft_select(player);
+        return;
+    }
+    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (player<0 || player>=MAXPLAYER) return;
     if (players[player].p_status != PALIVE) return;
     if (players[player].p_flags & PFCLOAK && !Observer) return;
@@ -306,6 +316,11 @@ void tractor_player(int player)
 {
     struct player *victim;
 
+    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+        inl_draft_select(player);
+        return;
+    }
+    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (weaponsallowed[WP_TRACTOR]==0) {
 	return;
     }
@@ -337,6 +352,11 @@ void pressor_player(int player)
     int target;
     struct player *victim;
 
+    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+        inl_draft_reject(player);
+        return;
+    }
+    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (weaponsallowed[WP_TRACTOR]==0) {
         new_warning(0,"Tractor beams haven't been invented yet.");
 	return;
