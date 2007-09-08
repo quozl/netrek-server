@@ -1,0 +1,64 @@
+# HOWTO build a Debian based Netrek Server virtual appliance
+# by James Cameron, 2007-09-08
+#
+# input: Debian netinst installation media, internet access.
+#
+# output: virtual appliance that runs a netrek server in bronco mode,
+# suitable for use by qemu, vmware, etc.
+
+qemu-img create -f vmdk debian-etch.vmdk 400M
+
+# build etch system from installation media
+# TODO: use /usr/sbin/qemu-make-debian-root instead
+qemu -hda debian-etch.vmdk -boot d -cdrom /dev/hda
+# root password netrek
+
+# reboot after installation
+qemu -hda debian-etch.vmdk -boot c -cdrom /dev/hda -redir tcp:8022::22
+
+# install ssh for further access
+apt-get update
+apt-get install ssh
+
+# build a netrek virtual appliance using the debian system as input
+cp debian-etch.vmdk netrek-server.vmdk
+qemu -hda netrek-server.vmdk -boot c -cdrom /dev/hda -redir tcp:8022::22
+
+# local shell customisation, set your proxy server here, optional
+export http_proxy=http://10.0.0.1:3128/
+
+# reduce grub boot timer from five seconds to zero seconds
+sed 's/timeout\t\t5/timeout\t\t0/' < /boot/grub/menu.lst > /tmp/menu.lst && \
+mv /tmp/menu.lst /boot/grub/menu.lst
+
+# install the netrek server package
+echo "deb http://quozl.linux.org.au/netrek ./" >> /etc/apt/sources.list
+apt-get update
+apt-get install netrek-server-vanilla
+
+# add missing dependency
+apt-get install libgmp3c2
+
+# configure netrek server to start on boot
+update-rc.d netrek-server-vanilla defaults
+
+# trim back packages installed
+apt-get remove --purge \
+traceroute manpages usbutils acpid acpi info eject libsasl2 iptables \
+installation-report netcat wget man-db groff-base dselect nano tasksel \
+tasksel-data aptitude apt-utils console-common console-data console-tools \
+libdb4.4 libsigc++-2.0-0c2a libconsole dmidecode
+# TODO: find other packages to remove, to cut down the space used
+
+# clean up
+apt-get clean
+
+poweroff
+
+# test boot the netrek server appliance
+qemu -hda netrek-server.vmdk -boot c -cdrom /dev/hda -redir tcp:8952::2592 -snapshot
+
+# compress the appliance
+cp netrek-server.vmdk netrek-server-vanilla-2.12.1-appliance.vmdk
+pbzip2 -v9 netrek-server-vanilla-2.12.1-appliance.vmdk
+# total 127Mb
