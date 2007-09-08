@@ -40,25 +40,90 @@ Key: O = pool players, C = captains, P = picked team
 
 */
 
+/* Modified tactical positioning-- will tractors reach?:
+
++--------------------------------------------------+
+|                                                  |
+/                                                  /
+/                   P               P              / 
+/                                                  /
+/                 P P P           P P P            / 
+/                                                  /
+/                 P P P           P P P            /
+/                                                  /
+/                                                  |
+|                      C        C                  |
+|                                                  |
+|                                                  |
+|                                                  |
+|          O O O O O O O O O O O O O O O O O       |
+|                                                  |
+|                                                  |
+/                                                  /
+/                                                  /
+/                                                  /
++--------------------------------------------------+
+
+Key: O = pool players, C = captains, P = picked team
+
+Desired offsets from center:
+
+Player pool -- 20% down
+Captains -- 20% right/left
+Picked players-- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
+
+*/
+
 static void inl_draft_place_captain(struct player *j)
 {
   int x = GWIDTH / 2;
   int y = GWIDTH / 2;
-  int offset = ( GWIDTH / 5 ) / 4; /* quarter of tactical */
+	
+	/*  Old positioning code-- saved in case the new looks terrible 
+  
+	int offset = ( GWIDTH / 5 ) / 4; 
   if (j->p_team == FED) { y += offset; }
   if (j->p_team == ROM) { y -= offset; }
   j->p_inl_x = x;
   j->p_inl_y = y;
+	
+	*/
+	
+	/* Going to put the captains 20% right and left */
+	
+	int xoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
+	
+	if (j->p_team == FED) { x += xoffset; }
+  if (j->p_team == ROM) { x -= xoffset; }
+  j->p_inl_x = x;
+  j->p_inl_y = y;	
+	
 }
 
 static void inl_draft_place_pool(struct player *j)
 {
   int x = GWIDTH / 2;
   int y = GWIDTH / 2;
-  int offset_x = ( GWIDTH / 5 ) / 2; /* half of tactical */
+	
+	/* Old positioning code-- saved in case new looks terrible */
+	/*
+  int offset_x = ( GWIDTH / 5 ) / 2; */
   /* TODO: position independently of player number */
-  j->p_inl_x = x - offset_x + j->p_no * (offset_x / 18) ;
+	/*
+	j->p_inl_x = x - offset_x + j->p_no * (offset_x / 18) ;
   j->p_inl_y = y;
+	*/
+	
+	int yoffset = (GWIDTH / 5) / 5; 	/* one-fifth of tactical */
+	int xoffset = (GWIDTH / 5) / 2;
+	
+	/* Not sure how we can position independly of player number
+	   There's going to be two ugly holes where the captains would be
+		 May need to assign a new variable
+	*/
+	
+	j->p_inl_x = x - offset_x + j->p_no * (offset_x / 14);
+	j->p_inly_y = y - yoffset;	
 }
 
 static void inl_draft_place_pick(struct player *j)
