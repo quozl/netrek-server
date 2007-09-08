@@ -167,6 +167,59 @@ int do_switchside(comm,mess)
 #endif /* ! nodef */
 }
 
+/* Allows the captain to agree on starting a minidraft */
+
+int do_minidraft(comm,mess)
+ 	  char *comm;
+ 	  struct message *mess;
+{
+  int who;
+  int c, num = -1;
+  int startdraft = 0;
+
+#ifdef INLDEBUG
+  ERROR(2,("	Enter do_minidraft\n"));
+#endif
+
+  who = mess->m_from;
+
+	if (!inl_stat.change)
+    {			/* can't change it anymore */
+      pmessage(who, MINDIV, addr_mess(who, MINDIV),
+	       "You can not start a draft. The game has started.");
+      return 0;
+    }
+
+  /* Check if player is Captain */
+  if ((num = check_player(who, 1)) == NONE)
+    return 0;
+
+  inl_teams[num].flags |= T_MINIDRAFT;
+
+  pmessage(0, MALL, inl_from, "%s (%s) requests a MiniDraft.",
+	   inl_teams[num].t_name, players[who].p_mapchars);
+
+  for (c=0; c < INLTEAM; c++)
+    {
+      if (inl_teams[c].flags & T_MINIDRAFT) startdraft++;
+    }
+
+#ifdef INLDEBUG
+  ERROR(2,("	  startdraft = %d\n",startdraft));
+#endif
+
+ 	if (startdraft != 2) return 1;
+
+ 	for (c=0; c < INLTEAM; c++)
+    inl_teams[c].flags &= ~T_MINIDRAFT;
+		
+	inl_stat.flags |= S_MINIDRAFT;
+	/* TODO: REMOVE THIS FLAG WHEN DRAFT COMPLETE */
+
+  inl_draft_begin();
+  return 0;
+
+}
 
 /* Allows the captain to agree on starting the game */
 
@@ -193,6 +246,13 @@ int do_start(comm,mess)
 
   if ((num = check_player(who, 1)) == NONE)
     return 0;
+
+	if (inl_stat.flags & S_MINIDRAFT)	/* A Minidraft is occuring */
+	{
+		pmessage(who, MINDIV, addr_mess(who, MINDIV),
+	  	"You cannot start while a minidraft is underway.");
+    return 0;
+	}
 
   if ((inl_teams[num].side_index == NOT_CHOOSEN)
       || (inl_teams[num].side_index == RELINQUISH))
