@@ -74,56 +74,56 @@ Picked players-- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
 
 */
 
+#define INL_DRAFT_STYLE_BOTTOM_TO_TOP 1
+#define INL_DRAFT_STYLE_LEFT_TO_RIGHT 2
+
+static int inl_draft_style = INL_DRAFT_STYLE_BOTTOM_TO_TOP;
+
 static void inl_draft_place_captain(struct player *j)
 {
   int x = GWIDTH / 2;
   int y = GWIDTH / 2;
-	
-	/*  Old positioning code-- saved in case the new looks terrible 
-  
-	int offset = ( GWIDTH / 5 ) / 4; 
-  if (j->p_team == FED) { y += offset; }
-  if (j->p_team == ROM) { y -= offset; }
-  j->p_inl_x = x;
-  j->p_inl_y = y;
-	
-	*/
-	
-	/* Going to put the captains 20% right and left */
-	
-	int xoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
-	
-	if (j->p_team == FED) { x += xoffset; }
-  if (j->p_team == ROM) { x -= xoffset; }
-  j->p_inl_x = x;
-  j->p_inl_y = y;	
-	
+
+  if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
+    int offset = ( GWIDTH / 5 ) / 4; 
+    if (j->p_team == FED) { y += offset; }
+    if (j->p_team == ROM) { y -= offset; }
+    j->p_inl_x = x;
+    j->p_inl_y = y;
+  }
+
+  if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
+    /* Going to put the captains 20% right and left */
+    int xoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
+    if (j->p_team == FED) { x += xoffset; }
+    if (j->p_team == ROM) { x -= xoffset; }
+    j->p_inl_x = x;
+    j->p_inl_y = y;
+  }
 }
 
 static void inl_draft_place_pool(struct player *j)
 {
   int x = GWIDTH / 2;
   int y = GWIDTH / 2;
-	
-	/* Old positioning code-- saved in case new looks terrible */
-	/*
-  int offset_x = ( GWIDTH / 5 ) / 2; */
-  /* TODO: position independently of player number */
-	/*
-	j->p_inl_x = x - offset_x + j->p_no * (offset_x / 18) ;
-  j->p_inl_y = y;
-	*/
-	
-	int yoffset = (GWIDTH / 5) / 5; 	/* one-fifth of tactical */
-	int xoffset = (GWIDTH / 5) / 2;
-	
-	/* Not sure how we can position independly of player number
-	   There's going to be two ugly holes where the captains would be
-		 May need to assign a new variable
-	*/
-	
-	j->p_inl_x = x - offset_x + j->p_no * (offset_x / 14);
-	j->p_inly_y = y - yoffset;	
+
+  if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
+    int offset_x = ( GWIDTH / 5 ) / 2;
+    /* TODO: position independently of player number */
+    j->p_inl_x = x - offset_x + j->p_no * (offset_x / 18) + 1000;
+    j->p_inl_y = y;
+  }
+
+  if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
+    int yoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
+    int xoffset = (GWIDTH / 5) / 2;
+    /* Not sure how we can position independly of player number
+       There's going to be two ugly holes where the captains would be
+       May need to assign a new variable
+    */
+    j->p_inl_x = x - xoffset + j->p_no * (xoffset / 14);
+    j->p_inl_y = y - yoffset;
+  }
 }
 
 static void inl_draft_place_pick(struct player *j)
@@ -131,7 +131,7 @@ static void inl_draft_place_pick(struct player *j)
   int x = GWIDTH / 2;
   int y = GWIDTH / 2;
   int offset_x = ( GWIDTH / 5 ) / 2; /* half of tactical */
-  int offset_y = ( GWIDTH / 5 ) / 5 * 4; /* four fifths of tactical */
+  int offset_y = ( GWIDTH / 5 ) / 6;
   if (j->p_team == FED) { y += offset_y; }
   if (j->p_team == ROM) { y -= offset_y; }
   /* TODO: position independently of player number */
@@ -230,7 +230,7 @@ void inl_draft_update()
   struct player *j;
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-    int dx, dy;
+    int dx, dy, nx, ny;
     if (j->p_status != PALIVE) continue;
     if (j->p_flags & PFROBOT) continue;
     /* newly arriving players are forced into the pool */
@@ -240,8 +240,10 @@ void inl_draft_update()
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
-    if ((abs(dx) + abs(dy)) > 100) {
-      p_x_y_go(j, j->p_x - (dx / 20), j->p_y - (dy / 20));
+    if ((abs(dx) + abs(dy)) > 200) {
+      nx = j->p_x - (dx / 10);
+      ny = j->p_y - (dy / 10);
+      p_x_y_go(j, nx, ny);
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
@@ -255,6 +257,7 @@ static int inl_draft_next()
   struct player *j;
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+    if (j == me) continue;
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
     if (!j->p_inl_captain) continue;
@@ -351,4 +354,19 @@ void inl_draft_reject(int n)
     }
     break;
   }
+}
+
+char *inl_draft_name(int x)
+{
+  switch (x) {
+  case INL_DRAFT_OFF             : return "INL_DRAFT_OFF";
+  case INL_DRAFT_MOVING_TO_POOL  : return "INL_DRAFT_MOVING_TO_POOL";
+  case INL_DRAFT_CAPTAIN_UP      : return "INL_DRAFT_CAPTAIN_UP";
+  case INL_DRAFT_CAPTAIN_DOWN    : return "INL_DRAFT_CAPTAIN_DOWN";
+  case INL_DRAFT_POOLED          : return "INL_DRAFT_POOLED";
+  case INL_DRAFT_MOVING_TO_PICK  : return "INL_DRAFT_MOVING_TO_PICK";
+  case INL_DRAFT_PICKED          : return "INL_DRAFT_PICKED";
+  case INL_DRAFT_PICKED_SELECTOR : return "INL_DRAFT_PICKED_SELECTOR";
+  }
+  return "UNKNOWN";
 }

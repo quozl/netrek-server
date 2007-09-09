@@ -513,3 +513,9 @@ int is_idle(struct player *victim)
     else
         return 0;
 }
+
+int is_invisible_due_idle(struct player *victim)
+{
+  if (status->gameup & GU_INL_DRAFT) return 0;
+  return is_idle(victim);
+}

@@ -9,6 +9,7 @@
 #include "data.h"
 #include "proto.h"
 #include "util.h"
+#include "draft.h"
 
 static void usage(void)
 {
@@ -27,6 +28,8 @@ wait-for-pause      wait until a pause occurs\n\
 single-step         do one simulation step during a pause\n\
 no-test-mode        turn off test mode\n\
 show-context        show the context structure\n\
+inl-draft-on        activate INL draft mode\n\
+inl-draft-off       deactivate INL draft mode\n\
 \n\
 In test mode the simulation engine will decrement the frame counter\n\
 defined by set-test-counter and pause the game when the counter\n\
@@ -204,6 +207,16 @@ int main(int argc, char **argv)
     if (!strcmp(argv[i], "sleep")) {
       if (++i == argc) return 0;
       sleep(atoi(argv[i]));
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "inl-draft-on")) {
+      inl_draft_begin();
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "inl-draft-off")) {
+      inl_draft_end();
       goto state_0;
     }
 

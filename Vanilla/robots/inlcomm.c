@@ -17,6 +17,7 @@
 #include "inldefs.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "draft.h"
 
 extern Inl_stats inl_stat;
 extern Team	 inl_teams[];
@@ -40,9 +41,9 @@ check_player(who, captain)
   ERROR(2,("	Enter check_player\n"));
 #endif
 
-  if ((players[who].w_queue != QU_HOME) && 
+  if ((players[who].w_queue != QU_HOME) &&
       (players[who].w_queue != QU_AWAY) &&
-      (players[who].w_queue != QU_HOME_OBS) && 
+      (players[who].w_queue != QU_HOME_OBS) &&
       (players[who].w_queue != QU_AWAY_OBS) )
     {
       pmessage(who, MINDIV, addr_mess(who, MINDIV),
@@ -67,7 +68,7 @@ check_player(who, captain)
 
   if (captain)
     {
-      if (inl_teams[num].captain != who) 
+      if (inl_teams[num].captain != who)
 	{
 	  pmessage(who, MINDIV, addr_mess(who, MINDIV),
 		   "You are not the captain of your team.");
@@ -264,7 +265,7 @@ int do_start(comm,mess)
 
   inl_teams[num].flags |= T_START;
 
-  pmessage(0, MALL, inl_from, "%s (%s) requests the game to start.", 
+  pmessage(0, MALL, inl_from, "%s (%s) requests the game to start.",
 	   inl_teams[num].t_name, players[who].p_mapchars);
 
   for (c=0; c < INLTEAM; c++)
@@ -399,7 +400,7 @@ int do_gametime(comm,mess)
       else
         pmessage(who, MINDIV, addr_mess(who, MINDIV),
                  "Time remaining: %d:%02.2d", minutes, seconds);
-     }        
+     }
 #endif
 
       return 1;
@@ -491,7 +492,7 @@ struct message *mess;
                      "Pending slot %c is no longer active. Trade reset.",
                      slot_char(inl_stat.swap[i]));
             trade_reset();
-            return 0;                
+            return 0;
         }
 
     if (!strcasecmp(comm, "TRADE")) {
@@ -511,7 +512,7 @@ struct message *mess;
                          inl_teams[inl_stat.swapteam].t_name,
                          inl_teams[inl_stat.swapteam].name,
                          slot_char(inl_stat.swap[0]),
-                         slot_char(inl_stat.swap[1]));         
+                         slot_char(inl_stat.swap[1]));
         }
         return 1;
     }
@@ -567,16 +568,16 @@ struct message *mess;
         if (swap[0] == swap[1]) {
             pmessage(who, MINDIV, addr_mess(who, MINDIV),
                      "Please specify two different slots to trade.");
-            return 0;        
+            return 0;
         }
-        
+
         if (p0->p_team == p1->p_team) {
             pmessage(who, MINDIV, addr_mess(who, MINDIV),
                      "You can't trade two players on the same team!");
-            return 0;        
+            return 0;
         }
     }
-    
+
     for (i = 0; i < num; i++)
         if ((swap[i] == inl_teams[us].captain) ||
             (swap[i] == inl_teams[them].captain)) {
@@ -1223,7 +1224,7 @@ int do_free(char *comm, struct message *mess)
 #ifdef nodef
   /* if the captain tries to free a slot on the other team, deny it */
   if (
-	( players[who].w_queue == QU_HOME && 
+	( players[who].w_queue == QU_HOME &&
 	  players[victim].w_queue != QU_HOME &&
 	  players[victim].w_queue != QU_HOME_OBS ) ||
 	( players[who].w_queue == QU_AWAY &&
@@ -1244,8 +1245,8 @@ int do_free(char *comm, struct message *mess)
 	       "Slot is already free.");
       return 1;
     }
- 
-  /* convert slot # to slot character */ 
+
+  /* convert slot # to slot character */
   slot = (victim < 10) ? '0' + victim : 'a' + (victim - 10);
 
   /* save some SB armies, but don't save normal ship armies so that

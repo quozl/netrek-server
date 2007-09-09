@@ -59,7 +59,7 @@
 #define T_SIDELOCKED    0x40            /* Pregame only-side cant choose */ 
 #define T_CONFINE       0x80            /* Pregame only */
 #define T_REGISTER      0x100           /* Captain requests registration */
-#define T_MINIDRAFT			0x200						/* Pregame only- Minidraft */
+#define T_MINIDRAFT     0x200
 
 /* INL_STAT flags */
 

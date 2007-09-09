@@ -1,0 +1,18 @@
+source code
+
+robots/inlcmds.c initiates a draft
+tools/setgame.c also may initiate a draft
+ntserv/draft.c handles the daemon animation of a draft, and actions.
+
+debugging
+
+tools/setship.c may monitor p_inl_* variables for a slot
+tools/setship.c may set p_inl_draft for testing
+
+design
+
+- captains both must choose to draft,
+- INL robot calls inl_draft_begin(),
+- daemon takes over ships,
+- captains lock on players desired in their team.
+

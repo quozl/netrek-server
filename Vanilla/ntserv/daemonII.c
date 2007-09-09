@@ -365,7 +365,7 @@ int main(int argc, char **argv)
 #define PLFIGHTFUSE     5
 #define SIGHTFUSE       5
 #define BEAMFUSE        8       /* scott 8/25/90 -- was 10 */
-#define DRAFTFUSE       20
+#define DRAFTFUSE       1
 #define PMOVEFUSE       300      /* planet movement fuse 07/26/95 JRP */
 #define QUEUEFUSE       600     /* cleanup every 60 seconds */
 #ifdef INL_POP
