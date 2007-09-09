@@ -504,18 +504,20 @@ struct player {
     int p_inl_captain;          /* Player is an INL captain */
     int p_inl_draft;            /* Player navigation restricted by INL draft */
     int p_inl_x, p_inl_y;       /* Coordinates to navigate to */
+    int p_inl_pick_sequence;    /* pick number in team */
     int p_ip_duplicates;        /* ignore this slot for duplicate ip check */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
 
 /* INL draft states for p_inl_draft */
-#define INL_DRAFT_OFF            0 /* not involved */
-#define INL_DRAFT_MOVING_TO_POOL 1 /* in transit to pool */
-#define INL_DRAFT_CAPTAIN_UP     2 /* captain with right to select */
-#define INL_DRAFT_CAPTAIN_DOWN   3 /* captain without right to select */
-#define INL_DRAFT_POOLED         4 /* in pool of players to be chosen */
-#define INL_DRAFT_MOVING_TO_PICK 5 /* has been chosen, in transit to team */
-#define INL_DRAFT_PICKED         6 /* has been chosen by a captain */
+#define INL_DRAFT_OFF             0 /* not involved */
+#define INL_DRAFT_MOVING_TO_POOL  1 /* in transit to pool */
+#define INL_DRAFT_CAPTAIN_UP      2 /* captain with right to select */
+#define INL_DRAFT_CAPTAIN_DOWN    3 /* captain without right to select */
+#define INL_DRAFT_POOLED          4 /* in pool of players to be chosen */
+#define INL_DRAFT_MOVING_TO_PICK  5 /* has been chosen, in transit to team */
+#define INL_DRAFT_PICKED          6 /* has been chosen by a captain */
+#define INL_DRAFT_PICKED_SELECTOR 7 /* has been given duty to pick */
 
 struct statentry {
     char name[NAME_LEN], password[NAME_LEN];
