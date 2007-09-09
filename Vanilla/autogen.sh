@@ -1,4 +1,6 @@
 #!/bin/sh
+# autogen.sh prepares a source tree after a darcs get, see README.darcs
+# you need tools, see README.developers "Setting up a Build Environment"
 
 for file in config.guess config.sub ltmain.sh;
 do
@@ -15,3 +17,5 @@ chmod +x debian/rules debian/postinst debian/postrm
 chmod +x debian/netrek-server-vanilla.init
 chmod +x tests/build
 echo "autogen.sh completed ok"
+
+# to test your build environment, read and run tests/build
