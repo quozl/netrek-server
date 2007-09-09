@@ -311,12 +311,7 @@ struct player *player_by_number(char *name)
   return &players[i];
 }
 
-/*
- **  Move a player to the specified team, if they are not yet there.
- **  Make them peaceful with the new team, and hostile/at war with the
- **  other team.
- */
-void change_team(int p_no, int ours, int theirs)
+void change_team_quietly(int p_no, int ours, int theirs)
 {
     struct player *k = &players[p_no];
     int queue;
@@ -337,6 +332,18 @@ void change_team(int p_no, int ours, int theirs)
     k->p_team     =  ours;
     sprintf(k->p_mapchars, "%c%c", teamlet[k->p_team], shipnos[p_no]);
     sprintf(k->p_longname, "%s (%s)", k->p_name, k->p_mapchars);
+}
+
+/*
+ **  Move a player to the specified team, if they are not yet there.
+ **  Make them peaceful with the new team, and hostile/at war with the
+ **  other team.
+ */
+void change_team(int p_no, int ours, int theirs)
+{
+    struct player *k = &players[p_no];
+
+    change_team_quietly(p_no, ours, theirs);
 
     k->p_status = PEXPLODE;
     k->p_whydead = TOURNSTART;

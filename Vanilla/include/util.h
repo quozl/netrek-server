@@ -33,6 +33,7 @@ void p_x_y_set(struct player *pl, int p_x, int p_y);
 void p_x_y_commit(struct player *j);
 void p_x_y_to_internal(struct player *j);
 void p_x_y_join(struct player *j, struct player *pl);
+void change_team_quietly(int p_no, int ours, int theirs);
 void change_team(int p_no, int ours, int theirs);
 char slot_char(int slotnum);
 int slot_num(char slot);

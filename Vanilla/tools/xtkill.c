@@ -117,14 +117,7 @@ int main(int argc, char **argv)
       case 'o': team = 8; break;
       default:  team = 0;
       }	    
-      players[player].p_team = team;
-      players[player].p_hostile &= ~team;
-      players[player].p_swar &= ~team;
-      players[player].p_war &= ~team;
-      sprintf(players[player].p_mapchars, "%c%c", 
-	      teamlet[players[player].p_team], shipnos[player]);
-      sprintf(players[player].p_longname, "%s (%s)", 
-	      players[player].p_name, players[player].p_mapchars);
+      change_team_quietly(players[player].p_no, team, players[player].p_team);
     }
     break;
     case 'e': /* eject (GHOSTTIME applies in daemon) */
