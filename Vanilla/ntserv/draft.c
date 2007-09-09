@@ -1,5 +1,3 @@
-/* TODO: test this whole module, it has only been coded, not run */
-
 #include <stdlib.h>
 #include "copyright.h"
 #include "config.h"
@@ -17,10 +15,12 @@
 the process by which professional sports teams select players not
 contracted to any team, often from colleges or amateur ranks." */
 
-/* TODO: initial draft mode declaration by captains, mutual agreement,
-   sets all players to appropriate p_inl_draft modes, and moves
-   players into position.  Requires INL robot voting commands to be
-   added.  */
+/* TODO: pmessage cannot be called from this module since it is shared
+   by both ntserv and daemon, so need to find a reliable way to inject
+   messages from a module shared by both.  */
+
+/* TODO: initial draft mode declaration by captains, requires INL
+   robot voting commands to be added.  */
 
 /* positioning on tactical
 
@@ -41,6 +41,10 @@ Key: O = pool players, C = captains, P = picked team
 */
 
 /* Modified tactical positioning-- will tractors reach?:
+   (yes, tractor range is not checked on the code path used, it is up
+   to the client whether it sends the packet, and both player lock and
+   tractor trigger inl_draft_select ... probably worth emphasising
+   player lock instead -- quozl)
 
 +--------------------------------------------------+
 |                                                  |
@@ -175,6 +179,7 @@ void inl_draft_begin()
   }
   
   status->gameup |= GU_INL_DRAFT;
+  /* pmessage(0, MALL, "GOD->ALL", "Draft begins."); */
 }
 
 void inl_draft_end()
@@ -188,6 +193,8 @@ void inl_draft_end()
     j->p_inl_draft = INL_DRAFT_OFF;
   }
   status->gameup &= ~(GU_INL_DRAFT);
+  /* TODO: send the players back home? or let them fight here? */
+  /* pmessage(0, MALL, "GOD->ALL", "Draft ends."); */
 }
 
 /* for _MOVING_TO_POOL animate position, and on arrival choose whether
@@ -234,8 +241,10 @@ void inl_draft_update()
     if (j->p_status != PALIVE) continue;
     if (j->p_flags & PFROBOT) continue;
     /* newly arriving players are forced into the pool */
-    if (j->p_inl_draft == INL_DRAFT_OFF)
+    if (j->p_inl_draft == INL_DRAFT_OFF) {
       j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
+      /* pmessage(0, MALL, "GOD->ALL", "Draft pool addition, new ship joined."); */
+    }
     /* TODO: captain could quit and rejoin */
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
@@ -266,6 +275,7 @@ static int inl_draft_next()
     return 1;
   }
   /* TODO: cannot proceed with next pick, no captain of other team */
+  /* pmessage(0, MALL, "GOD->ALL", "Draft stalled, no captain of other team."); */
   return 0;
 }
 
@@ -273,21 +283,14 @@ static void inl_draft_pick(struct player *j)
 {
   /* TODO: draw a phaser from captain to pick? */
 
-  /* changing team? */
   if (j->p_team != me->p_team) {
-    /* be hostile */
-    j->p_hostile |= me->p_team;
-    j->p_war = (j->p_swar | j->p_hostile);
-    /* change team */
-    j->p_team = me->p_team;
-    /* be friendly to new team */
-    j->p_war &= ~me->p_team;
-    j->p_hostile &= ~me->p_team;
-    j->p_swar &= ~me->p_team;
+    change_team_quietly(j->p_no, me->p_team, j->p_team);
   }
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
-  /* TODO: commentator */
+
+  /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
+     me->p_mapchars); */
 }
 
 void inl_draft_select(int n)
@@ -304,7 +307,10 @@ void inl_draft_select(int n)
     if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
       /* captain fingers fellow captain */
       /* meaning: pass */
-      inl_draft_next(me);
+      if (inl_draft_next()) {
+        /* pmessage(0, MALL, "GOD->ALL", "Draft pick declined by %s.",
+	   me->p_mapchars); */
+      }
     }
     break;
   case INL_DRAFT_MOVING_TO_POOL : /* in transit to pool */
@@ -325,7 +331,8 @@ void inl_draft_select(int n)
   case INL_DRAFT_PICKED         : /* has been chosen by a captain */
     if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
       /* captain fingers a picked player */
-      /* meaning: undefined */
+      /* meaning: delegation of pick duty */
+      /* TODO: implement _PICKED_SELECTOR */
     }
     break;
   }
