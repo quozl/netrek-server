@@ -4646,23 +4646,22 @@ static void signal_servers(void)
 
 void message_flag(struct message *cur, char *address)
 {
-            if(arg[0] != DINVALID){
-                cur->args[0] = arg[0];
-                cur->args[1] = arg[1];
-                cur->args[2] = arg[2];
-                cur->args[3] = arg[3];
-                cur->args[4] = arg[4];
-                cur->args[5] = arg[5];
-        }
-        else {
-                if (strstr(address,"GOD->")!=NULL)
-                        cur->args[0] = SVALID; /* It has a real header */
-                else
-                        cur->args[0] = SINVALID;
-                        /* Marked as invalid to send over */
-                                /* SP_S_WARNING  and SP_S_MESSAGE HW */
-        }
-        arg[0] = DINVALID;
+    if (arg[0] != DINVALID) {
+        cur->args[0] = arg[0];
+        cur->args[1] = arg[1];
+        cur->args[2] = arg[2];
+        cur->args[3] = arg[3];
+        cur->args[4] = arg[4];
+        cur->args[5] = arg[5];
+    } else {
+        if (strstr(address, "GOD->") != NULL)
+            /* has a real header */
+            cur->args[0] = SVALID;
+        else
+            /* invalid to send over SP_S_WARNING or SP_S_MESSAGE HW */
+            cur->args[0] = SINVALID;
+    }
+    arg[0] = DINVALID;
 }
 
 /*  Hey Emacs!
