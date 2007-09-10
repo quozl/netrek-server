@@ -26,6 +26,8 @@ show-test-torpedo-position  show position of first torpedo owned\n\
 destroy-test-torpedo        detonate torpedo\n\
 sleep n                     sleep for n seconds\n\
 set-inl-draft n             set INL draft mode state n (0=off)\n\
+player                      change an observer to a player\n\
+observer                    change a player to an observer\n\
 ");
 }
 
@@ -204,6 +206,17 @@ int setship(char *cmds)
       printf("p_inl_captain %d p_inl_draft %d (%s) p_inl_x %d p_inl_y %d p_inl_pick_sequence %d\n", me->p_inl_captain, me->p_inl_draft, inl_draft_name(me->p_inl_draft), me->p_inl_x, me->p_inl_y, me->p_inl_pick_sequence);
       usleep(20000);
     }
+    goto state_1;
+  }
+
+  if (!strcmp(token, "player")) {
+    me->p_flags &= ~PFOBSERV;
+    me->p_status = PALIVE;
+    goto state_1;
+  }
+  if (!strcmp(token, "observer")) {
+    me->p_flags |= PFOBSERV;
+    me->p_status = POBSERV;
     goto state_1;
   }
 
