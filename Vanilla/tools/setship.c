@@ -209,6 +209,14 @@ int setship(char *cmds)
     goto state_1;
   }
 
+  if (!strcmp(token, "wait-for-inl-draft-to-end")) {
+    for (;;) {
+      if (me->p_inl_draft == INL_DRAFT_OFF) exit(0);
+      usleep(20000);
+    }
+    goto state_1;
+  }
+
   if (!strcmp(token, "player")) {
     me->p_flags &= ~PFOBSERV;
     me->p_status = PALIVE;
