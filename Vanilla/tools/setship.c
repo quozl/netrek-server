@@ -209,6 +209,11 @@ int setship(char *cmds)
     goto state_1;
   }
 
+  if (!strcmp(token, "show-inl-draft")) {
+    printf("p_inl_captain %d p_inl_draft %d (%s) p_inl_x %d p_inl_y %d p_inl_pick_sequence %d\n", me->p_inl_captain, me->p_inl_draft, inl_draft_name(me->p_inl_draft), me->p_inl_x, me->p_inl_y, me->p_inl_pick_sequence);
+    goto state_1;
+  }
+
   if (!strcmp(token, "wait-for-inl-draft-to-end")) {
     for (;;) {
       if (me->p_inl_draft == INL_DRAFT_OFF) exit(0);

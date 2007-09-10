@@ -186,7 +186,7 @@ metaget: metaget.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o $(EXTRALIBS)
 
 setgame: setgame.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgame.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgame.o $(OBJS) $(LIBS)
 
 setplanet: setplanet.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setplanet.o $(OBJS)
@@ -195,7 +195,7 @@ setteam: setteam.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setteam.o $(OBJS)
 
 setship: setship.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setship.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setship.o $(OBJS) $(LIBS)
 
 ban: ban.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS)

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 #include "copyright.h"
 #include "config.h"
 #include "defs.h"
@@ -79,6 +80,45 @@ Picked players-- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
 
 static int inl_draft_style = INL_DRAFT_STYLE_BOTTOM_TO_TOP;
 
+/* measure the size of the pool */
+static int inl_draft_pool_size()
+{
+  int h, k;
+  struct player *j;
+
+  for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
+    if (j->p_status == PFREE) continue;
+    if (j->p_flags & PFROBOT) continue;
+    if (j->p_inl_draft == INL_DRAFT_MOVING_TO_POOL ||
+        j->p_inl_draft == INL_DRAFT_POOLED ||
+        j->p_inl_draft == INL_DRAFT_MOVING_TO_PICK) k++;
+  }
+  return k;
+}
+
+/* given a team, find their draft captain */
+static struct player *inl_draft_team_to_captain(int p_team)
+{
+  int h;
+  struct player *j;
+
+  for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+    if (j->p_status == PFREE) continue;
+    if (j->p_flags & PFROBOT) continue;
+    if (!j->p_inl_captain) continue;
+    if (j->p_team != p_team) continue;
+    if (j->p_inl_draft == INL_DRAFT_CAPTAIN_UP ||
+        j->p_inl_draft == INL_DRAFT_CAPTAIN_DOWN) return j;
+  }
+  return NULL;
+}
+
+/* given a pick player, find their draft captain */
+static struct player *inl_draft_pick_to_captain(struct player *k)
+{
+  return inl_draft_team_to_captain(k->p_team);
+}
+
 static void inl_draft_place_captain(struct player *j)
 {
   int x = GWIDTH / 2;
@@ -139,6 +179,12 @@ static void inl_draft_place_pick(struct player *j)
   j->p_inl_y = y;
 }
 
+static void inl_draft_place_selector(struct player *j)
+{
+  inl_draft_place_captain(j);
+  j->p_inl_x -= 2000;
+}
+
 static void inl_draft_place(struct player *j)
 {
   switch (j->p_inl_draft) {
@@ -155,6 +201,9 @@ static void inl_draft_place(struct player *j)
   case INL_DRAFT_MOVING_TO_PICK : /* has been chosen, in transit to team */
   case INL_DRAFT_PICKED         : /* has been chosen by a captain */
     inl_draft_place_pick(j);
+    break;
+  case INL_DRAFT_PICKED_SELECTOR:
+    inl_draft_place_selector(j);
     break;
   }
 }
@@ -190,27 +239,39 @@ void inl_draft_end()
   }
   status->gameup &= ~(GU_INL_DRAFT);
   /* TODO: send the players back home? or let them fight here? */
+  /* TODO: turn off confine during a draft? see if it has an impact */
   pmessage(0, MALL, "GOD->ALL", "Draft ends.");
 }
 
-/* for _MOVING_TO_POOL animate position, and on arrival choose whether
-they are _POOLED or _CAPTAIN_UP or _CAPTAIN_DOWN */
-static void inl_draft_arrival_pool(struct player *j)
+static void inl_draft_arrival_captain(struct player *k)
 {
-  if (!j->p_inl_captain) {
-    j->p_inl_draft = INL_DRAFT_POOLED;
+  int other_team = k->p_team == ROM ? FED : ROM;
+  struct player *other_captain = inl_draft_team_to_captain(other_team);
+
+  /* arrival without another captain */
+  if (other_captain == NULL) {
+    k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
     return;
   }
-  /* TODO: determine which captain should get first pick, default FED */
-  if (j->p_team == FED) j->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-  if (j->p_team == ROM) j->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
+  /* arrival with a captain who has the up */
+  if (other_captain->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
+  }
+  k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
+  /* therefore captain closest to draft gets the first choice */
+  /* TODO: indicate up captain using some graphical element, but do
+  not reduce body language opportunities ... e.g. use plasma torps not
+  shields */
+}
+
+static void inl_draft_arrival_pool(struct player *j)
+{
+  j->p_inl_draft = INL_DRAFT_POOLED;
 }
 
 static void inl_draft_arrival_pick(struct player *j)
 {
   j->p_inl_draft = INL_DRAFT_PICKED;
-  /* TODO: count slots in INL_DRAFT_MOVING_TO_POOL or INL_DRAFT_POOLED */
-  /* TODO: terminate draft if no slots remain in pool */
 }
 
 /* a ship has arrived at the nominated position */
@@ -218,10 +279,20 @@ static void inl_draft_arrival(struct player *j)
 {
   switch (j->p_inl_draft) {
   case INL_DRAFT_MOVING_TO_POOL : /* in transit to pool */
+    if (j->p_inl_captain) {
+      inl_draft_arrival_captain(j);
+      return;
+    }
     inl_draft_arrival_pool(j);
     break;
   case INL_DRAFT_MOVING_TO_PICK : /* has been chosen, in transit to team */
     inl_draft_arrival_pick(j);
+    break;
+  case INL_DRAFT_POOLED:
+  case INL_DRAFT_PICKED:
+    if (j->p_inl_captain) {
+      inl_draft_arrival_captain(j);
+    }
     break;
   }
 }
@@ -233,7 +304,7 @@ void inl_draft_update()
   struct player *j;
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-    int dx, dy, nx, ny;
+    int dx, dy;
     if (j->p_status != PALIVE) continue;
     if (j->p_flags & PFROBOT) continue;
     /* newly arriving players are forced into the pool */
@@ -241,57 +312,62 @@ void inl_draft_update()
       j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
       pmessage(0, MALL, "GOD->ALL", "Draft pool addition, new ship joined.");
     }
-    /* TODO: captain could quit and rejoin */
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
-    if ((abs(dx) + abs(dy)) > 200) {
-      nx = j->p_x - (dx / 10);
-      ny = j->p_y - (dy / 10);
-      p_x_y_go(j, nx, ny);
+    if ((abs(dx) + abs(dy)) > 500) {
+      p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
+      j->p_dir = ((u_char) nint(atan2((double) (j->p_inl_x -
+            j->p_x), (double) (j->p_y - j->p_inl_y)) / 3.14159 *
+            128.));
+      /* TODO: factorise the above formula into util.c */
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
     }
   }
+  if (inl_draft_pool_size() == 0) {
+    inl_draft_end();
+  }
 }
 
-static int inl_draft_next()
+static int inl_draft_next(struct player *k)
 {
   int h;
   struct player *j;
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-    if (j == me) continue;
+    if (j == k) continue;
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
     if (!j->p_inl_captain) continue;
     j->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-    me->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
+    k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
     return 1;
   }
-  /* TODO: cannot proceed with next pick, no captain of other team */
+  /* TODO: test that a captain who leaves and returns can allow draft
+  to continue, test that a replacement captain can take the role */
   pmessage(0, MALL, "GOD->ALL", "Draft stalled, no captain of other team.");
   return 0;
 }
 
-static void inl_draft_pick(struct player *j)
+static void inl_draft_pick(struct player *j, struct player *k)
 {
-  /* TODO: draw a phaser from captain to pick? */
+  /* TODO: draw a phaser from captain or selector to pick? */
 
-  if (j->p_team != me->p_team) {
-    change_team_quietly(j->p_no, me->p_team, j->p_team);
+  if (j->p_team != k->p_team) {
+    change_team_quietly(j->p_no, k->p_team, j->p_team);
   }
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
 
   pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
-           me->p_mapchars);
+           k->p_mapchars);
 }
 
 void inl_draft_select(int n)
 {
-  struct player *j;
+  struct player *j, *k = me;      /* j: pick-ee, k: pick-er */
   if ((n < 0) || (n > MAXPLAYER)) return;
   j = &players[n];
   switch (j->p_inl_draft) {
@@ -300,24 +376,46 @@ void inl_draft_select(int n)
   case INL_DRAFT_CAPTAIN_UP     : /* captain with right to select */
     break;
   case INL_DRAFT_CAPTAIN_DOWN   : /* captain without right to select */
-    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    if (k->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
       /* captain fingers fellow captain */
       /* meaning: pass */
-      if (inl_draft_next()) {
+      if (inl_draft_next(k)) {
         pmessage(0, MALL, "GOD->ALL", "Draft pick declined by %s.",
-                 me->p_mapchars);
+                 k->p_mapchars);
       }
     }
     break;
   case INL_DRAFT_MOVING_TO_POOL : /* in transit to pool */
   case INL_DRAFT_POOLED         : /* in pool of players to be chosen */
-    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    if (k->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
       /* captain fingers a pool player */
       /* meaning: pool player is picked, next captain to pick */
-      if (inl_draft_next()) {
-        inl_draft_pick(j);
+      if (!j->p_inl_captain) {
+        if (inl_draft_next(k)) {
+          inl_draft_pick(j, k);
+        }
       }
-    } else if (me->p_inl_draft == INL_DRAFT_PICKED) {
+    } else if (k->p_inl_draft == INL_DRAFT_PICKED_SELECTOR) {
+      /* selector fingers a pool player */
+      /* meaning: pool player is picked, next captain to pick */
+      k = inl_draft_pick_to_captain(me);
+      if (k == NULL) {
+        pmessage(0, MALL, "GOD->ALL", "Draft error, %s has no captain.",
+                 me->p_mapchars);
+        return;
+      }
+      if (k->p_inl_draft != INL_DRAFT_CAPTAIN_UP) {
+        pmessage(0, MALL, "GOD->ALL",
+                 "Draft error, pick by %s ignored because captain is not up.",
+                 me->p_mapchars);
+        return;
+      }
+      if (!j->p_inl_captain) {
+        if (inl_draft_next(k)) {
+          inl_draft_pick(j, k);
+        }
+      }
+    } else if (k->p_inl_draft == INL_DRAFT_PICKED) {
       /* non-captain pick fingers a pool player */
       /* meaning: team signaling to captain their preference */
       /* TODO: distort pool position according to how many fingerings */
@@ -325,10 +423,23 @@ void inl_draft_select(int n)
     break;
   case INL_DRAFT_MOVING_TO_PICK : /* has been chosen, in transit to team */
   case INL_DRAFT_PICKED         : /* has been chosen by a captain */
-    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    if (k->p_inl_draft == INL_DRAFT_CAPTAIN_UP ||
+        k->p_inl_draft == INL_DRAFT_CAPTAIN_DOWN) {
       /* captain fingers a picked player */
       /* meaning: delegation of pick duty */
-      /* TODO: implement _PICKED_SELECTOR */
+      if (j->p_team == k->p_team) {
+        j->p_inl_draft = INL_DRAFT_PICKED_SELECTOR;
+      }
+    }
+    break;
+  case INL_DRAFT_PICKED_SELECTOR:
+    if (k->p_inl_draft == INL_DRAFT_CAPTAIN_UP ||
+        k->p_inl_draft == INL_DRAFT_CAPTAIN_DOWN) {
+      /* captain fingers a selector */
+      /* meaning: cancel delegation of pick duty */
+      if (j->p_team == k->p_team) {
+        j->p_inl_draft = INL_DRAFT_PICKED;
+      }
     }
     break;
   }
@@ -362,14 +473,14 @@ void inl_draft_reject(int n)
 char *inl_draft_name(int x)
 {
   switch (x) {
-  case INL_DRAFT_OFF             : return "INL_DRAFT_OFF";
-  case INL_DRAFT_MOVING_TO_POOL  : return "INL_DRAFT_MOVING_TO_POOL";
-  case INL_DRAFT_CAPTAIN_UP      : return "INL_DRAFT_CAPTAIN_UP";
-  case INL_DRAFT_CAPTAIN_DOWN    : return "INL_DRAFT_CAPTAIN_DOWN";
-  case INL_DRAFT_POOLED          : return "INL_DRAFT_POOLED";
-  case INL_DRAFT_MOVING_TO_PICK  : return "INL_DRAFT_MOVING_TO_PICK";
-  case INL_DRAFT_PICKED          : return "INL_DRAFT_PICKED";
-  case INL_DRAFT_PICKED_SELECTOR : return "INL_DRAFT_PICKED_SELECTOR";
+  case INL_DRAFT_OFF             : return "_OFF";
+  case INL_DRAFT_MOVING_TO_POOL  : return "_MOVING_TO_POOL";
+  case INL_DRAFT_CAPTAIN_UP      : return "_CAPTAIN_UP";
+  case INL_DRAFT_CAPTAIN_DOWN    : return "_CAPTAIN_DOWN";
+  case INL_DRAFT_POOLED          : return "_POOLED";
+  case INL_DRAFT_MOVING_TO_PICK  : return "_MOVING_TO_PICK";
+  case INL_DRAFT_PICKED          : return "_PICKED";
+  case INL_DRAFT_PICKED_SELECTOR : return "_PICKED_SELECTOR";
   }
   return "UNKNOWN";
 }

@@ -269,11 +269,10 @@ void lock_planet(int planet)
 
 void lock_player(int player)
 {
-    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    if (me->p_inl_draft != INL_DRAFT_OFF) {
         inl_draft_select(player);
         return;
     }
-    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (player<0 || player>=MAXPLAYER) return;
     if (players[player].p_status != PALIVE) return;
     if (players[player].p_flags & PFCLOAK && !Observer) return;
@@ -317,11 +316,10 @@ void tractor_player(int player)
 {
     struct player *victim;
 
-    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    if (me->p_inl_draft != INL_DRAFT_OFF) {
         inl_draft_select(player);
         return;
     }
-    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (weaponsallowed[WP_TRACTOR]==0) {
 	return;
     }
@@ -353,11 +351,10 @@ void pressor_player(int player)
     int target;
     struct player *victim;
 
-    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
+    if (me->p_inl_draft != INL_DRAFT_OFF) {
         inl_draft_reject(player);
         return;
     }
-    if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (weaponsallowed[WP_TRACTOR]==0) {
         new_warning(0,"Tractor beams haven't been invented yet.");
 	return;
