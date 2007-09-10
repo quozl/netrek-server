@@ -15,10 +15,6 @@
 the process by which professional sports teams select players not
 contracted to any team, often from colleges or amateur ranks." */
 
-/* TODO: pmessage cannot be called from this module since it is shared
-   by both ntserv and daemon, so need to find a reliable way to inject
-   messages from a module shared by both.  */
-
 /* TODO: initial draft mode declaration by captains, requires INL
    robot voting commands to be added.  */
 
@@ -179,7 +175,7 @@ void inl_draft_begin()
   }
   
   status->gameup |= GU_INL_DRAFT;
-  /* pmessage(0, MALL, "GOD->ALL", "Draft begins."); */
+  pmessage(0, MALL, "GOD->ALL", "Draft begins.");
 }
 
 void inl_draft_end()
@@ -194,7 +190,7 @@ void inl_draft_end()
   }
   status->gameup &= ~(GU_INL_DRAFT);
   /* TODO: send the players back home? or let them fight here? */
-  /* pmessage(0, MALL, "GOD->ALL", "Draft ends."); */
+  pmessage(0, MALL, "GOD->ALL", "Draft ends.");
 }
 
 /* for _MOVING_TO_POOL animate position, and on arrival choose whether
@@ -243,7 +239,7 @@ void inl_draft_update()
     /* newly arriving players are forced into the pool */
     if (j->p_inl_draft == INL_DRAFT_OFF) {
       j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-      /* pmessage(0, MALL, "GOD->ALL", "Draft pool addition, new ship joined."); */
+      pmessage(0, MALL, "GOD->ALL", "Draft pool addition, new ship joined.");
     }
     /* TODO: captain could quit and rejoin */
     inl_draft_place(j);
@@ -275,7 +271,7 @@ static int inl_draft_next()
     return 1;
   }
   /* TODO: cannot proceed with next pick, no captain of other team */
-  /* pmessage(0, MALL, "GOD->ALL", "Draft stalled, no captain of other team."); */
+  pmessage(0, MALL, "GOD->ALL", "Draft stalled, no captain of other team.");
   return 0;
 }
 
@@ -289,8 +285,8 @@ static void inl_draft_pick(struct player *j)
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
 
-  /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
-     me->p_mapchars); */
+  pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
+           me->p_mapchars);
 }
 
 void inl_draft_select(int n)
@@ -308,8 +304,8 @@ void inl_draft_select(int n)
       /* captain fingers fellow captain */
       /* meaning: pass */
       if (inl_draft_next()) {
-        /* pmessage(0, MALL, "GOD->ALL", "Draft pick declined by %s.",
-	   me->p_mapchars); */
+        pmessage(0, MALL, "GOD->ALL", "Draft pick declined by %s.",
+                 me->p_mapchars);
       }
     }
     break;

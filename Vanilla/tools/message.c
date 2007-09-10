@@ -3,25 +3,8 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 #include "util.h"
-
-/* external prototypes */
-extern int openmem(int);	/* from openmem.c */
-
-void pmessage(char *str, int recip, int group)
-{
-    struct message *cur;
-    if (++(mctl->mc_current) >= MAXMESSAGE)
-	mctl->mc_current = 0;
-    cur = &messages[mctl->mc_current];
-    cur->m_no = mctl->mc_current;
-    cur->m_flags = group;
-    cur->m_time = 0;
-    cur->m_recpt = recip;
-    cur->m_from = 255; /* change 12/11/90 TC */
-    (void) sprintf(cur->m_data, "%s", str);
-    cur->m_flags |= MVALID;
-}
 
 int prior()
 {
@@ -50,7 +33,7 @@ int prior()
 	case '8':
 	case '9':
 	    printf("Message goes to player %c\n", *to);
-	    pmessage(message, *to-'0', MINDIV);
+	    amessage(message, *to-'0', MINDIV);
 	    break;
 	case 'a': case 'b': case 'c': case 'd':
 	case 'e': case 'f': case 'g': case 'h':
@@ -60,27 +43,27 @@ int prior()
 	case 'u': case 'v': case 'w': case 'x':
 	case 'y': case 'z':
 	    printf("Message goes to player %c\n", *to);
-	    pmessage(message, *to-'a'+10, MINDIV);
+	    amessage(message, *to-'a'+10, MINDIV);
 	    break;
 	case 'A':
 	    printf("Message goes to ALL\n");
-	    pmessage(message, 0, MALL);
+	    amessage(message, 0, MALL);
 	    break;
 	case 'K':
 	    printf("Message goes to KLI\n");
-	    pmessage(message, KLI, MTEAM);
+	    amessage(message, KLI, MTEAM);
 	    break;
 	case 'R':
 	    printf("Message goes to ROM\n");
-	    pmessage(message, ROM, MTEAM);
+	    amessage(message, ROM, MTEAM);
 	    break;
 	case 'O':
 	    printf("Message goes to ORI\n");
-	    pmessage(message, ORI, MTEAM);
+	    amessage(message, ORI, MTEAM);
 	    break;
 	case 'F':
 	    printf("Message goes to FED\n");
-	    pmessage(message, FED, MTEAM);
+	    amessage(message, FED, MTEAM);
 	    break;
 	default: 
 	    break;
@@ -104,16 +87,7 @@ int main(int argc, char **argv)
     if (me == NULL) return 1;
     if (++i == argc) return 1;
 
-    struct message *cur;
-    if (++(mctl->mc_current) >= MAXMESSAGE) mctl->mc_current = 0;
-    cur = &messages[mctl->mc_current];
-    cur->m_no = mctl->mc_current;
-    cur->m_flags = MINDIV;
-    cur->m_time = 0;
-    cur->m_recpt = me->p_no;
-    cur->m_from = me->p_no;
-    (void) sprintf(cur->m_data, " %s->%s   %s", me->p_mapchars, me->p_mapchars, argv[i]);
-    cur->m_flags |= MVALID;
-
+    pmessage2(me->p_no, MINDIV, "", me->p_no,
+              " %s->%s   %s", me->p_mapchars, me->p_mapchars, argv[i]);
     return 0;
 }

@@ -147,7 +147,6 @@ int numPlanets(int owner);
 /* main.c */
 void exitGame(void);
 int CheckBypass(char *login, char *host, char *file);
-void message_flag(struct message *cur, char *address);
 
 /* ntscmds.c */
 int bounceSessionStats(int from);
@@ -219,6 +218,9 @@ void lmessage(const char *fmt, ...);
 void pmessage(int recip, int group, char *address, const char *, ...);
 void pmessage2(int recip, int group, char *address, u_char from,
                const char *, ...);
+void amessage(char *str, int recip, int group);
+void do_message_pre_set(void (*proposed)(struct message *message,
+                                         char *address));
 void do_message_post_set(int (*proposed)(struct message *message));
 
 /* socket.c */

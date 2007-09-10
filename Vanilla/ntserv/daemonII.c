@@ -120,6 +120,7 @@ static void signal_servers(void);
 #ifdef PUCK_FIRST
 static void signal_puck(void);
 #endif /*PUCK_FIRST*/
+static void message_flag(struct message *cur, char *address);
 
 /* external scope prototypes */
 extern void pinit(void);
@@ -209,6 +210,7 @@ int main(int argc, char **argv)
             exit(1);
         }
 
+    do_message_pre_set(message_flag);
     readsysdefaults();
     if (opt_restart) {
         ERROR(1,("daemon: warm start\n"));
@@ -4644,7 +4646,7 @@ static void signal_servers(void)
     }
 }
 
-void message_flag(struct message *cur, char *address)
+static void message_flag(struct message *cur, char *address)
 {
     if (arg[0] != DINVALID) {
         cur->args[0] = arg[0];

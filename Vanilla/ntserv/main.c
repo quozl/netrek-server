@@ -41,6 +41,7 @@ static void sendMotd(void);
 static void sendConfigMsg(void);
 static void printStats(void);
 static void bans_check();
+static void message_flag(struct message *cur, char *address);
 
 extern int ignored[MAXPLAYER];
 int indie = 0;			/* always be indie 8/28/91 TC */
@@ -124,6 +125,7 @@ int main(int argc, char **argv)
 
     /* this finds the shared memory information */
     openmem(1);
+    do_message_pre_set(message_flag);
     do_message_post_set(do_check_command);
     readsysdefaults();
 
@@ -860,7 +862,7 @@ static void bans_check()
 }
 
 /* ARGSUSED */
-void message_flag(struct message *cur, char *address)
+static void message_flag(struct message *cur, char *address)
 {
     /* This is to prevent false sending with SP_S_WARNING */
     cur->args[0] = DINVALID;

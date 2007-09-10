@@ -66,7 +66,19 @@ void pmessage2(int recip, int group, char *address, u_char from,
 
 }
 
+/* raw message */
+void amessage(char *str, int recip, int group)
+{
+  pmessage(recip, group, "", "%s", str);
+}
+
+static void (*do_message_pre)(struct message *message, char *address) = NULL;
 static int (*do_message_post)(struct message *message) = NULL;
+
+void do_message_pre_set(void (*proposed)(struct message *message, char *address))
+{
+  do_message_pre = proposed;
+}
 
 void do_message_post_set(int (*proposed)(struct message *message))
 {
@@ -112,12 +124,18 @@ void do_message(int recip, int group, char *address, u_char from,
 
   strcpy(cur->m_data,temp2);
 
-  message_flag(cur,address);
+  /* message insertion pre-processor, for generalised adjustment */
+  if (do_message_pre != NULL) {
+    (*do_message_pre)(cur, address);
+  }
+
   cur->m_flags |= MVALID;
 
+  /* message insertion post-processor, for command detection */
   if (do_message_post != NULL) {
-    if ((cur->m_flags & MINDIV) && (cur->m_recpt == me->p_no) &&
-	(cur->m_from == me->p_no)) {
+    if ((cur->m_flags & MINDIV) &&
+        (cur->m_recpt == me->p_no) &&
+        (cur->m_from == me->p_no)) {
       (*do_message_post)(cur);
     }
   }
