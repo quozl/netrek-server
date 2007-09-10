@@ -116,11 +116,6 @@ int fd;					/* log file file descriptor	*/
 
 #ifdef REAPER_HANDLER
 
-/* some lame OS's don't support SA_NOCLDWAIT */
-#ifndef SA_NOCLDWAIT
-#define SA_NOCLDWAIT	0
-#endif
-
 #ifdef linux
 #define sa_sigaction sa_restorer
 #endif

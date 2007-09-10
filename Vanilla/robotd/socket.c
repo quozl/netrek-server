@@ -449,6 +449,10 @@ int port;
     return 1;
 }
 
+#if !defined(O_NDELAY)
+#define O_NDELAY O_NONBLOCK
+#endif /* !defined(O_NDELAY) */
+
 set_rsock_nowait()
 {
    if(fcntl(rsock, F_SETFL, O_NDELAY) < 0) {

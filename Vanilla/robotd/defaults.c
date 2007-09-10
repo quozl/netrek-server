@@ -78,13 +78,12 @@ char *str;
     return(NULL);
 }
 
-strcmpi(str1, str2)
-char *str1, *str2;
+strcmpi(const char * str1, const char * str2)
 {
-    char chr1, chr2;
 /*#ifdef strcasecmp */
     return (strcasecmp(str1,str2));
 /*#else
+    char chr1, chr2;
     for(;;) {
         chr1 = isupper(*str1) ? *str1 : toupper(*str1);
         chr2 = isupper(*str2) ? *str2 : toupper(*str2);

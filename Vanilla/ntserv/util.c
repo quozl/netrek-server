@@ -14,6 +14,10 @@
 #include "struct.h"
 #include "data.h"
 
+#if !defined(strcasestr)
+#define strcasestr strstr
+#endif /* !defined(strcasestr) */
+
 /*
 ** Provide the angular distance between two angles.
 */

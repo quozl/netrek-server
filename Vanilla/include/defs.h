@@ -12,6 +12,11 @@
 #define NULL	((char *) 0)
 #endif
 
+/* some OS's don't define SA_NOCLDWAIT */
+#ifndef SA_NOCLDWAIT
+#define SA_NOCLDWAIT	0
+#endif
+
 #define ERROR(l,x)	{ if (errorlevel >= l ) { printf x; }}
 
 #define FNAMESIZE	256
