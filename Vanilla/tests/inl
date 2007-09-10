@@ -1,0 +1,33 @@
+#!/bin/sh
+LIBDIR=/usr/local/games/netrek-server-vanilla
+cd ${LIBDIR}
+
+# start a test player in slot 0 before starting this script
+
+# start a set of robots
+lib/og/robot -h localhost -p 4577 -Tr 2>/dev/null >/dev/null &
+sleep 0.2
+lib/og/robot -h localhost -p 4577 -Tr 2>/dev/null >/dev/null &
+sleep 0.2
+lib/og/robot -h localhost -p 4577 -Tr 2>/dev/null >/dev/null &
+sleep 0.2
+lib/og/robot -h localhost -p 4577 -Tr 2>/dev/null >/dev/null &
+sleep 0.2
+lib/og/robot -h localhost -p 4566 -Tf 2>/dev/null >/dev/null &
+sleep 0.2
+lib/og/robot -h localhost -p 4566 -Tf 2>/dev/null >/dev/null &
+sleep 0.2
+lib/og/robot -h localhost -p 4566 -Tf 2>/dev/null >/dev/null &
+
+# allow time to get in
+sleep 2
+
+# captains enter commands to start
+lib/tools/message forge-to-self 8 captain
+lib/tools/message forge-to-self 0 captain
+lib/tools/message forge-to-self 8 rom
+lib/tools/message forge-to-self 0 fed
+lib/tools/message forge-to-self 8 "gametime 5 2"
+lib/tools/message forge-to-self 0 "gametime 5 2"
+lib/tools/message forge-to-self 8 "start"
+lib/tools/message forge-to-self 0 "start"
