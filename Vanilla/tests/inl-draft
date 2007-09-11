@@ -19,13 +19,17 @@ sleep 2
 lib/tools/message forge-to-self 8 captain
 lib/tools/message forge-to-self 0 captain
 
+# start the draft (temporary until INL robot accepts draft command)
+lib/tools/setgame inl-draft-on
+
 # start the draft
-lib/tools/message forge-to-self 8 draft
-lib/tools/message forge-to-self 0 draft
+#lib/tools/message forge-to-self 8 draft
+#lib/tools/message forge-to-self 0 draft
 
 # wait for it to end
 sleep 1
 lib/tools/setship 0 wait-for-inl-draft-to-end
+exit
 
 # start the game
 lib/tools/message forge-to-self 8 rom

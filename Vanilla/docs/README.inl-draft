@@ -1,18 +1,67 @@
-source code
+INL Draft Mode
+by James Cameron and Rich Hansen, 2007-09.
 
-robots/inlcmds.c initiates a draft
-tools/setgame.c also may initiate a draft
-ntserv/draft.c handles the daemon animation of a draft, and actions.
+For use during an INL mode pregame, to enable the captains to select
+players from those who are connected.
 
-debugging
+Usage
 
-tools/setship.c may monitor p_inl_* variables for a slot
-tools/setship.c may set p_inl_draft for testing
+    a.  captains enter a command to start a draft, both must agree,
 
-design
+    b.  ships are transwarped to the galaxy centre, positioned in a
+        line which we call the "pool",
 
-- captains both must choose to draft,
-- INL robot calls inl_draft_begin(),
-- daemon takes over ships,
-- captains lock on players desired in their team.
+    c.  while moving, ships cannot change direction or speed, but they
+        can fire weaponry and raise shields, but the weaponry is
+        harmless,
+
+    d.  while stationary, ships can change direction, but not speed,
+        and can raise or lower shields, and use harmless weaponry
+        ... so that body language may continue,
+
+    e.  the two captains are transwarped out of the pool and stand side by
+        side,
+
+    f.  the captains alternate in using "lock" or "tractor" to pick
+        players from the pool, the ships change to the captains team,
+        and move next to the captain in an area called the "pick",
+
+    g.  a captain can pass on his round using a "lock" on the other
+        captain,
+
+    h.  a captain can choose a selector from his already picked ships,
+        the selector moves into a new position, and is allowed to make
+        picks in the same way the captain may ... any number of
+        selectors can be chosen, and both the captain and the selector
+        may make each pick,
+
+    i.  the draft is finished when the pool is empty, and the ordinary
+        pre-game resumes ... with the ships in their pick positions.
+
+Data Structures
+
+     status->gameup has a bit GU_INL_DRAFT that is set when draft
+     begins, enabling an alternate code path for animation control,
+
+     player->p_inl_draft defines the current animation state of a
+     player,
+
+     player->p_inl_x, y, defines the location the player is being
+     constrained toward,
+
+     player->p_inl_*_sequence, defines position ordering.
+
+Source Code
+
+    robots/inlcmds.c initiates a draft.
+
+    ntserv/draft.c handles the daemon animation of a draft, and actions.
+
+Test Tools
+
+    tools/setgame.c may initiate a draft using "inl-draft-on".
+
+    tools/setship.c may monitor p_inl_* variables for a slot.
+
+    tools/setship.c may set p_inl_draft for testing.
 
