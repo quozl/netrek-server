@@ -38,6 +38,7 @@ extern int do_timeout();
 extern int do_confine();
 extern int do_cscore();
 extern int do_scoremode();
+extern int do_minidraft();
 
 extern int cleanup();
 
@@ -108,6 +109,10 @@ struct command_handler_2 inl_commands[] = {
     C_PR_CAPTAIN | C_PR_PREGAME,
     "Start tournament.",
     (void (*)()) do_start },				/* START */
+	{	"MINIDRAFT",
+		C_PR_CAPTAIN | C_PR_PREGAME,
+		"Request Minidraft.",
+		(void (*)()) do_minidraft },		/* MINIDRAFT */
   { "REGISTER",
     C_PR_CAPTAIN,
     "Toggle official/unofficial state of game.",
