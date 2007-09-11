@@ -1,7 +1,11 @@
 
-$Id: BUGS,v 1.6 2006/05/06 12:28:20 quozl Exp $
-
 List of things that are defects
+
+	- on first entry to an INL=1 server,
+	  INL->X0   You have been ejected due to player DB inconsistency.
+	  but does not hinder player or game.
+
+	- INL=1 incompatible with FPS=50, workaround is to set FPS=10.
 
 	- robots are not recognising Cas, reported by KaraokeBar, Australia,
 	  2007-05-15
