@@ -504,8 +504,8 @@ struct player {
     int p_inl_captain;          /* Player is an INL captain */
     int p_inl_draft;            /* Player navigation restricted by INL draft */
     int p_inl_x, p_inl_y;       /* Coordinates to navigate to */
-    int p_inl_pick_sequence;    /* pick number in team */
-		int p_inl_pool_sequence;		/* Position in the player pool */
+    int p_inl_pool_sequence;    /* position in the pool */
+    int p_inl_pick_sequence;    /* position in the pick */
     int p_ip_duplicates;        /* ignore this slot for duplicate ip check */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };

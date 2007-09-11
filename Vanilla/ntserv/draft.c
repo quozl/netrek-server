@@ -157,9 +157,7 @@ static void inl_draft_place_pool(struct player *j)
   if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
     int yoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
     int xoffset = (GWIDTH / 5) / 2;
-    
-		/* Place in pool; inl_pool_sequence initialized in inl_draft_begin() */
-    j->p_inl_x = x - xoffset + j->inl_pool_sequence * (xoffset / 14);
+    j->p_inl_x = x - xoffset + j->p_inl_pool_sequence * (xoffset / 14);
     j->p_inl_y = y - yoffset;
   }
 }
@@ -169,42 +167,37 @@ static void inl_draft_place_pick(struct player *j)
   int x = GWIDTH / 2;
   int y = GWIDTH / 2;
 
-	if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-  	int offset_x = ( GWIDTH / 5 ) / 2; /* half of tactical */
-  	int offset_y = ( GWIDTH / 5 ) / 6;
-  	if (j->p_team == FED) { y += offset_y; }
-  	if (j->p_team == ROM) { y -= offset_y; }
+  if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
+    int offset_x = ( GWIDTH / 5 ) / 2; /* half of tactical */
+    int offset_y = ( GWIDTH / 5 ) / 6;
+    if (j->p_team == FED) { y += offset_y; }
+    if (j->p_team == ROM) { y -= offset_y; }
 
-	
-  	/* TODO: position independently of player number */
-  	j->p_inl_x = x + offset_x - j->p_no * (offset_x / 18) ;
-  	j->p_inl_y = y;
-	}
-	
-	if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP)	{
-		/* Magic numbers set in inl_draft_pick()
+    /* TODO: position independently of player number */
+    j->p_inl_x = x + offset_x - j->p_no * (offset_x / 18) ;
+    j->p_inl_y = y;
+  }
+
+  if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
+    /* Magic numbers set in inl_draft_pick()
 		   0-99 		are pool places
 			 100-199	are home picks
 			 200-299	are away picks
-	 	*/
-		if (j->p_inl_pick_sequence > 200)	{		/* Away pick */
-			int xoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 200) / 3));
-			int yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 200) % 3));
-		}
-		else if (j->p_inl_pick_sequence > 100)	{		/* Home pick */
-			int xoffset = (( GWIDTH / 5 ) / 4) - ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 100) / 3));
-			int yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 100) % 3));
-		}
-		else	{ 	/* ERROR */	
-			int xoffset = 0;
-			int yoffset = 0;
-		}
-		
-		j->p_inl_x = x + xoffset;
-		j->p_inl_y = y + yoffset;
-	}
-		
-	
+    */
+    if (j->p_inl_pick_sequence > 200) { /* Away pick */
+      int xoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 200) / 3));
+      int yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 200) % 3));
+    } else if (j->p_inl_pick_sequence > 100) { /* Home pick */
+      int xoffset = (( GWIDTH / 5 ) / 4) - ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 100) / 3));
+      int yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 100) % 3));
+    } else { /* ERROR */
+      int xoffset = 0;
+      int yoffset = 0;
+    }
+
+    j->p_inl_x = x + xoffset;
+    j->p_inl_y = y + yoffset;
+  }
 }
 
 static void inl_draft_place_selector(struct player *j)
@@ -238,20 +231,18 @@ static void inl_draft_place(struct player *j)
 
 void inl_draft_begin()
 {
-  int h;
-	int poolPositionCount = 0;
+  int h, i;
+  int pool_position_count = 0;
   struct player *j;
 
-  for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+  for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
     j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-		if (!j->p_inl_captain) /* Captains don't need a pool position */
-		{
-			j->p_inl_pool_sequence = poolPositionCount; /*Initialize position in pool*/
-			poolPositionCount++;
-			/* TODO: Handle ships who join mid-draft-- give a poolPosition somehow */
-		}
+    if (!j->p_inl_captain) {
+      j->p_inl_pool_sequence = i++;
+      /* TODO: Handle ships who join mid-draft-- give a poolPosition somehow */
+    }
     inl_draft_place(j);
     /* TODO: set course and speed, with a speed proportional to
     distance to target, rather than step into position */
@@ -346,21 +337,21 @@ void inl_draft_update()
     if (j->p_inl_draft == INL_DRAFT_OFF) {
       j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
       pmessage(0, MALL, "GOD->ALL", "Draft pool addition, new ship joined.");
-			/* TODO: Assign newcomer a pool position */
+      /* TODO: Assign newcomer a pool position */
     }
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
     if ((abs(dx) + abs(dy)) > 500) {
       p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
-			/* Face the way your going-- let's try spinning instead
+      /* Face the way you move
       j->p_dir = ((u_char) nint(atan2((double) (j->p_inl_x -
             j->p_x), (double) (j->p_y - j->p_inl_y)) / 3.14159 *
             128.));
-			*/
-			/* Spin the ship (hopefully) */
-			j->p_dir = ((u_char) nint((j->p_dir + 1) % 128));
+      */
       /* TODO: factorise the above formula into util.c */
+      /* spin the ship */
+      j->p_dir = ((u_char) nint((j->p_dir + 1) % 128));
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
@@ -394,30 +385,18 @@ static int inl_draft_next(struct player *k)
 static void inl_draft_pick(struct player *j, struct player *k)
 {
   /* TODO: draw a phaser from captain or selector to pick? */
-	static int homePickCount = 0;
-	static int awayPickCount = 0;
-	
+  static int home_pick_sequence = 0;
+  static int away_pick_sequence = 0;
+
   if (j->p_team != k->p_team) {
     change_team_quietly(j->p_no, k->p_team, j->p_team);
   }
-	
-	/* Set pick selection number */
-	/* Could probably find a cleaner way to do this */
-	if (j->p_team == FED)
-	{
-		j->p_inl_pick_sequence = 100 + homePickCount;
-		homePickCount++;
-	}
-	else if (j->p_team == ROM)
-	{
-		j->p_inl_pick_sequence = 200 + awayPickCount;
-		awayPickCount++;
-	}
-	else	/* ERROR */
-	{
-		/* TODO: Add Error Code */
-	}
-	
+
+  if (j->p_team == FED) {
+    j->p_inl_pick_sequence = 100 + home_pick_sequence++;
+  } else if (j->p_team == ROM) {
+    j->p_inl_pick_sequence = 200 + away_pick_sequence++;
+  }
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
 
