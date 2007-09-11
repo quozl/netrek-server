@@ -59,7 +59,7 @@
 #define T_SIDELOCKED    0x40            /* Pregame only-side cant choose */ 
 #define T_CONFINE       0x80            /* Pregame only */
 #define T_REGISTER      0x100           /* Captain requests registration */
-#define T_MINIDRAFT     0x200
+#define T_DRAFT         0x200
 
 /* INL_STAT flags */
 
@@ -72,7 +72,7 @@
 #define S_TOURNEY	0x40		/* tournament under way! */
 #define S_COUNTDOWN	0x80		/* 1 minute until start countdown */
 #define S_CONFINE       0x100           /* Confine players */
-#define S_MINIDRAFT			0x200						/* Minidraft is underway */
+#define S_DRAFT		0x200		/* Draft is underway */
 
 #define NONE		-1
 
