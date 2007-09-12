@@ -369,9 +369,10 @@ INL=@INL@
 INL_RECORD=@INL@
 #
 #	Style of INL draft tactical layout
-#	2 = pool on bottom, pick on top beyond each captain,
-#	1 = pool on left, pick on right beyond each captain,
 #	0 = pool horizontal centre, captains above and below, pick nearest race
+#	1 = pool on left, pick on right beyond each captain,
+#	2 = pool on bottom, pick on top beyond each captain,
+#	(may be changed during a draft to explore the preferred style)
 INL_DRAFT_STYLE=0
 #
 #	Enable Dogfight practice robot.

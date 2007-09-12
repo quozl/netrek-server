@@ -150,13 +150,14 @@ static void inl_draft_place_captain(struct player *j)
 
   case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
     {
-      int offset = DRAFT_W / 4;
+      int offset = 2000;
 
       if (j->p_team == FED) { y += offset; }
       if (j->p_team == ROM) { y -= offset; }
       j->p_inl_x = x;
       j->p_inl_y = y;
     }
+    break;
 
   case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
     {
@@ -168,6 +169,7 @@ static void inl_draft_place_captain(struct player *j)
       j->p_inl_x = x;
       j->p_inl_y = y;
     }
+    break;
 
   case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
     {
@@ -177,6 +179,7 @@ static void inl_draft_place_captain(struct player *j)
       if (j->p_team == FED) { j->p_inl_y = y + dy; }
       if (j->p_team == ROM) { j->p_inl_y = y - dy; }
     }
+    break;
   }
 }
 
@@ -188,11 +191,12 @@ static void inl_draft_place_pool(struct player *j)
   switch (inl_draft_style) {
   case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
     {
-      int dx = DRAFT_W / 2;
+      int dx = 10000;
 
       j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 18) + 1000;
       j->p_inl_y = y;
     }
+    break;
 
   case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
     {
@@ -202,6 +206,7 @@ static void inl_draft_place_pool(struct player *j)
       j->p_inl_x = x - (dx / 2) + j->p_inl_pool_sequence * (dx / 14);
       j->p_inl_y = y + dy;
     }
+    break;
 
   case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
     {
@@ -216,6 +221,7 @@ static void inl_draft_place_pool(struct player *j)
         j->p_inl_x = x - (dx * n / 2) + j->p_inl_pool_sequence * dx;
       }
     }
+    break;
   }
 }
 
@@ -227,15 +233,16 @@ static void inl_draft_place_pick(struct player *j)
   switch (inl_draft_style) {
   case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
     {
-      int dx = DRAFT_W / 2;
-      int dy = DRAFT_W / 6;
+      int dx = DRAFT_W / 20;
+      int dy = 4000;
 
       if (j->p_team == FED) { y += dy; }
       if (j->p_team == ROM) { y -= dy; }
       
-      j->p_inl_x = x + dx - j->p_inl_pick_sequence * (dx / 18) ;
+      j->p_inl_x = x + j->p_inl_pick_sequence * dx;
       j->p_inl_y = y;
     }
+    break;
 
   case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
     {
@@ -253,6 +260,7 @@ static void inl_draft_place_pick(struct player *j)
       j->p_inl_x = x + dx;
       j->p_inl_y = y - dy;
     }
+    break;
 
   case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
     {
@@ -274,14 +282,25 @@ static void inl_draft_place_pick(struct player *j)
         j->p_inl_x = x - (dx * n / 2) + j->p_inl_pick_sequence * dx + dx / 2;
       }
     }
+    break;
   }
 }
 
 static void inl_draft_place_selector(struct player *j)
 {
   inl_draft_place_captain(j);
-  if (j->p_team == FED) { j->p_inl_x -= 2000; }
-  if (j->p_team == ROM) { j->p_inl_x += 2000; }
+  switch (inl_draft_style) {
+  case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
+    j->p_inl_y -= 1000;
+    break;
+  case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
+    j->p_inl_x -= 2000;
+    break;
+  case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
+    if (j->p_team == FED) { j->p_inl_x -= 2000; }
+    if (j->p_team == ROM) { j->p_inl_x += 2000; }
+    break;
+  }
 }
 
 static void inl_draft_place(struct player *j)
