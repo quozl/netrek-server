@@ -20,7 +20,7 @@ contracted to any team, often from colleges or amateur ranks." */
 
 /* TODO: initial draft mode declaration by captains, requires INL
    robot voting commands to be added.  */
-#define INL_DRAFT_STYLE_BOTTOM_TO_TOP 1
+#define INL_DRAFT_STYLE_BOTTOM_TO_TOP 2
 
 /* Rich Hansen
 
@@ -54,7 +54,7 @@ Picked players -- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
 
 */
 
-#define INL_DRAFT_STYLE_LEFT_TO_RIGHT 2
+#define INL_DRAFT_STYLE_LEFT_TO_RIGHT 1
 
 /* James Cameron
 
@@ -74,7 +74,7 @@ Key: {} = centre, O = pool players, C = captains, P = picked team
 
 */
 
-#define INL_DRAFT_STYLE_CENTRE_OUTWARDS 3
+#define INL_DRAFT_STYLE_CENTRE_OUTWARDS 0
 
 /* James Cameron
 
@@ -271,7 +271,7 @@ static void inl_draft_place_pick(struct player *j)
         j->p_inl_x = x;
       } else {
         int dx = DRAFT_W / 20;
-        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pick_sequence * dx;
+        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pick_sequence * dx + dx / 2;
       }
     }
   }
@@ -320,9 +320,6 @@ void inl_draft_begin()
   int h, i;
   struct player *j;
 
-  if (inl_draft_style == 0)
-    inl_draft_style = INL_DRAFT_STYLE_CENTRE_OUTWARDS;
-
   context->inl_pool_sequence = 0;
   context->inl_home_pick_sequence = 0;
   context->inl_away_pick_sequence = 0;
@@ -370,6 +367,7 @@ static void inl_draft_arrival_captain(struct player *k)
   /* arrival with a captain who has the up */
   if (other_captain->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
+    return;
   }
   k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
   /* therefore captain closest to draft gets the first choice */
@@ -620,13 +618,14 @@ void inl_draft_watch()
 
   for (;;) {
     usleep(500000);
-    fprintf(stderr, "\033[f--         O=%02d H=%02d A=%02d\n",
+    fprintf(stderr, "\033[fS=%d        O=%02d H=%02d A=%02d\n",
+            inl_draft_style,
             context->inl_pool_sequence,
             context->inl_home_pick_sequence, context->inl_away_pick_sequence);
     for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
       if (j->p_status == PFREE) continue;
       if (j->p_flags & PFROBOT) continue;
-      fprintf(stderr, "%s C=%d D=%d O=%02d P=%02d X=%08d Y=%08d %s\033[K\n",
+      fprintf(stderr, "%s C=%d D=%d O=%02d P=%02d X=%08d Y=%08d %s\n",
               j->p_mapchars, j->p_inl_captain, j->p_inl_draft,
               j->p_inl_pool_sequence, j->p_inl_pick_sequence,
               j->p_inl_x, j->p_inl_y, inl_draft_name(j->p_inl_draft));
