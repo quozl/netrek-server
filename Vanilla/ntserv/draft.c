@@ -80,6 +80,13 @@ Picked players-- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
 
 static int inl_draft_style = INL_DRAFT_STYLE_BOTTOM_TO_TOP;
 
+/* position of galactic to use for draft */
+#define DRAFT_X (GWIDTH/2)
+#define DRAFT_Y (GWIDTH/2)
+
+/* width of tactical */
+#define DRAFT_W (GWIDTH/5)
+
 /* measure the size of the pool */
 static int inl_draft_pool_size()
 {
@@ -121,11 +128,11 @@ static struct player *inl_draft_pick_to_captain(struct player *k)
 
 static void inl_draft_place_captain(struct player *j)
 {
-  int x = GWIDTH / 2;
-  int y = GWIDTH / 2;
+  int x = DRAFT_X;
+  int y = DRAFT_Y;
 
   if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-    int offset = ( GWIDTH / 5 ) / 4; 
+    int offset = DRAFT_W / 4;
     if (j->p_team == FED) { y += offset; }
     if (j->p_team == ROM) { y -= offset; }
     j->p_inl_x = x;
@@ -133,10 +140,10 @@ static void inl_draft_place_captain(struct player *j)
   }
 
   if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    /* Going to put the captains 20% right and left */
-    int xoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
-    if (j->p_team == FED) { x += xoffset; }
-    if (j->p_team == ROM) { x -= xoffset; }
+    /* captains 20% right and left */
+    int dx = DRAFT_W / 5;
+    if (j->p_team == FED) { x += dx; }
+    if (j->p_team == ROM) { x -= dx; }
     j->p_inl_x = x;
     j->p_inl_y = y;
   }
@@ -144,57 +151,51 @@ static void inl_draft_place_captain(struct player *j)
 
 static void inl_draft_place_pool(struct player *j)
 {
-  int x = GWIDTH / 2;
-  int y = GWIDTH / 2;
+  int x = DRAFT_X;
+  int y = DRAFT_Y;
 
   if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-    int offset_x = ( GWIDTH / 5 ) / 2;
-    /* TODO: position independently of player number */
-    j->p_inl_x = x - offset_x + j->p_no * (offset_x / 18) + 1000;
+    int dx = DRAFT_W / 2;
+    j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 18) + 1000;
     j->p_inl_y = y;
   }
 
   if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    int yoffset = (GWIDTH / 5) / 5; /* one-fifth of tactical */
-    int xoffset = (GWIDTH / 5) / 2;
-    j->p_inl_x = x - xoffset + j->p_inl_pool_sequence * (xoffset / 14);
-    j->p_inl_y = y - yoffset;
+    int dy = DRAFT_W / 5;
+    int dx = DRAFT_W / 2;
+    j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 14);
+    j->p_inl_y = y - dy;
   }
 }
 
 static void inl_draft_place_pick(struct player *j)
 {
-  int x = GWIDTH / 2;
-  int y = GWIDTH / 2;
+  int x = DRAFT_X;
+  int y = DRAFT_Y;
 
   if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-    int offset_x = ( GWIDTH / 5 ) / 2; /* half of tactical */
-    int offset_y = ( GWIDTH / 5 ) / 6;
-    if (j->p_team == FED) { y += offset_y; }
-    if (j->p_team == ROM) { y -= offset_y; }
+    int dx = DRAFT_W / 2;
+    int dy = DRAFT_W / 6;
+    if (j->p_team == FED) { y += dy; }
+    if (j->p_team == ROM) { y -= dy; }
 
-    /* TODO: position independently of player number */
-    j->p_inl_x = x + offset_x - j->p_no * (offset_x / 18) ;
+    j->p_inl_x = x + dx - j->p_inl_pick_sequence * (dx / 18) ;
     j->p_inl_y = y;
   }
 
   if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    /* Note that p_inl_pick_sequence is the order picked for that side */
-		int xoffset = 0;
-		int yoffset = 0;
-    if (j->p_team == ROM) { /* Away pick */
-      xoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) / 3));
-      yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) % 3));
-    } else if (j->p_team == FED) { /* Home pick */
-      xoffset = (( GWIDTH / 5 ) / 4) - ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) / 3));
-      yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) % 3));
-    } else { /* ERROR */
-      xoffset = 0;
-      yoffset = 0;
+    int dx = 0;
+    int dy = 0;
+    if (j->p_team == ROM) {
+      dx = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+      dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+    } else if (j->p_team == FED) {
+      dx = (DRAFT_W / 4) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+      dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
     }
 
-    j->p_inl_x = x + xoffset;
-    j->p_inl_y = y + yoffset;
+    j->p_inl_x = x + dx;
+    j->p_inl_y = y + dy;
   }
 }
 
@@ -229,36 +230,36 @@ static void inl_draft_place(struct player *j)
 
 static void inl_draft_assign_to_pool(struct player *j)
 {
-	int h, i, loop;
-	struct player *k;
-	
-	j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-	if (j->p_inl_captain)	return;	/* Captains don't get put in the pool */
-		
-	/* First, we need to find an open pool position */
-	loop = 1;
-	i = 0;
-	while (loop)	{
-		loop = 0;
-		for (h = 0, k = &players[0]; h < MAXPLAYER; h++, k++)	{
-			if (k->p_status == PFREE) continue;
-    	if (k->p_flags & PFROBOT) continue;
-    	if (j != k &&												/* Ignore the player in question */
-					k->p_inl_pool_sequence == i)	{	/* This position is occupied */
-				loop = 1;													/* Keep searching */
-			}	
-    }
-		i++;
-		
-		/* Perform Sanity Check */
-		if (i > MAXPLAYER)	{
-			loop = 0;	/* Escape */
-			i = -1;
-		}
-	}
+  int h, i, loop;
+  struct player *k;
 
-	/* Assign the position */
-	j->p_inl_pool_sequence = i;
+  j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
+  if (j->p_inl_captain) return; /* captains don't get put in the pool */
+
+  /* find an open pool position */
+  loop = 1;
+  i = 0;
+  while (loop) {
+    loop = 0;
+    for (h = 0, k = &players[0]; h < MAXPLAYER; h++, k++) {
+      if (k->p_status == PFREE) continue;
+      if (k->p_flags & PFROBOT) continue;
+      if (j == k) continue;
+      if (k->p_inl_pool_sequence == i) { /* This position is occupied */
+        loop = 1; /* Keep searching */
+      }
+    }
+    i++;
+
+    /* Perform Sanity Check */
+    if (i > MAXPLAYER) {
+      loop = 0; /* Escape */
+      i = -1;
+    }
+  }
+
+  /* Assign the position */
+  j->p_inl_pool_sequence = i;
 }
 
 void inl_draft_begin()
@@ -277,7 +278,7 @@ void inl_draft_begin()
   }
   
   status->gameup |= GU_INL_DRAFT;
-  pmessage(0, MALL, "GOD->ALL", "The Captains have agreed to hold a draft!");
+  pmessage(0, MALL, "GOD->ALL", "The Captains have agreed to hold a draft.");
 }
 
 void inl_draft_end()
@@ -362,8 +363,8 @@ void inl_draft_update()
     if (j->p_flags & PFROBOT) continue;
     /* newly arriving players are forced into the pool */
     if (j->p_inl_draft == INL_DRAFT_OFF) {
-      pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted!", j->p_mapchars);
-			inl_draft_assign_to_pool(j);
+      pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted", j->p_mapchars);
+      inl_draft_assign_to_pool(j);
     }
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
@@ -428,9 +429,10 @@ static void inl_draft_pick(struct player *j, struct player *k)
 
   /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
            k->p_mapchars); */
-					 
-	pmessage(0, MALL, "GOD->ALL", "%s Pick #%s: %s drafts %s.", j->p_team == FED ? "HOME" : "AWAY",
-					 j->p_inl_pick_sequence, k->p_mapchars, j->p_mapchars);
+
+  pmessage(0, MALL, "GOD->ALL", "%s Pick #%s: %s drafts %s.",
+           j->p_team == FED ? "HOME" : "AWAY", j->p_inl_pick_sequence,
+           k->p_mapchars, j->p_mapchars);
 }
 
 void inl_draft_select(int n)
