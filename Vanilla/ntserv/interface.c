@@ -33,7 +33,7 @@ void set_speed(int speed)
     if (speed > me->p_ship.s_maxspeed) {
 	me->p_desspeed = me->p_ship.s_maxspeed;
     } else if (speed < 0) {
-	speed=0;
+	speed = 0;
     }
     /* note: possibly a bug, if speed requested is above maximum, then
     the code above momentarily sets p_desspeed to s_maxspeed, yet code
@@ -316,10 +316,6 @@ void tractor_player(int player)
 {
     struct player *victim;
 
-    if (me->p_inl_draft != INL_DRAFT_OFF) {
-        inl_draft_select(player);
-        return;
-    }
     if (weaponsallowed[WP_TRACTOR]==0) {
 	return;
     }
@@ -351,10 +347,6 @@ void pressor_player(int player)
     int target;
     struct player *victim;
 
-    if (me->p_inl_draft != INL_DRAFT_OFF) {
-        inl_draft_reject(player);
-        return;
-    }
     if (weaponsallowed[WP_TRACTOR]==0) {
         new_warning(0,"Tractor beams haven't been invented yet.");
 	return;

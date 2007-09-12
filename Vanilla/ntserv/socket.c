@@ -43,6 +43,7 @@
 #include "util.h"
 #include "genspkt.h"
 #include "slotmaint.h"
+#include "draft.h"
 
 #ifdef OOPS
 #ifdef MIPSEL
@@ -1419,6 +1420,10 @@ static void handleTractorReq(struct tractor_cpacket *packet)
 	return;
     }
     if (target<0 || target>=MAXPLAYER || target==me->p_no) return;
+    if (me->p_inl_draft != INL_DRAFT_OFF) {
+        inl_draft_select(target);
+        return;
+    }
     player = &players[target];
     if (player->p_flags & PFCLOAK) return;
     if (hypot((double) me->p_x-player->p_x,
@@ -1454,6 +1459,10 @@ static void handleRepressReq(struct repress_cpacket *packet)
 	return;
     }
     if (target<0 || target>=MAXPLAYER || target==me->p_no) return;
+    if (me->p_inl_draft != INL_DRAFT_OFF) {
+        inl_draft_reject(target);
+        return;
+    }
     player= &players[target];
     if (player->p_flags & PFCLOAK) return;
     if (hypot((double) me->p_x-player->p_x,
