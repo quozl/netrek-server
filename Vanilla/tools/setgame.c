@@ -220,5 +220,10 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
+    if (!strcmp(argv[i], "watch-draft")) {
+      inl_draft_watch();
+      goto state_0;
+    }
+
     goto state_0;
 }

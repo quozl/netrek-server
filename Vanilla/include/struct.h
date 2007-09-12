@@ -102,6 +102,9 @@ struct context {
     struct status start;        /* status copy at time of daemon cold start */
     int cp_planet_hits;         /* planet data mismatch stats counters */
     int cp_planet_miss;
+    int inl_pool_sequence;
+    int inl_home_pick_sequence;
+    int inl_away_pick_sequence;
 };
 
 

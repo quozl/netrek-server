@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+#include <unistd.h>
 #include "copyright.h"
 #include "config.h"
 #include "defs.h"
@@ -18,67 +20,80 @@ contracted to any team, often from colleges or amateur ranks." */
 
 /* TODO: initial draft mode declaration by captains, requires INL
    robot voting commands to be added.  */
+#define INL_DRAFT_STYLE_BOTTOM_TO_TOP 1
 
-/* positioning on tactical
-
-+--------------------------------------------------+
-|                                                  |
-|                           P P P P                |
-|                         C                        |
-|                                                  |
-| O O O O O O O O O O                              |
-|                                                  |
-|                         C                        |
-|                           P P P P P              |
-|                                                  |
-+--------------------------------------------------+
-
-Key: O = pool players, C = captains, P = picked team
-
-*/
-
-/* Modified tactical positioning-- will tractors reach?:
-   (yes, tractor range is not checked on the code path used, it is up
-   to the client whether it sends the packet, and both player lock and
-   tractor trigger inl_draft_select ... probably worth emphasising
-   player lock instead -- quozl)
+/* Rich Hansen
 
 +--------------------------------------------------+
 |                                                  |
-/                                                  /
-/                   P               P              / 
-/                                                  /
-/                 P P P           P P P            / 
-/                                                  /
-/                 P P P           P P P            /
-/                                                  /
-/                                                  |
-|                      C        C                  |
+|                                                  |
+|                   P               P              | 
+|                                                  |
+|                 P P P           P P P            | 
+|                                                  |
+|                 P P P           P P P            |
+|                                                  |
+|                                                  |
+|                     C   {}   C                   |
 |                                                  |
 |                                                  |
 |                                                  |
 |          O O O O O O O O O O O O O O O O O       |
 |                                                  |
 |                                                  |
-/                                                  /
-/                                                  /
-/                                                  /
+|                                                  |
 +--------------------------------------------------+
 
-Key: O = pool players, C = captains, P = picked team
+Key: {} = centre, O = pool players, C = captains, P = picked team
 
 Desired offsets from center:
 
 Player pool -- 20% down
 Captains -- 20% right/left
-Picked players-- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
+Picked players -- 20%, 30%, 40% up, 25%, 30%, 35% right (or left)
 
 */
 
-#define INL_DRAFT_STYLE_BOTTOM_TO_TOP 1
 #define INL_DRAFT_STYLE_LEFT_TO_RIGHT 2
 
-static int inl_draft_style = INL_DRAFT_STYLE_BOTTOM_TO_TOP;
+/* James Cameron
+
++--------------------------------------------------+
+|                                                  |
+|                           P P P P                |
+|                         C                        |
+|                                                  |
+| O O O O O O O O O O     {}                       |
+|                                                  |
+|                         C                        |
+|                           P P P P P              |
+|                                                  |
++--------------------------------------------------+
+
+Key: {} = centre, O = pool players, C = captains, P = picked team
+
+*/
+
+#define INL_DRAFT_STYLE_CENTRE_OUTWARDS 3
+
+/* James Cameron
+
++--------------------------------------------------+
+|                 P P P P P P P P P                | -4000
+|                                                  |
+|                         C S                      | -2000
+|                                                  |
+|  O O O O O O O O O O O O{}O O O O O O O O O O O  | +0
+|                                                  |
+|                       S C                        | +2000
+|                                                  |
+|                 P P P P P P P P P                | +4000
++--------------------------------------------------+
+
+Key:
+{} = centre, O = pool players, C = captains, P = picked team, S = selector
+
+*/
 
 /* position of galactic to use for draft */
 #define DRAFT_X (GWIDTH/2)
@@ -131,21 +146,37 @@ static void inl_draft_place_captain(struct player *j)
   int x = DRAFT_X;
   int y = DRAFT_Y;
 
-  if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-    int offset = DRAFT_W / 4;
-    if (j->p_team == FED) { y += offset; }
-    if (j->p_team == ROM) { y -= offset; }
-    j->p_inl_x = x;
-    j->p_inl_y = y;
-  }
+  switch (inl_draft_style) {
 
-  if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    /* captains 20% right and left */
-    int dx = DRAFT_W / 5;
-    if (j->p_team == FED) { x += dx; }
-    if (j->p_team == ROM) { x -= dx; }
-    j->p_inl_x = x;
-    j->p_inl_y = y;
+  case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
+    {
+      int offset = DRAFT_W / 4;
+
+      if (j->p_team == FED) { y += offset; }
+      if (j->p_team == ROM) { y -= offset; }
+      j->p_inl_x = x;
+      j->p_inl_y = y;
+    }
+
+  case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
+    {
+      /* captains 20% right and left */
+      int dx = DRAFT_W / 5;
+
+      if (j->p_team == FED) { x += dx; }
+      if (j->p_team == ROM) { x -= dx; }
+      j->p_inl_x = x;
+      j->p_inl_y = y;
+    }
+
+  case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
+    {
+      int dy = 2000;;
+
+      j->p_inl_x = x;
+      if (j->p_team == FED) { j->p_inl_y = y + dy; }
+      if (j->p_team == ROM) { j->p_inl_y = y - dy; }
+    }
   }
 }
 
@@ -154,17 +185,37 @@ static void inl_draft_place_pool(struct player *j)
   int x = DRAFT_X;
   int y = DRAFT_Y;
 
-  if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-    int dx = DRAFT_W / 2;
-    j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 18) + 1000;
-    j->p_inl_y = y;
-  }
+  switch (inl_draft_style) {
+  case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
+    {
+      int dx = DRAFT_W / 2;
 
-  if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    int dy = DRAFT_W / 5;
-    int dx = DRAFT_W / 2;
-    j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 14);
-    j->p_inl_y = y - dy;
+      j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 18) + 1000;
+      j->p_inl_y = y;
+    }
+
+  case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
+    {
+      int dy = DRAFT_W / 5;
+      int dx = DRAFT_W / 2;
+
+      j->p_inl_x = x - (dx / 2) + j->p_inl_pool_sequence * (dx / 14);
+      j->p_inl_y = y + dy;
+    }
+
+  case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
+    {
+      int n = context->inl_pool_sequence;
+
+      j->p_inl_y = y;
+      if (n == 0) {
+        j->p_inl_x = x;
+      } else {
+        int dx = DRAFT_W / 20;
+
+        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pool_sequence * dx;
+      }
+    }
   }
 }
 
@@ -173,36 +224,64 @@ static void inl_draft_place_pick(struct player *j)
   int x = DRAFT_X;
   int y = DRAFT_Y;
 
-  if (inl_draft_style == INL_DRAFT_STYLE_LEFT_TO_RIGHT) {
-    int dx = DRAFT_W / 2;
-    int dy = DRAFT_W / 6;
-    if (j->p_team == FED) { y += dy; }
-    if (j->p_team == ROM) { y -= dy; }
+  switch (inl_draft_style) {
+  case INL_DRAFT_STYLE_LEFT_TO_RIGHT:
+    {
+      int dx = DRAFT_W / 2;
+      int dy = DRAFT_W / 6;
 
-    j->p_inl_x = x + dx - j->p_inl_pick_sequence * (dx / 18) ;
-    j->p_inl_y = y;
-  }
-
-  if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    int dx = 0;
-    int dy = 0;
-    if (j->p_team == ROM) {
-      dx = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-      dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
-    } else if (j->p_team == FED) {
-      dx = (DRAFT_W / 4) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-      dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+      if (j->p_team == FED) { y += dy; }
+      if (j->p_team == ROM) { y -= dy; }
+      
+      j->p_inl_x = x + dx - j->p_inl_pick_sequence * (dx / 18) ;
+      j->p_inl_y = y;
     }
 
-    j->p_inl_x = x + dx;
-    j->p_inl_y = y + dy;
+  case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
+    {
+      int dx = 0;
+      int dy = 0;
+
+      if (j->p_team == ROM) {
+        dx = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+        dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+      } else if (j->p_team == FED) {
+        dx = (DRAFT_W / 4) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+        dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+      }
+      
+      j->p_inl_x = x + dx;
+      j->p_inl_y = y - dy;
+    }
+
+  case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
+    {
+      int n = 0, dy = 4000;
+
+      if (j->p_team == FED) {
+        j->p_inl_y = y + dy;
+        n = context->inl_home_pick_sequence;
+      }
+      if (j->p_team == ROM) {
+        j->p_inl_y = y - dy;
+        n = context->inl_away_pick_sequence;
+      }
+
+      if (n == 0) {
+        j->p_inl_x = x;
+      } else {
+        int dx = DRAFT_W / 20;
+        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pick_sequence * dx;
+      }
+    }
   }
 }
 
 static void inl_draft_place_selector(struct player *j)
 {
   inl_draft_place_captain(j);
-  j->p_inl_x -= 2000;
+  if (j->p_team == FED) { j->p_inl_x -= 2000; }
+  if (j->p_team == ROM) { j->p_inl_x += 2000; }
 }
 
 static void inl_draft_place(struct player *j)
@@ -230,42 +309,23 @@ static void inl_draft_place(struct player *j)
 
 static void inl_draft_assign_to_pool(struct player *j)
 {
-  int h, i, loop;
-  struct player *k;
-
   j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
   if (j->p_inl_captain) return; /* captains don't get put in the pool */
 
-  /* find an open pool position */
-  loop = 1;
-  i = 0;
-  while (loop) {
-    loop = 0;
-    for (h = 0, k = &players[0]; h < MAXPLAYER; h++, k++) {
-      if (k->p_status == PFREE) continue;
-      if (k->p_flags & PFROBOT) continue;
-      if (j == k) continue;
-      if (k->p_inl_pool_sequence == i) { /* This position is occupied */
-        loop = 1; /* Keep searching */
-      }
-    }
-    i++;
-
-    /* Perform Sanity Check */
-    if (i > MAXPLAYER) {
-      loop = 0; /* Escape */
-      i = -1;
-    }
-  }
-
-  /* Assign the position */
-  j->p_inl_pool_sequence = i;
+  j->p_inl_pool_sequence = context->inl_pool_sequence++;
 }
 
 void inl_draft_begin()
 {
   int h, i;
   struct player *j;
+
+  if (inl_draft_style == 0)
+    inl_draft_style = INL_DRAFT_STYLE_CENTRE_OUTWARDS;
+
+  context->inl_pool_sequence = 0;
+  context->inl_home_pick_sequence = 0;
+  context->inl_away_pick_sequence = 0;
 
   for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
@@ -369,16 +429,16 @@ void inl_draft_update()
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
-    if ((abs(dx) + abs(dy)) > 500) {
-      p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
-      /* Face the way you move
-      j->p_dir = ((u_char) nint(atan2((double) (j->p_inl_x -
-            j->p_x), (double) (j->p_y - j->p_inl_y)) / 3.14159 *
-            128.));
-      */
+    if ((abs(dx) + abs(dy)) > 750) {
+      p_x_y_go(j, j->p_x - (dx / 4), j->p_y - (dy / 4));
+      j->p_dir = ((u_char) nint(atan2(
+                                      (double) (j->p_inl_x - j->p_x),
+                                      (double) (j->p_y - j->p_inl_y))
+                                / 3.14159 * 128.));
       /* TODO: factorise the above formula into util.c */
       /* spin the ship */
-      j->p_dir = ((u_char) nint((j->p_dir + 1) % 128));
+      /* has no effect, no idea why, - quozl */
+      /* j->p_dir = ((u_char) nint((j->p_dir + 1) % 128)); */
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
@@ -412,17 +472,15 @@ static int inl_draft_next(struct player *k)
 static void inl_draft_pick(struct player *j, struct player *k)
 {
   /* TODO: draw a phaser from captain or selector to pick? */
-  static int home_pick_sequence = 0;
-  static int away_pick_sequence = 0;
-
   if (j->p_team != k->p_team) {
     change_team_quietly(j->p_no, k->p_team, j->p_team);
   }
 
   if (j->p_team == FED) {
-    j->p_inl_pick_sequence = home_pick_sequence++;
-  } else if (j->p_team == ROM) {
-    j->p_inl_pick_sequence = away_pick_sequence++;
+    j->p_inl_pick_sequence = context->inl_home_pick_sequence++;
+  }
+  if (j->p_team == ROM) {
+    j->p_inl_pick_sequence = context->inl_away_pick_sequence++;
   }
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
@@ -430,7 +488,7 @@ static void inl_draft_pick(struct player *j, struct player *k)
   /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
            k->p_mapchars); */
 
-  pmessage(0, MALL, "GOD->ALL", "%s Pick #%s: %s drafts %s.",
+  pmessage(0, MALL, "GOD->ALL", "%s Pick # %d: %s drafts %s.",
            j->p_team == FED ? "HOME" : "AWAY", j->p_inl_pick_sequence,
            k->p_mapchars, j->p_mapchars);
 }
@@ -553,4 +611,25 @@ char *inl_draft_name(int x)
   case INL_DRAFT_PICKED_SELECTOR : return "_PICKED_SELECTOR";
   }
   return "UNKNOWN";
+}
+
+void inl_draft_watch()
+{
+  int h;
+  struct player *j;
+
+  for (;;) {
+    usleep(500000);
+    fprintf(stderr, "\033[f--         O=%02d H=%02d A=%02d\n",
+            context->inl_pool_sequence,
+            context->inl_home_pick_sequence, context->inl_away_pick_sequence);
+    for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+      if (j->p_status == PFREE) continue;
+      if (j->p_flags & PFROBOT) continue;
+      fprintf(stderr, "%s C=%d D=%d O=%02d P=%02d X=%08d Y=%08d %s\033[K\n",
+              j->p_mapchars, j->p_inl_captain, j->p_inl_draft,
+              j->p_inl_pool_sequence, j->p_inl_pick_sequence,
+              j->p_inl_x, j->p_inl_y, inl_draft_name(j->p_inl_draft));
+    }
+  }
 }
