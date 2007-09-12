@@ -179,20 +179,18 @@ static void inl_draft_place_pick(struct player *j)
   }
 
   if (inl_draft_style == INL_DRAFT_STYLE_BOTTOM_TO_TOP) {
-    /* Magic numbers set in inl_draft_pick()
-		   0-99 		are pool places
-			 100-199	are home picks
-			 200-299	are away picks
-    */
-    if (j->p_inl_pick_sequence > 200) { /* Away pick */
-      int xoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 200) / 3));
-      int yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 200) % 3));
-    } else if (j->p_inl_pick_sequence > 100) { /* Home pick */
-      int xoffset = (( GWIDTH / 5 ) / 4) - ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 100) / 3));
-      int yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence - 100) % 3));
+    /* Note that p_inl_pick_sequence is the order picked for that side */
+		int xoffset = 0;
+		int yoffset = 0;
+    if (j->p_team == ROM) { /* Away pick */
+      xoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) / 3));
+      yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) % 3));
+    } else if (j->p_team == FED) { /* Home pick */
+      xoffset = (( GWIDTH / 5 ) / 4) - ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) / 3));
+      yoffset = (( GWIDTH / 5 ) / 4) + ((( GWIDTH / 5) / 10) * ((j->p_inl_pick_sequence) % 3));
     } else { /* ERROR */
-      int xoffset = 0;
-      int yoffset = 0;
+      xoffset = 0;
+      yoffset = 0;
     }
 
     j->p_inl_x = x + xoffset;
@@ -229,20 +227,49 @@ static void inl_draft_place(struct player *j)
   }
 }
 
+static void inl_draft_assign_to_pool(struct player *j)
+{
+	int h, i, loop;
+	struct player *k;
+	
+	j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
+	if (j->p_inl_captain)	return;	/* Captains don't get put in the pool */
+		
+	/* First, we need to find an open pool position */
+	loop = 1;
+	i = 0;
+	while (loop)	{
+		loop = 0;
+		for (h = 0, k = &players[0]; h < MAXPLAYER; h++, k++)	{
+			if (k->p_status == PFREE) continue;
+    	if (k->p_flags & PFROBOT) continue;
+    	if (j != k &&												/* Ignore the player in question */
+					k->p_inl_pool_sequence == i)	{	/* This position is occupied */
+				loop = 1;													/* Keep searching */
+			}	
+    }
+		i++;
+		
+		/* Perform Sanity Check */
+		if (i > MAXPLAYER)	{
+			loop = 0;	/* Escape */
+			i = -1;
+		}
+	}
+
+	/* Assign the position */
+	j->p_inl_pool_sequence = i;
+}
+
 void inl_draft_begin()
 {
   int h, i;
-  int pool_position_count = 0;
   struct player *j;
 
   for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
-    j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-    if (!j->p_inl_captain) {
-      j->p_inl_pool_sequence = i++;
-      /* TODO: Handle ships who join mid-draft-- give a poolPosition somehow */
-    }
+    inl_draft_assign_to_pool(j);
     inl_draft_place(j);
     /* TODO: set course and speed, with a speed proportional to
     distance to target, rather than step into position */
@@ -250,7 +277,7 @@ void inl_draft_begin()
   }
   
   status->gameup |= GU_INL_DRAFT;
-  pmessage(0, MALL, "GOD->ALL", "Draft begins.");
+  pmessage(0, MALL, "GOD->ALL", "The Captains have agreed to hold a draft!");
 }
 
 void inl_draft_end()
@@ -266,7 +293,7 @@ void inl_draft_end()
   status->gameup &= ~(GU_INL_DRAFT);
   /* TODO: send the players back home? or let them fight here? */
   /* TODO: turn off confine during a draft? see if it has an impact */
-  pmessage(0, MALL, "GOD->ALL", "Draft ends.");
+  pmessage(0, MALL, "GOD->ALL", "The draft has completed!");
 }
 
 static void inl_draft_arrival_captain(struct player *k)
@@ -335,9 +362,8 @@ void inl_draft_update()
     if (j->p_flags & PFROBOT) continue;
     /* newly arriving players are forced into the pool */
     if (j->p_inl_draft == INL_DRAFT_OFF) {
-      j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-      pmessage(0, MALL, "GOD->ALL", "Draft pool addition, new ship joined.");
-      /* TODO: Assign newcomer a pool position */
+      pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted!", j->p_mapchars);
+			inl_draft_assign_to_pool(j);
     }
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
@@ -393,15 +419,18 @@ static void inl_draft_pick(struct player *j, struct player *k)
   }
 
   if (j->p_team == FED) {
-    j->p_inl_pick_sequence = 100 + home_pick_sequence++;
+    j->p_inl_pick_sequence = home_pick_sequence++;
   } else if (j->p_team == ROM) {
-    j->p_inl_pick_sequence = 200 + away_pick_sequence++;
+    j->p_inl_pick_sequence = away_pick_sequence++;
   }
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
 
-  pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
-           k->p_mapchars);
+  /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
+           k->p_mapchars); */
+					 
+	pmessage(0, MALL, "GOD->ALL", "%s Pick #%s: %s drafts %s.", j->p_team == FED ? "HOME" : "AWAY",
+					 j->p_inl_pick_sequence, k->p_mapchars, j->p_mapchars);
 }
 
 void inl_draft_select(int n)
