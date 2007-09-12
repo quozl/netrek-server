@@ -293,6 +293,7 @@ char Mars[FNAMESIZE];
 char Puck[FNAMESIZE];
 char Inl[FNAMESIZE];
 int inl_record = 0;
+int inl_draft_style = 0;
 
 char Access_File[FNAMESIZE];
 char NoCount_File[FNAMESIZE];

@@ -202,6 +202,8 @@ struct sysdef_keywords {
     "Enable INL (league) robot on startup" },
   { "INL_RECORD",	SYSDEF_INT,	&inl_record,
     "Record INL games server side with CamBot" },
+  { "INL_DRAFT_STYLE",	SYSDEF_INT,	&inl_draft_style,
+    "Style of INL draft layout on tactical" },
 #ifdef DOGFIGHT
   { "DOGFIGHT",		SYSDEF_ROBOT,	(void *) MARS_ROBOT,
     "Enable Mars (dogfight) robot on startup" },

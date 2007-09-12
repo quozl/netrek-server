@@ -315,6 +315,7 @@ extern char Mars[FNAMESIZE];
 extern char Puck[FNAMESIZE];
 extern char Inl[FNAMESIZE];
 extern int inl_record;
+extern int inl_draft_style;
 
 extern char Access_File[FNAMESIZE];
 extern char NoCount_File[FNAMESIZE];

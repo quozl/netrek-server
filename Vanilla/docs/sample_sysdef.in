@@ -368,6 +368,12 @@ INL=@INL@
 #	Record INL games server side with CamBot.  (0 = no, 1 = yes)
 INL_RECORD=@INL@
 #
+#	Style of INL draft tactical layout
+#	1 = pool on bottom, pick on top beyond each captain,
+#	2 = pool on left, pick on right beyond each captain,
+#	3 = pool horizontal centre, captains above and below, pick nearest race
+INL_DRAFT_STYLE=0
+#
 #	Enable Dogfight practice robot.
 DOGFIGHT=0
 #
