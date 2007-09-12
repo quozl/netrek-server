@@ -290,45 +290,12 @@ struct sysdef_keywords {
 /*
 
 Procedure for adding new default value.
-James Cameron, 14th February 2004.
+James Cameron, 12th September 2007.
 
 - add to ntserv/data.c
 - add to include/data.h
 - add to sysdef_keywords in include/sysdefaults.h, in any order, prefer end
 - add to docs/sample_sysdef.in with comment about value meanings
-- add to docs/CUSTOMIZATION
-- use glade (http://glade.pn.org/) to add to gum/gum.xml and regenerate code
-- leave a comment below if your defaults have not been added to gum
-
-STARBASE_REBUILD_TIME
-STURGEON*
-EJECT_VOTE_*
-BAN_VOTE_*
-*DUPLICATES
-MAX_NEWBIE_*
-NEWBIE_BALANCE_HUMANS
-SAFE_IDLE
-OBSERVER_MUTING
-BAN_NOCONNECT
-ADMIN_PASSWORD
-DDRANK
-GARANK
-BLOGGING
-FPS
-SBORBIT
-OBSERVER_KEEPS_GAME_ALIVE
-RESTRICT_3RD_DROP
-IP_CHECK_DNS*
-CLASSICTOURN
-REPORT_USERS
-OFFENSE_RANK
-ROBOT_DEBUG_*
-PRET_PLANETS
-PRET_SAVE_GALAXY
-PRET_GALAXY_LIFETIME
-SERVER_ADVERTISE_*
-WHITELIST_INDIV
-WHITELIST_TEAM
-WHITELIST_ALL
+- add to docs/CUSTOMIZATION if reasonable but do not duplicate above
 
 */
