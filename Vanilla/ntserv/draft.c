@@ -367,7 +367,7 @@ void inl_draft_end()
     if (j->p_flags & PFROBOT) continue;
     j->p_inl_draft = INL_DRAFT_OFF;
   }
-  status->gameup &= ~(GU_INL_DRAFT);
+  status->gameup &= ~GU_INL_DRAFT;
   /* TODO: send the players back home? or let them fight here? */
   /* TODO: turn off confine during a draft? see if it has an impact */
   pmessage(0, MALL, "GOD->ALL", "The draft has completed!");

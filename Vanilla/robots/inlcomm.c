@@ -171,8 +171,8 @@ int do_switchside(comm,mess)
 /* Allows the captain to agree on starting a draft */
 
 int do_draft(comm,mess)
- 	  char *comm;
- 	  struct message *mess;
+     char *comm;
+     struct message *mess;
 {
   int who;
   int c, num = -1;
@@ -184,21 +184,20 @@ int do_draft(comm,mess)
 
   who = mess->m_from;
 
-	if (!inl_stat.change)
-    {			/* can't change it anymore */
+  if (!inl_stat.change)
+    {
       pmessage(who, MINDIV, addr_mess(who, MINDIV),
-	       "You can not start a draft. The game has started.");
+               "You cannot DRAFT while a game is underway.");
       return 0;
     }
 
-  /* Check if player is Captain */
   if ((num = check_player(who, 1)) == NONE)
     return 0;
 
   inl_teams[num].flags |= T_DRAFT;
 
-  pmessage(0, MALL, inl_from, "%s (%s) requests a Draft.",
-	   inl_teams[num].t_name, players[who].p_mapchars);
+  pmessage(0, MALL, inl_from, "%s (%s) requests a draft.",
+           inl_teams[num].t_name, players[who].p_mapchars);
 
   for (c=0; c < INLTEAM; c++)
     {
@@ -209,17 +208,15 @@ int do_draft(comm,mess)
   ERROR(2,("	  startdraft = %d\n",startdraft));
 #endif
 
- 	if (startdraft != 2) return 1;
+  if (startdraft != 2) return 1;
 
- 	for (c=0; c < INLTEAM; c++)
+  for (c=0; c < INLTEAM; c++)
     inl_teams[c].flags &= ~T_DRAFT;
-		
-	inl_stat.flags |= S_DRAFT;
-	/* TODO: REMOVE THIS FLAG WHEN DRAFT COMPLETE */
+
+  inl_stat.flags |= S_DRAFT;
 
   inl_draft_begin();
   return 0;
-
 }
 
 /* Allows the captain to agree on starting the game */
@@ -248,12 +245,19 @@ int do_start(comm,mess)
   if ((num = check_player(who, 1)) == NONE)
     return 0;
 
-	if (inl_stat.flags & S_DRAFT)	/* A draft is occuring */
-	{
-		pmessage(who, MINDIV, addr_mess(who, MINDIV),
-	  	"You cannot start while a draft is underway.");
-    return 0;
-	}
+  if (inl_stat.flags & S_DRAFT)
+    {
+      if (!(status->gameup & GU_INL_DRAFT)) {
+        inl_stat.flags &= ~S_DRAFT;
+      }
+    }
+
+  if (inl_stat.flags & S_DRAFT)
+    {
+      pmessage(who, MINDIV, addr_mess(who, MINDIV),
+               "You cannot START while a draft is underway.");
+      return 0;
+    }
 
   if ((inl_teams[num].side_index == NOT_CHOOSEN)
       || (inl_teams[num].side_index == RELINQUISH))
@@ -278,7 +282,6 @@ int do_start(comm,mess)
 
   if (begin != 2) return 1;
 
-  /* #ifdef nodef */  /* why was this nodef here? */
   if ((inl_teams[HOME].time != inl_teams[AWAY].time ) ||
       (inl_teams[HOME].overtime != inl_teams[AWAY].overtime))
     {
@@ -293,7 +296,6 @@ int do_start(comm,mess)
 	}
       return 0;
     }
-  /* #endif */
 
   if (inl_teams[HOME].start_armies != inl_teams[AWAY].start_armies)
     {
@@ -717,7 +719,7 @@ int do_resetgalaxy(comm,mess)
   int rebuild = 0;
 
 #ifdef INLDEBUG
-  ERROR(2,("	Enter do_start\n"));
+  ERROR(2,("	Enter do_resetgalaxy\n"));
 #endif
 
   who = mess->m_from;

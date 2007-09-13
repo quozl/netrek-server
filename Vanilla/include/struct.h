@@ -111,8 +111,10 @@ struct context {
 /* The following defines are for gameup field */
 #define GU_GAMEOK 0x1
 #define GU_PRACTICE 0x2			/* Basepractice robot is present */
+/* also set by INL robot during a pause, in pre-game, or post-game */
 #define practice_mode ((status->gameup) & GU_PRACTICE)
 #define GU_CHAOS 0x4
+/* also set by INL robot in post-game */
 #define chaos ((status->gameup) & GU_CHAOS)
 #define GU_PAUSED 0x8
 #define GU_INROBOT 0x10			/* INL robot is present	*/

@@ -121,6 +121,22 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
+    if (!strcmp(argv[i], "wait-for-inl-start")) {
+      while (status->gameup & (GU_GAMEOK|GU_INROBOT)) {
+        sleep(1);
+        if (!(status->gameup & (GU_CHAOS|GU_PRACTICE))) break;
+      }
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "wait-for-inl-end")) {
+      while (status->gameup & (GU_GAMEOK|GU_INROBOT)) {
+        sleep(1);
+        if (status->gameup & (GU_CHAOS|GU_PRACTICE)) break;
+      }
+      goto state_0;
+    }
+
     if (!strcmp(argv[i], "no-test-mode")) {
       context->frame_test_mode = 0;
       goto state_0;
@@ -179,6 +195,31 @@ int main(int argc, char **argv)
       printf("blog_pickup_game_full: %d\n", context->blog_pickup_game_full);
       printf("blog_pickup_queue_full: %d\n", context->blog_pickup_queue_full);
       goto state_0;
+    }
+
+    if (!strcmp(argv[i], "watch-gameup")) {
+      int old, new;
+      old = -1;
+      for(;;) {
+	new = status->gameup;
+	if (new != old) {
+	  fprintf(stderr, "%s%s%s%s%s%s%s%s%s%s%s%s$\n",
+		  new & GU_GAMEOK      ? "_GAMEOK      ":"             ",
+		  new & GU_PRACTICE    ? "_PRACTICE    ":"             ",
+		  new & GU_CHAOS       ? "_CHAOS       ":"             ",
+		  new & GU_PAUSED      ? "_PAUSED      ":"             ",
+		  new & GU_INROBOT     ? "_INROBOT     ":"             ",
+		  new & GU_NEWBIE      ? "_NEWBIE      ":"             ",
+		  new & GU_PRET        ? "_PRET        ":"             ",
+		  new & GU_BOT_IN_GAME ? "_BOT_IN_GAME ":"             ",
+		  new & GU_CONQUER     ? "_CONQUER     ":"             ",
+		  new & GU_PUCK        ? "_PUCK        ":"             ",
+		  new & GU_DOG         ? "_DOG         ":"             ",
+		  new & GU_INL_DRAFT   ? "_INL_DRAFT   ":"             ");
+	  old = new;
+	}
+        usleep(100000);
+      }
     }
 
     if (!strcmp(argv[i], "lock-on")) {
