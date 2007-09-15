@@ -161,8 +161,8 @@ static void inl_draft_place_captain(struct player *j)
 
   case INL_DRAFT_STYLE_BOTTOM_TO_TOP:
     {
-      /* captains 20% right and left */
-      int dx = DRAFT_W / 5;
+      /* captains 10% right and left */
+      int dx = DRAFT_W / 10;
 
       if (j->p_team == FED) { x += dx; }
       if (j->p_team == ROM) { x -= dx; }
@@ -250,11 +250,11 @@ static void inl_draft_place_pick(struct player *j)
       int dy = 0;
 
       if (j->p_team == ROM) {
-        dx = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-        dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+        dx = -(DRAFT_W / 8) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+        dy = (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
       } else if (j->p_team == FED) {
-        dx = (DRAFT_W / 4) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-        dy = (DRAFT_W / 4) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+        dx = (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+        dy = (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
       }
       
       j->p_inl_x = x + dx;
@@ -447,15 +447,17 @@ void inl_draft_update()
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
     if ((abs(dx) + abs(dy)) > 750) {
-      p_x_y_go(j, j->p_x - (dx / 4), j->p_y - (dy / 4));
+      p_x_y_go(j, j->p_x - (dx / 20), j->p_y - (dy / 20));
+			
       j->p_dir = ((u_char) nint(atan2(
                                       (double) (j->p_inl_x - j->p_x),
                                       (double) (j->p_y - j->p_inl_y))
                                 / 3.14159 * 128.));
+																
       /* TODO: factorise the above formula into util.c */
       /* spin the ship */
       /* has no effect, no idea why, - quozl */
-      /* j->p_dir = ((u_char) nint((j->p_dir + 1) % 128)); */
+      /*j->p_dir = ((u_char) nint((j->p_dir + 1) % 128));*/
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
