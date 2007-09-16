@@ -446,18 +446,22 @@ void inl_draft_update()
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
+
+
     if ((abs(dx) + abs(dy)) > 750) {
-      p_x_y_go(j, j->p_x - (dx / 20), j->p_y - (dy / 20));
+	    p_x_y_go(j, j->p_x - (dx / 15), j->p_y - (dy / 15));
 			
-      j->p_dir = ((u_char) nint(atan2(
+      /*j->p_dir = ((u_char) nint(atan2(
                                       (double) (j->p_inl_x - j->p_x),
                                       (double) (j->p_y - j->p_inl_y))
-                                / 3.14159 * 128.));
+                                / 3.14159 * 128.)); */
 																
       /* TODO: factorise the above formula into util.c */
       /* spin the ship */
       /* has no effect, no idea why, - quozl */
-      /*j->p_dir = ((u_char) nint((j->p_dir + 1) % 128));*/
+			j->p_dir = ((u_char) nint(((int)j->p_dir + 24) % 256));
+			j->p_desdir = j->p_dir;
+      
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
@@ -507,9 +511,9 @@ static void inl_draft_pick(struct player *j, struct player *k)
   /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
            k->p_mapchars); */
 
-  pmessage(0, MALL, "GOD->ALL", "%s Pick # %d: %s drafts %s.",
+  pmessage(0, MALL, "GOD->ALL", "%s Pick # %d: %s drafts %s (%s).",
            j->p_team == FED ? "HOME" : "AWAY", j->p_inl_pick_sequence,
-           k->p_mapchars, j->p_mapchars);
+           k->p_mapchars, j->p_mapchars, j->p_name);
 }
 
 void inl_draft_select(int n)
@@ -527,7 +531,7 @@ void inl_draft_select(int n)
       /* captain fingers fellow captain */
       /* meaning: pass */
       if (inl_draft_next(k)) {
-        pmessage(0, MALL, "GOD->ALL", "Draft pick declined by %s.",
+        pmessage(0, MALL, "GOD->ALL", "%s passes this draft pick!",
                  k->p_mapchars);
       }
     }
