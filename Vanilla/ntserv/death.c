@@ -42,7 +42,8 @@ void death(void)
 	break;
     case KWINNER:
         if ((queues[QU_PICKUP].q_flags & QU_OPEN) &&
-	    (queues[QU_PICKUP].count > 0)){
+	    (queues[QU_PICKUP].count > 0) &&
+	    !(me->p_flags & PFOBSERV)){
 	  mustexit = 1;
 	}
 	break;
