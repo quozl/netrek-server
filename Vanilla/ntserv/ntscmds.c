@@ -650,16 +650,16 @@ int bounceWhois(int from)
                in the playerlist anyways. */
             bounce(from, "(%s@%s)", me->p_login, me->p_full_hostname);
         } else
-            bounce(from, msgbuf);
+            bounce(from, "%s", msgbuf);
         if (ip_check_dns && strcmp(me->p_full_hostname, me->p_dns_hostname)) {
             snprintf(msgbuf, 255, "[DNS Mismatch] %s resolves to %s", 
                      me->p_mapchars, me->p_dns_hostname);
             if (strlen(msgbuf) > MSGTEXT_LEN) {
                 bounce(from, "[DNS Mismatch] %s resolves to:", me->p_mapchars);
-                bounce(from, me->p_dns_hostname);
+                bounce(from, "%s", me->p_dns_hostname);
             }
             else
-                bounce(from, msgbuf);
+                bounce(from, "%s", msgbuf);
         }
         else
             bounce(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
