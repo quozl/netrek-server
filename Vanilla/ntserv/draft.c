@@ -329,8 +329,8 @@ static void inl_draft_place(struct player *j)
 static void inl_draft_assign_to_pool(struct player *j)
 {
   j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
+	j->p_inl_pick_sequence = 0;
   if (j->p_inl_captain) return; /* captains don't get put in the pool */
-
   j->p_inl_pool_sequence = context->inl_pool_sequence++;
 }
 
@@ -348,6 +348,13 @@ void inl_draft_begin()
     if (j->p_flags & PFROBOT) continue;
     inl_draft_assign_to_pool(j);
     inl_draft_place(j);
+		/* Break orbit and undock */
+    if (j->p_flags & PFORBIT)  {
+			j->p_flags &= ~PFORBIT;
+		}
+		if (j->p_flags & PFDOCK)	{
+			j->p_flags &= ~PFDOCK;
+		}		
     /* TODO: set course and speed, with a speed proportional to
     distance to target, rather than step into position */
     j->p_desspeed = 0;
@@ -449,7 +456,7 @@ void inl_draft_update()
 
 
     if ((abs(dx) + abs(dy)) > 750) {
-	    p_x_y_go(j, j->p_x - (dx / 15), j->p_y - (dy / 15));
+	    p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
 			
       /*j->p_dir = ((u_char) nint(atan2(
                                       (double) (j->p_inl_x - j->p_x),
@@ -494,6 +501,7 @@ static int inl_draft_next(struct player *k)
 
 static void inl_draft_pick(struct player *j, struct player *k)
 {
+	int curpick;
   /* TODO: draw a phaser from captain or selector to pick? */
   if (j->p_team != k->p_team) {
     change_team_quietly(j->p_no, k->p_team, j->p_team);
@@ -505,15 +513,20 @@ static void inl_draft_pick(struct player *j, struct player *k)
   if (j->p_team == ROM) {
     j->p_inl_pick_sequence = context->inl_away_pick_sequence++;
   }
-
+	
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
+	curpick = context->inl_home_pick_sequence + context->inl_away_pick_sequence;
 
   /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
            k->p_mapchars); */
 
-  pmessage(0, MALL, "GOD->ALL", "%s Pick # %d: %s drafts %s (%s).",
+  /* pmessage(0, MALL, "GOD->ALL", "%s Pick # %d: %s drafts %s (%s).",
            j->p_team == FED ? "HOME" : "AWAY", j->p_inl_pick_sequence,
-           k->p_mapchars, j->p_mapchars, j->p_name);
+           k->p_mapchars, j->p_mapchars, j->p_name);*/
+
+	pmessage(0, MALL, "GOD->ALL", "Selection #%d: %s (%s) drafts %s (%s).",
+           curpick,k->p_mapchars, 
+					 j->p_team == FED ? "HOME" : "AWAY",j->p_mapchars, j->p_name);
 }
 
 void inl_draft_select(int n)
