@@ -373,7 +373,7 @@ void inl_draft_end()
     place_starting_planet(j);
   }
   status->gameup &= ~GU_INL_DRAFT;
-  /* TODO: send the players back home? or let them fight here? */
+  /* TODO: move players back home with the fancy movement logic */
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
 }
 
@@ -442,6 +442,7 @@ void inl_draft_update()
     int dx, dy;
     if (j->p_status != PALIVE) continue;
     if (j->p_flags & PFROBOT) continue;
+    if (j->p_flags & PFOBSERV) continue;
     /* newly arriving players are forced into the pool */
     if (j->p_inl_draft == INL_DRAFT_OFF) {
       pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted", j->p_mapchars);
