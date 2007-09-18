@@ -369,10 +369,10 @@ void inl_draft_end()
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
     if (j->p_flags & PFOBSERV) continue;
-    j->p_inl_draft = INL_DRAFT_OFF;
-    place_starting_planet(j);
+    j->p_inl_draft = INL_DRAFT_MOVING_TO_HOME;
+    place_starting_planet(j, 1);
   }
-  status->gameup &= ~GU_INL_DRAFT;
+  //status->gameup &= ~GU_INL_DRAFT;
   /* TODO: move players back home with the fancy movement logic */
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
 }
@@ -409,6 +409,11 @@ static void inl_draft_arrival_pick(struct player *j)
   j->p_inl_draft = INL_DRAFT_PICKED;
 }
 
+static void inl_draft_arrival_home(struct player *j)
+{
+    j->p_inl_draft = INL_DRAFT_END;
+}
+
 /* a ship has arrived at the nominated position */
 static void inl_draft_arrival(struct player *j)
 {
@@ -422,6 +427,9 @@ static void inl_draft_arrival(struct player *j)
     break;
   case INL_DRAFT_MOVING_TO_PICK : /* has been chosen, in transit to team */
     inl_draft_arrival_pick(j);
+    break;
+  case INL_DRAFT_MOVING_TO_HOME : /* draft ended, going home */
+    inl_draft_arrival_home(j);
     break;
   case INL_DRAFT_POOLED:
   case INL_DRAFT_PICKED:
@@ -437,12 +445,19 @@ void inl_draft_update()
 {
   int h;
   struct player *j;
+  int move = 0, pcount = 0, endcount = 0;
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     int dx, dy;
     if (j->p_status != PALIVE) continue;
     if (j->p_flags & PFROBOT) continue;
     if (j->p_flags & PFOBSERV) continue;
+    pcount++;
+    if (j->p_inl_draft == INL_DRAFT_END)
+    {
+        endcount++;
+        continue;
+    }
     /* newly arriving players are forced into the pool */
     if (j->p_inl_draft == INL_DRAFT_OFF) {
       pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted", j->p_mapchars);
@@ -457,8 +472,21 @@ void inl_draft_update()
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
+      if (j->p_inl_draft == INL_DRAFT_END)
+        endcount++;
     }
+    if (j->p_inl_draft == INL_DRAFT_MOVING_TO_HOME)
+      move = 1;
   }
+  if (pcount == endcount) {
+    status->gameup &= ~GU_INL_DRAFT;
+      for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+        j->p_inl_draft = INL_DRAFT_OFF;
+      }
+    return;
+  }
+  if (move)
+    return;
   if (inl_draft_pool_size() == 0) {
     inl_draft_end();
   }
@@ -623,6 +651,7 @@ char *inl_draft_name(int x)
   case INL_DRAFT_CAPTAIN_DOWN    : return "_CAPTAIN_DOWN";
   case INL_DRAFT_POOLED          : return "_POOLED";
   case INL_DRAFT_MOVING_TO_PICK  : return "_MOVING_TO_PICK";
+  case INL_DRAFT_MOVING_TO_HOME  : return "_MOVING_TO_HOME";
   case INL_DRAFT_PICKED          : return "_PICKED";
   case INL_DRAFT_PICKED_SELECTOR : return "_PICKED_SELECTOR";
   }

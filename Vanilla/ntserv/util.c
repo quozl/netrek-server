@@ -540,10 +540,17 @@ struct planet *pick_starting_planet(int p_team)
     }
 }
 
-void place_starting_planet(struct player *k)
+void place_starting_planet(struct player *k, int inl)
 {
     struct planet *starting_planet = pick_starting_planet(k->p_team);
-    p_x_y_go(k,
-             starting_planet->pl_x + (random() % 10000) - 5000,
-             starting_planet->pl_y + (random() % 10000) - 5000);
+    int x = starting_planet->pl_x + (random() % 10000) - 5000;
+    int y = starting_planet->pl_y + (random() % 10000) - 5000;
+    
+    if (inl)
+    {
+        k->p_inl_x = x;
+        k->p_inl_y = y;
+    }
+    else
+        p_x_y_go(k, x, y);
 }

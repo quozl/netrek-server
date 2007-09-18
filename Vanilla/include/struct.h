@@ -522,8 +522,10 @@ struct player {
 #define INL_DRAFT_CAPTAIN_DOWN    3 /* captain without right to select */
 #define INL_DRAFT_POOLED          4 /* in pool of players to be chosen */
 #define INL_DRAFT_MOVING_TO_PICK  5 /* has been chosen, in transit to team */
-#define INL_DRAFT_PICKED          6 /* has been chosen by a captain */
-#define INL_DRAFT_PICKED_SELECTOR 7 /* has been given duty to pick */
+#define INL_DRAFT_MOVING_TO_HOME  6 /* draft ended, going home */
+#define INL_DRAFT_PICKED          7 /* has been chosen by a captain */
+#define INL_DRAFT_PICKED_SELECTOR 8 /* has been given duty to pick */
+#define INL_DRAFT_END             9 /* done moving home after draft */
 
 struct statentry {
     char name[NAME_LEN], password[NAME_LEN];

@@ -42,4 +42,4 @@ int p_ups_set(struct player *me, int ups);
 int is_idle(struct player *victim);
 int is_invisible_due_idle(struct player *victim);
 struct planet *pick_starting_planet(int p_team);
-void place_starting_planet(struct player *k);
+void place_starting_planet(struct player *k, int inl);
