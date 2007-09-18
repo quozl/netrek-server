@@ -251,10 +251,10 @@ static void inl_draft_place_pick(struct player *j)
 
       if (j->p_team == ROM) {
         dx = -(DRAFT_W / 8) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-        dy = (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+        dy =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
       } else if (j->p_team == FED) {
-        dx = (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-        dy = (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+        dx =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
+        dy =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
       }
       
       j->p_inl_x = x + dx;
@@ -329,8 +329,9 @@ static void inl_draft_place(struct player *j)
 static void inl_draft_assign_to_pool(struct player *j)
 {
   j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-	j->p_inl_pick_sequence = 0;
+  j->p_inl_pick_sequence = 0;
   if (j->p_inl_captain) return; /* captains don't get put in the pool */
+
   j->p_inl_pool_sequence = context->inl_pool_sequence++;
 }
 
@@ -346,20 +347,12 @@ void inl_draft_begin()
   for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
+    j->p_desspeed = 0;
+    bay_release(j);
+    j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    getship(&j->p_ship, CRUISER);
     inl_draft_assign_to_pool(j);
     inl_draft_place(j);
-		/* Break orbit and undock */
-    if (j->p_flags & PFORBIT)  {
-			j->p_flags &= ~PFORBIT;
-		}
-		if (j->p_flags & PFDOCK)	{
-			j->p_flags &= ~PFDOCK;
-		}
-		/* Force to CA */
-		getship(&j->p_ship, CRUISER);		
-    /* TODO: set course and speed, with a speed proportional to
-    distance to target, rather than step into position */
-    j->p_desspeed = 0;
   }
   
   status->gameup |= GU_INL_DRAFT;
@@ -378,9 +371,7 @@ void inl_draft_end()
   }
   status->gameup &= ~GU_INL_DRAFT;
   /* TODO: send the players back home? or let them fight here? */
-  /* TODO: turn off confine during a draft? see if it has an impact */
-	/* Confine appears to have no affect so far -dotman */
-  pmessage(0, MALL, "GOD->ALL", "The draft has completed!");
+  pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
 }
 
 static void inl_draft_arrival_captain(struct player *k)
@@ -391,21 +382,18 @@ static void inl_draft_arrival_captain(struct player *k)
   /* arrival without another captain */
   if (other_captain == NULL) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-		getship(&k->p_ship, BATTLESHIP);
+    getship(&k->p_ship, BATTLESHIP);
     return;
   }
   /* arrival with a captain who has the up */
   if (other_captain->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
-		getship(&k->p_ship, SCOUT);
+    getship(&k->p_ship, SCOUT);
     return;
   }
   k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
+  getship(&k->p_ship, BATTLESHIP);
   /* therefore captain closest to draft gets the first choice */
-  /* TODO: indicate up captain using some graphical element, but do
-  not reduce body language opportunities ... e.g. use plasma torps not
-  shields */
-	getship(&k->p_ship, BATTLESHIP);
 }
 
 static void inl_draft_arrival_pool(struct player *j)
@@ -459,22 +447,9 @@ void inl_draft_update()
     inl_draft_place(j);
     dx = j->p_x - j->p_inl_x;
     dy = j->p_y - j->p_inl_y;
-
-
     if ((abs(dx) + abs(dy)) > 750) {
-	    p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
-			
-      /*j->p_dir = ((u_char) nint(atan2(
-                                      (double) (j->p_inl_x - j->p_x),
-                                      (double) (j->p_y - j->p_inl_y))
-                                / 3.14159 * 128.)); */
-																
-      /* TODO: factorise the above formula into util.c */
-      /* spin the ship */
-      /* has no effect, no idea why, - quozl */
-			j->p_dir = ((u_char) nint(((int)j->p_dir + 24) % 256));
-			j->p_desdir = j->p_dir;
-      
+      p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
+      j->p_desdir = j->p_dir = (u_char) nint(((int)j->p_dir + 24) % 256);
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
@@ -496,9 +471,9 @@ static int inl_draft_next(struct player *k)
     if (j->p_flags & PFROBOT) continue;
     if (!j->p_inl_captain) continue;
     j->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-		getship(&j->p_ship, BATTLESHIP);
+    getship(&j->p_ship, BATTLESHIP);
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
-		getship(&k->p_ship, SCOUT);
+    getship(&k->p_ship, SCOUT);
     return 1;
   }
   /* TODO: test that a captain who leaves and returns can allow draft
@@ -509,7 +484,6 @@ static int inl_draft_next(struct player *k)
 
 static void inl_draft_pick(struct player *j, struct player *k)
 {
-	int curpick;
   /* TODO: draw a phaser from captain or selector to pick? */
   if (j->p_team != k->p_team) {
     change_team_quietly(j->p_no, k->p_team, j->p_team);
@@ -518,23 +492,17 @@ static void inl_draft_pick(struct player *j, struct player *k)
   if (j->p_team == FED) {
     j->p_inl_pick_sequence = context->inl_home_pick_sequence++;
   }
+
   if (j->p_team == ROM) {
     j->p_inl_pick_sequence = context->inl_away_pick_sequence++;
   }
-	
+
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
-	curpick = context->inl_home_pick_sequence + context->inl_away_pick_sequence;
 
-  /* pmessage(0, MALL, "GOD->ALL", "Draft pick of %s by %s.", j->p_mapchars,
-           k->p_mapchars); */
-
-  /* pmessage(0, MALL, "GOD->ALL", "%s Pick # %d: %s drafts %s (%s).",
-           j->p_team == FED ? "HOME" : "AWAY", j->p_inl_pick_sequence,
-           k->p_mapchars, j->p_mapchars, j->p_name);*/
-
-	pmessage(0, MALL, "GOD->ALL", "Selection #%d: %s (%s) drafts %s (%s).",
-           curpick,k->p_mapchars, 
-					 j->p_team == FED ? "HOME" : "AWAY",j->p_mapchars, j->p_name);
+  pmessage(0, MALL, "GOD->ALL", "Selection #%d: %s (%s) drafts %s (%s).",
+           context->inl_home_pick_sequence + context->inl_away_pick_sequence,
+           k->p_mapchars, j->p_team == FED ? "HOME" : "AWAY", j->p_mapchars,
+           j->p_name);
 }
 
 void inl_draft_select(int n)
@@ -552,7 +520,7 @@ void inl_draft_select(int n)
       /* captain fingers fellow captain */
       /* meaning: pass */
       if (inl_draft_next(k)) {
-        pmessage(0, MALL, "GOD->ALL", "%s passes this draft pick!",
+        pmessage(0, MALL, "GOD->ALL", "%s passes this draft pick.",
                  k->p_mapchars);
       }
     }
