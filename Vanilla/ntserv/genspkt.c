@@ -1640,13 +1640,13 @@ void updateMessages(void)
                         if (is_whitelisted && whitelist_indiv) {
                             send_msg = TRUE;
                             if (!warning_shown) {
-                                bounce(cur->m_from,
-                                   "Player is ignoring you but your whitelist entry overrides it.");
+                                god(cur->m_from,
+                                    "Player is ignoring you but your whitelist entry overrides it.");
                                 warning_shown = 1;
                             }
                         } else {
-                            bounce(cur->m_from,
-                               "That player is currently ignoring you.");
+                            god(cur->m_from,
+                                "That player is currently ignoring you.");
                         }
                     } else {
                         send_msg = TRUE;
@@ -1660,7 +1660,7 @@ void updateMessages(void)
                 if (!strcasecmp(cchar, "mute on")) {
                     if (me->p_status == POBSERV) {
                         if (!mute) {
-                            bounce(cur->m_from, "Mute enabled.");
+                            god(cur->m_from, "Mute enabled.");
                             mute = TRUE;
                         }
                         send_msg = FALSE;
@@ -1668,7 +1668,7 @@ void updateMessages(void)
                 } else if (!strcasecmp(cchar, "mute off")) {
                     if (me->p_status == POBSERV) {
                         if (mute) {
-                            bounce(cur->m_from, "Mute disabled.");
+                            god(cur->m_from, "Mute disabled.");
                             mute = FALSE;
                         }
                         send_msg = FALSE;

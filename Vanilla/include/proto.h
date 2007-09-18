@@ -213,7 +213,8 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
                            char *server, int pno);
 
 /* smessage.c */
-void bounce(int bounceto, const char *, ...);
+void godf(int bounceto, const char *, ...);
+void god(int bounceto, const char *);
 void lmessage(const char *fmt, ...);
 void pmessage(int recip, int group, char *address, const char *, ...);
 void pmessage2(int recip, int group, char *address, u_char from,

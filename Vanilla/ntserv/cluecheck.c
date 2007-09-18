@@ -146,16 +146,16 @@ static void do_reminder(void)
   char **h;
 
   new_warning(UNDEF,"You have very important messages, Captain!");
-  bounce(me->p_no,"************* READ THIS ** READ THIS ** READ THIS ******************");
-  bounce(me->p_no,"This is a clue server, you MUST read messages on the game");
+  god(me->p_no,"************* READ THIS ** READ THIS ** READ THIS ******************");
+  god(me->p_no,"This is a clue server, you MUST read messages on the game");
   if (clue>1) {
-    bounce(me->p_no,"To verify, send the answer of the following question to yourself.");
-    bounce(me->p_no,question->quest);
-    for(h=question->help; *h; h++) bounce(me->p_no,*h);
+    god(me->p_no,"To verify, send the answer of the following question to yourself.");
+    god(me->p_no,question->quest);
+    for(h=question->help; *h; h++) god(me->p_no,*h);
   } else {
-    bounce(me->p_no,"To verify, send the word '%s' to yourself. Thank you.", clueString);
+    godf(me->p_no,"To verify, send the word '%s' to yourself. Thank you.", clueString);
   }
-  bounce(me->p_no,"********************************************************************");
+  god(me->p_no,"********************************************************************");
 }
 
 void clue_check(void)
@@ -168,28 +168,28 @@ void clue_check(void)
   if (!flag) {
 
     if (me->p_status == POBSERV) {
-      bounce(me->p_no," ");
-      bounce(me->p_no,"Observers don't need cluechecking.");
-      bounce(me->p_no,"Because if they don't read, they'll be very bored anyway.");
-      bounce(me->p_no," ");
+      god(me->p_no," ");
+      god(me->p_no,"Observers don't need cluechecking.");
+      god(me->p_no,"Because if they don't read, they'll be very bored anyway.");
+      god(me->p_no," ");
       clueVerified=1;
       clueFuse=0;
       clueCount=0;
       return;
     }
     if (!minRank && (me->p_stats.st_rank >= cluerank)){
-      bounce(me->p_no," ");
-      bounce(me->p_no,"Due to your rank, you're automatically verified.");
-      bounce(me->p_no," ");
+      god(me->p_no," ");
+      god(me->p_no,"Due to your rank, you're automatically verified.");
+      god(me->p_no," ");
       clueVerified=1;
       clueFuse=0;
       clueCount=0;
       return;
     }
     if (CheckBypass(login,host,Clue_Bypass)) {
-      bounce(me->p_no," ");
-      bounce(me->p_no,"God has determined that you're not a twink. You've been verified.");
-      bounce(me->p_no," ");
+      god(me->p_no," ");
+      god(me->p_no,"God has determined that you're not a twink. You've been verified.");
+      god(me->p_no," ");
       clueVerified=1;
       clueFuse=0;
       clueCount=0;

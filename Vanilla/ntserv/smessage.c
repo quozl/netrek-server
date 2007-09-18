@@ -20,7 +20,7 @@
 void do_message(int recip, int group, char *address, u_char from,
                 const char *fmt, va_list args);
 
-void bounce(int bounceto, const char *fmt, ...) {
+void godf(int bounceto, const char *fmt, ...) {
 
   char buf[15];
   va_list args;
@@ -30,6 +30,10 @@ void bounce(int bounceto, const char *fmt, ...) {
   do_message(bounceto, MINDIV, buf, 255, fmt, args);
   va_end(args);
 
+}
+
+void god(int bounceto, const char *msg) {
+  godf(bounceto, "%s", msg);
 }
 
 /* statistics log message for client stdout or popup */

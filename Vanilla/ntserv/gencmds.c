@@ -189,7 +189,7 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
 
   if (players[who].p_status == POBSERV)
   {
-    bounce(who, "Sorry, observers can't vote");
+    god(who, "Sorry, observers can't vote");
     return 0;
   }
 
@@ -209,8 +209,8 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
   {
     if ( (j->voting[what] + votes[num].frequency) > time(NULL) )
     {
-      bounce(who,"Sorry, you can only use %s every %1.1f minutes",
-	     votes[num].command, votes[num].frequency / 60.0);
+      godf(who,"Sorry, you can only use %s every %1.1f minutes",
+           votes[num].command, votes[num].frequency / 60.0);
       return 0;
     }
   }

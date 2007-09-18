@@ -437,7 +437,7 @@ void do_whois_query(char *comm, struct message *mess, int who)
 #ifdef RSA
 int bounceRSAClientType(int from)
 {
-        bounce(from,"Client: %s", RSA_client_type);
+        godf(from, "Client: %s", RSA_client_type);
 
         return 1;
 }
@@ -471,8 +471,7 @@ int bounceSessionStats(int from)
 
 
     if (deltaTicks == 0) {
-        bounce(from,
-                "Session stats are only available during t-mode.");
+        god(from, "Session stats are only available during t-mode.");
         return 1; /* non t-mode */
     }
 
@@ -488,22 +487,22 @@ int bounceSessionStats(int from)
     sessionDefense = (double) deltaTicks * status->losses /
         (deltaLosses!=0 ? (deltaLosses * status->timeprod) : (status->timeprod));
 
-    bounce(from,
-        "%2s stats: %d planets and %d armies. %d wins/%d losses. %5.2f hours.",
-        me->p_mapchars,
-        deltaPlanets,
-        deltaArmies,
-        deltaKills,
-        deltaLosses,
-        (float) deltaTicks/36000.0);
-    bounce(from,
-        "Ratings: Pla: %5.2f  Bom: %5.2f  Off: %5.2f  Def: %5.2f  Ratio: %4.2f",
-        sessionPlanets,
-        sessionBombing,
-        sessionOffense,
-        sessionDefense,
-        (float) deltaKills /
-        (float) ((deltaLosses == 0) ? 1 : deltaLosses));
+    godf(from,
+         "%2s stats: %d planets and %d armies. %d wins/%d losses. %5.2f hours.",
+         me->p_mapchars,
+         deltaPlanets,
+         deltaArmies,
+         deltaKills,
+         deltaLosses,
+         (float) deltaTicks/36000.0);
+    godf(from,
+         "Ratings: Pla: %5.2f  Bom: %5.2f  Off: %5.2f  Def: %5.2f  Ratio: %4.2f",
+         sessionPlanets,
+         sessionBombing,
+         sessionOffense,
+         sessionDefense,
+         (float) deltaKills /
+         (float) ((deltaLosses == 0) ? 1 : deltaLosses));
     return 1;
 }
 
@@ -535,8 +534,7 @@ int bounceSBStats(int from)
 #endif /* LTD_STATS */
 
 /*  if (deltaTicks == 0) {
-        bounce(from,
-        "No SB time yet this session.");
+        god(from, "No SB time yet this session.");
         return 0;
     } */
 
@@ -571,36 +569,34 @@ int bounceSBStats(int from)
         overallKPH = overallDPH = 0.0;
     }
 
-    bounce(from,
-      "%2s overall SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
-      me->p_mapchars,
-
+    godf(from,
+         "%2s overall SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
+         me->p_mapchars,
 #ifdef LTD_STATS
-      ltd_kills(me, LTD_SB),
-      ltd_deaths(me, LTD_SB),
-      (float) ltd_ticks(me, LTD_SB) / 36000.0,
-
+         ltd_kills(me, LTD_SB),
+         ltd_deaths(me, LTD_SB),
+         (float) ltd_ticks(me, LTD_SB) / 36000.0,
 #else
-      me->p_stats.st_sbkills,
-      me->p_stats.st_sblosses,
-      (float) me->p_stats.st_sbticks/36000.0,
+         me->p_stats.st_sbkills,
+         me->p_stats.st_sblosses,
+         (float) me->p_stats.st_sbticks/36000.0,
 #endif /* LTD_STATS */
-      overallRatio);
+         overallRatio);
 
     if (deltaTicks)
-        bounce(from,
-          "%2s session SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
-          me->p_mapchars,
-          deltaKills,
-          deltaLosses,
-          (float) deltaTicks/36000.0,
-          sessionRatio);
-        bounce(from,
-          "Kills/Hour: %5.2f (%5.2f total), Deaths/Hour: %4.2f (%4.2f total)",
-          sessionKPH,
-          overallKPH,
-          sessionDPH,
-          overallDPH);
+        godf(from,
+             "%2s session SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
+             me->p_mapchars,
+             deltaKills,
+             deltaLosses,
+             (float) deltaTicks/36000.0,
+             sessionRatio);
+        godf(from,
+             "Kills/Hour: %5.2f (%5.2f total), Deaths/Hour: %4.2f (%4.2f total)",
+             sessionKPH,
+             overallKPH,
+             sessionDPH,
+             overallDPH);
     return 1;
 }
 
@@ -610,17 +606,17 @@ int bouncePingStats(int from)
 {
     if(me->p_avrt == -1){
         /* client doesn't support it or server not pinging */
-        bounce(from,"No PING stats available for %c%c",
-           me->p_mapchars[0], me->p_mapchars[1]);
+        godf(from, "No PING stats available for %c%c",
+             me->p_mapchars[0], me->p_mapchars[1]);
     }
     else{
-        bounce(from,
-            "%c%c PING stats: Avg: %d ms, Stdv: %d ms, Loss: %0.1f%%/%0.1f%% s->c/c->s",
-            me->p_mapchars[0], me->p_mapchars[1],
-            me->p_avrt,
-            me->p_stdv,
-            me->p_pkls_s_c,
-            me->p_pkls_c_s);
+        godf(from,
+             "%c%c PING stats: Avg: %d ms, Stdv: %d ms, Loss: %0.1f%%/%0.1f%% s->c/c->s",
+             me->p_mapchars[0], me->p_mapchars[1],
+             me->p_avrt,
+             me->p_stdv,
+             me->p_pkls_s_c,
+             me->p_pkls_c_s);
     }
     return 1;
 }
@@ -628,8 +624,8 @@ int bouncePingStats(int from)
 
 int bounceUDPStats(int from)
 {
-    bounce(from, "%c%c last UDP update size: %d bytes",
-           me->p_mapchars[0], me->p_mapchars[1], last_udp_size);
+    godf(from, "%c%c last UDP update size: %d bytes",
+         me->p_mapchars[0], me->p_mapchars[1], last_udp_size);
     return 1;
 }
 
@@ -638,48 +634,48 @@ int bounceWhois(int from)
     char msgbuf[255];
 
     if (hidden) {
-        bounce(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
+        godf(from, "%s is %s (%s)", me->p_mapchars, me->p_name, me->p_login);
     } else {
         snprintf(msgbuf, 255, "%s is %s (%s@%s)", me->p_mapchars, me->p_name,
                  me->p_login, me->p_full_hostname);
         if (strlen(msgbuf) > MSGTEXT_LEN) {
-            bounce(from, "%s is %s:", me->p_mapchars, me->p_name);
+            godf(from, "%s is %s:", me->p_mapchars, me->p_name);
             /* There is a slight possibility of this still being cut
                off with a really long username and hostname, but let's
                not send TOO many lines. The missing end chars will be
                in the playerlist anyways. */
-            bounce(from, "(%s@%s)", me->p_login, me->p_full_hostname);
+            godf(from, "(%s@%s)", me->p_login, me->p_full_hostname);
         } else
-            bounce(from, "%s", msgbuf);
+            god(from, msgbuf);
         if (ip_check_dns && strcmp(me->p_full_hostname, me->p_dns_hostname)) {
             snprintf(msgbuf, 255, "[DNS Mismatch] %s resolves to %s", 
                      me->p_mapchars, me->p_dns_hostname);
             if (strlen(msgbuf) > MSGTEXT_LEN) {
-                bounce(from, "[DNS Mismatch] %s resolves to:", me->p_mapchars);
-                bounce(from, "%s", me->p_dns_hostname);
+                godf(from, "[DNS Mismatch] %s resolves to:", me->p_mapchars);
+                god(from, me->p_dns_hostname);
             }
             else
-                bounce(from, "%s", msgbuf);
+                god(from, msgbuf);
         }
         else
-            bounce(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
+            godf(from, "%s at %s (IP)", me->p_mapchars, me->p_ip);
 #ifdef DNSBL_SHOW
         if ((me->p_sorbsproxy && (me->p_sorbsproxy != 8)) ||
             me->p_njablproxy) {
-            bounce(from,
-                   "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.",
-                   me->p_mapchars, me->p_ip);
+            god(from,
+                "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.",
+                me->p_mapchars, me->p_ip);
             if (me->p_xblproxy)
-                bounce(from,
-                       "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)",
-                       me->p_mapchars);
+                god(from,
+                    "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)",
+                     me->p_mapchars);
             if (me->p_sorbsproxy)
-                bounce(from, "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
-                       (me->p_sorbsproxy & 1) == 1 ? "HTTP" : "", (me->p_sorbsproxy & 3) == 3 ? "|" : "",
-                       (me->p_sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->p_sorbsproxy & 6) == 6 ? "|" : "",
-                       (me->p_sorbsproxy & 4) == 4 ? "MISC" : "");
+                god(from, "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
+                    (me->p_sorbsproxy & 1) == 1 ? "HTTP" : "", (me->p_sorbsproxy & 3) == 3 ? "|" : "",
+                    (me->p_sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->p_sorbsproxy & 6) == 6 ? "|" : "",
+                    (me->p_sorbsproxy & 4) == 4 ? "MISC" : "");
             if (me->p_njablproxy)
-                bounce(from, "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
+                god(from, "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
         }
 #endif
     }

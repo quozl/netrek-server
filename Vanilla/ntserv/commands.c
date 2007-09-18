@@ -535,7 +535,7 @@ int do_generic_vote(char *comm, int who)
     if (!(num = check_listing(comm)) ) return 0;
 
     if (players[who].p_status == POBSERV) {
-      bounce(who,"Sorry, Observers can't vote");
+      god(who,"Sorry, Observers can't vote");
       return 0;
     }
 
@@ -594,16 +594,16 @@ int do_generic_vote(char *comm, int who)
 	if (j->p_status == POBSERV) continue;
 
         pcount++;
-        if (i==who) {
-	    if ((j->voting[what] != 0) && (votes[num].frequency != 0)) {
-		if ( (j->voting[what] + votes[num].frequency) > time(NULL) ) {
-      		    bounce(who,"Sorry, you can only use %s every %1.1f minutes",
-				votes[num].type, votes[num].frequency / 60.0);
-	 	    return 0;
-		}
-	    }
+        if (i == who) {
+            if ((j->voting[what] != 0) && (votes[num].frequency != 0)) {
+                if ((j->voting[what] + votes[num].frequency) > time(NULL)) {
+                    godf(who, "Sorry, you can only use %s every %1.1f minutes",
+                         votes[num].type, votes[num].frequency / 60.0);
+                    return 0;
+                }
+            }
             j->voting[what] = time(NULL);  /* Enter newest vote */
-	}
+        }
         if (j->voting[what] > 0) vcount++;
     }
 
@@ -782,7 +782,7 @@ int do_whois_query(char *comm, struct message *mess, int who)
 #ifdef RSA
 int bounceRSAClientType(int from)
 {
-        bounce(from,"Client: %s", RSA_client_type);
+        godf(from, "Client: %s", RSA_client_type);
         return 1;
 }
 #endif
@@ -811,8 +811,7 @@ int bounceSessionStats(int from)
 
 
     if (deltaTicks == 0) {
-        bounce(from,
-                "Session stats are only available during t-mode.");
+        god(from, "Session stats are only available during t-mode.");
         return 1; /* non t-mode */
     }
 
@@ -828,22 +827,22 @@ int bounceSessionStats(int from)
     sessionDefense = (double) deltaTicks * status->losses /
         (deltaLosses!=0 ? (deltaLosses * status->timeprod) : (status->timeprod));
 
-    bounce(from,
-        "%2s stats: %d planets and %d armies. %d wins/%d losses. %5.2f hours.",
-        me->p_mapchars,
-        deltaPlanets,
-        deltaArmies,
-        deltaKills,
-        deltaLosses,
-        (float) deltaTicks/36000.0);
-    bounce(from,
-        "Ratings: Pla: %5.2f  Bom: %5.2f  Off: %5.2f  Def: %5.2f  Ratio: %4.2f",
-        sessionPlanets,
-        sessionBombing,
-        sessionOffense,
-        sessionDefense,
-        (float) deltaKills /
-        (float) ((deltaLosses == 0) ? 1 : deltaLosses));
+    godf(from,
+         "%2s stats: %d planets and %d armies. %d wins/%d losses. %5.2f hours.",
+         me->p_mapchars,
+         deltaPlanets,
+         deltaArmies,
+         deltaKills,
+         deltaLosses,
+         (float) deltaTicks/36000.0);
+    godf(from,
+         "Ratings: Pla: %5.2f  Bom: %5.2f  Off: %5.2f  Def: %5.2f  Ratio: %4.2f",
+         sessionPlanets,
+         sessionBombing,
+         sessionOffense,
+         sessionDefense,
+         (float) deltaKills /
+         (float) ((deltaLosses == 0) ? 1 : deltaLosses));
     return 1;
 }
 
@@ -871,8 +870,7 @@ int bounceSBStats(int from)
 #endif
 
 /*  if (deltaTicks == 0) {
-        bounce(from,
-        "No SB time yet this session.");
+        god(from, "No SB time yet this session.");
         return 0;
     } */
 
@@ -904,34 +902,34 @@ int bounceSBStats(int from)
         overallKPH = overallDPH = 0.0;
     }
 
-    bounce(from,
-      "%2s overall SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
-      me->p_mapchars,
+    godf(from,
+         "%2s overall SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
+         me->p_mapchars,
 #ifdef LTD_STATS
-      ltd_kills(me, LTD_SB),
-      ltd_deaths(me, LTD_SB),
-      (float) ltd_ticks(me, LTD_SB) / 36000.0,
+         ltd_kills(me, LTD_SB),
+         ltd_deaths(me, LTD_SB),
+         (float) ltd_ticks(me, LTD_SB) / 36000.0,
 #else
-      me->p_stats.st_sbkills,
-      me->p_stats.st_sblosses,
-      (float) me->p_stats.st_sbticks/36000.0,
+         me->p_stats.st_sbkills,
+         me->p_stats.st_sblosses,
+         (float) me->p_stats.st_sbticks/36000.0,
 #endif
-      overallRatio);
+         overallRatio);
 
     if (deltaTicks)
-        bounce(from,
-          "%2s session SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
-          me->p_mapchars,
-          deltaKills,
-          deltaLosses,
-          (float) deltaTicks/36000.0,
-          sessionRatio);
-        bounce(from,
-          "Kills/Hour: %5.2f (%5.2f total), Deaths/Hour: %4.2f (%4.2f total)",
-          sessionKPH,
-          overallKPH,
-          sessionDPH,
-          overallDPH);
+        godf(from,
+             "%2s session SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
+             me->p_mapchars,
+             deltaKills,
+             deltaLosses,
+             (float) deltaTicks/36000.0,
+             sessionRatio);
+        godf(from,
+             "Kills/Hour: %5.2f (%5.2f total), Deaths/Hour: %4.2f (%4.2f total)",
+             sessionKPH,
+             overallKPH,
+             sessionDPH,
+             overallDPH);
     return 1;
 }
 
@@ -941,17 +939,17 @@ int bouncePingStats(int from)
 {
     if(me->p_avrt == -1){
         /* client doesn't support it or server not pinging */
-        bounce(from,"No PING stats available for %c%c",
-           me->p_mapchars[0], me->p_mapchars[1]);
+        godf(from, "No PING stats available for %c%c",
+             me->p_mapchars[0], me->p_mapchars[1]);
     }
     else{
-        bounce(from,
-            "%c%c PING stats: Avg: %d ms, Stdv: %d ms, Loss: %0.1f%/%0.1f%% s->c/c->s",
-            me->p_mapchars[0], me->p_mapchars[1],
-            me->p_avrt,
-            me->p_stdv,
-            me->p_pkls_s_c,
-            me->p_pkls_c_s);
+        godf(from,
+             "%c%c PING stats: Avg: %d ms, Stdv: %d ms, Loss: %0.1f%/%0.1f%% s->c/c->s",
+             me->p_mapchars[0], me->p_mapchars[1],
+             me->p_avrt,
+             me->p_stdv,
+             me->p_pkls_s_c,
+             me->p_pkls_c_s);
     }
     return 1;
 }

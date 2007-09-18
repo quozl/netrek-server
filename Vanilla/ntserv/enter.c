@@ -304,13 +304,13 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 #endif
 #ifdef DNSBL_WARN
           if (me->p_xblproxy)
-              bounce(me->p_no, "Your IP address was found on the Spamhaus XBL list.");
+              god(me->p_no, "Your IP address was found on the Spamhaus XBL list.");
           if (me->p_sorbsproxy)
-              bounce(me->p_no, "Your IP address was found on the SORBS Web/Vulnerability list.");
+              god(me->p_no, "Your IP address was found on the SORBS Web/Vulnerability list.");
           if (me->p_xblproxy || me->p_sorbsproxy) {
-              bounce(me->p_no, "Your computer may be infected with a virus or other malware.");
-              bounce(me->p_no, "Please visit %s for further help.", DNSBL_WARN_WEBSITE);
-              bounce(me->p_no, "If you have any questions, please ask the server admin.");
+              god(me->p_no, "Your computer may be infected with a virus or other malware.");
+              godf(me->p_no, "Please visit %s for further help.", DNSBL_WARN_WEBSITE);
+              god(me->p_no, "If you have any questions, please ask the server admin.");
           }
 #endif
       }
