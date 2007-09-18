@@ -354,7 +354,9 @@ void inl_draft_begin()
 		}
 		if (j->p_flags & PFDOCK)	{
 			j->p_flags &= ~PFDOCK;
-		}		
+		}
+		/* Force to CA */
+		getship(&j->p_ship, CRUISER);		
     /* TODO: set course and speed, with a speed proportional to
     distance to target, rather than step into position */
     j->p_desspeed = 0;
@@ -377,6 +379,7 @@ void inl_draft_end()
   status->gameup &= ~GU_INL_DRAFT;
   /* TODO: send the players back home? or let them fight here? */
   /* TODO: turn off confine during a draft? see if it has an impact */
+	/* Confine appears to have no affect so far -dotman */
   pmessage(0, MALL, "GOD->ALL", "The draft has completed!");
 }
 
@@ -388,11 +391,13 @@ static void inl_draft_arrival_captain(struct player *k)
   /* arrival without another captain */
   if (other_captain == NULL) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
+		getship(&k->p_ship, BATTLESHIP);
     return;
   }
   /* arrival with a captain who has the up */
   if (other_captain->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
+		getship(&k->p_ship, SCOUT);
     return;
   }
   k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
@@ -400,6 +405,7 @@ static void inl_draft_arrival_captain(struct player *k)
   /* TODO: indicate up captain using some graphical element, but do
   not reduce body language opportunities ... e.g. use plasma torps not
   shields */
+	getship(&k->p_ship, BATTLESHIP);
 }
 
 static void inl_draft_arrival_pool(struct player *j)
@@ -490,7 +496,9 @@ static int inl_draft_next(struct player *k)
     if (j->p_flags & PFROBOT) continue;
     if (!j->p_inl_captain) continue;
     j->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
+		getship(&j->p_ship, BATTLESHIP);
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
+		getship(&k->p_ship, SCOUT);
     return 1;
   }
   /* TODO: test that a captain who leaves and returns can allow draft
