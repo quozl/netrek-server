@@ -193,7 +193,7 @@ static void inl_draft_place_pool(struct player *j)
     {
       int dx = 10000;
 
-      j->p_inl_x = x - dx + j->p_inl_pool_sequence * (dx / 18) + 1000;
+      j->p_inl_x = x - dx + j->p_inl_pool * (dx / 18) + 1000;
       j->p_inl_y = y;
     }
     break;
@@ -203,14 +203,14 @@ static void inl_draft_place_pool(struct player *j)
       int dy = DRAFT_W / 5;
       int dx = DRAFT_W / 2;
 
-      j->p_inl_x = x - (dx / 2) + j->p_inl_pool_sequence * (dx / 14);
+      j->p_inl_x = x - (dx / 2) + j->p_inl_pool * (dx / 14);
       j->p_inl_y = y + dy;
     }
     break;
 
   case INL_DRAFT_STYLE_CENTRE_OUTWARDS:
     {
-      int n = context->inl_pool_sequence;
+      int n = context->inl_pool;
 
       j->p_inl_y = y;
       if (n == 0) {
@@ -218,7 +218,7 @@ static void inl_draft_place_pool(struct player *j)
       } else {
         int dx = DRAFT_W / 20;
 
-        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pool_sequence * dx;
+        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pool * dx;
       }
     }
     break;
@@ -239,7 +239,7 @@ static void inl_draft_place_pick(struct player *j)
       if (j->p_team == FED) { y += dy; }
       if (j->p_team == ROM) { y -= dy; }
       
-      j->p_inl_x = x + j->p_inl_pick_sequence * dx;
+      j->p_inl_x = x + j->p_inl_pick * dx;
       j->p_inl_y = y;
     }
     break;
@@ -250,11 +250,11 @@ static void inl_draft_place_pick(struct player *j)
       int dy = 0;
 
       if (j->p_team == ROM) {
-        dx = -(DRAFT_W / 8) - (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-        dy =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+        dx = -(DRAFT_W / 8) - (DRAFT_W / 10 * (j->p_inl_pick / 3));
+        dy =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick % 3));
       } else if (j->p_team == FED) {
-        dx =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence / 3));
-        dy =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick_sequence % 3));
+        dx =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick / 3));
+        dy =  (DRAFT_W / 8) + (DRAFT_W / 10 * (j->p_inl_pick % 3));
       }
       
       j->p_inl_x = x + dx;
@@ -268,18 +268,18 @@ static void inl_draft_place_pick(struct player *j)
 
       if (j->p_team == FED) {
         j->p_inl_y = y + dy;
-        n = context->inl_home_pick_sequence;
+        n = context->inl_home_pick;
       }
       if (j->p_team == ROM) {
         j->p_inl_y = y - dy;
-        n = context->inl_away_pick_sequence;
+        n = context->inl_away_pick;
       }
 
       if (n == 0) {
         j->p_inl_x = x;
       } else {
         int dx = DRAFT_W / 20;
-        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pick_sequence * dx + dx / 2;
+        j->p_inl_x = x - (dx * n / 2) + j->p_inl_pick * dx + dx / 2;
       }
     }
     break;
@@ -329,10 +329,10 @@ static void inl_draft_place(struct player *j)
 static void inl_draft_assign_to_pool(struct player *j)
 {
   j->p_inl_draft = INL_DRAFT_MOVING_TO_POOL;
-  j->p_inl_pick_sequence = 0;
+  j->p_inl_pick = 0;
   if (j->p_inl_captain) return; /* captains don't get put in the pool */
 
-  j->p_inl_pool_sequence = context->inl_pool_sequence++;
+  j->p_inl_pool = context->inl_pool++;
 }
 
 void inl_draft_begin()
@@ -340,9 +340,9 @@ void inl_draft_begin()
   int h, i;
   struct player *j;
 
-  context->inl_pool_sequence = 0;
-  context->inl_home_pick_sequence = 0;
-  context->inl_away_pick_sequence = 0;
+  context->inl_pool = 0;
+  context->inl_home_pick = 0;
+  context->inl_away_pick = 0;
 
   for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
@@ -490,17 +490,17 @@ static void inl_draft_pick(struct player *j, struct player *k)
   }
 
   if (j->p_team == FED) {
-    j->p_inl_pick_sequence = context->inl_home_pick_sequence++;
+    j->p_inl_pick = context->inl_home_pick++;
   }
 
   if (j->p_team == ROM) {
-    j->p_inl_pick_sequence = context->inl_away_pick_sequence++;
+    j->p_inl_pick = context->inl_away_pick++;
   }
 
   j->p_inl_draft = INL_DRAFT_MOVING_TO_PICK;
 
   pmessage(0, MALL, "GOD->ALL", "Selection #%d: %s (%s) drafts %s (%s).",
-           context->inl_home_pick_sequence + context->inl_away_pick_sequence,
+           context->inl_home_pick + context->inl_away_pick,
            k->p_mapchars, j->p_team == FED ? "HOME" : "AWAY", j->p_mapchars,
            j->p_name);
 }
@@ -634,14 +634,14 @@ void inl_draft_watch()
     usleep(500000);
     fprintf(stderr, "\033[fS=%d        O=%02d H=%02d A=%02d\n",
             inl_draft_style,
-            context->inl_pool_sequence,
-            context->inl_home_pick_sequence, context->inl_away_pick_sequence);
+            context->inl_pool,
+            context->inl_home_pick, context->inl_away_pick);
     for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
       if (j->p_status == PFREE) continue;
       if (j->p_flags & PFROBOT) continue;
       fprintf(stderr, "%s C=%d D=%d O=%02d P=%02d X=%08d Y=%08d %s\n",
               j->p_mapchars, j->p_inl_captain, j->p_inl_draft,
-              j->p_inl_pool_sequence, j->p_inl_pick_sequence,
+              j->p_inl_pool, j->p_inl_pick,
               j->p_inl_x, j->p_inl_y, inl_draft_name(j->p_inl_draft));
     }
   }

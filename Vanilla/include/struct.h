@@ -102,9 +102,9 @@ struct context {
     struct status start;        /* status copy at time of daemon cold start */
     int cp_planet_hits;         /* planet data mismatch stats counters */
     int cp_planet_miss;
-    int inl_pool_sequence;
-    int inl_home_pick_sequence;
-    int inl_away_pick_sequence;
+    int inl_pool;               /* sequence number for next pool player */
+    int inl_home_pick;          /* sequence number for next home pick */
+    int inl_away_pick;          /* sequence number for next away pick */
 };
 
 
@@ -506,11 +506,11 @@ struct player {
     short p_special;
     struct specialweapon p_weapons[NUMSPECIAL];
 #endif
-    int p_inl_captain;          /* Player is an INL captain */
-    int p_inl_draft;            /* Player navigation restricted by INL draft */
-    int p_inl_x, p_inl_y;       /* Coordinates to navigate to */
-    int p_inl_pool_sequence;    /* position in the pool */
-    int p_inl_pick_sequence;    /* position in the pick */
+    int p_inl_captain;          /* is an INL captain */
+    int p_inl_draft;            /* draft state, see INL_DRAFT_* below */
+    int p_inl_x, p_inl_y;       /* coordinates to navigate to during draft */
+    int p_inl_pool;             /* position in the draft pool */
+    int p_inl_pick;             /* position in the draft pick */
     int p_ip_duplicates;        /* ignore this slot for duplicate ip check */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
