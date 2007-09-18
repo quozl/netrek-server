@@ -360,7 +360,7 @@ void inl_draft_begin()
   pmessage(0, MALL, "GOD->ALL", "The Captains have agreed to hold a draft.");
 }
 
-void inl_draft_end()
+void inl_draft_done()
 {
   int h;
   struct player *j;
@@ -372,9 +372,18 @@ void inl_draft_end()
     j->p_inl_draft = INL_DRAFT_MOVING_TO_HOME;
     place_starting_planet(j, 1);
   }
-  //status->gameup &= ~GU_INL_DRAFT;
-  /* TODO: move players back home with the fancy movement logic */
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
+}
+
+void inl_draft_end()
+{
+    int h;
+    struct player *j;
+    
+    for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+      j->p_inl_draft = INL_DRAFT_OFF;
+    }
+    status->gameup &= ~GU_INL_DRAFT;
 }
 
 static void inl_draft_arrival_captain(struct player *k)
@@ -479,16 +488,13 @@ void inl_draft_update()
       move = 1;
   }
   if (pcount == endcount) {
-    status->gameup &= ~GU_INL_DRAFT;
-      for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-        j->p_inl_draft = INL_DRAFT_OFF;
-      }
+    inl_draft_end();
     return;
   }
   if (move)
     return;
   if (inl_draft_pool_size() == 0) {
-    inl_draft_end();
+    inl_draft_done();
   }
 }
 
