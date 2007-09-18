@@ -370,6 +370,7 @@ void inl_draft_end()
     if (j->p_flags & PFROBOT) continue;
     if (j->p_flags & PFOBSERV) continue;
     j->p_inl_draft = INL_DRAFT_OFF;
+    place_starting_planet(j);
   }
   status->gameup &= ~GU_INL_DRAFT;
   /* TODO: send the players back home? or let them fight here? */

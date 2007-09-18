@@ -530,3 +530,20 @@ int is_invisible_due_idle(struct player *victim)
   if (status->gameup & GU_INL_DRAFT) return 0;
   return is_idle(victim);
 }
+
+struct planet *pick_starting_planet(int p_team)
+{
+    int i, tno = team_no(p_team);
+    for (;;) {
+        i = tno * 10 + random() % 10;
+        if (startplanets[i]) return &planets[i];
+    }
+}
+
+void place_starting_planet(struct player *k)
+{
+    struct planet *starting_planet = pick_starting_planet(k->p_team);
+    p_x_y_go(k,
+             starting_planet->pl_x + (random() % 10000) - 5000,
+             starting_planet->pl_y + (random() % 10000) - 5000);
+}

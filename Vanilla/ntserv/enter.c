@@ -33,15 +33,6 @@ static void placeIndependent(void);
 static int first_time = 1;
 #endif
 
-static struct planet *pick_starting_planet(int p_team)
-{
-    int i, tno = team_no(p_team);
-    for (;;) {
-        i = tno * 10 + random() % 10;
-        if (startplanets[i]) return &planets[i];
-    }
-}
-
 static u_char face_enemy(void)
 {
     int team_other, x, y;
@@ -84,7 +75,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     static int lastteam= -1;
     static int lastrank= -1;
     char addrbuf[10];
-    struct planet *starting_planet;
     int i, join;
 
     /* Use local variables, not the globals */
@@ -142,10 +132,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
         me->p_dir = me->p_desdir = 0;
     } else {
         me->p_team = (1 << tno);
-        starting_planet = pick_starting_planet(me->p_team);
-        p_x_y_go(me,
-                 starting_planet->pl_x + (random() % 10000) - 5000,
-                 starting_planet->pl_y + (random() % 10000) - 5000);
+        place_starting_planet(me);
         me->p_dir = me->p_desdir = face_enemy();
     }
     p_x_y_unbox(me);
