@@ -347,6 +347,7 @@ void inl_draft_begin()
   for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
+    if (j->p_flags & PFOBSERV) continue;
     j->p_desspeed = 0;
     bay_release(j);
     j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
@@ -367,6 +368,7 @@ void inl_draft_end()
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j->p_status == PFREE) continue;
     if (j->p_flags & PFROBOT) continue;
+    if (j->p_flags & PFOBSERV) continue;
     j->p_inl_draft = INL_DRAFT_OFF;
   }
   status->gameup &= ~GU_INL_DRAFT;
