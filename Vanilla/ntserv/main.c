@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     /* Stop permanent bans from proceeding */
     if (ban_noconnect) {
         /* note: etc/bypass is not checked */
-        if (login && host && ip) {
+        if (host && ip) {
             if ((bans_check_permanent(login, host) == TRUE) ||
                 (bans_check_permanent(login, ip) == TRUE)) {
                 noplay(2);
