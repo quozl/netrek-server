@@ -28,6 +28,9 @@ sleep n                     sleep for n seconds\n\
 set-inl-draft n             set INL draft mode state n (0=off)\n\
 player                      change an observer to a player\n\
 observer                    change a player to an observer\n\
+damage n                    set damage to n\n\
+shields n                   set shields remaining to n\n\
+fuel n                      set fuel remaining to n\n\
 ");
 }
 
@@ -230,6 +233,24 @@ int setship(char *cmds)
   if (!strcmp(token, "observer")) {
     me->p_flags |= PFOBSERV;
     me->p_status = POBSERV;
+    goto state_1;
+  }
+
+  if (!strcmp(token, "damage")) {
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    me->p_damage = me->p_ship.s_maxdamage - atoi(token);
+    goto state_1;
+  }
+
+  if (!strcmp(token, "shields")) {
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    me->p_shield = atoi(token);
+    goto state_1;
+  }
+
+  if (!strcmp(token, "fuel")) {
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    me->p_fuel = atoi(token);
     goto state_1;
   }
 
