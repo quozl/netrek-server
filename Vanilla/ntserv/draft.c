@@ -102,6 +102,27 @@ Key:
 /* width of tactical */
 #define DRAFT_W (GWIDTH/5)
 
+/* whether a slot is to be ignored for a draft */
+static int inl_draft_ignore(struct player *j)
+{
+  if (j->p_status == PFREE) return 1;
+  if (j->p_flags & PFROBOT) return 1;
+  if (j->p_flags & PFOBSERV) return 1;
+  return 0;
+}
+
+static int inl_draft_count_by_state(int p_inl_draft)
+{
+  int h, k;
+  struct player *j;
+
+  for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
+    if (inl_draft_ignore(j)) continue;
+    if (j->p_inl_draft == p_inl_draft) k++;
+  }
+  return k;
+}
+
 /* measure the size of the pool */
 static int inl_draft_pool_size()
 {
@@ -109,8 +130,7 @@ static int inl_draft_pool_size()
   struct player *j;
 
   for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
-    if (j->p_status == PFREE) continue;
-    if (j->p_flags & PFROBOT) continue;
+    if (inl_draft_ignore(j)) continue;
     if (j->p_inl_draft == INL_DRAFT_MOVING_TO_POOL ||
         j->p_inl_draft == INL_DRAFT_POOLED ||
         j->p_inl_draft == INL_DRAFT_MOVING_TO_PICK) k++;
@@ -125,8 +145,7 @@ static struct player *inl_draft_team_to_captain(int p_team)
   struct player *j;
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-    if (j->p_status == PFREE) continue;
-    if (j->p_flags & PFROBOT) continue;
+    if (inl_draft_ignore(j)) continue;
     if (!j->p_inl_captain) continue;
     if (j->p_team != p_team) continue;
     if (j->p_inl_draft == INL_DRAFT_CAPTAIN_UP ||
@@ -330,9 +349,26 @@ static void inl_draft_place(struct player *j)
     break;
   case INL_DRAFT_MOVING_TO_HOME:
   case INL_DRAFT_END:
-    inl_draft_place_end(j);
     break;
   }
+}
+
+/* highlight the captain with the up */
+static void inl_draft_highlight_up(struct player *k)
+{
+  getship(&k->p_ship, BATTLESHIP);
+}
+
+/* highlight the captain who is waiting */
+static void inl_draft_highlight_down(struct player *k)
+{
+  getship(&k->p_ship, SCOUT);
+}
+
+/* everybody else */
+static void inl_draft_highlight_off(struct player *k)
+{
+  getship(&k->p_ship, CRUISER);
 }
 
 static void inl_draft_assign_to_pool(struct player *j)
@@ -349,18 +385,17 @@ void inl_draft_begin()
   int h, i;
   struct player *j;
 
+  context->inl_draft = INL_DRAFT_MOVING_TO_POOL;
   context->inl_pool = 0;
   context->inl_home_pick = 0;
   context->inl_away_pick = 0;
 
   for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-    if (j->p_status == PFREE) continue;
-    if (j->p_flags & PFROBOT) continue;
-    if (j->p_flags & PFOBSERV) continue;
+    if (inl_draft_ignore(j)) continue;
     j->p_desspeed = 0;
     bay_release(j);
     j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
-    getship(&j->p_ship, CRUISER);
+    inl_draft_highlight_off(j);
     inl_draft_assign_to_pool(j);
     inl_draft_place(j);
   }
@@ -374,11 +409,12 @@ void inl_draft_done()
   int h;
   struct player *j;
 
+  context->inl_draft = INL_DRAFT_MOVING_TO_HOME;
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-    if (j->p_status == PFREE) continue;
-    if (j->p_flags & PFROBOT) continue;
-    if (j->p_flags & PFOBSERV) continue;
+    if (inl_draft_ignore(j)) continue;
     j->p_inl_draft = INL_DRAFT_MOVING_TO_HOME;
+    inl_draft_highlight_off(j);
+    inl_draft_place_end(j);
   }
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
 }
@@ -388,6 +424,7 @@ void inl_draft_end()
   int h;
   struct player *j;
 
+  context->inl_draft = INL_DRAFT_OFF;
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     j->p_inl_draft = INL_DRAFT_OFF;
   }
@@ -402,17 +439,17 @@ static void inl_draft_arrival_captain(struct player *k)
   /* arrival without another captain */
   if (other_captain == NULL) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-    getship(&k->p_ship, BATTLESHIP);
+    inl_draft_highlight_up(k);
     return;
   }
   /* arrival with a captain who has the up */
   if (other_captain->p_inl_draft == INL_DRAFT_CAPTAIN_UP) {
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
-    getship(&k->p_ship, SCOUT);
+    inl_draft_highlight_down(k);
     return;
   }
   k->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-  getship(&k->p_ship, BATTLESHIP);
+  inl_draft_highlight_up(k);
   /* therefore captain closest to draft gets the first choice */
 }
 
@@ -428,7 +465,7 @@ static void inl_draft_arrival_pick(struct player *j)
 
 static void inl_draft_arrival_home(struct player *j)
 {
-    j->p_inl_draft = INL_DRAFT_END;
+  j->p_inl_draft = INL_DRAFT_END;
 }
 
 /* a ship has arrived at the nominated position */
@@ -462,22 +499,15 @@ void inl_draft_update()
 {
   int h;
   struct player *j;
-  int move = 0, pcount = 0, endcount = 0;
 
+  /* tumbling transwarp-like animation for alive ships involved in draft */
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     int dx, dy;
+    if (inl_draft_ignore(j)) continue;
     if (j->p_status != PALIVE) continue;
-    if (j->p_flags & PFROBOT) continue;
-    if (j->p_flags & PFOBSERV) continue;
-    pcount++;
-    if (j->p_inl_draft == INL_DRAFT_END)
-    {
-        endcount++;
-        continue;
-    }
     /* newly arriving players are forced into the pool */
-    /* TODO: if this happens during a move to home, draft may never end */
-    if (j->p_inl_draft == INL_DRAFT_OFF) {
+    if (context->inl_draft == INL_DRAFT_MOVING_TO_POOL &&
+        j->p_inl_draft == INL_DRAFT_OFF) {
       pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted", j->p_mapchars);
       inl_draft_assign_to_pool(j);
     }
@@ -490,20 +520,18 @@ void inl_draft_update()
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);
-      if (j->p_inl_draft == INL_DRAFT_END)
-        endcount++;
     }
-    if (j->p_inl_draft == INL_DRAFT_MOVING_TO_HOME)
-      move = 1;
   }
-  if (pcount == endcount) {
-    inl_draft_end();
-    return;
-  }
-  if (move)
-    return;
-  if (inl_draft_pool_size() == 0) {
-    inl_draft_done();
+
+  switch (context->inl_draft) {
+  case INL_DRAFT_MOVING_TO_POOL:
+    if (inl_draft_pool_size() == 0)
+      inl_draft_done();
+    break;
+  case INL_DRAFT_MOVING_TO_HOME:
+    if (inl_draft_count_by_state(INL_DRAFT_MOVING_TO_HOME) == 0)
+      inl_draft_end();
+    break;
   }
 }
 
@@ -514,13 +542,12 @@ static int inl_draft_next(struct player *k)
 
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (j == k) continue;
-    if (j->p_status == PFREE) continue;
-    if (j->p_flags & PFROBOT) continue;
+    if (inl_draft_ignore(j)) continue;
     if (!j->p_inl_captain) continue;
     j->p_inl_draft = INL_DRAFT_CAPTAIN_UP;
-    getship(&j->p_ship, BATTLESHIP);
+    inl_draft_highlight_up(j);
     k->p_inl_draft = INL_DRAFT_CAPTAIN_DOWN;
-    getship(&k->p_ship, SCOUT);
+    inl_draft_highlight_down(k);
     return 1;
   }
   /* TODO: test that a captain who leaves and returns can allow draft
@@ -666,9 +693,10 @@ char *inl_draft_name(int x)
   case INL_DRAFT_CAPTAIN_DOWN    : return "_CAPTAIN_DOWN";
   case INL_DRAFT_POOLED          : return "_POOLED";
   case INL_DRAFT_MOVING_TO_PICK  : return "_MOVING_TO_PICK";
-  case INL_DRAFT_MOVING_TO_HOME  : return "_MOVING_TO_HOME";
   case INL_DRAFT_PICKED          : return "_PICKED";
   case INL_DRAFT_PICKED_SELECTOR : return "_PICKED_SELECTOR";
+  case INL_DRAFT_MOVING_TO_HOME  : return "_MOVING_TO_HOME";
+  case INL_DRAFT_END             : return "_END";
   }
   return "UNKNOWN";
 }
@@ -680,13 +708,12 @@ void inl_draft_watch()
 
   for (;;) {
     usleep(500000);
-    fprintf(stderr, "\033[fS=%d        O=%02d H=%02d A=%02d\n",
-            inl_draft_style,
-            context->inl_pool,
+    fprintf(stderr, "\033[f_draft_style=%d _draft=%02d _pool=%02d "
+            "_home_pick=%02d _away_pick=%02d\n",
+            inl_draft_style, context->inl_draft, context->inl_pool,
             context->inl_home_pick, context->inl_away_pick);
     for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-      if (j->p_status == PFREE) continue;
-      if (j->p_flags & PFROBOT) continue;
+      if (inl_draft_ignore(j)) continue;
       fprintf(stderr, "%s C=%d D=%d O=%02d P=%02d X=%08d Y=%08d %s\n",
               j->p_mapchars, j->p_inl_captain, j->p_inl_draft,
               j->p_inl_pool, j->p_inl_pick,

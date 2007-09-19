@@ -41,5 +41,6 @@ void t_x_y_set(struct torp *k, int t_x, int t_y);
 int p_ups_set(struct player *me, int ups);
 int is_idle(struct player *victim);
 int is_invisible_due_idle(struct player *victim);
+struct planet *pl_pick_home(int p_team);
 void pl_pick_home_offset(int p_team, int *x, int *y);
 void p_x_y_go_home(struct player *k);

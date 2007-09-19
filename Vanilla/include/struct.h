@@ -102,11 +102,11 @@ struct context {
     struct status start;        /* status copy at time of daemon cold start */
     int cp_planet_hits;         /* planet data mismatch stats counters */
     int cp_planet_miss;
+    int inl_draft;              /* phase of draft */
     int inl_pool;               /* sequence number for next pool player */
     int inl_home_pick;          /* sequence number for next home pick */
     int inl_away_pick;          /* sequence number for next away pick */
 };
-
 
 /* The following defines are for gameup field */
 #define GU_GAMEOK 0x1

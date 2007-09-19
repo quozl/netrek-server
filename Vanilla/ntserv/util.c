@@ -531,7 +531,7 @@ int is_invisible_due_idle(struct player *victim)
   return is_idle(victim);
 }
 
-static void struct planet *pl_pick_home(int p_team)
+struct planet *pl_pick_home(int p_team)
 {
     int i, tno = team_no(p_team);
     for (;;) {
@@ -543,7 +543,7 @@ static void struct planet *pl_pick_home(int p_team)
 
 void pl_pick_home_offset(int p_team, int *x, int *y)
 {
-    struct planet *pl = pl_pick_home(k->p_team);
+    struct planet *pl = pl_pick_home(p_team);
     *x = pl->pl_x + (random() % 10000) - 5000;
     *y = pl->pl_y + (random() % 10000) - 5000;
 }

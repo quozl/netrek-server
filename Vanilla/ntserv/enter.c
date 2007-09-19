@@ -50,7 +50,7 @@ static u_char face_enemy(void)
         y = GWIDTH/2;
     } else {
         /* team opposes, face one of the enemy home worlds */
-        planet_other = pick_starting_planet(team_other);
+        planet_other = pl_pick_home(team_other);
         x = planet_other->pl_x;
         y = planet_other->pl_y;
     }

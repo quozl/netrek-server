@@ -25,11 +25,11 @@ lib/tools/message forge-to-self 0 draft
 
 # wait for it to end
 echo wait-for-inl-draft-to-end
-sleep 1
+sleep 0.1
 lib/tools/setship 0 wait-for-inl-draft-to-end
 
 # start the game
-sleep 1
+sleep 0.1
 lib/tools/message forge-to-self 8 rom
 lib/tools/message forge-to-self 0 fed
 lib/tools/message forge-to-self 8 "gametime 1 1"
@@ -38,7 +38,9 @@ lib/tools/message forge-to-self 8 "start"
 lib/tools/message forge-to-self 0 "start"
 
 echo wait-for-inl-start
+sleep 0.1
 lib/tools/setgame wait-for-inl-start
 echo started
+sleep 0.1
 lib/tools/setgame wait-for-inl-end
 echo ended
