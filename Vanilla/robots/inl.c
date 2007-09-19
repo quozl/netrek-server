@@ -1701,6 +1701,7 @@ void doResources(int startup)
 void reset_stats()
 {
   int i;
+  int rank = 0; /* Suppress uninitialized warning */
   struct player *j;
 
   /* Reset global stats. */
@@ -1717,6 +1718,8 @@ void reset_stats()
     j = &players[i];
 
     /* initial player state as given in getname */
+    if (status->gameup & GU_INL_DRAFTGAME)
+        rank = j->p_stats.st_rank;
     MZERO(&(j->p_stats), sizeof(struct stats));
 #ifdef LTD_STATS
     ltd_reset(j);
@@ -1724,6 +1727,9 @@ void reset_stats()
     j->p_stats.st_tticks = 1;
 #endif
     j->p_stats.st_flags=ST_INITIAL;
+
+    if (status->gameup & GU_INL_DRAFTGAME)
+        j->p_stats.st_rank = rank;
 
     /* reset stats which are not in stats */
     j->p_kills = 0;
