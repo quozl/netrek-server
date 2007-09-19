@@ -419,7 +419,6 @@ void inl_draft_done()
     inl_draft_highlight_off(j);
     inl_draft_place_end(j);
   }
-  pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
   status->gameup |= GU_INL_DRAFTGAME;
 }
 
@@ -432,6 +431,7 @@ void inl_draft_end()
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     j->p_inl_draft = INL_DRAFT_OFF;
   }
+  pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
   status->gameup &= ~GU_INL_DRAFT;
 }
 
