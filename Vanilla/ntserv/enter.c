@@ -231,13 +231,14 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	/* NBT added...nicer output I think */
 
 	if (lastrank != mystats->st_rank) {
-	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
-	        "%.16s (%2.2s) promoted to %s (%.16s@%.32s)",
-		me->p_name,
-                me->p_mapchars,
-                ranks[me->p_stats.st_rank].name,
-                me->p_login,
-		me->p_full_hostname);
+	    if (!(status->gameup & GU_INL_DRAFTGAME))
+                pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
+                         "%.16s (%2.2s) promoted to %s (%.16s@%.32s)",
+                          me->p_name,
+                          me->p_mapchars,
+                          ranks[me->p_stats.st_rank].name,
+                          me->p_login,
+                          me->p_full_hostname);
 	} else {
 	/* new-style join message 4/13/92 TC */
 	  pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
