@@ -420,6 +420,7 @@ void inl_draft_done()
     inl_draft_place_end(j);
   }
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
+  status->gameup |= GU_INL_DRAFTGAME;
 }
 
 void inl_draft_end()
@@ -438,6 +439,9 @@ static void inl_draft_arrival_captain(struct player *k)
 {
   int other_team = k->p_team == ROM ? FED : ROM;
   struct player *other_captain = inl_draft_team_to_captain(other_team);
+
+  /* Rank the captain up to Admiral */
+  k->p_stats.st_rank = NUMRANKS - 1;
 
   /* arrival without another captain */
   if (other_captain == NULL) {
@@ -580,6 +584,8 @@ static void inl_draft_pick(struct player *j, struct player *k)
            context->inl_home_pick + context->inl_away_pick,
            k->p_mapchars, j->p_team == FED ? "HOME" : "AWAY", j->p_mapchars,
            j->p_name);
+  /* Rank the player up depending on pick position */
+  j->p_stats.st_rank = NUMRANKS - (context->inl_home_pick + context->inl_away_pick - 1) / 2 - 2;
 }
 
 void inl_draft_select(int n)

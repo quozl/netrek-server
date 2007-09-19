@@ -130,7 +130,8 @@ struct context {
 #define hockey_mode ((status->gameup) & GU_PUCK)
 #define GU_DOG 0x400			/* Dogfight robot is present */
 #define dogfight_mode ((status->gameup) & GU_DOG)
-#define GU_INL_DRAFT 0x800
+#define GU_INL_DRAFT 0x800              /* INL draft is in process */
+#define GU_INL_DRAFTGAME 0x1000         /* Game is an INL draft game */
 
 /* values of p_status */
 #define PFREE 		   0x0000
