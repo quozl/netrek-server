@@ -1490,6 +1490,8 @@ void obliterate(int wflag, char kreason)
   for (j = firstPlayer; j<=lastPlayer; j++) {
     if (j->p_status == PFREE)
       continue;
+    if (kreason == TOURNEND)
+      j->p_inl_captain = 0;
     if (j->p_status == POBSERV) {
       j->p_status = PEXPLODE;
       j->p_whydead = kreason;

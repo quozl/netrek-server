@@ -223,6 +223,22 @@ void solicit(int force)
     fclose(file);
   }
   
+  /* Don't solicit in INL mode unless both sides have captains;
+     this fixes the problem of the server sticking around post-game
+     due to player slots remaining in the game */
+  if (inl_mode) {
+      int h, k;
+      struct player *j;
+      int captains = 0;
+
+      for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
+        if (j->p_inl_captain && (j->p_status != PFREE))
+          captains++;
+      }
+      if (captains < 2)
+        return;
+  }
+
   /* update each metaserver */
   for (i=0; i<MAXMETASERVERS; i++) {
     struct metaserver *m = &metaservers[i];
