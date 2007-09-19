@@ -336,10 +336,6 @@
 						     scaling for you */
 #undef NEW_CREDIT
 
-                                /* FASTER_SB_MAXUPDATES - allow 10 ups/sec for
-                                                           SB's */
-#define FASTER_SB_MAXUPDATES
-
                                 /* SBFUEL_FIX      - fix starbase re-fueling */
 #define SBFUEL_FIX
 

@@ -75,9 +75,6 @@ that can change the server.
 
 	NEW_CREDIT - give 1 planet for destroying, two planets for taking.
 
-
-	FASTER_SB_MAXUPDATES - allow 10 ups/sec for SB's 
-
 	SBFUEL_FIX - fix starbase re-fueling 
 
 	NEW_ETEMP - Wreck's etemp fix 

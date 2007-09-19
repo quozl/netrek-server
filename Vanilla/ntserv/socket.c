@@ -313,10 +313,6 @@ static FILE	*mlog;
 #endif
 
 /*int           send_short        = 0;*/ /* is now in data.c , because of robotII.c */
-/* the following now in data.c due to FASTER_SB_MAXUPDATES */
-/*static int	send_threshold    = 0;*/	/* infinity */
-/* static int	actual_threshold  = 0;*/	/* == send_threshold / numupdates */
-/*static int	numupdates	  = 5;*/	/* For threshold */
 /* static int	send_mesg         = 1; */
 /* static int	send_kmesg        = 1; */
 /* static int	send_warn         = 1; */
