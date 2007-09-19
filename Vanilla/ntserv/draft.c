@@ -385,13 +385,13 @@ void inl_draft_done()
 
 void inl_draft_end()
 {
-    int h;
-    struct player *j;
-    
-    for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
-      j->p_inl_draft = INL_DRAFT_OFF;
-    }
-    status->gameup &= ~GU_INL_DRAFT;
+  int h;
+  struct player *j;
+
+  for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+    j->p_inl_draft = INL_DRAFT_OFF;
+  }
+  status->gameup &= ~GU_INL_DRAFT;
 }
 
 static void inl_draft_arrival_captain(struct player *k)
