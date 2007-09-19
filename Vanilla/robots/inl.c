@@ -497,6 +497,15 @@ void player_maint()
 #ifdef INLDEBUG
   ERROR(2,("Enter player_maint\n"));
 #endif
+  /* Remove the captain flag if the captain disappeared */
+  if (players[inl_teams[HOME].captain].p_status == PFREE) {
+    inl_teams[HOME].captain = NONE;
+    players[inl_teams[HOME].captain].p_inl_captain = 0;
+  }
+  if (players[inl_teams[AWAY].captain].p_status == PFREE) {
+    inl_teams[AWAY].captain = NONE;
+    players[inl_teams[AWAY].captain].p_inl_captain = 0;
+  }
 }
 
 int all_alert(int stat)
