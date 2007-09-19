@@ -303,6 +303,11 @@ static void inl_draft_place_selector(struct player *j)
   }
 }
 
+static void inl_draft_place_end(struct player *j)
+{
+  pl_pick_home_offset(j->p_team, &j->p_inl_x, &j->p_inl_y);
+}
+
 static void inl_draft_place(struct player *j)
 {
   switch (j->p_inl_draft) {
@@ -322,6 +327,10 @@ static void inl_draft_place(struct player *j)
     break;
   case INL_DRAFT_PICKED_SELECTOR:
     inl_draft_place_selector(j);
+    break;
+  case INL_DRAFT_MOVING_TO_HOME:
+  case INL_DRAFT_END:
+    inl_draft_place_end(j);
     break;
   }
 }
@@ -370,7 +379,6 @@ void inl_draft_done()
     if (j->p_flags & PFROBOT) continue;
     if (j->p_flags & PFOBSERV) continue;
     j->p_inl_draft = INL_DRAFT_MOVING_TO_HOME;
-    place_starting_planet(j, 1);
   }
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
 }
@@ -437,14 +445,14 @@ static void inl_draft_arrival(struct player *j)
   case INL_DRAFT_MOVING_TO_PICK : /* has been chosen, in transit to team */
     inl_draft_arrival_pick(j);
     break;
-  case INL_DRAFT_MOVING_TO_HOME : /* draft ended, going home */
-    inl_draft_arrival_home(j);
-    break;
   case INL_DRAFT_POOLED:
   case INL_DRAFT_PICKED:
     if (j->p_inl_captain) {
       inl_draft_arrival_captain(j);
     }
+    break;
+  case INL_DRAFT_MOVING_TO_HOME : /* draft ended, going home */
+    inl_draft_arrival_home(j);
     break;
   }
 }
@@ -468,6 +476,7 @@ void inl_draft_update()
         continue;
     }
     /* newly arriving players are forced into the pool */
+    /* TODO: if this happens during a move to home, draft may never end */
     if (j->p_inl_draft == INL_DRAFT_OFF) {
       pmessage(0, MALL, "GOD->ALL", "%s has joined, and is ready to be drafted", j->p_mapchars);
       inl_draft_assign_to_pool(j);

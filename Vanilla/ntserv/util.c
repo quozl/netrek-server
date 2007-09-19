@@ -531,26 +531,26 @@ int is_invisible_due_idle(struct player *victim)
   return is_idle(victim);
 }
 
-struct planet *pick_starting_planet(int p_team)
+static void struct planet *pl_pick_home(int p_team)
 {
     int i, tno = team_no(p_team);
     for (;;) {
         i = tno * 10 + random() % 10;
         if (startplanets[i]) return &planets[i];
     }
+    /* FIXME: continuously loops if there are no startplanets */
 }
 
-void place_starting_planet(struct player *k, int inl)
+void pl_pick_home_offset(int p_team, int *x, int *y)
 {
-    struct planet *starting_planet = pick_starting_planet(k->p_team);
-    int x = starting_planet->pl_x + (random() % 10000) - 5000;
-    int y = starting_planet->pl_y + (random() % 10000) - 5000;
-    
-    if (inl)
-    {
-        k->p_inl_x = x;
-        k->p_inl_y = y;
-    }
-    else
-        p_x_y_go(k, x, y);
+    struct planet *pl = pl_pick_home(k->p_team);
+    *x = pl->pl_x + (random() % 10000) - 5000;
+    *y = pl->pl_y + (random() % 10000) - 5000;
+}
+
+void p_x_y_go_home(struct player *k)
+{
+    int x, y;
+    pl_pick_home_offset(k->p_team, &x, &y);
+    p_x_y_go(k, x, y);
 }

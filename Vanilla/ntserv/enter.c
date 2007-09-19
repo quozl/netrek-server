@@ -132,7 +132,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
         me->p_dir = me->p_desdir = 0;
     } else {
         me->p_team = (1 << tno);
-        place_starting_planet(me, 0);
+        p_x_y_go_home(me);
         me->p_dir = me->p_desdir = face_enemy();
     }
     p_x_y_unbox(me);
