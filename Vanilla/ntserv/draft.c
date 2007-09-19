@@ -378,6 +378,9 @@ static void inl_draft_assign_to_pool(struct player *j)
   if (j->p_inl_captain) return; /* captains don't get put in the pool */
 
   j->p_inl_pool = context->inl_pool++;
+
+  /* Place unpicked slots on the independent team to help player listings */
+  change_team_quietly(j->p_no, NOBODY, j->p_team);
 }
 
 void inl_draft_begin()

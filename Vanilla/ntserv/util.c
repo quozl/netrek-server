@@ -320,7 +320,7 @@ void change_team_quietly(int p_no, int ours, int theirs)
     struct player *k = &players[p_no];
     int queue;
 
-    if (k->w_queue != QU_PICKUP)
+    if ((k->w_queue != QU_PICKUP) && (ours != NOBODY))
     {
         queue = ( ours == FED ) ? QU_HOME : QU_AWAY;
         queues[k->w_queue].free_slots++;
