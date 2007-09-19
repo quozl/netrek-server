@@ -679,7 +679,8 @@ static void move()
             if (is_tournament_mode()) {
                     ts = TS_BEGIN;
                     if (check_scum && check_scummers(1))
-                            ts = TS_SCUMMERS;
+                            if (!inl_mode)
+                                    ts = TS_SCUMMERS;
             }
             break;
 
