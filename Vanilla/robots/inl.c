@@ -994,7 +994,7 @@ int end_tourney()
 
     /* Tourn off t-mode */
     status->gameup |= (GU_CHAOS | GU_PRACTICE);
-    status->gameup &= ~(GU_PAUSED);
+    status->gameup &= ~(GU_PAUSED & GU_INL_DRAFTGAME);
 
     gettimeofday(&tv, (struct timezone *) 0);
     fprintf(inl_log, "TIME: Game ending at %d seconds\n", (int) tv.tv_sec);
