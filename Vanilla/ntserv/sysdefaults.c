@@ -144,6 +144,7 @@ void readsysdefaults(void)
     if (ping_freq <= 0) ping_freq = 1;
     if (ping_iloss_interval <= 0) ping_iloss_interval = 1;
     if (ping_ghostbust_interval <= 0) ping_ghostbust_interval = 1;
+    if (ghostbust_timer <= 0) ghostbust_timer = 1;
 
 #ifdef BASEPRACTICE
     if (manager_type == BASEP_ROBOT) {

@@ -281,6 +281,10 @@ PING_GHOSTBUST=1
 # 	How many pings before we ghostbust the client
 PING_GHOSTBUST_INTERVAL=60
 #
+#       Length of standard ghostbust timer. This should be increased for
+#       INL servers. (120 is a reasonable value for INL)
+GHOSTBUST_TIMER=30
+#
 #	Set the max. # of armies a planet can have out of t-mode.
 MAX_POP=70
 #

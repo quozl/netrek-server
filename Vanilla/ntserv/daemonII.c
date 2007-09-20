@@ -393,8 +393,8 @@ int main(int argc, char **argv)
 #define PLANETFUSE      400/PLANETSTAGGER
 #endif
 
-#define GHOSTTIME       (30 * 1000000 / UPDATE) /* 30 secs */
-#define KGHOSTTIME      (32 * 1000000 / UPDATE) /* 32 secs */
+#define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE) /* default 30 secs */
+#define KGHOSTTIME      ((ghostbust_timer + 2) * 1000000 / UPDATE) /* default 32 secs */
 #define OUTFITTIME      (3 * AUTOQUIT * 1000000 / UPDATE) /* three minutes */
 #define LOGINTIME       (6 * AUTOQUIT * 1000000 / UPDATE) /* six minutes */
 

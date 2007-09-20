@@ -26,7 +26,7 @@
 #include "packets.h"
 #include "slotmaint.h"
 
-#define GHOSTTIME       (30 * 1000000 / UPDATE) /* 30 secs */
+#define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE) /* 30 secs */
 
 static int sendflag=0;
 static int do_update =1;

@@ -220,6 +220,8 @@ int     ping_ghostbust_interval=5; /* in ping_freq, when to ghostbust
                                       if allowed */
 #endif
 
+int	ghostbust_timer=30;
+
 int           twarpMode=0;       /* isae - SB transwarp */
 int           twarpSpeed=60;     /* isae - Warp speed */
 
