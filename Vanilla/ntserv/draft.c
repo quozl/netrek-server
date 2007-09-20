@@ -397,7 +397,9 @@ void inl_draft_begin()
     if (inl_draft_ignore(j)) continue;
     j->p_desspeed = 0;
     bay_release(j);
-    j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN |
+                    PFCLOAK);
+    j->p_flags |= PFSEEN;
     inl_draft_highlight_off(j);
     inl_draft_assign_to_pool(j);
     inl_draft_place(j);
