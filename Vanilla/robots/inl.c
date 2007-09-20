@@ -432,7 +432,7 @@ inlmove()
 
   update_sys_defaults();
 
-  if (inl_stat.flags & S_CONFINE)
+  if (inl_stat.flags & S_CONFINE && !(inl_stat.flags & S_DRAFT))
     inl_confine();
   else
     inl_unconfine();
