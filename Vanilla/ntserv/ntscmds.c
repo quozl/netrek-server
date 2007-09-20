@@ -662,20 +662,20 @@ int bounceWhois(int from)
 #ifdef DNSBL_SHOW
         if ((me->p_sorbsproxy && (me->p_sorbsproxy != 8)) ||
             me->p_njablproxy) {
-            god(from,
+            godf(from,
                 "[ProxyCheck] NOTE: %s (%s) may be using an open proxy.",
                 me->p_mapchars, me->p_ip);
             if (me->p_xblproxy)
-                god(from,
+                godf(from,
                     "[ProxyCheck] %s is on the Spamhaus XBL (POSSIBLE open proxy)",
                      me->p_mapchars);
             if (me->p_sorbsproxy)
-                god(from, "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
+                godf(from, "[ProxyCheck] %s is on SORBS (PROBABLE open %s%s%s%s%s proxy)", me->p_mapchars,
                     (me->p_sorbsproxy & 1) == 1 ? "HTTP" : "", (me->p_sorbsproxy & 3) == 3 ? "|" : "",
                     (me->p_sorbsproxy & 2) == 2 ? "SOCKS" : "", (me->p_sorbsproxy & 6) == 6 ? "|" : "",
                     (me->p_sorbsproxy & 4) == 4 ? "MISC" : "");
             if (me->p_njablproxy)
-                god(from, "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
+                godf(from, "[ProxyCheck] %s is on the NJABL proxy list (PROBABLE open proxy)", me->p_mapchars);
         }
 #endif
     }
