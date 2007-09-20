@@ -857,6 +857,13 @@ static void udplayersight(void)
   }
 }
 
+static void udplayers_pdead(struct player *j)
+{
+  if ((--j->p_explode <= 0) || (status->gameup & GU_PAUSED)) {
+    saveplayer(j);
+    j->p_status = POUTFIT; /* change 5/24/91 TC, was PFREE */
+  }
+}
 
 /* update players during pause */
 static void udplayerpause(void) {
@@ -877,12 +884,13 @@ static void udplayerpause(void) {
         continue;
         break;
       case PEXPLODE:
-        if (j->p_whydead == KQUIT)
-          j->p_status = PDEAD;
+        j->p_status = PDEAD;
         break;
       case PDEAD:
         if (j->p_whydead == KQUIT)
           kill_player = 1;
+        else
+          udplayers_pdead(j);
         break;
     }
 
@@ -966,14 +974,6 @@ static void udplayers_pobserv(struct player *j)
                 j->p_status = PDEAD;
                 j->p_whydead = KGHOST;
                 j->p_whodead = j->p_no;
-        }
-}
-
-static void udplayers_pdead(struct player *j)
-{
-        if (--j->p_explode <= 0) {      /* Ghost Buster */
-                saveplayer(j);
-                j->p_status = POUTFIT; /* change 5/24/91 TC, was PFREE */
         }
 }
 
