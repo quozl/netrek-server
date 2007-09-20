@@ -205,6 +205,9 @@ that can change the server.
    	PING_GHOSTBUST_INTERVAL - ( >0) based on PING_GHOSTBUST and PING_FREQ,
 		the number of unaswered pings before ghostbusting a player.
 
+        GHOSTBUST_TIMER - ( >0 ) Timer setting to ghostbust a client using the
+                normal ghostbust routines.
+
         MAX_POP - Set the maximum number of armies a planet can pop too.
 
         ERROR_LEVEL - How much errors/debugging is sent to the ERROR file.      
