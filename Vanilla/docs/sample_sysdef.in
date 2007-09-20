@@ -281,8 +281,13 @@ PING_GHOSTBUST=1
 # 	How many pings before we ghostbust the client
 PING_GHOSTBUST_INTERVAL=60
 #
-#       Length of standard ghostbust timer. This should be increased for
-#       INL servers. (120 is a reasonable value for INL)
+#       Seconds that may elapse without any input from client before
+#       the slot is freed.  The standard ghostbust timer.  Determines
+#       how quickly a slot is freed if the client crashes, or the
+#       player does not select a team.
+#
+#       For INL servers increase this to 120 to help a TRADE during a
+#       PAUSE not free a player that has taken a biological break.
 GHOSTBUST_TIMER=30
 #
 #	Set the max. # of armies a planet can have out of t-mode.

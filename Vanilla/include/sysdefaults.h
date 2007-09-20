@@ -151,7 +151,7 @@ struct sysdef_keywords {
     "Interval without pings before ghostbust"		},
 #endif /* PING */
   { "GHOSTBUST_TIMER",	SYSDEF_INT,	&ghostbust_timer,
-    "Time to ghostbust a slot" },
+    "Time to ghostbust a slot in seconds" },
   { "TRANSWARP",	SYSDEF_INT,	&twarpMode,
     "Enable transwarp to Starbase" },
   { "WARPSPEED",	SYSDEF_INT,	&twarpSpeed,
