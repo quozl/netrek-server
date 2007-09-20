@@ -15,11 +15,14 @@
 /* draft */
 
 /* http://en.wikipedia.org/wiki/Draft_%28sports%29 "A sports draft is
-the process by which professional sports teams select players not
-contracted to any team, often from colleges or amateur ranks." */
+   the process by which professional sports teams select players not
+   contracted to any team, often from colleges or amateur ranks." */
 
-/* TODO: initial draft mode declaration by captains, requires INL
-   robot voting commands to be added.  */
+/* testing this code ... review the tests/inl-draft script, use
+   tools/setgame to trigger a draft manually, use tools/setgame to
+   monitor status->gameup, use tools/setship to monitor slots involved
+   in a draft. */
+
 #define INL_DRAFT_STYLE_BOTTOM_TO_TOP 2
 
 /* Rich Hansen
@@ -357,12 +360,14 @@ static void inl_draft_place(struct player *j)
 static void inl_draft_highlight_up(struct player *k)
 {
   getship(&k->p_ship, BATTLESHIP);
+  god(k->p_no, "Draft captain, your turn to pick a player.");
 }
 
 /* highlight the captain who is waiting */
 static void inl_draft_highlight_down(struct player *k)
 {
   getship(&k->p_ship, SCOUT);
+  god(k->p_no, "Draft captain, the other captain has the pick, standby.");
 }
 
 /* everybody else */
@@ -406,7 +411,7 @@ void inl_draft_begin()
   }
   
   status->gameup |= GU_INL_DRAFTING;
-  pmessage(0, MALL, "GOD->ALL", "The Captains have agreed to hold a draft.");
+  pmessage(0, MALL, "GOD->ALL", "The captains have agreed to hold a draft.");
 }
 
 void inl_draft_done()
@@ -609,6 +614,7 @@ void inl_draft_select(int n)
         pmessage(0, MALL, "GOD->ALL", "%s passes this draft pick.",
                  k->p_mapchars);
       }
+      /* TODO: this can result in an imbalance */
     }
     break;
   case INL_DRAFT_MOVING_TO_POOL : /* in transit to pool */
@@ -655,6 +661,7 @@ void inl_draft_select(int n)
       /* meaning: delegation of pick duty */
       if (j->p_team == k->p_team) {
         j->p_inl_draft = INL_DRAFT_PICKED_SELECTOR;
+        god(j->p_no, "Draft selector, your captain has chosen you to pick.");
       }
     }
     break;
@@ -665,6 +672,7 @@ void inl_draft_select(int n)
       /* meaning: cancel delegation of pick duty */
       if (j->p_team == k->p_team) {
         j->p_inl_draft = INL_DRAFT_PICKED;
+        god(j->p_no, "Draft selector, your captain has withdrawn your duty to pick.");
       }
     }
     break;
@@ -680,8 +688,15 @@ void inl_draft_reject(int n)
   case INL_DRAFT_OFF            : /* not involved */
   case INL_DRAFT_MOVING_TO_POOL : /* in transit to pool */
   case INL_DRAFT_POOLED         : /* in pool of players to be chosen */
+    break;
   case INL_DRAFT_CAPTAIN_UP     : /* captain with right to select */
   case INL_DRAFT_CAPTAIN_DOWN   : /* captain without right to select */
+    if (me->p_inl_draft == INL_DRAFT_CAPTAIN_UP ||
+        me->p_inl_draft == INL_DRAFT_CAPTAIN_DOWN) {
+        pmessage(0, MALL, "GOD->ALL",
+                 "Captain %s slaps captain %s around with a dead trout.",
+                 me->p_mapchars, j->p_mapchars);
+    }
     break;
   case INL_DRAFT_MOVING_TO_PICK : /* has been chosen, in transit to team */
   case INL_DRAFT_PICKED         : /* has been chosen by a captain */
