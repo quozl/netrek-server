@@ -412,4 +412,7 @@ extern int whitelist_indiv;
 extern int whitelist_team;
 extern int whitelist_all;
 
+/* lame hack to get around gcc silliness */
+extern double round(double);
+
 #endif /* _h_data */
