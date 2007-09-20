@@ -7,8 +7,10 @@
 /* bytes to reserve for outgoing packet to metaserver */
 #define MAXMETABYTES 2048
 
-/* maximum number of metaservers supported */
+/* maximum number of metaservers lines supported */
 #define MAXMETASERVERS 8
+/* Note: for an INL server we need two entries in metaservers file for
+   each real metaserver on the internet */
 
 /* minimum allowable delay between updates to metaserver */
 #define META_MINIMUM_DELAY 60

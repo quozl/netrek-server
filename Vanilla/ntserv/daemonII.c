@@ -756,7 +756,7 @@ static void move()
     }
 
     if (fuse(DRAFTFUSE)) {
-        if (status->gameup & GU_INL_DRAFT) inl_draft_update();
+        if (status->gameup & GU_INL_DRAFTING) inl_draft_update();
     }
 
     if (planet_move && fuse(PMOVEFUSE)) {

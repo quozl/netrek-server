@@ -247,7 +247,7 @@ int do_start(comm,mess)
 
   if (inl_stat.flags & S_DRAFT)
     {
-      if (!(status->gameup & GU_INL_DRAFT)) {
+      if (!(status->gameup & GU_INL_DRAFTING)) {
         inl_stat.flags &= ~S_DRAFT;
       }
     }

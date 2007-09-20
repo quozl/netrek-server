@@ -201,23 +201,24 @@ int main(int argc, char **argv)
       int old, new;
       old = -1;
       for(;;) {
-	new = status->gameup;
-	if (new != old) {
-	  fprintf(stderr, "%s%s%s%s%s%s%s%s%s%s%s%s$\n",
-		  new & GU_GAMEOK      ? "_GAMEOK      ":"             ",
-		  new & GU_PRACTICE    ? "_PRACTICE    ":"             ",
-		  new & GU_CHAOS       ? "_CHAOS       ":"             ",
-		  new & GU_PAUSED      ? "_PAUSED      ":"             ",
-		  new & GU_INROBOT     ? "_INROBOT     ":"             ",
-		  new & GU_NEWBIE      ? "_NEWBIE      ":"             ",
-		  new & GU_PRET        ? "_PRET        ":"             ",
-		  new & GU_BOT_IN_GAME ? "_BOT_IN_GAME ":"             ",
-		  new & GU_CONQUER     ? "_CONQUER     ":"             ",
-		  new & GU_PUCK        ? "_PUCK        ":"             ",
-		  new & GU_DOG         ? "_DOG         ":"             ",
-		  new & GU_INL_DRAFT   ? "_INL_DRAFT   ":"             ");
-	  old = new;
-	}
+        new = status->gameup;
+        if (new != old) {
+          fprintf(stderr, "%s%s%s%s%s%s%s%s%s%s%s%s$\n",
+                  new & GU_GAMEOK       ? "_GAMEOK      ":"             ",
+                  new & GU_PRACTICE     ? "_PRACTICE    ":"             ",
+                  new & GU_CHAOS        ? "_CHAOS       ":"             ",
+                  new & GU_PAUSED       ? "_PAUSED      ":"             ",
+                  new & GU_INROBOT      ? "_INROBOT     ":"             ",
+                  new & GU_NEWBIE       ? "_NEWBIE      ":"             ",
+                  new & GU_PRET         ? "_PRET        ":"             ",
+                  new & GU_BOT_IN_GAME  ? "_BOT_IN_GAME ":"             ",
+                  new & GU_CONQUER      ? "_CONQUER     ":"             ",
+                  new & GU_PUCK         ? "_PUCK        ":"             ",
+                  new & GU_DOG          ? "_DOG         ":"             ",
+                  new & GU_INL_DRAFTING ? "_INL_DRAFTING":"             ",
+                  new & GU_INL_DRAFTED  ? "_INL_DRAFTED ":"             ");
+          old = new;
+        }
         usleep(100000);
       }
     }

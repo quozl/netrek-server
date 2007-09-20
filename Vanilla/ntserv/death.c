@@ -78,7 +78,8 @@ void death(void)
     if (inl_mode) hourratio=5;
 
     /* First we check for promotions, unless in an INL draft game: */
-    if ((me->p_stats.st_rank < NUMRANKS-1) && !(status->gameup & GU_INL_DRAFTGAME)) {
+    if ((me->p_stats.st_rank < NUMRANKS-1) &&
+        !(status->gameup & GU_INL_DRAFTED)) {
 
 #ifdef LTD_STATS
 

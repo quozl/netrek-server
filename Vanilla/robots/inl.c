@@ -994,7 +994,7 @@ int end_tourney()
 
     /* Tourn off t-mode */
     status->gameup |= (GU_CHAOS | GU_PRACTICE);
-    status->gameup &= ~(GU_PAUSED & GU_INL_DRAFTGAME);
+    status->gameup &= ~(GU_PAUSED & GU_INL_DRAFTED);
 
     gettimeofday(&tv, (struct timezone *) 0);
     fprintf(inl_log, "TIME: Game ending at %d seconds\n", (int) tv.tv_sec);
@@ -1703,7 +1703,7 @@ void doResources(int startup)
 void reset_stats()
 {
   int i;
-  int rank = 0; /* Suppress uninitialized warning */
+  int rank = 0;
   struct player *j;
 
   /* Reset global stats. */
@@ -1720,8 +1720,8 @@ void reset_stats()
     j = &players[i];
 
     /* initial player state as given in getname */
-    if (status->gameup & GU_INL_DRAFTGAME)
-        rank = j->p_stats.st_rank;
+    if (status->gameup & GU_INL_DRAFTED)
+      rank = j->p_stats.st_rank;
     MZERO(&(j->p_stats), sizeof(struct stats));
 #ifdef LTD_STATS
     ltd_reset(j);
@@ -1730,8 +1730,8 @@ void reset_stats()
 #endif
     j->p_stats.st_flags=ST_INITIAL;
 
-    if (status->gameup & GU_INL_DRAFTGAME)
-        j->p_stats.st_rank = rank;
+    if (status->gameup & GU_INL_DRAFTED)
+      j->p_stats.st_rank = rank;
 
     /* reset stats which are not in stats */
     j->p_kills = 0;

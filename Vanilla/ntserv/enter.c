@@ -228,10 +228,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	    }
 	}
 
-	/* NBT added...nicer output I think */
-
-	if (lastrank != mystats->st_rank) {
-	    if (!(status->gameup & GU_INL_DRAFTGAME))
+        if (lastrank != mystats->st_rank) {
+            if (!(status->gameup & GU_INL_DRAFTED))
                 pmessage2(0, MALL | MJOIN, addrbuf, me->p_no,
                          "%.16s (%2.2s) promoted to %s (%.16s@%.32s)",
                           me->p_name,

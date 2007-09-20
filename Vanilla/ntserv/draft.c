@@ -379,7 +379,7 @@ static void inl_draft_assign_to_pool(struct player *j)
 
   j->p_inl_pool = context->inl_pool++;
 
-  /* Place unpicked slots on the independent team to help player listings */
+  /* separate pool on client sorted player list */
   change_team_quietly(j->p_no, NOBODY, j->p_team);
 }
 
@@ -403,7 +403,7 @@ void inl_draft_begin()
     inl_draft_place(j);
   }
   
-  status->gameup |= GU_INL_DRAFT;
+  status->gameup |= GU_INL_DRAFTING;
   pmessage(0, MALL, "GOD->ALL", "The Captains have agreed to hold a draft.");
 }
 
@@ -419,7 +419,7 @@ void inl_draft_done()
     inl_draft_highlight_off(j);
     inl_draft_place_end(j);
   }
-  status->gameup |= GU_INL_DRAFTGAME;
+  status->gameup |= GU_INL_DRAFTED;
 }
 
 void inl_draft_end()
@@ -432,7 +432,7 @@ void inl_draft_end()
     j->p_inl_draft = INL_DRAFT_OFF;
   }
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
-  status->gameup &= ~GU_INL_DRAFT;
+  status->gameup &= ~GU_INL_DRAFTING;
 }
 
 static void inl_draft_arrival_captain(struct player *k)
@@ -440,7 +440,7 @@ static void inl_draft_arrival_captain(struct player *k)
   int other_team = k->p_team == ROM ? FED : ROM;
   struct player *other_captain = inl_draft_team_to_captain(other_team);
 
-  /* Rank the captain up to Admiral */
+  /* captains are admirals */
   k->p_stats.st_rank = NUMRANKS - 1;
 
   /* arrival without another captain */
@@ -584,8 +584,9 @@ static void inl_draft_pick(struct player *j, struct player *k)
            context->inl_home_pick + context->inl_away_pick,
            k->p_mapchars, j->p_team == FED ? "HOME" : "AWAY", j->p_mapchars,
            j->p_name);
-  /* Rank the player up depending on pick position */
-  j->p_stats.st_rank = NUMRANKS - (context->inl_home_pick + context->inl_away_pick - 1) / 2 - 2;
+  /* set rank of player depending on pick position */
+  j->p_stats.st_rank =
+    NUMRANKS - (context->inl_home_pick + context->inl_away_pick - 1) / 2 - 2;
 }
 
 void inl_draft_select(int n)
