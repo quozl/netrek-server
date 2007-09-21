@@ -857,12 +857,40 @@ static void udplayersight(void)
   }
 }
 
+static void udplayers_pexplode_bays(struct player *j)
+{
+        bay_release(j);
+        if (j->p_ship.s_type == STARBASE) {
+                bay_release_all(j);
+                /* set reconstruction time for new starbase */
+                if (((j->p_whydead == KSHIP) ||
+                     (j->p_whydead == KTORP) ||
+                     (j->p_whydead == KPHASER) ||
+                     (j->p_whydead == KPLASMA) ||
+                     (j->p_whydead == KPLANET) ||
+                     (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
+                        teams[j->p_team].te_turns = starbase_rebuild_time;
+                        if (j->p_status == PDEAD) blog_base_loss(j);
+                }
+        }
+}
+
+static void udplayerspause_pexplode(struct player *j)
+{
+        /* only animate explosions in a pause that are due to a TRADE */
+        if (j->p_whydead == TOURNSTART) {
+                j->p_flags &= ~(PFCLOAK|PFORBIT);
+                j->p_status = PDEAD;
+                udplayers_pexplode_bays(j);
+        }
+}
+
 static void udplayers_pdead(struct player *j)
 {
-  if ((--j->p_explode <= 0) || (status->gameup & GU_PAUSED)) {
-    saveplayer(j);
-    j->p_status = POUTFIT; /* change 5/24/91 TC, was PFREE */
-  }
+        if ((--j->p_explode <= 0) || (status->gameup & GU_PAUSED)) {
+                saveplayer(j);
+                j->p_status = POUTFIT;
+        }
 }
 
 /* update players during pause */
@@ -884,7 +912,7 @@ static void udplayerpause(void) {
         continue;
         break;
       case PEXPLODE:
-        j->p_status = PDEAD;
+        udplayerspause_pexplode(j);
         break;
       case PDEAD:
         if (j->p_whydead == KQUIT)
@@ -990,24 +1018,10 @@ static void udplayers_pexplode(struct player *j)
         
         if (--j->p_explode <= 0) {
                 j->p_status = PDEAD;
-                /* todo: fps support, use of fuse for time limit */
                 j->p_explode = 600/PLAYERFUSE; /* set PDEAD time limit */
         }
         
-        bay_release(j);
-        if (j->p_ship.s_type == STARBASE) {
-                bay_release_all(j);
-                /* set reconstruction time for new starbase */
-                if (((j->p_whydead == KSHIP) || 
-                     (j->p_whydead == KTORP) ||
-                     (j->p_whydead == KPHASER) || 
-                     (j->p_whydead == KPLASMA) ||
-                     (j->p_whydead == KPLANET) ||
-                     (j->p_whydead == KGENOCIDE)) && (status->tourn)) {
-                        teams[j->p_team].te_turns = starbase_rebuild_time;
-                        if (j->p_status == PDEAD) blog_base_loss(j);
-                }
-        }
+        udplayers_pexplode_bays(j);
         /* And he is ejected from orbit. */
         j->p_flags &= ~PFORBIT;
         
