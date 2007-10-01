@@ -288,6 +288,10 @@ struct sysdef_keywords {
     "Allow whitelisted users to bypass :t ignores." },
   { "WHITELIST_ALL",	SYSDEF_INT,	&whitelist_all,
     "Allow whitelisted users to bypass :a ignores." },
+  { "SCRIPT_TOURN_START", SYSDEF_CHAR, script_tourn_start,
+    "Script to run when T-Mode starts" },
+  { "SCRIPT_TOURN_END", SYSDEF_CHAR, script_tourn_end,
+    "Script to run when T-Mode ends" },
   { "",			SYSDEF_END,	NULL		}
 };
 

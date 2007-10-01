@@ -231,6 +231,8 @@ int actual_threshold = 0;	/* == send_threshold / numupdates */
 int numupdates = 5;		/* For threshold */
 
 char admin_password[ADMIN_PASS_LEN];
+char script_tourn_start[FNAMESIZE];
+char script_tourn_end[FNAMESIZE];
 
 char Global[FNAMESIZE];
 char Scores[FNAMESIZE];

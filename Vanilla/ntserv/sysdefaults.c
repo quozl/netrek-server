@@ -66,6 +66,8 @@ void readsysdefaults(void)
     defups = maxups;
     manager_type = NO_ROBOT;
     strcpy(Motd,N_MOTD);
+    strcpy(script_tourn_start, "");
+    strcpy(script_tourn_end, "");
 
     getshipdefaults();
 

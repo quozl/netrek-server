@@ -157,6 +157,16 @@ void restart_handler(int signum)
   HANDLE_SIG(SIGHUP, restart_handler);
 }
 
+static void fork_script(char *script)
+{
+  if (fork() == 0) {
+    alarm_prevent_inheritance();
+    execlp(script, script, NULL);
+    perror(script);
+    _exit(1);
+  }
+}
+
 int main(int argc, char **argv)
 {
     register int i;
@@ -294,11 +304,7 @@ int main(int argc, char **argv)
 
 #ifdef AUTOMOTD
    if(stat(Motd, &mstat) == 0 && (time(NULL) - mstat.st_mtime) > 60*60*12){
-      if(fork() == 0){
-         execl("/bin/sh", "sh", "-c", MakeMotd, 0);
-         perror(MakeMotd);
-         _exit(1);
-      }
+      fork_script(MakeMotd);
    }
 #endif
 
@@ -703,6 +709,7 @@ static void move()
             political_begin(oldmessage);
             ts = TS_TOURNAMENT;
             context->frame_tourn_start = context->frame;
+            if (strlen(script_tourn_start) > 0) fork_script(script_tourn_start);
             /* break; */
 
     case TS_TOURNAMENT:
@@ -718,6 +725,7 @@ static void move()
             context->frame_tourn_end = context->frame;
             political_end(oldmessage);
             ts = TS_PICKUP;
+            if (strlen(script_tourn_end) > 0) fork_script(script_tourn_end);
             break;
     }
 

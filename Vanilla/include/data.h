@@ -253,6 +253,8 @@ extern int numupdates;
 extern int send_short;
 
 extern char admin_password[ADMIN_PASS_LEN];
+extern char script_tourn_start[FNAMESIZE];
+extern char script_tourn_end[FNAMESIZE];
 
 extern char Global[FNAMESIZE];
 extern char Scores[FNAMESIZE];

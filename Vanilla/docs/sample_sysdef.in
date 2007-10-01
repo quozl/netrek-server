@@ -133,6 +133,10 @@ IP_CHECK_DNS_VERBOSE=0
 # 	number of players per team for t-mode
 TOURN=4
 #
+#       scripts to run when t-mode starts and ends
+SCRIPT_TOURN_START=
+SCRIPT_TOURN_END=
+#
 # 	allow cloakers on homeworld to idle safely if no t-mode
 # 	(0 = no, 1 = yes)
 SAFE_IDLE=1
