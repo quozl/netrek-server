@@ -419,7 +419,7 @@ int connectToClient(char *machine, int port)
 	ERROR(1,("%s: ioctl(FIONBIO) failed, %s\n", whoami(), 
 		 strerror(errno)));
 	close(ns);
-	return(0);
+	return 0;
     }
 
     /* start a connection attempt */
@@ -428,7 +428,7 @@ int connectToClient(char *machine, int port)
 	ERROR(2,("%s: connect() failed, %s\n", whoami(), 
 		 strerror(errno)));
 	close(ns);
-	return(0);
+	return 0;
     }
 
     /* wait a short time for it to complete */
@@ -441,12 +441,12 @@ int connectToClient(char *machine, int port)
 	ERROR(1,("%s: select() after connect() failed, %s\n", whoami(), 
 		 strerror(errno)));
 	close(ns);
-	return(0);
+	return 0;
     }
     if (stat == 0) {
 	ERROR(3,("%s: connect timed out\n", whoami()));
 	close(ns);
-	return(0);
+	return 0;
     }
 
     /* read status of connect attempt */
@@ -462,17 +462,17 @@ int connectToClient(char *machine, int port)
     case ECONNREFUSED:
 	ERROR(3,("%s: connection refused\n", whoami()));
 	close(ns);
-	return(0);
+	return 0;
     case ENETUNREACH:
 	ERROR(3,("%s: network unreachable\n", whoami()));
 	close(ns);
-	return(0);
+	return 0;
     case ETIMEDOUT:
     default:
 	ERROR(3,("%s: connect() failed, %s\n", whoami(), 
 		 strerror(errno)));
 	close(ns);
-	return(0);
+	return 0;
     }
 
     /* set the socket blocking */
@@ -481,14 +481,14 @@ int connectToClient(char *machine, int port)
 	ERROR(1,("%s: ioctl(FIONBIO) failed, %s\n", whoami(), 
 		 strerror(errno)));
 	close(ns);
-	return(0);
+	return 0;
     }
 
     sock=ns;
     setNoDelay(sock);
     initClientData();
     testtime = -1;
-    return(1);
+    return 1;
 }
 
 /* Check the socket to read it's inet addr for possible future use.
@@ -600,7 +600,7 @@ void initClientData(void)
 
 int isClientDead(void)
 {
-    return(clientDead);
+    return clientDead;
 }
 
 void updateClient(void)
@@ -931,7 +931,7 @@ int readFromClient(void)
     fd_set readfds;
     int retval = 0;
 
-    if (clientDead) return(0);
+    if (clientDead) return 0;
     timeout.tv_sec=0;
     timeout.tv_usec=0;
     FD_ZERO(&readfds);
@@ -1037,7 +1037,7 @@ static int doRead(int asock)
 		    /* and fall through to disconnect */
 		} else {
 		    UDPDIAG(("Reconnect successful\n"));
-		    return (0);
+		    return 0;
 		}
 	    } /* errno == ECONNREFUSED */
 
@@ -1047,18 +1047,18 @@ static int doRead(int asock)
 	    closeUdpConn();
 	    commMode = COMM_TCP;
 #ifdef notdef
-	    return(0);  /* I have large questions here -- tell client? */
+	    return 0;  /* I have large questions here -- tell client? */
 #endif
 	} /* asock == udpSock */
 	clientDead=1;
-	return(0);
+	return 0;
     }
     bufptr=buf;
     while (bufptr < buf+count) {
 	if (*bufptr < 1 || *bufptr > NUM_PACKETS || handlers[(int)*bufptr].size==0) {
 	    ERROR(1,("%s: unknown packet type: %d, aborting...\n",
 		     whoami(), *bufptr));
-	    return (0);
+	    return 0;
 	}
 	size=handlers[(int)*bufptr].size;
 	if(size == -1){     /* variable packet */
@@ -1089,7 +1089,7 @@ static int doRead(int asock)
 		ERROR(1,( "1a) read() failed (%d, error %d)\n",
 			  count, errno));
 		clientDead=1;
-		return(0);
+		return 0;
 	    }
 
 	    temp=read(asock,buf+count,size-(count+(buf-bufptr)));
@@ -1100,7 +1100,7 @@ static int doRead(int asock)
 		ERROR(1,( "2) read() failed (%d, error %d)\n",
 			  count, errno));
 		clientDead=1;
-		return(0);
+		return 0;
 	    }
 	}
 	/* Check to see if the handler is there and the request is legal.
@@ -1165,7 +1165,7 @@ static int doRead(int asock)
 				  count, errno));
 			logmessage(buf);
 			clientDead=1;
-			return(0);
+			return 0;
 		    }
 		} else {
 		    count=BUFSIZ;
@@ -1176,7 +1176,7 @@ static int doRead(int asock)
 	    bufptr-=BUFSIZ;
 	}
     }
-    return(1);
+    return 1;
 }
 
 static void handleTorpReq(struct torp_cpacket *packet)
@@ -1827,9 +1827,9 @@ int checkVersion(void)
 	packet.why=0;
 	sendClientPacket((CVOID) &packet);
 	flushSockBuf();
-	return(0);
+	return 0;
     }
-    return(1);
+    return 1;
 }
 
 void logEntry(void)
@@ -1857,7 +1857,7 @@ static int gwrite(int fd, char *wbuf, size_t size)
     register size_t bytes = size;
     register int count = 0;
 
-    if (clientDead) return (0);
+    if (clientDead) return 0;
 
     if (bytes>BUFSIZE) {
 	ERROR(1,("ERROR!!! gwrite got passed buf size of %d\n",bytes));
@@ -1869,7 +1869,7 @@ static int gwrite(int fd, char *wbuf, size_t size)
 	if (count++ > 100) {
 	    ERROR(1,("Gwrite hosed: too many writes (%d)\n",getpid()));
 	    clientDead = 1;
-	    return (-1);
+	    return -1;
 	}
 	if (n < 0) {
 	    if (errno==ENOBUFS) {
@@ -1890,11 +1890,11 @@ static int gwrite(int fd, char *wbuf, size_t size)
 	    else if (errno==EPIPE) {
 		/* The pipe is broken: i.e. the client is dead */
 		/* clientDead is marked outside of gwrite */
-		return (-1);
+		return -1;
 	    }
 	    else {
 	    	perror("gwrite");
-		return (-1);
+		return -1;
 	    }
 	    if (fd == udpSock) {
 		/* do we want Hiccup code here? */
@@ -1906,12 +1906,12 @@ static int gwrite(int fd, char *wbuf, size_t size)
 	    sprintf(tempbuf, "Died in gwrite, n=%d, errno=%d <%s@%s>",
 		    n, errno, me->p_login, me->p_full_hostname);
 	    logmessage(tempbuf);
-	    return(-1);
+	    return -1;
 	}
 	bytes -= n;
 	wbuf += n;
     }
-    return(orig);
+    return orig;
 }
 
 static void handleDockingReq(struct dockperm_cpacket *packet)
@@ -2446,7 +2446,7 @@ static int connUdpConn(void)
 
     if (udpSock > 0) {
 	ERROR(2,( "ntserv: tried to open udpSock twice\n"));
-	return (0);	/* pretend we succeeded (this could be bad) */
+	return 0;	/* pretend we succeeded (this could be bad) */
     }
     if (udpbufptr != udpbuf) {
 	udpbufptr = udpbuf;		/* clear out any old data */
@@ -2455,7 +2455,7 @@ static int connUdpConn(void)
 
     if ((udpSock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 	perror("ntserv: unable to create DGRAM socket");
-	return (-1);
+	return -1;
     }
 
 #ifdef UDP_FIX 			/* 15/6/93 SK UDP connection time out fix */
@@ -2480,7 +2480,7 @@ static int connUdpConn(void)
         perror("ntserv: cannot bind to local port");
         close(udpSock);
 	udpSock = -1;
-	return (-1);
+	return -1;
     }
 
     /* determine what our port is */
@@ -2490,7 +2490,7 @@ static int connUdpConn(void)
 	UDPDIAG(("Can't get our own socket; connection failed\n"));
 	close(udpSock);
 	udpSock = -1;
-	return (-1);
+	return -1;
     }
     udpLocalPort = (int) ntohs(addr.sin_port);
 
@@ -2531,7 +2531,7 @@ static int connUdpConn(void)
 		 udpClientPort));
 	close(udpSock);
 	udpSock = -1;
-	return (-1);
+	return -1;
     }
     UDPDIAG(("connect to %s's port %d on 0x%x succeded\n",
 	     me->p_name, udpClientPort, remoteaddr));
@@ -2543,14 +2543,14 @@ static int connUdpConn(void)
 	UDPDIAG(("Can't get our own socket; connection failed\n"));
 	close(udpSock);
 	udpSock = -1;
-	return (-1);
+	return -1;
     }
     udpLocalPort = (int) ntohs(addr.sin_port);
 
     if (udpAllowed > 2)		/* verbose debug mode? */
 	printUdpInfo();
 
-    return (0);
+    return 0;
 }
 
 int closeUdpConn(void)
@@ -2558,7 +2558,7 @@ int closeUdpConn(void)
     V_UDPDIAG(("Closing UDP socket\n"));
     if (udpSock < 0) {
 	ERROR(2,( "ntserv: tried to close a closed UDP socket\n"));
-	return (-1);
+	return -1;
     }
     shutdown(udpSock, 2);	/* wham */
     close(udpSock);		/* bam */
@@ -2569,7 +2569,7 @@ int closeUdpConn(void)
     UDPDIAG(("Disabling PORTSWAP mode.  Flags = %d\n", portswapflags));
 #endif
 
-    return (0);
+    return 0;
 }
 
 /* used for debugging */
