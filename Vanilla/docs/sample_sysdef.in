@@ -270,6 +270,14 @@ NODIAG=1
 # 	Allow UDP connections (0 = no, 1 = yes)
 UDP=1
 #
+#       Bind UDP port base (0 = off, n = port number)
+#
+#       Sets the base port number used for the server side during the switch
+#       to UDP mode, instead of using an operating system allocated sequential
+#       or random port number.  This is useful for servers that have port based
+#       firewall protection, since it reduces the outbound rule set.
+BIND_UDP_PORT_BASE=0
+#
 # 	Number of planets to start surrender counter
 SURRSTART=1
 #

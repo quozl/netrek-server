@@ -211,6 +211,7 @@ extern int galactic_smooth;
 extern int udpSock;		/* UDP */
 extern int commMode;		/* UDP */
 extern int udpAllowed;		/* UDP */
+extern int bind_udp_port_base;
 
 extern double	oldmax;
 extern double	Sin[], Cos[];

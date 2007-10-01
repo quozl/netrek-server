@@ -138,6 +138,8 @@ struct sysdef_keywords {
     "Perform client program verification"		},
   { "UDP",		SYSDEF_INT,	&udpAllowed,
     "Use UDP communications for speed"			},
+  { "BIND_UDP_PORT_BASE",	SYSDEF_INT,	&bind_udp_port_base,
+    "Use specific UDP port range rather than random"	},
   { "SURRSTART",	SYSDEF_INT,	&surrenderStart,
     "Number of planets at which surrender starts"	},
 #ifdef PING

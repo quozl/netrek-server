@@ -166,6 +166,7 @@ int	galactic_smooth = 0;
 int	udpSock=(-1);     /* UDP - the almighty socket */
 int	commMode=0;     /* UDP - initial mode is TCP only */
 int	udpAllowed=1;   /* UDP - sysdefaults */
+int	bind_udp_port_base=0;
 
 double	oldmax = 0.0;
 

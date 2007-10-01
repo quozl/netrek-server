@@ -2469,7 +2469,12 @@ static int connUdpConn(void)
     } else {
 	UDPDIAG(("Using interface 0x%x\n", ntohl(addr.sin_addr.s_addr)));
     }
-    addr.sin_port = 0;
+
+    if (bind_udp_port_base == 0) {
+        addr.sin_port = 0;
+    } else {
+        addr.sin_port = htons(bind_udp_port_base + me->p_no);
+    }
 
     if (bind(udpSock, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         perror("ntserv: cannot bind to local port");
