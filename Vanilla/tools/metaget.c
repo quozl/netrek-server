@@ -28,6 +28,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <string.h>
 
 int main (int argc, char *argv[])
 {
@@ -61,9 +62,14 @@ int main (int argc, char *argv[])
 
   /* send query */
   stat = sendto(sock, "?", 1, 0, (struct sockaddr *) &address, 
-		sizeof(struct sockaddr));
+                sizeof(struct sockaddr));
   if (stat < 0) { perror("sendto"); return 3; }
-    
+
+  /* optional premature exit */
+  if (argc > 3) {
+    if (!strcmp(argv[3], "no-wait")) return 0;
+  }
+
   /* wait for response */
   len = recvfrom(sock, buf, BUFSIZ, 0, NULL, NULL);
   if (len < 0) { perror("recvfrom"); return 4; }
