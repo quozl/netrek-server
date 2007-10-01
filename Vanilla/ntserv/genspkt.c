@@ -1543,18 +1543,6 @@ static int parseQuery(struct message *msg)
     if (strcmp(cchar, "udpstats") == 0)
 	return bounceUDPStats(msg->m_from);
 
-    /* DEBUG */
-    if (strcmp(cchar, "debug") == 0){
-	char	  buf[80];
-	sprintf(buf, "dumpshmem > %s.dump.%d", login, getpid());
-	if(fork() == 0){
-	    SIGNAL(SIGALRM, SIG_DFL);
-	    execl("/bin/sh", "sh", "-c", buf, NULL);
-	    perror("execl");
-	    ERROR(1,("Another socket exit"));
-	    _exit(1);
-	}
-    }
     return FALSE;
 }
 
