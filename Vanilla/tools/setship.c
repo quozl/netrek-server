@@ -28,6 +28,7 @@ sleep n                     sleep for n seconds\n\
 set-inl-draft n             set INL draft mode state n (0=off)\n\
 player                      change an observer to a player\n\
 observer                    change a player to an observer\n\
+captain                     mark a player as a draft captain\n\
 damage n                    set damage to n\n\
 shields n                   set shields remaining to n\n\
 fuel n                      set fuel remaining to n\n\
@@ -233,6 +234,16 @@ int setship(char *cmds)
   if (!strcmp(token, "observer")) {
     me->p_flags |= PFOBSERV;
     me->p_status = POBSERV;
+    goto state_1;
+  }
+
+  if (!strcmp(token, "captain")) {
+    me->p_inl_captain = 1;
+    goto state_1;
+  }
+
+  if (!strcmp(token, "no-captain")) {
+    me->p_inl_captain = 0;
     goto state_1;
   }
 
