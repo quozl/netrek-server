@@ -251,27 +251,51 @@ cb_updt(int unused)
 int
 main(int argc, char *argv[])
 {
+    int i, verbose = 0, updates = 0;
+    char *recordfile = RECORDFILE;
+
+    for (i = 0; i < argc; i++) {
+        if (!strcmp(argv[i], "--verbose")) {
+            verbose++;
+        }
+        if (!strcmp(argv[i], "--updates")) {
+            if (++i < argc) {
+                updates = atoi(argv[i]);
+                if (verbose) fprintf(stderr,
+                                     "cambot: updates set to %d\n", updates);
+            }
+        }
+        if (!strcmp(argv[i], "--output")) {
+            if (++i < argc) {
+                recordfile = strdup(argv[i]);
+                if (verbose) fprintf(stderr,
+                                     "cambot: recordfile set to %s\n",
+                                     recordfile);
+            }
+        }
+    }
 
     srandom(time(NULL));
 
     getpath();
     openmem(0);
     readsysdefaults();
+    if (updates == 0) updates = fps;
 
-    if ((packetsFile = fopen(RECORDFILE,"wb"))==NULL) {
-	ERROR(1,("Could not open recording file.\n"));
-	exit(1);
+    if ((packetsFile = fopen(recordfile, "wb"))==NULL) {
+        ERROR(1,("Could not open recording file.\n"));
+        exit(1);
     } 
 
     initSPackets();
     {
-	int i;
+        int i;
 
-	for (i=0; i<MAXPLAYER; i++)
-	{
-	    clientSelfs[i].pnum=-1;
-	    clientSelfShips[i].damage=-1;
-	}
+        for (i=0; i<MAXPLAYER; i++)
+        {
+            clientSelfs[i].pnum=-1;
+            clientSelfShips[i].damage=-1;
+        }
     }
 
     send_short=2;
@@ -280,7 +304,7 @@ main(int argc, char *argv[])
      * create a bogus player struct to prevent seg faults */
     me = &cambot_me;
     MZERO(me, sizeof(struct player));
-    p_ups_set(me, fps);
+    p_ups_set(me, updates);
 
     /* Add setup packets now */
     sendFeature(&Many_Self_F);
@@ -289,7 +313,8 @@ main(int argc, char *argv[])
     SIGNAL(SIGINT, cleanup);
     SIGNAL(SIGTERM, cleanup);
 
-    alarm_setitimer(distortion, fps);
+    alarm_setitimer(distortion, updates);
+    if (verbose) fprintf(stderr, "cambot: recording ...\n");
     for (;;) {
         PAUSE(SIGALRM);
     }
