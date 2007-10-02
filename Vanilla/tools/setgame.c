@@ -203,7 +203,7 @@ int main(int argc, char **argv)
       for(;;) {
         new = status->gameup;
         if (new != old) {
-          fprintf(stderr, "%s%s%s%s%s%s%s%s%s%s%s%s$\n",
+          fprintf(stderr, "%s%s%s%s%s%s%s%s%s%s%s%s%s$\n",
                   new & GU_GAMEOK       ? "_GAMEOK      ":"             ",
                   new & GU_PRACTICE     ? "_PRACTICE    ":"             ",
                   new & GU_CHAOS        ? "_CHAOS       ":"             ",
@@ -264,6 +264,11 @@ int main(int argc, char **argv)
 
     if (!strcmp(argv[i], "watch-draft")) {
       inl_draft_watch();
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "inl-drafted-off")) {
+      status->gameup &= ~GU_INL_DRAFTED;
       goto state_0;
     }
 
