@@ -614,13 +614,7 @@ void do_refit(int type)
 #endif
         me->p_kills < plkills))
         me->p_ship.s_plasmacost = -1;
-    me->p_shield = me->p_ship.s_maxshield;
-    me->p_damage = 0;
-    me->p_fuel = me->p_ship.s_maxfuel;
-    me->p_wtemp = 0;
-    me->p_wtime = 0;
-    me->p_etemp = 0;
-    me->p_etime = 0;
+    p_heal(me);
     me->p_ship.s_type = type;
     if (type == STARBASE) {
 	bay_init(me);

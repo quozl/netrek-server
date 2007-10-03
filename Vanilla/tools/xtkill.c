@@ -291,11 +291,7 @@ int main(int argc, char **argv)
 #endif
       break;
     case 'r':           /* repair ship */
-      players[player].p_shield = players[player].p_ship.s_maxshield;
-      players[player].p_damage = 0;
-      players[player].p_etemp = 0;
-      players[player].p_wtemp = 0;
-      players[player].p_fuel = players[player].p_ship.s_maxfuel;
+      p_heal(&players[player]);
       break;
     default:
       Usage();

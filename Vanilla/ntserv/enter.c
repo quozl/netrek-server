@@ -139,14 +139,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     me->p_ntorp = 0;
     me->p_cloakphase = 0;
     me->p_nplasmatorp = 0;
-    me->p_damage = 0;
-    me->p_subdamage = 0;
-    me->p_etemp = 0;
-    me->p_etime = 0;
-    me->p_wtemp = 0;
-    me->p_wtime = 0;
-    me->p_shield = me->p_ship.s_maxshield;
-    me->p_subshield = 0;
+    p_heal(me);
     me->p_swar = 0;
     me->p_lastseenby = VACANT;
     me->p_kills = 0.0;
@@ -306,7 +299,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	lastrank = mystats->st_rank;
     }
 
-    me->p_fuel = myship->s_maxfuel;
     delay = 0;
 }
 
