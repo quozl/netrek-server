@@ -1,5 +1,5 @@
 INL Draft Mode
-by James Cameron and Rich Hansen, 2007-09.
+by James Cameron, Rich Hansen, and Karthik Arumugham, 2007-09.
 
 For use during an INL mode pregame, to enable the captains to select
 players from those who are connected.
@@ -19,8 +19,8 @@ Usage
         and can raise or lower shields, and use harmless weaponry
         ... so that body language may continue,
 
-    e.  the two captains are transwarped out of the pool and stand side by
-        side,
+    e.  the two captains are transwarped out of the pool and stand
+        side by side,
 
     f.  the captains alternate in using "lock" or "tractor" to pick
         players from the pool, the ships change to the captains team,
@@ -36,12 +36,18 @@ Usage
         may make each pick,
 
     i.  the draft is finished when the pool is empty, and the ordinary
-        pre-game resumes ... with the ships in their pick positions.
+        pre-game resumes ... with the ships moved to home planet,
+
+    j.  player ranks are set in descending order by pick position, if
+        it is an INL pregame,
 
 Data Structures
 
-     status->gameup has a bit GU_INL_DRAFT that is set when draft
+     status->gameup has a bit GU_INL_DRAFTING that is set when draft
      begins, enabling an alternate code path for animation control,
+
+     status->gameup has a bit GU_INL_DRAFTED that is set when a draft
+     ends, changing the way promotions are done,
 
      player->p_inl_draft defines the current animation state of a
      player,
@@ -49,7 +55,7 @@ Data Structures
      player->p_inl_x, y, defines the location the player is being
      constrained toward,
 
-     player->p_inl_*_sequence, defines position ordering.
+     player->p_inl_{pick,pool}, defines position ordering.
 
 Source Code
 
