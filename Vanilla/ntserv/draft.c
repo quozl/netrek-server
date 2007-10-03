@@ -438,6 +438,7 @@ void inl_draft_end()
   context->inl_draft = INL_DRAFT_OFF;
   for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     j->p_inl_draft = INL_DRAFT_OFF;
+    p_heal(j);
   }
   pmessage(0, MALL, "GOD->ALL", "The draft has completed.");
   status->gameup &= ~GU_INL_DRAFTING;
