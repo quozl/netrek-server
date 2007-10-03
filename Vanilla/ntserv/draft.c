@@ -426,7 +426,8 @@ void inl_draft_done()
     inl_draft_highlight_off(j);
     inl_draft_place_end(j);
   }
-  status->gameup |= GU_INL_DRAFTED;
+  if (status->gameup & GU_INROBOT)
+    status->gameup |= GU_INL_DRAFTED;
 }
 
 void inl_draft_end()
@@ -448,7 +449,8 @@ static void inl_draft_arrival_captain(struct player *k)
   struct player *other_captain = inl_draft_team_to_captain(other_team);
 
   /* captains are admirals */
-  k->p_stats.st_rank = NUMRANKS - 1;
+  if (status->gameup & GU_INROBOT)
+    k->p_stats.st_rank = NUMRANKS - 1;
 
   /* arrival without another captain */
   if (other_captain == NULL) {
@@ -592,8 +594,9 @@ static void inl_draft_pick(struct player *j, struct player *k)
            k->p_mapchars, j->p_team == FED ? "HOME" : "AWAY", j->p_mapchars,
            j->p_name);
   /* set rank of player depending on pick position */
-  j->p_stats.st_rank =
-    NUMRANKS - (context->inl_home_pick + context->inl_away_pick - 1) / 2 - 2;
+  if (status->gameup & GU_INROBOT)
+    j->p_stats.st_rank =
+      NUMRANKS - (context->inl_home_pick + context->inl_away_pick - 1) / 2 - 2;
 }
 
 void inl_draft_select(int n)
