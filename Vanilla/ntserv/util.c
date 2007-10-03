@@ -554,3 +554,13 @@ void p_x_y_go_home(struct player *k)
     pl_pick_home_offset(k->p_team, &x, &y);
     p_x_y_go(k, x, y);
 }
+
+void p_heal(struct player *k)
+{
+  k->p_shield = k->p_ship.s_maxshield;
+  k->p_subshield = 0;
+  k->p_damage = k->p_subdamage = 0;
+  k->p_fuel   = k->p_ship.s_maxfuel;
+  k->p_etemp  = k->p_etime = 0;
+  k->p_wtemp  = k->p_wtime = 0;
+}

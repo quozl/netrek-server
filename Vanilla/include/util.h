@@ -44,3 +44,4 @@ int is_invisible_due_idle(struct player *victim);
 struct planet *pl_pick_home(int p_team);
 void pl_pick_home_offset(int p_team, int *x, int *y);
 void p_x_y_go_home(struct player *k);
+void p_heal(struct player *k);
