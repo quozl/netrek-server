@@ -255,6 +255,7 @@ extern int actual_threshold;
 extern int numupdates;
 extern int send_short;
 
+extern int adminexec;
 extern char admin_password[ADMIN_PASS_LEN];
 extern char script_tourn_start[FNAMESIZE];
 extern char script_tourn_end[FNAMESIZE];

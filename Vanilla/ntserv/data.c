@@ -233,6 +233,7 @@ int send_threshold = 0;		/* infinity */
 int actual_threshold = 0;	/* == send_threshold / numupdates */
 int numupdates = 5;		/* For threshold */
 
+int adminexec = 0;
 char admin_password[ADMIN_PASS_LEN];
 char script_tourn_start[FNAMESIZE];
 char script_tourn_end[FNAMESIZE];

@@ -1077,7 +1077,7 @@ void do_admin(char *comm, struct message *mess)
   int who = mess->m_from;
   struct player *p = &players[who];
   char *addr = addr_mess(who,MINDIV);
-  char *one, *two;
+  char *one, *two = NULL;
   char command[256];
   int slot;
   struct player *them = NULL;
@@ -1117,6 +1117,7 @@ void do_admin(char *comm, struct message *mess)
   /* admin kill n - blow them up */
   /* admin ban n - ban the host */
   /* admin reset - reset galactic */
+  /* admin exec - execute shell command */
   
   /* admin */
   one = strtok(comm, " ");
@@ -1130,21 +1131,24 @@ void do_admin(char *comm, struct message *mess)
   }
 
   /* argument */
-  two = strtok(NULL, " ");
-  if (two != NULL) {
-    *two = toupper(*two);
-    if ((*two >= '0') && (*two <='9'))
-      slot = *two - '0';
-    else if ((*two >= 'A') && (*two <= ('A' + MAXPLAYER - 10)))
-      slot = *two - 'A' + 10;
-    else {
-      pmessage(who, MINDIV, addr, "admin: ignored, slot not recognised");
-      return;
-    }
-    them = &players[slot];
-    if (them->p_status == PFREE) {
-      pmessage(who, MINDIV, addr, "admin: ignored, slot is free");
-      return;
+  if (strcmp(one, "exec"))
+  {
+    two = strtok(NULL, " ");
+    if (two != NULL) {
+      *two = toupper(*two);
+      if ((*two >= '0') && (*two <='9'))
+        slot = *two - '0';
+      else if ((*two >= 'A') && (*two <= ('A' + MAXPLAYER - 10)))
+        slot = *two - 'A' + 10;
+      else {
+        pmessage(who, MINDIV, addr, "admin: ignored, slot not recognised");
+        return;
+      }
+      them = &players[slot];
+      if (them->p_status == PFREE) {
+        pmessage(who, MINDIV, addr, "admin: ignored, slot is free");
+        return;
+      }
     }
   }
 
@@ -1193,6 +1197,14 @@ void do_admin(char *comm, struct message *mess)
     sprintf(command, "%s/tools/admin/reset %s", LIBDIR, p->p_full_hostname);
     system(command);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
+  } else if (!strcmp(one, "exec")) {
+    if (!adminexec)
+      pmessage(who, MINDIV, addr, "admin: exec is not enabled.");
+    else
+    {
+      system(one + 5);
+      pmessage(who, MINDIV, addr, "admin: executed \"%s\"", one + 5);
+    }
   } else {
     pmessage(who, MINDIV, addr, "admin: what? kill/quit/ban/free/reset, lowercase");
   }

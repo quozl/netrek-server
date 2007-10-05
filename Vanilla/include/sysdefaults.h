@@ -43,7 +43,9 @@ struct sysdef_keywords {
 } sysdef_keywords[] =
 {
   { "ADMIN_PASSWORD",	SYSDEF_CHAR,	admin_password,
-    "Admin password" },
+    "Admin password"                                    },
+  { "ADMIN_EXEC",       SYSDEF_INT,     &adminexec,
+    "Allow admins to execute shell commands"            },
   { "CLUE",		SYSDEF_INT,	&clue,
     "Message based clue checking"			},
   { "CLUERANK",		SYSDEF_INT,	&cluerank,
