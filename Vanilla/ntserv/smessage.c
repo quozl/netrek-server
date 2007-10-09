@@ -76,7 +76,10 @@ void amessage(char *str, int recip, int group)
   pmessage(recip, group, "", "%s", str);
 }
 
+/* callback for preparing struct message entry further, used by daemon */
 static void (*do_message_pre)(struct message *message, char *address) = NULL;
+
+/* callback for post message insertion processing */
 static int (*do_message_post)(struct message *message) = NULL;
 
 void do_message_pre_set(void (*proposed)(struct message *message, char *address))
@@ -127,8 +130,9 @@ void do_message(int recip, int group, char *address, u_char from,
   cur->m_from = from;
 
   strcpy(cur->m_data,temp2);
+  cur->args[0] = DINVALID;
 
-  /* message insertion pre-processor, for generalised adjustment */
+  /* callback for preparing struct message entry further, used by daemon */
   if (do_message_pre != NULL) {
     (*do_message_pre)(cur, address);
   }

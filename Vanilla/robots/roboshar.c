@@ -20,12 +20,6 @@ extern int debug;
  *  The following routines are shared code
  */
 
-void message_flag(struct message *cur, char *address)
-{
-    /* This is to prevent false sending with SP_S_WARNING */
-    cur->args[0] = DINVALID;
-}
-
 /*#include "warnings.h"*/
 /* only the fct, robots cannot set send_short */
 
