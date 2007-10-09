@@ -69,7 +69,9 @@ void checkmess();
 static void obliterate(int wflag, char kreason, int killRobots, int resetShip);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
+#ifndef PRETKEEPALIVE
 static int is_robots_only(void);
+#endif
 static int totalRobots(int team);
 static void exitRobot(void);
 static char * namearg(void);
@@ -82,7 +84,7 @@ static int num_humans(int team);
 static int num_humans_alive();
 static int totalPlayers();
 static void doResources(void);
-static void terminate(void);
+static void terminate(int);
 static void savegalaxy(void);
 static void restoregalaxy(void);
  
@@ -190,7 +192,6 @@ main(argc, argv)
 void checkmess()
 { 
     int         shmemKey = PKEY;
-    static int no_humans = 0;
     static int no_bots = 0;
     static int time_in_T = 0;
 
@@ -353,10 +354,12 @@ void checkmess()
     }
 }
 
+#ifndef PRETKEEPALIVE
 static int is_robots_only(void)
 {
    return !num_humans(0);
 }
+#endif
 
 static int totalPlayers()
 {
@@ -656,7 +659,7 @@ static void cleanup(int terminate)
 }
 
 /* terminate is called as a signal handler and is a wrapper for cleanup() */
-static void terminate () {
+static void terminate (int ignored) {
 	cleanup (1);
 }
 
