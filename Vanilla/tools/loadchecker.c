@@ -14,6 +14,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 
 #define HIGH_USAGE       60 /* percentages.  high means report usage at */
 #define VERY_HIGH_USAGE  80 /* every interval. 'very' and 'ultra' are */
@@ -41,13 +42,6 @@
    instance).
 
 */
-
-/* file scope prototypes */
-static void pmessage(char *, int, int);
-
-/* external prototypes */
-extern int openmem(int);	/* from openmem.c */
-
 
 int gotmem = 0;
 
@@ -101,7 +95,7 @@ int main()
       /* print out usage every 3 intervals or more often if usage is high */
       
       if (((displayCount % 3) == 0) || (idle < 100-HIGH_USAGE)) {
-	pmessage(buf, 0, MALL);
+	amessage(buf, 0, MALL);
       }
       if ( ((++displayCount) % 3) == 0) displayCount =0;
     }
@@ -110,20 +104,4 @@ int main()
     }
     sleep(INTERVAL);	/* wait 5 minutes */
   }
-}
-
-
-static void pmessage(char *str, int recip, int group)
-{
-  struct message *cur;
-  if (++(mctl->mc_current) >= MAXMESSAGE)
-    mctl->mc_current = 0;
-  cur = &messages[mctl->mc_current];
-  cur->m_no = mctl->mc_current;
-  cur->m_flags = group;
-  cur->m_time = 0;
-  cur->m_recpt = recip;
-  cur->m_from = 255; /* change 12/11/90 TC */
-  (void) sprintf(cur->m_data, "%s", str);
-  cur->m_flags |= MVALID;
 }

@@ -20,12 +20,10 @@
 #include INC_STRINGS
 #include "struct.h"
 #include "data.h"
-
-extern int openmem(int);
+#include "proto.h"
 
 void action(int ignored);
 void usage(char *string);
-void pmessage(char *str, int recip, int group);
 void funnymessage(void);
 void pmove(void);
 void start_topgun(void);
@@ -181,7 +179,7 @@ void action(int ignored)
      topgunships();
      if ((ttimer > 0) && ((ttimer % 120) == 0))  {
 	sprintf(buf, ">                -= T O P    G U N =-      (%d min. left) ", (ttimer/60));
-	pmessage(buf , 0, MALL);
+	amessage(buf , 0, MALL);
 	rules();
       }    
    } else
@@ -204,38 +202,23 @@ void usage(char *string)
     printf("  -m seconds interval for funny messages\n");
 }
 
-void pmessage(char *str, int recip, int group)
-{
-    struct message *cur;
-    if (++(mctl->mc_current) >= MAXMESSAGE)
-	mctl->mc_current = 0;
-    cur = &messages[mctl->mc_current];
-    cur->m_no = mctl->mc_current;
-    cur->m_flags = group;
-    cur->m_time = 0;
-    cur->m_recpt = recip;
-    cur->m_from = 255; /* change 3/30/91 TC */
-    (void) sprintf(cur->m_data, "%s", str);
-    cur->m_flags |= MVALID;
-}
-
 void funnymessage(void)
 {
   int rnd;
 
     switch (random()%10) {
-	case 0: pmessage("GOD->ALL Doosh the Twinks",0,MALL);
+	case 0: amessage("GOD->ALL Doosh the Twinks",0,MALL);
 		break;
 	case 1: rnd=random()%(MAXPLAYER-TESTERS);
 		if (players[rnd].p_status == PALIVE) {
 		  sprintf(buf,"GOD->ALL %s you really suck!",players[rnd].p_name);
-		  pmessage(buf,0,MALL);
+		  amessage(buf,0,MALL);
 		}
 		break;
 	case 2: rnd=random()%(MAXPLAYER-TESTERS);
 		if (players[rnd].p_status == PALIVE) {
 		  sprintf(buf,"GOD->ALL %s don't scum play for the team",players[rnd].p_name);
-		  pmessage(buf,0,MALL);
+		  amessage(buf,0,MALL);
 		}
 		break;
 	case 3: rnd=random()%(MAXPLAYER-TESTERS);
@@ -248,13 +231,13 @@ void funnymessage(void)
         	  players[rnd].p_whodead=0;
 		  sprintf(buf,"GOD->ALL %s (%2s) exploded because clueless play",
 			players[rnd].p_name,players[rnd].p_mapchars);
-		  pmessage(buf,0,MALL | MKILL);
+		  amessage(buf,0,MALL | MKILL);
 		}
 		break;
-	case 4: pmessage("GOD->ALL   ~|~ /\\ | | /~ |_| |\\ /\\ |   | |\\ |",0,MALL); 
-		pmessage("GOD->ALL    |  \\/ |_| \\_ | | |/ \\/  \\^/  | \\|",0,MALL);
+	case 4: amessage("GOD->ALL   ~|~ /\\ | | /~ |_| |\\ /\\ |   | |\\ |",0,MALL); 
+		amessage("GOD->ALL    |  \\/ |_| \\_ | | |/ \\/  \\^/  | \\|",0,MALL);
 		break;
-	default: pmessage("GOD->ALL It's fun time !!!!!!!!!",0,MALL);
+	default: amessage("GOD->ALL It's fun time !!!!!!!!!",0,MALL);
 		break;
 	}
 }
@@ -316,10 +299,10 @@ d */
     else /* don't overwrite saved sysdef (how'd it get there?) */
         fclose(fp);
 
-    pmessage("GOD->ALL",0, MALL);
+    amessage("GOD->ALL",0, MALL);
     sprintf(buf,"GOD->ALL  Top Gun rules are in effect for %d minutes.",
             topguntime/60);
-    pmessage(buf, 0, MALL);
+    amessage(buf, 0, MALL);
     rules();
 }
 
@@ -358,19 +341,19 @@ void topgunships(void)
 
 void rules(void)
 {
-    pmessage(">  Torp damage  : 130 pts.  Torp cost  :  100 fuel.", 0, MALL);
-    pmessage(">  Plasma damage: normal    Plasma cost: 1500 fuel.  Plasmas enhanced.", 0, MALL);
-    pmessage(">  No kills required for plasmas.  SB rebuild time is zero.", 0, MALL);
+    amessage(">  Torp damage  : 130 pts.  Torp cost  :  100 fuel.", 0, MALL);
+    amessage(">  Plasma damage: normal    Plasma cost: 1500 fuel.  Plasmas enhanced.", 0, MALL);
+    amessage(">  No kills required for plasmas.  SB rebuild time is zero.", 0, MALL);
 }
 
 void stop_topgun(void)
 {
     int player;
 
-    pmessage("GOD->ALL", 0, MALL);
+    amessage("GOD->ALL", 0, MALL);
     sprintf(buf,"GOD->ALL  Top Gun Rules are no longer in effect.");
-    pmessage(buf, 0, MALL);
-    pmessage("GOD->ALL", 0, MALL);
+    amessage(buf, 0, MALL);
+    amessage("GOD->ALL", 0, MALL);
     system(RESTORE_SYSDEF_CMD);
 
 #ifndef nodef

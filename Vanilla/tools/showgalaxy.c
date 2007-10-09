@@ -38,7 +38,6 @@ int isinput(int delay);
 void showPlanets(void);
 void showPlayers(void);
 void usage(char *);
-void pmessage(char *str, int recip, int group);
 void wspew_mess(struct message *mess);
 
 void reaper()
@@ -177,7 +176,7 @@ int main(int argc, char **argv)
 			    wclear(command_w);
 			    break;
 			case '\n':
-			    pmessage(theMess,sendingTo,sendMask);
+			    amessage(theMess,sendingTo,sendMask);
 			    s=NULL;
 			    sendingMessage=0;
 			    wclear(command_w);
@@ -487,21 +486,6 @@ void usage(char *string)
 {
     printf("Usage: %s [-dnnn]\n", string);
     printf("  -dnnn  delay nnn 1/10 seconds between frames\n");
-}
-
-void pmessage(char *str, int recip, int group)
-{
-    struct message *cur;
-    if (++(mctl->mc_current) >= MAXMESSAGE)
-	mctl->mc_current = 0;
-    cur = &messages[mctl->mc_current];
-    cur->m_no = mctl->mc_current;
-    cur->m_flags = group;
-    cur->m_time = 0;
-    cur->m_recpt = recip;
-    cur->m_from = 19;
-    (void) sprintf(cur->m_data, "%s", str);
-    cur->m_flags |= MVALID;
 }
 
  /* NBT 2/20/93 */

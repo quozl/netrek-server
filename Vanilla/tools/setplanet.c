@@ -47,22 +47,6 @@ couptime N    set the time allowed before coup\n\
 }
 
 /* send message to players */
-static void _pmessage(char *str, int recip, int group)
-{
-  struct message *cur;
-  if (++(mctl->mc_current) >= MAXMESSAGE)
-    mctl->mc_current = 0;
-  cur = &messages[mctl->mc_current];
-  cur->m_no = mctl->mc_current;
-  cur->m_flags = group;
-  cur->m_time = 0;
-  cur->m_from = 255;
-  cur->m_recpt = recip;
-  (void) sprintf(cur->m_data, "%s", str);
-  cur->m_flags |= MVALID;
-}
-
-/* send message to players */
 static void say(const char *fmt, ...)
 {
   va_list args;
@@ -70,7 +54,7 @@ static void say(const char *fmt, ...)
 
   va_start(args, fmt);
   vsnprintf(buf, sizeof(buf), fmt, args);
-  _pmessage(buf, 0, MALL);
+  amessage(buf, 0, MALL);
   va_end(args);
 }
 

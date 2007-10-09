@@ -14,18 +14,14 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 
 #define MAXLINELEN 128
 #define MAXLINES 400
 #define MAXRECIP 40
 
 /* file scope prototypes */
-static void pmessage(char *, int, int);
 static char *read_line(FILE *fp);
-
-/* external prototypes */
-extern int openmem(int);	/* from openmem.c */
-
 
 typedef int Boolean;
 
@@ -140,33 +136,12 @@ char *argv[];
     while (j < nrecipients) {
 	while (i < nmessages) {
 	    printf("%d: %s\n", i, messages[i]);
-	    pmessage(messages[i++], recipients[j], groups[j]);
+	    amessage(messages[i++], recipients[j], groups[j]);
 	    sleep(1);
 	}
 	j++;
     }
     return 1;		/* satisfy lint */
-}
-
-static void pmessage(char *str, int recip, int group)
-{
-    struct message *cur;
-    int mesgnum;
-
-    if ((mesgnum = ++(mctl->mc_current)) >= MAXMESSAGE) {
-	mesgnum = mctl->mc_current = 0;
-    }
-    cur = &messages[mesgnum];
-    cur->m_no = mesgnum;
-    cur->m_flags = group;
-    cur->m_time = 0;
-    cur->m_recpt = recip;
-    cur->m_from =255; /* change 12/11/90 TC */
-    (void) sprintf(cur->m_data, "%s", str);
-    /* This is to prevent false sending with SP_S_WARNING */
-    cur->args[0] = DINVALID;
-    cur->m_flags |= MVALID;
-
 }
 
 /********************************************************************************
