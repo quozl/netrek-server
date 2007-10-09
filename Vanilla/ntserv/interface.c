@@ -187,7 +187,7 @@ void beam_down(void)
         if(realNumShips(owner) == 0 && owner != NOBODY
           && !(me->p_team & planets[me->p_planet].pl_flags)
           && !(team_opposing(me->p_team) & planets[me->p_planet].pl_flags)) {
-            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets. Sorry Bill.");
+            new_warning(UNDEF,"You may not drop on 3rd and 4th space planets.");
             return;
         }
     }
