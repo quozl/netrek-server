@@ -221,6 +221,7 @@ int main(int argc, char **argv)
         }
 
     do_message_pre_set(message_flag);
+    do_message_force_daemon();
     readsysdefaults();
     if (opt_restart) {
         ERROR(1,("daemon: warm start\n"));
@@ -622,6 +623,7 @@ static void move()
         udplayerpause();
         if (status->gameup & GU_CONQUER) conquer_update();
       }
+      do_message_requeue_all();
       /* but continue to signal player processes at their chosen rate */
       signal_servers();
       return;
@@ -748,6 +750,7 @@ static void move()
         udcloak();
     }
 
+    do_message_requeue_all();
     signal_servers();
 
     if (fuse(TEAMFUSE)) {

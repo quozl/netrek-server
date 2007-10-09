@@ -126,6 +126,8 @@ static void setup_memory(struct memory *sharedMemory)
     phasers = sharedMemory->phasers;
     mctl = sharedMemory->mctl;
     messages = sharedMemory->messages;
+    uplink = sharedMemory->uplink;
+    oob = sharedMemory->oob;
     teams = sharedMemory->teams;
     shipvals = sharedMemory->shipvals;
     queues = sharedMemory->queues;

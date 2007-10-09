@@ -223,6 +223,9 @@ void amessage(char *str, int recip, int group);
 void do_message_pre_set(void (*proposed)(struct message *message,
                                          char *address));
 void do_message_post_set(int (*proposed)(struct message *message));
+void do_message_force_daemon();
+void do_message_force_player();
+void do_message_requeue_all();
 
 /* socket.c */
 struct player_spacket;

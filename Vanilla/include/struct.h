@@ -701,6 +701,8 @@ struct message {
 
 struct mctl {
     int mc_current;
+    int mc_uplink[MAXPLAYER];
+    int mc_oob;
 };
 
 /* This is a structure used for objects returned by mouse pointing */
@@ -731,7 +733,9 @@ struct memory {
     struct planet	planets[MAXPLANETS];
     struct phaser	phasers[MAXPLAYER];
     struct mctl		mctl[1];
-    struct message	messages[MAXMESSAGE];
+    struct message	messages[MAXMESSAGE];          /* daemon to slot  */
+    struct message      uplink[MAXPLAYER * MAXUPLINK]; /* slot to daemon  */
+    struct message      oob[MAXUPLINK];                /* tools to daemon */
     struct team		teams[MAXTEAM + 1];
     struct ship		shipvals[NUM_TYPES];
     struct pqueue       queues[MAXQUEUE];

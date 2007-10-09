@@ -91,6 +91,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     }
 #endif
 
+    do_message_force_player();
     STRNCPY(me->p_name, name, NAME_LEN);
     me->p_name[NAME_LEN - 1] = '\0';
     getship(myship, s_type);
