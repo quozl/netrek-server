@@ -115,6 +115,8 @@ main(argc, argv)
    strcpy(robot_host,REMOTEHOST);
    readsysdefaults();
    alarm_init();
+   setbuf(stdout, NULL);
+   setbuf(stderr, NULL);
    if (!debug)
        SIGNAL(SIGINT, cleanup);
 
