@@ -119,7 +119,13 @@ int queues_init(void)
     queues[QU_PICKUP_OBS].free_slots = TESTERS - 1; /* Give 1 less than TESTERS, so a robot can always */
     queues[QU_PICKUP_OBS].max_slots  = TESTERS - 1; /* join the game */
     queues[QU_PICKUP_OBS].tournmask  = ALLTEAM;
+/* if ROBOT_OBSERVER_OFFSET defined we force observers to start in slot 'h' */
+/* thereby forcing Smack and other moderation bots to start in slot 'g' */
+#ifdef ROBOT_OBSERVER_OFFSET
+    queues[QU_PICKUP_OBS].low_slot   = MAXPLAYER - TESTERS + 1;
+#else
     queues[QU_PICKUP_OBS].low_slot   = MAXPLAYER - TESTERS;
+#endif
     queues[QU_PICKUP_OBS].high_slot  = MAXPLAYER - 1;
     queues[QU_PICKUP_OBS].q_flags    =
       QU_OPEN|QU_RESTRICT|QU_OBSERVER|QU_REPORT;

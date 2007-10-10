@@ -455,6 +455,11 @@ only if you have no intention of retaining stats on the server for pickup */
 				server. */
 #define PLAYER_INDEX
 
+                                /* ROBOT_OBSERVER_OFFSET - force observers
+                                to start in slot 'h' thereby forcing the
+                                moderation bots to occupy slot 'g'. */
+#undef ROBOT_OBSERVER_OFFSET
+
 #endif		/* SERVER */
 
 

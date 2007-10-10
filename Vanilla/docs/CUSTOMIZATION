@@ -89,8 +89,11 @@ that can change the server.
         NO_BRUTALITY    - disallow fighting between waiting players in the 
 			  dogfighting mode (only when DOGFIGHT is defined).
 
+	ROBOT_OBSERVER_OFFSET	- define to ensure that the moderation robot
+			  is always in slot g.
 
-	
+
+
 
 
 2) .sysdef parameters:
