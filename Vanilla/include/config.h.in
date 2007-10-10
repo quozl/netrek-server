@@ -460,6 +460,11 @@ only if you have no intention of retaining stats on the server for pickup */
                                 moderation bots to occupy slot 'g'. */
 #undef ROBOT_OBSERVER_OFFSET
 
+				/* SB_RAPID_COOLDOWN - enables twice the
+				normal rate of weapon cool down.  Useful in
+				base practice mode */
+#undef SB_RAPID_COOLDOWN
+
 #endif		/* SERVER */
 
 

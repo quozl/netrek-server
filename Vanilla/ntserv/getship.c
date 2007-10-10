@@ -231,6 +231,9 @@ void getshipdefaults(void)
         shipvals[STARBASE].s_maxspeed = 2; /* starbase */
         shipvals[STARBASE].s_maxwpntemp = 1300; /* starbase */
         shipvals[STARBASE].s_maxegntemp = 1000; /* starbase */
+#ifdef SB_RAPID_COOLDOWN
+	shipvals[STARBASE].s_wpncoolrate = 8; /* starbase */
+#endif
     } else {
         shipvals[STARBASE].s_maxspeed = 3; /* starbase */
         shipvals[STARBASE].s_maxwpntemp = 999999; /* starbase */
