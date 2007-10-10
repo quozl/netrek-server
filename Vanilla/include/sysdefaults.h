@@ -191,6 +191,8 @@ struct sysdef_keywords {
     "Save t-mode galaxy on transition from t-mode to pre-t mode" },
   { "PRET_GALAXY_LIFETIME",	SYSDEF_INT,	&pret_galaxy_lifetime,
     "Number of seconds the saved t-mode galaxy is eligible to be restored" },
+  { "PRET_SAVE_ARMIES",	SYSDEF_INT,	&pret_save_armies,
+    "Number of seconds the saved t-mode galaxy is eligible to be restored" },
 #endif
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,

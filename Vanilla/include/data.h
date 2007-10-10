@@ -309,6 +309,7 @@ extern int pret_guest;
 extern int pret_planets;
 extern int pret_save_galaxy;
 extern int pret_galaxy_lifetime;
+extern int pret_save_armies;
 #endif
 extern int robot_debug_target;
 extern int robot_debug_level;

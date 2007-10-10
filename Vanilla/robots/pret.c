@@ -87,6 +87,7 @@ static void doResources(void);
 static void terminate(int);
 static void savegalaxy(void);
 static void restoregalaxy(void);
+static void save_carried_armies(void);
  
 static void
 reaper(int sig)
@@ -228,6 +229,8 @@ void checkmess()
             if (pret_save_galaxy) {
                 messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
                 messAll(255,roboname,"*** Galaxy will be restored if T-mode starts again within %d minutes ***", pret_galaxy_lifetime/60);
+		if (pret_save_armies)
+		    save_carried_armies();
                 savegalaxy();
                 galaxysaved = 1;
                 savedtime = time((time_t *) 0);
@@ -513,6 +516,24 @@ static void stop_this_bot(struct player *p, char *why)
         "Robot %s (%2s) was ejected%s",
         p->p_name, p->p_mapchars, why);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
+}
+
+static void save_carried_armies(void)
+{
+    int i;
+    struct player *j;
+    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
+	if (j->p_status == PFREE)
+            continue;
+        if (j->p_flags & PFROBOT)
+            continue;
+        if (j->p_status == POBSERV)
+            continue;
+        if (j == me) continue;
+
+        if (j->p_armies > 0)
+	    save_armies(j);
+    }
 }
 
 static void save_armies(struct player *p)

@@ -183,6 +183,11 @@ that can change the server.
 		t-mode galaxy is eligible to be restored when t-mode starts
 		again.
 
+	PRET_SAVE_ARMIES - (0 or 1) If set armies carried by players at the
+		start of Pre-T will get returned to the players home planet.
+		This will occur just prior to the galaxy being saved if
+		PRET_SAVE_GALAXY is enabled.
+
 	NEWTURN - (0 or 1) Different turning speeds.
 
 	HIDDEN - (0 or 1) Enemy players that are far away from a friendly ship
