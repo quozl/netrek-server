@@ -151,7 +151,9 @@ void readsysdefaults(void)
 #ifdef BASEPRACTICE
     if (manager_type == BASEP_ROBOT) {
       binconfirm=0;	/* allow robots to join	*/
+#ifdef ALLOW_PRACTICE_ROBOT_SB
       sbrank=0;		/* no SB restriction	*/
+#endif
       check_scum=0;
     }
 #endif

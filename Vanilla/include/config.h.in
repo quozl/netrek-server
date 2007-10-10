@@ -465,6 +465,10 @@ only if you have no intention of retaining stats on the server for pickup */
 				base practice mode */
 #undef SB_RAPID_COOLDOWN
 
+				/* ALLOW_PRACTICE_ROBOT_SB - allows practice
+				robots to be refitted into SBs */
+#undef ALLOW_PRACTICE_ROBOT_SB
+
 #endif		/* SERVER */
 
 

@@ -95,6 +95,9 @@ that can change the server.
 	SB_RAPID_COOLDOWN	- allows for twice the normal rate of weapon
 				  cooldown; useful on base-practice.
 
+	ALLOW_PRACTICE_ROBOT_SB	- allows practice robots to be refit into
+				  starbases if defined.
+
 
 
 
