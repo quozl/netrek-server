@@ -322,6 +322,8 @@ int main(int argc, char **argv)
     me->p_pkls_s_c = -1;
 #endif
 
+    me->p_authorised = 0;
+
 #ifdef LTD_STATS
 
     startTkills   = ltd_kills(me, LTD_TOTAL);

@@ -1070,8 +1070,6 @@ void do_transwarp(char *comm, struct message *mess)
   }
 }
 
-static int authorised = 0;
-
 void do_admin(char *comm, struct message *mess)
 {
   int who = mess->m_from;
@@ -1082,7 +1080,7 @@ void do_admin(char *comm, struct message *mess)
   int slot;
   struct player *them = NULL;
 
-  if (!authorised) {
+  if (!p->p_authorised) {
     if (strstr(comm, "ADMIN password")) {
       char *cchar = &comm[15];
       if (!strcmp(cchar, admin_password)) {
@@ -1092,7 +1090,7 @@ void do_admin(char *comm, struct message *mess)
                    p->p_mapchars, p->p_ip));
           return;
         }
-        authorised = 1;
+        p->p_authorised = 1;
         pmessage(who, MINDIV, addr, "admin: authorised");
         ERROR(2,("%s admin: authorised, ip=%s\n", p->p_mapchars, p->p_ip));
         return;
@@ -1105,7 +1103,7 @@ void do_admin(char *comm, struct message *mess)
     }
   }
 
-  if (!authorised) {
+  if (!p->p_authorised) {
     if (p->w_queue != QU_GOD_OBS && p->w_queue != QU_GOD) {
       pmessage(who, MINDIV, addr, "Sorry, no.", p->w_queue);
       ERROR(2,("%s admin: not yet authorised, ip=%s\n", p->p_mapchars, p->p_ip));

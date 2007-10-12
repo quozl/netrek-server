@@ -174,6 +174,8 @@ static void conquer_ships_explode()
 		if (j->p_status == PFREE) continue;
 		/* Don't kill robots on geno */
 		if (j->p_flags & PFROBOT) continue;
+		/* Don't kill admin observers on geno */
+		if (j->p_authorised && (j->p_flags & PFOBSERV)) continue;
 		j->p_status = PEXPLODE;
 		j->p_whydead = KWINNER;
 		j->p_whodead = conquer_player;

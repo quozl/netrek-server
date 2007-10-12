@@ -514,6 +514,7 @@ struct player {
     int p_inl_pick;             /* position in the draft pick */
     int p_ip_duplicates;        /* ignore this slot for duplicate ip check */
     /* add initialisation of new variables in enter(), or ntserv main() */
+    int p_authorised;           /* is an admin */
 };
 
 /* INL draft states for p_inl_draft */
