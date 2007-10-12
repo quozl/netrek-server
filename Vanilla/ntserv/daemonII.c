@@ -2749,7 +2749,8 @@ static void udsurrend(void)
     for (i = 0, j = &players[0]; i < MAXPLAYER; i++, j++) {
         if( (j->p_status == POBSERV) && 
             (j->p_team != NOBODY) &&
-            (realNumShips(j->p_team) < tournplayers) ) {
+            (realNumShips(j->p_team) < tournplayers) &&
+            !j->p_authorised) {
             j->p_status = PEXPLODE;
             j->p_whydead = KPROVIDENCE;
             j->p_flags &= ~(PFPLOCK | PFPLLOCK);
