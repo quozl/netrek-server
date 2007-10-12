@@ -33,7 +33,7 @@ $debug = 1;
 $bgcolor="6699CC";
 $th = "<th bgcolor=$bgcolor>";
 $td = "<td align=center>";
-$statboys = "statboys\@csua.berkeley.edu";
+$statboys = "netrek\@localhost";
 $mailprog = "/usr/lib/sendmail";
 $tickspersec = 10;
 
@@ -51,7 +51,7 @@ $keyloc = "http://stats.psychosis.net/key.html";
 # This is for keeping a local stats archive in addition to the stats
 # that auto-archive.pl sends to http://www.netrek.org/stats/.
 #
-#$dropdir = "/home/karthik/public_html/clue";
+#$dropdir = "/home/netrek/www/stats";
 #
 # Uncomment this if $dropdir is defined and stats should be dumped
 # into subdirectories within $dropdir.
@@ -61,7 +61,10 @@ $dropsub = 1;
 # Uncomment this to use a more readable form for dropdir entries.
 #
 $newdrop = 1;
-
+#
+# Set this to call a directory indexing script after generating stats.
+#
+#$dirindex = "/home/netrek/bin/statsindex.py";
 #
 
 if ($keyloc) {
@@ -170,6 +173,9 @@ if ( $dropdir ) {
 	    }
 	    system("chmod 755 \"$dirpath\"");
 	    system("chmod 644 \"$dirpath\"/*");
+	    if ($dirindex) {
+		system("$dirindex $dropdir > $dropdir/index.html");
+	    }
 	} else {
 	    system("cp -f $outputfile $dropdir/$outputfile");
 	}
