@@ -162,7 +162,7 @@ because they have initialisation of variables dependent on UPDATE. */
 /* These are memory sections */
 #define PLAYER 1
 #define MAXMESSAGE 75
-#define MAXUPLINK 10
+#define MAXUPLINK 20
 #define MAXREVIEWMESSAGE 20
 
 #define timeprod_int()		(int)(status->timeprod/10.0)
