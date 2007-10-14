@@ -51,7 +51,8 @@ void death(void)
     case KDAEMON:
     case KOVER:
     case KBADBIN:
-	mustexit = 1;
+        if (!(me->p_authorised && (me->p_flags & PFOBSERV)))
+            mustexit = 1;
 	break;
     default:
 	ERROR(1,("BUG in server: ?? reason for death: %d\n",me->p_whydead));
