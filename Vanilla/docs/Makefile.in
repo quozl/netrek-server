@@ -74,6 +74,7 @@ install: $(DOCS)
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/hide
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/mute
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/ignore
+	mkdir -p $(DESTDIR)$(SYSCONFDIR)/ip/deny
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/ip/ignore/doosh
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/ip/ignore/multi
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/ip/ignore/by-ip
