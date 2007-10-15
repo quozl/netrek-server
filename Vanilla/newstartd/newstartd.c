@@ -59,7 +59,6 @@ int debug = 0;		/* programmers' debugging flag			*/
 
 static int get_connection();
 static int read_portfile(char *);
-static int is_host_denied(char *ip);
 static void deny(char *ip);
 static void statistics(int, char *ip);
 static void process(int, char *ip);
@@ -302,7 +301,7 @@ int main (int argc, char *argv[])
       prog[port_idx].accepts++;
 
       /* check this client against denied parties */
-      if (is_host_denied(inet_ntoa(addr.sin_addr))) {
+      if (ip_deny(inet_ntoa(addr.sin_addr))) {
 	prog[port_idx].denials++;
 	deny (inet_ntoa(addr.sin_addr));
 	close (0);
@@ -520,13 +519,6 @@ static int get_connection(struct sockaddr_in *peer)
     dup2(sock, 0);
   }
   return i;
-}
-
-static int is_host_denied(char *ip)
-{
-  char name[128];
-  snprintf(name, 127, "%s/deny/%s", SYSCONFDIR, ip);
-  return (access(name, F_OK) == 0);
 }
 
 static void deny(char *ip)

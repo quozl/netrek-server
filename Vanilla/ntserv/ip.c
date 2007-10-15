@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <dirent.h>
 
 #include "copyright.h"
 #include "config.h"
@@ -193,13 +194,39 @@ static int flag_test(char *name)
   return (access(name, F_OK) == 0);
 }
 
-static char name[256];
-
-static char *name_deny(char *ip)
+int flag_test_cidr(char *name, char *ip)
 {
-  snprintf(name, 255, "%s/deny/%s", SYSCONFDIR, ip);
-  return name;
+    DIR *dp;
+    struct dirent *ep;
+    char *str;
+    in_addr_t host, entry;
+    int mask;
+    
+    if (!(dp = opendir(name)))
+        return 0;
+    
+    host = inet_addr(ip);
+    while ((ep = readdir(dp)))
+    {
+        if (!strcmp(ep->d_name, ip))
+            return 1;
+        if (!(str = strtok(ep->d_name, "-")))
+            continue;
+        if (!(str = strtok(NULL, "-")))
+            continue;
+        if ((entry = inet_addr(ep->d_name)) == -1)
+            continue;
+        mask = atoi(str);
+        if ((mask < 0) || (mask > 32))
+            continue;
+        if ((host << (32 - mask)) == (entry << (32 - mask)))
+            return 1;
+    }
+    closedir(dp);
+    return 0;
 }
+
+static char name[256];
 
 static char *name_etc(char *prefix, char *ip)
 {
@@ -213,46 +240,51 @@ static char *name_var(char *prefix, char *ip)
   return name;
 }
 
+/* denied parties list, whether to drop connection in newstartd */
+int ip_deny(char *ip) {
+    return flag_test_cidr(name_etc("deny", ""), ip);
+}
+
 /* denied parties list, add to, as a critical defense measure */
 void ip_deny_set(char *ip) {
-  return flag_set(name_deny(ip));
+  flag_set(name_etc("deny", ip));
 }
 
 /* whitelist, whether to trust user more */
 int ip_whitelisted(char *ip) {
-  return flag_test(name_etc("whitelist", ip));
+  return flag_test_cidr(name_etc("whitelist", ""), ip);
 }
 
 /* hide, whether to hide ip address and host name */
 int ip_hide(char *ip) {
-  return flag_test(name_etc("hide", ip));
+  return flag_test_cidr(name_etc("hide", ""), ip);
 }
 
 /* duplicates, whether to allow multiple connections from this ip */
 int ip_duplicates(char *ip) {
-  return flag_test(name_etc("duplicates", ip));
+  return flag_test_cidr(name_etc("duplicates", ""), ip);
 }
 
 /* duplicates, allow them */
 void ip_duplicates_set(char *ip) {
-  return flag_set(name_etc("duplicates", ip));
+  flag_set(name_etc("duplicates", ip));
 }
 
 /* duplicates, deny them */
 void ip_duplicates_clear(char *ip) {
-  return flag_clear(name_etc("duplicates", ip));
+  flag_clear(name_etc("duplicates", ip));
 }
 
 /* global mute, default others :ita to individual, team and all ignore */
 int ip_mute(char *ip) {
   if (ip == NULL || ip[0] == '\0') return 0;
-  return flag_test(name_etc("mute", ip));
+  return flag_test_cidr(name_etc("mute", ""), ip);
 }
 
 /* global ignore, default others :ita to individual ignore */
 int ip_ignore(char *ip) {
   if (ip == NULL || ip[0] == '\0') return 0;
-  return flag_test(name_etc("ignore", ip));
+  return flag_test_cidr(name_etc("ignore", ""), ip);
 }
 
 /* saved doosh message ignore state */

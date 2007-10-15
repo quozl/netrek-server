@@ -2,6 +2,7 @@
 void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
                int *p_xblproxy, int *p_sorbsproxy, int *p_njablproxy, int len);
 void ip_waitpid();
+int ip_deny(char *ip);
 void ip_deny_set(char *ip);
 int ip_whitelisted(char *ip);
 int ip_hide(char *ip);
