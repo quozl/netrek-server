@@ -209,7 +209,10 @@ int flag_test_cidr(char *name, char *ip)
     while ((ep = readdir(dp)))
     {
         if (!strcmp(ep->d_name, ip))
+        {
+            closedir(dp);
             return 1;
+        }
         if (!(str = strtok(ep->d_name, "-")))
             continue;
         if (!(str = strtok(NULL, "-")))
@@ -220,7 +223,10 @@ int flag_test_cidr(char *name, char *ip)
         if ((mask < 0) || (mask > 32))
             continue;
         if ((host << (32 - mask)) == (entry << (32 - mask)))
+        {
+            closedir(dp);
             return 1;
+        }
     }
     closedir(dp);
     return 0;
