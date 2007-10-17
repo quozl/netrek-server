@@ -1383,6 +1383,9 @@ void start_countdown()
 	   inl_teams[AWAY].t_name,
 	   inl_teams[AWAY].name,
 	   sides[inl_teams[AWAY].side_index].name);
+  fprintf(inl_log, "    0: INL->ALL  Home team is   %s (%s): %s\n", inl_teams[HOME].t_name, inl_teams[HOME].name, sides[inl_teams[HOME].side_index].name);
+  fprintf(inl_log, "    0: INL->ALL  Away team is   %s (%s): %s\n", inl_teams[AWAY].t_name, inl_teams[AWAY].name, sides[inl_teams[AWAY].side_index].name);
+  fprintf(inl_log, "    0: INL->ALL  Teams chosen.\n");
   pmessage(0, MALL, inl_from, " ");
   pmessage(0, MALL, inl_from, "Teams chosen.  Game will start in 1 minute.");
   pmessage(0, MALL, inl_from,
