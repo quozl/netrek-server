@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, time
+import os, sys, time
 
 TIMEFORMAT = "%a, %b %d %Y" # Fri, Oct 12 2007
 TIMEOFFSET = 4800 # 80 minutes (60 regulation + 20 overtime)
@@ -8,8 +8,11 @@ TIMEOFFSET = 4800 # 80 minutes (60 regulation + 20 overtime)
 def dirtimecomp(a, b):
     return b[1][8] - a[1][8]
 
+if len(sys.argv) == 2:
+    os.chdir(sys.argv[1])
+
 dirs = []
-for f in os.listdir('.'):
+for f in os.listdir("."):
     if f.find("-vs-") == -1:
         continue
     dirs += [[f, os.stat(f)]]
