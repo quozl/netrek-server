@@ -44,7 +44,7 @@ Source Structure
 
 Server Processes
 
-    netrekd 
+    netrekd
 
        (aka newstartd) Listens for incoming clients that want to
        connect to the server.  Reads the .ports file which tells it
@@ -161,3 +161,46 @@ Debugging/Error Messages
     robots (puck, basep, etc); perror() does though.
 
 --
+Data Structures
+
+                            +----------------------------------------+
+                            | struct player players[MAXPLAYER];      |---+
+                            +----------------------------------------+   |
+                            |                                        |   |
+                            |   struct player players[0]; <--------------+
+                            |   struct player players[1];            |
+  +-----------+             |                                        |
+  | me->p_no; |------------>|                                        |
+  +-----------+             |                                        |
+                            |                                        |
+  +--------------------+    |                                        |
+  | struct player *me; |------> struct player players[me->p_no];     |
+  +--------------------+    |                                        |
+                            |                                        |
+                            |   struct player players[MAXPLAYER-2];  |
+                            |   struct player players[MAXPLAYER-1];  |
+                            +----------------------------------------+
+  +--------------+
+  | memory->mctl |---------------+
+  +--------------+               v
+                            +----------------------+
+                            | struct mctl mctl[1]; |
+                            |                      |
+                            | mc_current           |-------+
+                            | mc_uplink[MAXPLAYER] |       |
+                            | mc_oob               |       |
+                            +----------------------+       |
+  +------------------+                                     |
+  | memory->messages |-----------+                         |
+  +------------------+           v                         |
+                            +------------------------------|-------+
+                            | struct message messages[MAXMESSAGE]; |
+                            |                              |       |
+           +--------------> | messages[0];                 |       |
+           |                | messages[1];            <----+       |
+           |                | messages[MAXMESSAGE-2];              |
+           |                | messages[MAXMESSAGE-1];              |
+           |                +--------------------------------------+
+  +------------+
+  | msgCurrent |
+  +------------+
