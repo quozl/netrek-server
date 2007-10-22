@@ -425,7 +425,7 @@ inlmove()
   inl_stat.ticks++;
   player_maint();		      /* update necessary stats and info */
 
-  if (inl_stat.flags & S_COUNTDOWN )
+  if (inl_stat.flags & S_COUNTDOWN)
     countdown(inl_stat.ticks,&inl_countdown);
   checkmess();
 
@@ -546,7 +546,8 @@ void checkmess()
     oldmctl++;
     if (oldmctl == MAXMESSAGE) oldmctl = 0;
     /* no commands during countdown, and no buffering of them */
-    if (inl_stat.flags & S_COUNTDOWN && messages[oldmctl].m_flags & MINDIV) {
+    if (!(inl_stat.flags & S_COUNTDOWN) &&
+        messages[oldmctl].m_flags & MINDIV) {
       if (messages[oldmctl].m_recpt == messages[oldmctl].m_from) {
 	me = &players[messages[oldmctl].m_from];
 	if (!check_command(&messages[oldmctl]))
