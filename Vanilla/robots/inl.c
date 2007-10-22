@@ -427,8 +427,7 @@ inlmove()
 
   if (inl_stat.flags & S_COUNTDOWN )
     countdown(inl_stat.ticks,&inl_countdown);
-  else					/* no com. during countdown */
-    checkmess();
+  checkmess();
 
   update_sys_defaults();
 
@@ -543,10 +542,11 @@ void checkmess()
     exit(1);
   }
 
-  while (oldmctl!=mctl->mc_current) {
+  while (oldmctl != mctl->mc_current) {
     oldmctl++;
-    if (oldmctl==MAXMESSAGE) oldmctl=0;
-    if (messages[oldmctl].m_flags & MINDIV) {
+    if (oldmctl == MAXMESSAGE) oldmctl = 0;
+    /* no commands during countdown, and no buffering of them */
+    if (inl_stat.flags & S_COUNTDOWN && messages[oldmctl].m_flags & MINDIV) {
       if (messages[oldmctl].m_recpt == messages[oldmctl].m_from) {
 	me = &players[messages[oldmctl].m_from];
 	if (!check_command(&messages[oldmctl]))
