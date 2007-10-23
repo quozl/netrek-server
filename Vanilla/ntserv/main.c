@@ -324,6 +324,8 @@ int main(int argc, char **argv)
 
     me->p_authorised = 0;
 
+    me->p_verify_clue = 0;
+
 #ifdef LTD_STATS
 
     startTkills   = ltd_kills(me, LTD_TOTAL);

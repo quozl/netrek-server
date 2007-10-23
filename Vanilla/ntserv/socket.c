@@ -3076,6 +3076,7 @@ static void check_clue(struct mesg_cpacket  *packet)
 	if (!strcmp(packet->mesg,clueString)) {
 	    sprintf(player, "GOD->%c%c", teamlet[me->p_team], shipnos[me->p_no]);
 	    clueVerified=1;
+	    me->p_verify_clue = 1;
 	    clueFuse=0;
 	    clueCount=0;
 	    pmessage(me->p_no, MINDIV, player, 

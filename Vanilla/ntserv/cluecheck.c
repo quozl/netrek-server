@@ -147,7 +147,7 @@ static void do_reminder(void)
 
   new_warning(UNDEF,"You have very important messages, Captain!");
   god(me->p_no,"************* READ THIS ** READ THIS ** READ THIS ******************");
-  god(me->p_no,"This is a clue server, you MUST read messages on the game");
+  god(me->p_no,"This is a clue server, you MUST read messages in the game.");
   if (clue>1) {
     god(me->p_no,"To verify, send the answer of the following question to yourself.");
     god(me->p_no,question->quest);
