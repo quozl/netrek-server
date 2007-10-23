@@ -906,6 +906,7 @@ main(argc, argv)
      char           *argv[];
 {
     printf("You don't have NEWBIESERVER option on.\n");
+    return 0;
 }
 
 #endif /* NEWBIESERVER */
