@@ -16,7 +16,7 @@ struct Question {
 
 static struct Question clueWords[] = {
 
-  {"What means a++ ?",
+  {"What does a++ mean?",
    {"a) Player a is a twink, I killed him two times in a row.",
     "b) Player a carries armies, please kill him now.",
     "c) Player a rewls, don't come close to him.",
@@ -30,7 +30,8 @@ static struct Question clueWords[] = {
   {"Which ship can carry 3 armies per kill?",
    { "sc, dd, ca, as, bb ", NULL },
    "as" },
-  {"The most important planets have:",
+    
+  {"The most important planets are:",
      {"a) agricultural",
       "b) repair",
       "c) fuel",
@@ -43,6 +44,7 @@ static struct Question clueWords[] = {
       "c) engines",
       NULL },
      "b" },
+    
   {"The message \"OGG BASE!!\", that means that your teammates want you to:",
      {"a) attack the enemy starbase",
       "b) go to your home base",
@@ -62,30 +64,28 @@ static struct Question clueWords[] = {
       NULL },
      "5" },
 
-  {"To protect your starbase, the best place to be is:",
+  {"To help your starbase dodge, the best place to be is:",
      {"a) In FRONT of the base",
       "b) NEXT TO the base",
       "c) BEHIND the base",
       NULL },
-     "a" },
+     "b" },
 
   {"How many armies can be carried by a destroyer with three kills?",
      { NULL },
      "5" },
 
-  {"How do you stop a cloaked enemy from taking a planet he's orbiting?",
-     {"a) Fire at the planet.",
-      "b) Fire at the ?? on the galactic map.",
-      "c) Tractor him off the planet.",
+  {"How long is a standard clue game (2007)?",
+     {"a) 30 minutes",
+      "b) 60 minutes",
+      "c) 90 minutes",
       NULL },
-     "a" },
+     "b" },
 
-  {"What is the most accurate way to find a cloaked enemy?",
-     {"a) Look at the galactic map.",
-      "b) Hit him with a photon torpedo.",
-      "c) Hit him with a phaser",
-      NULL },
-     "c" },
+  {"How many armies can be carried by an assault ship with 1.5 kills?",
+     { NULL },
+     "4" },
+    
 #ifdef CLUE2
   {"An assault ship can bomb at most how many armies at once?",
      { NULL },
