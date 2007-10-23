@@ -61,7 +61,7 @@ static off_t db_index_fetch(char *namePick, struct statentry *player) {
 
   if (content.dsize != sizeof(off_t)) {
     ERROR(8,("db.c: db_index_fetch: gdbm_fetch('%s'): dsize [%d] not sizeof(off_t) [%d]\n",
-	     namePick, content.dsize, sizeof(off_t)));
+	     namePick, content.dsize, (int)sizeof(off_t)));
     gdbm_close(dbf);
     return -1;
   }
@@ -262,7 +262,7 @@ int newplayer(struct statentry *player)
   lock_off(LOCK_PLAYER_ADD);
 
   ERROR(8,("db.c: newplayer: sizeof '%d' offset '%d' position '%d'\n", 
-           sizeof(struct statentry), offset, position));
+           (int)sizeof(struct statentry), offset, position));
 
 #ifdef PLAYER_INDEX
   /* do not create an index entry until the character name is reused,

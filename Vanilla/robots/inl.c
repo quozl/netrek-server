@@ -551,12 +551,14 @@ void checkmess()
       if (messages[oldmctl].m_recpt == messages[oldmctl].m_from) {
 	me = &players[messages[oldmctl].m_from];
 	if (!check_command(&messages[oldmctl]))
+	{
       if (!me->p_verify_clue)
 	    pmessage(messages[oldmctl].m_from, MINDIV,
 		     addr_mess(messages[oldmctl].m_from, MINDIV),
 		     "Not an INL command.  Send yourself 'help' for help.");
       else
         me->p_verify_clue = 0;
+        }
       }
     }
 #ifdef nodef

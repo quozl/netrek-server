@@ -50,6 +50,7 @@ static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "ip.h"
 #define MVERS
 #include "version.h"
 #include "patchlevel.h"

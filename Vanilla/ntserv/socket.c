@@ -728,7 +728,7 @@ void sendClientPacket(void *void_packet)
     if (packet->type<1 || packet->type>NUM_SIZES || 
 	sizes[(int)packet->type]==0) {
 	ERROR(1,("%s: attempt to send strange packet %d %d\n", whoami(),
-		 packet->type,NUM_SIZES));
+		 packet->type, (int)NUM_SIZES));
 	return;
     }
     packetsSent[(int)packet->type]++;
@@ -1860,7 +1860,7 @@ static int gwrite(int fd, char *wbuf, size_t size)
     if (clientDead) return 0;
 
     if (bytes>BUFSIZE) {
-	ERROR(1,("ERROR!!! gwrite got passed buf size of %d\n",bytes));
+	ERROR(1,("ERROR!!! gwrite got passed buf size of %d\n", (int)bytes));
 	return -1;
     }
 
@@ -1899,7 +1899,7 @@ static int gwrite(int fd, char *wbuf, size_t size)
 	    if (fd == udpSock) {
 		/* do we want Hiccup code here? */
 		UDPDIAG(("write() failed, fd=%d, bytes=%d, errno=%d\n",
-			 fd, bytes, errno));
+			 fd, (int)bytes, errno));
 		printUdpInfo();
 		logmessage("UDP gwrite failed:");
 	    }

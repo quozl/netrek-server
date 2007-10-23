@@ -5,6 +5,7 @@
 #include "copyright2.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 struct stringlist {
     char *string;
