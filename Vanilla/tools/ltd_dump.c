@@ -328,7 +328,7 @@ int main(const int argc, const char *argv[]) {
     plf = open(PlayerFile, O_RDONLY, 0744);
 
   if (argc == 3)
-    who = argv[2];
+    who = (char *)argv[2];
   else
     who = NULL;
 

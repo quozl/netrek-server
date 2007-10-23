@@ -16,10 +16,10 @@
 
 #ifdef LTD_STATS
 
-void main(void) {
+int main(void) {
 
   printf("newscores: This program does not work with LTD_STATS\n");
-  return;
+  return 0;
 
 }
 
