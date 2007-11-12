@@ -326,6 +326,8 @@ int main(int argc, char **argv)
 
     me->p_verify_clue = 0;
 
+    me->p_inl_captain = 0;
+
 #ifdef LTD_STATS
 
     startTkills   = ltd_kills(me, LTD_TOTAL);
