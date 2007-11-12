@@ -165,7 +165,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) 
       j->voting[me->p_no] = -1;
 
-    me->p_inl_captain = 0;
     me->p_inl_draft = INL_DRAFT_OFF;
 
     /* join message stuff */
