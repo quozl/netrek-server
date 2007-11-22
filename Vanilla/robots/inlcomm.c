@@ -482,6 +482,13 @@ struct message *mess;
 
     who = mess->m_from;
 
+    if (!inl_stat.change)
+    {		/* can't change it anymore */
+        pmessage(who, MINDIV, addr_mess(who, MINDIV),
+            "You can no longer trade. The game has started.");
+        return 0;
+    }
+
     if ((us = check_player(who, 1)) == NONE) return 0;
     them = !us;
     us_b = 1 << (inl_teams[us].side - 1);
