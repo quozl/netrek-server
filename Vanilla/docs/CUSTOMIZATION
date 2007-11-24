@@ -150,6 +150,12 @@ that can change the server.
 
 	PLKILLS - ( >=0 ) Number of kills needed to get plasmas.
 
+	DDRANK - ( 0 - 7 ) Rank needed to get a DD.
+		0 = Ensign , 7 = Admiral
+
+	GARANK - ( 0 - 7 ) Rank needed to get a GA.
+		0 = Ensign , 7 = Admiral
+
 	SBRANK - ( 0 - 7 ) Rank needed to get a starbase.
 		0 = Ensign , 7 = Admiral
 
