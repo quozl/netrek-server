@@ -233,9 +233,9 @@ that can change the server.
 
 	BASEPRACTICE - (0 or 1) Used to put server in basepractice mode.
 
-	TRANSWARP - (o or 1) Turn on transwarp capabilities.
+	TRANSWARP_ENABLE - (o or 1) Turn on transwarp capabilities.
 
-	WARPSPEED - (0 or 1) How fast transwap is.	
+	TRANSWARP_SPEED - (0 or 1) How fast transwap is.	
 
 	WHITELIST_INDIV - (0 or 1) Allow whitelist to overide :i messages
 

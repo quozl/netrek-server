@@ -156,9 +156,9 @@ struct sysdef_keywords {
 #endif /* PING */
   { "GHOSTBUST_TIMER",	SYSDEF_INT,	&ghostbust_timer,
     "Time to ghostbust a slot in seconds" },
-  { "TRANSWARP",	SYSDEF_INT,	&twarpMode,
+  { "TRANSWARP_ENABLE",	SYSDEF_INT,	&twarpMode,
     "Enable transwarp to Starbase" },
-  { "WARPSPEED",	SYSDEF_INT,	&twarpSpeed,
+  { "TRANSWARP_SPEED",	SYSDEF_INT,	&twarpSpeed,
     "Transwarp equivalent warp speed" },
   { "VECTOR",		SYSDEF_INT,	&vectortorps,
     "Vector torps (unimplemented)" },

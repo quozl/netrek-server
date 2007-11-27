@@ -312,10 +312,10 @@ ERROR_LEVEL=2
 START_ARMIES=30
 #
 #	Turn on transwarp capabilities. (1 = on, 0 = off)
-TRANSWARP=0
+TRANSWARP_ENABLE=0
 #
 #	How fast transwarp is.
-WARPSPEED=60
+TRANSWARP_SPEED=60
 #
 #	Enable the advertising of other servers with players, to assist
 #	with concentrating the playerbase.
