@@ -28,7 +28,7 @@ SELF_8FLAGS           S       ON
 # send 19 flags in SP_S_YOU_SS and SP_SEQUENCE
 19FLAGS               S       ON
 # warp 15 means player is cloaked (see vanilla server)
-CLOAK_MAXWARP         S       ON
+CLOAK_MAXWARP         S       OFF
 # SB hours (?)
 SBHOURS               S       ON
 # client macro switch (old clients)
