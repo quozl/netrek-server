@@ -227,6 +227,7 @@ int	ghostbust_timer=30;
 
 int           twarpMode=0;       /* isae - SB transwarp */
 int           twarpSpeed=60;     /* isae - Warp speed */
+int           twarpDelay=1;      /* quozl - start delay in milliseconds */
 
 int send_short = 0;
 int send_threshold = 0;		/* infinity */

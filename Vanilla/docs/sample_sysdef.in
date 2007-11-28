@@ -317,6 +317,12 @@ TRANSWARP_ENABLE=0
 #	How fast transwarp is.
 TRANSWARP_SPEED=60
 #
+#       Initiation delay after lock in milliseconds
+#       (to improve equity between clients that have a function that
+#       locates the base in player list vs clients that require a player
+#       to find the base in melee)
+TRANSWARP_DELAY=1
+#
 #	Enable the advertising of other servers with players, to assist
 #	with concentrating the playerbase.
 SERVER_ADVERTISE_ENABLE=0

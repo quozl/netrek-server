@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <signal.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -27,6 +29,28 @@ int handleTranswarp(void)
    }
    if (me->p_status != PALIVE)
       return 0;
+   if (twarpDelay) {
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      int msec = (tv.tv_sec - me->p_playerl_tv.tv_sec) * 1000 +
+                 (tv.tv_usec - me->p_playerl_tv.tv_usec) / 1000;
+      if (glog_open() == 0) {
+         glog_printf("transwarp msec = %d offense = %.2f ip = %s RSA = %s\n",
+                     msec,
+#ifdef LTD_STATS
+                     ltd_offense_rating(me),
+#else
+                     offenseRating(me),
+#endif /* LTD_STATS */
+                     me->p_ip,
+                     RSA_client_type
+                    );
+         glog_flush();
+      }
+      if (msec < twarpDelay) {
+         usleep((twarpDelay - msec) * 1000);
+      }
+   }
    if (!me->p_cantranswarp) {
       new_warning(UNDEF, "Starbase refuses transwarping from us in particular, captain!", -1);
       return 0;

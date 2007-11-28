@@ -11,6 +11,7 @@
 #include <math.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include "defs.h"
 #include "struct.h"
@@ -277,9 +278,10 @@ void lock_player(int player)
     if (players[player].p_status != PALIVE) return;
     if (players[player].p_flags & PFCLOAK && !Observer) return;
 
-    me->p_flags |= PFPLOCK;
-    me->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
     me->p_playerl = player;
+    gettimeofday(&me->p_playerl_tv, NULL);
+    me->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+    me->p_flags |= PFPLOCK;
 
     /* notify player docking perm status of own SB when locking 7/19/92 TC */
 

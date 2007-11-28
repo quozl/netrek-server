@@ -160,6 +160,8 @@ struct sysdef_keywords {
     "Enable transwarp to Starbase" },
   { "TRANSWARP_SPEED",	SYSDEF_INT,	&twarpSpeed,
     "Transwarp equivalent warp speed" },
+  { "TRANSWARP_DELAY",	SYSDEF_INT,	&twarpDelay,
+    "Transwarp initiation delay after lock in milliseconds" },
   { "VECTOR",		SYSDEF_INT,	&vectortorps,
     "Vector torps (unimplemented)" },
   { "START_ARMIES",	SYSDEF_INT,	&top_armies,

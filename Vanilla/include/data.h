@@ -249,6 +249,7 @@ extern int ghostbust_timer;
 
 extern int twarpMode;       /* isae - SB transwarp */
 extern int twarpSpeed;     /* isae - Warp speed */
+extern int twarpDelay;
 extern int send_short;
 extern int send_threshold;
 extern int actual_threshold;

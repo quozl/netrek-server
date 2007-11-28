@@ -443,6 +443,7 @@ struct player {
     float p_kills;              /* Enemies killed */
     short p_planet;             /* Planet orbiting or locked onto */
     short p_playerl;            /* Player locked onto */
+    struct timeval p_playerl_tv;
     short p_armies;
     int p_fuel;
     short p_explode;            /* Keeps track of final explosion */
