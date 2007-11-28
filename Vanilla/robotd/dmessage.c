@@ -973,7 +973,7 @@ R_ProcMessage(message, flags, from, to, std, config)
 	    "false");
 	 response(buf);
       }
-      else if(strncmp(m, "itourn", 7)==0){
+      else if(strncmp(m, "itourn", 6)==0){
 	 _state.itourn = !_state.itourn;
 	 sprintf(buf, "ignore tmode: %s", _state.itourn?"true":
 	    "false");
