@@ -5,6 +5,8 @@
 #ifndef __INCLUDED_struct_h__
 #define __INCLUDED_struct_h__
 
+#include <sys/time.h>
+
 #include "copyright.h"
 
 #ifdef LTD_STATS
