@@ -167,11 +167,17 @@ PLKILLS=2
 #       Rank needed to fly a destroyer (0 = Ensign)
 DDRANK=0
 #
+#	Offense needed to take out DD (0.0 = None)
+DD_MINIMAL_OFFENSE=0.0
+#
 #       Rank needed to fly a galaxy class ship (0 = Ensign)
 GARANK=0
 #
 # 	Rank needed to take out starbase (3 = Commander)
 SBRANK=3
+#
+#	Offense needed to take out starbase (0.0 = None)
+SB_MINIMAL_OFFENSE=0.0
 #
 #	Planets needed to take out starbase
 SBPLANETS=5

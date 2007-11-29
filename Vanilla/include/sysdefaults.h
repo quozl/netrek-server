@@ -300,6 +300,10 @@ struct sysdef_keywords {
     "Script to run when T-Mode starts" },
   { "SCRIPT_TOURN_END", SYSDEF_CHAR, script_tourn_end,
     "Script to run when T-Mode ends" },
+  { "SB_MINIMAL_OFFENSE", SYSDEF_FLOAT, &sb_minimal_offense,
+    "Minimal offense required to refit to a SB" },
+  { "DD_MINIMAL_OFFENSE", SYSDEF_FLOAT, &dd_minimal_offense,
+    "Minimal offense required to refit to a DD" },
   { "",			SYSDEF_END,	NULL		}
 };
 

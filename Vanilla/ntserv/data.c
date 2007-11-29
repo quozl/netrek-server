@@ -496,3 +496,6 @@ int whitelist_all = 0;
 
 int server_advertise_enable = 0;
 char server_advertise_filter[MSG_LEN];
+
+float sb_minimal_offense = 0.0;
+float dd_minimal_offense = 0.0;

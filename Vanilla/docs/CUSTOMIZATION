@@ -153,11 +153,17 @@ that can change the server.
 	DDRANK - ( 0 - 7 ) Rank needed to get a DD.
 		0 = Ensign , 7 = Admiral
 
+	DD_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		destroyer.
+
 	GARANK - ( 0 - 7 ) Rank needed to get a GA.
 		0 = Ensign , 7 = Admiral
 
 	SBRANK - ( 0 - 7 ) Rank needed to get a starbase.
 		0 = Ensign , 7 = Admiral
+
+	SB_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		starbase.
 
 	RESTRICT_BOMB (0 or 1) - Disable bombing out of t-mode.
 

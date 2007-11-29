@@ -473,6 +473,28 @@ static void sendwarn(char *string, int atwar, int team)
 void do_refit(int type)
 {	
     int i=0;
+    float sessionOffense, sessionDefense;
+    int   deltaKills, deltaLosses, deltaTicks;
+
+#ifdef LTD_STATS
+    deltaKills   = ltd_kills(me, LTD_TOTAL)         - startTkills;
+    deltaLosses  = ltd_deaths(me, LTD_TOTAL)        - startTlosses;
+    deltaTicks   = ltd_ticks(me, LTD_TOTAL)         - startTticks;
+#else
+    deltaKills = me->p_stats.st_tkills - startTkills;
+    deltaLosses = me->p_stats.st_tlosses - startTlosses;
+    deltaTicks = me->p_stats.st_tticks - startTticks;
+#endif
+
+/* if deltaTicks 0 we bump it up to 1 to get around a division by 0 issue */
+    if (deltaTicks == 0)
+	deltaTicks=1;
+
+    sessionOffense = (double) deltaKills * status->timeprod /
+        ((double) deltaTicks * status->kills);
+
+    sessionDefense = (double) deltaTicks * status->losses /
+        (deltaLosses!=0 ? (deltaLosses * status->timeprod) : (status->timeprod));
 
     if (type<0 || type>ATT) return;
     if (me->p_flags & PFORBIT) {
@@ -528,6 +550,23 @@ void do_refit(int type)
             new_warning(UNDEF,"You need a rank of %s or higher to command a destroyer!", ranks[ddrank].name);
             return;
         }
+	if ((!inl_mode) && (!practice_mode)) {
+	    if (is_guest(me->p_name)) {
+	        if (sessionOffense < dd_minimal_offense) {
+	            new_warning(UNDEF,"You need an offense of %2.2f or higher to command a destroyer!", dd_minimal_offense);
+	            return;
+	        }
+	    } else {
+#ifdef LTD_STATS
+	        if (ltd_offense_rating(me) < dd_minimal_offense) {
+#else
+	        if (offenseRating(me) < dd_minimal_offense) {
+#endif
+		    new_warning(UNDEF,"You need an offense of %2.2f or higher to command a destroyer!", dd_minimal_offense);
+		    return;
+	        }
+	    }
+	}
     }
     if (type == SGALAXY) {
         if (me->p_stats.st_rank < garank) {
@@ -545,6 +584,23 @@ void do_refit(int type)
 	    new_warning(UNDEF,"You need a rank of %s or higher to command a starbase!", ranks[sbrank].name);
             }
 	    return;
+	}
+	if ((!inl_mode) && (!practice_mode)){
+	    if (is_guest(me->p_name)) {
+	        if (sessionOffense < sb_minimal_offense) {
+	            new_warning(UNDEF,"You need an offense of %2.2f or higher to command a starbase!", sb_minimal_offense);
+	            return;
+	        }
+	    } else {
+#ifdef LTD_STATS
+	        if (ltd_offense_rating(me) < sb_minimal_offense) {
+#else
+	        if (offenseRating(me) < sb_minimal_offense) {
+#endif
+		    new_warning(UNDEF,"You need an offense of %2.2f or higher to command a starbase!", sb_minimal_offense);
+		    return;
+	        }
+	    }
 	}
     }
     if (type == STARBASE && chaos) {
