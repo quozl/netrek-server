@@ -31,7 +31,6 @@
 
 /* file scope prototypes */
 static void handleLogin(void);
-static int lockout(void);
 
 #ifdef REGISTERED_USERS
 char *registered_users_name;
@@ -68,7 +67,7 @@ static void handleLogin(void)
     ERROR(8,("handleLogin: %s %s %s\n", 
 	     passPick[15] == 0 ? "attempt" : "query", namePick, passPick));
 
-    if (is_guest(namePick) && !lockout()) {
+    if (is_guest(namePick)) {
 
 	hourratio=5;
 	MZERO(&player.stats, sizeof(struct stats));
@@ -147,7 +146,7 @@ static void handleLogin(void)
 #endif
 
     /* A new guy? */
-    if ((position == -1) && !lockout()) {
+    if (position == -1) {
 	strcpy(player.name, namePick);
 	strcpy(player.password, crypt_player(passPick, namePick));
 	MZERO(&player.stats, sizeof(struct stats));
@@ -174,9 +173,8 @@ static void handleLogin(void)
 
     /* An actual login attempt */
     strcpy(newpass, crypt_player(passPick, player.name));
-    if (lockout() ||
-	(!streq(player.password, newpass) &&
-	 !streq(player.password, crypt_player_raw(passPick, player.password)))) {
+    if (!streq(player.password, newpass) &&
+	 !streq(player.password, crypt_player_raw(passPick, player.password))) {
 	    sendClientLogin(NULL);
 	    flushSockBuf();
 	    ERROR(8,("handleLogin: password-failure namePick=%s passPick=%s file=%s newstyle=%s oldstyle=%s\n", namePick, passPick, player.password, newpass, crypt_player_raw(passPick, player.password)));
@@ -194,10 +192,4 @@ static void handleLogin(void)
     }
     flushSockBuf();
     return;
-}
-
-/* return true if we want a lockout */
-static int lockout(void)
-{
-    return ((strncmp(login, "bozo", 4) == 0) || 0);
 }
