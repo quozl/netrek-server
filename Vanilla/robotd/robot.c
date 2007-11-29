@@ -1393,7 +1393,7 @@ req_set_speed(s, l, f)
 
    if(s > _state.maxspeed) s = _state.maxspeed;
 
-   if(inl && !status->tourn && !_state.itourn)
+   if(inl && !status->tourn && !_state.itourn && !ignoreTMode)
       return;
 
    if(_state.p_desspeed != s){

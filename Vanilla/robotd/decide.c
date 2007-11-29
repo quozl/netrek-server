@@ -77,7 +77,7 @@ decide()
    }
 
    /* no automatic decisions unless t-mode */
-   if(!status->tourn && !_state.itourn) {
+   if(!status->tourn && !_state.itourn && !ignoreTMode) {
       return;
    }
 
