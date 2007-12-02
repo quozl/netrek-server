@@ -1217,7 +1217,7 @@ int ltd_can_rank(struct player *p) {
 
   float offense_rating, defense_rating, bombing_rating, planet_rating;
   float total_rating, total_hours, total_di, required_di;
-  int rank;
+  int rank, nextrank;
 
   offense_rating = ltd_offense_rating(p);
   defense_rating = ltd_defense_rating(p);
@@ -1232,6 +1232,10 @@ int ltd_can_rank(struct player *p) {
   required_di = ranks[p->p_stats.st_rank + 1].hours / hourratio *
                 ranks[p->p_stats.st_rank + 1].ratings;
 
+  nextrank = p->p_stats.st_rank + 1;
+  if (nextrank >= NUMRANKS)
+    return 0;
+
   /* The person is promoted if they have enough hours and their
    * ratings are high enough, or if it is clear that they could sit
    * around and do nothing for the amount of time required, and still
@@ -1241,7 +1245,7 @@ int ltd_can_rank(struct player *p) {
 
   rank = p->p_stats.st_rank + 1;
 
-  if (((offense_rating >= ranks[rank].offense) || !offense_rank) &&
+  if (((offense_rating >= ranks[nextrank].offense) || !offense_rank) &&
       ((total_hours > ranks[rank].hours / hourratio &&
         total_rating >= ranks[rank].ratings) ||
        (total_hours < ranks[rank].hours / hourratio &&
@@ -1255,7 +1259,7 @@ int ltd_can_rank(struct player *p) {
 
   rank = p->p_stats.st_rank;
 
-  if (((offense_rating >= ranks[rank].offense || !offense_rank) &&
+  if (((offense_rating >= ranks[nextrank].offense || !offense_rank) &&
        total_rating >= ranks[rank].ratings) &&
       total_di >= required_di * 2)
 
@@ -1268,7 +1272,7 @@ int ltd_can_rank(struct player *p) {
   rank = p->p_stats.st_rank - 1;
 
   if (p->p_stats.st_rank > 0 &&
-      ((offense_rating >= ranks[rank].offense || !offense_rank) &&
+      ((offense_rating >= ranks[nextrank].offense || !offense_rank) &&
        total_rating >= ranks[rank].ratings) &&
       total_di >= required_di * 4)
 
@@ -1281,7 +1285,7 @@ int ltd_can_rank(struct player *p) {
   rank = p->p_stats.st_rank - 2;
 
   if (p->p_stats.st_rank >= 4 &&
-      ((offense_rating >= ranks[rank].offense || !offense_rank) &&
+      ((offense_rating >= ranks[nextrank].offense || !offense_rank) &&
        total_rating >= ranks[rank].ratings) &&
       total_di >= required_di * 8)
 

@@ -110,7 +110,7 @@ void death(void)
 	    /* We also promote if they belong in their current rank, but have
 	     * twice enough DI for the next rank.
 	     */
-	    (((offenseRating(me) >= ranks[mystats->st_rank].offense || !offense_rank) &&
+	    (((offenseRating(me) >= ranks[mystats->st_rank + 1].offense || !offense_rank) &&
 	      ratingTotals >= ranks[mystats->st_rank].ratings) && 
 	     ratingTotals*(mystats->st_tticks/36000.0) >= 
 	     ranks[mystats->st_rank+1].hours/hourratio*ranks[mystats->st_rank+1].ratings*2) {
@@ -120,7 +120,7 @@ void death(void)
 	     * times the DI for the next rank.
 	     */
 	    (mystats->st_rank > 0 &&
-	     ((offenseRating(me) >= ranks[mystats->st_rank-1].offense || !offense_rank) &&
+	     ((offenseRating(me) >= ranks[mystats->st_rank + 1].offense || !offense_rank) &&
 	      ratingTotals >= ranks[mystats->st_rank-1].ratings) &&
 	     ratingTotals*(mystats->st_tticks/36000.0) >=
 	     ranks[mystats->st_rank+1].hours/hourratio*ranks[mystats->st_rank+1].ratings*4) {
@@ -131,7 +131,7 @@ void death(void)
              * Captain.
              */
 	    if ((mystats->st_rank-2 > 0 &&
-              ((offenseRating(me) >= ranks[mystats->st_rank-2].offense || !offense_rank) &&
+              ((offenseRating(me) >= ranks[mystats->st_rank + 1].offense || !offense_rank) &&
                ratingTotals >= ranks[mystats->st_rank-2].ratings) &&
 	       ratingTotals*(mystats->st_tticks/36000.0) >=
 	       ranks[mystats->st_rank+1].hours / 
