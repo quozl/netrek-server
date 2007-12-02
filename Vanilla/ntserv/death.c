@@ -130,7 +130,7 @@ void death(void)
              * times the DI for the next rank, and at least the rank of 
              * Captain.
              */
-	    if ((mystats->st_rank-2 > 0 &&
+	    if ((mystats->st_rank-3 > 0 &&
               ((offenseRating(me) >= ranks[mystats->st_rank + 1].offense || !offense_rank) &&
                ratingTotals >= ranks[mystats->st_rank-2].ratings) &&
 	       ratingTotals*(mystats->st_tticks/36000.0) >=
