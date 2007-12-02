@@ -545,7 +545,7 @@ void do_refit(int type)
             return;
         }
         if ((!inl_mode) && (!practice_mode)) {
-            if (playerOffense <= dd_minimal_offense) {
+            if (playerOffense < dd_minimal_offense) {
                 new_warning(UNDEF,"You need an offense of %2.2f or higher to command a destroyer!", dd_minimal_offense);
                 return;
             }
