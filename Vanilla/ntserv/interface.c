@@ -475,7 +475,6 @@ void do_refit(int type)
 {	
     int i=0;
     float playerOffense, playerDefense, damageFactor;
-    int   deltaKills, deltaLosses, deltaTicks;
 
 #ifdef LTD_STATS
     playerOffense = ltd_offense_rating(me);
