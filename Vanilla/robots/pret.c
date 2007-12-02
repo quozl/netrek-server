@@ -85,7 +85,7 @@ static void resetPlanets(void);
 static void checkPreTVictory();
 static int num_humans(int team);
 static int num_humans_alive();
-static int totalPlayers();
+static int totalPlayers(int noteam);
 static void doResources(void);
 static void terminate(int);
 static void savegalaxy(void);
@@ -268,9 +268,9 @@ void checkmess()
         if(robot_debug_target != -1) {
             messOne(255, roboname, robot_debug_target,
                     "Total Players: %d  Current bots: %d  Current human players: %d",
-                    totalPlayers(), totalRobots(0), num_humans(0));
+                    totalPlayers(1), totalRobots(0), num_humans(0));
         }
-        if(totalPlayers() > PT_MAX_WITH_ROBOTS) {
+        if(totalPlayers(1) > PT_MAX_WITH_ROBOTS) {
             if(robot_debug_target != -1) {
                 messOne(255, roboname, robot_debug_target, "Stopping a robot");
                 messOne(255, roboname, robot_debug_target, "Current bots: %d  Current human players: %d",
@@ -285,7 +285,7 @@ void checkmess()
 
         if (num_humans_alive() > 0 &&
             totalRobots(0) < PT_ROBOTS &&
-            totalPlayers() < PT_MAX_WITH_ROBOTS &&
+            totalPlayers(1) < PT_MAX_WITH_ROBOTS &&
             realT == 0)
         {
             int next_team = 0;
@@ -312,7 +312,7 @@ void checkmess()
 
    /* Reset for real T mode ? */
    if ((ticks % ROBOCHECK) == 0) {
-        if(totalRobots(0) == 0 && totalPlayers() >= 8) {
+        if(totalRobots(0) == 0 && totalPlayers(0) >= 8) {
             time_in_T += ROBOCHECK / PERSEC;
             if(realT == 0) {
                 time_in_T = 0;
@@ -369,7 +369,7 @@ static int is_robots_only(void)
 }
 #endif
 
-static int totalPlayers()
+static int totalPlayers(int noteam)
 {
    int i;
    struct player *j;
@@ -382,6 +382,8 @@ static int totalPlayers()
         if (j->p_flags & PFROBOT)
             continue;
         if (j->p_flags & PFOBSERV)
+            continue;
+        if (!noteam && (j->p_team == ALLTEAM))
             continue;
         count++;
    }
