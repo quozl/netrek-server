@@ -474,7 +474,7 @@ static void sendwarn(char *string, int atwar, int team)
 void do_refit(int type)
 {	
     int i=0;
-    float sessionOffense, sessionDefense;
+    float playerOffense, playerDefense, damageFactor;
     int   deltaKills, deltaLosses, deltaTicks;
 
 #ifdef LTD_STATS
