@@ -40,6 +40,9 @@ char *roboname = "Kathy";
 
 #define NUMNAMES        20
 
+/* borrowed from daemonII.c until we find a better place */
+#define PLAYERFUSE      1
+
 static char    *names[NUMNAMES] =
 {"Annihilator", "Banisher", "Blaster",
  "Demolisher", "Destroyer", "Eliminator",
@@ -316,7 +319,7 @@ void checkmess()
                 realT = 1;
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
-                obliterate(0, KPROVIDENCE, 0, 0);
+                obliterate(0, TOURNSTART, 0, 0);
 		if (pret_save_galaxy) {
                     if (galaxysaved)
                     {
@@ -675,7 +678,7 @@ static void cleanup(int terminate)
         }
     } while (retry);            /* Some robots havn't terminated yet */
 
-    obliterate(0, KPROVIDENCE, 1, 1);
+    obliterate(0, KOVER, 1, 1);
     status->gameup &= ~GU_PRET;
     if (terminate)
         exitRobot();
@@ -711,7 +714,7 @@ static void checkPreTVictory() {
 
     if(winner > 0) {
         messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
-        obliterate(0, KPROVIDENCE, 0, 1);
+        obliterate(0, KWINNER, 0, 1);
         resetPlanets();
         galaxysaved = 0;
     }
@@ -854,10 +857,24 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
         if ((j->p_flags & PFROBOT) && killRobots == 0)
             continue;
         if (j == me) continue;
+        if ((kreason == TOURNSTART) && (j->p_ship.s_type == STARBASE))
+        {
+#ifdef LTD_STATS
+            if (ltd_offense_rating(j) < sb_minimal_offense)
+#else
+            if (offenseRating(j) < sb_minimal_offense)
+#endif
+            {
+                j->p_status = PEXPLODE;
+                j->p_whydead = TOURNSTART;
+                j->p_whodead = me->p_no;
+                j->p_explode = 2 * SBEXPVIEWS / PLAYERFUSE;
+            }
+        }
         if (resetShip)
         {
             j->p_kills = 0;
-	    if (j->p_ship.s_type != STARBASE)
+            if (j->p_ship.s_type != STARBASE)
                 j->p_ship.s_plasmacost = -1;
         }
         j->p_ntorp = 0;
