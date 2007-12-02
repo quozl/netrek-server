@@ -68,8 +68,8 @@ char **argv;
     getpath();
     printf("Warning:  If you do not know how to use this program, break it now!\n");
     status=(struct status *) malloc(sizeof(struct status));
-    scanf("%ld %d %d %d %d %lf\n", 
-	(long int *) &status->time, 
+    scanf("%d %d %d %d %d %lf\n", 
+	&status->time, 
 	&status->planets, 
 	&status->armsbomb, 
 	&status->kills, 

@@ -75,8 +75,8 @@ int main(int argc, char **argv)
     fprintf(stderr,"Warning: if you do not know how to use this program,\n");
     fprintf(stderr,"         you're about to lose the player database\n");
     status=(struct status *) malloc(sizeof(struct status));
-    scanf("%10ld %10d %10d %10d %10d %10lf\n", 
-	(long int *) &status->time, 
+    scanf("%10d %10d %10d %10d %10d %10lf\n", 
+	&status->time, 
 	&status->planets, 
 	&status->armsbomb, 
 	&status->kills, 
