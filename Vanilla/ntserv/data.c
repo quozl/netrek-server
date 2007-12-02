@@ -499,3 +499,8 @@ char server_advertise_filter[MSG_LEN];
 
 float sb_minimal_offense = 0.0;
 float dd_minimal_offense = 0.0;
+
+/* classical style refit at < 75% hull damage */
+int lame_refit = 1;
+/* classical style base refit at < 75% hull damage */
+int lame_base_refit = 1;

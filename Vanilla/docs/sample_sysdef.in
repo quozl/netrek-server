@@ -411,6 +411,20 @@ INL_RECORD=@INL@
 #	(may be changed during a draft to explore the preferred style)
 INL_DRAFT_STYLE=0
 #
+#       Enable classical refit criteria.  Historically ships were allowed
+#       to refit at less than 75% hull damage.  This is clearly against the
+#       original authors intentions as the other criteria is > 75% fuel and
+#       > 75% shields remaining.  Setting this to 0 will change this so that
+#       all 3 factors (fuel, shields and hull) are at their respective 25%
+#       values.
+LAME_REFIT=1
+#
+#       Base specific lame refit setting.  This only applies to bases;
+#       this will allow a server to honor the historic criteria for
+#       normal ships (LAME_REFIT=1) while preventing a base from
+#       refitting at damage > 25%.
+LAME_BASE_REFIT=1
+#
 #	Enable Dogfight practice robot.
 DOGFIGHT=0
 #

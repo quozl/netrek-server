@@ -304,6 +304,10 @@ struct sysdef_keywords {
     "Minimal offense required to refit to a SB" },
   { "DD_MINIMAL_OFFENSE", SYSDEF_FLOAT, &dd_minimal_offense,
     "Minimal offense required to refit to a DD" },
+  { "LAME_REFIT",     SYSDEF_INT,     &lame_refit,
+    "Allow classical refits at < 75% damage." },
+  { "LAME_BASE_REFIT",        SYSDEF_INT,     &lame_base_refit,
+    "Allow classical base refits at < 75% damage." },
   { "",			SYSDEF_END,	NULL		}
 };
 

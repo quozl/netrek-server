@@ -421,6 +421,8 @@ extern int whitelist_team;
 extern int whitelist_all;
 extern float sb_minimal_offense;
 extern float dd_minimal_offense;
+extern int lame_refit;
+extern int lame_base_refit;
 
 /* lame hack to get around gcc silliness */
 extern double round(double);

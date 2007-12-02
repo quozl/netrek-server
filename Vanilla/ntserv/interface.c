@@ -474,7 +474,8 @@ static void sendwarn(char *string, int atwar, int team)
 void do_refit(int type)
 {	
     int i=0;
-    float playerOffense, playerDefense;
+    float sessionOffense, sessionDefense;
+    int   deltaKills, deltaLosses, deltaTicks;
 
 #ifdef LTD_STATS
     playerOffense = ltd_offense_rating(me);
@@ -509,7 +510,13 @@ void do_refit(int type)
 	return;
     } 
 
-    if ((me->p_damage> ((float)me->p_ship.s_maxdamage)*.75) || 
+    if (((me->p_ship.s_type != STARBASE) && lame_refit) || ((me->p_ship.s_type == STARBASE) && lame_base_refit)) {
+	damageFactor=.75;
+    } else {
+	damageFactor=.25;
+    }
+
+    if ((me->p_damage > ((float)me->p_ship.s_maxdamage)*damageFactor) ||
 	    (me->p_shield < ((float)me->p_ship.s_maxshield)*.75) ||
 	    (me->p_fuel < ((float)me->p_ship.s_maxfuel)*.75)) {
         new_warning(55,"Central Command refuses to accept a ship in this condition!");

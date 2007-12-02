@@ -255,6 +255,14 @@ that can change the server.
 
 	WHITELIST_ALL - (0 or 1) Allow whitelist to overide :a messages
 
+	LAME_REFIT - (0 or 1) If 1 use the historic ship refit criteria;
+		if 0 use the criteria the original developers intended
+		(>25% fuel, >25% shields, >75% hull).  Defaults to
+		classical criteria.
+
+	LAME_BASE_REFIT - (0 or 1) Same as LAME_REFIT but exclusively
+		for starbases.
+
 	Dog-Fighter Specific Defines:
 		CONTESTSIZE - ( >0) Number of the contestants needed 
 				    before starting.
