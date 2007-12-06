@@ -287,7 +287,7 @@ int ip_mute(char *ip) {
   return flag_test_cidr(name_etc("mute", ""), ip);
 }
 
-/* prevent user from sending multi-line macros */
+/* prevent user from sending messages to all, aka global :a */
 int ip_muteall(char *ip) {
     if (ip == NULL || ip[0] == '\0') return 0;
     return flag_test_cidr(name_etc("muteall", ""), ip);
