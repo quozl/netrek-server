@@ -287,6 +287,12 @@ int ip_mute(char *ip) {
   return flag_test_cidr(name_etc("mute", ""), ip);
 }
 
+/* prevent user from sending multi-line macros */
+int ip_muteall(char *ip) {
+    if (ip == NULL || ip[0] == '\0') return 0;
+    return flag_test_cidr(name_etc("muteall", ""), ip);
+}
+
 /* global ignore, default others :ita to individual ignore */
 int ip_ignore(char *ip) {
   if (ip == NULL || ip[0] == '\0') return 0;
@@ -365,6 +371,8 @@ void ip_ignore_initial(struct player *me)
   }
   if (ip_mute(me->p_ip))
       mute = 1;
+  if (ip_muteall(me->p_ip))
+      muteall = 1;
 }
 
 /* called on login by others, to recall saved state */

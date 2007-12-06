@@ -441,6 +441,7 @@ int F_show_visibility_range = 0;	/* allow client to show range at
 					 * which enemies can see self */
 int F_flags_all = 0;			/* SP_FLAGS_ALL packet may be sent */
 int mute = 0;
+int muteall = 0;
 int remoteaddr = -1;		/* inet address in net format */
 int observer_muting = 0;
 int observer_keeps_game_alive = 0;

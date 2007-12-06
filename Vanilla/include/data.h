@@ -374,6 +374,7 @@ extern char Cambot_out[FNAMESIZE];
 #define PRE_T_ROBOT_LOGIN "Pre_T_Robot!"
 
 extern int mute;
+extern int muteall;
 extern int remoteaddr;		/* inet address in net format */
 extern int observer_muting;
 extern int observer_keeps_game_alive;
