@@ -226,7 +226,7 @@ void getEntry(int *team, int *stype)
 		    teamPick= -1;
 		    continue;
 		}
-		if ((!inl_mode) && (!practice_mode) && status->tourn) {
+               if ((!inl_mode) && (!practice_mode) && (!pre_t_mode)) {
             if (playerOffense < sb_minimal_offense) {
 			    new_warning(UNDEF,"You need an offense of %2.2f or higher to command a starbase!", sb_minimal_offense);
 			    sendPickokPacket(0);
