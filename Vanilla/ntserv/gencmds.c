@@ -233,6 +233,12 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
     return 0;
   }
 
+  if (!strncmp(comm, "EJECT", 5) && (who == player))
+  {
+      god(who, "Sorry, you can't eject yourself.");
+      return 0;
+  }
+
   nv[0] = '\0';
   for (i=0, j = &players[i]; i < MAXPLAYER; i++, j++)
   {
