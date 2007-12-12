@@ -538,8 +538,10 @@ static void save_carried_armies(void)
             continue;
         if (j == me) continue;
 
-        if (j->p_armies > 0)
+        if (j->p_armies > 0) {
 	    save_armies(j);
+	    j->p_armies = 0;
+	}
     }
 }
 
