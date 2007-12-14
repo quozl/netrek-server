@@ -718,7 +718,7 @@ void do_time_msg(char *comm, struct message *mess)
   }
 
   switch (teams[t].te_surrender_pause) {
-    case 0:
+    case TE_SURRENDER_PAUSE_OFF:
       remaining = 60 - ((context->frame - teams[t].te_surrender_frame) / fps);
       if (remaining < 50 && remaining > 0) {
         pmessage(who, MINDIV, addr, "The %s have %d minutes %d seconds left before they surrender.", team_name(t), teams[t].te_surrender-1, remaining);
@@ -726,10 +726,10 @@ void do_time_msg(char *comm, struct message *mess)
         pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].te_surrender);
       }
       break;
-    case 1:
+    case TE_SURRENDER_PAUSE_ON_TOURN:
       pmessage(who, MINDIV, addr, "The %s will have %d minutes left when T mode resumes", team_name(t), teams[t].te_surrender);
       break;
-    case 2:
+    case TE_SURRENDER_PAUSE_ON_PLANETS:
       pmessage(who, MINDIV, addr, "The %s will have %d minutes left if they are down to %d planets", team_name(t), teams[t].te_surrender, surrenderStart);
       break;
   }

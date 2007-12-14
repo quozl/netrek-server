@@ -3883,6 +3883,7 @@ static void checkgen(int loser, struct player *winner)
         pmessage(0, MALL, " ", " ");
 
         teams[loser].te_surrender = minutes;
+        teams[loser].te_surrender_pause = TE_SURRENDER_PAUSE_OFF;
         teams[loser].te_surrender_frame = context->frame;
     }
 
