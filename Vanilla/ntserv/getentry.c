@@ -330,8 +330,11 @@ static int tournamentMask(int team, int queue)
         return 0;
     
     /* Handle special cases that do other things */
-    /* Chaos, topgun mode, or admin observer */
-    if (chaos || topgun || (me->p_authorised && (me->p_flags & PFOBSERV)))
+    /* admin observer */
+    if (me->p_authorised && (me->p_flags & PFOBSERV))
+        return ALLTEAM;
+    /* Chaos or topgun mode */
+    if (chaos || topgun)
         return mask;
     /* Queue with no restrictions */
     if (!(queues[queue].q_flags & QU_RESTRICT))
