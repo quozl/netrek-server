@@ -98,7 +98,7 @@ TURN_KEYS             S       OFF
 # Allow clients to show the range at which enemy ships can see you as a circle
 # on the galactic map.  This information can be derived by the client by
 # mimicing the function udplayersight() in daemonII.c.
-SHOW_VISIBILITY_RANGE         S       ON
+SHOW_VISIBILITY_RANGE         S       OFF
 # Flag packet that sends abbreviated flags (cloak, shield, alive) for all
 # players every update for those who use SP_PLAYER instead of SP_S_PLAYER.
 SP_FLAGS_ALL            S       ON
