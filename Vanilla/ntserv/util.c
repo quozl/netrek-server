@@ -147,6 +147,22 @@ int find_slot_by_host(char *host, int j)
   return -1;
 }
 
+/* given ip address, return first matching player */
+int find_slot_by_ip(char *ip, int j)
+{
+  struct player *p;
+  int i;
+
+  p = &players[0];
+  for(i=j;i<MAXPLAYER;i++) {
+    if ( (p->p_status != PFREE) && (!(p->p_flags & PFROBOT))) {
+      if (!strcmp(ip, p->p_ip)) return i;
+    }
+    p++;
+  }
+  return -1;
+}
+
 /* find a planet by name */
 struct planet *planet_find(char *name)
 {
