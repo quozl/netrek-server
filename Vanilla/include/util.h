@@ -9,6 +9,7 @@ int realNumShipsBots(int owner);
 void setEnemy(int myteam, struct player *me);
 #endif /* LTD_STATS */
 int find_slot_by_host(char *host, int j);
+int find_slot_by_ip(char *ip, int j);
 int mprintf(char *format, ...);
 struct planet *planet_find(char *name);
 struct planet *planet_by_number(char *name);
