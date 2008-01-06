@@ -508,4 +508,7 @@ because they have initialisation of variables dependent on UPDATE. */
 
 #define NLOCKS          3       /* number of locks with a defined purpose */
 
+#define IGNORING	1	/* next 2 are for state checks in the     */
+#define IGNOREDBY	2	/* do_display_ignores func. in ntscmds.c  */
+
 #endif /* _h_defs */

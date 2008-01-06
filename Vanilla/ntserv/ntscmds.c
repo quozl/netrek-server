@@ -23,6 +23,7 @@
 #include "util.h"
 #include "ip.h"
 #include "slotmaint.h"
+#include <dirent.h>
 
 void do_player_eject(int who, int player, int mflags, int sendto);
 void do_player_ban(int who, int player, int mflags, int sendto);
@@ -64,6 +65,9 @@ void do_become(char *comm, struct message *mess);
 #ifdef GENO_COUNT
 void do_genos_query(char *comm, struct message *mess, int who);
 #endif
+void do_display_ignoring(char *comm, struct message *mess, int who);
+void do_display_ignoredby(char *comm, struct message *mess, int who);
+void do_display_ignores(char *comm, struct message *mess, int who, int type);
 void eject_player(int who);
 void ban_player(int who);
 void do_client_query(char *comm, struct message *mess, int who);
@@ -171,6 +175,14 @@ static struct command_handler_2 nts_commands[] =
 		C_PLAYER,
 		"Show time until the Starbase is available.",
 		do_sbtime_msg },		/* SBTIME */
+	{ "IGNORING",
+		C_PLAYER,
+		"Display list of ip's you are ignoring.",
+		do_display_ignoring },		/* IGNORING */
+	{ "IGNOREDBY",
+		C_PLAYER,
+		"Display list of ip's that are ignoring you.",
+		do_display_ignoredby },		/* IGNOREDBY */
 #ifdef GENO_COUNT
     { "GENOS",
 		C_PLAYER | C_PR_INPICKUP,
@@ -680,6 +692,107 @@ int bounceWhois(int from)
 #endif
     }
     return 1;
+}
+
+/* ARGSUSED */
+void do_display_ignoring (char *comm, struct message *mess, int who)
+{
+    do_display_ignores (comm, mess, who, IGNORING);
+}
+
+/* ARGSUSED */
+void do_display_ignoredby (char *comm, struct message *mess, int who)
+{
+    do_display_ignores (comm, mess, who, IGNOREDBY);
+}
+
+void do_display_ignores (char *comm, struct message *mess, int who, int igntype)
+{
+    DIR *dir;
+    FILE *ignorefile;
+    struct dirent *dirent;
+    struct player *p;
+    struct player *other;
+    int whofrom = mess->m_from;
+    int ignmask = 0;
+    int slot = -1;
+    int hits = 0;
+    char dirname[NAME_MAX];
+    char msg[MSG_LEN];
+    char filename[NAME_MAX];
+    char *addr = addr_mess(whofrom,MINDIV);
+    char *srcip;
+    char *destip;
+    char *dname;
+
+    p = &players[whofrom];
+
+    snprintf (dirname, NAME_MAX, "%s/ip/ignore/by-ip", LOCALSTATEDIR);
+
+    if (!(dir = opendir (dirname))) {
+	pmessage (whofrom, MINDIV, addr, "Sorry, not able to get list of ignores");
+	ERROR (1,("Not able to opendir(%s) and retrieve ignore list\n", dirname));
+	return;
+    }
+
+    pmessage (whofrom, MINDIV, addr, "You are currently %s the following players:", (igntype == IGNORING) ? "ignoring" : "being ignored by");
+
+    while ((dirent = readdir (dir)))
+    {
+        ignmask = 0;
+	msg[0] = '\0';
+	dname = strdup (dirent->d_name);
+        srcip = strtok (dname, "-");
+        destip = strtok (NULL, "-");
+
+	if ((srcip == NULL) || (destip == NULL))
+	    continue;
+
+	if (!strcmp ((igntype == IGNORING) ? srcip : destip, p->p_ip)) {
+	    slot = find_slot_by_ip ((igntype == IGNORING) ? destip : srcip, 0);
+	    if (slot == -1) {
+		strcat (msg, "  ");
+	    } else {
+		other = &players[slot];
+		sprintf (msg, "%s", other->p_mapchars);
+	    }
+
+	    sprintf (msg, "%s %-15s ", msg, (igntype == IGNORING) ? destip : srcip);
+	    sprintf (filename, "%s/%s", dirname, dirent->d_name);
+	    ignorefile = fopen (filename, "r");
+	    if (ignorefile == NULL) {
+		pmessage (whofrom, MINDIV, addr, "Unable to get ignore settings");
+		ERROR (1,("Not able to fopen(%s) and retrieve ignore value\n", filename));
+                free (dname);
+		continue;
+	    }
+	    fscanf (ignorefile, "%d\n", &ignmask);
+	    fclose (ignorefile);
+	    if (ignmask == 0) {
+		free (dname);
+		continue;
+	    }
+	    if (ignmask & MINDIV) {
+		strcat (msg, "Indiv ");
+	    }
+	    if (ignmask & MTEAM) {
+		strcat (msg, "Team ");
+	    }
+	    if (ignmask & MALL) {
+		strcat (msg, "All ");
+	    }
+	    pmessage (whofrom, MINDIV, addr, "%s", msg);
+	    hits++;
+	}
+        free (dname);
+    }
+    closedir (dir);
+    if (hits > 0) {
+        pmessage (whofrom, MINDIV, addr, "%d players are %s.", hits, (igntype == IGNORING) ? "being ignored by you" : "ignoring you");
+    } else {
+        pmessage (whofrom, MINDIV, addr, "No entries found.");
+    return;
+    }
 }
 
 
