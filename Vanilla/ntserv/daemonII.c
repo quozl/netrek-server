@@ -2825,9 +2825,9 @@ static void udsurrend(void)
             }
             if ((teams[t].te_surrender % 5) == 0 ||
                 teams[t].te_surrender < 5) {
-                pmessage(0, MALL, "GOD->ALL", "The %s %s %d minutes remaining.",
+                pmessage(0, MALL, "GOD->ALL", "The %s %s %d minute%s remaining.",
                         team_name(t), team_verb(t),
-                        teams[t].te_surrender);
+                        teams[t].te_surrender, (teams[t].te_surrender == 1) ? "" : "s");
             }
             if ((teams[t].te_surrender % 5) == 0) {
                 pmessage(0, MALL, "GOD->ALL", "%d planets will sustain the empire.  %d suspends countdown.",
@@ -3869,14 +3869,14 @@ static void checkgen(int loser, struct player *winner)
         /* start the clock 1/27/92 TC */
         int minutes = binconfirm ? SURRLENGTH : SURRLENGTH*2/3;
         blog_printf("racial", "%s collapsing\n\n"
-                    "The %s %s %d minutes before the empire collapses.  "
+                    "The %s %s %d minute%s before the empire collapses.  "
                     "%d planets are needed to sustain the empire.",
                     team_name(loser), team_name(loser), team_verb(loser),
-                    minutes, SURREND);
+                    minutes, (minutes == 1) ? "" : "s", SURREND);
         pmessage(0, MALL, " ", " ");
         pmessage(0, MALL, "GOD->ALL",
-                "The %s %s %d minutes before the empire collapses.",
-                team_name(loser), team_verb(loser), minutes);
+                "The %s %s %d minute%s before the empire collapses.",
+                team_name(loser), team_verb(loser), minutes, (minutes == 1) ? "" : "s");
         pmessage(0, MALL, "GOD->ALL",
                 "%d planets are needed to sustain the empire.",
                 SURREND);

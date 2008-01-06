@@ -834,16 +834,16 @@ void do_time_msg(char *comm, struct message *mess)
     case TE_SURRENDER_PAUSE_OFF:
       remaining = 60 - ((context->frame - teams[t].te_surrender_frame) / fps);
       if (remaining < 50 && remaining > 0) {
-        pmessage(who, MINDIV, addr, "The %s have %d minutes %d seconds left before they surrender.", team_name(t), teams[t].te_surrender-1, remaining);
+        pmessage(who, MINDIV, addr, "The %s have %d minute%s %d second%s left before they surrender.", team_name(t), teams[t].te_surrender-1, (teams[t].te_surrender-1 == 1) ? "" : "s", remaining, (remaining == 1) ? "" : "s");
       } else {
-        pmessage(who, MINDIV, addr, "The %s have %d minutes left before they surrender.", team_name(t), teams[t].te_surrender);
+        pmessage(who, MINDIV, addr, "The %s have %d minute%s left before they surrender.", team_name(t), teams[t].te_surrender, (teams[t].te_surrender == 1) ? "" : "s");
       }
       break;
     case TE_SURRENDER_PAUSE_ON_TOURN:
-      pmessage(who, MINDIV, addr, "The %s will have %d minutes left when T mode resumes", team_name(t), teams[t].te_surrender);
+      pmessage(who, MINDIV, addr, "The %s will have %d minute%s left when T mode resumes", team_name(t), teams[t].te_surrender, (teams[t].te_surrender == 1) ? "" : "s");
       break;
     case TE_SURRENDER_PAUSE_ON_PLANETS:
-      pmessage(who, MINDIV, addr, "The %s will have %d minutes left if they are down to %d planets", team_name(t), teams[t].te_surrender, surrenderStart);
+      pmessage(who, MINDIV, addr, "The %s will have %d minute%s left if they are down to %d planets", team_name(t), teams[t].te_surrender, (teams[t].te_surrender == 1) ? "" : "s", surrenderStart);
       break;
   }
 }
@@ -852,7 +852,7 @@ void do_time_msg(char *comm, struct message *mess)
 void do_sbtime_msg(char *comm, struct message *mess)
 {
   if (teams[players[mess->m_from].p_team].te_turns > 0)
-	pmessage(mess->m_from, MINDIV, addr_mess(mess->m_from, MINDIV), "Starbase construction will be complete in %d minutes.", teams[players[mess->m_from].p_team].te_turns);
+	pmessage(mess->m_from, MINDIV, addr_mess(mess->m_from, MINDIV), "Starbase construction will be complete in %d minute%s.", teams[players[mess->m_from].p_team].te_turns, (teams[players[mess->m_from].p_team].te_turns == 1) ? "" : "s");
   else
 	pmessage(mess->m_from, MINDIV, addr_mess(mess->m_from, MINDIV), "Your Starbase is available.");
 }
