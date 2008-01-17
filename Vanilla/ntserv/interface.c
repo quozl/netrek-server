@@ -510,9 +510,9 @@ void do_refit(int type)
     } 
 
     if (((me->p_ship.s_type != STARBASE) && lame_refit) || ((me->p_ship.s_type == STARBASE) && lame_base_refit)) {
-	damageFactor=.75;
+	damageFactor = .75;
     } else {
-	damageFactor=.25;
+	damageFactor = .25;
     }
 
     if ((me->p_damage > ((float)me->p_ship.s_maxdamage)*damageFactor) ||
