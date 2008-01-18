@@ -745,8 +745,10 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
         srcip = strtok(dname, "-");
         destip = strtok(NULL, "-");
 
-	if ((srcip == NULL) || (destip == NULL))
-	    continue;
+        if ((srcip == NULL) || (destip == NULL)) {
+            free(dname);
+            continue;
+        }
 
         if (!strcmp((igntype == IGNORING) ? srcip : destip, p->p_ip)) {
             slot = find_slot_by_ip((igntype == IGNORING) ? destip : srcip, 0);
@@ -794,8 +796,7 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
         pmessage(whofrom, MINDIV, addr, "%d players are %s.", hits,
                  (igntype == IGNORING) ? "being ignored by you" : "ignoring you");
     } else {
-        pmessage (whofrom, MINDIV, addr, "No entries found.");
-    return;
+        pmessage(whofrom, MINDIV, addr, "No entries found.");
     }
 }
 
