@@ -1,5 +1,3 @@
-$Id: README.LTD,v 1.1 2005/03/21 05:23:34 jerub Exp $
-
 Leonard/Tom/Dave (LTD) Extended Player Statistics
 Dave Ahn <ahn@users.sourceforge.net>
 
@@ -117,20 +115,20 @@ used to build your server:
 clean' followed by 'make'.  If the configure script is automatically
 invoked, you may have to rerun configure with the appropriate args and
 rebuild everything.  Be sure to check config.h after configure is
-finished.
+finished, to make sure LTD_STATS is defined.
 
 6. Type 'make install' to install your server binaries.
 
-7. Copy the Vanilla/tools/ltd_convert program to your runtime tools/
-directory.
+7. Copy the Vanilla/tools/ltd_convert program to your runtime
+lib/tools/ directory.
 
-8. Type "tools/ltd_convert .players .players.new" and check the outout
-for error messages.
+8. Change directory to the server root, and type "ltd_convert
+var/players var/players.new" then check the output for error messages.
 
-9. Type "tools/ltd_dump .players.new" and verify the output.
+9. Type "ltd_dump var/players.new" and verify the output.
 
-10. Replace the old ".players" DB file with the ".players.new" file.
-Do not change the other game state files (such as .planets).
+10. Replace the old "var/players" DB file with the "var/players.new"
+file.  Do not change the other game state files (such as planets).
 
 11. Start the Vanilla server, login and check to make sure things are
 running OK.
