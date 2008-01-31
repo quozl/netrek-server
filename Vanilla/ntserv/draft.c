@@ -393,6 +393,8 @@ void inl_draft_begin()
   int h, i;
   struct player *j;
 
+  status->gameup &= ~GU_INL_DRAFTED;
+
   context->inl_draft = INL_DRAFT_MOVING_TO_POOL;
   context->inl_pool = 0;
   context->inl_home_pick = 0;

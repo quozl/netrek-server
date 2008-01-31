@@ -1199,7 +1199,7 @@ int do_confine(char *comm, struct message *mess)
 	inl_stat.flags &= ~(S_CONFINE);
 
       pmessage(0, MALL, inl_from,
-	       "%s team (%s) has toggled confine OFF (confine is an OR function)",
+	       "%s team (%s) has toggled confine OFF",
 	       inl_teams[num].t_name,
 	       players[who].p_mapchars);
     }
@@ -1209,7 +1209,7 @@ int do_confine(char *comm, struct message *mess)
       inl_stat.flags |= S_CONFINE;
 
       pmessage(0, MALL, inl_from,
-	       "%s team (%s) has toggled confine ON (confine is an OR function)",
+	       "%s team (%s) has toggled confine ON",
 	       inl_teams[num].t_name,
 	       players[who].p_mapchars);
     }

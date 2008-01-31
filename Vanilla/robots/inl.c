@@ -431,7 +431,7 @@ inlmove()
 
   update_sys_defaults();
 
-  if (inl_stat.flags & S_CONFINE && !(inl_stat.flags & S_DRAFT))
+  if (inl_stat.flags & S_CONFINE && (!(inl_stat.flags & S_DRAFT) || (status->gameup & GU_INL_DRAFTED)))
     inl_confine();
   else
     inl_unconfine();
