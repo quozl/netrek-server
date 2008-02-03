@@ -717,15 +717,15 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
     int ignmask = 0;
     int slot = -1;
     int hits = 0;
-    char dirname[NAME_MAX];
+    char dirname[FNAMESIZE];
     char msg[MSG_LEN];
-    char filename[NAME_MAX];
+    char filename[FNAMESIZE];
     char *addr = addr_mess(whofrom,MINDIV);
     char *dname, *srcip, *destip;
 
     p = &players[whofrom];
 
-    snprintf(dirname, NAME_MAX, "%s/ip/ignore/by-ip", LOCALSTATEDIR);
+    snprintf(dirname, FNAMESIZE, "%s/ip/ignore/by-ip", LOCALSTATEDIR);
 
     if (!(dir = opendir(dirname))) {
         pmessage(whofrom, MINDIV, addr,
