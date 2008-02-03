@@ -36,6 +36,11 @@
 
 int debug=0;
 
+/* define the name of the moderation bot - please note that due to the way */
+/* messages are handled and the formatting of those messages care must be  */
+/* taken to ensure that the bot name does not exceed 5 characters.  If the */
+/* desired name is larger than 5 chars the message routines will need  to  */
+/* have their formatting and contents corrected */
 char *roboname = "Kathy";
 
 #define NUMNAMES        20
@@ -150,7 +155,7 @@ main(argc, argv)
        */
 
     robonameset(me); /* set the robot@nowhere fields */
-    enter(team, 0, pno, class, "Kathy"); /* was BATTLESHIP 8/9/91 TC */
+    enter(team, 0, pno, class, roboname); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;                              /* So robot stats don't get saved */
     me->p_flags |= (PFROBOT | PFCLOAK);          /* Mark as a robot and hide it */
@@ -203,7 +208,7 @@ void checkmess()
 
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != POBSERV){  /*So I'm not alive now...*/
-        ERROR(2,("ERROR: Kathy died??\n"));
+        ERROR(2,("ERROR: %s died??\n", roboname));
         cleanup(0);   /*Kathy is dead for some unpredicted reason like xsg */
     }
 
@@ -513,13 +518,16 @@ static int totalRobots(int team)
 
 static void stop_this_bot(struct player *p, char *why)
 {
+    char msg[16];
+
     p->p_ship.s_type = STARBASE;
     p->p_whydead=KQUIT;
     p->p_explode=10;
     p->p_status=PEXPLODE;
     p->p_whodead=0;
+    sprintf (msg, "%s->ALL", roboname);
 
-    pmessage(0, MALL, "Kathy->ALL", 
+    pmessage(0, MALL, msg, 
         "Robot %s (%2s) was ejected%s",
         p->p_name, p->p_mapchars, why);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
@@ -548,12 +556,14 @@ static void save_carried_armies(void)
 static void save_armies(struct player *p)
 {
   int i, k;
+  char msg[16];
+  sprintf (msg, "%s->ALL", roboname);
 
   k=10*(remap[p->p_team]-1);
   if (k>=0 && k<=30) for (i=0; i<10; i++) {
     if (planets[i+k].pl_owner==p->p_team) {
       planets[i+k].pl_armies += p->p_armies;
-      pmessage(0, MALL, "Kathy->ALL", "%s's %d armies placed on %s",
+      pmessage(0, MALL, msg, "%s's %d armies placed on %s",
                      p->p_name, p->p_armies, planets[k+i].pl_name);
       break;
     }
@@ -666,12 +676,15 @@ static void cleanup(int terminate)
 {
     struct player *j;
     int i, retry;
+    char msg[16];
+
+    sprintf (msg, " because %s is cleaning up.", roboname);
 
     do {
         /* terminate all robots */
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
             if ((j->p_status == PALIVE) && j != me && is_robot(j))
-                stop_this_bot(j, " because Kathy is cleaning up.");
+                stop_this_bot(j, msg);
         }
 
         USLEEP(2000000);
@@ -835,8 +848,8 @@ static void exitRobot(void)
         }
         else {
             messAll(255,roboname,"#");
-            messAll(255,roboname,"#  Kathy is tired.  Pre-T Entertainment is over "
-                    "for now");
+            messAll(255,roboname,"#  %s is tired.  Pre-T Entertainment is over "
+                    "for now", roboname);
             messAll(255,roboname,"#");
         }
     }
