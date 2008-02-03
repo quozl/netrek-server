@@ -793,7 +793,8 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
     }
     closedir(dir);
     if (hits > 0) {
-        pmessage(whofrom, MINDIV, addr, "%d players are %s.", hits,
+        pmessage(whofrom, MINDIV, addr, "%d player%s %s.", hits,
+                 (hits == 1) ? " is" : "s are",
                  (igntype == IGNORING) ? "being ignored by you" : "ignoring you");
     } else {
         pmessage(whofrom, MINDIV, addr, "No entries found.");
