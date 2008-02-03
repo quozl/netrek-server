@@ -563,8 +563,9 @@ static void save_armies(struct player *p)
   if (k>=0 && k<=30) for (i=0; i<10; i++) {
     if (planets[i+k].pl_owner==p->p_team) {
       planets[i+k].pl_armies += p->p_armies;
-      pmessage(0, MALL, msg, "%s's %d armies placed on %s",
-                     p->p_name, p->p_armies, planets[k+i].pl_name);
+      pmessage(0, MALL, msg, "%s's %d arm%s placed on %s",
+                     p->p_name, p->p_armies, (p->p_armies == 1) ? "y" : "ies",
+                     planets[k+i].pl_name);
       break;
     }
   }
