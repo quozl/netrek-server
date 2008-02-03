@@ -898,6 +898,7 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
         j->p_ntorp = 0;
         j->p_nplasmatorp = 0;
         j->p_armies = 0;
+        p_heal(j);
         if (wflag == 1)
             j->p_hostile = (FED | ROM | ORI | KLI);         /* angry */
         else if (wflag == 2)
