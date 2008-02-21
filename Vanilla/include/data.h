@@ -118,7 +118,6 @@ extern fd_set	inputMask;
 extern int	nextSocket;
 extern char	*host;
 extern char	*ip;
-extern int	noressurect;
 extern int	userVersion, userUdpVersion;
 extern int	clue;
 extern int	clueverified;

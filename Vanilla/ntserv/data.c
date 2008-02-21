@@ -72,7 +72,6 @@ fd_set	inputMask;
 int 	nextSocket;
 char	*host;
 char	*ip;
-int 	noressurect=0;
 int	userVersion=0, userUdpVersion=0;
 int	bypassed=0;
 int	top_armies=30;		/*initial army count default */

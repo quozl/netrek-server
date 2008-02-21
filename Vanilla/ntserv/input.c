@@ -62,54 +62,6 @@ static void setflag()
 #endif /*PING*/
 }
 
-static int resurrect(void)
-{
-  register int i;
-
-  sigpipe_suspend(SIGALRM);
-#ifndef SCO /* SCO doesn't have SIGIO, so why bother ignoring it? */
-  SIGNAL(SIGIO, SIG_IGN);
-#endif
-
-  if (!testtime) {
-    ERROR(2,("%s: input() commences resurrection\n", me->p_mapchars));
-  }
-
-  commMode = COMM_TCP;
-  if (udpSock >= 0)
-    closeUdpConn();
-
-  /* for next thirty seconds, we try to restore connection */
-  shutdown(sock, 2);
-  sock= -1;
-  for (i=0;; i++) {
-    me->p_ghostbuster = 0;
-    if (testtime == 1)
-      sleep(1);
-    else
-      sleep(5);
-    if (connectToClient(host, nextSocket)) break;
-    if (((i>=5) && testtime) || 
-	((i>=6) && (!testtime))) {
-      ERROR(2,("%s: input() giving up\n", me->p_mapchars));
-      freeslot(me);
-      exit(0);
-    }
-  }
-  if (testtime) {
-    me->p_whydead = KQUIT;
-    me->p_status = PEXPLODE;
-    ERROR(3,("%s: user attempted to used old reserved.c\n", me->p_mapchars));
-    new_warning(UNDEF,"Only RSA clients are valid. Please use a blessed one.");
-  }
-  else {
-    ERROR(2,("%s: resurrected\n", me->p_mapchars));
-    testtime = -1;	/* Do verification after GB  - NBT */
-  }
-  sigpipe_resume(SIGALRM);
-  return 1;
-}
-
 static void gamedown()
 {
   struct badversion_spacket packet;
@@ -139,11 +91,8 @@ void input(void)
     /* Idea:  read from client often, send to client not so often */
     while (living) {
 	if (isClientDead()) {
-	    if (noressurect){
-		freeslot(me);
-		exit(0);
-	    }
-	    resurrect();
+            freeslot(me);
+            exit(0);
 	}
 	if (!(status -> gameup & GU_GAMEOK)) panic();
 	/* wait for activity on network socket or next daemon update */

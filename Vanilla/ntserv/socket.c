@@ -1815,7 +1815,6 @@ static void handleSocketReq(struct socket_cpacket *packet)
 /*ARGSUSED*/
 static void handleByeReq(struct bye_cpacket *packet)
 {
-    noressurect=1;
 }
 
 int checkVersion(void)

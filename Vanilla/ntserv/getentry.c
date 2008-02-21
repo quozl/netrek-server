@@ -58,80 +58,8 @@ void getEntry(int *team, int *stype)
 	}
 	socketPause(1);
 	readFromClient();
-	if (isClientDead()) {
-	    int i;
-
-	    if (noressurect) exitGame();
-      	    ERROR(2,("%s: getentry() commences resurrection\n",
-        		me->p_mapchars));
-
-	    /* UDP fail-safe */
-	    commMode = COMM_TCP;
-	    if (udpSock >= 0)
-		closeUdpConn();
-
-	    /* For next two minutes, we try to restore connection */
-	    shutdown(sock, 2);
-	    sock= -1;
-	    for (i=0;; i++) {
-		switch(me->p_status) {
-		case PFREE:
-                    ERROR(1,("%s: getentry() unfreeing a PFREE", 
-			     me->p_mapchars));
-		    me->p_status=PDEAD;
-		    me->p_explode=600;
-		    break;
-		case PALIVE:
-		    me->p_ghostbuster=0;
-		    break;
-                case POBSERV:
-                  me->p_status = PDEAD;
-		case PDEAD:
-		    me->p_explode=600;
-		    break;
-		default:
-		    me->p_explode=600;
-		    me->p_ghostbuster=0;
-		    break;
-		}
-		sleep(5);
-		if (connectToClient(host, nextSocket)) break;
-		if (i>=11) {
-		    ERROR(2,("%s: getentry() giving up\n", me->p_mapchars)); 
-		    switch(me->p_status) {
-		    case PFREE:
-			break;
-		    case PALIVE:
-			me->p_ghostbuster=1000000; 
-			break;
-                    case POBSERV:
-                      me->p_status = PDEAD;
-		    case PDEAD:
-			me->p_explode=0;
-			break;
-		    default:
-			me->p_explode=0;
-			me->p_ghostbuster=1000000;
-			break;
-		    }
-		    exitGame();
-		}
-	    }
-	    ERROR(2,("%s: getentry() resurrected\n", me->p_mapchars));
-
-            if(me->p_process != getpid()){
-                /* whoops, co-pilot.  We're outa here */
-	        ERROR(1,("%s: getentry() exiting a co-pilot\n",
-			 me->p_mapchars));
-                (void) forceShutdown(-10);
-            }
-
-	    testtime = -1;		/* do verification after GB  - NBT */
-	    teamPick = -1;
-	    updateSelf(0);
-	    updateShips();
-	    flushSockBuf();
-	}
+	if (isClientDead())
+	    exitGame();
 	if (teamPick != -1) {
 	    if (teamPick < 0 || teamPick > 3) {
 		new_warning(UNDEF,"Get real!");

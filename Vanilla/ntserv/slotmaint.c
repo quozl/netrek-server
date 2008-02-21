@@ -38,10 +38,12 @@ int freeslot(struct player *who)
     who->p_status      = PFREE;
     who->p_flags       = 0;
     who->p_ghostbuster = 0;
-/*	Dangerous if the player get resurrected 
+#ifdef LTD_STATS
+    ltd_reset(who);
+#else
     MZERO(&who->p_stats, sizeof(struct stats));  
     who->p_stats.st_tticks=1;
-*/
+#endif
     queues[who->w_queue].free_slots++;
     MZERO(who->voting, sizeof(time_t) * PV_TOTAL);
     who->p_process     = 0;
