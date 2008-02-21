@@ -1003,9 +1003,10 @@ struct generic_32_spacket {
     short	repair_time;	/* server estimate of repair time in seconds */
     short	pl_orbit;	/* what planet player orbiting, -1 if none */
     char	pad1[25];	/* TODO: consider using a union */
+};
 #define GENERIC_32_VERSION 'a'
 #define GENERIC_32_LENGTH 32
-};
+#define COST_GENERIC_32 (F_sp_generic_32 ? GENERIC_32_LENGTH : 0)
 
 /* versioning instructions: we start with version 'a', and each time a
    field is added increment the version and reduce the pad size,

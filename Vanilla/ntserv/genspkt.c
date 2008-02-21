@@ -2185,7 +2185,7 @@ void updatePlayerStats(void)
     struct stats_spacket   *stats;
     struct stats_s_spacket *s_stats = &singleStats;
     struct player          *pl;
-    static int		   lastpno=MAXPLAYER; 
+    static int		   lastpno = -1;
 
     /* Variables for stats */
     int    kills, losses, armsbomb, planets;

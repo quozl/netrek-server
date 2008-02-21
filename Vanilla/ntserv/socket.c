@@ -605,9 +605,7 @@ int isClientDead(void)
 
 void updateClient(void)
 {
-    int cost_generic_32 = (F_sp_generic_32 ? SP_GENERIC_32 : 0);
-    int threshold_1 = 60 + cost_generic_32;
-    int threshold_2 = 75 + cost_generic_32;
+    int threshold_1 = 60 + COST_GENERIC_32;
 
 #ifdef SHORT_THRESHOLD
     static int skip = 0;	/* If skip is set we skip next update */
@@ -657,9 +655,7 @@ void updateClient(void)
 	    updateStatus(TRUE);
 	else
 	    updateStatus(FALSE);  /* Update only if status->torn changes */
-	if(F_full_direction_resolution || F_full_weapon_resolution
-	  || SizeOfUDPUpdate() < threshold_2)
-	    updatePlayerStats();
+	updatePlayerStats();
     } else {
 	updateTorps();
 	updatePlasmas();
