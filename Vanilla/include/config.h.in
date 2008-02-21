@@ -260,7 +260,7 @@
 #define SELF_RESET
 
                                 /* SHORT_THRESHOLD - For Short Packets */
-#define SHORT_THRESHOLD
+#undef SHORT_THRESHOLD
 
                                 /* SURRENDER_SHORT - Cut surrender time in
                                                      half */
