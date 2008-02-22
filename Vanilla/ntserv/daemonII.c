@@ -242,7 +242,7 @@ int main(int argc, char **argv)
 #endif
         players[i].p_no=i;
         players[i].p_ups = defups;
-        players[i].p_fpu = 1;
+        players[i].p_fpu = fps / defups;
         MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
     }
 
