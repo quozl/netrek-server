@@ -35,6 +35,11 @@
 
 int debug=0;
 
+/* define the name of the moderation bot - please note that due to the way */
+/* messages are handled and the formatting of those messages care must be  */
+/* taken to ensure that the bot name does not exceed 5 characters.  If the */
+/* desired name is larger than 5 chars the message routines will need to   */
+/* have their formatting and contents corrected */
 char *roboname = "Merlin";
 
 #define NUMNAMES        20

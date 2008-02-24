@@ -39,7 +39,7 @@ int debug=0;
 /* define the name of the moderation bot - please note that due to the way */
 /* messages are handled and the formatting of those messages care must be  */
 /* taken to ensure that the bot name does not exceed 5 characters.  If the */
-/* desired name is larger than 5 chars the message routines will need  to  */
+/* desired name is larger than 5 chars the message routines will need to   */
 /* have their formatting and contents corrected */
 char *roboname = "Kathy";
 
@@ -525,7 +525,7 @@ static void stop_this_bot(struct player *p, char *why)
     p->p_explode=10;
     p->p_status=PEXPLODE;
     p->p_whodead=0;
-    sprintf (msg, "%s->ALL", roboname);
+    sprintf(msg, "%s->ALL", roboname);
 
     pmessage(0, MALL, msg, 
         "Robot %s (%2s) was ejected%s",
@@ -679,7 +679,7 @@ static void cleanup(int terminate)
     int i, retry;
     char msg[16];
 
-    sprintf (msg, " because %s is cleaning up.", roboname);
+    sprintf(msg, " because %s is cleaning up.", roboname);
 
     do {
         /* terminate all robots */
