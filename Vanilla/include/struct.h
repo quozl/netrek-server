@@ -199,11 +199,7 @@ struct context {
 #define KBADBIN         0x0f            /* bad binary */
 #define KTORP2          0x10            /* killed by detted torps */
 #define KSHIP2          0x11            /* chain-reaction explosions */
-#ifdef WINSMACK
 #define KPLASMA2        0x12            /* killed by zapped plasma */
-#else
-#define KPLASMA2	KPLASMA		/* killed by a plasma */
-#endif
 
 #ifdef STURGEON
 #define UPG_TEMPSHIELD	0

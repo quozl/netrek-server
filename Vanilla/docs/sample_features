@@ -102,6 +102,9 @@ SHOW_VISIBILITY_RANGE         S       OFF
 # Flag packet that sends abbreviated flags (cloak, shield, alive) for all
 # players every update for those who use SP_PLAYER instead of SP_S_PLAYER.
 SP_FLAGS_ALL            S       ON
+# Send additional p_whydead states (KSHIP2, KTORP2, KPLASMA2) to clients which
+# can handle those cases.
+WHY_DEAD_2		S	ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.

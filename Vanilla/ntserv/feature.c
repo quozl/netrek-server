@@ -61,6 +61,7 @@ struct feature_var feature_vars[] = {
    { "TURN_KEYS",		&F_turn_keys},
    { "SHOW_VISIBILITY_RANGE",	&F_show_visibility_range},
    { "SP_FLAGS_ALL",		&F_flags_all},
+   { "WHY_DEAD_2",		&F_why_dead_2},
    { NULL, NULL },
 };
 

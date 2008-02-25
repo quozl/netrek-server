@@ -365,6 +365,7 @@ extern int F_show_cloakers;
 extern int F_turn_keys;
 extern int F_show_visibility_range;
 extern int F_flags_all;
+extern int F_why_dead_2;
 
 extern char Cambot[FNAMESIZE];
 extern char Cambot_out[FNAMESIZE];

@@ -2125,9 +2125,12 @@ static void p_explosion(struct player *player, int why, int who)
     /* damage resulting from ship explosion is done in subsequent frames */
 }
 
-static int t_whydead(struct torp *torp)
+static int t_whydead(struct player *k, struct torp *torp)
 {
-    return torp->t_type == TPHOTON ? KTORP : KPLASMA;
+    if (F_why_dead_2 && (k->p_no != torp->t_owner))
+        return torp->t_type == TPHOTON ? KTORP2 : KPLASMA2;
+    else
+        return torp->t_type == TPHOTON ? KTORP : KPLASMA;
 }
 
 #ifdef STURGEON
@@ -2314,7 +2317,7 @@ static void t_explosion(struct torp *torp)
           k = player_(torp->t_whodet);
         else 
           k = player_(torp->t_owner);
-        p_explosion(j, t_whydead(torp), k->p_no);
+        p_explosion(j, t_whydead(k, torp), k->p_no);
         if ((k->p_team != j->p_team) || 
             ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
         {
@@ -3637,8 +3640,10 @@ static void blowup(struct player *sh)
                   k = &players[sh->p_whodead]; 
                 else
                   k = sh;
-
-                p_explosion(j, KSHIP, k->p_no);
+                if (F_why_dead_2 && k->p_no != sh->p_no)
+                    p_explosion(j, KSHIP2, k->p_no);
+                else
+                    p_explosion(j, KSHIP, k->p_no);
 
                 if ((k->p_team != j->p_team) ||
                     ((k->p_team == j->p_team) && !(j->p_flags & PFPRACTR))){
@@ -4089,9 +4094,7 @@ char *whydeadmess[] = {
   "[bad binary]",      /* KBADBIN      */
   "[detted photon]",   /* KTORP2       */
   "[chain explosion]", /* KSHIP2       */
-#ifdef WINSMACK
   "[zapped plasma]",   /* KPLASMA2     */
-#endif
   " "};
 #if 0
 #define numwhymess (sizeof(whydeadmess)/sizeof(char *))
