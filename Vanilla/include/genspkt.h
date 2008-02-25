@@ -19,3 +19,5 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur);
 void sendGeneric32Packet(void);
 void sendFeatureFps();
 void sendFeatureUps();
+void sendLameRefit();
+void sendLameBaseRefit();

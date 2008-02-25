@@ -2469,6 +2469,30 @@ sendFeatureUps()
     strcpy(fp.name, "UPS");
     sendClientPacket(&fp);
 }
+void
+sendLameRefit()
+{
+    struct feature_spacket fp;
+    memset(&fp, 0, sizeof(struct feature_spacket));
+    fp.type = SP_FEATURE;
+    fp.feature_type = 'S';
+    fp.value = htonl(lame_refit);
+    strcpy(fp.name, "LAME_REFIT");
+    sendClientPacket(&fp);
+}
+
+void
+sendLameBaseRefit()
+{
+    struct feature_spacket fp;
+    memset(&fp, 0, sizeof(struct feature_spacket));
+    fp.type = SP_FEATURE;
+    fp.feature_type = 'S';
+    fp.value = htonl(lame_base_refit);
+    strcpy(fp.name, "LAME_BASE_REFIT");
+    sendClientPacket(&fp);
+}
+
 #endif /* FEATURE_PACKETS */
 
 /*

@@ -2227,6 +2227,8 @@ static void handleFeature(struct feature_cpacket *cpacket)
     if (!was) {
         sendFeatureFps();
         sendFeatureUps();
+        sendLameRefit();
+        sendLameBaseRefit();
     }
 }
 
