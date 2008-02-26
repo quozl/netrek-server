@@ -2446,51 +2446,42 @@ sendFeature(struct feature_spacket *packet)
     sendClientPacket((CVOID) packet);
 }
 
-void
-sendFeatureFps()
+static void
+send_server_feature(char *name, int value)
 {
     struct feature_spacket fp;
     memset(&fp, 0, sizeof(struct feature_spacket));
     fp.type = SP_FEATURE;
     fp.feature_type = 'S';
-    fp.value = htonl(fps);
-    strcpy(fp.name, "FPS");
+    fp.value = htonl(value);
+    strcpy(fp.name, name);
     sendClientPacket(&fp);
+}
+
+void
+sendFeatureFps()
+{
+    send_server_feature("FPS", fps);
 }
 
 void
 sendFeatureUps()
 {
-    struct feature_spacket fp;
-    memset(&fp, 0, sizeof(struct feature_spacket));
-    fp.type = SP_FEATURE;
-    fp.feature_type = 'S';
-    fp.value = htonl(me == NULL ? defups : me->p_ups);
-    strcpy(fp.name, "UPS");
-    sendClientPacket(&fp);
+    send_server_feature("UPS", me == NULL ? defups : me->p_ups);
 }
+
 void
 sendLameRefit()
 {
-    struct feature_spacket fp;
-    memset(&fp, 0, sizeof(struct feature_spacket));
-    fp.type = SP_FEATURE;
-    fp.feature_type = 'S';
-    fp.value = htonl(lame_refit);
-    strcpy(fp.name, "LAME_REFIT");
-    sendClientPacket(&fp);
+    if (lame_refit != 1)
+        send_server_feature("LAME_REFIT", lame_refit);
 }
 
 void
 sendLameBaseRefit()
 {
-    struct feature_spacket fp;
-    memset(&fp, 0, sizeof(struct feature_spacket));
-    fp.type = SP_FEATURE;
-    fp.feature_type = 'S';
-    fp.value = htonl(lame_base_refit);
-    strcpy(fp.name, "LAME_BASE_REFIT");
-    sendClientPacket(&fp);
+    if (lame_base_refit != 1)
+        send_server_feature("LAME_BASE_REFIT", lame_base_refit);
 }
 
 #endif /* FEATURE_PACKETS */
