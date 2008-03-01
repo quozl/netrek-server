@@ -24,7 +24,7 @@ L_OBJS = advertise.o alarm.o balance.o bans.o bay.o blog.o \
 	openmem.o orbit.o \
 	phaser.o ping.o plasma.o \
 	rsa_key.o reserved.o \
-	salt.o slotmaint.o sigpipe.o sintab.o smessage.o socket.o \
+	salt.o slotmaint.o sigpipe.o sintab.o smessage.o socket.o solicit.o \
 	startrobot.o sturgeon.o sysdefaults.o \
 	torp.o transwarp.o \
 	util.o \

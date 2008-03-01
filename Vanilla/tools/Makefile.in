@@ -35,14 +35,14 @@ SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
 	${srcdir}/sortdb.c \
 	${srcdir}/ntpasswd.c \
 	${srcdir}/setgame.c ${srcdir}/setplanet.c ${srcdir}/setteam.c \
-	${srcdir}/setship.c
+	${srcdir}/setship.c ${srcdir}/delist.c
 
 EXECS =	ban getpath blotpassword loadchecker mess message newscores planets players \
 	scores \
         setgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
         ntpasswd ltd_dump ltd_convert nuke trekon metaget \
-	setgame setplanet setteam setship
+	setgame setplanet setteam setship delist
 
 all: $(PMAKE) $(EXECS)
 
@@ -97,6 +97,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) setplanet $(DESTDIR)$(LIBDIR)/tools/setplanet
 	$(INSTALLPROG) $(INSTALLOPTS) setteam $(DESTDIR)$(LIBDIR)/tools/setteam
 	$(INSTALLPROG) $(INSTALLOPTS) setship $(DESTDIR)$(LIBDIR)/tools/setship
+	$(INSTALLPROG) $(INSTALLOPTS) delist $(DESTDIR)$(LIBDIR)/tools/delist
 	$(INSTALLPROG) $(INSTALLOPTS) ban $(DESTDIR)$(LIBDIR)/tools/ban
 	$(INSTALLPROG) $(INSTALLOPTS) getpath $(DESTDIR)$(LIBDIR)/tools/getpath
 	$(INSTALLPROG) $(INSTALLOPTS) setpath $(DESTDIR)$(LIBDIR)/tools/setpath
@@ -196,6 +197,9 @@ setteam: setteam.o $(OBJS)
 
 setship: setship.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setship.o $(OBJS) $(LIBS)
+
+delist: delist.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} delist.o $(OBJS) $(LIBS)
 
 ban: ban.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS)

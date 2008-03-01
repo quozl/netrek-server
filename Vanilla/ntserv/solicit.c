@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <time.h>
 #include <sys/types.h>
@@ -405,4 +406,38 @@ void solicit(int force)
       strcpy(m->prior, packet);
     }
   }
+}
+
+void solicit_delist(char *host, char *ours)
+{
+  int i;
+  char packet[MAXMETABYTES];
+  char *here = packet;
+  struct metaserver *m = (struct metaserver *) calloc(1, sizeof(struct metaserver));
+
+  strcpy(m->host, host);
+  m->port = 3521;
+  strcpy(m->ours, ours);
+  udp_attach(m);
+
+  sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
+          /* version */   "b",
+          /* address */   m->ours,
+          /* type    */   "B",
+          /* port    */   2592,
+          /* observe */   2593,
+          /* players */   -1,
+          /* free    */   0,
+          /* t-mode  */   "n",
+          /* RSA     */   "n",
+          /* full    */   "y",
+          /* comment */   "delist"
+          );
+  here += strlen(here);
+  for (i=0; i<8; i++) {
+    udp_tx(m, packet, here - packet);
+    fprintf(stderr, "tx ");
+    sleep(1);
+  }
+  fprintf(stderr, "\n");
 }

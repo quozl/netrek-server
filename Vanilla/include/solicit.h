@@ -44,3 +44,4 @@ struct metaserver
 };
 
 void solicit(int force);
+void solicit_delist(char *meta, char *host);
