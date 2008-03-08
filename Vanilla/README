@@ -12,5 +12,3 @@ send context diffs or subscribe for ongoing discussions.
 Current source is in darcs repository, to obtain it ...
 
 darcs get http://netrek.org/repos/netrek-server
-
-For version, see version.h and patchlevel.h, or make name and run it.
