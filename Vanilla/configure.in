@@ -1,7 +1,7 @@
 dnl	This file is an input file used by the GNU "autoconf" program to
 dnl	generate the file "configure", which is run during Netrek installation
 dnl	to configure the system for the local environment.
-AC_INIT(name.c)
+AC_INIT(ntserv/daemonII.c)
 AC_CONFIG_HEADER(include/config.h)
 AC_PREFIX_DEFAULT("/usr/local/games/netrek-server-vanilla")
 
