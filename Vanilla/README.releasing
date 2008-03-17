@@ -38,6 +38,7 @@ darcs diff -u > tmp.diff
 more tmp.diff
 # commit changes
 darcs record --patch-name="prerelease $VS"
+# optional
 darcs send
 
 # test the build is clean
@@ -82,14 +83,14 @@ cow -h 127.0.0.1
 rm -rf /tmp/$VS /tmp/$PN-$VS
 cd
 
-# debian packaging (from tar.gz)
+# debian packaging (from tar.gz) [not working]
 cd /tmp
 tar xfz $PN-$VS.tar.gz 
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make release
 
-# debian packaging (from darcs)
+# debian packaging (from darcs) [not working]
 cd /tmp
 rm -rf netrek-server-debian-packaging
 darcs get ~/src/darcs/netrek-server netrek-server-debian-packaging
@@ -98,7 +99,7 @@ sh autogen.sh
 ./configure
 make release
 
-# rpm packaging
+# rpm packaging [not working]
 $PN/rpm/tar2rpm
 cp $PN/res-rsa-*.tar.gz /usr/src/redhat/SOURCES
 cd /usr/src/redhat/SPECS
