@@ -1,3 +1,8 @@
+/*! @file bay.c
+    Starbase bay manipulation.
+    Operations on the docking bays of a starbase.
+    */
+
 #include "copyright.h"
 #include "config.h"
 #include <assert.h>
@@ -6,18 +11,26 @@
 #include "data.h"
 #include "util.h"
 
-/* starbase bay functions */
-
-/* convert a docked ship player to the base they are docked to */
+/*! @brief Identify the base a ship is docked to.
+    @warning Checks player::p_flags. Must only be called if a ship is docked.
+    Generates an assertion failure if not.
+    @param me player pointer of docked ship.
+    @return player pointer of base.
+    */
 struct player *bay_owner(struct player *me)
 {
   assert(me->p_flags & PFDOCK);
   return p_no(me->p_dock_with);
 }
 
-/* check all bays for consistency, despite our best efforts it is
-still possible for the bays to be inconsistent, an example is a
-SIGKILL of ntserv */
+/*! @brief Check bays for consistency.
+    @details Iterates through the bays of a base to ensure that each
+    one is either VACANT or points to a ship that is docked to the
+    base.  Despite our best efforts it is still possible for the bays
+    to be inconsistent, an example is a SIGKILL of ntserv.
+    @param base player pointer of base.
+    @return none.
+    */
 void bay_consistency_check(struct player *base)
 {
   int i;
@@ -44,7 +57,12 @@ void bay_consistency_check(struct player *base)
   }
 }
 
-/* claim a specific bay on a base for use by a docking ship */
+/*! @brief Claim a specific bay on a base for docking.
+    @param base player pointer of base.
+    @param me player pointer of docking ship.
+    @param bay_no which bay to claim.
+    @return none.
+    */
 void bay_claim(struct player *base, struct player *me, int bay_no)
 {
   me->p_dock_with = base->p_no;
@@ -52,7 +70,10 @@ void bay_claim(struct player *base, struct player *me, int bay_no)
   base->p_bays[bay_no] = me->p_no;
 }
 
-/* release of a bay by a docked ship */
+/*! @brief Release of a bay by a docked ship.
+    @param me player pointer of potentially docked ship.
+    @return none.
+    */
 void bay_release(struct player *me)
 {
   if (me->p_flags & PFDOCK) {
@@ -65,7 +86,10 @@ void bay_release(struct player *me)
   }
 }
 
-/* release of all bays by a base */
+/*! @brief Release of all bays by a base.
+    @param base player pointer of base.
+    @return none.
+    */
 void bay_release_all(struct player *base)
 {
   int i;
@@ -77,7 +101,10 @@ void bay_release_all(struct player *base)
     }
 }
 
-/* initialise all bays */
+/*! @brief Initialise all bays.
+    @param me player pointer of ship.
+    @return none.
+    */
 void bay_init(struct player *me)
 {
   int i;
@@ -85,11 +112,18 @@ void bay_init(struct player *me)
     me->p_bays[i] = VACANT;
 }
 
+/*! @brief Return closest bay to a position.
+    @details Bays are numbered clockwise from top right (0), bottom
+    right (1), bottom left (2), and top left (3).  See source for
+    ASCII art map of bays.
+    @param base player pointer of base.
+    @return bay_no closest bay number of base.
+    */
 /*
- * Return closest bay according to position.
  * A starbase's bays are      3    0
  * numbered as in this          ()
- * picture:                   2    1                       */
+ * picture:                   2    1
+*/
 int bay_closest(struct player *base, LONG dx, LONG dy)
 {
   bay_consistency_check(base);

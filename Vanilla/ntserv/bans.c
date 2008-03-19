@@ -1,3 +1,8 @@
+/*! @file bans.c
+    Player banning.
+    Provides temporary and permanent banning by IP address.
+    */
+
 #include <stdio.h>
 #include <ctype.h>
 
@@ -13,9 +18,13 @@
 #define FALSE 0
 #endif
 
-/* ban functions */
-
-/* add a ban given a player slot number */
+/*! @brief Add a ban given a player slot number.
+    @details Adds a temporary ban to the next empty slot in the list
+    of bans, reports the action to the error log, and blogs about it.
+    @param who player slot number to be banned.
+    @param by description of who is making the ban.
+    @return status 0 if ban list full, 1 if ban added.
+    */
 int bans_add_temporary_by_player(int who, char *by)
 {
   int i;
@@ -38,7 +47,12 @@ int bans_add_temporary_by_player(int who, char *by)
   return 0;
 }
 
-/* ages all temporary bans by the seconds that have elapsed, game time */
+/*! @brief Age temporary bans.
+    @details Ages all temporary bans by the game time that has
+    elapsed, expiring them as needed.  Blogs about expired bans.
+    @param elapsed time elapsed in seconds.
+    @return none.
+*/
 void bans_age_temporary(int elapsed) {
   int i;
 
@@ -59,16 +73,30 @@ void bans_age_temporary(int elapsed) {
   }
 }
 
-/* identified ban relevant to caller */
+/*! @brief Identified ban relevant to caller.
+    @details A local pointer to the last chosen temporary ban, so that
+    it can be checked rapidly by the wait queue logic without causing
+    a ban list lookup.
+ */
 struct ban *bans_check_temporary_identified;
 
-/* check temporary ban again */
+/*! @brief Check temporary ban again.
+    @details Return the remaining time on the ban most recently
+    identified by bans_check_temporary().  Used to provide a minute by
+    minute countdown to a player connection that was given a wait
+    queue response as a result of their ban.
+    @return remaining time remaining in seconds */
 int bans_check_temporary_remaining()
 {
   return bans_check_temporary_identified->b_remain;
 }
 
-/* check temporary bans voted */
+/*! @brief Check for a temporary ban.
+    @details Given an IP address, check for a temporary ban.  Must be
+    called before bans_check_temporary_remaining() is called.
+    @param ip the IP address in text form, dotted quad.
+    @return result TRUE if banned, FALSE if not.
+*/
 int bans_check_temporary(char *ip)
 {
   int i;
@@ -85,7 +113,14 @@ int bans_check_temporary(char *ip)
   return FALSE;
 }
 
-/* check permanent bans in file (previously in main.c) */
+/*! @brief Check for a permanent ban.
+    @details Check for permanent bans in the banned file.
+    @bug unnecessary action, main.c calls this twice, and so the
+    banned file is opened and closed twice.
+    @param login the login name sent by the client.
+    @param host the host name or IP address of the client.
+    @return result TRUE if banned, FALSE if not.
+    */
 int bans_check_permanent(char *login, char *host)
 {
   FILE  *bannedfile;
