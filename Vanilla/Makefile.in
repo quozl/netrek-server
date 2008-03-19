@@ -97,6 +97,10 @@ lint:
 	cd keycomp; $(MAKE) lint
 	cd tools;   $(MAKE) lint
 
+doxygen:
+	rm -rf html
+	doxygen doxygen.conf
+
 clean:
 	cd ntserv;    $(MAKE) clean
 	cd robots;    $(MAKE) clean
