@@ -6,7 +6,7 @@ server running. Thanks to Micheal Kantner.
 
 The steps are really as easy as the following:
 1)  Ftp everything you need (server, res-rsa, xsg)
-2)  decrypt (rsa-only) and uncompress/gunzip everthing.
+2)  decrypt (rsa-only) and uncompress/gunzip everything.
 3)  Make two directories (you probably already have one of them)
      netrekroot   (you probably have this one)
      netrekroot/serverdir

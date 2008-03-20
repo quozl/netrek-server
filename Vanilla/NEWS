@@ -14,9 +14,9 @@
   * pret, repair/refuel slots on switch to real t-mode
   * pret, fixed "1 armies" issue
   * pret, bot name fixes
-  * Fix confine after a draft has occured
+  * Fix confine after a draft has occurred
   * review LTD_STATS conversion procedure
-  * pet peeve, fix all occurences of "1 minutes"
+  * pet peeve, fix all occurrences of "1 minutes"
   * add ignoring/ignoredby commands
   * util.h - missing function declaration
   * util.c - add find_slot_by_ip function

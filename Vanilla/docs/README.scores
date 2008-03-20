@@ -75,7 +75,7 @@ game.  A player can also get the current score by sending the word
 	INL->ALL  SCORE: FED is winning by planet count [tie break]
 
 Each score is followed by the winning team under that scoring system.
-Here, FED is winning by planet count.  Continous score is tied.  If
+Here, FED is winning by planet count.  Continuous score is tied.  If
 the game were to end immediately, FED would win by the planet count
 tie breaker.  Please see the WINNING CONDITIONS section below on how
 to interpret these messages.
@@ -147,7 +147,7 @@ MOMENTUM scoring mode:
 	Continuous    WIN          loss       Game goes to EXTRA TIME.
 	Planets       loss         WIN
 
-	In the first EXTRA TIME mode, all ships are oblierated like
+	In the first EXTRA TIME mode, all ships are obliterated like
 	sudden death OT.  Exactly 5 minutes are added, and game play
 	resumes.  At the end of 5 minutes, the above rules are used to
 	determine the winner. If the game is tied by rule 5, then an

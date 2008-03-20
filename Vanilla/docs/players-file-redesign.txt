@@ -57,25 +57,25 @@ ntserv/getpath.c
 	prefixes the string with LIBDIR
 pledit/main.c
 	passes name to edit_file()
-	(would be superceded by sql database access)
+	(would be superseded by sql database access)
 tools/html.c
 	sequential read of whole file
-	(would be superceded by sql database access)
+	(would be superseded by sql database access)
 tools/ltd_dump.c
 	multiple sequential reads of whole file
 tools/mergescores.c
 	erase current file and write a batch of records to a new file
-	(would be superceded by sql database access)
+	(would be superseded by sql database access)
 tools/newscores.c
 	erase current file and write a batch of records to a new file
-	(would be superceded by sql database access)
+	(would be superseded by sql database access)
 tools/ntpasswd.c
 	find record and update
 tools/scores.c
 	sequential read of whole file
 tools/text.c
 	sequential read of whole file
-	(would be superceded by sql database access)
+	(would be superseded by sql database access)
 tools/trimscores.c
 	erase current file and write a batch of records to a new file
 tools/update.c

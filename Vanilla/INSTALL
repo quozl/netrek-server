@@ -41,7 +41,7 @@ Configure will make two files for the server to deal with the differences.
 These are config.h and system.mk.  
 
 (If you intend to do any development work, consider typing at this stage "make
-depend".  This will add file dependencies to the Makefiles to optimise
+depend".  This will add file dependencies to the Makefiles to optimize
 recompilation.  However, please "make rmdependencies" before submitting patches
 or changes back to CVS.)
 

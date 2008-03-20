@@ -91,7 +91,7 @@ COMMANDS
  O		Options menu
  Q		Quit
  V		Rotate bitmap display of local planets
- B		Rotate bitmap dispaly of galactic planets
+ B		Rotate bitmap display of galactic planets
  l		Lock on to player/planet (also button 1)
  S		Show status window of a previously selected player
  w		Show war window of a previously selected player

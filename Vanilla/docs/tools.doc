@@ -51,7 +51,7 @@ bronco: mess
 Usage: mess
 
 Like message, only you can enter multi-line messages, which get sent in a
-batch (so you don't have to keep running "mesage" over and over).  Also allows
+batch (so you don't have to keep running "message" over and over).  Also allows
 multiple recipients (so you can send to "0123" instead of just "0").
 
 newscores
@@ -329,7 +329,7 @@ all players on the galactic map).  If 1, it's activated for tournaments.
 
 MAXLOAD is the maximum load average allowed before the game shuts itself down.
 ** Under UTS, if MAXLOAD is set to "0.0", then the game will shut down.  No
-comparison with the actual load averge is performed.
+comparison with the actual load average is performed.
 
 CHAOS is a boolean flag; if TRUE, then "chaos mode" is turned on.  This has
 the following effects:

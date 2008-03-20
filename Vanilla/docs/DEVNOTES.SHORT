@@ -8,7 +8,7 @@ Bye
 
 PS: This is a beta release.
     2 things are missing.
-PLAYER, WARNING,TORP amd message is working... Test it out.
+PLAYER, WARNING,TORP and message is working... Test it out.
 
 Happy Easter Break!
 
@@ -36,11 +36,11 @@ client/redraw.c	removed SHORT_PACKETS Code ( not necessary)
 
 16.04.93:
 ntserv/socket.c	rewrote updateMessages. ( Was really to clumsy.)	
-		LOGPACKETS loggs size only if in SHORT mode.
+		LOGPACKETS logs size only if in SHORT mode.
 		updateforce changed: plasmatorps are now handled like
 		normal torpinfo.
 		[ Sidenote about my implementation: I think i have some good 
-		ideas, but the overrall implementation is not really shining. 
+		ideas, but the overall implementation is not really shining. 
 		My programming skills are not so good....]
 
 client/socket.c	changed the code a bit .look at the diffs.
@@ -96,7 +96,7 @@ struct message {
 23.04.93  cleaned up the code, updateSmall ('-') is working.
 	  changed newplanet Routine to Berkley style redraw.
 
-	  Can someome implement a second key for UpdateSmall+?
+	  Can someone implement a second key for UpdateSmall+?
           ( Do not know which key to choose.)
 	  And a different menu for the short code. ( Because ',' is for
 	  the pingwindow. And i think the SHORT switch should go into the
@@ -105,7 +105,7 @@ struct message {
 	  test it . The best to test the new system would be a inl server.
   	  Then you can do a limited release of the client and play some 
 	  scrimmages with the new code. Where can i find the latest *stable*
- 	  INL sourcen? 
+ 	  INL sources? 
 
 	Bye
 		Heiko Wengler
@@ -114,7 +114,7 @@ struct message {
 
 		Heiko Wengler
  
-29.04.93	removed a TFREE bug. (introduced by simply copying sourcecode
+29.04.93	removed a TFREE bug. (introduced by simply copying source code
 		without changing one line of code.)
 
 		H.W.
@@ -148,7 +148,7 @@ client:	changed handleVPLayers: a) if playernumber to high continue.
 
 			HW
 
-21.05.93	Cleaned the tools up. Added in every pmesage() function
+21.05.93	Cleaned the tools up. Added in every pmessage() function
 		an DINVALID flag. 
 		Implemented threshold idea. compile in with
 		-DSHORT_THRESHOLD. Not defined because server is sluggy
@@ -164,19 +164,19 @@ client:	changed handleVPLayers: a) if playernumber to high continue.
 
 9.06.93		Client/server fix from Tedd Hadley (Torps.)
 
-26.06.93	SP_S_YOU_SS is now sended with UDP.
+26.06.93	SP_S_YOU_SS is now sent with UDP.
 		( Hadley.)
 
-26.06.93	SP_S_YOU_SS is now sended with UDP.
+26.06.93	SP_S_YOU_SS is now sent with UDP.
 		( Hadley.)
 
-26.06.93	SP_S_YOU_SS is now sended with UDP.
+26.06.93	SP_S_YOU_SS is now sent with UDP.
 		( Hadley.)
 
-26.06.93	SP_S_YOU_SS is now sended with UDP.
+26.06.93	SP_S_YOU_SS is now sent with UDP.
 		( Hadley.)
 
-26.06.93	SP_S_YOU_SS is now sended with UDP.
+26.06.93	SP_S_YOU_SS is now sent with UDP.
 		( Hadley.)
 
 9.06.93		Client/server fix from Tedd Hadley (Torps.)

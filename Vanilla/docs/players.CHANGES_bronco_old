@@ -88,7 +88,7 @@ pop rate is the same.
 * UDP.  UDP v1.0 installed.
 
 * Session statistic query.  Sending yourself (or any other single
-player) a '?' produces a session statisitc query, listing the t-mode
+player) a '?' produces a session statistic query, listing the t-mode
 planets/armies/wins/losses and corresponding ratings and ratio for the
 current session.
 

@@ -124,7 +124,7 @@ Configuring the server
     keycomp/defs.h
 
 	Same as ntserv/defs.h, but SURREND=5 instead of 4?  Should be
-	link to ntserv instead?  What is kecomp/ used for?
+	link to ntserv instead?  What is keycomp/ used for?
 
     getship.c
 

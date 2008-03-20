@@ -3,7 +3,7 @@
 	The server has the base practice code compiled into it. However,
 to use it you will have to have the robots that aren't included in this
 code. You will have to get them from Tedd Hadley (hadley@uci.edu). Please
-don't bother him unless you are serious about setting up a base pratice
+don't bother him unless you are serious about setting up a base practice
 server.
 
 Setting up BASE PRACTICE
@@ -13,7 +13,7 @@ Getting the robot binary:
    Since the robot source code is quite a mess, I'll usually send a binary
    on request (email hadley@uci.edu)
   
-   A few robot binaries are also loacted at 
+   A few robot binaries are also located at 
 	ftp://ftp.risc.uni-linz.ac.at/pub/netrek/bin.misc/
     
 config.h:

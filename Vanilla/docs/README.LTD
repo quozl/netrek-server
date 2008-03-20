@@ -322,7 +322,7 @@ as average phaser damage, kills per hour, kill/death ratio, etc.
 	
 (osba) [ogged sb armies]
 	Number of armies on board an enemy SB you ogged.  This stat
-	is updated seperately from (oat), armies you ogged on other
+	is updated separately from (oat), armies you ogged on other
 	ships.
 
 (ofc)  [ogged friendly carrier]

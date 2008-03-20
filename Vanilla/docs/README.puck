@@ -71,7 +71,7 @@ Version 2.01Bpl0, November 8, 1993 ***Beta Release Version***
 
 3)  Offsides code:  It has been started and is fully functional,
     but not much fun to play with.  It will be improved in future
-    releases.  I do NOT recommentd using it.
+    releases.  I do NOT recommend using it.
     Enable via #define OFFSIDE
 
 4)  Player Eject by voting:  Works great but is a potential
@@ -84,7 +84,7 @@ Version 2.01Bpl0, November 8, 1993 ***Beta Release Version***
     last about 8 minutes longer.
     Disable via #define SHORT_GAME (i.e clock always ticks)
 
-6)  Loquaciouns Announcer:  Announces each time puck possession changes.
+6)  Loquacious Announcer:  Announces each time puck possession changes.
     Enable via #define ANNOUNCER
 
 7)  Restructured the control flow of the game.  Is now in a more
@@ -106,9 +106,9 @@ Version 2.00, October 1, 1993
     speed.  i.e.  Fly warp 12 into the side, you still use warp 12
     fuel and change angle at the warp 12 rate.  These are #IFDEF's
     Enable via #define WALL_BOUNCE
-    Enable vie #deinfe GOAL_CLEAR
+    Enable via #define GOAL_CLEAR
 
-    Known feature:  if orbitting a goal planet, you can enter
+    Known feature:  if orbiting a goal planet, you can enter
     the goal area.  If you want into the goal, you must go slow...
 
 2)  Sitout code:  send "sitout" to puck, and you are teleported out
@@ -166,7 +166,7 @@ Version 1.00, September 20, 1993
     planets are immediately at 2 armies and slots are held.  More of
     a technicality than anything else.
 
-8)  some other cosmetic changes probably occured, and they should be
+8)  some other cosmetic changes probably occurred, and they should be
     documented in the code.
 
 I tried to credit everyone with their contributions whenever possible.

@@ -122,7 +122,7 @@ DENY_DUPLICATES=0
 #	Reference: ntserv/daemonII.c check_scummers)
 CHECKSCUM=3
 #
-#	Do full reverse/forward lookup on IP addreses to check for matching
+#	Do full reverse/forward lookup on IP addresses to check for matching
 #	DNS entries, and make mismatches show in a 'WHOIS'/'@' (0 = no, 1 = yes)
 IP_CHECK_DNS=1
 #
@@ -352,7 +352,7 @@ NEWBIE=0
 #	+ humans) that is maintained at all times.  If there are less humans
 #	than this number, the rest of the slots will be filled with robots
 #	until this number of slots is reached.  If there are an equal number
-#	or more huamans than this number, there will be no robots in game.
+#	or more humans than this number, there will be no robots in game.
 MIN_NEWBIE_SLOTS=12
 #
 #       Maximum number of newbie server players to allow at once
@@ -375,7 +375,7 @@ PRET_PLANETS=3
 #    Save t-mode galaxy during transition from t-mode to pre-t mode
 PRET_SAVE_GALAXY=1
 #
-#    Number of seconds the saved t-mode galaxy is elegible to be restored
+#    Number of seconds the saved t-mode galaxy is eligible to be restored
 #    if t-mode starts up again.
 PRET_GALAXY_LIFETIME=600
 #

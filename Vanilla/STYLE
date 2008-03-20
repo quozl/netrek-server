@@ -1,18 +1,9 @@
 Coding Style
 ------------
 
-1.  for minor changes, do not change indentation, keep it consistent
-    with the indentation in the file you are working on,
-
-2.  for major changes to a file, reindent the file according to 4
-    below,
-
-3.  for new files, indent the file according to 4 below,
-
-4.  indent by either two or four spaces, or use tabs, but be
-    consistent within a file, preferred is four spaces, no tabs.
-
-An example
+1.  indent by either two or four spaces, or use tabs, but be
+    consistent within a file, preferred is four spaces, no tabs, for
+    example:
 
 static int foo(int a)
 {
@@ -24,6 +15,11 @@ static int foo(int a)
         jkl;
     }
 }
+
+2.  for minor changes, do not change indentation, keep it consistent
+    with the indentation in the file you are working on,
+
+3.  for major changes to a file, indent the file entirely.
 
 
 Darcs - Sending Patches

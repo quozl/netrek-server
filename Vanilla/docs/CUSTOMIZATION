@@ -1,5 +1,5 @@
 
-	Here is a more in-depth explaination into some of the features
+	Here is a more in-depth explanation into some of the features
 that can change the server. 
 
 1) config/config.h defines :
@@ -24,19 +24,19 @@ that can change the server.
 
 	NEED_EXIT - Some systems need exit to be defined in socket.c
 
-	NO_PLANET_PLAGUE - Don't allow planet plagueing. Don't use this with
+	NO_PLANET_PLAGUE - Don't allow planet plaguing. Don't use this with
 		ERIKPLAGUE.
 
 	PING - Allow ping stats support. This may increase the network load a
 		little.
 
-	RSA - Use RSA verification. Some method of verification is recommeneded.
+	RSA - Use RSA verification. Some method of verification is recommended.
 		RSA is the most accepted method now.
 
 	SHOW_RSA - Display some messages like failed RSA verification message
 		and type of client on entry of player.
 
-	RESETGALAXY - Everytime a conquer occurs reset the galaxy.
+	RESETGALAXY - Every time a conquer occurs reset the galaxy.
 
 	SELF_RESET - galaxy will reset if daemon dies.
 
@@ -65,7 +65,7 @@ that can change the server.
 	NEWMASK - Use a newer tournament mask function that is less rigid
 		than older version. Doesn't take preferences into account.
 
-	RCD - Support Reciever variable distresses. (Saves on a lot of network
+	RCD - Support Receiver variable distresses. (Saves on a lot of network
 		traffic).
 
 	FLAT_BONUS - 5x bonus for killing last army on a planet 
@@ -93,7 +93,7 @@ that can change the server.
 			  is always in slot g.
 
 	SB_RAPID_COOLDOWN	- allows for twice the normal rate of weapon
-				  cooldown; useful on base-practice.
+				  cool down; useful on base-practice.
 
 	ALLOW_PRACTICE_ROBOT_SB	- allows practice robots to be refit into
 				  starbases if defined.
@@ -181,7 +181,7 @@ that can change the server.
 
 	TOPGUN - (0 or 1) Misc things to make playing harder and only clueful
 		players may like..  Mutually exclusive with all other non-
-		tandard server modes.
+		standard server modes.
 
 	PRET - (0 or 1) Enable pre-t entertainment mode.  Mutually exclusive
 		with all other non-standard server modes.
@@ -229,7 +229,7 @@ that can change the server.
 		the absence of ping responses from a client.
 
    	PING_GHOSTBUST_INTERVAL - ( >0) based on PING_GHOSTBUST and PING_FREQ,
-		the number of unaswered pings before ghostbusting a player.
+		the number of unanswered pings before ghostbusting a player.
 
         GHOSTBUST_TIMER - ( >0 ) Timer setting to ghostbust a client using the
                 normal ghostbust routines.
@@ -273,7 +273,7 @@ that can change the server.
 				(not implemented yet..).
 
 	In addition ship characteristics can be changed. The list of
-	charactistics that can be changed are:         
+	characteristics that can be changed are:         
           TURNS, ACCS, TORPDAMAGE, PHASERDAMAGE, PHASERFUSE, PLASMADAMAGE, 
           TORPSPEED, TORPFUSE, TORPTURNS, PLASMASPEED, PLASMAFUSE, PLAMSATURNS, 
           MAXSPEED, REPAIR, MAXFUEL, TORPCOST, PLASMACOST, PHASERCOST, 

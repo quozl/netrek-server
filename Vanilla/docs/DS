@@ -9,7 +9,7 @@
       the daemon completes move().  Likewise, there's no way to predict how
       many ntserv processes are active simultaneously.
 
-      With daemon synchronization, the daemon signals the ntserv proceses
+      With daemon synchronization, the daemon signals the ntserv process
       when it completes move().  This helps guarantee that the ntserv
       processes are updating the client only after the daemon is finished
       with that cycle and ensures that the clients get the most recent

@@ -1,7 +1,7 @@
 
 rsa_keycap 	-- sample key descriptions file.  Each key entry contains these
 		   fields:
-   key name : a unique key indentifier currently constructed by concatenating
+   key name : a unique key identifier currently constructed by concatenating
 	      abbreviations for client type , author, and binary architecture.
    client type : (ct=) a string identifying the client type 
    creator  : (cr=) the email address of the author or person who compiled

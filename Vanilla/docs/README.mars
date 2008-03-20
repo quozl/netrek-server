@@ -3,7 +3,7 @@ MARS: 	Dog-Fight Robot
 
 
 	The mars robot overseers the players when run. It puts the server into
-dog-fighting mode and handles all tournament activites. To end the tourney
+dog-fighting mode and handles all tournament activities. To end the tourney
 mode simply kill the mars robot and the server will revert to normal execution.
 
 	This is a first release of the mars robot so a few bugs are expected.

@@ -1,6 +1,6 @@
 FILES
    
-   convert.c		-- simple translator for 60x10 graphics charcters
+   convert.c		-- simple translator for 60x10 graphics characters
    motd_logo.MASTER	-- logo (design yourself -- sample UCI logo given)
    motd_local.MASTER	-- server-specific motd
    top50		-- show top 50 scores by rank and hours.
@@ -12,7 +12,7 @@ SPECIAL CHARACTERS
    Since they are difficult to enter with a standard text editor, the 'convert'
    program is provided which translates special characters to the corresponding
    graphics character.  A description of the special characters follows.  
-   Special characters can be escaped by preceeding with '\'.
+   Special characters can be escaped by preceding with '\'.
 
     -           -- horizontal bar
     _           -- lower horizontal bar

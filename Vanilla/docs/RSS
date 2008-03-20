@@ -83,7 +83,7 @@ Events logged by a class type, such as:
     int  p_pkls_c_s;           /* packet loss (client to server) */
     int  p_pkls_s_c;           /* packet loss (server to client) */
 	not yet done
-- racial, wins and losses by race, (coqn, geno, surr, base),
+- racial, wins and losses by race, (conq, geno, surr, base),
 	ok
 - t-mode, session begin, session end with struct status values,
 	gantt chart showing players who were there, icons per pick/take/death

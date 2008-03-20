@@ -28,7 +28,7 @@ server can't handle it.  You can also reduce the number of robots the
 server keeps running via MIN_NUM_PLAYERS.
 
 If the gethostname() call in newbie.c returns the wrong thing then
-define TREKSERVER to something appropiate.  Shouldn't be necessary
+define TREKSERVER to something appropriate.  Shouldn't be necessary
 unless you are multihoming.
 
 robotd/robot.c:

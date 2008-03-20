@@ -3,8 +3,8 @@
 there help with the code.
 
     Mark Levine     - 	For his work on the new getentry code.
-    Kurt Siegl      -   For his work on Linux port, SYSV dependenices, and
-			  the config.h format which elminates much of the
+    Kurt Siegl      -   For his work on Linux port, SYSV dependencies, and
+			  the config.h format which eliminates much of the
 			  ugliness of all the defines in the code. Oh, and
 			  also for pointing out all the stupid things I do. :)
     Micheal Kantner -  For finding all the small things that I overlook while

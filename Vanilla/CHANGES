@@ -2,7 +2,7 @@ Changes File, see tail for latest.
 
 pl3 - pl4 : Tue Jul 13 15:42:29 PDT 1993
 
-	Fixed daemon and gcc problem with writeable strings. - Mark Levine.
+	Fixed daemon and gcc problem with writable strings. - Mark Levine.
 	Many many SYSV changes and mods for sequent machines - Kurt Siegl.
 	rsa-server.c added to the standard distribution.    - Nick Trown
 
@@ -31,7 +31,7 @@ pl7 - pl8 : Thu Jul 29 16:12:49 PDT 1993
 	  don't cost as much, assault's torpcost doesn't
 	  cost as much, higher wpntemp for SBs)		    - Nick Trown / jmn
 	Now supports Linux.				    - Kurt Siegl.
-	Added Daemon Sychronization.			    - Tedd Hadley / NBT
+	Added Daemon Synchronization.			    - Tedd Hadley / NBT
 pl8 - 2.01pl0 : Wed Aug 18 21:54:34 PDT 1993
 	More fixes for robots when all players leave the
 	   game 					   - Mark Levine.
@@ -147,7 +147,7 @@ pl8 - 2.01pl0 : Wed Aug 18 21:54:34 PDT 1993
 	Vector torps from Calvin			   - Sheldon
 	Fixed wander code				   - Sheldon
 	Added code to redefine ship stats from .sysdef	   - Sheldon
-	SB contruction time is not reset out of tmode	   - Habig
+	SB construction time is not reset out of tmode	   - Habig
 	Puck, Mars, and pickup use new command interface   - nbt
 	Fixed .bypass.					   - Habig
 	Added more functionality to scores tool.	   - Habig
@@ -205,7 +205,7 @@ pl8 - 2.01pl0 : Wed Aug 18 21:54:34 PDT 1993
 	Fix SB updates after it dies.			   - Habig
 2.5pl3 - 2.5pl4:
 	Added ship info packets for different ship stats   - Habig
-	Made changes to creditting system		   - Habig
+	Made changes to crediting system		   - Habig
 	Improved voting					   - Kantner
 	Improved robots (commands, functionality)	   - Siegl
 	Improved INL robot commands			   - Siegl
@@ -587,7 +587,7 @@ pl8 - 2.01pl0 : Wed Aug 18 21:54:34 PDT 1993
 
 	Date: Tue, 21 Apr 1998 12:04:21 +1000
 	From: James Cameron <cameron@stl.dec.com>
-	Subject: [VANILLA-L:847] Overheat state propogated to refitted ships
+	Subject: [VANILLA-L:847] Overheat state propagated to refitted ships
 
 	(2.8pl0 released 23-Apr-1998)
 

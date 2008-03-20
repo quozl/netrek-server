@@ -14,7 +14,7 @@ improved but I have been running it for a couple of weeks without any trouble.
 		3. It gets the list and then forks and execs rsa_keycomp with
 		   the -c option to make the new .reserved and report on any
 		   new keys produced. Note: You can still use the exclude
-		   files and such described in the keycomp README. The ouput
+		   files and such described in the keycomp README. The output
 		   for the daemon/rsa_keycomp will be appended to what you
 		   made ERROR_FILE in defs.h in ntserv.
 
@@ -22,7 +22,7 @@ improved but I have been running it for a couple of weeks without any trouble.
 		   motd_logo.MASTER, append the key list, and then the other
 		   info on the end (motd_local.MASTER). Then it will make a
 		   new best players list and put this on the end.  Note: The
-		   files motd_logo.MASTER, and lotd_local.MASTER are converted
+		   files motd_logo.MASTER, and motd_local.MASTER are converted
 		   from ascii to 6x10 font which has more characters. Look at
 		   README.motd for a description of these.
 

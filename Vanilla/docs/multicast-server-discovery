@@ -130,7 +130,7 @@ a server owner chooses to use it somehow.  See tools/metaget for the
 test query program.
 
 See parsemeta.c in the client source for additional details on making
-the query and procesisng the responses.
+the query and processing the responses.
 
 
 Verification

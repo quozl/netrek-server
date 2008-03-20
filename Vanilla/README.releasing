@@ -165,6 +165,6 @@ primary distribution site, so I need to let BXA know.  It's not a problem.
 I have a template I use, so I'll notify BXA before each Vanilla release
 I put on the ftp site.  You should probably add a notice to each Vanilla
 release announcement with something like "This package contains
-cryptoghic software.  Please be aware of the laws governing your country
-regarding the use of crytography."
+cryptographic software.  Please be aware of the laws governing your country
+regarding the use of cryptography."
 

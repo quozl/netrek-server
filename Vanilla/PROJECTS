@@ -44,7 +44,7 @@ List of things to do in the future
 
 	  SCAN_FRIENDLY ... if 1 sends information about enemy ships,
 	  according to war, peace, hostility settings.  Expected to be
-	  turned on by illumunated server administrators.  Default on.
+	  turned on by illuminated server administrators.  Default on.
 
 	  SCAN_HOSTILE ... if 1 sends information about enemy ships,
 	  according to war, peace, hostility settings.  Default on.
@@ -64,7 +64,7 @@ List of things to do in the future
 
 	- scenario game, entire galaxy starts off as neutral, every
           player starts with 1 kill and 2 armies.  Most planets after
-          20 minutes wins.  Option only 5 lives.  Option respwan
+          20 minutes wins.  Option only 5 lives.  Option respawn
           positioning would be interesting to balance. [credit Jerub
           on #netrek]
 
@@ -242,7 +242,7 @@ List of things to do in the future
           overloading a variable.  Example states could be PTPLAYER,
           PTOBSERVER, PTROBOT and PTPRACTICE.  Whenever a slot changes
           modes, save the slot (if appropriate) and re-read stats from
-          .players anew as if a fresh login occured but without the
+          .players anew as if a fresh login occurred but without the
           slot assignment (which would require a client upgrade).
 
           Cleaning up the observer code is a prerequisite for
