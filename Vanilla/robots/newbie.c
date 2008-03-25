@@ -102,8 +102,8 @@ main(argc, argv)
 
 #ifndef TREKSERVER
     if (gethostname(hostname, 64) != 0) {
-	 perror("gethostname");
-	 exit(1);
+         perror("gethostname");
+         exit(1);
     }
 #else
     strcpy(hostname, TREKSERVER);
@@ -232,18 +232,22 @@ void checkmess()
     if ((ticks % ROBOEXITWAIT) == 0) {
         if(robot_debug_target != -1) {
             messOne(255, roboname, robot_debug_target,
-                    "Total Players: %d  Current bots: %d  Current human players: %d",
+                    "Total Players: %d  Current bots: %d  "
+                    "Current human players: %d",
                     totalPlayers(), totalRobots(0), num_humans(0));
         }
-        if (((count > queues[QU_PICKUP].max_slots) || (totalPlayers() > min_newbie_slots))
-            && (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
+        if (((count > queues[QU_PICKUP].max_slots) ||
+             (totalPlayers() > min_newbie_slots)) &&
+             (QUPLAY(QU_NEWBIE_PLR) <= max_newbie_players)) {
             if(robot_debug_target != -1) {
-                messOne(255, roboname, robot_debug_target, "Stopping a robot");
-                messOne(255, roboname, robot_debug_target, "Current bots: %d  Current human players: %d",
+                messOne(255, roboname, robot_debug_target,
+                        "Stopping a robot");
+                messOne(255, roboname, robot_debug_target,
+                        "Current bots: %d  Current human players: %d",
                         totalRobots(0), num_humans(0));
             }
-	    stop_a_robot();
-	}
+            stop_a_robot();
+        }
     }
 
     /* Start a robot */
@@ -251,10 +255,13 @@ void checkmess()
         int next_team = 0;
         num_players(&next_team);
 
-        if ((count < (queues[QU_PICKUP].max_slots)) && (totalPlayers() < min_newbie_slots)) {
+        if ((count < (queues[QU_PICKUP].max_slots)) &&
+            (totalPlayers() < min_newbie_slots)) {
             if(robot_debug_target != -1) {
-                messOne(255, roboname, robot_debug_target, "Starting a robot");
-                messOne(255, roboname, robot_debug_target, "Current bots: %d  Current human players: %d",
+                messOne(255, roboname, robot_debug_target,
+                        "Starting a robot");
+                messOne(255, roboname, robot_debug_target,
+                        "Current bots: %d  Current human players: %d",
                         totalRobots(0), num_humans(0));
             }
             if (next_team == FED)
@@ -266,13 +273,15 @@ void checkmess()
             else if (next_team == KLI)
                 start_a_robot("-Tk");
             else
-                fprintf(stderr, "Start_a_robot team select (%d) failed.\n", next_team);
+                fprintf(stderr,
+                        "Start_a_robot team select (%d) failed.\n",
+                        next_team);
         }
     }
 
     /* Check Merlin's x and y position */
     if ( (ticks % ROBOCHECK) == 0 ) {
-	checkpos();
+        checkpos();
     }
 
     if ((ticks % SENDINFO) == 0) {
@@ -280,15 +289,15 @@ void checkmess()
             case 0:
                 break;
             case 1:
-                messAll(255,roboname,"Welcome to the Newbie Server.");
-                messAll(255,roboname,"See http://genocide.netrek.org/beginner/newbie.php");
+                messAll(255,roboname, "Welcome to the Newbie Server.");
+                messAll(255,roboname, "See http://genocide.netrek.org/beginner/newbie.php");
                 break;
             case 2:
-                messAll(255,roboname,"Welcome to the Sturgeon Server in newbie mode.");
-                messAll(255,roboname,"See http://netrek.warped.us for how to play sturgeon!");
+                messAll(255,roboname, "Welcome to the Sturgeon Server in newbie mode.");
+                messAll(255,roboname, "See http://netrek.warped.us for how to play sturgeon!");
                 break;
             default:
-                messAll(255,roboname,"Want all the latest netrek news?");
+                messAll(255,roboname, "Want all the latest netrek news?");
                 messAll(255,roboname, "See http://www.netrek.org/");
                 break;
         }
@@ -310,17 +319,17 @@ static int checkpos(void)
 
     /* are we moving? */
     if ( (me->p_x != oldx) || (me->p_y != oldy) ) {
-	moving=1;
-	stopped=0;
-	oldx=me->p_x;
-	oldy=me->p_y;
+        moving=1;
+        stopped=0;
+        oldx=me->p_x;
+        oldy=me->p_y;
     }
 
     /* if we stopped moving */
     /* count how long */
     if ( (me->p_x == oldx) && (me->p_y == oldy) ) {
-	moving=0;
-	stopped=stopped + 1;
+        moving=0;
+        stopped=stopped + 1;
     }
 
     /* stopped for sometime now */
@@ -388,9 +397,9 @@ static int num_humans(int team) {
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
       if (j->p_status == PFREE)
-	 continue;
+         continue;
       if (j->p_flags & PFROBOT)
-	 continue;
+         continue;
       if (j->p_status == POBSERV)
          continue;
       if(team != 0 && j->p_team != team)
@@ -399,13 +408,15 @@ static int num_humans(int team) {
          /* Found a human. */
          count++;
          if(robot_debug_target != -1 && robot_debug_level >= 2) {
-             messOne(255, roboname, robot_debug_target, "%d: Counting %s (%s %s) as a human",
+             messOne(255, roboname, robot_debug_target,
+                     "%d: Counting %s (%s %s) as a human",
                      i, j->p_mapchars, j->p_login, j->p_monitor);
          }
       }
       else {
          if(robot_debug_target != -1 && robot_debug_level >= 2) {
-             messOne(255, roboname, robot_debug_target, "%d: NOT Counting %s (%s %s) as a human",
+             messOne(255, roboname, robot_debug_target,
+                     "%d: NOT Counting %s (%s %s) as a human",
                      i, j->p_mapchars, j->p_login, j->p_monitor);
           }
       }
@@ -420,18 +431,23 @@ static void stop_a_robot(void)
     int teamToStop, rt;
 
     if(robot_debug_target != -1 && robot_debug_level >= 3) {
-        messOne(255, roboname, robot_debug_target, "#1(%d): %d human %d robot  #2(%d): %d human %d robot",
+        messOne(255, roboname, robot_debug_target,
+                "#1(%d): %d human %d robot  #2(%d): %d human %d robot",
                 team1, num_humans(team1), totalRobots(team1),
                 team2, num_humans(team2), totalRobots(team2));
     }
-    /* First check if overall player count is imbalanced.  If so, stop robot from team
-       with the most total players (human + robot).  If total number per side is equal,
-       but there are an imbalanced number of humans per side, either nuke robot from the
-       team with the fewest humans, or stack humans on 1 side, depending on balance setting.
-       If both total players and total humans are even, stop a robot on a random team. */
-    if ((num_humans(team1) + totalRobots(team1)) > (num_humans(team2) + totalRobots(team2)))
+    /* First check if overall player count is imbalanced.  If so, stop
+       robot from team with the most total players (human + robot).
+       If total number per side is equal, but there are an imbalanced
+       number of humans per side, either nuke robot from the team with
+       the fewest humans, or stack humans on 1 side, depending on
+       balance setting.  If both total players and total humans are
+       even, stop a robot on a random team. */
+    if ((num_humans(team1) + totalRobots(team1)) >
+        (num_humans(team2) + totalRobots(team2)))
         teamToStop = team1;
-    else if ((num_humans(team1) + totalRobots(team1)) > (num_humans(team2) + totalRobots(team2)))
+    else if ((num_humans(team1) + totalRobots(team1)) >
+             (num_humans(team2) + totalRobots(team2)))
         teamToStop = team2;
     else if (num_humans(team1) < num_humans(team2)) {
         if (!newbie_balance_humans && totalRobots(team2) != 0)
@@ -453,7 +469,8 @@ static void stop_a_robot(void)
             teamToStop = team2;
     }
     if(robot_debug_target != -1 && robot_debug_level >= 3) {
-        messOne(255, roboname, robot_debug_target, "Stopping from %d", teamToStop);
+        messOne(255, roboname, robot_debug_target, "Stopping from %d",
+                teamToStop);
     }
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j->p_status == PFREE)
@@ -462,7 +479,8 @@ static void stop_a_robot(void)
             continue;
 
         /* If he's at the MOTD we'll get him next time. */
-        if (j->p_team == teamToStop && j->p_status == PALIVE && rprog(j->p_login, j->p_monitor)) {
+        if (j->p_team == teamToStop && j->p_status == PALIVE &&
+            rprog(j->p_login, j->p_monitor)) {
             stop_this_bot(j);
             return;
         }
@@ -581,7 +599,8 @@ num_players(int *next_team)
     }
 
    if(robot_debug_target != -1 && robot_debug_level >= 2)
-        messOne(255, roboname, robot_debug_target, "num_players: total team count is %d", tc);
+        messOne(255, roboname, robot_debug_target,
+                "num_players: total team count is %d", tc);
 
     if (tc == 0) { /* no teams yet, join anybody */
         rt = random() % 4;
@@ -641,8 +660,9 @@ num_players(int *next_team)
         team2 = *next_team;
     }
 
-    if (tc >= 2) { /* 2 or more teams, join opposing team with less members */
-                   /* And let's reassign teams just to be safe */
+    if (tc >= 2) {
+        /* 2 or more teams, join opposing team with less members.
+	   And let's reassign teams just to be safe */
 
         if (team_count[FED]>0 && team_count[ROM]>0) {
             if (team_count[ROM]>team_count[FED])
@@ -739,8 +759,8 @@ namearg(void)
 
         namef = 0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-            if (j->p_status != PFREE && strncmp(name, j->p_name, strlen(name) - 1)
-                == 0) {
+            if (j->p_status != PFREE &&
+                strncmp(name, j->p_name, strlen(name) - 1) == 0) {
                 namef = 1;
                 break;
             }
@@ -865,8 +885,8 @@ static void exitRobot(void)
         }
         else {
             messAll(255,roboname,"#");
-            messAll(255,roboname,"#  Merlin is tired.  Newbie Server is over "
-                    "for now");
+            messAll(255,roboname,"#  Merlin is tired.  "
+                    "Newbie Server is over for now");
             messAll(255,roboname,"#");
         }
     }
@@ -878,7 +898,8 @@ static void exitRobot(void)
 
 static void obliterate(int wflag, char kreason)
 {
-    /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
+    /* 0 = do nothing to war status, 1= make war with all, 2= make
+    peace with all */
     struct player *j;
 
     /* clear torps and plasmas out */
