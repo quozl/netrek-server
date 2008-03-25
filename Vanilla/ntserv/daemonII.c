@@ -1,6 +1,20 @@
-/* 
- * daemonII.c 
- */
+/*! @file daemonII.c
+    @brief Netrek universe simulation.
+    @details Runs the simulation of the Netrek universe, in a
+    step-wise frame by frame sequence, keeping only the current frame,
+    updating object positions, causing object to object effects, and
+    signalling the per player server processes each update.  The
+    daemon is started by the first per player server process and runs
+    until all players have left or the game is terminated.
+
+    The daemon is self-contained; it calls out to libnetrek functions,
+    it forks new processes, but nothing calls the daemon.
+    Communication from other processes to the daemon is to be via the
+    shared memory segment.
+
+    There is only one public function, main().  Everything else is
+    to be declared static.
+    */
 #include "copyright.h"
 
 #include <stdio.h>
@@ -75,7 +89,7 @@ static void move();
 static void udplayersight(void);
 static void udplayers(void);
 static void udships(void);
-static void udplayerpause(void);
+static void udplayers_pause(void);
 static void changedir(struct player *sp);
 static void udcloak(void);
 static void udtwarp(void);
@@ -132,14 +146,14 @@ extern void pmove(void);
 /* note: consider restart capability before extending these, it may be
    better to place new variables in struct memory */
 
-static int opt_debug   = 0;             /* --debug                      */
-static int opt_tell    = 0;             /* --tell                       */
-static int opt_restart = 0;             /* --restart                    */
+static int opt_debug   = 0;             /*!< --debug                      */
+static int opt_tell    = 0;             /*!< --tell                       */
+static int opt_restart = 0;             /*!< --restart                    */
 
-static int sig_restart = 0;             /* restart signal received      */
+static int sig_restart = 0;             /*!< restart signal received      */
 
-static int tcount[MAXTEAM + 1];         /* team count, planet rescue    */
-static int arg[8];                      /* short message                */
+static int tcount[MAXTEAM + 1];         /*!< team count, planet rescue    */
+static int arg[8];                      /*!< short message arg list       */
 
 #ifdef PUCK_FIRST
 static int pucksem_id;
@@ -147,16 +161,22 @@ static union semun pucksem_arg;
 static struct sembuf pucksem_op[1];
 #endif /*PUCK_FIRST*/
 
-int pl_warning[MAXPLANETS];             /* To keep planets shut up for awhile */
-int tm_robots[MAXTEAM + 1];             /* To limit the number of robots */
-int tm_coup[MAXTEAM + 1];               /* To allow a coup */
+int pl_warning[MAXPLANETS];     /*!< fuse, per planet, under attack msg */
+int tm_robots[MAXTEAM + 1];     /*!< fuse, per team, non-t rescue robot */
 
-void restart_handler(int signum)
+/*! @brief Restart handler.
+    @details Handles a SIGHUP signal by incrementing the restart
+    signal received counter and restarting the handler for the next
+    SIGHUP. */
+static void restart_handler(int signum)
 {
   sig_restart++;
   HANDLE_SIG(SIGHUP, restart_handler);
 }
 
+/*! @brief Fork a script.
+    @details Executes a specified script in a forked process.
+    @param script the name of the script. */
 static void fork_script(char *script)
 {
   if (fork() == 0) {
@@ -167,6 +187,11 @@ static void fork_script(char *script)
   }
 }
 
+/*! @brief Main function.
+    @details Runs the simulation, does not return, calls exit(3) on
+    stop, exits via exec(3) on restart. During start, initialises the
+    universe, and informs the parent process when initialisation has
+    completed and regular simulation has begun. */
 int main(int argc, char **argv)
 {
     register int i;
@@ -412,10 +437,10 @@ int main(int argc, char **argv)
 
 int dietime = -1;  /* isae - was missing int */
 
+/*! @brief Check if tournament mode conditions are met.
+    @details Used to determine if we should be recording stats.
+    @return t boolean, 1 for true, 0 for false. */
 static int is_tournament_mode(void)
-/* Return 1 if tournament mode, 0 otherwise.
- * This function used to determine if we should be recording stats.
- */
 {
     int i, count[MAXTEAM+1], quorum[MAXTEAM+1];
     struct player *p;
@@ -451,10 +476,9 @@ static int is_tournament_mode(void)
 }
 
 
-/* Check the player list for possible t-mode scummers.
-   Nick Trown   12/19/92
-*/
-
+/*! @brief Check player list for possible t-mode scummers.
+    @author Nick Trown 12/19/92
+    */
 static int check_scummers(int verbose)
 {
     int i, j;
@@ -535,7 +559,14 @@ static int check_scummers(int verbose)
     return 0;
 }
 
-
+/*! @brief Send t-mode commencement message to all players.
+    @details Messages that announce t-mode are fictional, and so the
+    matching message to announce end of t-mode has to match the
+    fiction.
+    @bug Messages with the same theme would be better listed next to
+    each other, and perhaps be obtained from a default configuration
+    file for the server installed by the "make install" target. Having
+    them coded here is inflexible. */
 static void political_begin(int message)
 {
         switch (message) {
@@ -567,6 +598,7 @@ static void political_begin(int message)
         }
 }
 
+/*! @brief Send matching t-mode end message to all players. */
 static void political_end(int message)
 {
         switch (message) {
@@ -598,6 +630,10 @@ static void political_end(int message)
         }
 }
 
+/*! @brief Per frame simulation.
+    @details Runs the simulation forward by one frame, affecting the
+    state of the universe and objects. Called once per frame time as a
+    result of a SIGALRM. */
 static void move()
 {
     static int oldmessage;
@@ -621,7 +657,7 @@ static void move()
       static int cycle = 0;
       /* run player and conquer parade at ten times per second */
       if (cycle++ % (fps / 10) == 0) {
-        udplayerpause();
+        udplayers_pause();
         if (status->gameup & GU_CONQUER) conquer_update();
       }
       do_message_requeue_all();
@@ -796,7 +832,11 @@ static void move()
 }
 
 
-
+/*! @brief Update player sight.
+    @details Updates player visibility state (PFSEEN) based on orbit
+    status, and distance to an enemy.
+    @warning The decision whether to show position is taken by
+    updateShips() in genspkt.c */
 static void udplayersight(void)
 {
   struct player *j, *k;
@@ -869,6 +909,10 @@ static void udplayersight(void)
   }
 }
 
+/*! @brief Explosion effects on docking bays.
+    @details Release docking bays as a result of a ship explosion.  If
+    the ship is a base, release all docked ships from bays, set the
+    starbase rebuild time, and blog about the loss of the base. */
 static void udplayers_pexplode_bays(struct player *j)
 {
         bay_release(j);
@@ -887,9 +931,10 @@ static void udplayers_pexplode_bays(struct player *j)
         }
 }
 
+/*! @brief Explosion effects on ships, during pause.
+    @details Only animate explosions in a pause that are due to a TRADE. */
 static void udplayerspause_pexplode(struct player *j)
 {
-        /* only animate explosions in a pause that are due to a TRADE */
         if (j->p_whydead == TOURNSTART) {
                 j->p_flags &= ~(PFCLOAK|PFORBIT);
                 j->p_status = PDEAD;
@@ -897,6 +942,16 @@ static void udplayerspause_pexplode(struct player *j)
         }
 }
 
+/*! @brief Dead state.
+    @details Ship has finished exploding. In PDEAD state the p_explode
+    counter is decremented until it reaches zero or below, then the
+    player statistics are saved and the ship enters POUTFIT state.
+    During a pause, p_explode is ignored and the POUTFIT state happens
+    on the next frame.
+    @warning Delay for expiry of in-flight weapons before player is
+    given team selection window is implemented in intrupt() in
+    redraw.c, not in the daemon.
+*/
 static void udplayers_pdead(struct player *j)
 {
         if ((--j->p_explode <= 0) || (status->gameup & GU_PAUSED)) {
@@ -905,8 +960,16 @@ static void udplayers_pdead(struct player *j)
         }
 }
 
-/* update players during pause */
-static void udplayerpause(void) {
+/*! @brief Update players, during pause.
+    @details Update players structure during a pause.  Similar in
+    effect to udplayers(), but only a subset of functions are called,
+    which are those necessary to sustain normal operation during a
+    pause.  No object animation occurs.
+
+    For each player, adopt any new coordinates requested by tools,
+    handle state, detect ghostbuster watchdog expiry, and terminate
+    player process if required. */
+static void udplayers_pause(void) {
   int i;
   struct player *j;
 
@@ -935,7 +998,7 @@ static void udplayerpause(void) {
     }
 
     if (++(j->p_ghostbuster) > GHOSTTIME) {
-      ERROR(4,("daemon/udplayerpause: %s: ship ghostbusted (wd=%d)\n", 
+      ERROR(4,("daemon/udplayers_pause: %s: ship ghostbusted (wd=%d)\n", 
                    j->p_mapchars, j->p_whydead));
       ghostmess(j, "no ping in pause");
       j->p_status = PDEAD;
@@ -948,11 +1011,11 @@ static void udplayerpause(void) {
       j->p_ghostbuster = 0;
 
       saveplayer(j);
-      ERROR(8,("daemon/udplayerpause: %s: sending SIGTERM to %d\n", 
+      ERROR(8,("daemon/udplayers_pause: %s: sending SIGTERM to %d\n", 
                j->p_mapchars, j->p_process));
 
       if (kill (j->p_process, SIGTERM) < 0)
-        ERROR(1,("daemon/udplayerpause: kill(%d, SIGTERM) failed!\n",
+        ERROR(1,("daemon/udplayers_pause: kill(%d, SIGTERM) failed!\n",
                  j->p_process));
 
       /* let's be safe */
@@ -961,6 +1024,14 @@ static void udplayerpause(void) {
   }
 }
 
+/*! @brief Update players, during POUTFIT.
+    @details During POUTFIT nothing much happens, but if the state lasts
+    too long the slot is declared ghostbusted.
+
+    While in POUTFIT state we are waiting for the player to rejoin a team.
+    redraw.c sees to it that they cannot rejoin until all in-flight weapons
+    have ended, that is n_torps reaches zero. POUTFIT has nothing to do with
+    refitting. */
 static void udplayers_poutfit(struct player *j)
 {
         int outfitdelay;
@@ -1017,6 +1088,10 @@ static void udplayers_pobserv(struct player *j)
         }
 }
 
+/*! @brief Explosion effects on ships.
+    @details Cancel cloak. Damage nearby ships. Set dead
+    state. Determine dead time. Cascade explosion into docking
+    bays. Eject from orbit. Trim life timers of in-flight weapons. */
 static void udplayers_pexplode(struct player *j)
 {
         j->p_updates++;
@@ -1050,11 +1125,16 @@ static void udplayers_pexplode(struct player *j)
         }
 }
 
+/*! @brief Orbit simulation.
+    @details While in orbit, ships rotate around the primary in a
+    circle of fixed diameter, with the ship facing the direction of
+    travel. Manage the orbital direction and reset the ship
+    coordinates to what they should be for the new position in orbit.
+
+    Orbit simulation occurs on major updates, effectively at a ten
+    frames per second rate. */
 static void udplayers_palive_move_in_orbit(struct player *j)
 {
-        /* every major update, at the 10 fps rate, manage the orbital
-        direction and reset the ship coordinates to what they should
-        be for the new position in orbit */
         j->p_dir += 2;
         j->p_desdir = j->p_dir;
         j->p_x_internal = planets[j->p_planet].pl_x * SPM + SPM * ORBDIST
@@ -1683,6 +1763,8 @@ static void udplayers_palive(struct player *j)
         udplayers_palive_set_alert(j);
 }
 
+/*! @brief Update players.
+    @details Update players structure for next simulation frame. */
 static void udplayers(void)
 {
     int i;
@@ -2936,8 +3018,6 @@ static void teamtimers(void)
     for (i = 0; i <= MAXTEAM; i++) {
         if (tm_robots[i] > 0)
             tm_robots[i]--;
-        if (tm_coup[i] > 0)
-            tm_coup[i]--;
     }
 }
 
@@ -3040,7 +3120,7 @@ static void plrescue(struct planet *l)
 #ifdef PRETSERVER
     !bot_in_game &&
 #endif
-        tm_robots[l->pl_owner] == 0) {
+        tm_robots[l->pl_owner] <= 0) {
 
         rescue(l->pl_owner, NotTmode);
 	/* todo: fps support, use of a fuse */
@@ -3094,7 +3174,7 @@ static void plfight(void)
     if (l->pl_armies < 5)
       continue;
 
-      /* Warn owning team */
+    /* Warn owning team */
     if (pl_warning[j->p_planet] <= 0)
     {
       /* todo: fps support, use of a fuse */
@@ -4077,7 +4157,7 @@ static void saveplayer(struct player *victim)
 
 /* NBT 2/20/93 */
 
-char *whydeadmess[] = { 
+static char *whydeadmess[] = { 
   " ", 
   "[quit]",            /* KQUIT        */
   "[photon]",          /* KTORP        */   
@@ -4330,7 +4410,7 @@ static void addTroops(int loser, int winner)
     }
 }
 
-char conqfile_name[MSG_LEN];
+static char conqfile_name[MSG_LEN];
 
 static FILE *conqfile_open()
 {
@@ -4523,7 +4603,7 @@ static void fork_robot(int robot)
 }
 
 #ifdef PUCK_FIRST
-void do_nuttin (int sig) { }
+static void do_nuttin (int sig) { }
 
 /* This has [should have] the daemon wait until the puck has finished by
    waiting on a semaphore.  Error logging is not entirely useful.
