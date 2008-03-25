@@ -18,6 +18,7 @@
 #include "packets.h"
 #include "proto.h"
 #include "sturgeon.h"
+#include "planet.h"
 #include "util.h"
 
 #define DNSBL_WARN_WEBSITE "http://psychosis.net/exploits/"

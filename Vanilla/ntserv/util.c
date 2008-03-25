@@ -163,30 +163,6 @@ int find_slot_by_ip(char *ip, int j)
   return -1;
 }
 
-/* find a planet by name */
-struct planet *planet_find(char *name)
-{
-  int i, count = 0, match = 0;
-
-  for(i=0; i<MAXPLANETS; i++) {
-    if (!strncasecmp(name, planets[i].pl_name, strlen(name))) {
-      match = i;
-      count++;
-    }
-  }
-  if (count == 1) return &planets[match];
-  return NULL;
-}
-
-/* find a planet by number */
-struct planet *planet_by_number(char *name)
-{
-  int i = atoi(name);
-  if (i < 0) return NULL;
-  if (i > (MAXPLANETS-1)) return NULL;
-  return &planets[i];
-}
-
 char *team_name(int team) {
   char *array[MAXTEAM+1] = { "0", "Federation", "Romulans", "3", "Klingons", 
 			     "5", "6", "7", "Orions" };
@@ -545,23 +521,6 @@ int is_invisible_due_idle(struct player *victim)
 {
   if (status->gameup & GU_INL_DRAFTING) return 0;
   return is_idle(victim);
-}
-
-struct planet *pl_pick_home(int p_team)
-{
-    int i, tno = team_no(p_team);
-    for (;;) {
-        i = tno * 10 + random() % 10;
-        if (startplanets[i]) return &planets[i];
-    }
-    /* FIXME: continuously loops if there are no startplanets */
-}
-
-void pl_pick_home_offset(int p_team, int *x, int *y)
-{
-    struct planet *pl = pl_pick_home(p_team);
-    *x = pl->pl_x + (random() % 10000) - 5000;
-    *y = pl->pl_y + (random() % 10000) - 5000;
 }
 
 void p_x_y_go_home(struct player *k)

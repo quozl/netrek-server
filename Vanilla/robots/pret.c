@@ -30,8 +30,8 @@
 #include "alarm.h"
 #include "roboshar.h"
 #include "pretdefs.h"
+#include "planet.h"
 #include "util.h"
-#include "planets.h"
 #include "slotmaint.h"
 
 int debug=0;
@@ -91,7 +91,6 @@ static void checkPreTVictory();
 static int num_humans(int team);
 static int num_humans_alive();
 static int totalPlayers(int noteam);
-static void doResources(void);
 static void terminate(int);
 static void savegalaxy(void);
 static void restoregalaxy(void);
@@ -769,81 +768,7 @@ static void resetPlanets(void) {
             planets[i].pl_armies = 30;
         planets[i].pl_owner = owner;
     }
-
-/* set planet resources */
-    doResources();
-}
-
-/* maximum number of agris that can exist in one quadrant */
-#define AGRI_LIMIT 3
-
-/* the four close planets to the home planet */
-static int core_planets[4][4] =
-{{ 7, 9, 5, 8,},
- { 12, 19, 15, 16,},
- { 24, 29, 25, 26,},
- { 34, 39, 38, 37,},
-};
-/* the outside edge, going around in order */
-static int front_planets[4][5] =
-{{ 1, 2, 4, 6, 3,},
- { 14, 18, 13, 17, 11,},
- { 22, 28, 23, 21, 27,},
- { 31, 32, 33, 35, 36,},
-};
-
-void doResources(void)
-{
-  int i, j, k, which;
-  MCOPY(pdata, planets, sizeof(pdata));
-  for (i = 0; i< 40; i++) {
-        planets[i].pl_armies = top_armies;
-  }
-  for (i = 0; i < 4; i++){
-    /* one core AGRI */
-    planets[core_planets[i][random() % 4]].pl_flags |= PLAGRI;
-
-    /* one front AGRI */
-    which = random() % 2;
-    if (which){
-      planets[front_planets[i][random() % 2]].pl_flags |= PLAGRI;
-
-      /* place one repair on the other front */
-      planets[front_planets[i][(random() % 3) + 2]].pl_flags |= PLREPAIR;
-
-      /* place 2 FUEL on the other front */
-      for (j = 0; j < 2; j++){
-      do {
-        k = random() % 3;
-      } while (planets[front_planets[i][k + 2]].pl_flags & PLFUEL) ;
-      planets[front_planets[i][k + 2]].pl_flags |= PLFUEL;
-      }
-    } else {
-      planets[front_planets[i][(random() % 2) + 3]].pl_flags |= PLAGRI;
-
-      /* place one repair on the other front */
-      planets[front_planets[i][random() % 3]].pl_flags |= PLREPAIR;
-
-      /* place 2 FUEL on the other front */
-      for (j = 0; j < 2; j++){
-      do {
-        k = random() % 3;
-      } while (planets[front_planets[i][k]].pl_flags & PLFUEL);
-      planets[front_planets[i][k]].pl_flags |= PLFUEL;
-      }
-    }
-
-    /* drop one more repair in the core (home + 1 front + 1 core = 3 Repair)*/
-    planets[core_planets[i][random() % 4]].pl_flags |= PLREPAIR;
-
-    /* now we need to put down 2 fuel (home + 2 front + 2 = 5 fuel) */
-    for (j = 0; j < 2; j++){
-      do {
-      k = random() % 4;
-      } while (planets[core_planets[i][k]].pl_flags & PLFUEL);
-      planets[core_planets[i][k]].pl_flags |= PLFUEL;
-    }
-  }
+    pl_reset();
 }
 
 static void exitRobot(void)

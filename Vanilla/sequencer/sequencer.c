@@ -4,29 +4,13 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "planets.h"
 #include "proto.h"
+#include "planet.h"
+#include "util.h"
 
 #define KTOURNSTART     0x0e
 
 int debug=0;
-
-/* the four close planets to the home planet */
-static int core_planets[4][4] =
-{
-  {7, 9, 5, 8,},
-  {12, 19, 15, 16,},
-  {24, 29, 25, 26,},
-  {34, 39, 38, 37,},
-};
-/* the outside edge, going around in order */
-static int front_planets[4][5] =
-{
-  {1, 2, 4, 6, 3,},
-  {14, 18, 13, 17, 11,},
-  {22, 28, 23, 21, 27,},
-  {31, 32, 33, 35, 36,},
-};
 
 /* from inl.c */
 void obliterate(int wflag, char kreason)
@@ -53,90 +37,6 @@ void obliterate(int wflag, char kreason)
       j->p_hostile = 0;       /* otherwise make all peaceful */
     j->p_war = (j->p_swar | j->p_hostile);
   }
-}
-
-void doResources(int startup)
-{
-  int i, j, k, which;
-
-  /* this is all over the place :-) */
-  for (i = 0; i <= MAXTEAM; i++)
-    {
-      teams[i].te_turns = 0;
-    }
-  if (startup)
-    {
-      MCOPY (pdata, planets, sizeof (pdata));
-
-      for (i = 0; i < 4; i++)
-        {
-          /* one core AGRI */
-          planets[core_planets[i][random () % 4]].pl_flags |= PLAGRI;
-
-          /* one front AGRI */
-          which = random () % 2;
-          if (which)
-            {
-              j = random () % 2;
-              planets[front_planets[i][j]].pl_flags |= PLAGRI;
-
-              /* give fuel to planet next to agri (hde) */
-              planets[front_planets[i][!j]].pl_flags |= PLFUEL;
-
-              /* place one repair on the other front */
-              planets[front_planets[i][(random () % 3) + 2]].pl_flags |= PLREPAIR;
-
-              /* place 2 FUEL on the other front */
-              for (j = 0; j < 2; j++)
-                {
-                  do
-                    {
-                      k = random () % 3;
-                    }
-                  while (planets[front_planets[i][k + 2]].pl_flags & PLFUEL);
-                  planets[front_planets[i][k + 2]].pl_flags |= PLFUEL;
-                }
-            }
-          else
-            {
-              j = random () % 2;
-              planets[front_planets[i][j + 3]].pl_flags |= PLAGRI;
-              /* give fuel to planet next to agri (hde) */
-              planets[front_planets[i][(!j) + 3]].pl_flags |= PLFUEL;
-
-              /* place one repair on the other front */
-              planets[front_planets[i][random () % 3]].pl_flags |= PLREPAIR;
-
-              /* place 2 FUEL on the other front */
-              for (j = 0; j < 2; j++)
-                {
-                  do
-                    {
-                      k = random () % 3;
-                    }
-                  while (planets[front_planets[i][k]].pl_flags & PLFUEL);
-                  planets[front_planets[i][k]].pl_flags |= PLFUEL;
-                }
-            }
-
-          /* drop one more repair in the core 
-		(home + 1 front + 1 core = 3 Repair) */
-
-          planets[core_planets[i][random () % 4]].pl_flags |= PLREPAIR;
-
-          /* now we need to put down 2 fuel (home + 2 front + 2 = 5 fuel) */
-
-          for (j = 0; j < 2; j++)
-            {
-              do
-                {
-                  k = random () % 4;
-                }
-              while (planets[core_planets[i][k]].pl_flags & PLFUEL);
-              planets[core_planets[i][k]].pl_flags |= PLFUEL;
-            }
-        }
-    }
 }
 
 /*
@@ -200,7 +100,7 @@ do_local_balance ( void *nothing )
 void
 do_reset ( void *nothing )
 {
-    doResources(1);
+    pl_reset();
     /* save planet/player state ? */
 }
 

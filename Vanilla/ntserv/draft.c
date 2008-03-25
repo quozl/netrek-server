@@ -8,8 +8,8 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
-#include "daemon.h"
 #include "draft.h"
+#include "planet.h"
 #include "util.h"
 
 /* draft */

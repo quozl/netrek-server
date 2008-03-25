@@ -5,9 +5,9 @@
 #include <ctype.h>
 #include "defs.h"
 #include "struct.h"
-#include "planets.h"
 #include "data.h"
 #include "proto.h"
+#include "planet.h"
 #include "util.h"
 
 static void usage(void)
@@ -220,8 +220,9 @@ int main(int argc, char **argv)
     }
 
     if (!strcmp(argv[i], "restore")) {
-      pl->pl_x = pdata[pl->pl_no].pl_x;
-      pl->pl_y = pdata[pl->pl_no].pl_y;
+      struct planet *virginal = pl_virgin();
+      pl->pl_x = virginal[pl->pl_no].pl_x;
+      pl->pl_y = virginal[pl->pl_no].pl_y;
       if (verbose) say("%s restored to normal location", pl->pl_name);
       goto state_1;
     }

@@ -27,7 +27,7 @@ extern char	*inl_from;
 extern Inl_countdown inl_countdown;
 
 extern char	*addr_mess(int who, int type);
-extern int	doResources();
+extern void	pl_reset_inl();
 extern void	inl_freeze();
 extern int	check_winner();
 
@@ -758,7 +758,7 @@ int do_resetgalaxy(comm,mess)
       inl_teams[c].flags = 0;		/* reset all flags */
     }
 
-  doResources(1);
+  pl_reset_inl(1);
 
   pmessage (0, MALL, inl_from,
 	    "Game restarting with new galaxy.  Teams should be reselected");

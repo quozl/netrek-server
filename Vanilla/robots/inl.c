@@ -22,7 +22,6 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "planets.h"
 #include "inldefs.h"
 #include "proto.h"
 #include "alarm.h"
@@ -169,7 +168,7 @@ int start_tourney();
 void reset_stats();
 void update_scores();
 void announce_scores(int, int, FILE *);
-void doResources(int startup);
+void pl_reset_inl(int startup);
 void countdown(int counter, Inl_countdown *cnt);
 void obliterate(int wflag, char kreason);
 void player_maint();
@@ -1193,7 +1192,7 @@ void reset_inl(int is_end_tourney)
   }
 
   if (!is_end_tourney) {
-    doResources(1);
+    pl_reset_inl(1);
   }
 
 }
@@ -1450,7 +1449,7 @@ int start_tourney()
       break;
   }
 
-  doResources(0);
+  pl_reset_inl(0);
 
 #ifdef nodef
   inl_planets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
@@ -1613,7 +1612,7 @@ void countdown(int counter, Inl_countdown *cnt)
 
 }
 
-void doResources(int startup)
+void pl_reset_inl(int startup)
 {
   int i, j, k, which;
 
@@ -1624,7 +1623,7 @@ void doResources(int startup)
     }
   if (startup)
     {
-      MCOPY (pdata, planets, sizeof (pdata));
+      MCOPY(pl_virgin(), planets, pl_virgin_size());
 
       for (i = 0; i < MAXPLANETS; i++)
 	{
@@ -1702,6 +1701,7 @@ void doResources(int startup)
     }
   else
     {
+      struct planet *pdata = pl_virgin();
       for (i = 0; i < MAXPLANETS; i++)
 	{
 	  planets[i].pl_info = pdata[i].pl_info;

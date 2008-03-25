@@ -5,8 +5,8 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
-#include "daemon.h"
 #include "conquer.h"
+#include "planet.h"
 #include "util.h"
 
 /* conquest gloating parade */
@@ -193,7 +193,7 @@ static void conquer_galaxy_reset()
 {
 	int i;
 
-	doResources();
+	pl_reset();
 	for (i = 0; i <= MAXTEAM; i++) {
 		teams[i].te_turns = 0;
 		teams[i].te_surrender = 0;

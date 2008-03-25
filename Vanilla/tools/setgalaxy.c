@@ -16,9 +16,9 @@
 #include <unistd.h>
 #include "defs.h"
 #include "struct.h"
-#include "planets.h"
 #include "data.h"
 #include "proto.h"
+#include "planet.h"
 #include "util.h"
 
 static void CoolServerIdea(void);
@@ -42,7 +42,7 @@ static void usage(void)
 int main(int argc, char **argv)
 {
     int i;
-    int top_armies = START_ARMIES;
+    int top_armies = 17;
 
     srandom(getpid());
     openmem(0);
@@ -83,9 +83,10 @@ int main(int argc, char **argv)
     }
 
     if (*argv[1] == 'l') {
+        struct planet *virginal = pl_virgin();
 	for (i = 0; i < MAXPLANETS; i++) {
-	    planets[i].pl_x = pdata[i].pl_x;
-	    planets[i].pl_y = pdata[i].pl_y;
+	    planets[i].pl_x = virginal[i].pl_x;
+	    planets[i].pl_y = virginal[i].pl_y;
 	}
 	printf("Restored locations.\n");
 	return 0;
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
     }
 
     if (*argv[1] == 't' || *argv[1] == 'r') { /* tourney reset resources, owners */
-	MCOPY(pdata, planets, sizeof(pdata));
+	MCOPY(pl_virgin(), planets, pl_virgin_size());
 	for (i = 0; i < MAXPLANETS; i++) {
 	    planets[i].pl_armies = top_armies;
 	}

@@ -5,7 +5,6 @@
 #include <ctype.h>
 #include "defs.h"
 #include "struct.h"
-#include "planets.h"
 #include "data.h"
 #include "proto.h"
 

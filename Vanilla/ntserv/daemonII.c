@@ -11,19 +11,20 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <netinet/in.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "planets.h"
 #include "proto.h"
 #include "conquer.h"
-#include "daemon.h"
 #include "alarm.h"
 #include "blog.h"
 #include "util.h"
 #include "slotmaint.h"
 #include "advertise.h"
 #include "draft.h"
+#include "solicit.h"
+#include "planet.h"
 
 #include INC_UNISTD
 #include INC_SYS_FCNTL
@@ -124,7 +125,6 @@ static void message_flag(struct message *cur, char *address);
 
 /* external scope prototypes */
 extern void pinit(void);
-extern void solicit(int force);
 extern void pmove(void);
 
 /* global scope variables */
@@ -253,17 +253,18 @@ int main(int argc, char **argv)
 #endif
 
     if (resetgalaxy) {          /* added 2/6/93 NBT */
-        doResources(); 
+        pl_reset();
     }
     else {
       if (plfd < 0) {
         ERROR(1,("daemon: no planet file, restarting galaxy\n"));
-        doResources();
+        pl_reset();
       }
       else {
-        if (read(plfd, (char *) planets, sizeof(pdata)) != sizeof(pdata)) {
+        int psize = sizeof(struct planet) * MAXPLANETS;
+        if (read(plfd, (char *) planets, psize) != psize) {
             ERROR(1,("daemon: planet file wrong size, restarting galaxy\n"));
-            doResources();
+            pl_reset();
         }
         (void) close(plfd);
       }
@@ -647,7 +648,7 @@ static void move()
             ERROR(3,("daemon: self-destructing\n"));
 #ifdef SELF_RESET /* isae -- reset the galaxy when the daemon dies */
             ERROR(3,("daemon: resetting galaxy!\n"));
-            doResources();
+            pl_reset();
 #endif
         }
         exitDaemon(0);
@@ -3786,8 +3787,9 @@ static void save_planets(void)
     glfd = open(Global, O_RDWR|O_CREAT, 0744);
 
     if (plfd >= 0) {
+        int psize = sizeof(struct planet) * MAXPLANETS;
         (void) lseek(plfd, (off_t) 0, 0);
-        (void) write(plfd, (char *) planets, sizeof(pdata));
+        (void) write(plfd, (char *) planets, psize);
         (void) close(plfd);
     }
     if (glfd >= 0) {
@@ -4518,79 +4520,6 @@ static void fork_robot(int robot)
    } else {
       ERROR(8,( "daemon: forked game manager pid %d\n", manager_pid));
    }
-}
-
-/* maximum number of agris that can exist in one quadrant */
-
-#define AGRI_LIMIT 3
-
-/* the four close planets to the home planet */
-static int core_planets[4][4] =
-{{ 7, 9, 5, 8,},
- { 12, 19, 15, 16,},
- { 24, 29, 25, 26,},
- { 34, 39, 38, 37,},
-};
-/* the outside edge, going around in order */
-static int front_planets[4][5] =
-{{ 1, 2, 4, 6, 3,},
- { 14, 18, 13, 17, 11,},
- { 22, 28, 23, 21, 27,},
- { 31, 32, 33, 35, 36,},
-};
-
-void doResources(void)
-{
-  int i, j, k, which;
-  MCOPY(pdata, planets, sizeof(pdata));
-  for (i = 0; i< 40; i++) {
-        planets[i].pl_armies = top_armies;
-  }
-  for (i = 0; i < 4; i++){
-    /* one core AGRI */
-    planets[core_planets[i][random() % 4]].pl_flags |= PLAGRI;
-
-    /* one front AGRI */
-    which = random() % 2;
-    if (which){
-      planets[front_planets[i][random() % 2]].pl_flags |= PLAGRI;
-
-      /* place one repair on the other front */
-      planets[front_planets[i][(random() % 3) + 2]].pl_flags |= PLREPAIR;
-
-      /* place 2 FUEL on the other front */
-      for (j = 0; j < 2; j++){
-      do {
-        k = random() % 3;
-      } while (planets[front_planets[i][k + 2]].pl_flags & PLFUEL) ;
-      planets[front_planets[i][k + 2]].pl_flags |= PLFUEL;
-      }
-    } else {
-      planets[front_planets[i][(random() % 2) + 3]].pl_flags |= PLAGRI;
-
-      /* place one repair on the other front */
-      planets[front_planets[i][random() % 3]].pl_flags |= PLREPAIR;
-
-      /* place 2 FUEL on the other front */
-      for (j = 0; j < 2; j++){
-      do {
-        k = random() % 3;
-      } while (planets[front_planets[i][k]].pl_flags & PLFUEL);
-      planets[front_planets[i][k]].pl_flags |= PLFUEL;
-      }
-    }
-
-    /* drop one more repair in the core (home + 1 front + 1 core = 3 Repair)*/
-    planets[core_planets[i][random() % 4]].pl_flags |= PLREPAIR;
-
-    /* now we need to put down 2 fuel (home + 2 front + 2 = 5 fuel) */
-    for (j = 0; j < 2; j++){
-      do {
-      k = random() % 4;
-      } while (planets[core_planets[i][k]].pl_flags & PLFUEL);
-      planets[core_planets[i][k]].pl_flags |= PLFUEL;
-    }
-  }
 }
 
 #ifdef PUCK_FIRST

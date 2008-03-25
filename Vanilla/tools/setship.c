@@ -7,6 +7,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "planet.h"
 #include "util.h"
 #include "draft.h"
 
