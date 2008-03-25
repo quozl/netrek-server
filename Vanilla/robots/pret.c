@@ -157,8 +157,8 @@ main(argc, argv)
     robonameset(me); /* set the robot@nowhere fields */
     enter(team, 0, pno, class, roboname); /* was BATTLESHIP 8/9/91 TC */
 
-    me->p_pos = -1;                              /* So robot stats don't get saved */
-    me->p_flags |= (PFROBOT | PFCLOAK);          /* Mark as a robot and hide it */
+    me->p_pos = -1;                     /* So robot stats don't get saved */
+    me->p_flags |= (PFROBOT | PFCLOAK); /* Mark as a robot and hide it */
     
     /* don't appear in the galaxy */
     p_x_y_set(me, -100000, -100000);
@@ -209,7 +209,7 @@ void checkmess()
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != POBSERV){  /*So I'm not alive now...*/
         ERROR(2,("ERROR: %s died??\n", roboname));
-        cleanup(0);   /*Kathy is dead for some unpredicted reason like xsg */
+        cleanup(0);   /* dead for some unpredicted reason like xsg */
     }
 
     /* make sure shared memory is still valid */
@@ -239,8 +239,8 @@ void checkmess()
             if (pret_save_galaxy) {
                 messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
                 messAll(255,roboname,"*** Galaxy will be restored if T-mode starts again within %d minutes ***", pret_galaxy_lifetime/60);
-		if (pret_save_armies)
-		    save_carried_armies();
+                if (pret_save_armies)
+                    save_carried_armies();
                 savegalaxy();
                 galaxysaved = 1;
                 savedtime = time((time_t *) 0);
@@ -325,7 +325,7 @@ void checkmess()
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
                 obliterate(0, TOURNSTART, 0, 0);
-		if (pret_save_galaxy) {
+                if (pret_save_galaxy) {
                     if (galaxysaved)
                     {
                         now = time((time_t *) 0);
@@ -415,13 +415,15 @@ static int num_humans(int team)
             /* Found a human. */
             count++;
             if(robot_debug_target != -1 && robot_debug_level >= 2) {
-                messOne(255, roboname, robot_debug_target, "%d: Counting %s (%s %s) as a human",
+                messOne(255, roboname, robot_debug_target,
+                        "%d: Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
         }
         else {
             if(robot_debug_target != -1 && robot_debug_level >= 2) {
-                messOne(255, roboname, robot_debug_target, "%d: NOT Counting %s (%s %s) as a human",
+                messOne(255, roboname, robot_debug_target,
+                        "%d: NOT Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
         }
@@ -465,7 +467,8 @@ static void stop_a_robot(void)
         teamToStop = team2;
 
     if(robot_debug_target != -1 && robot_debug_level >= 3) {
-        messOne(255, roboname, robot_debug_target, "Stopping from %d", teamToStop);
+        messOne(255, roboname, robot_debug_target,
+                "Stopping from %d", teamToStop);
     }
 
     /* remove a robot, first check for robots not carrying */
@@ -538,7 +541,7 @@ static void save_carried_armies(void)
     int i;
     struct player *j;
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-	if (j->p_status == PFREE)
+        if (j->p_status == PFREE)
             continue;
         if (j->p_flags & PFROBOT)
             continue;
@@ -547,9 +550,9 @@ static void save_carried_armies(void)
         if (j == me) continue;
 
         if (j->p_armies > 0) {
-	    save_armies(j);
-	    j->p_armies = 0;
-	}
+            save_armies(j);
+            j->p_armies = 0;
+        }
     }
 }
 
@@ -635,8 +638,8 @@ namearg(void)
 
         namef = 0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-            if (j->p_status != PFREE && strncmp(name, j->p_name, strlen(name) - 1)
-                == 0) {
+            if (j->p_status != PFREE &&
+                strncmp(name, j->p_name, strlen(name) - 1) == 0) {
                 namef = 1;
                 break;
             }
@@ -704,7 +707,7 @@ static void cleanup(int terminate)
 
 /* terminate is called as a signal handler and is a wrapper for cleanup() */
 static void terminate (int ignored) {
-	cleanup (1);
+    cleanup (1);
 }
 
 /* a pre-t victory is when one team is up by pret_planets planets */
@@ -731,7 +734,9 @@ static void checkPreTVictory() {
     if(o>=10+pret_planets) winner = ORI;
 
     if(winner > 0) {
-        messAll(255,roboname,"The %s have won this round of pre-T entertainment!", team_name(winner));
+        messAll(255,roboname,
+                "The %s have won this round of pre-T entertainment!",
+                team_name(winner));
         obliterate(0, KWINNER, 0, 1);
         resetPlanets();
         galaxysaved = 0;
@@ -766,7 +771,7 @@ static void resetPlanets(void) {
     }
 
 /* set planet resources */
-    doResources ();
+    doResources();
 }
 
 /* maximum number of agris that can exist in one quadrant */
@@ -849,8 +854,8 @@ static void exitRobot(void)
         }
         else {
             messAll(255,roboname,"#");
-            messAll(255,roboname,"#  %s is tired.  Pre-T Entertainment is over "
-                    "for now", roboname);
+            messAll(255,roboname,"#  %s is tired.  "
+                    "Pre-T Entertainment is over for now", roboname);
             messAll(255,roboname,"#");
         }
     }
@@ -862,7 +867,8 @@ static void exitRobot(void)
 
 static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
 {
-    /* 0 = do nothing to war status, 1= make war with all, 2= make peace with all */
+    /* 0 = do nothing to war status, 1= make war with all, 2= make
+    peace with all */
     struct player *j;
 
     /* clear torps and plasmas out */
