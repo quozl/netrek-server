@@ -1,3 +1,7 @@
+/*! @file struct.h
+    @brief structure definitions
+    */
+
 /*
  * struct.h for the server of an xtrek socket protocol.
  */
@@ -146,10 +150,10 @@ struct context {
 #define POBSERV		   0x0006           /* not really dead, but observer. */
 
 /* bit masks of p_flags */
-#define PFSHIELD	   0x0001
-#define PFREPAIR	   0x0002
-#define PFBOMB		   0x0004
-#define PFORBIT		   0x0008
+#define PFSHIELD	   0x0001 /*!< shields are up */
+#define PFREPAIR	   0x0002 /*!< repairing damage or shields */
+#define PFBOMB		   0x0004 /*!< bombing planet while orbiting */
+#define PFORBIT		   0x0008 /*!< orbiting planet p_planet */
 #define PFCLOAK		   0x0010
 #define PFWEP		   0x0020
 #define PFENG		   0x0040
@@ -165,7 +169,7 @@ struct context {
 #define PFCOPILOT	  0x10000	/* Allow copilots */
 #define PFWAR		  0x20000	/* computer reprogramming for war */
 #define PFPRACTR	  0x40000	/* practice type robot (no kills) */
-#define PFDOCK            0x80000       /* true if docked to a starbase */
+#define PFDOCK            0x80000 /*!< docked to a base, p_dock_with valid */
 #define PFREFIT          0x100000       /* true if about to refit */
 #define PFREFITTING	 0x200000	/* true if currently refitting */
 #define PFTRACT  	 0x400000	/* tractor beam activated */
@@ -397,11 +401,12 @@ struct stats {
 #define ST_INITIAL ST_MAPMODE+ST_NAMEMODE+ST_SHOWSHIELDS+ \
                    ST_KEEPPEACE+ST_SHOWLOCAL*2+ST_SHOWGLOBAL*2;
 
+/*! @struct player struct.h struct */
 struct player {
-    int p_no;
-    int p_updates;              /* Number of updates ship has survived */
+    int p_no;                   /*!< slot number, from zero to MAXPLAYER */
+    int p_updates;              /*!< number of updates ship has survived */
     int p_status;               /* Player status */
-    u_int p_flags;              /* Player flags */
+    u_int p_flags;              /*!< flags bitmask, see PF* defines */
     char p_name[NAME_LEN];      /* Player handle, i.e. "Wreck" */
     char p_login[NAME_LEN];     /* Login name of player's account */
     char p_ip[NAME_LEN];        /* IP address of client in text */
