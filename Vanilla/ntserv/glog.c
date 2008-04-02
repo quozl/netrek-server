@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <sys/time.h>
+#include <time.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -29,6 +31,13 @@ int glog_open() {
 
 void glog_printf(const char *fmt, ...) {
   va_list args;
+  time_t curtime;
+  char * t_buff;
+
+  curtime=time(NULL);
+  t_buff=ctime(&curtime);
+  t_buff[strlen(t_buff)-1]='\0';
+  fprintf(glog, "%s: ", t_buff);
 
   va_start(args, fmt);
   vfprintf(glog, fmt, args);
