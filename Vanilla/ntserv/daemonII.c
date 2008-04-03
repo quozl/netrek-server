@@ -764,6 +764,13 @@ static void move()
             context->frame_tourn_end = context->frame;
             political_end(oldmessage);
             ts = TS_PICKUP;
+
+            if (glog_open() == 0) {
+                glog_printf("t-mode duration (seconds): %d\n", 
+                  frames_to_seconds(context->frame_tourn_end-context->frame_tourn_start));
+                glog_flush();
+            }
+
             if (strlen(script_tourn_end) > 0) fork_script(script_tourn_end);
             break;
     }
