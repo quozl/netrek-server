@@ -30,14 +30,14 @@ int glog_open() {
 }
 
 void glog_printf(const char *fmt, ...) {
+  time_t now;
+  char *timestamp;
   va_list args;
-  time_t curtime;
-  char * t_buff;
 
-  curtime=time(NULL);
-  t_buff=ctime(&curtime);
-  t_buff[strlen(t_buff)-1]='\0';
-  fprintf(glog, "%s: ", t_buff);
+  now = time(NULL);
+  timestamp = ctime(&now);
+  timestamp[strlen(timestamp)-1] = '\0';
+  fprintf(glog, "%s: ", timestamp);
 
   va_start(args, fmt);
   vfprintf(glog, fmt, args);

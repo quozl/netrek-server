@@ -771,8 +771,9 @@ static void move()
             ts = TS_PICKUP;
 
             if (glog_open() == 0) {
-                glog_printf("t-mode duration (seconds): %d\n", 
-                  frames_to_seconds(context->frame_tourn_end-context->frame_tourn_start));
+                int n = frames_to_seconds(context->frame_tourn_end -
+                                          context->frame_tourn_start);
+                glog_printf("t-mode duration (seconds): %d\n", n);
                 glog_flush();
             }
 
