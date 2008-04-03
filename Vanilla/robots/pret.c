@@ -736,6 +736,11 @@ static void checkPreTVictory() {
         messAll(255,roboname,
                 "The %s have won this round of pre-T entertainment!",
                 team_name(winner));
+        /* wait for conquer parade to complete */
+        while ((status->gameup & GU_CONQUER)) {
+          usleep(20000);
+          me->p_ghostbuster = 0;
+        }
         obliterate(0, KWINNER, 0, 1);
         resetPlanets();
         galaxysaved = 0;

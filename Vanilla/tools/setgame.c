@@ -1,3 +1,8 @@
+/*! @file setgame.c
+    Affect game state from command line, pause, resume and terminate,
+    plus test functions.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -253,6 +258,12 @@ int main(int argc, char **argv)
 
     if (!strcmp(argv[i], "inl-drafted-off")) {
       status->gameup &= ~GU_INL_DRAFTED;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "conquer-trigger")) {
+      context->conquer_trigger++;
+      status->gameup |= GU_PAUSED;
       goto state_0;
     }
 

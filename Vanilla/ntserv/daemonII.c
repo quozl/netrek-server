@@ -321,6 +321,7 @@ int main(int argc, char **argv)
     memcpy(&context->start, status, sizeof(struct status));
     context->blog_pickup_game_full = 0;
     context->blog_pickup_queue_full = 0;
+    context->conquer_trigger = 0;
 
 #undef wait
 
@@ -659,6 +660,10 @@ static void move()
       if (cycle++ % (fps / 10) == 0) {
         udplayers_pause();
         if (status->gameup & GU_CONQUER) conquer_update();
+      }
+      if (context->conquer_trigger != 0) {
+        conquer_begin_special();
+        context->conquer_trigger = 0;
       }
       do_message_requeue_all();
       /* but continue to signal player processes at their chosen rate */
@@ -4109,6 +4114,17 @@ static int checkwin(struct player *winner)
             return 1;
         }
     }
+
+    /* pre-t round win check */
+    if (!status->tourn)
+        if (status->gameup && GU_PRET)
+            if (teams[winner->p_team].te_plcount > (10 + pret_planets)) {
+                pmessage(0, MALL | MCONQ, " ",
+                         "The %s have won a round!",
+                         team_name(winner->p_team));
+                conquer_begin_pret(winner);
+            }
+
     return 0;
 }
 

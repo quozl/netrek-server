@@ -14,6 +14,11 @@
 static int conquer_player;	/* player number that won	*/
 static int conquer_planet;	/* planet they won at		*/
 static int conquer_timer;	/* countdown timer		*/
+static int conquer_type;	/* type of parade		*/
+
+#define CONQUER_TYPE_END          0
+#define CONQUER_TYPE_SPECIAL      1
+#define CONQUER_TYPE_PRET         2
 
 #define CONQUER_TIMER_BEGIN	100	/* total parade length in ticks	*/
 #define CONQUER_TIMER_DECLOAK	 90	/* threshold to decloak all	*/
@@ -169,7 +174,6 @@ static void conquer_ships_explode()
 	int h;
 	struct player *j;
 
-
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
 		/* Don't kill robots on geno */
@@ -206,6 +210,17 @@ static void conquer_end()
 	conquer_galaxy_reset();
 }
 
+static void conquer_go_home()
+{
+	int h;
+	struct player *j;
+
+	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+		if (j->p_status == PFREE) continue;
+		p_x_y_go_home(j);
+	}
+}
+
 /* manage the animation sequence */
 /* called by daemon once per tick while in a GU_CONQUER pause */
 void conquer_update()
@@ -213,33 +228,70 @@ void conquer_update()
 	conquer_timer--;
 	if (conquer_timer == CONQUER_TIMER_DECLOAK) {
 		conquer_decloak();
-		conquer_deplasma();
+		if (conquer_type != CONQUER_TYPE_SPECIAL)
+			conquer_deplasma();
 	}
 	if (conquer_timer < CONQUER_TIMER_DECLOAK) {
-		conquer_plasma_ring();
+		if (conquer_type != CONQUER_TYPE_SPECIAL)
+			conquer_plasma_ring();
 		conquer_ships_ring();
 	}
 	if (conquer_timer == CONQUER_TIMER_PARADE)
 		conquer_parade();
 	if (conquer_timer == CONQUER_TIMER_GOODBYE)
-		pmessage(0, MALL, "GOD->ALL", "Goodbye.");
+		if (conquer_type == CONQUER_TYPE_END)
+			pmessage(0, MALL, "GOD->ALL", "Goodbye.");
 	if (conquer_timer > 0) return;
 	status->gameup &= ~(GU_PAUSED|GU_CONQUER);
-	conquer_plasma_explode();
-	conquer_end();
+	switch (conquer_type) {
+	case CONQUER_TYPE_END:
+		conquer_plasma_explode();
+		conquer_end();
+		break;
+	case CONQUER_TYPE_SPECIAL:
+		conquer_go_home();
+		break;
+	case CONQUER_TYPE_PRET:
+		conquer_plasma_explode();
+		conquer_go_home();
+		break;
+	}
 }
 
 /* begin a conquer parade sequence */
+static void conquer_begin_by_type(struct player *winner, int type)
+{
+	status->gameup |= GU_CONQUER|GU_PAUSED;
+	conquer_player = winner->p_no;
+	conquer_planet = winner->p_planet;
+	conquer_timer = CONQUER_TIMER_BEGIN;
+	conquer_type = type;
+}
+
+/* standard conquer at end of game */
 void conquer_begin(struct player *winner)
 {
 #ifdef NOCONQUERPARADE
 	conquer_end();
 #else
-	status->gameup |= GU_CONQUER|GU_PAUSED;
-	conquer_player = winner->p_no;
-	conquer_planet = winner->p_planet;
-	conquer_timer = CONQUER_TIMER_BEGIN;
+	conquer_begin_by_type(winner, CONQUER_TYPE_END);
 #endif
+}
+
+/* pre-t mode round won parade */
+void conquer_begin_pret(struct player *winner)
+{
+	conquer_begin_by_type(winner, CONQUER_TYPE_PRET);
+}
+
+/* special parade triggered by setgame */
+void conquer_begin_special()
+{
+	status->gameup |= GU_CONQUER|GU_PAUSED;
+	conquer_timer = CONQUER_TIMER_BEGIN;
+	conquer_player = -1;
+	conquer_planet = 0;
+	conquer_type = CONQUER_TYPE_SPECIAL;
 }
 
 /*  Hey Emacs!

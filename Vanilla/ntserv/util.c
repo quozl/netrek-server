@@ -13,6 +13,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "planet.h"
 
 #if !defined(strcasestr)
 #define strcasestr strstr
