@@ -29,6 +29,7 @@
 #include "ltd_stats.h"
 #include "blog.h"
 #include "util.h"
+#include "planet.h"
 
 /*
 
@@ -541,10 +542,8 @@ void checkmess()
   ERROR(2,("Enter checkmess\n"));
 #endif
 
-  /* make sure shared memory is still valid */
-  if (shmget(PKEY, SHMFLAG, 0) < 0) {
-    exit(1);
-  }
+  /* exit if daemon terminates use of shared memory */
+  if (forgotten()) exit(1);
 
   while (oldmctl != mctl->mc_current) {
     oldmctl++;

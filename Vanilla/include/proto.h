@@ -169,6 +169,7 @@ void lock_show(int lock);
 void lock_off(int lock);
 void lock_on(int lock);
 void lock_on_nowait(int lock);
+int forgotten(void);
 
 /* orbit.c */
 void orbit(void);

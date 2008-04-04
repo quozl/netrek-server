@@ -294,3 +294,10 @@ int detachmem(void) {
   }
   return 1;
 }
+
+int forgotten(void) {
+  if (shmget(pkey, SHMFLAG, 0) < 0) {
+    return 1;
+  }
+  return 0;
+}

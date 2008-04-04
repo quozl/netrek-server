@@ -201,7 +201,6 @@ main(argc, argv)
 
 void checkmess()
 { 
-    int         shmemKey = PKEY;
     static int no_bots = 0;
     static int time_in_T = 0;
 
@@ -211,11 +210,8 @@ void checkmess()
         cleanup(0);   /* dead for some unpredicted reason like xsg */
     }
 
-    /* make sure shared memory is still valid */
-    if (shmget(shmemKey, SHMFLAG, 0) < 0) {
-        exit(1);
-        ERROR(2,("ERROR: Invalid shared memory\n"));
-    }
+    /* exit if daemon terminates use of shared memory */
+    if (forgotten()) exit(1);
 
     ticks++;
 

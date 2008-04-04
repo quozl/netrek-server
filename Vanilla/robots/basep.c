@@ -176,35 +176,30 @@ main(argc, argv)
 
 void checkmess()
 {
-   int 	shmemKey = PKEY;
+  me->p_ghostbuster = 0;         /* keep ghostbuster away */
+  if (me->p_status != PALIVE){  /*So I'm not alive now...*/
+    ERROR(2,("ERROR: Smack died??\n"));
+    cleanup(0);
+  }
 
-    me->p_ghostbuster = 0;         /* keep ghostbuster away */
-    if (me->p_status != PALIVE){  /*So I'm not alive now...*/
-      ERROR(2,("ERROR: Smack died??\n"));
-      cleanup(0);    /*Smack is dead for some unpredicted reason like xsg */
-    }
+  robocheck++;
+  if ((robocheck % ROBOCHECK) == 0)
+    check_robots_only();
 
-     robocheck++;
-      if ((robocheck % ROBOCHECK) == 0)
-	 check_robots_only();
-      /* make sure shared memory is still valid */
-      if (shmget(shmemKey, SHMFLAG, 0) < 0) {
-	 exit(1);
-	 ERROR(2,("ERROR: Invalid shared memory\n"));
+  /* exit if daemon terminates use of shared memory */
+  if (forgotten()) exit(1);
 
-      }
+  if ((robocheck % SENDINFO) == 0) {
+    messAll(255, roboname, "Welcome to the Basepractice Server.");
+    messAll(255, roboname, "Send me the message \"help\" for rules.");
+    messAll(255, roboname, "Read the MOTD for detailed info.");
+  }
 
-      if ((robocheck % SENDINFO) == 0) {
-	messAll(255,roboname,"Welcome to the Basepractice Server.");
-	messAll(255,roboname,"Send me the message \"help\" for rules.");
-	messAll(255,roboname,"Read the MOTD for detailed info.");
-	}
-
-    while (oldmctl!=mctl->mc_current) {
-        oldmctl++;
-        if (oldmctl==MAXMESSAGE) oldmctl=0;
-        robohelp(me, oldmctl, roboname);
-    }
+  while (oldmctl != mctl->mc_current) {
+    oldmctl++;
+    if (oldmctl == MAXMESSAGE) oldmctl=0;
+    robohelp(me, oldmctl, roboname);
+  }
 }
 
 /* check to see if all robots in the game. If so tell them to exit */

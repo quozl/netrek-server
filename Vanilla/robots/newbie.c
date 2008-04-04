@@ -197,7 +197,6 @@ main(argc, argv)
 
 void checkmess()
 {
-    int         shmemKey = PKEY;
     static int no_humans = 0;
     static int count = 0;
 
@@ -207,11 +206,8 @@ void checkmess()
         cleanup(0);   /*Merlin is dead for some unpredicted reason like xsg */
     }
 
-    /* make sure shared memory is still valid */
-    if (shmget(shmemKey, SHMFLAG, 0) < 0) {
-        exit(1);
-        ERROR(2,("ERROR: Invalid shared memory\n"));
-    }
+    /* exit if daemon terminates use of shared memory */
+    if (forgotten()) exit(1);
 
     ticks++;
 
