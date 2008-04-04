@@ -44,6 +44,9 @@ static void conquer_decloak()
 		if (j->p_status == PFREE) continue;
 		j->p_flags &= ~PFCLOAK;
 		j->p_flags |= PFSEEN;
+		if (conquer_type != CONQUER_TYPE_END)
+			j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT |
+					PFBEAMUP | PFBEAMDOWN);
 	}
 }
 
@@ -85,8 +88,12 @@ static void conquer_plasma_ring()
 {
 	struct torp *k;
 	int np = 0, pn = 0;
-	int radius = (CONQUER_TIMER_BEGIN - conquer_timer) 
+	int radius = (CONQUER_TIMER_BEGIN - conquer_timer)
 		* CONQUER_RING_RADIUS * ORBDIST / CONQUER_TIMER_BEGIN;
+
+	if (conquer_type == CONQUER_TYPE_END) {
+		radius = 2 * CONQUER_RING_RADIUS * ORBDIST - radius;
+	}
 
 	for (k = firstPlasma; k <= lastPlasma; k++, k++) {
 		np++;

@@ -4117,14 +4117,19 @@ static int checkwin(struct player *winner)
     }
 
     /* pre-t round win check */
-    if (!status->tourn)
-        if (status->gameup && GU_PRET)
-            if (teams[winner->p_team].te_plcount > (10 + pret_planets)) {
-                pmessage(0, MALL | MCONQ, " ",
-                         "The %s have won a round!",
-                         team_name(winner->p_team));
+    if (!status->tourn) {
+        if (status->gameup & GU_PRET) {
+            int need = 10 + pret_planets - teams[winner->p_team].te_plcount;
+            if (need < 1) {
                 conquer_begin_pret(winner);
+            } else {
+                pmessage(0, MALL, "GOD->ALL",
+                         "%s need %d more planet%s to win this round!",
+                         team_name(winner->p_team), need,
+                         (need == 1) ? "" : "s");
             }
+        }
+    }
 
     return 0;
 }
