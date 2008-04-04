@@ -317,6 +317,7 @@ extern int robot_debug_level;
 extern char Robodir[FNAMESIZE];
 extern char robofile[FNAMESIZE];
 extern char robot_host[FNAMESIZE];
+extern int is_robot_by_host;
 #endif
 #ifdef DOGFIGHT
 extern char Mars[FNAMESIZE];

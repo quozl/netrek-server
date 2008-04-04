@@ -295,6 +295,7 @@ int robot_debug_level = 0;
 char Robodir[FNAMESIZE];
 char robofile[FNAMESIZE];
 char robot_host[FNAMESIZE];
+int is_robot_by_host = 1;
 #endif
 #ifdef DOGFIGHT
 char Mars[FNAMESIZE];

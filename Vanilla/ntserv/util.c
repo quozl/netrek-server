@@ -236,7 +236,7 @@ int is_robot(const struct player *pl)
 {
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
   if (pl->p_flags & PFBPROBOT) return 1;
-  if (!strcmp(pl->p_ip, robot_host)) return 1;
+  if (is_robot_by_host && (!strcmp(pl->p_ip, robot_host))) return 1;
 #endif
   if (pl->p_flags & PFROBOT) return 1;
   return 0;

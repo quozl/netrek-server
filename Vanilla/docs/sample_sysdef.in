@@ -345,6 +345,10 @@ BASEPRACTICE=0
 #	Host to which to connect with robots
 ROBOTHOST=127.0.0.1
 #
+#       Whether to assume that a slot accessing the server from the
+#       matching ROBOTHOST above is a robot, regardless of the flags.
+IS_ROBOT_BY_HOST=1
+#
 #    Newbie Server
 NEWBIE=0
 #

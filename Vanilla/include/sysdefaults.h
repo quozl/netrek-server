@@ -199,6 +199,8 @@ struct sysdef_keywords {
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER)  || defined(PRETSERVER)
   { "ROBOTHOST",	SYSDEF_CHAR,	robot_host,
     "Robot host" },
+  { "IS_ROBOT_BY_HOST",	SYSDEF_INT,	&is_robot_by_host,
+    "Whether to classify a slot as a robot if it matches ROBOTHOST" },
 #endif
   { "ROBOT_DEBUG_TARGET",	SYSDEF_INT,	&robot_debug_target,
     "Slot # to send newbie/pret debug output to" },
