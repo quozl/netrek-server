@@ -633,7 +633,7 @@ struct planet {
     char pl_name[NAME_LEN];
     int pl_namelen;		/* Cuts back on strlen's */
     int pl_armies;
-    int pl_info;		/* Teams which have info on planets */
+    int pl_info;		/* bitmask of teams which have info on me */
     int pl_deadtime;		/* Time before planet will support life */
     int pl_couptime;		/* Time before coup may take place */
 };
