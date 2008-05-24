@@ -159,6 +159,26 @@ int main(int argc, char **argv)
 		defenseRating(&j));
 	    continue;
 	}
+	else if (count !=0 && harsh==100 && play_entry.stats.st_tticks == 1
+		&& play_entry.stats.st_tkills == 0
+		&& play_entry.stats.st_tlosses == 0
+		&& play_entry.stats.st_tarmsbomb == 0
+		&& play_entry.stats.st_planets == 0
+		&& play_entry.stats.st_rank == 0) {
+            j.p_stats = play_entry.stats;
+            printf("%-16.16s %7.2f   %4d %5.2f  %4d %5.2f  %4d %5.2f  %4d %5.2f\n",
+                play_entry.name,
+                play_entry.stats.st_tticks / 36000.0,
+                play_entry.stats.st_tplanets,
+                planetRating(&j),
+                play_entry.stats.st_tarmsbomb,
+                bombingRating(&j),
+                play_entry.stats.st_tkills,
+                offenseRating(&j),
+                play_entry.stats.st_tlosses,
+                defenseRating(&j));
+            continue;
+	}
 	if (fd>=0) {
 	    write(fd, (char *) &play_entry, sizeof(struct statentry));
 	    kept++;
@@ -187,6 +207,10 @@ input files by 'scores'.\n\
 It then recreates the database (.players), throwing away characters\n\
 which haven't been used recently.  The n tells it how harsh to be when\n\
 determining who to throw away.  The default n is 10.\n\
+\n\
+Alternatively, use a n value of 100 to instead trim players who have a\n\
+0 value for rank (i.e. ensign), tkills, tlosses, tarmsbomb, and\n\
+tplanets, and a 1 value for tticks.  Useful for trimming unplayed chars.\n\
 \n\
 For characters dropped, a summary line is written to standard output.\n");
     exit(0);
