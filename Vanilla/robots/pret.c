@@ -542,6 +542,8 @@ static void save_carried_armies(void)
             continue;
         if (j->p_status == POBSERV)
             continue;
+        if (j->p_status == PDEAD)
+            continue;
         if (j == me) continue;
 
         if (j->p_armies > 0) {
