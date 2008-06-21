@@ -12,6 +12,8 @@
 #include "planet.h"
 #include "util.h"
 
+/* BUGs 2008-04-17 ... a draft can occur without a second captain somehow, workaround is to change a slot team using xtkill and ask them to uncaptain and captain.  Enforced weapon and lock state causes delegation to every player. */
+
 /* draft */
 
 /* http://en.wikipedia.org/wiki/Draft_%28sports%29 "A sports draft is
