@@ -408,14 +408,13 @@ struct badversion_spacket { /* SP_BADVERSION py-struct "!bbxx" #21 */
     char pad3;
 };
 
-/* numbering and ordering per current usage as at 2008-06-21 */
-#define BADVERSION_SOCKET  0 /* CP_SOCKET version does not match, exiting */
-#define BADVERSION_DENIED  1 /* access denied by netrekd */
-#define BADVERSION_NOSLOT  1 /* no slot on queue */
-#define BADVERSION_BANNED  2 /* banned */
-#define BADVERSION_DOWN    6 /* game shutdown by server */
-#define BADVERSION_SILENCE 6 /* daemon stalled */
-#define BADVERSION_SELECT  6 /* internal error */
+#define BADVERSION_SOCKET   0 /* CP_SOCKET version does not match, exiting */
+#define BADVERSION_DENIED   1 /* access denied by netrekd */
+#define BADVERSION_NOSLOT   2 /* no slot on queue */
+#define BADVERSION_BANNED   3 /* banned */
+#define BADVERSION_DOWN     4 /* game shutdown by server */
+#define BADVERSION_SILENCE  5 /* daemon stalled */
+#define BADVERSION_SELECT   6 /* internal error */
 /* as at 2008-06-21 netrek-client-cow and netrek-client-xp report 0 as
    invalid version, 1-6 as cannot play, others are not valid, and
    netrek-client-xp uses a popup message box for 1-6 */
