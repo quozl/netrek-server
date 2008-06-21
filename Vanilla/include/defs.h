@@ -511,4 +511,16 @@ because they have initialisation of variables dependent on UPDATE. */
 #define IGNORING	1	/* next 2 are for state checks in the     */
 #define IGNOREDBY	2	/* do_display_ignores func. in ntscmds.c  */
 
+/* SP_BADVERSION reason codes */
+#define BADVERSION_SOCKET   0 /* CP_SOCKET version does not match, exiting */
+#define BADVERSION_DENIED   1 /* access denied by netrekd */
+#define BADVERSION_NOSLOT   2 /* no slot on queue */
+#define BADVERSION_BANNED   3 /* banned */
+#define BADVERSION_DOWN     4 /* game shutdown by server */
+#define BADVERSION_SILENCE  5 /* daemon stalled */
+#define BADVERSION_SELECT   6 /* internal error */
+/* as at 2008-06-21 netrek-client-cow and netrek-client-xp report 0 as
+   invalid version, 1-6 as cannot play, others are not valid, and
+   netrek-client-xp uses a popup message box for 1-6 */
+
 #endif /* _h_defs */

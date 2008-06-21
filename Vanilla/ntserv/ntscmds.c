@@ -68,7 +68,7 @@ void do_genos_query(char *comm, struct message *mess, int who);
 void do_display_ignoring(char *comm, struct message *mess, int who);
 void do_display_ignoredby(char *comm, struct message *mess, int who);
 void do_display_ignores(char *comm, struct message *mess, int who, int type);
-void eject_player(int who);
+void eject_player(int who, int why);
 void ban_player(int who);
 void do_client_query(char *comm, struct message *mess, int who);
 void do_ping_query(char *comm, struct message *mess, int who);
