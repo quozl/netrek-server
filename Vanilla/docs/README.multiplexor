@@ -1,0 +1,62 @@
+Goals: permit all client to server and metaserver communication via
+UDP port 2592, while still permitting the conventional communication.
+
+Non-goals: data efficiency, reduced lag, backward compatibility,
+client verification, IP address revelation.
+
+Design: multiplexor process bound to UDP port 2592, with which clients
+will communicate.  Multiplexor will exchange packets with ntserv and
+other server side processes.
+
+   +--------+            +-------------+ M          +--------------+
+   | client |------------| multiplexor |------------| metaserver   |
+   +--------+   udp 2592 +-------------+   udp 3521 +--------------+
+			    |	|   |
+                            |   |   |    S          +--------------+
+                            |   |   ----------------| players list |
+                            |   |          udp 3521 +--------------+
+			    |	|
+                            |   |        P          +--------------+
+                            |   |-------------------| ntserv player|
+                            |              tcp 2592 +--------------+
+			    |
+                            |            O          +--------------+
+                            ------------------------| ntserv observ|
+                                           tcp 2593 +--------------+
+
+struct xpacket {
+       char type;	/* {M,S,P,O} */
+       char data[n];
+}
+
+Examples:
+
+C->X: M?
+X->M: ?
+M->X: r,6\ncontinuum.us.netrek.org,2592,3,303,0,0,B\n ...
+X->C: Mr,6\ncontinuum.us.netrek.org,2592,3,303,0,0,B\n ...
+
+C->X: S?
+X->S: ?
+S->X: s,B,Unnamed Vanilla Server,1,2592,0,0\n ...
+X->C: Ss,B,Unnamed Vanilla Server,1,2592,0,0\n ...
+
+C->X: P{CP_SOCKET}{CP_FEATURE} ...
+X->P: {CP_SOCKET}{CP_FEATURE} ...
+P->X: {SP_MOTD}{SP_FEATURE} ...
+X->C: P{SP_MOTD}{SP_FEATURE} ...
+
+FIXME: how to handle packet loss on the previously TCP connection?
+
+       - STCP?
+
+Question: multiple clients behind a gateway?
+
+Answer: gateway will assign different source ports, so the clients can
+be identified by their source port (getpeername).
+
+
+Question: how will client IP addresses appear?
+
+Answer: they will not.  (Or this could be passed in a special packet
+that is trusted if the source IP is local).
