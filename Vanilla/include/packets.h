@@ -476,16 +476,16 @@ struct scan_spacket {		/* ATM */
     LONG p_wtemp;
 };
 
-struct udp_reply_spacket {	/* UDP */
-    char type;		/* SP_UDP_REPLY */
+struct udp_reply_spacket { /* SP_UDP_REPLY py-struct '!bbxxi' #28 */
+    char type;
     char reply;
     char pad1;
     char pad2;
     int  port;
 };
 
-struct sequence_spacket {	/* UDP */
-    char type;		/* SP_SEQUENCE */
+struct sequence_spacket { /* SP_SEQUENCE py-struct '!bBH' #29 */
+    char type;
     u_char flag8;
     u_short sequence;
 };
@@ -757,8 +757,8 @@ struct scan_cpacket { /* CP_SCAN py-struct "!bbxx" #34 */
     char pad2;
 };
 
-struct udp_req_cpacket {	/* UDP */
-    char type;		/* CP_UDP_REQ */
+struct udp_req_cpacket { /* CP_UDP_REQ py-struct "!bbbxi" #35 */
+    char type;
     char request;
     char connmode;	/* respond with port # or just send UDP packet? */
     char pad2;
