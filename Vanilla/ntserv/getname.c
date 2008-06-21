@@ -58,8 +58,9 @@ static void handleLogin(void)
     FD_SET (CP_LOGIN, &inputMask);
     while (*namePick=='\0') {
 	/* Been ghostbusted? */
-	if (me->p_status==PFREE) exitGame();
-	if (isClientDead()) exitGame();
+	if (me->p_status == PFREE) exitGame(0);
+	if (isClientDead()) exitGame(0);
+	if (me->p_disconnect) exitGame(me->p_disconnect);
 	socketPause(1);
 	readFromClient();
     }

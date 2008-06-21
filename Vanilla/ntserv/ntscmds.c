@@ -285,10 +285,10 @@ void do_player_eject(int who, int player, int mflags, int sendto)
     pmessage(0, MALL, addr_mess(who,MALL), 
 	"%2s has been ejected by their team", j->p_mapchars);
 
-    eject_player(j->p_no);
+    eject_player(j->p_no, BADVERSION_NOSLOT);
 }
 
-void eject_player(int who)
+void eject_player(int who, int why)
 {
   struct player *j;
 
@@ -296,20 +296,13 @@ void eject_player(int who)
   j->p_ship.s_type = STARBASE;
   j->p_whydead=KQUIT;
   j->p_explode=10;
-  /* note vicious eject prevents animation of ship explosion */
   j->p_status=PEXPLODE;
   j->p_whodead=me->p_no;
   bay_release(j);
 
   if (eject_vote_vicious) {
-                                      /* Eject AND free the slot. I am sick
-                                         of the idiots who login and just
-                                         make the game less playable. And
-                                         when ejected by the team they log
-                                         right back in. Freeing the slot
-                                         should help a little. */
     if (j->p_process != 0) {
-      if (kill(j->p_process, SIGTERM) < 0) freeslot(j);
+      j->p_disconnect = why;
     } else {
       freeslot(j);
     }
@@ -343,7 +336,7 @@ void do_player_ban(int who, int player, int mflags, int sendto)
     pmessage(0, MALL, addr_mess(who,MALL), 
 	"%2s has been temporarily banned by their team", j->p_mapchars);
 
-    eject_player(j->p_no);
+    eject_player(j->p_no, BADVERSION_BANNED);
     if (!bans_add_temporary_by_player(j->p_no, " by the players")) {
       pmessage(0, MALL, addr_mess(who,MALL), 
 	       " temporary ban list is full, ban ineffective");

@@ -266,6 +266,12 @@ int setship(char *cmds)
     goto state_1;
   }
 
+  if (!strcmp(token, "disconnect")) {
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    me->p_disconnect = atoi(token);
+    goto state_1;
+  }
+
   goto state_0;
 }
 

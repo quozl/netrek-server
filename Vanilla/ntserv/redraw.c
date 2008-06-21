@@ -85,7 +85,7 @@ void intrupt(void)
     }
     if (me->p_status == PFREE) {
 	ERROR(1,("intrupt: exitGame() on PFREE (pid %i)\n",getpid()));
-	exitGame();
+	exitGame(0);
     }
 
     if (!Observer || me->p_status == PEXPLODE)

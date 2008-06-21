@@ -96,6 +96,7 @@ void input(void)
             exit(0);
 	}
 	if (!(status -> gameup & GU_GAMEOK)) panic(BADVERSION_DOWN);
+	if (me->p_disconnect) panic(me->p_disconnect);
 	/* wait for activity on network socket or next daemon update */
 	while (1) {
             FD_ZERO(&readfds);

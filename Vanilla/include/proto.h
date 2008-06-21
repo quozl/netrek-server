@@ -145,7 +145,7 @@ void do_refit(int type);
 int numPlanets(int owner);
 
 /* main.c */
-void exitGame(void);
+void exitGame(int why);
 int CheckBypass(char *login, char *host, char *file);
 
 /* ntscmds.c */

@@ -1282,7 +1282,7 @@ int do_free(char *comm, struct message *mess)
 
   if (j->p_process)
     {
-      kill(j->p_process, SIGTERM);
+      j->p_disconnect = BADVERSION_NOSLOT;
       pmessage(0, MALL, inl_from, "Freeing slot %c (done by slot %c)", slot,
                slot_char(who));
       return 1;

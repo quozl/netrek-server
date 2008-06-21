@@ -198,6 +198,7 @@ int main(int argc, char **argv)
         me->p_flags |= PFOBSERV;
 
     me->p_process = getpid();
+    me->p_disconnect = 0;
     p_ups_set(me, defups);
     strncpy(me->p_ip, host, sizeof(me->p_ip));
 
@@ -366,7 +367,7 @@ int main(int argc, char **argv)
             repCount=0;         /* Make sure he gets an update immediately */
         }
         if (team == -1) {
-            exitGame();
+            exitGame(0);
         }
         bypassed = (CheckBypass(login,host,Bypass_File) == TRUE);
 
@@ -432,9 +433,11 @@ static void noplay(int reason)
     flushSockBuf ();
 }
 
-void exitGame(void)
+void exitGame(int reason)
 {
     char addrbuf[20];
+
+    if (reason) noplay(reason);
 
     if (me != NULL && me->p_team != ALLTEAM) {
         sprintf(addrbuf, " %c%c->ALL",

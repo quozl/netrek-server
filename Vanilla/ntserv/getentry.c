@@ -57,9 +57,10 @@ void getEntry(int *team, int *stype)
 	    me->p_explode=600;
 	}
 	socketPause(1);
+	if (me->p_disconnect) exitGame(me->p_disconnect);
 	readFromClient();
 	if (isClientDead())
-	    exitGame();
+	    exitGame(0);
 	if (teamPick != -1) {
 	    if (teamPick < 0 || teamPick > 3) {
 		new_warning(UNDEF,"Get real!");
