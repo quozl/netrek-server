@@ -99,11 +99,10 @@ static void save_carried_armies(void);
 static void
 reaper(int sig)
 {
-    int stat=0;
-    static int pid;
+    int pid, stat = 0;
 
     while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
-    HANDLE_SIG(SIGCHLD,reaper);
+    HANDLE_SIG(SIGCHLD, reaper);
 }
 
 #ifdef PRETSERVER
@@ -112,9 +111,7 @@ main(argc, argv)
      int             argc;
      char           *argv[];
 {
-    int team = 4;
     int pno;
-    int class;                  /* ship class 8/9/91 TC */
  
 #ifndef TREKSERVER
     if (gethostname(hostname, 64) != 0) {
@@ -138,10 +135,9 @@ main(argc, argv)
     if (!debug)
         SIGNAL(SIGINT, terminate);
 
-    class = STARBASE;
     target = -1;                /* no target 7/27/91 TC */
-    if ( (pno = pickslot(QU_PRET_DMN)) < 0) {
-       printf("exiting! %d\n", pno);
+    if ((pno = pickslot(QU_PRET_DMN)) < 0) {
+       printf("exiting! due pickslot returning %d\n", pno);
        exit(0);
     }
     me = &players[pno];
@@ -154,7 +150,7 @@ main(argc, argv)
        */
 
     robonameset(me); /* set the robot@nowhere fields */
-    enter(team, 0, pno, class, roboname); /* was BATTLESHIP 8/9/91 TC */
+    enter(4, 0, pno, STARBASE, roboname); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;                     /* So robot stats don't get saved */
     me->p_flags |= (PFROBOT | PFCLOAK); /* Mark as a robot and hide it */
