@@ -34,7 +34,7 @@
 #endif
 
 /* file scope prototypes */
-static void noplay();
+static void noplay(int reason);
 static void reaper(int);
 static void printUsage(char *prog);
 static void sendMotd(void);
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
         if (host && ip) {
             if ((bans_check_permanent(login, host) == TRUE) ||
                 (bans_check_permanent(login, ip) == TRUE)) {
-                noplay(2);
+                noplay(BADVERSION_BANNED);
                 ERROR(2,("ntserv/main.c: premature disconnect of %s due to permanent ban\n", ip));
                 exit(1);
             }
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
     /* wait for a slot to become free */
     pno = findslot(w_queue);
     if (pno < 0) {
-        noplay(1);
+        noplay(BADVERSION_NOSLOT);
 	ERROR(2,("ntserv/main.c: Quitting: No slot available on queue %d\n",w_queue));
 	exit(1);
     }
@@ -420,11 +420,12 @@ int main(int argc, char **argv)
     }
 }
 
-void noplay(int reason)
+static void noplay(int reason)
 {
     /* trigger client's "Sorry, but you cannot play xtrek now.
        Try again later." */
     struct badversion_spacket packet;
+    memset(&packet, 0, sizeof(struct badversion_spacket));
     packet.type = SP_BADVERSION;
     packet.why = reason;
     sendClientPacket (&packet);

@@ -1818,8 +1818,9 @@ int checkVersion(void)
     struct badversion_spacket packet;
 
     if (userVersion != SOCKVERSION) {
-	packet.type=SP_BADVERSION;
-	packet.why=0;
+	memset(&packet, 0, sizeof(struct badversion_spacket));
+	packet.type = SP_BADVERSION;
+	packet.why = BADVERSION_SOCKET;
 	sendClientPacket((CVOID) &packet);
 	flushSockBuf();
 	return 0;

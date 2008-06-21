@@ -539,8 +539,10 @@ static void deny(char *ip)
   }
 
   /* issue a bad version packet to the client */
+  memset(&packet, 0, sizeof(struct badversion_spacket));
   packet.type = SP_BADVERSION;
-  packet.why = 1;
+#define BADVERSION_DENIED 1 /* access denied by netrekd */
+  packet.why = BADVERSION_DENIED;
   write (0, (char *) &packet, sizeof(packet));
 
   sleep (2);

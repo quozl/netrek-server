@@ -62,18 +62,19 @@ static void setflag()
 #endif /*PING*/
 }
 
-static void gamedown()
+static void gamedown(why)
 {
   struct badversion_spacket packet;
+  memset(&packet, 0, sizeof(struct badversion_spacket));
   packet.type = SP_BADVERSION;
-  packet.why = 6;
+  packet.why = why;
   sendClientPacket(&packet);
   flushSockBuf();
 }
 
-static void panic()
+static void panic(int why)
 {
-  gamedown();
+  gamedown(why);
   freeslot(me);
   exit(0);
 }
@@ -94,7 +95,7 @@ void input(void)
             freeslot(me);
             exit(0);
 	}
-	if (!(status -> gameup & GU_GAMEOK)) panic();
+	if (!(status -> gameup & GU_GAMEOK)) panic(BADVERSION_DOWN);
 	/* wait for activity on network socket or next daemon update */
 	while (1) {
             FD_ZERO(&readfds);
@@ -111,10 +112,10 @@ void input(void)
 	    poll.tv_usec = 0;
 	    rv = select(nfds+1, &readfds, 0, 0, &poll);
 	    if (rv > 0) break;
-	    if (rv == 0) { panic(); /* daemon silence timeout */ }
+	    if (rv == 0) { panic(BADVERSION_SILENCE); /* daemon timeout */ }
 	    if (errno == EINTR) continue;
 	    perror("select");
-	    panic();
+	    panic(BADVERSION_SELECT);
 	}
 	/* if daemon signalled us, perform the update only */
 	if (FD_ISSET(afd, &readfds)) {
