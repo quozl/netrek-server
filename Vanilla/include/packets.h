@@ -974,10 +974,11 @@ struct oggv_cpacket {
 };
 #endif
 
-struct ship_cap_spacket {	/* Server configuration of client */
+/* Server configuration of client */
+struct ship_cap_spacket { /* SP_SHIP_CAP py-struct "!bbHHHiiiiiiHHH1sx16s2sH" #39 */
     char	type;		/* screw motd method */
     char	operation;	/* 0 = add/change a ship, 1 = remove a ship */
-    u_short	s_type;		/* SP_SHIP_CAP */
+    u_short	s_type;
     u_short	s_torpspeed;
     u_short	s_phaserrange;
     int		s_maxspeed;
