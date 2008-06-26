@@ -310,6 +310,8 @@ struct sysdef_keywords {
     "Allow classical refits at < 75% damage." },
   { "LAME_BASE_REFIT",        SYSDEF_INT,     &lame_base_refit,
     "Allow classical base refits at < 75% damage." },
+  { "LOGINTIME",        SYSDEF_INT,     &logintime,
+    "How long to allow login for, in seconds." },
   { "",			SYSDEF_END,	NULL		}
 };
 

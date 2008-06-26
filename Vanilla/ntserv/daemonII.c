@@ -429,8 +429,7 @@ int main(int argc, char **argv)
 
 #define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE) /* default 30 secs */
 #define KGHOSTTIME      ((ghostbust_timer + 2) * 1000000 / UPDATE) /* default 32 secs */
-#define OUTFITTIME      (3 * AUTOQUIT * 1000000 / UPDATE) /* three minutes */
-#define LOGINTIME       (6 * AUTOQUIT * 1000000 / UPDATE) /* six minutes */
+#define OUTFITTIME      (3 * AUTOQUIT * 1000000 / UPDATE) /* minutes */
 
 #define HUNTERKILLER    (-1)
 #define TERMINATOR      (-2)    /* Terminator */
@@ -1051,7 +1050,7 @@ static void udplayers_poutfit(struct player *j)
 
         switch (j->p_whydead) {
         case KLOGIN:
-                outfitdelay = LOGINTIME;
+                outfitdelay = logintime * 1000000 / UPDATE;
                 break;
         case KQUIT:
         case KBADBIN:

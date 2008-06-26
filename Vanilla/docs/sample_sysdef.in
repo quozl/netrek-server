@@ -111,6 +111,14 @@ DUPLICATES=3
 #	adding to the etc/deny directory (0 = no, 1 = yes)
 DENY_DUPLICATES=0
 #
+#	Maximum time to allow for login.  This value multiplied by
+#	DUPLICATES+1 determines how long a legitimate player will have to
+#	wait during a CP_SOCKET style denial of service attack.  Set this
+#	value lower during an attack, and restore it after the attack.
+#	The default is derived from the Netrek XP client which ceases a
+#	login attempt after 99 seconds.
+LOGINTIME=100
+#
 #	Have the server check for t-mode scummers.
 #	(A t-mode scummer is an IP address that has more than one client
 #	running, however it is hard to tell if the IP address might represent

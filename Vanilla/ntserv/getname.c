@@ -43,6 +43,9 @@ void getname(void)
     *(me->p_name)=0;
     while (*(me->p_name)==0) {
 	handleLogin();
+	/* denial of service attack risk ... if this persists beyond
+	the sysdefaults value of LOGINTIME then the daemon will
+	ghostbust the slot */
     }
 }
 

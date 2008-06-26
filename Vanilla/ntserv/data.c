@@ -506,3 +506,6 @@ float dd_minimal_offense = 0.0;
 int lame_refit = 1;
 /* classical style base refit at < 75% hull damage */
 int lame_base_refit = 1;
+
+/* login time, in seconds, default set from Netrek XP in 2008-06 */
+int logintime = 100;
