@@ -79,12 +79,12 @@ struct planet *planet_by_number(char *name)
 
 struct planet *pl_pick_home(int p_team)
 {
-    int i, tno = team_no(p_team);
-    for (;;) {
+    int j, i, tno = team_no(p_team);
+    for (j=0; j<GWIDTH; j++) {
         i = tno * 10 + random() % 10;
         if (startplanets[i]) return &planets[i];
     }
-    /* FIXME: continuously loops if there are no startplanets */
+    return &planets[13]; /* Regulus */
 }
 
 void pl_pick_home_offset(int p_team, int *x, int *y)
