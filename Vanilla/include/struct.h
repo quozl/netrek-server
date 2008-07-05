@@ -785,10 +785,10 @@ struct dmacro_list {
 
 enum dist_type {
         /* help me do series */
-        take=1, ogg, bomb, space_control, help1, help2, help3, help4,
+        take=1, ogg, bomb, space_control, save_planet, base_ogg, help1, help2,
 
         /* doing series */
-        escorting, ogging, bombing, controlling, doing1, doing2, doing3, doing4,
+        escorting, ogging, bombing, controlling, asw, asbomb, doing1, doing2,
 
         /* other info series */
         free_beer, /* ie. player x is totally hosed now */
@@ -802,7 +802,7 @@ enum dist_type {
         /* just a generic distress call */
         generic };
 
-        /* help1-4, doing1-4, and other1-2 are for future expansion */
+        /* help3-4, doing3-4, and other1-2 are for future expansion */
 
 enum target_type { none, planet, player };
 /* The General distress has format:

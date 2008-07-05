@@ -345,7 +345,7 @@ struct  dmacro_list distmacro[] = {
 	{ 'l', "controlling", " %T%c->%O Controlling at %l\0" },
 	{ '5', "asw", " %T%c->%O Anti-bombing %p near %b.\0" } ,
 	{ '6', "asbomb", " %T%c->%O DON'T BOMB %l. Let me bomb it (%S)\0" } ,
-	{ '7', "doing1", " %T%c->%O (%i)%?%a>0%{ has %a arm%?%a=1%{y%!ies%}%} at %l.  (%d%% dam, %s%% shd, %f%% fuel\0)" } ,
+	{ '7', "doing1", " %T%c->%O (%i)%?%a>0%{ has %a arm%?%a=1%{y%!ies%}%} at %l.  (%d%% dam, %s%% shd, %f%% fuel)\0" } ,
 	{ '8', "doing2", " %T%c->%O (%i)%?%a>0%{ has %a arm%?%a=1%{y%!ies%}%} at %l.  (%d%% dam, %s%% shd, %f%% fuel)\0" } ,
 	{ 'f', "free_beer", " %T%c->%O %p is free beer\0" },
 	{ 'n', "no_gas", " %T%c->%O %p @ %l has no gas\0" },
