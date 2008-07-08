@@ -998,12 +998,12 @@ struct ship_cap_spacket { /* SP_SHIP_CAP py-struct "!bbHHHiiiiiiHHH1sx16s2sH" #3
     u_short	s_bitmap;
 };
 
-struct generic_32_spacket {
-    char	type;		/* SP_GENERIC_32 */
+struct generic_32_spacket { /* SP_GENERIC_32 py-struct "!bbhh26x" #32 */
+    char	type;
     char	version;	/* alphabetic */
     short	repair_time;	/* server estimate of repair time in seconds */
     short	pl_orbit;	/* what planet player orbiting, -1 if none */
-    char	pad1[25];	/* TODO: consider using a union */
+    char	pad1[26];	/* TODO: consider using a union */
 };
 #define GENERIC_32_VERSION 'a'
 #define GENERIC_32_LENGTH 32
