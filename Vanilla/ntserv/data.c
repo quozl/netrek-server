@@ -333,7 +333,7 @@ struct  dmacro_list distmacro[] = {
 	{ 'X', "no zero", "this should never get looked at" },
 	{ 't', "taking", " %T%c->%O (%S) Carrying %a to %l%?%n>-1%{ @ %n%}\0"},
 	{ 'o', "ogg", " %T%c->%O Help Ogg %p at %l\0" },
-	{ 'b', "bomb", " %T%c->%O %?%n>4%{bomb %l @ %n%!bomb%}\0"},
+	{ 'b', "bomb", " %T%c->%O %?%n>4%{bomb %l @ %n%!bomb %l%}\0"},
 	{ 'c', "space_control", " %T%c->%O Help Control at %L\0" },
 	{ '1', "save_planet", " %T%c->%O Emergency at %L!!!!\0" },
 	{ '2', "base_ogg", " %T%c->%O Sync with --]> %g <[-- OGG ogg OGG base!!\0" },
