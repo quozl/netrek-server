@@ -139,6 +139,7 @@ int mustUpdate[MAXPLAYER];
 
 struct youss_spacket		clientSelfShip;
 struct you_short_spacket	clientSelfShort;
+struct generic_32_spacket	clientGeneric32;
 
 /* HW */
 u_char clientVPlanets[MAXPLANETS*sizeof(struct planet_s_spacket)+2 +6];
@@ -2364,6 +2365,7 @@ void initSPackets(void)
 
     clientSelfShip.damage = -1;
     clientSelfShort.pnum = -1;
+    clientGeneric32.repair_time = -1;
 }
 
 /* Routine called by forceUpdate to clear local packet info, and force
@@ -2654,17 +2656,24 @@ void
 sendGeneric32Packet(void)
 {
     struct generic_32_spacket gp;
+    int len = GENERIC_32_LENGTH;
     struct player *pl;
 
     if (!F_sp_generic_32) return;
 
     pl = my();
-    memset(&gp, 0, GENERIC_32_LENGTH);
+    memset(&gp, 0, len);
     gp.type = SP_GENERIC_32;
     gp.version = GENERIC_32_VERSION;
+    /*! @bug not using network byte order for these two fields.
+        may need to do this in next version of packet */
     gp.repair_time = pl->p_repair_time;
     gp.pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
-    sendClientPacket(&gp);
+
+    if (memcmp(&clientGeneric32, &gp, len) != 0) {
+        memcpy(&clientGeneric32, &gp, len);
+        sendClientPacket(&gp);
+    }
 }
 
 /*  Hey Emacs!
