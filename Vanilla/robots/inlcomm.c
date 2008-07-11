@@ -379,32 +379,19 @@ int do_gametime(comm,mess)
 
   if (!(inl_stat.flags & S_PREGAME))
     {
-      time = inl_stat.time;
-      if (inl_stat.flags & S_OVERTIME)
-	time += inl_stat.overtime;
-
-      time += inl_stat.extratime;
-
+      int seconds = ( inl_stat.remaining / PERSEC ) % 60;
+      int minutes = ( inl_stat.remaining / PERMIN );
 #ifdef nodef
       pmessage(who, MINDIV, addr_mess(who, MINDIV),
 	       "Minutes remaining: %i	Planet tally: %i - %i - %i",
-	       ((time - inl_stat.game_ticks) / PERMIN ),
+	       (inl_stat.remaining / PERMIN ),
 	       inl_teams[HOME].planets, inl_teams[AWAY].planets,
 	       (20 - inl_teams[HOME].planets - inl_teams[AWAY].planets));
 #else
-     {
-      int seconds = ( (time - inl_stat.game_ticks) / PERSEC ) % 60;
-      int minutes = ( (time - inl_stat.game_ticks) / PERMIN );
-
-      if (inl_stat.extratime)
-        pmessage(who, MINDIV, addr_mess(who, MINDIV),
-                 "Extra Time remaining: %d:%02.2d", minutes, seconds);
-      else
-        pmessage(who, MINDIV, addr_mess(who, MINDIV),
-                 "Time remaining: %d:%02.2d", minutes, seconds);
-     }
+      pmessage(who, MINDIV, addr_mess(who, MINDIV),
+               "%sTime remaining: %d:%02.2d",
+               inl_stat.extratime ? "Extra " : "", minutes, seconds);
 #endif
-
       return 1;
     }
 

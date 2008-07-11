@@ -28,7 +28,7 @@
 
 /* System dependent setups */
 
-#define PERSEC		10		/* Number of checks per second */
+#define PERSEC		fps		/* Number of checks per second */
 #define PERMIN		(60*PERSEC)	/* Number of checks per minute */
 
 #define HOMETEAM	FED		/* Entry point for home team */
@@ -109,6 +109,7 @@ typedef struct _inl_stat {
 	int     tmout_ticks;
 	int	time, overtime;
         int	extratime;
+	int	remaining;              /* remaining time for display only */
 	int	score_mode;
 	double	weighted_divisor;
 	int swap[2];			/* two slots to be traded */
@@ -129,7 +130,6 @@ typedef struct _inl_countdown {
 	int	counts[20];	/* Message interval */
 	int 	act;		/* Index for next action */
 	int	end;		/* null time for countdown */
-	int	unit;		/* ticks per time unit */
 	int	(*action) ();	/* Function to execute */
 	char	*message;	/* Message to print */
 } Inl_countdown;

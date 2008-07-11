@@ -129,6 +129,7 @@ Inl_stats inl_stat = {
   0,			/* time */
   0,			/* overtime */
   0,			/* extratime */
+  0,			/* remaining */
   0,			/* score_mode */
   0.0,			/* weighted_divisor */
   {-1, -1},		/* swap */
@@ -137,12 +138,12 @@ Inl_stats inl_stat = {
 };
 
 Inl_countdown inl_countdown =
-{0,{60,30,10,5,4,3,2,1,0,-1},8,0,PERSEC,NULL,""};
+{0,{60,30,10,5,4,3,2,1,0,-1},8,0,NULL,""};
 
 int end_tourney();
 int checkgeno();
 Inl_countdown inl_game =
-{0,{2700,1800,600,300,120,60,30,10,5,4,3,2,1,0,-1},12,0,PERSEC,end_tourney,""};
+{0,{2700,1800,600,300,120,60,30,10,5,4,3,2,1,0,-1},12,0,end_tourney,""};
 
 /* XXX Gag me! */
 /* the four close planets to the home planet */
@@ -447,6 +448,12 @@ inlmove()
   }
 
   inl_stat.game_ticks++;
+  inl_stat.remaining = inl_stat.time +
+    (inl_stat.flags & S_OVERTIME ? inl_stat.overtime : 0) +
+    inl_stat.extratime - inl_stat.game_ticks;
+  context->inl_game_ticks = inl_stat.game_ticks;
+  context->inl_remaining = inl_stat.remaining;
+
   if (obliterate_timer > 0)
     obliterate_timer--;
 
@@ -895,9 +902,8 @@ int end_tourney()
   /* still in regulation, but momentum scoring dictates EXTRA TIME */
   else if ((inl_stat.flags & S_TOURNEY) && (win_cond == -1))
     {
-
-      static const int extratime = 5 * PERMIN;
-      static const int extra_max = 5 * PERMIN * 3;
+      int extratime = 5 * PERMIN;
+      int extra_max = 5 * PERMIN * 3;
 
       /* only allow 3 cycles of extra time */
       if (inl_stat.extratime < extra_max) {
@@ -1136,6 +1142,7 @@ void reset_inl(int is_end_tourney)
   inl_stat.tmout_ticks = 0;
   inl_stat.time = INL_REGULATION * PERMIN;
   inl_stat.overtime = INL_OVERTIME * PERMIN;
+  inl_stat.remaining = 0;
   inl_stat.score_mode = 0;
   inl_stat.weighted_divisor = 0.0;
 
@@ -1467,6 +1474,9 @@ int start_tourney()
   inl_stat.overtime = inl_teams[0].overtime * PERMIN;
 #endif
   inl_stat.game_ticks = 0;
+  inl_stat.remaining = -1;
+  context->inl_game_ticks = inl_stat.game_ticks;
+  context->inl_remaining = inl_stat.remaining;
 
   status->gameup &= ~(GU_CHAOS | GU_PRACTICE);
 #ifdef DEBUG
@@ -1587,11 +1597,11 @@ void countdown(int counter, Inl_countdown *cnt)
   int i = 0;
   int j = 0;
 
-  if (cnt->end - cnt->counts[cnt->idx]*cnt->unit > counter)
+  if (cnt->end - cnt->counts[cnt->idx]*PERSEC > counter)
     return;
 
   while ((cnt->idx != cnt->act) &&
-	 (cnt->end - cnt->counts[cnt->idx+1]*cnt->unit <= counter))
+	 (cnt->end - cnt->counts[cnt->idx+1]*PERSEC <= counter))
     {
       cnt->idx++;
     }

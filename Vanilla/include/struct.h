@@ -113,6 +113,8 @@ struct context {
     int inl_home_pick;          /* sequence number for next home pick */
     int inl_away_pick;          /* sequence number for next away pick */
     int conquer_trigger;        /* supervisory robot triggers a parade */
+    int inl_game_ticks;         /* ticks passed in INL game */
+    int inl_remaining;          /* remaining ticks in INL game */
 };
 
 /* The following defines are for gameup field */
