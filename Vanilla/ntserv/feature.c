@@ -35,34 +35,35 @@ struct feature_spacket {
 /* this server. */
 struct feature_var {
     char   *name;
-    int    *var; /* local variable */
+    int    *var;        /* local variable */
+    int    *arg1;       /* additional argument */
 };
 
 struct feature_var feature_vars[] = {
-   { "FEATURE_PACKETS",		&F_client_feature_packets },
-   { "WHY_DEAD",		&why_dead },
-   { "SBHOURS",			&SBhours },
-   { "SELF_8FLAGS",		&F_self_8flags},
-   { "19FLAGS", 		&F_19flags},
+  {"FEATURE_PACKETS",   &F_client_feature_packets,      NULL},
+  {"WHY_DEAD",          &why_dead,                      NULL},
+  {"SBHOURS",           &SBhours,                       NULL},
+  {"SELF_8FLAGS",       &F_self_8flags,                 NULL},
+  {"19FLAGS",           &F_19flags,                     NULL},
 #ifdef RCD
-   { "RC_DISTRESS",		&F_rc_distress}, /* xx */
+  { "RC_DISTRESS",      &F_rc_distress,                 NULL}, /* xx */
 #endif
-   { "CLOAK_MAXWARP",		&F_cloak_maxwarp},
-   { "SHIP_CAP",		&F_ship_cap},
-   { "DEAD_WARP",		&dead_warp },
-   { "SHOW_ALL_TRACTORS",	&F_show_all_tractors},
-   { "SHOW_ARMY_COUNT",		&F_show_army_count},
-   { "SHOW_OTHER_SPEED",	&F_show_other_speed},
-   { "SHOW_CLOAKERS",		&F_show_cloakers},
-   { "SP_GENERIC_32",		&F_sp_generic_32},
-   { "FULL_DIRECTION_RESOLUTION",	&F_full_direction_resolution},
-   { "FULL_WEAPON_RESOLUTION",	&F_full_weapon_resolution},
-   { "CHECK_PLANETS",		&F_check_planets},
-   { "TURN_KEYS",		&F_turn_keys},
-   { "SHOW_VISIBILITY_RANGE",	&F_show_visibility_range},
-   { "SP_FLAGS_ALL",		&F_flags_all},
-   { "WHY_DEAD_2",		&F_why_dead_2},
-   { NULL, NULL },
+  {"CLOAK_MAXWARP",     &F_cloak_maxwarp,               NULL},
+  {"SHIP_CAP",          &F_ship_cap,                    NULL},
+  {"DEAD_WARP",         &dead_warp,                     NULL},
+  {"SHOW_ALL_TRACTORS", &F_show_all_tractors,           NULL},
+  {"SHOW_ARMY_COUNT",   &F_show_army_count,             NULL},
+  {"SHOW_OTHER_SPEED",  &F_show_other_speed,            NULL},
+  {"SHOW_CLOAKERS",     &F_show_cloakers,               NULL},
+  {"SP_GENERIC_32",     &F_sp_generic_32,               &A_sp_generic_32},
+  {"CHECK_PLANETS",     &F_check_planets,               NULL},
+  {"TURN_KEYS",         &F_turn_keys,                   NULL},
+  {"SP_FLAGS_ALL",      &F_flags_all,                   NULL},
+  {"WHY_DEAD_2",        &F_why_dead_2,                  NULL},
+  {"FULL_DIRECTION_RESOLUTION", &F_full_direction_resolution, NULL},
+  {"FULL_WEAPON_RESOLUTION",    &F_full_weapon_resolution,    NULL},
+  {"SHOW_VISIBILITY_RANGE",     &F_show_visibility_range,     NULL},
+  {NULL, NULL, NULL},
 };
 
 
@@ -222,6 +223,9 @@ getFeature(struct feature_cpacket *cpack, /* client request */
 	  /* client values mean nothing here */
 	  spack->value = 1;
        }
+       if (feature_vars[i].arg1) {
+          *feature_vars[i].arg1 = cpack->arg1;
+       }
        return;
       }
    }
@@ -243,5 +247,3 @@ static int feature_cmp(char *f, char *s)
 }
 
 #endif
-
-

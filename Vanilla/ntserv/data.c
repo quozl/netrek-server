@@ -427,6 +427,7 @@ int F_self_8flags   = 0;
 int F_19flags       = 0;	/* pack 19 flags into spare bytes */
 int F_show_all_tractors = 0;
 int F_sp_generic_32 = 0;		/* Repair time, etc. */
+int A_sp_generic_32 = 0;
 int F_full_direction_resolution = 0;	/* Use SP_PLAYER instead of
 					 * SP_S_PLAYER */
 int F_full_weapon_resolution = 0;	/* Send certain weapons data
