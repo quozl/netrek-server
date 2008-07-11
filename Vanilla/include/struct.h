@@ -257,7 +257,6 @@ struct team {
 #define TE_SURRENDER_PAUSE_ON_TOURN 1
 #define TE_SURRENDER_PAUSE_ON_PLANETS 2
     int te_plcount;		/* how many planets this team owns */
-    /* FIXME: global change s_ prefix to te_ prefix */
 };
 
 struct ship {
