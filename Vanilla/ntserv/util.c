@@ -540,3 +540,27 @@ void p_heal(struct player *k)
   k->p_etemp  = k->p_etime = 0;
   k->p_wtemp  = k->p_wtime = 0;
 }
+
+/* seconds to described units */
+void s2du(int input, unsigned char *value, char *unit) {
+  int x = input;
+
+  if (x < 256) { *value = x; *unit = 's'; return; } /* seconds */
+
+  x = input / 60;
+  if (x < 256) { *value = x; *unit = 'm'; return; } /* minutes */
+
+  x = input / 60 / 60;
+  if (x < 256) { *value = x; *unit = 'h'; return; } /* hours */
+
+  x = input / 60 / 60 / 24;
+  if (x < 256) { *value = x; *unit = 'd'; return; } /* days */
+
+  x = input / 60 / 60 / 24 / 7;
+  if (x < 256) { *value = x; *unit = 'w'; return; } /* weeks */
+
+  x = input / 60 / 60 / 24 / 365;
+  if (x < 256) { *value = x; *unit = 'y'; return; } /* years */
+
+  *value = input & 0xff; *unit = 'z'; return;
+}
