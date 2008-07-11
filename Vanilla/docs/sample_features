@@ -63,8 +63,8 @@ LITE_PLANETS          C       ON
 LITE_SOUNDS           C       ON
 # ship stat. packets
 SHIP_CAP              S       ON
-# generic packets
-SP_GENERIC_32         S       ON
+# generic packets (plus packet version number)
+SP_GENERIC_32         S       ON       2
 # Despite using short packets, show full direction resolution for
 # ships.  The same information for players is already included in the
 # original packet format.  When a client requests this feature, the

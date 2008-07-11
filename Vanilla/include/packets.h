@@ -998,26 +998,57 @@ struct ship_cap_spacket { /* SP_SHIP_CAP py-struct "!bbHHHiiiiiiHHH1sx16s2sH" #3
     u_short	s_bitmap;
 };
 
-struct generic_32_spacket { /* SP_GENERIC_32 py-struct "!bbhh26x" #32 */
-    char	type;
-    char	version;	/* alphabetic */
-    short	repair_time;	/* server estimate of repair time in seconds */
-    short	pl_orbit;	/* what planet player orbiting, -1 if none */
-    char	pad1[26];	/* TODO: consider using a union */
+struct generic_32_spacket {
+    char        type;
+    char        pad[31];
 };
-#define GENERIC_32_VERSION 'a'
 #define GENERIC_32_LENGTH 32
 #define COST_GENERIC_32 (F_sp_generic_32 ? GENERIC_32_LENGTH : 0)
+struct generic_32_spacket_a { /* SP_GENERIC_32 py-struct "b1sHH26x" #32 */
+    char        type;
+    char        version;        /* alphabetic, 0x60 + version */
+    u_short     repair_time;    /* server estimate of repair time in seconds */
+    u_short     pl_orbit;       /* what planet player orbiting, -1 if none */
+    char        pad1[26];
+    /* NOTE: this version didn't use network byte order for the shorts */
+};
+#define GENERIC_32_VERSION_A 1
+struct generic_32_spacket_b { /* SP_GENERIC_32 py-struct "!b1sHbHBBsBsBB18x" #32 */
+    char        type;
+    char        version;        /* alphabetic, 0x60 + version */
+    u_short     repair_time;    /* server estimate of repair time, seconds  */
+    char        pl_orbit;       /* what planet player orbiting, -1 if none  */
+    u_short     gameup;                  /* server status flags             */
+    u_char      tournament_teams;        /* what teams are involved         */
+    u_char      tournament_age;          /* duration of t-mode so far       */
+    char        tournament_age_units;    /* units for above, see s2du       */
+    u_char      tournament_remain;       /* remaining INL game time         */
+    char        tournament_remain_units; /* units for above, see s2du       */
+    u_char      starbase_remain;         /* starbase reconstruction, mins   */
+    u_char      team_remain;             /* team surrender time, seconds    */
+    char        pad1[18];
+} __attribute__ ((packed));
+#define GENERIC_32_VERSION_B 2
+#define GENERIC_32_VERSION GENERIC_32_VERSION_B /* default */
 
-/* versioning instructions: we start with version 'a', and each time a
-   field is added increment the version and reduce the pad size,
-   keeping the packet the same size ... client is entitled to trust
-   fields in struct that were defined at a particular version. */
+/* SP_GENERIC_32 versioning instructions:
 
-/*
-    packet.type = SP_GENERIC_32;
-    packet.version = GENERIC_32_VERSION;
-    if (sizeof(struct generic_32_spacket) != GENERIC_32_LENGTH) abort();
+   we start with version 'a', and each time a structure is changed
+   increment the version and reduce the pad size, keeping the packet
+   the same size ...
+
+   client is entitled to trust fields in struct that were defined at a
+   particular version ...
+
+   client is to send CP_FEATURE with SP_GENERIC_32 value 1 for version
+   'a', value 2 for version 'b', etc ...
+
+   server is to reply with SP_FEATURE with SP_GENERIC_32 value set to
+   the maximum version it supports (not the version requested by the
+   client), ...
+
+   server is to send SP_GENERIC_32 packets of the highest version it
+   knows about, but no higher than the version the client asks for.
 */
 
 struct flags_all_spacket {

@@ -2225,7 +2225,7 @@ static void handleFeature(struct feature_cpacket *cpacket)
     memset(&spacket, 0, sizeof(struct feature_spacket));
     getFeature(cpacket, &spacket);
     sendFeature(&spacket);
-    if (!was) {
+    if (!was) { /* initial feature packets to be sent by server */
         sendFeatureFps();
         sendFeatureUps();
         sendLameRefit();

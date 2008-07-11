@@ -2365,7 +2365,15 @@ void initSPackets(void)
 
     clientSelfShip.damage = -1;
     clientSelfShort.pnum = -1;
-    clientGeneric32.repair_time = -1;
+    clientGeneric32.type = 0;
+    if (sizeof(struct generic_32_spacket_a) != GENERIC_32_LENGTH) {
+        fprintf(stderr, "SP_GENERIC_32 size a wrong at %d bytes\n",
+                sizeof(struct generic_32_spacket_a));
+    }
+    if (sizeof(struct generic_32_spacket_b) != GENERIC_32_LENGTH) {
+        fprintf(stderr, "SP_GENERIC_32 size b wrong at %d bytes\n",
+                sizeof(struct generic_32_spacket_b));
+    }
 }
 
 /* Routine called by forceUpdate to clear local packet info, and force
@@ -2652,27 +2660,77 @@ sendMaskPacket(int mask)
     sendClientPacket((CVOID) &maskPacket);
 }
 
+static struct generic_32_spacket_a *
+sendGeneric32PacketA(struct player *pl, struct generic_32_spacket_a *ga)
+{
+    ga->type = SP_GENERIC_32;
+    ga->version = 'a';
+    /*! we did not use network byte order for these two fields */
+    ga->repair_time = pl->p_repair_time;
+    ga->pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
+    return ga;
+}
+
+static struct generic_32_spacket_b *
+sendGeneric32PacketB(struct player *pl, struct generic_32_spacket_b *gb)
+{
+    int v, t;
+
+    gb->type = SP_GENERIC_32;
+    gb->version = 'b';
+    gb->repair_time = ntohs(pl->p_repair_time);
+    gb->pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
+
+    gb->gameup = ntohs(status->gameup & 0xffff);
+
+    gb->tournament_teams = ((context->quorum[1] << 4) & 0xf0) |
+                            (context->quorum[0] & 0xf);
+
+    v = (context->frame - context->frame_tourn_start) / fps;
+    s2du(v, &gb->tournament_age, &gb->tournament_age_units);
+
+    v = context->inl_remaining / fps;
+    s2du(v, &gb->tournament_remain, &gb->tournament_remain_units);
+
+    v = teams[pl->p_team].te_turns;
+    if (v < 0) v = 0;
+    if (v > 255) v = 255;
+    gb->starbase_remain = v;
+
+    for (t=0;((t<=MAXTEAM)&&(teams[t].te_surrender==0));t++);
+    if (t > MAXTEAM) {
+        gb->team_remain = 0; /* no one is considering surrender now */
+    } else {
+        v = teams[t].te_surrender * 60 +
+            ((context->frame - teams[t].te_surrender_frame) / fps);
+        gb->team_remain = (v > 255) ? 255 : v;
+    }
+
+    return gb;
+}
+
 void
 sendGeneric32Packet(void)
 {
-    struct generic_32_spacket gp;
+    struct generic_32_spacket g, *gp;
     int len = GENERIC_32_LENGTH;
-    struct player *pl;
 
     if (!F_sp_generic_32) return;
+    memset(&g, 0, len);
 
-    pl = my();
-    memset(&gp, 0, len);
-    gp.type = SP_GENERIC_32;
-    gp.version = GENERIC_32_VERSION;
-    /*! @bug not using network byte order for these two fields.
-        may need to do this in next version of packet */
-    gp.repair_time = pl->p_repair_time;
-    gp.pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
+    gp = NULL;
+    if (A_sp_generic_32 == GENERIC_32_VERSION_A ||
+        A_sp_generic_32 == 0)
+        gp = (struct generic_32_spacket *)
+                sendGeneric32PacketA(my(), (struct generic_32_spacket_a *)&g);
+    if (A_sp_generic_32 == GENERIC_32_VERSION_B)
+        gp = (struct generic_32_spacket *)
+                sendGeneric32PacketB(my(), (struct generic_32_spacket_b *)&g);
+    if (gp == NULL) return;
 
-    if (memcmp(&clientGeneric32, &gp, len) != 0) {
-        memcpy(&clientGeneric32, &gp, len);
-        sendClientPacket(&gp);
+    if (memcmp(&clientGeneric32, gp, len) != 0) {
+        memcpy(&clientGeneric32, gp, len);
+        sendClientPacket(gp);
     }
 }
 
