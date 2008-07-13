@@ -125,7 +125,7 @@ int pl_virgin_size()
 
 void pl_reset(void)
 {
-  int i, j, k, which;
+  int i, j, k, which, sanity;
   MCOPY(pl_virgin(), planets, pl_virgin_size());
   for (i = 0; i < MAXPLANETS; i++) {
     planets[i].pl_armies = top_armies;
@@ -144,8 +144,10 @@ void pl_reset(void)
 
       /* place 2 FUEL on the other front */
       for (j = 0; j < 2; j++) {
+        sanity = 0;
         do {
           k = random() % 3;
+          if (sanity++ > GWIDTH) break;
         } while (planets[front_planets[i][k + 2]].pl_flags & PLFUEL) ;
         planets[front_planets[i][k + 2]].pl_flags |= PLFUEL;
       }
@@ -157,8 +159,10 @@ void pl_reset(void)
 
       /* place 2 FUEL on the other front */
       for (j = 0; j < 2; j++) {
+        sanity = 0;
         do {
           k = random() % 3;
+          if (sanity++ > GWIDTH) break;
         } while (planets[front_planets[i][k]].pl_flags & PLFUEL);
         planets[front_planets[i][k]].pl_flags |= PLFUEL;
       }
@@ -169,8 +173,10 @@ void pl_reset(void)
 
     /* now we need to put down 2 fuel (home + 2 front + 2 = 5 fuel) */
     for (j = 0; j < 2; j++) {
+      sanity = 0;
       do {
         k = random() % 4;
+        if (sanity++ > GWIDTH) break;
       } while (planets[core_planets[i][k]].pl_flags & PLFUEL);
       planets[core_planets[i][k]].pl_flags |= PLFUEL;
     }
