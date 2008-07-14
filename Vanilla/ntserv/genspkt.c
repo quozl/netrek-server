@@ -2678,10 +2678,10 @@ sendGeneric32PacketB(struct player *pl, struct generic_32_spacket_b *gb)
 
     gb->type = SP_GENERIC_32;
     gb->version = 'b';
-    gb->repair_time = ntohs(pl->p_repair_time);
+    gb->repair_time = htons(pl->p_repair_time);
     gb->pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
 
-    gb->gameup = ntohs(status->gameup & 0xffff);
+    gb->gameup = htons(status->gameup & 0xffff);
 
     gb->tournament_teams = ((context->quorum[1] << 4) & 0xf0) |
                             (context->quorum[0] & 0xf);
