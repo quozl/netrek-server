@@ -42,6 +42,7 @@ static void conquer_decloak()
 
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
+		if (is_idle(j)) continue;
 		j->p_flags &= ~PFCLOAK;
 		j->p_flags |= PFSEEN;
 		if (conquer_type != CONQUER_TYPE_END)
@@ -169,6 +170,7 @@ static void conquer_parade()
 	for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
 		if (j->p_no == conquer_player) continue;
+		if (is_idle(j)) continue;
 		conquer_ring_coordinates(j, k++, n, &x, &y);
 		p_x_y_go(j, x, y);
 		j->p_speed = 0;
