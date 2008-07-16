@@ -266,6 +266,8 @@ int setupmem(void) {
     /* Attach to the memory and bzero it */
     sharedMemory = (struct memory *) shmat(shmid, 0, 0);
     if (sharedMemory == (struct memory *) -1) {
+      /*! @bug EIDRM is seen here, probably due to a race condition,
+          and if so the operation should be retried from shmget. */
       ERROR(1,("setupmem: Can't attach to memory, error %i\n",errno));
       return 0;
     }

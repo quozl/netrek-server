@@ -1,6 +1,3 @@
-/* $Id: packets.h,v 1.2 2005/03/21 10:17:16 quozl Exp $
- */
-
 /* 
  * Include file for socket I/O xtrek.
  *
@@ -1020,7 +1017,7 @@ struct generic_32_spacket_b { /* SP_GENERIC_32 py-struct "!b1sHbHBBsBsBB18x" #32
     char        pl_orbit;       /* what planet player orbiting, -1 if none  */
     u_short     gameup;                  /* server status flags             */
     u_char      tournament_teams;        /* what teams are involved         */
-    u_char      tournament_age;          /* duration of t-mode so far       */
+    u_char      tournament_age;          /* time since last t-mode start    */
     char        tournament_age_units;    /* units for above, see s2du       */
     u_char      tournament_remain;       /* remaining INL game time         */
     char        tournament_remain_units; /* units for above, see s2du       */
