@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
 #include "defs.h"
@@ -86,8 +87,13 @@ int main(int argc, char **argv)
   /* request to free slot? */
   if (argc > 2) {
     if (*argv[2] == 'F') {
-      /* if we have an ntserv pid_t, send it a SIGTERM and exit */
-      if (players[player].p_process > 1) {
+      int pid;
+      pid = players[player].p_process;
+      players[player].p_disconnect = BADVERSION_DENIED;
+      usleep(200000); /* guarantee an update will occur */
+      if (players[player].p_status == PFREE) exit(0); /* slot free, he went */
+      if (pid != players[player].p_process) exit(0); /* pid changed, he went */
+      if (players[player].p_process > 1) { /* p_disconnect must have failed */
 	if (kill(players[player].p_process, SIGTERM) == 0)
 	  exit(0);
       }
