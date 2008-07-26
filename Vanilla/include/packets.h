@@ -362,7 +362,7 @@ struct ping_spacket { /* SP_PING py-struct "!bBHBBBB" #46 */
 
 struct pickok_spacket { /* SP_PICKOK py-struct "!bbxx" #16 */
     char type;
-    char state;
+    char state;         /* 0=no, 1=yes */
     char pad2;
     char pad3;
 };
