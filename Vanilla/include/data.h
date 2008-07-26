@@ -166,6 +166,8 @@ extern char *version;
 
 extern int why_dead;
 extern int Observer;
+extern int switch_to_observer;
+extern int switch_to_player;
 extern int SBhours;
 
 #ifdef CHECKMESG

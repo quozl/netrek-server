@@ -25,6 +25,8 @@
 #include "slotmaint.h"
 #include <dirent.h>
 
+#define EXPERIMENTAL_BE
+
 void do_player_eject(int who, int player, int mflags, int sendto);
 void do_player_ban(int who, int player, int mflags, int sendto);
 
@@ -58,8 +60,9 @@ void do_time_msg(char *comm, struct message *mess);
 void do_sbtime_msg(char *comm, struct message *mess);
 void do_queue_msg(char *comm, struct message *mess);
 void do_nowobble(char *comm, struct message *mess);
-#ifdef EXPERIMENTAL_BECOME
-void do_become(char *comm, struct message *mess);
+#ifdef EXPERIMENTAL_BE
+void do_be(char *comm, struct message *mess);
+void do_sub(char *comm, struct message *mess);
 #endif
 
 #ifdef GENO_COUNT
@@ -161,11 +164,15 @@ static struct command_handler_2 nts_commands[] =
 		0,
 		"Test new wobble on planet lock fix.",
 		do_nowobble },			/* NOWOBBLE */
-#ifdef EXPERIMENTAL_BECOME
-    { "BECOME",
+#ifdef EXPERIMENTAL_BE
+    { "BE",
 		0,
-		"Become a different slot number",
-		do_become },			/* BECOME */
+		"Switch between observer, player, or a different slot.",
+		do_be },			/* BE */
+    { "SUB",
+		0,
+		"Sub in or out, between observer and player.",
+		do_sub },			/* SUB */
 #endif
     { "TIME",
 		C_PR_INPICKUP,
@@ -933,31 +940,68 @@ void do_nowobble(char *comm, struct message *mess)
 	     nowobble ? "on (new test mode)" : "off (classic mode)", nowobble, comm );
 }
 
-#ifdef EXPERIMENTAL_BECOME
-/* become another slot ... lacking client support, in progress */
-void do_become(char *comm, struct message *mess)
+#ifdef EXPERIMENTAL_BE
+/* become another slot, or switch between observer and player mode */
+void do_be(char *comm, struct message *mess)
 {
     int who, pno;
-    char *addr;
+    char *more, *addr;
 
     who = mess->m_from;
     addr = addr_mess(who,MINDIV);
 
-    pno = atoi(comm+strlen("become "));
+    if (!strcmp(comm, "be")) {
+      pmessage(who, MINDIV, addr, "be observer - switch to observe on death");
+      pmessage(who, MINDIV, addr, "be player   - switch to player");
+      pmessage(who, MINDIV, addr, "be n        - switch slot number");
+      return;
+    }
+
+    more = comm + strlen("be ");
+
+    if (!strcmp("observer", more) || !strcmp("observe", more)) {
+      if (!Observer) {
+        switch_to_player = 0;
+        switch_to_observer = 1;
+        pmessage(who, MINDIV, addr, "You will be made an observer on death.");
+      } else {
+        pmessage(who, MINDIV, addr, "You are already an observer!");
+      }
+      return;
+    }
+
+    if (!strcmp("player", more) || !strcmp("play", more)) {
+      // FIXME: preconditions test, what if eight players already?
+      if (Observer) {
+        switch_to_observer = 0;
+        switch_to_player = 1;
+        me->p_whydead = KPROVIDENCE;
+        me->p_explode = 10;
+        me->p_status = PEXPLODE;
+        me->p_whodead = 0;
+      } else {
+        pmessage(who, MINDIV, addr, "You are already a player!");
+      }
+      return;
+    }
+
+    pno = slot_num(*more);
 
     if (pno < 0) return;
     if (pno > (MAXPLAYER-1)) return;
 
     if (me->p_no == pno) {
-      pmessage(who, MINDIV, addr, "you are this slot already");
+      pmessage(who, MINDIV, addr, "You are this slot already!");
       return;
     }
 
     struct player *be = &players[pno];
     if (be->p_status != PFREE) {
-      pmessage(who, MINDIV, addr, "slot is not free");
+      pmessage(who, MINDIV, addr, "Slot is not free!");
       return;
     }
+
+    /*! @bug: race condition, with slot allocation */
 
     memcpy(be, me, sizeof(struct player));
     me->p_status = PFREE;
@@ -966,6 +1010,94 @@ void do_become(char *comm, struct message *mess)
     sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);
     sprintf(me->p_longname, "%s (%s)", me->p_name, me->p_mapchars);
     updateSelf(1);
+}
+
+/*! @brief cooperative substition between observer and player
+    @details observer must send 'sub in' to mark themselves as willing
+    to play, player must send 'sub out' at which time the observer
+    will be forced to lock onto the player, then when the player dies
+    and rejoins they will switch to being an observer, and the
+    observer will die and rejoin as a player.
+  */
+void do_sub(char *comm, struct message *mess)
+{
+  int i, who;
+  char *more, *addr;
+  struct player *p, *q;
+  
+  who = mess->m_from;
+  addr = addr_mess(who,MINDIV);
+  
+  if (!strncmp(comm, "sub", 3)) {
+    pmessage(who, MINDIV, addr, "HOWTO: (1) an obs 'sub in', (2) player 'sub out', (3) player dies.");
+    for (i=0, p=players; i<MAXPLAYER; i++, p++) {
+      if (p->p_team != me->p_team) continue;
+      if (p->p_sub_out) {
+	q = &players[p->p_sub_out_for];
+	pmessage(who, MINDIV, addr, "%s is ready to sub out, with %s sub in",
+		 p->p_mapchars, q->p_mapchars);
+	break;
+      }
+    }
+    for (i=0, p=players; i<MAXPLAYER; i++, p++) {
+      if (p->p_team != me->p_team) continue;
+      if (p->p_sub_in) {
+	pmessage(who, MINDIV, addr, "%s is ready to sub in", p->p_mapchars);
+      }
+    }
+    return;
+  }
+
+  more = comm + strlen("sub ");
+
+  if (strcmp("in", more) && strcmp("out", more)) return;
+
+  if (Observer) {
+    /* we are an observer, toggle willingness */
+    me->p_sub_in = ~me->p_sub_in;
+    me->p_sub_in_for = -1;
+    pmessage(who, MINDIV, addr, me->p_sub_in ? 
+	     "Sub in ready, waiting for a player to sub out." : 
+	     "Sub in cancelled!");
+    return;
+  }
+
+  /* we are a player */
+
+  /* are we sub out pending? */
+  if (me->p_sub_out) {
+    p = &players[me->p_sub_out_for];
+    p->p_sub_in_for = -1;
+    me->p_sub_out = 0;
+    me->p_sub_out_for = -1;
+    pmessage(who, MINDIV, addr, "Sub out cancelled!");
+    return;
+  }
+
+  /* we are not sub out pending */
+
+  /* find the first waiting substitute, lowest slot */
+  for (i=0, p=players; i<MAXPLAYER; i++, p++) {
+    if (p->p_status != POBSERV) continue;
+    if (p->p_team != me->p_team) continue;
+    if (p->p_sub_in) {
+      p->p_sub_in_for = me->p_no;
+      me->p_sub_out_for = p->p_no;
+      // FIXME: tell team that other->p_mapchars subs for me->p_mapchars 
+      pmessage(who, MINDIV, addr,
+	       "Sub out ready ... on your death %s will enter", p->p_mapchars);
+      /* the sub in now watches the sub out, enforced */
+      p->p_playerl = me->p_no;
+      p->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+      p->p_flags |= PFPLOCK;
+      /* the sub out will switch to observer on next death */
+      me->p_sub_out = 1;
+      // on enter of *this* slot, kill the other
+      return;
+    }
+  }
+  pmessage(who, MINDIV, addr, "Sub out failed, no sub in waiting!");
+  return;
 }
 #endif
 

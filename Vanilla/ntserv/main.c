@@ -329,6 +329,11 @@ int main(int argc, char **argv)
 
     me->p_inl_captain = 0;
 
+    me->p_sub_in = 0;        /* flag, willingness to sub in */
+    me->p_sub_in_for = -1;   /* slot, the other player, or -1 */
+    me->p_sub_out = 0;       /* flag, substitution on death */
+    me->p_sub_out_for = -1;  /* slot, the other player, or -1 */
+
 #ifdef LTD_STATS
 
     startTkills   = ltd_kills(me, LTD_TOTAL);
@@ -397,18 +402,57 @@ int main(int argc, char **argv)
         */
         SIGNAL(SIGILL, SIG_DFL);
 
+	/* handle a sub out */
+	if (me->p_sub_out && me->p_sub_out_for != -1) {
+	  struct player *p = &players[me->p_sub_out_for];
+	  p->p_whydead = KPROVIDENCE;
+	  p->p_explode = 10;
+	  p->p_status = PEXPLODE;
+	  p->p_whodead = 0;
+	  pmessage(0, MALL, "GOD->ALL", "%s subs out", me->p_mapchars);
+	  switch_to_player = 0;
+	  switch_to_observer = 1;
+	  me->p_sub_out = 0;
+	  me->p_sub_out_for = -1;
+	}
+
+	/* handle a sub in */
+	if (me->p_sub_in && me->p_sub_in_for != -1) {
+	  switch_to_player = 1;
+	  switch_to_observer = 0;
+	  pmessage(0, MALL, "GOD->ALL", "%s subs in", me->p_mapchars);
+	  me->p_sub_in = 0;
+	  me->p_sub_in_for = -1;
+	}
+
+        if (switch_to_observer) {
+          me->p_flags |= PFOBSERV;
+          Observer = 1;
+          pmessage(me->p_no, MINDIV, addr_mess(me->p_no, MINDIV),
+                   "Switched to observer.");
+          switch_to_observer = 0;
+        }
+
+        if (switch_to_player) {
+          me->p_flags &= ~PFOBSERV;
+          Observer = 0;
+          pmessage(me->p_no, MINDIV, addr_mess(me->p_no, MINDIV),
+                   "Switched to player.");
+          switch_to_player = 0;
+        }
+
         if (!Observer) {
             me->p_status = PALIVE;                  /* Put player in game */
         } else {
             me->p_status = POBSERV;     /* put observer in game */
             new_warning(UNDEF,
                         "Lock onto a teammate or planet to see the action.");
-            pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
+            pmessage(me->p_no, MINDIV, addr_mess(me->p_no, MINDIV),
                      "Lock onto a teammate or planet to see the action.");
             /* Check if observer is muted */
             if (observer_muting && !whitelisted) {
               mute = 1;
-              pmessage(me->p_no, MINDIV, addr_mess(me->p_no,MINDIV),
+              pmessage(me->p_no, MINDIV, addr_mess(me->p_no, MINDIV),
                        "Policy: observers may not speak.");
             }
         }

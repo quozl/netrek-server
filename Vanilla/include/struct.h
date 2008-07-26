@@ -523,6 +523,10 @@ struct player {
     int p_authorised;           /* is an admin */
     int p_verify_clue;          /* just passed the clue check */
     int p_disconnect;           /* request ntserv to disconnect */
+    int p_sub_in;               /* flag, willingness to sub in */
+    int p_sub_in_for;           /* slot, the other player, or -1 */
+    int p_sub_out;              /* flag, substitution on death */
+    int p_sub_out_for;          /* slot, the other player, or -1 */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
 

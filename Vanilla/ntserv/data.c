@@ -122,6 +122,8 @@ char	*version;
 
 int	why_dead=0;
 int	Observer=0;
+int	switch_to_observer=0;
+int	switch_to_player=0;
 int	SBhours=0;
 
 int	testtime= -1;

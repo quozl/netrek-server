@@ -254,10 +254,29 @@ void cloak_off(void)
     me->p_flags &= ~PFCLOAK;
 }
 
+/*! @brief is this slot locked due to a sub in
+    @details the slot must have requested a sub in, the sub out must
+    have been done, and the sub out slot must not have a new user or
+    be free.
+ */
+static int is_sub_in_locked()
+{
+    struct player *p;
+
+    if (!me->p_sub_in) return 0;
+    if (me->p_sub_in_for == -1) return 0;
+    p = &players[me->p_sub_in_for];
+    if (!p->p_sub_out) return 0;
+    if (p->p_sub_out_for != me->p_no) return 0;
+    if (p->p_status == PFREE) return 0;
+    return 1;
+}
+
 void lock_planet(int planet)
 {
     if (me->p_inl_draft != INL_DRAFT_OFF) return;
     if (planet<0 || planet>=MAXPLANETS) return;
+    if (is_sub_in_locked()) return;
 
     me->p_flags |= PFPLLOCK;
     me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
@@ -278,6 +297,7 @@ void lock_player(int player)
     if (player<0 || player>=MAXPLAYER) return;
     if (players[player].p_status != PALIVE) return;
     if (players[player].p_flags & PFCLOAK && !Observer) return;
+    if (is_sub_in_locked()) return;
 
     me->p_playerl = player;
     gettimeofday(&me->p_playerl_tv, NULL);
