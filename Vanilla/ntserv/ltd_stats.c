@@ -459,9 +459,11 @@ void ltd_update_kills(struct player *credit_killer,
       killer_ltd->kills.phasered++;
       break;
     case KTORP:
+    case KTORP2:
       killer_ltd->kills.torped++;
       break;
     case KPLASMA:
+    case KPLASMA2:
       killer_ltd->kills.plasmaed++;
       break;
   }
@@ -676,9 +678,11 @@ void ltd_update_deaths(struct player *victim, struct player *actual_killer) {
       victim_ltd->deaths.phasered++;
       break;
     case KTORP:
+    case KTORP2:
       victim_ltd->deaths.torped++;
       break;
     case KPLASMA:
+    case KPLASMA2:
       victim_ltd->deaths.plasmaed++;
       break;
   }

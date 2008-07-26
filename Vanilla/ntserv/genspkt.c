@@ -1043,6 +1043,20 @@ updateStatus(int force)
     }
 }
 
+/*! @brief translate p_whydead to older protocol meanings.
+    @details if the WHY_DEAD_2 feature F_why_dead_2 is set, then the
+    daemon values of p_whydead can be sent as is to the client,
+    otherwise the values that are unique to WHY_DEAD_2 feature are
+    translated to the older values. */
+static int legacy_whydead(int p_whydead)
+{
+  if (F_why_dead_2) return p_whydead;
+  if (p_whydead == KTORP2) return KTORP;
+  if (p_whydead == KSHIP2) return KSHIP;
+  if (p_whydead == KPLASMA2) return KPLASMA;
+  return p_whydead;
+}
+
 /* Determine if sendself packet should be flagged as critical */
 int check_sendself_critical(struct player* pl, u_int flags, char armies, char swar,
                             short whydead, short whodead, char pnum)
@@ -1061,7 +1075,7 @@ int check_sendself_critical(struct player* pl, u_int flags, char armies, char sw
                 swar != pl->p_swar) {
             type = type | 0x40;     /* mark as semi-critical */
         }
-        if (    whydead != pl->p_whydead ||
+        if (    whydead != legacy_whydead(pl->p_whydead) ||
                 whodead != pl->p_whodead ||
                 pnum != pl->p_no) {
             type = type | 0x80;     /* mark as critical */
@@ -1077,7 +1091,7 @@ int sndSSelf(struct you_short_spacket *youp, struct player* pl, int howmuch)
 	 || youp->hostile != pl->p_hostile
 	 || youp->swar != pl->p_swar
 	 || youp->armies != pl->p_armies
-	 || youp->whydead != pl->p_whydead
+	 || youp->whydead != legacy_whydead(pl->p_whydead)
 	 || youp->whodead != pl->p_whodead
 	 || ntohl(youp->flags) != pl->p_flags ) {
 
@@ -1090,7 +1104,7 @@ int sndSSelf(struct you_short_spacket *youp, struct player* pl, int howmuch)
 	youp->hostile = pl->p_hostile;
 	youp->swar = pl->p_swar;
 	youp->armies = pl->p_armies;
-	youp->whydead = pl->p_whydead;
+	youp->whydead = legacy_whydead(pl->p_whydead);
 	youp->whodead = pl->p_whodead;
 	youp->flags = htonl(pl->p_flags);
 	sendClientPacket((CVOID) youp);
@@ -1112,7 +1126,7 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	 || ntohl(youp->flags) != pl->p_flags
 	 || youp->armies != pl->p_armies
 	 || youp->swar != pl->p_swar
-	 || ntohs(youp->whydead) != pl->p_whydead
+	 || ntohs(youp->whydead) != legacy_whydead(pl->p_whydead)
 	 || ntohs(youp->whodead) != pl->p_whodead
 	 || youp->tractor != tractor 
 	 || youp->pnum != pl->p_no) {
@@ -1131,7 +1145,7 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	youp->fuel=htonl(pl->p_fuel);
 	youp->etemp=htons(pl->p_etemp);
 	youp->wtemp=htons(pl->p_wtemp);
-	youp->whydead=htons(pl->p_whydead);
+	youp->whydead=htons(legacy_whydead(pl->p_whydead));
 	youp->whodead=htons(pl->p_whodead);
 	youp->damage=htonl(pl->p_damage);
 	youp->tractor=tractor;
@@ -2734,8 +2748,4 @@ sendGeneric32Packet(void)
     }
 }
 
-/*  Hey Emacs!
- * Local Variables:
- * c-file-style:"bsd"
- * End:
- */
+/* Hey Emacs! -*- Mode: C; c-file-style: "bsd"; indent-tabs-mode: nil -*- */

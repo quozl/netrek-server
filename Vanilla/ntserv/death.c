@@ -27,6 +27,7 @@ void death(void)
     case KTORP:
     case KTORP2:
     case KPLASMA:
+    case KPLASMA2:
     case KPHASER:
     case KPLANET:
     case KSHIP:
@@ -34,9 +35,6 @@ void death(void)
     case KGENOCIDE:
     case KGHOST:
     case KPROVIDENCE:
-#if KPLASMA != KPLASMA2
-    case KPLASMA2:
-#endif
     case TOURNEND:
     case TOURNSTART:
 	break;

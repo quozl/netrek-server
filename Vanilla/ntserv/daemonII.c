@@ -2222,7 +2222,9 @@ static void p_explosion(struct player *player, int why, int who)
 
 static int t_whydead(struct player *k, struct torp *torp)
 {
-    if (F_why_dead_2 && (k->p_no != torp->t_owner))
+    /*! @bug KTORP2 is defined as killed by detted torps, not own torps */
+    /*! @bug KPLASMA2 is defined as killed by zapped plasma, not own plasma */
+    if (k->p_no != torp->t_owner)
         return torp->t_type == TPHOTON ? KTORP2 : KPLASMA2;
     else
         return torp->t_type == TPHOTON ? KTORP : KPLASMA;
@@ -3733,7 +3735,7 @@ static void blowup(struct player *sh)
                   k = &players[sh->p_whodead]; 
                 else
                   k = sh;
-                if (F_why_dead_2 && k->p_no != sh->p_no)
+                if (k->p_no != sh->p_no)
                     p_explosion(j, KSHIP2, k->p_no);
                 else
                     p_explosion(j, KSHIP, k->p_no);
@@ -3781,7 +3783,7 @@ static void blowup(struct player *sh)
 
 #endif /* LTD_STATS */
 
-                killmess(j, k, sh, (k->p_no == sh->p_no)? KSHIP : KSHIP2);
+                killmess(j, k, sh, (k->p_no == sh->p_no) ? KSHIP : KSHIP2);
             }
         }
     }
