@@ -303,3 +303,16 @@ int forgotten(void) {
   }
   return 0;
 }
+
+#ifdef OPENMEM_TEST
+int main() {
+  int x;
+
+  for(x=0; x<1000; x++) {
+    openmem(1);
+    fprintf(stderr, "%4d %6d\n", x, context->daemon);
+    status->gameup &= ~GU_GAMEOK;
+    detachmem();
+  }
+}
+#endif
