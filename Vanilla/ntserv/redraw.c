@@ -46,7 +46,7 @@ void intrupt(void)
 #if defined(RSA) && defined(SHOW_RSA)
             if (!hidden && !whitelisted && !bypassed)
                 pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
-                          "%s %.16s is not using an RSA client",
+                          "%s %.16s is not using a trusted client",
                           ranks[me->p_stats.st_rank].name,
                           me->p_name);
 #endif
