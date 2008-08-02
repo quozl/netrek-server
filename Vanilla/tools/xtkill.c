@@ -36,7 +36,8 @@ static void Usage(void)
       C(lock, surrender -- set it)  (to 6 minutes (debugging aid))\n\
       L(oss adjust, SB (-1))        (in case you toast an SB accidentally)\n\
       R(obot obliterate)            (like obliterate, but only for robots)\n\
-      r(epair)                      (Full repair [shields + hull + fuel])\n\
+      r(epair)                      (full repair [shields + hull + fuel])\n\
+      f(latten)                     (remove kills / armies)\n\
 ");
   exit(1);
 }
@@ -297,6 +298,10 @@ int main(int argc, char **argv)
       break;
     case 'r':           /* repair ship */
       p_heal(&players[player]);
+      break;
+    case 'f':		/* flatten kills / armies */
+      players[player].p_kills = 0;
+      players[player].p_armies = 0;
       break;
     default:
       Usage();
