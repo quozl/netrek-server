@@ -2695,7 +2695,8 @@ sendGeneric32PacketB(struct player *pl, struct generic_32_spacket_b *gb)
     gb->repair_time = htons(pl->p_repair_time);
     gb->pl_orbit = pl->p_flags & PFORBIT ? pl->p_planet : -1;
 
-    gb->gameup = htons(status->gameup & 0xffff);
+    v = (status->gameup & ~GU_UNSAFE) | (is_idle(pl) ? 0 : GU_UNSAFE);
+    gb->gameup = htons(v & 0xffff);
 
     gb->tournament_teams = ((context->quorum[1] << 4) & 0xf0) |
                             (context->quorum[0] & 0xf);
