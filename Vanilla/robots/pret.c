@@ -315,7 +315,7 @@ void checkmess()
                 realT = 1;
                 status->gameup &= ~GU_BOT_IN_GAME;
                 messAll(255,roboname,"Resetting for real T-mode!");
-                obliterate(0, TOURNSTART, 0, 0);
+                obliterate(0, TOURNSTART, 0, 1);
                 if (pret_save_galaxy) {
                     if (galaxysaved)
                     {
