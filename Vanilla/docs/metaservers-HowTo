@@ -1,3 +1,20 @@
+The Netrek Metaservers are a group of systems behind the
+metaserver.netrek.org alias, which list current games available.
+
+Netrek clients contact the metaservers during startup.
+
+Games can occur without being listed on a metaserver, the metaserver
+only helps players find games.
+
+You may wish to list your server on the metaservers.  This is
+technically simple, but may have political implications, and if done
+wrongly may cause unnnecessary reaction.
+
+Communicate your intention with other server owners, through the
+mailing lists, or the IRC channel, or the netrek infrastructure team.
+
+--
+
 Date: Wed, 15 April 1998 09:06:09 +0000 (edited by many since)
 From: James Cameron <cameron@stl.dec.com>
 Subject: Metaservers File Format
@@ -54,7 +71,8 @@ will cause your server to be delisted from the metaserver automatically.
 This is handled by program code at the metaserver.
 
 To remove your server from metaserver listing, delete or rename the
-metaservers file.  After a while, the metaserver will remove the entry.
+metaservers file.  After a while, the metaserver will remove the
+entry.  To force a delisting sooner, see the tools/delist program.
 
 --
 James Cameron                                    (cameron@stl.dec.com)
