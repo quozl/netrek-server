@@ -684,7 +684,11 @@ static void cleanup(int terminate)
                 stop_this_bot(j, msg);
         }
 
-        USLEEP(2000000);
+        for (i=0; i<100; i++) {
+          usleep(20000);
+          me->p_ghostbuster = 0;
+        }
+
         retry=0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
             if ((j->p_status != PFREE) && j != me && is_robot(j))
