@@ -146,8 +146,10 @@ int main (int argc, char *argv[])
 
   /* if someone tries to ask for help, give 'em it */
   if (argc == 2 && argv[1][0] == '-') {
-    fprintf (stderr, "Usage: %s [portfile] [debug]\n", argv[0] );
-    fprintf (stderr, "Usage: %s stop\n", argv[0] );
+    fprintf(stderr, "Usage: %s [start|stop|reload]\n", argv[0]);
+    fprintf(stderr, "       start, begins listening for client connections\n");
+    fprintf(stderr, "       stop, stop listening for client connections\n");
+    fprintf(stderr, "       reload, read the port file after it is changed\n");
     exit (1);
   }
 
