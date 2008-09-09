@@ -274,29 +274,28 @@ static void auto_features(void)
     struct planet *pln;
     u_char course;
     int troop_capacity=0;
+    static int sd_time_last = -1;
+    int sd_time;
 
     check_observs();
     if (!living) return;
 
     if (me->p_flags & PFSELFDEST) {
-	if ((me->p_updates >= selfdest) ||
-	    ((me->p_flags & PFGREEN) && (me->p_damage == 0)
-		&& (me->p_shield == me->p_ship.s_maxshield))) {
-	    me->p_flags &= ~PFSELFDEST;
-	    me->p_explode = 10;
-	    me->p_whydead = KQUIT;
-	    me->p_status = PEXPLODE;
-	} else {
-	    switch ((selfdest - me->p_updates)/10) {
-	    case 5: case 4:
-		new_warning(UNDEF,"You notice everyone on the bridge is staring at you.");
-		break;
-	    default:
-		new_warning(UNDEF, "Stand By ... Self Destruct in %d seconds",
-			(selfdest - me->p_updates) / 10);
-		break;
-	    }
-	}
+        sd_time = (me->p_selfdest - me->p_updates) / 10;
+        if (sd_time != sd_time_last) {
+            sd_time_last = sd_time;
+            switch (sd_time) {
+            case 4:
+            case 5:
+              new_warning(UNDEF, "You notice everyone on the bridge is staring at you.");
+              break;
+            default:
+              new_warning(UNDEF, "Stand By ... Self Destruct in %d seconds", sd_time);
+              break;
+            }
+        }
+    } else {
+        sd_time_last = -1;
     }
 
     /* provide a refit countdown 4/6/92 TC */

@@ -1782,13 +1782,10 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 /*ARGSUSED*/
 static void handleQuitReq(struct quit_cpacket *packet)
 {
+    int sd_time = (me->p_ship.s_type != STARBASE) ? 10 : 60;
+    if (is_idle(me)) sd_time = sd_time / 5;
+    me->p_selfdest = me->p_updates + sd_time * 10;
     me->p_flags |= PFSELFDEST;
-    /* 10 seconds default self-destruct time */
-    selfdest = me->p_updates + 100;
-    /* 60 seconds to destruct a starbase */
-    if (me->p_ship.s_type==STARBASE) selfdest = me->p_updates + 600;
-    /* one tenth of that if safe idle */
-    if (is_idle(me)) selfdest = selfdest / 10;
     new_warning(90,"Self destruct initiated");
 }
 

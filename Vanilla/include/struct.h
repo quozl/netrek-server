@@ -454,6 +454,7 @@ struct player {
     short p_armies;
     int p_fuel;
     short p_explode;            /* Keeps track of final explosion */
+    int p_selfdest;             /*!< if PFSELFDEST, p_updates we die at */
     int p_etemp;
     short p_etime;
     int p_wtemp;

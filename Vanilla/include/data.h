@@ -85,7 +85,6 @@ extern int	messpend;
 extern int	lastcount;
 extern int	mdisplayed;
 extern int	redrawall;
-extern int	selfdest;
 extern int	lastm;
 extern int	delay;
 extern int	rdelay;

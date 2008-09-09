@@ -1742,6 +1742,17 @@ static void udplayers_palive_set_alert(struct player *j)
         }
 }
 
+static void udplayers_palive_self_destruct(struct player *j)
+{
+        if (!(j->p_flags & PFSELFDEST)) return;
+        if ((j->p_updates >= j->p_selfdest) ||
+            ((j->p_flags & PFGREEN) && (j->p_damage == 0)
+                && (j->p_shield == j->p_ship.s_maxshield))) {
+            j->p_flags &= ~PFSELFDEST;
+            p_explosion(j, KQUIT, j->p_no);
+        }
+}
+
 static void udplayers_palive(struct player *j)
 {
         if ((j->p_flags & PFORBIT) && !(j->p_flags & PFDOCK)) {
@@ -1773,6 +1784,7 @@ static void udplayers_palive(struct player *j)
         udplayers_palive_make_fuel(j);
         udplayers_palive_repair(j);
         udplayers_palive_set_alert(j);
+        udplayers_palive_self_destruct(j);
 }
 
 /*! @brief Update players.

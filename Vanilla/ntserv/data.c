@@ -37,7 +37,6 @@ int	messpend;
 int	lastcount;
 int	mdisplayed;
 int	redrawall;
-int	selfdest;
 int	udcounter;
 int	lastm;
 int	delay;			/* delay for decaring war */
