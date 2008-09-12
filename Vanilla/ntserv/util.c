@@ -576,6 +576,8 @@ void s2du(int input, unsigned char *value, char *unit) {
    (if pad is false).
 
    WARNING: val must be <= 100000000 (size < 9).
+
+   [code copied from COW string_util.c]
 */
 char *itoapad(int val, char *result, int pad, int prec)
 {
@@ -626,6 +628,8 @@ char *itoapad(int val, char *result, int pad, int prec)
    The floating point part will always be padded with zeros.
 
    WARNING: The whole part of `fval' must be <= 100000000 (size < 9).
+
+   [code copied from COW string_util.c]
 */
 char *ftoa(float fval, char *result, int pad, int iprec, int dprec)
 {

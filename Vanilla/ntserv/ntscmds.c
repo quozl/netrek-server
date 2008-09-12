@@ -462,8 +462,8 @@ int bounceSessionStats(int from)
     int                            deltaArmies, deltaPlanets,
                                    deltaKills, deltaLosses,
                                    deltaTicks;
-    char bufPlanets[8], bufBombing[8],
-         bufOffense[8], bufDefense[8];
+    char                           bufPlanets[8], bufBombing[8],
+                                   bufOffense[8], bufDefense[8];
 
 #ifdef LTD_STATS
 
