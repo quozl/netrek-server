@@ -43,3 +43,5 @@ int is_invisible_due_idle(struct player *victim);
 void p_x_y_go_home(struct player *k);
 void p_heal(struct player *k);
 void s2du(int t, unsigned char *v, char *u);
+char *itoapad(int val, char *result, int pad, int prec);
+char *ftoa(float fval, char *result, int pad, int iprec, int dprec);

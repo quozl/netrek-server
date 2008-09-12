@@ -462,6 +462,8 @@ int bounceSessionStats(int from)
     int                            deltaArmies, deltaPlanets,
                                    deltaKills, deltaLosses,
                                    deltaTicks;
+    char bufPlanets[8], bufBombing[8],
+         bufOffense[8], bufDefense[8];
 
 #ifdef LTD_STATS
 
@@ -507,12 +509,16 @@ int bounceSessionStats(int from)
          deltaKills,
          deltaLosses,
          (float) deltaTicks/36000.0);
+    ftoa(sessionPlanets, bufPlanets, 0, 2, 2);
+    ftoa(sessionBombing, bufBombing, 0, 2, 2);
+    ftoa(sessionOffense, bufOffense, 0, 2, 2);
+    ftoa(sessionDefense, bufDefense, 0, 2, 2);
     godf(from,
-         "Ratings: Pla: %5.2f  Bom: %5.2f  Off: %5.2f  Def: %5.2f  Ratio: %4.2f",
-         sessionPlanets,
-         sessionBombing,
-         sessionOffense,
-         sessionDefense,
+         "Ratings: Pla: %s  Bom: %s  Off: %s  Def: %s  Ratio: %4.2f",
+         bufPlanets,
+         bufBombing,
+         bufOffense,
+         bufDefense,
          (float) deltaKills /
          (float) ((deltaLosses == 0) ? 1 : deltaLosses));
     return 1;

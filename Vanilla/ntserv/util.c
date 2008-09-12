@@ -566,3 +566,91 @@ void s2du(int input, unsigned char *value, char *unit) {
 
   *value = input & 0xff; *unit = 'z'; return;
 }
+
+/*
+   Convert an integer `val' to a null terminated string `result'.
+
+   Only the `prec' most significant digits will be written out.
+   If `val' can be expressed in fewer than `prec' digits then the
+   number is padded out with zeros (if pad is true) or spaces
+   (if pad is false).
+
+   WARNING: val must be <= 100000000 (size < 9).
+*/
+char *itoapad(int val, char *result, int pad, int prec)
+{
+  int     lead_digit = 0, i, j, too_big = 1, h = 1;
+
+  if (prec != 0)
+    result[prec] = '\0';
+
+
+  /* Careful!!! maximum number convertable must be <=100000000. size < 9 */
+
+  for (i = 100000000, j = 0; i && h <= prec; i /= 10, j++)
+    {
+      if ((9 - prec) > j && too_big)
+        continue;
+      else if (h)
+        {
+          j = 0;
+          too_big = 0;
+          h = 0;
+        }
+
+      result[j] = (val % (i * 10)) / i + '0';
+
+      if (result[j] != '0' && !lead_digit)
+        lead_digit = 1;
+
+      if (!lead_digit && !pad)
+        if ((result[j] = (val % (i * 10)) / i + '0') == '0')
+          result[j] = ' ';
+    }
+
+  if (val == 0)
+    result[prec - 1] = '0';
+
+  return (result);
+}
+
+/*
+   Convert a float `fval' to a null terminated string `result'.
+
+   Only the `iprec' most significant whole digits and the `dprec'
+   most significat fractional digits are printed.
+
+   The integer part will be padded with zeros (if pad is true) or
+   spaces (if pad is false) if it is shorter than `iprec' digits.
+
+   The floating point part will always be padded with zeros.
+
+   WARNING: The whole part of `fval' must be <= 100000000 (size < 9).
+*/
+char *ftoa(float fval, char *result, int pad, int iprec, int dprec)
+{
+  int     i, ival;
+  float   val = fval;
+
+  if ((iprec + dprec) != 0)
+    result[iprec + dprec + 1] = '\0';
+
+  for (i = 0; i < dprec; i++)
+    val *= 10.0;
+
+  ival = val;
+  itoapad(ival, result, pad, iprec + dprec);
+
+  for (i = (iprec + dprec); i >= iprec; i--)
+    if (result[i] == ' ')
+      result[i + 1] = '0';
+  else
+    result[i + 1] = result[i];
+
+  result[iprec] = '.';
+
+  if (fval < 1.0)
+    result[iprec - 1] = '0';
+
+  return (result);
+}
