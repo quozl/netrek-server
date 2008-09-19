@@ -1,15 +1,7 @@
 #!/bin/sh
-echo "`date` $1 `basename $0` $2" >> $LOCALSTATEDIR/admin.log
-mail -s 'ban: $3' `whoami` << EOF
+echo "`date` $1 `basename $0` $3 ($2)" >> $LOCALSTATEDIR/admin.log
+mail -s "ban: $3" `whoami` << EOF
 God observer: $1
-Offending slot host name: $2
+Banned host : $3 ($2)
 EOF
-echo "# banned by admin command, `date`" >> etc/banned
-echo "*@$2" >> $SYSCONFDIR/banned
-
-# add to the access file if it is present
-# (see docs/README.ban)
-if [ -f $SYSCONFDIR/access ]; then
-    echo "# banned by admin command, `date`" >> $SYSCONFDIR/access
-    echo "$2 n" >> $SYSCONFDIR/access
-fi
+touch $SYSCONFDIR/ip/deny/$2
