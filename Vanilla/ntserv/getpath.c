@@ -119,7 +119,6 @@ void getpath()
 #endif
   snprintf(Puck,x,"%s/%s",g->libdir,N_PUCK);
   snprintf(Inl,x,"%s/%s",g->libdir,N_INL);
-  snprintf(Access_File,x,"%s/%s",g->sysconfdir,N_ACCESS_FILE);
   snprintf(NoCount_File,x,"%s/%s",g->sysconfdir,N_NOCOUNT_FILE);
   snprintf(Prog,x,"%s/%s",g->libdir,N_PROG);
   snprintf(LogFile,x,"%s/%s",g->localstatedir,N_LOGFILE);

@@ -1,13 +1,12 @@
 Banning players
 
-There are two files which can hinder players from connecting.  They
-use IP address, host name, or username.  They cannot prevent players
-from connecting who know how to use a tunnel to change their IP
-address and host name.
+There are two methods currently supported which can hinder players from
+connecting.  They use IP address, host name, or username.  They cannot
+prevent players from connecting who know how to use a tunnel to change
+their IP address and host name.
 
 Note: this document duplicates the functionality of the source, and
 may lag behind development.  References are included.
-
 
 1.  etc/banned
 
@@ -48,33 +47,22 @@ list in memory.  The list is lost when the daemon exits.
 [ntserv/bans.c function bans_add_temporary_by_player]
 
 
-2.  etc/access
+2.  etc/ip/deny/
 
-Is not created at installation time.
-You have to create a new file etc/access.
+Directory created empty at installation time.
 
-Warning: the default policy is to deny, therefore an empty etc/access
-file will deny all connections.
-[newstartd/newaccess.c function host_access]
+Upon game entry a check is made to see if a file exists in the etc/ip/deny
+directory with a name that matches the player's IP address.
 
-When a player is affected by this, they are not placed on queue, they
-do not see the message of the day, instead their client will be given
-the "You cannot play now" SP_BADVERSION packet.  The etc/bypass file
-is ignored.
+If such a file exists they are not placed on queue, they do not see the
+message of the day, instead their client will be given the "You cannot
+play now" SP_BADVERSION packet.  The etc/bypass file is ignored.
 [newstartd/newstartd.c function deny]
 
-Changes to the file are effective on the next client connection.
+Creation of the ip address files are effective on the next client connection.
 There is no need to restart newstartd.
-[newstartd/newaccess.c function host_access]
+[newstartd/ip_deny() function call]
 
-Add a line "default y" to the file to change the policy, then add
-exact host names.  For example:
-
-default y
-user.compuserve.com n
-
-Note: there is no wildcard matching, and the hostname is case
-sensitive.
-
-The in-game admin command "ban" adds to this file if it exists.
+The in-game admin command "ban" adds the proper ip address file to this
+directory.
 [ntserv/ntscmds.c function do_admin]

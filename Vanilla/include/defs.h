@@ -253,7 +253,6 @@ because they have initialisation of variables dependent on UPDATE. */
 #define N_ON_FILE	"on"
 #endif
 
-#define N_ACCESS_FILE	"access"
 #define N_NOCOUNT_FILE	"nocount"
 #define N_PROG		"ntserv"
 #define N_LOGFILE	"log"
