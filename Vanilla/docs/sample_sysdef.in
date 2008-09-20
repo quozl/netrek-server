@@ -1,9 +1,13 @@
-#	$Id: sample_sysdef.in,v 1.3 2006/04/26 09:52:42 quozl Exp $	
 #
-#	The sample sysdef file shipped with the server.
+#       The server defaults, or configuration file.
 #
-#	Edit this file to meet your requirements, or use the program gum to
-#	view and update it graphically.
+#       Changes to this file are usually immediate, even during a running
+#       game, which can lead to disturbance of the social dynamics.
+#
+#       Developers: see tail of include/sysdefaults.h for the procedure to
+#       add new names and values.
+#
+
 #
 #       Admin password for using admin command (change in order for it to
 #       work, if password is left as "password", it will NOT be accepted)
