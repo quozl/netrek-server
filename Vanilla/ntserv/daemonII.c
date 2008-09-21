@@ -1742,14 +1742,41 @@ static void udplayers_palive_set_alert(struct player *j)
         }
 }
 
+static void udplayers_palive_self_destruct_credit(struct player *j)
+{
+        struct player *k, *enemy;
+        int dist, max_dist;
+
+        enemy = NULL;
+        max_dist = GWIDTH * GWIDTH;
+        for (k = firstPlayer; k <= lastPlayer; k++) {
+                if (k->p_status != PALIVE) continue;
+                if (k->p_team == j->p_team) continue;
+                dist = hypot((double) (j->p_x - k->p_x),
+                             (double) (j->p_y - k->p_y));
+                if (dist > (GWIDTH/4)) continue;
+                if (dist < max_dist) {
+                        max_dist = dist;
+                        enemy = k;
+                }
+        }
+        if (enemy != NULL) {
+                enemy->p_kills += 1.0 + j->p_armies * 0.1 +
+                        j->p_kills * 0.1;
+        }
+}
+
 static void udplayers_palive_self_destruct(struct player *j)
 {
         if (!(j->p_flags & PFSELFDEST)) return;
         if ((j->p_updates >= j->p_selfdest) ||
             ((j->p_flags & PFGREEN) && (j->p_damage == 0)
                 && (j->p_shield == j->p_ship.s_maxshield))) {
-            j->p_flags &= ~PFSELFDEST;
-            p_explosion(j, KQUIT, j->p_no);
+                j->p_flags &= ~PFSELFDEST;
+                p_explosion(j, KQUIT, j->p_no);
+                if (self_destruct_credit) {
+                        udplayers_palive_self_destruct_credit(j);
+                }
         }
 }
 

@@ -240,6 +240,9 @@ RESTRICT_BOMB=1
 #       Disallow 3rd space bombing (1 = no bombing)
 NO_UNWARRING_BOMBING=1
 #
+#	Credit nearest enemy with the death of a ship that has quit.
+SELF_DESTRUCT_CREDIT=0
+#
 #	Turn off messaging for observers
 OBSERVER_MUTING=0
 #

@@ -510,3 +510,6 @@ int lame_base_refit = 1;
 
 /* login time, in seconds, default set from Netrek XP in 2008-06 */
 int logintime = 100;
+
+/* whether self destructing gives credit to nearest enemy */
+int self_destruct_credit = 0;

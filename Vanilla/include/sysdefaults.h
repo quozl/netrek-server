@@ -312,6 +312,8 @@ struct sysdef_keywords {
     "Allow classical base refits at < 75% damage." },
   { "LOGINTIME",        SYSDEF_INT,     &logintime,
     "How long to allow login for, in seconds." },
+  { "SELF_DESTRUCT_CREDIT",        SYSDEF_INT,     &self_destruct_credit,
+    "Whether nearby enemy ships are given kill credits for a quit scummer."},
   { "",			SYSDEF_END,	NULL		}
 };
 

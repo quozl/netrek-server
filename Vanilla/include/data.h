@@ -427,6 +427,7 @@ extern float dd_minimal_offense;
 extern int lame_refit;
 extern int lame_base_refit;
 extern int logintime;
+extern int self_destruct_credit;
 
 /* lame hack to get around gcc silliness */
 extern double round(double);
