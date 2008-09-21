@@ -844,6 +844,15 @@ static void move()
 }
 
 
+static void killer_credit(struct player *killer, struct player *died)
+{
+        killer->p_kills += 1.0 + died->p_armies * 0.1 + died->p_kills * 0.1;
+#ifdef STURGEON
+	if (sturgeon && sturgeon_extrakills)
+		killer->p_kills += died->p_upgrades * 0.15;
+#endif
+}
+
 /*! @brief Update player sight.
     @details Updates player visibility state (PFSEEN) based on orbit
     status, and distance to an enemy.
@@ -1761,8 +1770,7 @@ static void udplayers_palive_self_destruct_credit(struct player *j)
                 }
         }
         if (enemy != NULL) {
-                enemy->p_kills += 1.0 + j->p_armies * 0.1 +
-                        j->p_kills * 0.1;
+                killer_credit(enemy, j);
         }
 }
 
@@ -2457,25 +2465,15 @@ static void t_explosion(struct torp *torp)
         if ((k->p_team != j->p_team) || 
             ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
         {
-          k->p_kills += 1.0 + j->p_armies * 0.1 + j->p_kills * 0.1;
-#ifdef STURGEON
-          if (sturgeon && sturgeon_extrakills)
-            k->p_kills += j->p_upgrades * 0.15;
-#endif
-
+          killer_credit(k, j);
 #ifndef LTD_STATS       /* ltd_update_kills automatically checks max kills */
-
           checkmaxkills(k->p_no);
-
 #endif /* LTD_STATS */
-
         }
 
 #ifndef LTD_STATS
-
         killerstats(k->p_no, torp->t_owner, j);
         loserstats(j->p_no);
-
 #endif /* LTD_STATS */
 
 
@@ -3019,15 +3017,7 @@ static void udphaser(void)
                         }
                         if (victim->p_damage >= victim->p_ship.s_maxdamage) {
                             p_explosion(victim, KPHASER, i);
-
-                            players[i].p_kills += 1.0 + 
-                                victim->p_armies * 0.1 +
-                                victim->p_kills * 0.1;
-#ifdef STURGEON
-                            if (sturgeon && sturgeon_extrakills)
-                                players[i].p_kills += victim->p_upgrades * 0.15;
-#endif
-
+                            killer_credit(&players[i], victim);
 #ifndef LTD_STATS
                             killerstats(i, i, victim);
                             checkmaxkills(i);
@@ -3781,13 +3771,7 @@ static void blowup(struct player *sh)
 
                 if ((k->p_team != j->p_team) ||
                     ((k->p_team == j->p_team) && !(j->p_flags & PFPRACTR))){
-                  k->p_kills += 1.0 + 
-                    j->p_armies * 0.1 + j->p_kills * 0.1;
-#ifdef STURGEON
-                  if (sturgeon && sturgeon_extrakills)
-                    k->p_kills += j->p_upgrades * 0.15;
-#endif
-
+                  killer_credit(k, j);
 #ifdef LTD_STATS
                   ltd_update_kills_max(k);
 #else /* LTD_STATS */
