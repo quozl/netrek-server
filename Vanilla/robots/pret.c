@@ -199,6 +199,9 @@ void checkmess()
 { 
     static int no_bots = 0;
     static int time_in_T = 0;
+#ifndef PRETKEEPALIVE
+    static int no_humans = 0;
+#endif
 
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
     if (me->p_status != POBSERV){  /*So I'm not alive now...*/
