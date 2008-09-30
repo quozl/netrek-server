@@ -7,38 +7,38 @@
 #	   XTREKDIR   - root src dir
 #	   XTREKOWNER - Owner of the game
 
-XTREKDIR = @srcdir@
-prefix = @prefix@
-exec_prefix = @exec_prefix@
-LIBDIR = @libdir@
-BINDIR = @bindir@
-SYSCONFDIR = @sysconfdir@
-LOCALSTATEDIR = @localstatedir@
-XTREKOWNER = @LOGNAME@
+XTREKDIR=@srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+LIBDIR=@libdir@
+BINDIR=@bindir@
+SYSCONFDIR=@sysconfdir@
+LOCALSTATEDIR=@localstatedir@
+XTREKOWNER=@LOGNAME@
 
-PORT = -DPORT=2592
+PORT=-DPORT=2592
 
 #       Some systems dont have install so you may need to use cp instead
 #	A script call install in the root dir is also provided but isn't
 #       very robust. To use this put the full path
 
-SHELL = /bin/sh
-INSTALL = @INSTALL@
-INSTALLPROG = @INSTALL_PROGRAM@
-INSTALLDATA = @INSTALL_DATA@
+SHELL=/bin/sh
+INSTALL=@INSTALL@
+INSTALLPROG=@INSTALL_PROGRAM@
+INSTALLDATA=@INSTALL_DATA@
 
 #	Compiler:
 #	   NOTE: many systems' /bin/cc may choke on much of the code in 
 #		 ntserv/ use with # caution!
 
-CC  = @CC@
-CPP = @CPP@
-CPPFLAGS = @CPPFLAGS@
-LN  = @LN_S@
-LDFLAGS = @LDFLAGS@
+CC=@CC@
+CPP=@CPP@
+CPPFLAGS=@CPPFLAGS@
+LN=@LN_S@
+LDFLAGS=@LDFLAGS@
 
 #LINKFLAGS = -s -N
-LINKFLAGS = @LDFLAGS@
+LINKFLAGS=@LDFLAGS@
 
 # Compile in parallel
 # PMAKE = &
@@ -50,15 +50,15 @@ LINKFLAGS = @LDFLAGS@
 #	SysV defines:
 #	Use only -lm (EXTRALIBS) if you're not on SysV
 
-EXTRALIBS = $(LINKFLAGS) @LIBS@ 
-LIBCRYPT = @LIBCRYPT@
-LIBCURSES = @LIBCURSES@
-LIBTERMCAP = @LIBTERMCAP@
+EXTRALIBS=$(LINKFLAGS) @LIBS@
+LIBCRYPT=@LIBCRYPT@
+LIBCURSES=@LIBCURSES@
+LIBTERMCAP=@LIBTERMCAP@
 
 #	Some systems need X11R5 in the include path
 #	Comment out if you don't need this
 
-EXTRAINCS = # -I/usr/local/X11R5/include
+# EXTRAINCS=-I/usr/local/X11R5/include
 
 # NETREK_INCLUDES = -I../ntserv -I@srcdir@/../ntserv
 #
@@ -67,27 +67,27 @@ EXTRAINCS = # -I/usr/local/X11R5/include
 
 #STRDUPC = @srcdir@/strdup.c @srcdir@/random.c
 #STRDUPO = strdup.o random.o
-RANDOMO = @LIBOBJS@
+RANDOMO=@LIBOBJS@
 
 # Location of X include files if not standard
 # Use -I<path>
-X11INCLUDE = @XINCLUDES@
+X11INCLUDE=@XINCLUDES@
 
 # Name of X libraries 	(xsg only)
 # Put -L<path> before library if non-standard location.
-X11LIB = @XLIBSW@
+X11LIB=@XLIBSW@
 
 # GNU MP stuff
-GNUMP_INC = @GNUMPINC@
-GNUMP_LIB = @GNUMPLIB@
+GNUMP_INC=@GNUMPINC@
+GNUMP_LIB=@GNUMPLIB@
 
 # RSA stuff
-RSA_FLAGS = @NORSA@ -DRSA
-RSA_OBJS = @NORSA@ rsa_key.o
-RSA_SRC = @NORSA@ rsa_key.c
-RSA_INCS = @NORSA@ @MPINC@
-RSA_LIB = @NORSA@ @RSALIB@ @MPLIB@
+RSA_FLAGS=@NORSA@-DRSA
+RSA_OBJS=@NORSA@rsa_key.o
+RSA_SRC=@NORSA@rsa_key.c
+RSA_INCS=@NORSA@@MPINC@
+RSA_LIB=@NORSA@@RSALIB@ @MPLIB@
 
-EXTRAFLAGS = $(CPPFLAGS)
+EXTRAFLAGS=$(CPPFLAGS)
 
-FLAGS = @CFLAGS@ -Wall $(EXTRAFLAGS) $(RSA_FLAGS)
+FLAGS=@CFLAGS@ -Wall $(EXTRAFLAGS) $(RSA_FLAGS)
