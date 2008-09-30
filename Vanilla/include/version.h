@@ -1,9 +1,9 @@
 /* store the version info here */
 
 #ifdef SVERS
-static char serv_version[]="Vanilla server version 2.14";
+static char serv_version[]="Vanilla server version 2.15";
 #endif
 
 #ifdef MVERS
-static char mvers[]="2.14";
+static char mvers[]="2.15";
 #endif

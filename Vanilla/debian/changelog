@@ -1,3 +1,9 @@
+netrek-server-vanilla (2.15.0) unstable; urgency=low
+
+  * release
+
+ -- James Cameron <quozl@us.netrek.org>  Tue, 30 Sep 2008 14:52:07 +1000
+
 netrek-server-vanilla (2.14.0) unstable; urgency=low
 
   * release

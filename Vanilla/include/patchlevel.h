@@ -16,18 +16,3 @@
 #if !defined(NULL)
 #define NULL 0
 #endif
-
-#if 0
-/*
- * Patchname should be set back to an array of NULL at
- * every patch release.  I.e. this code should be compiled: */
-char *patchname[10] = {
-  NULL,
-};
-#else
-/*
- * Only compile this to add the name of your patch before it's official */
-char *patchname[10] = {
-  NULL,
-};
-#endif

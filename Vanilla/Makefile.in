@@ -1,17 +1,16 @@
-#	$Id: Makefile.in,v 1.11 2006/05/06 12:02:49 quozl Exp $	
 #
 #	Installers, you should not need to edit this file.
 #	Everything should be setup in the configuration script.
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.14.0
+VERSION=2.15.0
 
-RANLIB =  @RANLIB@
-VPATH = @srcdir@
-srcdir = @srcdir@
+RANLIB=@RANLIB@
+VPATH=@srcdir@
+srcdir=@srcdir@
 
-CONFIG = system.mk
+CONFIG=system.mk
 
 include $(CONFIG)
 
@@ -246,8 +245,8 @@ dist-minimal:
 #
 # Maintainer's Debian packaging section
 #
-DEBIAN_VERSION=`head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\)`
-DEBIAN_PACKAGE=`head -1 debian/changelog|cut -f1 -d\ `
+DEBIAN_VERSION=$(shell head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\))
+DEBIAN_PACKAGE=$(shell head -1 debian/changelog|cut -f1 -d\ )
 DEBIAN_ARCHIVE=~/public_html/external/mine/netrek
 
 source-package:

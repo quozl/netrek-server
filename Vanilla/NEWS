@@ -1,3 +1,80 @@
+2.15.0: released 2008-09-30
+
+  * factorise killer credit
+  * self destruct credit
+  * removal of etc/access references
+  * rework file head, add hint to developers
+  * admin/ban, fixes
+  * remove /og/
+  * decimal precision conformance for displayed stats
+  * self destruct, move from ntserv to daemon
+  * deprecate debug documentation in usage
+  * pret, reduce ghostbust during termination probability
+  * metaserver advisory political
+  * pret, flatten kills at start of t-mode
+  * is_idle, not if torps in flight
+  * xtkill, add (f)latten
+  * openmem, test program
+  * RSA does not mean trusted, reported by zelchenko
+  * experimental, clue game substitution
+  * experimental, WHY_DEAD_2 fix
+  * trivial packet doc fix
+  * trimscores, add trim by zero stats
+  * p_disconnect support for xtkill F
+  * fix comment on SP_GENERIC_32, add bug
+  * pret, conquer parade honors pre-t idlers
+  * SP_GENERIC_32, version 'b', fix byte swapping
+  * pl_reset, sanity of loop
+  * SP_GENERIC_32 version 'b' packet support
+  * inl, fix for 50 fps, add context-> fields
+  * features, begin to use arg1
+  * remove old fixme now done
+  * packets, remove unnecessary ifdef lines and blanks
+  * util, s2du
+  * fix missing end of line
+  * SP_GENERIC_32, only send when it changes
+  * RCD bomb, show planet name regardless
+  * SP_GENERIC_32, fix structure definition
+  * rcd, bring in changes from netrek-client-cow
+  * pl_pick_home, pathological case fix
+  * CP_SOCKET denial of service, security update
+  * SP_SHIP_CAP, add py-struct documentation
+  * SP_BADVERSION, compile fixes
+  * multiplexor design idea 2007-10
+  * SP_BADVERSION, use for eject, ban, free
+  * SP_BADVERSION, renumbering
+  * SP_BADVERSION, avoid leak, symbolise
+  * pret, code formatting
+  * note bug in clue game re captaincy on draft
+  * add py-struct to UDP packets for pygame client
+  * include call graph
+  * REPOSITORIES, update of darcs link
+  * pret, fix for save_armies_carried()
+  * pl_info, better documentation
+  * doxygen, add robotd
+  * pret, round win parade, tested
+  * is_robot_by_host, enables testing of pret locally
+  * forgotten, move common shmget usage to openmem.c
+  * review, t-mode duration logging
+  * pret, win parade, experimental
+  * daemon, add t-mode duration logging
+  * glog, add timestamps
+  * doxygen, struct.h incomplete documentation
+  * configure, remove X libraries
+  * inl, report who freed a slot, it can be ambiguous
+  * doxygen, daemon (1)
+  * doResources change to pl_reset
+  * pret.c, 80 column re-indentation
+  * newbie.c, 80 column re-indentation
+  * various spelling fixes
+  * doxygen, add documentation
+  * doxygen, add configuration and build target
+  * post release notes
+  * fix configure, relied on name.c
+  * deprecate name.c
+  * fix release date
+  * add metaserver delist tool
+
 2.14.0: released 2008-02-27
 
   - volunteer welcome to classify the list below, it is merely a "darcs
