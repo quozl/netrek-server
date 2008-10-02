@@ -1,14 +1,81 @@
-netrek-server-vanilla (2.15.0) unstable; urgency=low
+netrek-server-vanilla (2.15.0-2) hardy; urgency=low
 
+  * Upstream release of 2.15.0
+
+ -- Robert J. Tanner <tanner@real-time.com>  Tue, 30 Sep 2008 23:43:23 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.10) hardy; urgency=low
+
+  * Small issue, there is not an 'unstable' in ubuntu. Changed to hardy.
+
+ -- Robert J. Tanner <tanner@real-time.com>  Thu, 25 Sep 2008 09:43:45 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.9) unstable; urgency=low
+
+  * Change the default state to enable netrek-server-vanilla after install
+  * Close netrek-server #274282 by checking for the user's existence
+    properly.
+
+ -- Chris Collins <chris@collins.id.au>  Thu, 25 Sep 2008 17:21:56 +1000
+
+netrek-server-vanilla (2.13.0ubuntu0.8) hardy; urgency=low
+
+  * Merge in Chris Collin's change and 1-up his build release so I can push
+    the release.
+
+ -- Robert J. Tanner <tanner@real-time.com>  Wed, 24 Sep 2008 17:51:15 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.7) unstable; urgency=low
+
+  * Bring the init scripts in line with common Debian/Ubuntu practice
+  * Add Build-Conflicts to fix issues with RSA code failing on some
+    systems.
+
+ -- Chris Collins <chris@collins.id.au>  Thu, 25 Sep 2008 11:53:10 +1000
+
+netrek-server-vanilla (2.13.0ubuntu0.6) hardy; urgency=low
+
+  * Require starting of netrekd manually
+  * Add prerm script 
+
+ -- Robert J. Tanner <tanner@real-time.com>  Wed, 24 Sep 2008 01:02:34 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.5) hardy; urgency=low
+
+  * Remove #DEBHELPER# from postinst script
+  * Learned the hardware that pbuilder is not a proper way to test a package install
+  * Really close Ubuntu #272338
+
+ -- Robert J. Tanner <tanner@real-time.com>  Tue, 23 Sep 2008 21:03:02 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.4) hardy; urgency=low
+
+  * Remove all the debconf configuration until we can figure out why post-installs are failing.
+
+ -- Robert J. Tanner <tanner@real-time.com>  Mon, 22 Sep 2008 20:56:30 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.3) hardy; urgency=low
+
+  * Really close Ubuntu #232377
+
+ -- Robert J. Tanner <tanner@real-time.com>  Sat, 20 Sep 2008 18:12:37 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.2) hardy; urgency=low
+
+  * Closes Ubuntu #232338 server runs as root unecessarily
+  * Closes Ubuntu #232377 /etc/init.d/netrek-server-vanilla: 21: text: not found
+
+ -- Robert J. Tanner <tanner@real-time.com>  Fri, 19 Sep 2008 22:08:16 -0500
+
+netrek-server-vanilla (2.13.0ubuntu0.1) hardy; urgency=low
+
+  [ James Cameron ]
   * release
 
- -- James Cameron <quozl@us.netrek.org>  Tue, 30 Sep 2008 14:52:07 +1000
+  [ Bob Tanner ]
+  * Release for Ubuntu Hardy
 
-netrek-server-vanilla (2.14.0) unstable; urgency=low
-
-  * release
-
- -- James Cameron <quozl@us.netrek.org>  Mon, 19 Nov 2007 17:57:58 +1100
+ -- Robert J. Tanner <tanner@real-time.com>  Fri, 19 Sep 2008 12:03:03 -0500
 
 netrek-server-vanilla (2.13.0-0) unstable; urgency=low
 

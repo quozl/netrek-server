@@ -1,0 +1,5 @@
+# Config file for netrek-vanilla-server
+ENABLED=true
+
+# Options to invoke netrekd with
+OPTIONS=

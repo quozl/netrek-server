@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # NAME
-#   debian/postrm -- Debian postrm for netrek-server-vanilla
+#   debian/prerm -- Debian prerm for netrek-server-vanilla
 #
 # DESCRIPTION
-#   Do a db_purge as the last thing in removing the package.
+#   Place holder
 #
 # COPYRIGHT
 #   Copyright (c) 2008 Bob Tanner <tanner@real-time.com>
@@ -24,12 +24,6 @@
 #   with this program; if not, write to the Free Software Foundation, Inc., 59
 #   Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
-if [ "$1" = purge ] ; then
-	rm -f /var/lib/netrek-server-vanilla/log
-	rm -f /var/lib/netrek-server-vanilla/netrekd.pid
-fi
-
 #DEBHELPER#
 
 exit 0
-

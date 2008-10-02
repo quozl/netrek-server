@@ -1,0 +1,17 @@
+#!/bin/sh
+CONFIGFILE=/etc/default/netrek-vanilla-server
+set -e
+. /usr/share/debconf/confmodule
+
+# Load config file, if it exists.
+if [ -e $CONFIGFILE ]; then
+    . $CONFIGFILE || true
+
+    # Store values from config file into
+    # debconf db.
+    db_set netrek-server-vanilla/start_on_boot "$ENABLED"
+fi
+
+# Ask questions.
+db_input medium netrek-server-vanilla/start_on_boot || true
+db_go || true

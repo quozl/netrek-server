@@ -8,7 +8,7 @@
 #   steps necessary to make the netrek-server package.
 #
 # COPYRIGHT
-#   Copyright (c) 2006 Bob Tanner <tanner@real-time.com>
+#   Copyright (c) 2008 Bob Tanner <tanner@real-time.com>
 #
 # LICENSE
 #   This program is free software; you can redistribute it and/or modify it
@@ -35,15 +35,13 @@ DEB_CONFIGURE_EXTRA_FLAGS := --bindir=/usr/games \
 	--sysconfdir=/etc/netrek-server-vanilla \
 	--localstatedir=/var/lib/netrek-server-vanilla \
 	--prefix=
+DEB_MAKE_CLEAN_TARGET := distclean
 
 makebuilddir/netrek-server-vanilla::
 	if [ ! -x configure ]; then \
 		aclocal; \
 		libtoolize --copy --force; \
 		autoconf; \
-	fi
-	if [ ! -x tools/mktrekon ]; then \
-		chmod 755 tools/mktrekon; \
 	fi
 	if [ ! -x res-rsa/configure ]; then \
 		(cd res-rsa; autoconf) ;\
@@ -52,3 +50,4 @@ makebuilddir/netrek-server-vanilla::
 clean::
 	rm -f config.status
 	/usr/bin/debconf-updatepo
+

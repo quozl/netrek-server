@@ -7,7 +7,7 @@
 #   Place holder for post-installation maintainer scripts
 #
 # COPYRIGHT
-#   Copyright (c) 2006 Bob Tanner <tanner@real-time.com>
+#   Copyright (c) 2008 Bob Tanner <tanner@real-time.com>
 #
 # LICENSE
 #   This program is free software; you can redistribute it and/or modify it
@@ -27,11 +27,40 @@
 # Source debconf library.
 . /usr/share/debconf/confmodule
 
-# Check user's answer
-db_get netrek-server-vanilla/start_on_boot
-if [ "$RET" = "true" ]; then
-	/usr/sbin/update-rc.d netrek-server-vanilla defaults > /dev/null
+CONFIGFILE=/etc/default/netrek-server-vanilla
+
+if [ ! -e $CONFIGFILE ]; then
+    (
+        echo "# Config file for netrek-vanilla-server"
+        echo "ENABLED="
+    ) >> $CONFIGFILE
 fi
 
-# Do not add the DEBHELPER stuff, we are doing the above ourselves.
-exit 0
+# Check user's answer
+db_get netrek-server-vanilla/start_on_boot
+ENABLED="$RET"
+
+db_stop
+
+# If the admin deleted or commented some variables, (re-)add 
+# them to the conffile.
+grep -Eq "^ *ENABLED=" $CONFIGFILE || echo "ENABLED=" >> $CONFIGFILE
+
+invoke-rc.d netrek-server-vanilla stop
+
+sed -e "s/^ *ENABLED=.*/ENABLED=\"$ENABLED\"/" \
+  < $CONFIGFILE > $CONFIGFILE.tmp
+mv -f $CONFIGFILE.tmp $CONFIGFILE
+
+# fix permissions.
+if ! id netrek >/dev/null 2>/dev/null; then
+    addgroup --system netrek
+    adduser --system --home /var/lib/netrek-server-vanilla \
+	--no-create-home --disabled-password --ingroup netrek netrek
+fi
+chgrp -R netrek /var/lib/netrek-server-vanilla
+chown -R netrek /var/lib/netrek-server-vanilla
+chmod 2755 /var/lib/netrek-server-vanilla
+
+#DEBHELPER#
+
