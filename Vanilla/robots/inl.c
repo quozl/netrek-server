@@ -179,6 +179,7 @@ int all_alert(int stat);
 int check_winner();
 
 extern char *addr_mess(int who, int type);
+extern char *strcasestr(const char *, const char *);
 
 
 int
@@ -540,7 +541,9 @@ void logmessage(struct message *m)
   if (!(m->m_flags & MGOD)) return;
   if ((m->m_flags & MGOD) > least) return;
 #endif
-  fprintf(inl_log,"%5d: %s\n",inl_stat.ticks,m->m_data);
+  if (strcasestr(m->m_data, "ADMIN PASSWORD") == NULL) {
+    fprintf(inl_log,"%5d: %s\n",inl_stat.ticks,m->m_data);
+  }
 }
 
 void checkmess()

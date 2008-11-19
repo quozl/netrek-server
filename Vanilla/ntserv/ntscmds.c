@@ -117,7 +117,7 @@ static struct command_handler_2 nts_commands[] =
 		"Change your password         e.g. 'password neato neato'",
 		do_password },			/* PASSWORD */
     { "ADMIN",
-		C_PR_INPICKUP,
+		0,
 		"Administration commands for privileged users",
 		do_admin },			/* ADMIN */
 #ifdef REGISTERED_USERS
