@@ -41,7 +41,7 @@ EXECS =	ban getpath blotpassword loadchecker mess message newscores planets play
 	scores \
         setgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
-        ntpasswd ltd_dump ltd_convert nuke trekon metaget \
+        ntpasswd ltd_dump ltd_dump_html ltd_convert nuke trekon metaget \
 	setgame setplanet setteam setship delist
 
 all: $(PMAKE) $(EXECS)
@@ -90,6 +90,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) sortdb $(DESTDIR)$(LIBDIR)/tools/sortdb
 	$(INSTALLPROG) $(INSTALLOPTS) ntpasswd $(DESTDIR)$(LIBDIR)/tools/ntpasswd
 	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(DESTDIR)$(LIBDIR)/tools/ltd_dump
+	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump_html $(DESTDIR)$(LIBDIR)/tools/ltd_dump_html
 	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
 	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
 	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/tools/metaget
@@ -176,6 +177,9 @@ updated: update.o $(OBJS)
 
 ltd_dump: ltd_dump.o
 	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump ltd_dump.o $(OBJS)
+
+ltd_dump_html: ltd_dump_html.o
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump_html ltd_dump_html.o $(OBJS)
 
 ltd_convert: ltd_convert.o
 	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o $(OBJS)
