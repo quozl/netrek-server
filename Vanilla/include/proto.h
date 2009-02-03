@@ -35,7 +35,7 @@ void clue_check(void);
 void coup(void);
 
 /* db.c */
-int findplayer(char *namePick, struct statentry *player);
+int findplayer(char *namePick, struct statentry *player, int exhaustive);
 void savestats(void);
 int newplayer(struct statentry *player);
 char *crypt_player_raw(const char *password, const char *name);

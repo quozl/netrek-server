@@ -119,7 +119,7 @@ static void handleLogin(void)
 
     /* We look for the guy in the stat file */
     if (!streq(player.name, namePick)) {
-        position = findplayer(namePick, &player);
+      position = findplayer(namePick, &player, 1);
     } 
 
     /* Was this just a query? */

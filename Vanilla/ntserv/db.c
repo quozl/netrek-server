@@ -22,12 +22,6 @@
 #include "proto.h"
 #include "salt.h"
 
-/* support for timing requires glib, not expected to remain */
-#undef DB_TIMING
-#ifdef DB_TIMING
-#include <glib.h>
-#endif
-
 #ifdef PLAYER_INDEX
 
 /* fetch the offset to a player from the index database */
@@ -107,12 +101,9 @@ static void db_index_store(struct statentry *player, off_t position) {
 #endif
 
 /* given a name, find the player in the file, return position */
-int findplayer(char *namePick, struct statentry *player) {
+int findplayer(char *namePick, struct statentry *player, int exhaustive) {
   off_t position;
   int fd;
-#ifdef DB_TIMING
-  GTimer *timer = g_timer_new();
-#endif
 
   /* open the player file */
   fd = open(PlayerFile, O_RDONLY, 0644);
@@ -120,9 +111,6 @@ int findplayer(char *namePick, struct statentry *player) {
     ERROR(1,("db.c: findplayer: open('%s'): '%s'\n", PlayerFile, 
 	     strerror(errno)));
     strcpy(player->name, namePick);
-#ifdef DB_TIMING
-    g_timer_destroy(timer);
-#endif
     return -1;
   }
 
@@ -143,11 +131,6 @@ int findplayer(char *namePick, struct statentry *player) {
       close(fd);
       ERROR(8,("db.c: findplayer: ok, '%s' is indeed at position '%d'\n", 
 	       namePick, (int) position));
-#ifdef DB_TIMING
-      ERROR(8,("db.c: timing, cached resolution, %f\n", 
-	       g_timer_elapsed(timer, NULL)));
-      g_timer_destroy(timer);
-#endif      
       return position;
     }
     /* otherwise there's an inconsistency that we can recover from */
@@ -159,24 +142,22 @@ int findplayer(char *namePick, struct statentry *player) {
   }
 #endif
 
-  /* sequential search of player file */
-  position = 0;
-  while (read(fd, (char *) player, sizeof(struct statentry)) ==
-	 sizeof(struct statentry)) {
-    if (strcmp(namePick, player->name)==0) {
-      close(fd);
+  /* slow sequential search of player file */
+  if (exhaustive) {
+    position = 0;
+    while (read(fd, (char *) player, sizeof(struct statentry)) ==
+           sizeof(struct statentry)) {
+      if (strcmp(namePick, player->name)==0) {
+        close(fd);
 #ifdef PLAYER_INDEX
-      db_index_store(player, position);
+        db_index_store(player, position);
 #endif
-      ERROR(8,("db.c: findplayer: '%s' found in sequential scan at position '%d'\n", 
-	       namePick, (int) position));
-#ifdef DB_TIMING
-      ERROR(8,("db.c: timing, sequential resolution, %f\n", g_timer_elapsed(timer, NULL)));
-      g_timer_destroy(timer);
-#endif      
-      return position;
+        ERROR(8,("db.c: findplayer: '%s' found in sequential scan at position '%d'\n", 
+                 namePick, (int) position));
+        return position;
+      }
+      position++;
     }
-    position++;
   }
 
   /* not found, return failure */
@@ -184,10 +165,6 @@ int findplayer(char *namePick, struct statentry *player) {
   strcpy(player->name, namePick);
   ERROR(8,("db.c: findplayer: '%s' not found in sequential scan\n", 
 	   namePick));
-#ifdef DB_TIMING
-  ERROR(8,("db.c: timing, sequential failure, %f\n", g_timer_elapsed(timer, NULL)));
-  g_timer_destroy(timer);
-#endif      
   return -1;
 }
 
