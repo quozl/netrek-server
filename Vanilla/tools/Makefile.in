@@ -179,7 +179,7 @@ ltd_dump: ltd_dump.o
 	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump ltd_dump.o $(OBJS)
 
 ltd_dump_html: ltd_dump_html.o
-	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump_html ltd_dump_html.o $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump_html ltd_dump_html.o $(OBJS) $(LIBCRYPT) -lgdbm
 
 ltd_convert: ltd_convert.o
 	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o $(OBJS)
