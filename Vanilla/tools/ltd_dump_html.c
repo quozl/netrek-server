@@ -1,9 +1,6 @@
 /*
- *
- * Dave Ahn
- *
- * LTD stats dump utility program.
- *
+ * Dave Ahn, LTD stats dump utility program.
+ * James Cameron, HTML output, query by player
  */
 
 #include "config.h"
@@ -13,12 +10,10 @@
 #ifdef LTD_STATS
 
 #include <string.h>
-#include <assert.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include "defs.h"
 #include "ltd_stats.h"
 #include "struct.h"
@@ -26,6 +21,10 @@
 #include "proto.h"
 
 static FILE *fp;
+
+static void dump_full_header() {
+  fprintf(fp, "<p><b>LTD Extended Player Statistics Dump</b><p>\n\n");
+}
 
 static void dump_prefix(const char *abbr, const char *name) {
   fprintf(fp, "<tr><td>%s</td><td>%s</td>", abbr, name);
@@ -232,14 +231,11 @@ static void dump_sb_stats2(char *name, char race, struct ltd_stats *ltd) {
 }
 
 int main(const int argc, const char *argv[]) {
-
   struct statentry p;
-  int plf;
   int race;
   char *who;
 
 #ifdef LTD_PER_RACE
-
   const char *races[] = {
     "FED",
     "ROM",
@@ -247,109 +243,33 @@ int main(const int argc, const char *argv[]) {
     "ORI",
     "IND"
   };
-
 #else
-
   const char *races[] = {
     "ALL"
   };
-
 #endif
+  off_t position;
 
   fp = stdout;
-
   getpath();
 
-  if (argc == 2)
-    plf = open(argv[1], O_RDONLY, 0744);
-  else 
-    plf = open(PlayerFile, O_RDONLY, 0744);
-
-  if (argc == 3)
-    who = (char *)argv[2];
-  else
-    who = NULL;
-
-  if (plf <= -1) {
-
-    fprintf(stderr, "ltd_dump_html: can't open playerfile\n");
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s charactername\n", argv[0]);
     exit(-1);
+  }
+  who = (char *)argv[1];
 
+  position = findplayer(who, &p, 0);
+  if (position < 0) {
+    fprintf(stderr, "ltd_dump_html: can't find %s, or index missing\n", who);
+    exit(-2);
   }
 
-  fprintf(fp, "<p><b>LTD Starbase Statistics</b></p>\n");
-
-  dump_sb_header1();
-
-  while (read(plf, &p, sizeof(struct statentry)) > 1) {
-
-    for (race=0; race<LTD_NUM_RACES; race++) {
-
-      if ((who == NULL)||(strcmp(who, p.name) == 0)) {
-
-	dump_sb_stats1(p.name, races[race][0], p.stats.ltd[race]);
-
-      }
-
-    }
-
+  dump_full_header();
+  for (race=0; race<LTD_NUM_RACES; race++) {
+    dump_full(p.name, races[race], p.stats.ltd[race]);
   }
-
-  if (lseek(plf, 0, SEEK_SET) == -1) {
-
-    fprintf(stderr, "ltd_dump_html: lseek failed\n");
-    exit(-1);
-
-  }
-
-  fprintf(fp, "<table>\n\n");
-
-  dump_sb_header2();
-
-   while (read(plf, &p, sizeof(struct statentry)) > 1) {
-
-    for (race=0; race<LTD_NUM_RACES; race++) {
-
-      if ((who == NULL)||(strcmp(who, p.name) == 0)) {
-
-	dump_sb_stats2(p.name, races[race][0], p.stats.ltd[race]);
-
-      }
-
-    }
-
-  }
-
-  fprintf(fp, "</table>\n\n");
-  fprintf(fp, "<p><b>LTD Extended Player Statistics Dump</b><p>\n\n");
-
-  if (lseek(plf, 0, SEEK_SET) == -1) {
-
-    fprintf(stderr, "ltd_dump_html: lseek failed\n");
-    exit(-1);
-
-  }
- 
-  while (read(plf, &p, sizeof(struct statentry)) > 1) {
-
-
-    for (race=0; race<LTD_NUM_RACES; race++) {
-
-      if ((who == NULL)||(strcmp(who, p.name) == 0)) {
-
-	dump_full(p.name, races[race], p.stats.ltd[race]);
-
-      }
-
-    }
-
-  }
-
-
-  close(plf);
-
   return 0;
-
 }
 
 #else /* LTD_STATS */
