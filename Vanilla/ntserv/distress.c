@@ -28,7 +28,7 @@ extern char *shiptypes[];
 #endif
 
 /* file scope prototypes */
-static int testmacro (char *bufa, char *bufb, int *inda, int *indb);
+static void testmacro (char *bufa, char *bufb, int *inda, int *indb);
 static int condmacro (char *bufa, char *bufb, int *inda, int *indb, int flag);
 static int solvetest (char *bufa, int *inda);
 static int skipmacro (char buf[], int index);
@@ -554,12 +554,12 @@ int makedistress (struct distress *dist, /* the info */
   return (index3);
 }
 
-static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
+static void testmacro (char *bufa, char *bufb, int *inda, int *indb)
 {
   int state = 0;
 
   if (*indb >= 10 * MAXMACLEN)
-    return (0);	
+    return;	
 /* maybe we should do something more "safe" here (and at other returns)? */
 
 
@@ -578,7 +578,7 @@ static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
                   (*indb)++;
                 }
               else
-                return (0);     /* we are full, so we are done */
+                return;     /* we are full, so we are done */
               state = 0;
               continue;
 
@@ -591,7 +591,7 @@ static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
 		  (*indb)++;
 		}
 	      else
-		return (0);	/* we are full, so we are done */
+		return;	/* we are full, so we are done */
 	      state = 0;
 	      continue;
 
@@ -604,7 +604,7 @@ static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
 		  (*indb)++;
 		}
 	      else
-		return (0);	/* we are full, so we are done */
+		return;	/* we are full, so we are done */
 	      state = 0;
 	      continue;
 
@@ -617,7 +617,7 @@ static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
 		  (*indb)++;
 		}
 	      else
-		return (0);	/* we are full, so we are done */
+		return;	/* we are full, so we are done */
 	      state = 0;
 	      continue;
 
@@ -630,7 +630,7 @@ static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
 		  (*indb)++;
 		}
 	      else
-		return (0);	/* we are full, so we are done */
+		return;	/* we are full, so we are done */
 	      state = 0;
 	      continue;
 
@@ -664,10 +664,10 @@ static int testmacro (char *bufa, char *bufb, int *inda, int *indb)
 	  (*indb)++;
 	}
       else
-	return (0);
+	return;
     }
 
-    return (0);
+    return;
 }
 
 static int solvetest (char *bufa, int *inda)
