@@ -1,0 +1,57 @@
+$TTL 86400
+
+@	IN	SOA 	ns.real-time.com.	hostmaster.real-time.com. (
+               2009020300       ; Serial Number of this file
+                    86400       ; Refresh after 1 day
+                     7200       ; Retry after 2 hours
+                   604800       ; Expires after 1 week
+                    86400	; Minimum Time to Live (TTL)
+		)
+
+				IN	NS	dns-1.real-time.com.
+				IN	NS	dns-2.real-time.com.
+				IN	NS	a.ns.netrek.org.
+				IN	NS	b.ns.netrek.org.
+				IN	NS	c.ns.netrek.org.
+
+PrimeDirective			IN	A	24.1.216.202 
+klingon				IN	A	63.170.91.107
+
+www				IN	CNAME	crusader.real-time.com.
+archives			IN	CNAME	shadowknight.real-time.com.
+metaserver			IN	CNAME	sage.real-time.com.
+metaserver2			IN	CNAME	orion.netrek.org.	
+metaserver3			IN	CNAME	metaserver.psychosis.net.
+ftp				IN	CNAME	gladiator.real-time.com.
+
+				
+continuum			IN	CNAME	sage.real-time.com.
+lexus				IN	CNAME	lexus.physics.indiana.edu.
+wormhole			IN	CNAME	wormhole.ecst.csuchico.edu.
+kirk				IN	CNAME	kirk.ci.houston.tx.us.
+forbidden-donut			IN	CNAME	forbidden-donut.anet-stl.com.
+netrek1				IN	CNAME	netrek.advancenet.net.
+vulcans				IN	CNAME	vulcans.stu.rpi.edu.
+deepspace			IN	CNAME	deepspace.pnetrek.org.
+mary				IN	CNAME	mary.cs.fredonia.edu.
+netrek2				IN	CNAME	netrek.creativecorp.com.
+seahorse			IN	CNAME	seahorse.acs.brockport.edu.
+monster				IN	CNAME	monster.cibola.net.
+hockey				IN	CNAME	mccsun1.mit.edu.
+dias				IN	CNAME	dias.umiacs.umd.edu.
+tilden				IN	CNAME	tilden.eecs.berkeley.edu.
+riovista			IN	CNAME	riovista.eecs.berkeley.edu.
+inl				IN	CNAME	inl.real-time.com.
+hal				IN	CNAME	hal.eecs.umich.edu.
+lord				IN	CNAME	lord.egr.msu.edu.
+piglet				IN	CNAME	piglet.cc.utexas.edu.
+cvs				IN	CNAME	swashbuckler.real-time.com.
+vanilla				IN	CNAME	crusader.real-time.com.
+quozl				IN	CNAME	crusader.real-time.com.
+www.continuum			IN	CNAME	crusader.real-time.com.
+mailman				IN	CNAME	shadowknight.real-time.com.
+wiki				IN	CNAME	uml.eqenchanters.org.
+trac				IN	CNAME	xen.eqenchanters.org.
+
+us.netrek.org.			IN	MX	100 smtpgrey-1.real-time.com.
+				IN	MX	100 smtpgrey-2.real-time.com.
