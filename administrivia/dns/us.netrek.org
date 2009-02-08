@@ -20,11 +20,10 @@ klingon				IN	A	63.170.91.107
 www				IN	CNAME	crusader.real-time.com.
 archives			IN	CNAME	shadowknight.real-time.com.
 metaserver			IN	CNAME	sage.real-time.com.
+metaserver1			IN	CNAME	sage.real-time.com.
 metaserver2			IN	CNAME	orion.netrek.org.	
 metaserver3			IN	CNAME	metaserver.psychosis.net.
-ftp				IN	CNAME	gladiator.real-time.com.
 
-				
 continuum			IN	CNAME	sage.real-time.com.
 lexus				IN	CNAME	lexus.physics.indiana.edu.
 wormhole			IN	CNAME	wormhole.ecst.csuchico.edu.
@@ -45,7 +44,6 @@ inl				IN	CNAME	inl.real-time.com.
 hal				IN	CNAME	hal.eecs.umich.edu.
 lord				IN	CNAME	lord.egr.msu.edu.
 piglet				IN	CNAME	piglet.cc.utexas.edu.
-cvs				IN	CNAME	swashbuckler.real-time.com.
 vanilla				IN	CNAME	crusader.real-time.com.
 quozl				IN	CNAME	crusader.real-time.com.
 www.continuum			IN	CNAME	crusader.real-time.com.
