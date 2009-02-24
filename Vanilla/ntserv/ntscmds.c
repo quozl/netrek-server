@@ -76,6 +76,7 @@ void ban_player(int who);
 void do_client_query(char *comm, struct message *mess, int who);
 void do_ping_query(char *comm, struct message *mess, int who);
 void do_stats_query(char *comm, struct message *mess, int who);
+void do_ltd_query(char *comm, struct message *mess, int who);
 void do_sbstats_query(char *comm, struct message *mess, int who);
 void do_whois_query(char *comm, struct message *mess, int who);
 
@@ -108,6 +109,10 @@ static struct command_handler_2 nts_commands[] =
 		C_PLAYER,
 		"Show player's t-mode stats   e.g. 'STATS 0'",
 		do_stats_query },		/* STATS */
+    { "LTD",
+		C_PLAYER,
+		"Show your LTD stats via a web page",
+		do_ltd_query },			/* LTD */
     { "WHOIS",
 		C_PLAYER,
 		"Show player's login info     e.g. 'WHOIS 0'",
@@ -1530,3 +1535,11 @@ void do_register(char *comm, struct message *mess)
   pmessage(who, MINDIV, addr, "Registration recorded, expect an e-mail.");
 }
 #endif
+
+void do_ltd_query(char *comm, struct message *mess, int who)
+{
+  // dump stats for player to a file in stats export tree
+  // derive url and give it to them
+  // if specific permission given, send it as a long message stream
+}
+
