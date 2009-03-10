@@ -1,7 +1,7 @@
 $TTL 86400
 
 @	IN	SOA 	ns.real-time.com.	hostmaster.real-time.com. (
-               2009020300       ; Serial Number of this file
+               2009030900       ; Serial Number of this file
                     86400       ; Refresh after 1 day
                      7200       ; Retry after 2 hours
                    604800       ; Expires after 1 week
@@ -49,6 +49,7 @@ quozl				IN	CNAME	crusader.real-time.com.
 www.continuum			IN	CNAME	crusader.real-time.com.
 mailman				IN	CNAME	shadowknight.real-time.com.
 wiki				IN	CNAME	uml.eqenchanters.org.
+new-wiki			IN	CNAME	radagast.gerdesas.com.
 trac				IN	CNAME	xen.eqenchanters.org.
 
 us.netrek.org.			IN	MX	100 smtpgrey-1.real-time.com.
