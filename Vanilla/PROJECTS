@@ -3,6 +3,10 @@ $Id: PROJECTS,v 1.10 2006/05/06 12:17:29 quozl Exp $
 
 List of things to do in the future
 
+	- GGZ Gaming Zone integration.
+
+	- convert stored data to YAML.
+
         - registration, avoid sending SP_PSTATUS for newly logged in
           slots until after successful authentication.  Prevents
           attack via username.  Prevents pre-registration attacks.
