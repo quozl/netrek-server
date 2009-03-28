@@ -188,14 +188,14 @@ void orbit(void)
 
   /*
    * If exactly one tractoring player, check for docking there, 
-   * then return since no other orbitting or docking is allowed.   */
+   * then return since no other orbiting or docking is allowed.   */
   if (tractoring_player != NULL) {
     dock(tractoring_player);
     return;
   }
 
   /*
-   * If already docked or orbitting, nothing more needs to be done: */
+   * If already docked or orbiting, nothing more needs to be done: */
   if (me->p_flags & (PFDOCK | PFORBIT))
     return;
 
@@ -241,7 +241,7 @@ void orbit(void)
 
     /*
      * A successful orbit!
-     * Adjust me and the planet orbitted to reflect the new orbit situation.
+     * Adjust me and the planet orbited to reflect the new orbit situation.
      * In particular, my direction and x,y position probably change.  */
     dir = (u_char) nint(atan2((double) (me->p_x - l->pl_x),
 			      (double) (l->pl_y - me->p_y)) / M_PI * 128.);

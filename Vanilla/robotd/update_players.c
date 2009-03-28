@@ -341,7 +341,7 @@ orbit_check(p, j)
          if(_state.no_speed_given)
             j->p_speed = 0;
          if(DEBUG & DEBUG_ENEMY){
-            printf("%s invisible orbitting %s\n", j->p_mapchars, 
+            printf("%s invisible orbiting %s\n", j->p_mapchars,
                    planets[j->p_planet].pl_name);
          }
       }
@@ -362,7 +362,7 @@ orbit_check(p, j)
          if(_state.no_speed_given)
             j->p_speed = 0;
          if(DEBUG & DEBUG_ENEMY){
-            printf("%s Cloaked orbitting %s\n", j->p_mapchars, 
+            printf("%s Cloaked orbiting %s\n", j->p_mapchars,
                    planets[j->p_planet].pl_name);
          }
       }
@@ -379,7 +379,7 @@ orbit_check(p, j)
 	    if(_state.no_speed_given)
 	       j->p_speed = 0;
 	    if(DEBUG & DEBUG_ENEMY){
-	       printf("%s orbitting no PFORBIT %s\n", j->p_mapchars, 
+	       printf("%s orbiting no PFORBIT %s\n", j->p_mapchars,
 		  planets[j->p_planet].pl_name);
 	    }
 	 }

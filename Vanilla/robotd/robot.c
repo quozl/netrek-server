@@ -697,7 +697,7 @@ s_recharge()
       return;
    }
    else if(pl && (me->p_flags & PFORBIT) && hostilepl(pl)){
-      mprintf("orbitting hostile planet in recharge..\n");
+      mprintf("orbiting hostile planet in recharge..\n");
       req_shields_up();
       /* can we declare peace? */
       if(!(me->p_swar & pl->pl_owner)){
