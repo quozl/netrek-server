@@ -1,7 +1,7 @@
 $TTL 86400
 
 @	IN	SOA 	ns.real-time.com.	hostmaster.real-time.com. (
-               2009031100       ; Serial Number of this file
+               2009040700       ; Serial Number of this file
                     86400       ; Refresh after 1 day
                      7200       ; Retry after 2 hours
                    604800       ; Expires after 1 week
@@ -13,6 +13,8 @@ $TTL 86400
 				IN	NS	a.ns.netrek.org.
 				IN	NS	b.ns.netrek.org.
 				IN	NS	c.ns.netrek.org.
+				IN	NS	dns.gerdesas.com.
+				IN	NS	dns2.gerdesas.com.
 
 PrimeDirective			IN	A	24.1.216.202 
 klingon				IN	A	63.170.91.107
