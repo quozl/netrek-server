@@ -38,6 +38,7 @@ int main (int argc, char *argv[])
   struct sockaddr_in address;
   int len, stat;
   char buf[BUFSIZ];
+  int timeout = 10;
 
   host = "metaserver.us.netrek.org";
   if (argc > 1) host = argv[1];
@@ -69,6 +70,12 @@ int main (int argc, char *argv[])
   if (argc > 3) {
     if (!strcmp(argv[3], "no-wait")) return 0;
   }
+
+  /* optional alarm suppression */
+  if (argc > 3) {
+    if (!strcmp(argv[3], "no-timeout")) timeout = 0;
+  }
+  alarm(timeout);
 
   /* wait for response */
   len = recvfrom(sock, buf, BUFSIZ, 0, NULL, NULL);
