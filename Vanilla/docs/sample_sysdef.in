@@ -70,7 +70,10 @@ CLUE=0
 #	Do not cluecheck this rank or higher
 CLUERANK=4
 #
-# 	Send in iggy (ie hunterkillers) (0 = no, 1 = yes)
+#	Send in iggy (ie hunterkillers) (0 = no, 1 = yes)
+#	Random destructive robots that attack anybody, in default mode
+#	when enabled they appear every 30 minutes, in topgun mode five
+#	minutes, see HOSEFUSE in ntserv/daemonII.c
 HUNTERKILLER=0
 #
 # 	Reset galaxy on daemon startup (which happens on the next player to
