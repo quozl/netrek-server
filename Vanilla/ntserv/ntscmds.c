@@ -840,9 +840,11 @@ void do_time_msg(char *comm, struct message *mess)
   who = mess->m_from;
   addr = addr_mess(who,MINDIV);
 
-  for (t=0;((t<=MAXTEAM)&&(teams[t].te_surrender==0));t++);
-
-  if (t > MAXTEAM) {
+  t = context->quorum[0];
+  if (teams[t].te_surrender == 0) {
+    t = context->quorum[1];
+  }
+  if (teams[t].te_surrender == 0) {
     pmessage(who, MINDIV, addr, "No one is considering surrender now.  Go take some planets.");
     return;
   }
