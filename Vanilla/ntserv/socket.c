@@ -2011,21 +2011,12 @@ static void logmessage(char *string)
     }
 }
 
-static void clientVersionFree()
-{
-    if (version == NULL) return;
-    free(version);
-    version = NULL;
-}
-
 static void clientVersion(struct mesg_spacket *packet)
 {
     char *mesg = packet->mesg;
     if (*mesg == '@') {
         mesg++;
-        atexit(clientVersionFree);
-        version = strdup(mesg);
-        ERROR(1,("%s: version %s\n", whoami(), version));
+        ERROR(1,("%s: ident %s\n", whoami(), mesg));
     }
 }
 

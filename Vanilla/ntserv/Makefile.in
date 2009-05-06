@@ -17,7 +17,7 @@ L_OBJS = advertise.o alarm.o balance.o bans.o bay.o blog.o \
 	coup.o \
 	data.o db.o detonate.o distress.o draft.o \
 	enter.o \
-	feature.o features.o \
+	feature.o \
 	gencmds.o genspkt.o getpath.o getship.o glog.o \
 	interface.o ip.o \
 	ltd_stats.o \
@@ -63,7 +63,7 @@ R_FILES =   ${srcdir}/cluecheck.c ${srcdir}/coup.c ${srcdir}/data.c \
 	    ${srcdir}/startrobot.c  ${srcdir}/timecheck.c \
             ${srcdir}/torp.c  ${srcdir}/util.c  ${srcdir}/warning.c \
 	    $(RANDOMC)  ${srcdir}/ping.c ${srcdir}/getpath.c $(STRDUPC) \
-            ${srcdir}/features.c ${srcdir}/distress.c ${srcdir}/transwarp.c \
+            ${srcdir}/distress.c ${srcdir}/transwarp.c \
             ${srcdir}/gencmds.c ${srcdir}/ntscmds.c ${srcdir}/openmem.c \
             ${srcdir}/feature.c ${srcdir}/queue.c ${srcdir}/slotmaint.c \
             ${srcdir}/wander2.c ${srcdir}/sysdefaults.c ${srcdir}/rsa_key.c

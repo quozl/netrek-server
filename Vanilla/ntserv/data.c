@@ -115,10 +115,6 @@ int   eventlog=0;
 int	manager_type = 0;
 int	manager_pid = 0;
 
-#ifdef FEATURES
-char	*version = NULL;
-#endif
-
 int	why_dead=0;
 int	Observer=0;
 int	switch_to_observer=0;

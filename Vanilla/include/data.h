@@ -159,10 +159,6 @@ extern char testdata[16];
 extern int manager_type;
 extern int manager_pid;
 
-#ifdef FEATURES
-extern char *version;
-#endif
-
 extern int why_dead;
 extern int Observer;
 extern int switch_to_observer;

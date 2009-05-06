@@ -142,13 +142,6 @@ int decryptRSAPacket (void *s,
             key.client_type, key.architecture);
     RSA_client_type[KEY_SIZE * 2] = '\0';
 
-#ifdef FEATURES
-#ifdef FEATURE_PACKETS
-    if (!F_client_feature_packets)
-#endif
-      TellClient((char *) key.client_type); /* 6/12/93 LAB */
-#endif
-
     return 0;
 }
 #endif	/* RSA */
