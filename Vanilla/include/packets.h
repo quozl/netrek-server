@@ -49,6 +49,9 @@
 	CP_OUTFIT
 	SP_PICKOK, signals server acceptance of alive state
 
+	client identifies itself to server (optional)
+	CP_MESSAGE (MINDIV|MCONFIG, self, "@clientname clientversion")
+
 	alive state,
 	server places ship in game and play begins
 
