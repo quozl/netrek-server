@@ -116,7 +116,7 @@ int	manager_type = 0;
 int	manager_pid = 0;
 
 #ifdef FEATURES
-char	*version;
+char	*version = NULL;
 #endif
 
 int	why_dead=0;

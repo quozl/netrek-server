@@ -127,7 +127,7 @@ static void handleRSAKey();
 static void handlePingResponse(struct ping_cpacket  *packet);
 #endif
 
-static int clientVersion(struct mesg_spacket *packet);
+static void clientVersion(struct mesg_spacket *packet);
 static int doRead(int asock);
 static int gwrite(int fd, char *wbuf, size_t size);
 static void logmessage(char *string);
@@ -2011,17 +2011,23 @@ static void logmessage(char *string)
     }
 }
 
-static int clientVersion(struct mesg_spacket *packet)
+static void clientVersionFree()
 {
-
-    if (packet->mesg[0] != '@')
-	return FALSE;
-
-    /* FIXME: never freed */
-    version = (char *)strdup(INDEX(packet->mesg,'@')+1);
-    return TRUE;
+    if (version == NULL) return;
+    free(version);
+    version = NULL;
 }
 
+static void clientVersion(struct mesg_spacket *packet)
+{
+    char *mesg = packet->mesg;
+    if (*mesg == '@') {
+        mesg++;
+        atexit(clientVersionFree);
+        version = strdup(mesg);
+        ERROR(1,("%s: version %s\n", whoami(), version));
+    }
+}
 
 #ifdef RSA
 
