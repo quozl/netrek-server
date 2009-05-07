@@ -39,6 +39,7 @@ int main (int argc, char *argv[])
   int len, stat;
   char buf[BUFSIZ];
   int timeout = 10;
+  char *req = "?version=metaget";
 
   host = "metaserver.us.netrek.org";
   if (argc > 1) host = argv[1];
@@ -62,8 +63,8 @@ int main (int argc, char *argv[])
   }
 
   /* send query */
-  stat = sendto(sock, "?", 1, 0, (struct sockaddr *) &address, 
-                sizeof(struct sockaddr));
+  stat = sendto(sock, req, strlen(req), 0,
+                (struct sockaddr *) &address, sizeof(struct sockaddr));
   if (stat < 0) { perror("sendto"); return 3; }
 
   /* optional premature exit */
