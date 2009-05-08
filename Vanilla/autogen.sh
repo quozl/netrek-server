@@ -9,6 +9,12 @@ done
 
 aclocal
 libtoolize --copy
+if [ ! -f config.sub ]; then
+    # later versions of libtool silently fail to create config.sub
+    # unless --install is added, yet --install is not valid on the
+    # older versions.
+    libtoolize --install --copy
+fi
 autoconf
 cd res-rsa && autoconf && cd ..
 chmod +x tools/mktrekon
