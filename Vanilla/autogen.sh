@@ -12,8 +12,9 @@ libtoolize --copy
 if [ ! -f config.sub ]; then
     # later versions of libtool silently fail to create config.sub
     # unless --install is added, yet --install is not valid on the
-    # older versions.
-    libtoolize --install --copy
+    # older versions.  later versions also support --no-warn to reduce
+    # output volume
+    libtoolize --install --copy --no-warn
 fi
 autoconf
 cd res-rsa && autoconf && cd ..
