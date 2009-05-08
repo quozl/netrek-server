@@ -186,7 +186,8 @@
                                                      rather than the start */
 #define REVERSED_HOSTNAMES
 
-#undef DNSBL_CHECK              /*  DNSBL_CHECK - Check player's IP against
+#undef DNSBL_CHECK
+                                /*  DNSBL_CHECK - Check player IPs against
                                 public DNS blacklists to detect open proxies
                                 as well as possibly infected computers. */
 
