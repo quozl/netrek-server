@@ -43,6 +43,9 @@ void intrupt(void)
     } else if (testtime != 0) {
         testtime--;
         if (testtime==0) {
+            if (report_ident)
+                pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,
+                          "%s using %s", me->p_mapchars, me->p_ident);
 #if defined(RSA) && defined(SHOW_RSA)
             if (!hidden && !whitelisted && !bypassed)
                 pmessage2(0, MALL | MJOIN, "GOD->ALL", me->p_no,

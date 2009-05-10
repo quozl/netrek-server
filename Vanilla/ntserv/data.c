@@ -509,3 +509,6 @@ int logintime = 100;
 
 /* whether self destructing gives credit to nearest enemy */
 int self_destruct_credit = 0;
+
+/* Whether to report the client identification of arriving players */
+int report_ident = 0;

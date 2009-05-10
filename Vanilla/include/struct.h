@@ -529,6 +529,7 @@ struct player {
     int p_sub_in_for;           /* slot, the other player, or -1 */
     int p_sub_out;              /* flag, substitution on death */
     int p_sub_out_for;          /* slot, the other player, or -1 */
+    char p_ident[80];           /* client name and version supplied */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
 

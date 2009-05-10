@@ -428,9 +428,11 @@ void send_query(char which, int who, int from)
 /* ARGSUSED */
 void do_client_query(char *comm, struct message *mess, int who)
 {
-#ifdef RSA
-	send_query('#', who, mess->m_from); 
-#endif
+  char *addr;
+
+  addr = addr_mess(mess->m_from,MINDIV);
+  pmessage(mess->m_from, MINDIV, addr, "%s using %s",
+           players[who].p_mapchars, players[who].p_ident);
 }
 
 /* ARGSUSED */

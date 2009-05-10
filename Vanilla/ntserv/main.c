@@ -334,6 +334,8 @@ int main(int argc, char **argv)
     me->p_sub_out = 0;       /* flag, substitution on death */
     me->p_sub_out_for = -1;  /* slot, the other player, or -1 */
 
+    strcpy(me->p_ident, "unknown");
+
 #ifdef LTD_STATS
 
     startTkills   = ltd_kills(me, LTD_TOTAL);

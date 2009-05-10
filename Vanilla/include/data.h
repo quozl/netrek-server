@@ -428,4 +428,6 @@ extern int self_destruct_credit;
 /* lame hack to get around gcc silliness */
 extern double round(double);
 
+extern int report_ident;
+
 #endif /* _h_data */

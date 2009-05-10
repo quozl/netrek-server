@@ -314,6 +314,8 @@ struct sysdef_keywords {
     "How long to allow login for, in seconds." },
   { "SELF_DESTRUCT_CREDIT",        SYSDEF_INT,     &self_destruct_credit,
     "Whether nearby enemy ships are given kill credits for a quit scummer."},
+  { "REPORT_IDENT",        SYSDEF_INT,     &report_ident,
+    "Whether to report the client identification of arriving players."},
   { "",			SYSDEF_END,	NULL		}
 };
 

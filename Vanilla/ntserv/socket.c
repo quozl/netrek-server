@@ -1,6 +1,3 @@
-/* $Id: socket.c,v 1.8 2006/05/06 14:02:38 quozl Exp $
- */
-
 /*
  * Socket.c 
  *
@@ -2016,6 +2013,7 @@ static void clientVersion(struct mesg_spacket *packet)
     char *mesg = packet->mesg;
     if (*mesg == '@') {
         mesg++;
+        strncpy(me->p_ident, mesg, 80);
         ERROR(1,("%s: ident %s\n", whoami(), mesg));
     }
 }

@@ -288,6 +288,9 @@ PLANETS=00,10,20,30
 # 	Use binary confirmation (0 = no, 1 = RSA, 2 = RSA and reserved.c)
 CONFIRM=0
 #
+#       Whether to report the client identification of arriving players.
+REPORT_IDENT=0
+#
 #	For use with config.h's NEWMASK define. restrict diagonal games.
 NODIAG=1
 #
