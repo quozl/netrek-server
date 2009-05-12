@@ -27,7 +27,7 @@ newstartd: $(N_OBJS)
 clean: rmdependencies
 	/bin/rm -f *.o make.out core
 
-reallyclean:  clean 
+reallyclean:  clean
 	rm -f newstartd *~ #*#
 
 uninstall:
@@ -39,7 +39,7 @@ install: newstartd
 	mkdir -p $(DESTDIR)$(BINDIR)
 	ln -sf $(LIBDIR)/newstartd $(DESTDIR)$(BINDIR)/netrekd
 
-depend: 
+depend:
 	${CC} -M  $(CFLAGS) $(N_SRC) > .depend
 
 rmdependencies:

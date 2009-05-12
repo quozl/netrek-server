@@ -1,5 +1,3 @@
-/* 	$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $	 */
-
 #ifndef lint
 static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
 #endif /* lint */
@@ -23,7 +21,7 @@ static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
  *   Installation:  update the Prog and LogFile variables below, and
  *     set the default port appropriately (presently 2592).  Set debug=1
  *     to run this under dbx.  Link this with access.o and subnet.o.
- *  
+ *
  *   Summary of changes:
  *   - subsumes xtrekII.sock into startd (this calls ntserv directly to
  *       reduce OS overhead)
@@ -85,7 +83,7 @@ static int active;			/* number of processes running	*/
 
 static
 struct progrecord {			/* array of data read from file	*/
-  int type;				/* SOCK_STREAM, or SOCK_DGRAM	*/  
+  int type;				/* SOCK_STREAM, or SOCK_DGRAM	*/
   unsigned short port;			/* port number to listen on	*/
   int sock;				/* socket created on port or -1	*/
   pid_t child;				/* for UDP, active child	*/
@@ -255,20 +253,20 @@ int main (int argc, char *argv[])
   if (!debug) {
     pid = fork();
     if (pid != 0) {
-      if (pid < 0) { 
-	perror("fork"); 
-	exit(1); 
+      if (pid < 0) {
+	perror("fork");
+	exit(1);
       }
       fprintf (stderr, "netrekd: Vanilla Netrek Listener %s.%d started, pid %d,\n"
-	       "netrekd: logging to %s\n", 
+	       "netrekd: logging to %s\n",
 	       mvers, PATCHLEVEL, pid, LogFile );
       exit(0);
     }
-    
+
     /* detach from terminal */
     DETACH;
   }
-  
+
   /* do not propogate the log to forked processes */
   fcntl(fd, F_SETFD, FD_CLOEXEC);
 
@@ -313,7 +311,7 @@ int main (int argc, char *argv[])
 
       /* check for limit */
       if (active > MAXPROCESSES) {
-	fprintf(stderr, 
+	fprintf(stderr,
 		"netrekd: hit maximum processes, connection closed\n");
 	close (0);
 	continue;
@@ -357,7 +355,7 @@ int main (int argc, char *argv[])
       close (0);
 
     } /* while (!restart) */
-    
+
     /* SIGHUP restart requested, close all listening sockets */
     fprintf (stderr, "netrekd: restarting on SIGHUP\n");
 
@@ -376,9 +374,9 @@ static int get_connection(struct sockaddr_in *peer)
   socklen_t addrlen;
   fd_set accept_fds;
   int i, st, newsock;
-  
+
   int foo = 1;
-  
+
   /* stage one; for each port not yet open, set up listening socket */
 
   /* check all ports */
@@ -396,7 +394,7 @@ static int get_connection(struct sockaddr_in *peer)
       /* we can't cope with having socket zero for a listening socket */
       if (sock == 0) {
 	if (debug) fprintf(stderr, "gack: don't want socket zero\n");
-        if ((sock = socket(AF_INET, prog[i].type, 0)) < 0) {
+	if ((sock = socket(AF_INET, prog[i].type, 0)) < 0) {
 	  perror("socket");
 	  sleep(1);
 	  close(0);
@@ -404,11 +402,11 @@ static int get_connection(struct sockaddr_in *peer)
 	}
 	close(0);
       }
-      
+
       /* set the listening socket to close on exec so that children
 	 don't hold open the file descriptor, thus preventing us from
 	 restarting netrekd. */
-      
+
       if (fcntl(sock, F_SETFD, FD_CLOEXEC) < 0) {
 	perror("fcntl F_SETFD FD_CLOEXEC");
 	close(sock);
@@ -427,11 +425,11 @@ static int get_connection(struct sockaddr_in *peer)
 	sleep(1);
 	return -1;
       }
-      
+
       addr.sin_family = AF_INET;
       addr.sin_addr.s_addr = prog[i].addr;
       addr.sin_port = htons(prog[i].port);
-      
+
       if (bind(sock, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 	perror("bind");
 	close(sock);
@@ -457,8 +455,8 @@ static int get_connection(struct sockaddr_in *peer)
   }
 
   /* stage two; wait for a connection on the listening sockets */
-  
-  for (;;) { 				/* wait for a connection */
+
+  for (;;) {				/* wait for a connection */
     st = 0;
 
     FD_ZERO(&accept_fds);		/* clear the file descriptor mask */
@@ -479,7 +477,7 @@ static int get_connection(struct sockaddr_in *peer)
       sleep(1);
       return -1;
     }
-    
+
     /* block until select() indicates accept() will complete */
     st = select(32, &accept_fds, 0, 0, 0);
     if (st > 0) break;
@@ -604,7 +602,7 @@ static void process (int port_idx, char *ip)
     write (fd, logname, strlen(logname));
     close (fd);
   }
-  
+
   /* execute the program required */
   pr = &(prog[port_idx]);
   switch (pr->nargs) {
@@ -615,15 +613,15 @@ static void process (int port_idx, char *ip)
     execl (pr->prog, pr->progname, pr->arg[0], ip, (char *) NULL);
     break;
   case 2:
-    execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
+    execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1],
 	   ip, (char *) NULL);
     break;
   case 3:
-    execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
+    execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1],
 	   pr->arg[2], ip, (char *) NULL);
     break;
   case 4:
-    execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1], 
+    execl (pr->prog, pr->progname, pr->arg[0], pr->arg[1],
 	   pr->arg[2], pr->arg[3], ip, (char *) NULL);
     break;
   default: ;
@@ -674,7 +672,7 @@ static void reaper (int sig)
     pid = WAIT3 (&stat, WNOHANG, 0);
     if (pid > 0) {
       active--;
-      if (debug) fprintf (stderr, "active--: %d: pid %d terminated\n", 
+      if (debug) fprintf (stderr, "active--: %d: pid %d terminated\n",
 			  active, pid);
       int i;
       for (i=0; i<num_progs; i++) {
@@ -760,7 +758,7 @@ static int read_portfile (char *portfile)
   } else {
     perror (portfile);
   }
-  
+
   /* if the .ports file is empty, at least open the standard port */
   if (!i) {
     strcpy (prog[0].prog, Prog);
