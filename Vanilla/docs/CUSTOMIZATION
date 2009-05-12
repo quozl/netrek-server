@@ -1,11 +1,11 @@
 
 	Here is a more in-depth explanation into some of the features
-that can change the server. 
+that can change the server.
 
 1) config/config.h defines :
 
 	AUTOMOTD - Use this if you're not going to run the update daemon.
-		This will check you .motd and rebuild it every once in a 
+		This will check you .motd and rebuild it every once in a
 		while. Don't use both AUTOMOTD and the update daemon.
 
 	CHAIN_REACTION - This will not give credit for chain-reaction and
@@ -30,8 +30,7 @@ that can change the server.
 	PING - Allow ping stats support. This may increase the network load a
 		little.
 
-	RSA - Use RSA verification. Some method of verification is recommended.
-		RSA is the most accepted method now.
+	RSA - Use RSA verification.  RSA is now deprecated.
 
 	SHOW_RSA - Display some messages like failed RSA verification message
 		and type of client on entry of player.
@@ -68,25 +67,25 @@ that can change the server.
 	RCD - Support Receiver variable distresses. (Saves on a lot of network
 		traffic).
 
-	FLAT_BONUS - 5x bonus for killing last army on a planet 
+	FLAT_BONUS - 5x bonus for killing last army on a planet
 
-	BASEPRACTICE - Base training server. (Need special robots, see 
+	BASEPRACTICE - Base training server. (Need special robots, see
 		README.basep).
 
 	NEW_CREDIT - give 1 planet for destroying, two planets for taking.
 
-	SBFUEL_FIX - fix starbase re-fueling 
+	SBFUEL_FIX - fix starbase re-fueling
 
-	NEW_ETEMP - Wreck's etemp fix 
+	NEW_ETEMP - Wreck's etemp fix
 
-	DOGFIGHT - .sysdef interface for dogfight robot 
+	DOGFIGHT - .sysdef interface for dogfight robot
 
 	VOTING - allow voting mode
 
         ALLOW_EJECT     - define to allow players to eject others (only when
 			  VOTING is defined).
 
-        NO_BRUTALITY    - disallow fighting between waiting players in the 
+        NO_BRUTALITY    - disallow fighting between waiting players in the
 			  dogfighting mode (only when DOGFIGHT is defined).
 
 	ROBOT_OBSERVER_OFFSET	- define to ensure that the moderation robot
@@ -97,10 +96,6 @@ that can change the server.
 
 	ALLOW_PRACTICE_ROBOT_SB	- allows practice robots to be refit into
 				  starbases if defined.
-
-
-
-
 
 2) .sysdef parameters:
 
@@ -118,11 +113,11 @@ that can change the server.
 	LOGGOD - (0 or 1) log messages with "god:" at the beginning. Use with
 		CHECKMESG.
 
-	CHECKMESG - (0 or 1) check message logging. 
+	CHECKMESG - (0 or 1) check message logging.
 
 	DOOSHER - (0 or 1) Enable the auto-doosher.
 
-	WHYMESS - (0 or 1) with .mk define CHAIN_REACTION will report how a 
+	WHYMESS - (0 or 1) with .mk define CHAIN_REACTION will report how a
 		player died.
 
 	SHOWSYSDEF - (0 or 1) will show some of the sysdef options on the
@@ -189,7 +184,7 @@ that can change the server.
 	PRET_GUEST - (0 or 1) Use 'guest' logins for pre-t robots if set.
 
 	PRET_PLANETS - (1-10) Set win condition for pre-t mode.  This is
-		the number of planets a team must be up by in order to 
+		the number of planets a team must be up by in order to
 		win a round of pre-t entertainment.
 
 	PRET_SAVE_GALAXY - (0 or 1) If set galaxy is saved on t-mode to
@@ -216,7 +211,7 @@ that can change the server.
 	PLANETS - (0 - 39) The planets the will be the home planets. There are
 		4 params here. The order is fed, rom, kli, and then ori.
 
-	CONFIRM - (0 or 1) Use binary confirmation. 
+	CONFIRM - (0 or 1) Use binary confirmation.
 
 	UDP - (0 or 1) Allow UDP packets. Reduces lag.
 
@@ -236,7 +231,7 @@ that can change the server.
 
         MAX_POP - Set the maximum number of armies a planet can pop too.
 
-        ERROR_LEVEL - How much errors/debugging is sent to the ERROR file.      
+        ERROR_LEVEL - How much errors/debugging is sent to the ERROR file.
                 Only 1-3 are valid.
 
         START_ARMIES - How many planets are initially put on a planet.
@@ -247,7 +242,7 @@ that can change the server.
 
 	TRANSWARP_ENABLE - (o or 1) Turn on transwarp capabilities.
 
-	TRANSWARP_SPEED - (0 or 1) How fast transwap is.	
+	TRANSWARP_SPEED - (0 or 1) How fast transwap is.
 
 	WHITELIST_INDIV - (0 or 1) Allow whitelist to overide :i messages
 
@@ -264,25 +259,25 @@ that can change the server.
 		for starbases.
 
 	Dog-Fighter Specific Defines:
-		CONTESTSIZE - ( >0) Number of the contestants needed 
+		CONTESTSIZE - ( >0) Number of the contestants needed
 				    before starting.
-	
+
 		NUMMATCH - ( >0) Number of matches per contest.
 
-		SAVE_DOG_STAT - (0 or 1) Save the player stats? 
+		SAVE_DOG_STAT - (0 or 1) Save the player stats?
 				(not implemented yet..).
 
 	In addition ship characteristics can be changed. The list of
-	characteristics that can be changed are:         
-          TURNS, ACCS, TORPDAMAGE, PHASERDAMAGE, PHASERFUSE, PLASMADAMAGE, 
-          TORPSPEED, TORPFUSE, TORPTURNS, PLASMASPEED, PLASMAFUSE, PLAMSATURNS, 
-          MAXSPEED, REPAIR, MAXFUEL, TORPCOST, PLASMACOST, PHASERCOST, 
-          DETCOST, WARPCOST, CLOAKCOST, RECHARGE, ACCINT, DECINT, MAXSHIELD, 
-          MAXDAMAGE, MAXEGNTEMP, MAXWPNTEMP, EGNCOOLRATE, WPNCOOLRATE, 
+	characteristics that can be changed are:
+          TURNS, ACCS, TORPDAMAGE, PHASERDAMAGE, PHASERFUSE, PLASMADAMAGE,
+          TORPSPEED, TORPFUSE, TORPTURNS, PLASMASPEED, PLASMAFUSE, PLAMSATURNS,
+          MAXSPEED, REPAIR, MAXFUEL, TORPCOST, PLASMACOST, PHASERCOST,
+          DETCOST, WARPCOST, CLOAKCOST, RECHARGE, ACCINT, DECINT, MAXSHIELD,
+          MAXDAMAGE, MAXEGNTEMP, MAXWPNTEMP, EGNCOOLRATE, WPNCOOLRATE,
           MAXARMIES, WIDTH, HEIGHT, TYPE, MASS, TRACTSTR, TRACTRNG.
 
 	  To set ship characteristics you need to do something like the
-	  following: 
+	  following:
 
 		SHIP=1
 		BB PHASERCOST 945
@@ -294,9 +289,6 @@ that can change the server.
 	  Unless SHIP is 1 the stats between SHIP and END will not be read in.
 	  This example sets the NEWSHIP defines found at some servers. A '!'
 	  is a comment.
-
-
-
 
 3) .time file.
 
@@ -346,7 +338,7 @@ that can change the server.
 	Each line in these files should follow the format:
 
 		<login>@<domain>
-	The domain field can contain the total domain such as 
+	The domain field can contain the total domain such as
 	guzzler.ecst.csuchico.edu or can contain "*"s for all names such as
 	*.ecst.csuchico.edu would include all machines in the .ecst.csuchico.edu
 	domain.
@@ -374,4 +366,3 @@ method does not work try this way.
 
 	This change will require the bots to be re-compiled and
 	reinstalled.
-
