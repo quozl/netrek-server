@@ -105,6 +105,8 @@ SP_FLAGS_ALL            S       ON
 # Send additional p_whydead states (KSHIP2, KTORP2, KPLASMA2) to clients which
 # can handle those cases.
 WHY_DEAD_2		S	ON
+# Allow client to use automatic aiming and/or firing of weapons
+AUTO_WEAPONS            S       OFF
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
