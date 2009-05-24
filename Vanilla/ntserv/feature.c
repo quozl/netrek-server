@@ -64,6 +64,7 @@ struct feature_var feature_vars[] = {
   {"FULL_WEAPON_RESOLUTION",    &F_full_weapon_resolution,    NULL},
   {"SHOW_VISIBILITY_RANGE",     &F_show_visibility_range,     NULL},
   {"AUTO_WEAPONS",      &F_auto_weapons,                NULL},
+  {"SP_RANKS",          &F_sp_ranks,                    NULL},
   {NULL, NULL, NULL},
 };
 
