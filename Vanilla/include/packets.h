@@ -123,7 +123,7 @@
 
 /* variable length packets */
 #define VPLAYER_SIZE    4
-#define TOTAL_SPACKETS  62
+#define TOTAL_SPACKETS  63
 #define SP2SHORTVERSION 11      /* S_P2 */
 #define OLDSHORTVERSION 10      /* Short packets version 1 */
 
@@ -132,6 +132,7 @@
 #ifdef FEATURE_PACKETS
 #define SP_FEATURE      60
 #endif
+#define SP_RANKS        61
 
 /* packets sent from remote client to xtrek server */
 #define CP_MESSAGE	1		/* send a message */
@@ -1080,4 +1081,14 @@ struct feature_cpacket { /* CP_FEATURE py-struct "!bcbbi80s" #60 */
    char                 name[80];
 };
 #endif /* FEATURE_PACKETS */
+
+struct ranks_spacket {
+    char        type;           /* SP_RANKS */
+    int         rankn;          /* rank number */
+    char        name[10];       /* rank name */
+    char        cname[4];       /* short name */
+    LONG        hours;
+    LONG        ratings;
+    LONG        offense;
+};
 

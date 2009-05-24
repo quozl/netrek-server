@@ -109,7 +109,8 @@ int sizes[TOTAL_SPACKETS] = {
 #else
     0,						/* 60 */
 #endif
-    0,						/* 61 */
+    sizeof(struct ranks_spacket),		/* SP_RANKS */
+    0,						/* 62 */
 };
 
 /* a collection of previously sent packets by packet type and slot,
@@ -2746,6 +2747,24 @@ sendGeneric32Packet(void)
     if (memcmp(&clientGeneric32, gp, len) != 0) {
         memcpy(&clientGeneric32, gp, len);
         sendClientPacket(gp);
+    }
+}
+
+void
+sendRanksPacket()
+{
+    int i;
+    struct ranks_spacket rp;
+
+    for (i = 0; i < NUMRANKS; i++) {
+        rp.type=SP_RANKS;
+        rp.rankn = i;
+        strcpy(rp.name, ranks[i].name);
+        strcpy(rp.cname, ranks[i].cname);
+        rp.hours = ranks[i].hours;
+        rp.ratings = ranks[i].ratings;
+        rp.offense = ranks[i].offense;
+        sendClientPacket((CVOID) &rp);
     }
 }
 
