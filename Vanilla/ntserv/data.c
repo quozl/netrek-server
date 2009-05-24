@@ -175,29 +175,20 @@ char	*teamshort[9] = {"IND", "FED", "ROM", "X", "KLI", "X", "X", "X", "ORI"};
 char	login[PSEUDOSIZE];
 
 struct rank ranks[NUMRANKS] = {
-    { 0.0, 0.0, 0.0, "Ensign"},
-    { 2.0, 1.0, 0.0, "Lieutenant"},
-
-/* change: 12/8/90 TC no defense required    { 4.0, 2.0, 0.8, "Lt. Cmdr."}, 
-    { 8.0, 3.0, 0.8, "Commander"},
-    {15.0, 4.0, 0.8, "Captain"},
-    {20.0, 5.0, 0.8, "Flt. Capt."},
-    {25.0, 6.0, 0.8, "Commodore"},
-    {30.0, 7.0, 0.8, "Rear Adm."},
-    {40.0, 8.0, 0.8, "Admiral"}};*/
-
-    { 4.0, 2.0, 0.0, "Lt. Cmdr."}, 
-    { 8.0, 3.0, 0.0, "Commander"},
-    {15.0, 4.0, 0.0, "Captain"},
-    {20.0, 5.0, 0.0, "Flt. Capt."},
+    { 0.0, 0.0, 0.0, "Ensign", "Esgn"},
+    { 2.0, 1.0, 0.0, "Lieutenant", "Lt "},
+    { 4.0, 2.0, 0.0, "Lt. Cmdr.", "LtCm"},
+    { 8.0, 3.0, 0.0, "Commander", "Cder"},
+    {15.0, 4.0, 0.0, "Captain", "Capt"},
+    {20.0, 5.0, 0.0, "Flt. Capt.", "FltC"},
 
 /* change: 6/2/07 KA turn the defense measure into offense
    to challenge those players who just come in for the
    initial bombing and planet taking scumming; this is
    intended to improve team play amongst such players */
-    {25.0, 6.0, 1.0, "Commodore"},
-    {30.0, 7.0, 1.2, "Rear Adm."},
-    {40.0, 8.0, 1.4, "Admiral"}};
+    {25.0, 6.0, 1.0, "Commodore", "Cdor"},
+    {30.0, 7.0, 1.2, "Rear Adm.", "RAdm"},
+    {40.0, 8.0, 1.4, "Admiral", "Admr"}};
 
 int             startTkills, startTlosses, startTarms, startTplanets,
                 startTticks;

@@ -734,7 +734,7 @@ struct obtype {
 
 struct rank {
     float hours, ratings, offense;
-    char *name;
+    char *name, *cname;
 };
 
 struct ban {
