@@ -290,7 +290,7 @@ void checkmess()
                 break;
             case 2:
                 messAll(255,roboname, "Welcome to the Sturgeon Server in newbie mode.");
-                messAll(255,roboname, "See http://netrek.warped.us for how to play sturgeon!");
+                messAll(255,roboname, "See http://netrek.beeseenterprises.com for how to play sturgeon!");
                 break;
             default:
                 messAll(255,roboname, "Want all the latest netrek news?");
