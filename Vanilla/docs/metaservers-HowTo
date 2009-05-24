@@ -26,10 +26,10 @@ It works like this;
 
 	- you set up an etc/metaservers file with the addresses of the
 	  metaservers that should be kept informed,
-	
+
 	- when new players arrive on your server, a packet is sent to
 	  the metaservers informing them of the current player count,
-	
+
 	- periodically, the metaservers are told about current status.
 
 The format of the file is a series of space delimited fields
