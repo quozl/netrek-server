@@ -167,6 +167,9 @@ void solicit(int force)
       if (line == NULL) break;
       if (feof(file)) break;
 
+      /* ignore comments */
+      if (line[0] == '#') continue;
+
       /* parse each field, ignore the line if insufficient fields found */
 
       token = strtok(line, " ");	/* meta host name */

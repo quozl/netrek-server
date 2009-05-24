@@ -1,3 +1,21 @@
+#
+# The Netrek Metaservers are a group of systems behind the
+# metaserver.netrek.org alias, which list current games available.
+#
+# Netrek clients contact the metaservers during startup.
+#
+# Games can occur without being listed on a metaserver, the metaserver
+# only helps players find games.
+#
+# You may wish to list your server on the metaservers.  This is
+# technically simple, but may have political implications, and if done
+# wrongly may cause unnnecessary reaction.
+#
+# Communicate your intention with other server owners, through the
+# mailing lists, or the IRC channel, or the netrek infrastructure team.
+#
+# See docs/metaservers-HowTo for how to configure this file.
+#
 metaserver.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
 metaserver2.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
 metaserver3.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
