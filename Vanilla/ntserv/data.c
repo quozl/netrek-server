@@ -176,7 +176,7 @@ char	login[PSEUDOSIZE];
 
 struct rank ranks[NUMRANKS] = {
     { 0.0, 0.0, 0.0, "Ensign", "Esgn"},
-    { 2.0, 1.0, 0.0, "Lieutenant", "Lt "},
+    { 2.0, 1.0, 0.0, "Lieutenant", "Lt  "},
     { 4.0, 2.0, 0.0, "Lt. Cmdr.", "LtCm"},
     { 8.0, 3.0, 0.0, "Commander", "Cder"},
     {15.0, 4.0, 0.0, "Captain", "Capt"},

@@ -1085,8 +1085,8 @@ struct feature_cpacket { /* CP_FEATURE py-struct "!bcbbi80s" #60 */
 struct ranks_spacket {
     char        type;           /* SP_RANKS */
     int         rankn;          /* rank number */
-    char        name[10];       /* rank name */
-    char        cname[4];       /* short name */
+    char        name[11];       /* rank name */
+    char        cname[5];       /* short name */
     unsigned    hours;          /* where 1234=12.34 hours
                                  * and 0=0.00 hours */
     unsigned    ratings;        /* as per hours */
