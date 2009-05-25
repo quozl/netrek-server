@@ -76,7 +76,7 @@ unsigned localflags=0;
 int	tournMask=15;
 int 	nextSocket;	/* socket to use when we get ghostbusted... */
 int	updatePlayer[MAXPLAYER];	/* Needs updating on player list */
-char   *serverName="sequent.berkeley.edu";
+char   *serverName="127.0.0.1";
 int	loggedIn=0;
 int 	reinitPlanets=0;
 int	redrawPlayer[MAXPLAYER];	/* Needs redrawing on galactic map */
