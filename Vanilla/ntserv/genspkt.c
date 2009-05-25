@@ -2766,7 +2766,10 @@ sendRanksPacket()
         strcpy(rp.cname, ranks[i].cname);
         rp.hours = htonl((int) (ranks[i].hours*100));
         rp.ratings = htonl((int) (ranks[i].ratings*100));
-        rp.offense = htonl((int) (ranks[i].offense*100));
+        if (offense_rank)
+            rp.offense = htonl((int) (ranks[i].offense*100));
+        else
+            rp.offense = 0;
         sendClientPacket((CVOID) &rp);
     }
 }
