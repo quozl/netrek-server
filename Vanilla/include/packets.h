@@ -1087,8 +1087,9 @@ struct ranks_spacket {
     int         rankn;          /* rank number */
     char        name[10];       /* rank name */
     char        cname[4];       /* short name */
-    LONG        hours;
-    LONG        ratings;
-    LONG        offense;
+    unsigned    hours;          /* where 1234=12.34 hours
+                                 * and 0=0.00 hours */
+    unsigned    ratings;        /* as per hours */
+    unsigned    offense;        /* as per hours */
 };
 

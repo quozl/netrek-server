@@ -2756,14 +2756,17 @@ sendRanksPacket()
     int i;
     struct ranks_spacket rp;
 
+    if (!F_sp_ranks)
+        return;
+
     for (i = 0; i < NUMRANKS; i++) {
         rp.type=SP_RANKS;
         rp.rankn = i;
         strcpy(rp.name, ranks[i].name);
         strcpy(rp.cname, ranks[i].cname);
-        rp.hours = ranks[i].hours;
-        rp.ratings = ranks[i].ratings;
-        rp.offense = ranks[i].offense;
+        rp.hours = htonl((int) (ranks[i].hours*100));
+        rp.ratings = htonl((int) (ranks[i].ratings*100));
+        rp.offense = htonl((int) (ranks[i].offense*100));
         sendClientPacket((CVOID) &rp);
     }
 }
