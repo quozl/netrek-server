@@ -1757,7 +1757,7 @@ static void udplayers_palive_self_destruct_credit(struct player *j)
         int dist, max_dist;
 
         enemy = NULL;
-        max_dist = GWIDTH * GWIDTH;
+        max_dist = GWIDTH * 2;
         for (k = firstPlayer; k <= lastPlayer; k++) {
                 if (k->p_status != PALIVE) continue;
                 if (k->p_team == j->p_team) continue;
