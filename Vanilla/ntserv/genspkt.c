@@ -2753,10 +2753,11 @@ sendGeneric32Packet(void)
 void
 sendRanksPacket()
 {
+    static int sent = 0;
     int i;
     struct ranks_spacket rp;
 
-    if (!F_sp_ranks)
+    if (!F_sp_ranks || sent)
         return;
 
     for (i = 0; i < NUMRANKS; i++) {
@@ -2772,6 +2773,7 @@ sendRanksPacket()
             rp.offense = 0;
         sendClientPacket((CVOID) &rp);
     }
+    sent = 1;
 }
 
 /* Hey Emacs! -*- Mode: C; c-file-style: "bsd"; indent-tabs-mode: nil -*- */

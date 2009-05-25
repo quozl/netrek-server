@@ -21,3 +21,4 @@ void sendFeatureFps();
 void sendFeatureUps();
 void sendLameRefit();
 void sendLameBaseRefit();
+void sendRanksPacket();

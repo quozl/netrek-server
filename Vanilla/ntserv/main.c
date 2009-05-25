@@ -17,6 +17,7 @@
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
+#include "genspkt.h"
 #include "patchlevel.h"
 #define SVERS
 #include "version.h"
@@ -371,6 +372,7 @@ int main(int argc, char **argv)
             teamPick= -1;
             flushSockBuf();
             getEntry(&team, &s_type);
+            sendRanksPacket();
             repCount=0;         /* Make sure he gets an update immediately */
         }
         if (team == -1) {
