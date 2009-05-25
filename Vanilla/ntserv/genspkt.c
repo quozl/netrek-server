@@ -207,7 +207,13 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 	login->login[NAME_LEN-1]=0;
 	login->type=SP_PL_LOGIN;
 	login->pnum=pl->p_no;
-	login->rank=pl->p_stats.st_rank;
+	/* Backwards compatability - treat all ranks higher than admiral
+	   as admiral, for clients which can't handle SP_RANKS, so that
+	   client playerlist will display correctly. */
+	if (pl->p_stats.st_rank >= (NUMRANKS - 1) && !F_sp_ranks)
+		login->rank=pl->p_stats.st_rank-1;
+	else
+		login->rank=pl->p_stats.st_rank;
 	sendClientPacket(login);
 	/* on every change to player list, check saved ignore status */
 	if (me != pl && pl->p_status == PFREE) ip_ignore_login(me, pl);
