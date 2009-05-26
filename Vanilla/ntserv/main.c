@@ -372,7 +372,7 @@ int main(int argc, char **argv)
             teamPick= -1;
             flushSockBuf();
             getEntry(&team, &s_type);
-            sendRanksPacket();
+            sendRankPackets();
             repCount=0;         /* Make sure he gets an update immediately */
         }
         if (team == -1) {

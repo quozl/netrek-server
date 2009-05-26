@@ -107,8 +107,8 @@ SP_FLAGS_ALL            S       ON
 WHY_DEAD_2		S	ON
 # Allow client to use automatic aiming and/or firing of weapons
 AUTO_WEAPONS            S       OFF
-# Client can handle ranks_spacket
-SP_RANKS                S       ON
+# Client can handle rank_spacket and ranks above NUMRANKS
+SP_RANK                 S       ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.

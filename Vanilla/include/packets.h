@@ -132,7 +132,7 @@
 #ifdef FEATURE_PACKETS
 #define SP_FEATURE      60
 #endif
-#define SP_RANKS        61
+#define SP_RANK         61
 
 /* packets sent from remote client to xtrek server */
 #define CP_MESSAGE	1		/* send a message */
@@ -236,10 +236,10 @@ struct player_spacket { /* SP_PLAYER py-struct "!bbBbll" #4 */
 
 struct torp_info_spacket { /* SP_TORP_INFO py-struct "!bbbxhxx" #5 */
     char  type;
-    char  war;		
+    char  war;
     char  status;	/* TFREE, TDET, etc... */
     char  pad1;		/* pad needed for cross cpu compatibility */
-    short tnum;		
+    short tnum;
     short pad2;
 };
 
@@ -261,10 +261,10 @@ struct phaser_spacket { /* SP_PHASER py-struct "!bbbBlll" #7 */
 
 struct plasma_info_spacket { /* SP_PLASMA_INFO py-struct "!bbbxhxx" #8 */
     char  type;
-    char  war;		
+    char  war;
     char  status;	/* TFREE, TDET, etc... */
     char  pad1;		/* pad needed for cross cpu compatibility */
-    short pnum;		
+    short pnum;
     short pad2;
 };
 
@@ -521,7 +521,7 @@ struct mesg_cpacket { /* CP_MESSAGE py-struct "!bBBx80s" #1 */
 
 struct speed_cpacket { /* CP_SPEED py-struct "!bbxx" #2 */
     char type;
-    char speed;		
+    char speed;
     char pad1;
     char pad2;
 };
@@ -637,7 +637,7 @@ struct bomb_cpacket { /* CP_BOMB py-struct "!bbxx" #17 */
 struct beam_cpacket { /* CP_BEAM py-struct "!bbxx" #18 */
     char type;
     char state;
-    char pad1; 
+    char pad1;
     char pad2;
 };
 
@@ -944,7 +944,7 @@ struct phaser_s_spacket
     u_char dir;
     char pad1;
     char pad2;
-    char pad3;    
+    char pad3;
   };
 
 struct stats_s_spacket
@@ -1082,14 +1082,14 @@ struct feature_cpacket { /* CP_FEATURE py-struct "!bcbbi80s" #60 */
 };
 #endif /* FEATURE_PACKETS */
 
-struct ranks_spacket {
-    char        type;           /* SP_RANKS */
+struct rank_spacket { /* SP_RANK py-struct pending #61 */
+    char        type;
+    char        pad[3];
     int         rankn;          /* rank number */
-    char        name[11];       /* rank name */
-    char        cname[5];       /* short name */
-    unsigned    hours;          /* where 1234=12.34 hours
-                                 * and 0=0.00 hours */
-    unsigned    ratings;        /* as per hours */
-    unsigned    offense;        /* as per hours */
+    char        name[NAME_LEN]; /* full rank name */
+    int         hours;          /* hundredths of hours required */
+    int         ratings;        /* hundredths of ratings required */
+    int         offense;        /* hundredths of offense required */
+    char        cname[8];       /* short 'curt' rank name */
 };
 

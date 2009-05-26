@@ -68,7 +68,7 @@ void checkmess();
 static void obliterate(int wflag, char kreason);
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
-#ifndef PRETKEEPALIVE
+#ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
 static int is_robots_only(void);
 #endif
 static int totalRobots(int team);
@@ -213,7 +213,7 @@ void checkmess()
 
     ticks++;
 
-#ifndef PRETKEEPALIVE
+#ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
     /* End the current game if no humans for 60 seconds. */
     if ((ticks % ROBOCHECK) == 0) {
         if (no_humans >= 60)
@@ -343,7 +343,7 @@ static int checkpos(void)
     return 1;
 }
 
-#ifndef PRETKEEPALIVE
+#ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
 static int is_robots_only(void)
 {
    return !num_humans(0);

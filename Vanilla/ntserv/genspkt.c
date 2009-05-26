@@ -109,7 +109,7 @@ int sizes[TOTAL_SPACKETS] = {
 #else
     0,						/* 60 */
 #endif
-    sizeof(struct ranks_spacket),		/* SP_RANKS */
+    sizeof(struct rank_spacket),		/* SP_RANK */
     0,						/* 62 */
 };
 
@@ -207,14 +207,15 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 	login->login[NAME_LEN-1]=0;
 	login->type=SP_PL_LOGIN;
 	login->pnum=pl->p_no;
-	/* Backwards compatability - treat all ranks higher than admiral
-	   as admiral, for clients which can't handle SP_RANKS, so that
-	   client playerlist will display correctly. */
-	if (pl->p_stats.st_rank >= (NUMRANKS - 1) && !F_sp_ranks)
-		login->rank=pl->p_stats.st_rank-1;
-	else
-		login->rank=pl->p_stats.st_rank;
-	sendClientPacket(login);
+	login->rank=pl->p_stats.st_rank;
+	if (pl->p_stats.st_rank > (NUMRANKS - 1) && !F_sp_rank) {
+	    struct plyr_login_spacket *limited;
+	    memcpy(limited, login, sizeof(struct plyr_login_spacket));
+	    limited->rank=NUMRANKS - 1;
+	    sendClientPacket(limited);
+	} else {
+	    sendClientPacket(login);
+	}
 	/* on every change to player list, check saved ignore status */
 	if (me != pl && pl->p_status == PFREE) ip_ignore_login(me, pl);
 	return TRUE;
@@ -2757,17 +2758,18 @@ sendGeneric32Packet(void)
 }
 
 void
-sendRanksPacket()
+sendRankPackets()
 {
     static int sent = 0;
+    struct rank_spacket rp;
     int i;
-    struct ranks_spacket rp;
 
-    if (!F_sp_ranks || sent)
+    if (!F_sp_rank || sent)
         return;
 
+    memset(&rp, 0, sizeof(struct rank_spacket));
     for (i = 0; i < NUMRANKS; i++) {
-        rp.type=SP_RANKS;
+        rp.type = SP_RANK;
         rp.rankn = i;
         strncpy(rp.name, ranks[i].name, 11);
         strncpy(rp.cname, ranks[i].cname, 5);
@@ -2777,7 +2779,7 @@ sendRanksPacket()
             rp.offense = htonl((int) (ranks[i].offense*100));
         else
             rp.offense = 0;
-        sendClientPacket((CVOID) &rp);
+        sendClientPacket(&rp);
     }
     sent = 1;
 }

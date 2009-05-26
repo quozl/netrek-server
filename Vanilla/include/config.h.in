@@ -316,11 +316,11 @@
                                 /* PRETSERVER      - pre-T bot  support */
 #define PRETSERVER
 
-                                /* PRETKEEPALIVE   - keep pre-T mode going even
+                                /* ROBOTS_STAY_IF_PLAYERS_LEAVE   - keep pre-T mode going even
                                                      if there are no humans; this
                                                      works around a stuck Kathy
                                                      bug that should be fixed */
-#define PRETKEEPALIVE
+#define ROBOTS_STAY_IF_PLAYERS_LEAVE
 
                                 /* STURGEON        - sturgeon mode support */
 #undef STURGEON
