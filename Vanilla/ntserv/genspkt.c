@@ -2773,10 +2773,10 @@ sendRankPackets()
         rp.rankn = i;
         strncpy(rp.name, ranks[i].name, NAME_LEN);
         strncpy(rp.cname, ranks[i].cname, 8);
-        rp.hours = htonl((int) (ranks[i].hours*100));
-        rp.ratings = htonl((int) (ranks[i].ratings*100));
+        rp.hours = htonl((int) round(ranks[i].hours*100));
+        rp.ratings = htonl((int) round(ranks[i].ratings*100));
         if (offense_rank)
-            rp.offense = htonl((int) (ranks[i].offense*100));
+            rp.offense = htonl((int) round(ranks[i].offense*100));
         else
             rp.offense = 0;
         sendClientPacket(&rp);
