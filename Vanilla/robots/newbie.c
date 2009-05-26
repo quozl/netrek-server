@@ -199,7 +199,9 @@ main(argc, argv)
 
 void checkmess()
 {
+#ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
     static int no_humans = 0;
+#endif
     static int count = 0;
 
     me->p_ghostbuster = 0;         /* keep ghostbuster away */
