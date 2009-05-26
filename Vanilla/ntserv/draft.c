@@ -455,7 +455,7 @@ static void inl_draft_arrival_captain(struct player *k)
 
   /* captains are admirals */
   if (status->gameup & GU_INROBOT)
-    k->p_stats.st_rank = NUMRANKS - 1;
+    k->p_stats.st_rank = RANK_ADMIRAL;
 
   /* arrival without another captain */
   if (other_captain == NULL) {
