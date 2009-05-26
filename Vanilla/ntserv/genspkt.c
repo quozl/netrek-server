@@ -2771,8 +2771,8 @@ sendRankPackets()
     for (i = 0; i < NUMRANKS; i++) {
         rp.type = SP_RANK;
         rp.rankn = i;
-        strncpy(rp.name, ranks[i].name, 11);
-        strncpy(rp.cname, ranks[i].cname, 5);
+        strncpy(rp.name, ranks[i].name, NAME_LEN);
+        strncpy(rp.cname, ranks[i].cname, 8);
         rp.hours = htonl((int) (ranks[i].hours*100));
         rp.ratings = htonl((int) (ranks[i].ratings*100));
         if (offense_rank)
