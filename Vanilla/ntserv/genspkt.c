@@ -208,10 +208,10 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 	login->type=SP_PL_LOGIN;
 	login->pnum=pl->p_no;
 	login->rank=pl->p_stats.st_rank;
-	if (pl->p_stats.st_rank > (NUMRANKS - 1) && !F_sp_rank) {
+	if (pl->p_stats.st_rank > (RANK_ADMIRAL) && !F_sp_rank) {
 	    struct plyr_login_spacket limited;
 	    memcpy(&limited, login, sizeof(struct plyr_login_spacket));
-	    limited.rank=NUMRANKS - 1;
+	    limited.rank=RANK_ADMIRAL;
 	    sendClientPacket(&limited);
 	} else {
 	    sendClientPacket(login);

@@ -99,6 +99,7 @@
 #define CLOAK_PHASES 12  /* number of drawing phases in a cloak engage/disengage */
 #define NUMRANKS 9
 
+#define RANK_ADMIRAL 8  /* Max rank assumed by most clients */
 #define SURREND 4
 
 #ifdef SURRENDER_SHORT /* Length of surrender timer in minutes */
