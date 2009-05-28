@@ -17,7 +17,9 @@ if [ ! -f config.sub ]; then
     libtoolize --install --copy --no-warn
 fi
 autoconf
-cd res-rsa && autoconf && cd ..
+if [ -d res-rsa ]; then
+    cd res-rsa && autoconf && cd ..
+fi
 chmod +x tools/mktrekon
 cd tools/admin && chmod +x `grep ^EXECS Makefile.in | cut -d '=' -f 2` && cd ../..
 chmod +x debian/rules debian/postinst debian/postrm

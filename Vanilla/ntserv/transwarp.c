@@ -43,7 +43,11 @@ int handleTranswarp(void)
                      offenseRating(me),
 #endif /* LTD_STATS */
                      me->p_ip,
+#ifdef RSA
                      RSA_client_type
+#else
+                     "none"
+#endif
                     );
          glog_flush();
       }
