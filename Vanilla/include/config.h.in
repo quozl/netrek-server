@@ -211,18 +211,18 @@
                                                      popping scheme */
 #define INL_POP
 
+				/* PKEY		   - shared memory key, to
+						     override key specified
+						     in ntserv/defs.h */
+#undef PKEY
 
 				/* LTD_STATS       - Leonard/Tom/Dave extended
                                                      player statistics.  See
                                                      README.LTD for details.
                                                      THIS BREAKS PLAYERDB
                                                      COMPATIBILITY!! */
-#undef PKEY
-				/* PKEY		   - shared memory key, to 
-						     override key specified
-						     in ntserv/defs.h */
 
-#undef LTD_STATS
+#define LTD_STATS
 
 				/* LTD_PER_RACE    - LTD stats are normally
 				                     combined regardless
