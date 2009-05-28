@@ -76,7 +76,9 @@ void ban_player(int who);
 void do_client_query(char *comm, struct message *mess, int who);
 void do_ping_query(char *comm, struct message *mess, int who);
 void do_stats_query(char *comm, struct message *mess, int who);
+#ifdef LTD_STATS
 void do_ltd_query(char *comm, struct message *mess, int who);
+#endif
 void do_sbstats_query(char *comm, struct message *mess, int who);
 void do_whois_query(char *comm, struct message *mess, int who);
 
@@ -109,10 +111,12 @@ static struct command_handler_2 nts_commands[] =
 		C_PLAYER,
 		"Show player's t-mode stats   e.g. 'STATS 0'",
 		do_stats_query },		/* STATS */
+#ifdef LTD_STATS
     { "LTD",
 		C_PLAYER,
 		"Show your LTD stats via a web page",
 		do_ltd_query },			/* LTD */
+#endif
     { "WHOIS",
 		C_PLAYER,
 		"Show player's login info     e.g. 'WHOIS 0'",
@@ -1540,10 +1544,65 @@ void do_register(char *comm, struct message *mess)
 }
 #endif
 
-void do_ltd_query(char *comm, struct message *mess, int who)
-{
-  // dump stats for player to a file in stats export tree
-  // derive url and give it to them
-  // if specific permission given, send it as a long message stream
+#ifdef LTD_STATS
+static char *ltd_stats_url_prefix() {
+#define MAXPATH 256
+  char name[MAXPATH];
+  snprintf(name, MAXPATH, "%s/%s", SYSCONFDIR, "ltd-stats-url-prefix");
+  FILE *file = fopen(name, "r");
+  if (file == NULL) return NULL;
+  static char text[80];
+  char *res = fgets(text, 80, file);
+  fclose(file);
+  if (res == NULL) return NULL;
+  res[strlen(res)-1] = '\0';
+  return res;
 }
 
+void do_ltd_query(char *comm, struct message *mess, int who)
+{
+  char *url;
+  char name[256];
+  int ticks;
+
+  /* fail if the player has no player file position reference */
+  if (me->p_pos < 0) {
+    pmessage(who, MINDIV, addr_mess(who,MINDIV),
+             "Statistics are not kept for guests");
+    return;
+  }
+
+  /* fail if the server owner has not set up this up yet */
+  url = ltd_stats_url_prefix();
+  if (url == NULL) {
+    pmessage(who, MINDIV, addr_mess(who,MINDIV),
+             "Server owner has not configured etc/ltd-stats-url-prefix");
+    return;
+  }
+
+  /* invent a file name for the stats dump request output */
+  ticks = ltd_ticks(me, LTD_TOTAL);
+  snprintf(name, 256-1, "%s/blog/stats/%08x.%08x.html", LOCALSTATEDIR,
+           me->p_pos, ticks);
+
+  /* in a new process create the file and exit */
+  if (fork() == 0) {
+    (void) SIGNAL(SIGALRM,SIG_DFL);
+    FILE *fp = fopen(name, "w");
+    if (fp == NULL) return;
+    int fd = fileno(fp);
+    dup2(fd, 1);
+    execl("tools/ltd_dump_html", "ltd_dump_html", me->p_name, (char *) NULL);
+    perror("ltd_dump_html");
+  }
+
+  /* tell the user where to go to see it */
+  snprintf(name, 256-1, "%s/blog/stats/%d.%d.html", url, me->p_pos, ticks);
+  pmessage(who, MINDIV, addr_mess(who,MINDIV), name);
+
+  /* @bug: race condition, client might, if fast enough, access the
+  link before the ltd_dump_html process is finished, but this is
+  unlikely since the process should take a very very small time, it
+  uses indexed access to player file. */
+}
+#endif
