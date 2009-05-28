@@ -2770,7 +2770,8 @@ sendRankPackets()
     memset(&rp, 0, sizeof(struct rank_spacket));
     for (i = 0; i < NUMRANKS; i++) {
         rp.type = SP_RANK;
-        rp.rankn = i;
+        rp.rnum = i;
+        rp.rmax = NUMRANKS - 1;
         strncpy(rp.name, ranks[i].name, NAME_LEN);
         strncpy(rp.cname, ranks[i].cname, 8);
         rp.hours = htonl((int) (ranks[i].hours * 100 + 0.5));

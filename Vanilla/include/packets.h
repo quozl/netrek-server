@@ -1084,12 +1084,12 @@ struct feature_cpacket { /* CP_FEATURE py-struct "!bcbbi80s" #60 */
 
 struct rank_spacket { /* SP_RANK py-struct pending #61 */
     char        type;
-    char        pad[3];
-    int         rankn;          /* rank number */
+    char        rnum;           /* rank number */
+    char        rmax;           /* rank number maximum */
+    char        pad;
     char        name[NAME_LEN]; /* full rank name */
     int         hours;          /* hundredths of hours required */
     int         ratings;        /* hundredths of ratings required */
     int         offense;        /* hundredths of offense required */
     char        cname[8];       /* short 'curt' rank name */
 };
-
