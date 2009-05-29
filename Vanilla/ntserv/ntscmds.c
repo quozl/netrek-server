@@ -1129,8 +1129,8 @@ void do_password(char *comm, struct message *mess)
 
   /* guests have no player file position */
   if (p->p_pos < 0) {
-    pmessage(who, MINDIV, addr, 
-	     "You can't change your password, sorry!");
+    pmessage(who, MINDIV, addr,
+             "You can't change your password, sorry!");
     return;
   }
 
@@ -1141,23 +1141,23 @@ void do_password(char *comm, struct message *mess)
   /* look at the first word after command */
   one = strtok(NULL, " ");
   if (one == NULL) {
-    pmessage(who, MINDIV, addr, 
-	     "Enter your new password twice after the word PASSWORD");
+    pmessage(who, MINDIV, addr,
+             "Enter your new password twice after the word PASSWORD");
     return;
   }
 
   /* look at the second word after command */
   two = strtok(NULL, " ");
   if (two == NULL) {
-    pmessage(who, MINDIV, addr, 
-	     "Need new password twice, with a space between");
+    pmessage(who, MINDIV, addr,
+             "Need new password twice, with a space between");
     return;
   }
 
   /* compare and reject if different */
   if (strcmp(one, two)) {
-    pmessage(who, MINDIV, addr, 
-	     "No way, the two passwords are different!");
+    pmessage(who, MINDIV, addr,
+             "No way, the two passwords are different!");
     return;
   }
 
@@ -1165,8 +1165,14 @@ void do_password(char *comm, struct message *mess)
   changepassword(one);
 
   /* tell her we changed it */
-  pmessage(who, MINDIV, addr, 
-	   "Password changed to %s", one);
+  pmessage(who, MINDIV, addr,
+           "Password changed to %s", one);
+
+  if (strlen(one) > 8) {
+    pmessage(who, MINDIV, addr,
+             "WARNING PASSWORD OVERLONG: "
+             "only the first eight letters are used!");
+  }
 }
 
 
