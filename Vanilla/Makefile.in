@@ -16,7 +16,7 @@ include $(CONFIG)
 
 .PHONY: rmdependencies clean reallyclean install installbin \
 	do_library do_server do_listener do_robots do_robotd \
-	do_utilities do_rsa_utilities do_xsg do_pledit do_gum
+	do_utilities do_rsa_utilities do_xsg do_pledit
 
 all: null $(PMAKE) \
 	do_library do_server do_listener do_robots do_robotd \
@@ -63,9 +63,6 @@ do_robots: do_library
 do_robotd: 
 	cd robotd; $(MAKE)
 
-do_gum: do_library
-	cd gum; $(MAKE)
-
 do_xsg: do_library
 	cd xsg; $(MAKE);
 
@@ -104,9 +101,6 @@ clean:
 	cd ntserv;    $(MAKE) clean
 	cd robots;    $(MAKE) clean
 	cd robotd;    $(MAKE) clean
-	if [ x@GUM@ = xdo_gum ]; then \
-		cd gum;       $(MAKE) clean; \
-	fi
 	cd newstartd; $(MAKE) clean
 	cd tools;     $(MAKE) clean
 	cd sequencer; $(MAKE) clean
@@ -120,9 +114,6 @@ reallyclean:
 	cd ntserv;    $(MAKE) reallyclean
 	cd robots;    $(MAKE) reallyclean
 	cd robotd;    $(MAKE) reallyclean
-	if [ x@GUM@ = xdo_gum ]; then \
-		cd gum;       $(MAKE) distclean; \
-	fi
 	cd newstartd; $(MAKE) reallyclean
 	cd tools;     $(MAKE) reallyclean
 	cd sequencer; $(MAKE) reallyclean
@@ -148,9 +139,6 @@ installbin: all
 	cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
 	cd robots;    $(MAKE) install DESTDIR=$(DESTDIR)
 	cd robotd;    $(MAKE) install DESTDIR=$(DESTDIR)
-	if [ x@GUM@ = xdo_gum ]; then \
-		cd gum;       $(MAKE) install DESTDIR=$(DESTDIR); \
-	fi
 	cd newstartd; $(MAKE) install DESTDIR=$(DESTDIR)
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install DESTDIR=$(DESTDIR); \
@@ -196,7 +184,7 @@ dist:
 	cp -p configure.in Makefile.in system.mk.in configure config.sub \
 	config.guess install-sh $(NAME)/
         # subdirectories
-	cp -rp docs gum include keycomp motd newstartd ntserv php \
+	cp -rp docs include keycomp motd newstartd ntserv php \
 	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
