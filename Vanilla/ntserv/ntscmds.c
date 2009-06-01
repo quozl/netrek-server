@@ -1588,7 +1588,7 @@ void do_ltd_query(char *comm, struct message *mess, int who)
 
   /* invent a file name for the stats dump request output */
   ticks = ltd_ticks(me, LTD_TOTAL);
-  snprintf(name, 256-1, "%s/blog/stats/%08x.%08x.html", LOCALSTATEDIR,
+  snprintf(name, 256-1, "%s/www/stats/%08x.%08x.html", LOCALSTATEDIR,
            me->p_pos, ticks);
 
   /* in a new process create the file and exit */
@@ -1603,7 +1603,7 @@ void do_ltd_query(char *comm, struct message *mess, int who)
   }
 
   /* tell the user where to go to see it */
-  snprintf(name, 256-1, "%s/blog/stats/%d.%d.html", url, me->p_pos, ticks);
+  snprintf(name, 256-1, "%s/stats/%08x.%08x.html", url, me->p_pos, ticks);
   pmessage(who, MINDIV, addr_mess(who,MINDIV), name);
 
   /* @bug: race condition, client might, if fast enough, access the

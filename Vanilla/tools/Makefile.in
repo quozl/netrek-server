@@ -61,9 +61,9 @@ install: $(EXECS)
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/racial
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/bans
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/inl
-	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/stats
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www
 	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www/blog
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www/stats
 	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(DESTDIR)$(LIBDIR)/tools/updatekeys
 	$(INSTALLPROG) $(INSTALLOPTS) blosxom $(DESTDIR)$(LIBDIR)/blosxom
 	$(INSTALLPROG) $(INSTALLOPTS) blog $(DESTDIR)$(LIBDIR)/blog
