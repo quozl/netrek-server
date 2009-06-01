@@ -15,6 +15,13 @@ mailing lists, or the IRC channel, or the netrek infrastructure team.
 
 --
 
+For small group servers that you don't need to be listed publically,
+you can have the users add the server name to their metaservers list,
+and configure the multicast discovery feature, see 3521u in
+sample_ports and tools/metaget for testing.
+
+--
+
 Date: Wed, 15 April 1998 09:06:09 +0000 (edited by many since)
 From: James Cameron <cameron@stl.dec.com>
 Subject: Metaservers File Format
