@@ -109,6 +109,8 @@ WHY_DEAD_2		S	ON
 AUTO_WEAPONS            S       OFF
 # Client can handle rank_spacket and ranks above NUMRANKS
 SP_RANK                 S       ON
+# Client can handle ltd_spacket
+SP_LTD                  S       ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
