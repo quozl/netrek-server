@@ -38,6 +38,7 @@ void getEntry(int *team, int *stype)
 #ifdef LTD_STATS
     playerOffense = ltd_offense_rating(me);
     playerDefense = ltd_defense_rating(me);
+    sendLtdPacket();
 #else
     playerOffense = offenseRating(me);
     playerDefense = defenseRating(me);
@@ -48,7 +49,7 @@ void getEntry(int *team, int *stype)
 	/* updateShips so he knows how many players on each team */
 	updateShips();
 	sendMaskPacket(tournamentMask(me->p_team,me->w_queue));
-	flushSockBuf();		
+	flushSockBuf();
 	/* Have we been busted? */
 	if (me->p_status == PFREE) {
             ERROR(1,("%s: getentry() unfreeing a PFREE (pid %i)\n",
@@ -67,7 +68,7 @@ void getEntry(int *team, int *stype)
 		sendPickokPacket(0);
 		teamPick= -1;
 		continue;
-	    } 
+	    }
 	    if (!(tournamentMask(me->p_team,me->w_queue) & (1<<teamPick))) {
                 new_warning(9,"I cannot allow that.  Pick another team");
 		sendPickokPacket(0);
@@ -76,11 +77,11 @@ void getEntry(int *team, int *stype)
 	    }
 
 	    /* switching teams 7/27/91 TC */
-	    if (((1<<teamPick) != me->p_team) && 
-		(me->p_team != ALLTEAM) && 
-		(switching != teamPick) && 
-		(me->p_whydead != KGENOCIDE) && 
-		(me->p_whydead != KWINNER) && 
+	    if (((1<<teamPick) != me->p_team) &&
+		(me->p_team != ALLTEAM) &&
+		(switching != teamPick) &&
+		(me->p_whydead != KGENOCIDE) &&
+		(me->p_whydead != KWINNER) &&
 		(me->p_whydead != KPROVIDENCE) ) {
 		    switching = teamPick;
                     new_warning(10,"Please confirm change of teams.  Select the new team again.");
@@ -246,7 +247,7 @@ static int tournamentMask(int team, int queue)
     int large[2] = {0, 0};
     int count[NUMTEAM];
     int i;
-    
+
     /* Handle special cases that disallow all teams */
     /* INL guests cannot play, but they can read the MOTD and can observe */
     if ((inl_mode && !Observer && is_guest(me->p_name)) ||
@@ -257,7 +258,7 @@ static int tournamentMask(int team, int queue)
     /* Must exit is set */
         (mustexit))
         return 0;
-    
+
     /* Handle special cases that do other things */
     /* admin observer */
     if (me->p_authorised && (me->p_flags & PFOBSERV))
@@ -268,7 +269,7 @@ static int tournamentMask(int team, int queue)
     /* Queue with no restrictions */
     if (!(queues[queue].q_flags & QU_RESTRICT))
         return queues[queue].tournmask;
-    
+
     /* Find the two largest teams, include bots in the count if in
        pre-T mode */
     memset(count, 0, NUMTEAM * sizeof(int));
@@ -284,7 +285,7 @@ static int tournamentMask(int team, int queue)
         if (((count[i] >= 8) || (count[i] >= 4 && pre_t_mode)) &&
             (team != (1 << i)) && !Observer)
             mask &= ~(1 << i);
-        
+
         /* large[0] == largest team, large[1] == second largest team */
         if (count[i] > count[large[0]]) {
             large[1] = large[0];
@@ -292,7 +293,7 @@ static int tournamentMask(int team, int queue)
         } else if ((count[i] > count[large[1]]) || (large[0] == large[1]))
             large[1] = i;
     }
-    
+
     /* Handle rejoining after a team has been timercided, disallow the
        old team and disallow the two largest teams (may overlap)
        Return early so we can't diagonal-mask out all 4 teams */
@@ -322,7 +323,7 @@ static int tournamentMask(int team, int queue)
                         mask &= ~ROM;
                         break;
                 }
-    
+
     /* Allow observers to pick any valid team on initial entry */
     if ((team == ALLTEAM) && Observer)
         return mask;

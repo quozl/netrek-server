@@ -22,3 +22,4 @@ void sendFeatureUps();
 void sendLameRefit();
 void sendLameBaseRefit();
 void sendRankPackets();
+void sendLtdPacket();

@@ -1,5 +1,5 @@
 /*
- * GenSPkt.c 
+ * GenSPkt.c
  *
  * Kevin O'Connor 10/3/97
  *
@@ -110,7 +110,8 @@ int sizes[TOTAL_SPACKETS] = {
     0,						/* 60 */
 #endif
     sizeof(struct rank_spacket),		/* SP_RANK */
-    0,						/* 62 */
+    sizeof(struct ltd_spacket),			/* SP_LTD */
+    0,						/* 63 */
 };
 
 /* a collection of previously sent packets by packet type and slot,
@@ -2783,6 +2784,24 @@ sendRankPackets()
         sendClientPacket(&rp);
     }
     sent = 1;
+}
+
+void
+sendLtdPacket()
+{
+  struct ltd_spacket lp;
+
+  if (!F_sp_ltd)
+    return;
+
+  memset(&lp, 0, sizeof(struct ltd_spacket));
+  lp.type = SP_LTD;
+  lp.version = LTD_VERSION;
+  lp.endian = 'l';
+  lp.pad = ' ';
+  memcpy(&lp.ltd, &me->p_stats.ltd[0][LTD_TOTAL], sizeof(struct ltd_stats));
+
+  sendClientPacket(&lp);
 }
 
 /* Hey Emacs! -*- Mode: C; c-file-style: "bsd"; indent-tabs-mode: nil -*- */

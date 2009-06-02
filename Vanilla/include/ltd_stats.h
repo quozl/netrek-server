@@ -1,4 +1,4 @@
-/* $Id: ltd_stats.h,v 1.1 2005/03/21 05:23:36 jerub Exp $
+/*
  *
  * Dave Ahn
  *
@@ -19,6 +19,8 @@
 #define __INCLUDED_ltd_stats_h__
 
 #include "defs.h"	/* We need defines from this file */
+
+#define LTD_VERSION 'a' /* version for SP_LTD packet */
 
 typedef enum {
 

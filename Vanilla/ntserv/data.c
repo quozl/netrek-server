@@ -431,6 +431,7 @@ int F_flags_all = 0;			/* SP_FLAGS_ALL packet may be sent */
 int F_why_dead_2 = 0;			/* Use additional p_whydead states */
 int F_auto_weapons = 0;			/* allow client to autoaim/fire */
 int F_sp_rank = 0;			/* send rank_spacket */
+int F_sp_ltd = 0;			/* send ltd_spacket */
 int mute = 0;
 int muteall = 0;
 int remoteaddr = -1;		/* inet address in net format */

@@ -4,6 +4,7 @@
  * Kevin P. Smith 1/29/89
  */
 #include "copyright2.h"
+#include "ltd_stats.h"
 
 #define STATUS_TOKEN	"\t@@@"		/* ATM */
 
@@ -97,6 +98,10 @@
 #define SP_SEQUENCE	29		/* sequence # packet */
 #define SP_SC_SEQUENCE	30		/* this trans is semi-critical info */
 #define SP_RSA_KEY	31		/* handles binary verification */
+#define SP_GENERIC_32	32		/* 32 byte generic, see struct */
+#define SP_FLAGS_ALL	33		/* abbreviated flags for all players */
+
+#define SP_SHIP_CAP	39		/* Handles server ship mods */
 #define SP_S_REPLY      40              /* reply to send-short request */
 #define SP_S_MESSAGE    41              /* var. Message Packet */
 #define SP_S_WARNING    42              /* Warnings with 4  Bytes */
@@ -106,33 +111,30 @@
 #ifdef PING
 #define SP_PING         46              /* ping packet */
 #endif
-
-#define SP_GENERIC_32	32		/* 32 byte generic, see struct */
-#define SP_FLAGS_ALL	33		/* abbreviated flags for all players */
-#define SP_SHIP_CAP	39		/* Handles server ship mods */
-
 #define SP_S_TORP       47              /* variable length torp packet */
 #define SP_S_TORP_INFO  48              /* SP_S_TORP with TorpInfo */
 #define SP_S_8_TORP     49              /* optimized SP_S_TORP */
 #define SP_S_PLANET     50              /* see SP_PLANET */
 /* S_P2 */
+
 #define SP_S_SEQUENCE   56	/* SP_SEQUENCE for compressed packets */
 #define SP_S_PHASER     57      /* see struct */
 #define SP_S_KILLS      58      /* # of kills player have */
 #define SP_S_STATS      59      /* see SP_STATS */
-
-/* variable length packets */
-#define VPLAYER_SIZE    4
-#define TOTAL_SPACKETS  63
-#define SP2SHORTVERSION 11      /* S_P2 */
-#define OLDSHORTVERSION 10      /* Short packets version 1 */
-
-/* 51-54 unused */
-
 #ifdef FEATURE_PACKETS
 #define SP_FEATURE      60
 #endif
 #define SP_RANK         61
+#ifdef LTD_STATS
+#define SP_LTD          62      /* LTD stats for character */
+#endif
+
+#define TOTAL_SPACKETS  SP_LTD + 1 + 1 /* length of packet sizes array */
+
+/* variable length packets */
+#define VPLAYER_SIZE    4
+#define SP2SHORTVERSION 11      /* S_P2 */
+#define OLDSHORTVERSION 10      /* Short packets version 1 */
 
 /* packets sent from remote client to xtrek server */
 #define CP_MESSAGE	1		/* send a message */
@@ -1092,4 +1094,12 @@ struct rank_spacket { /* SP_RANK py-struct pending #61 */
     int         ratings;        /* hundredths of ratings required */
     int         offense;        /* hundredths of offense required */
     char        cname[8];       /* short 'curt' rank name */
+};
+
+struct ltd_spacket { /* SP_LTD py-struct pending #62 */
+    char        type;
+    char        version;
+    char        endian;
+    char        pad;
+    struct ltd_stats ltd;
 };
