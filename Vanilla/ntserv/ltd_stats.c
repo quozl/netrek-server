@@ -1305,24 +1305,121 @@ int ltd_can_rank(struct player *p) {
    tick or event, we call ltd_update_totals to calculate the totals
    each time the player dies. */
 
+#define TOTAL(STAT) \
+{ \
+  int i, t; \
+  for (t=0, i=1; i<LTD_NUM_SHIPS; i++) { \
+    if (i == LTD_SB) continue; \
+    t += p->p_stats.ltd[race][i].STAT; \
+  } \
+  p->p_stats.ltd[race][LTD_TOTAL].STAT = t; \
+}
+
+#define MAXIMISE(STAT) \
+{ \
+  int i, m; \
+  for (m=0, i=1; i<LTD_NUM_SHIPS; i++) { \
+    if (i == LTD_SB) continue; \
+    if (m < p->p_stats.ltd[race][i].STAT) m = p->p_stats.ltd[race][i].STAT; \
+  } \
+  p->p_stats.ltd[race][LTD_TOTAL].STAT = m; \
+}
+
 /* update LTD_TOTAL stats */
 void ltd_update_totals(struct player *p) {
+  int race = ltd_race(p->p_team);
 
-#ifdef foo
-  int ship, total = 0;
+    TOTAL(kills.total);
+    MAXIMISE(kills.max);
+    TOTAL(kills.first);
+    TOTAL(kills.first_potential);
+    TOTAL(kills.first_converted);
+    TOTAL(kills.second);
+    TOTAL(kills.second_potential);
+    TOTAL(kills.second_converted);
+    TOTAL(kills.phasered);
+    TOTAL(kills.torped);
+    TOTAL(kills.plasmaed);
 
-  /* update the LTD_TOTAL slot */
-  for (ship=1; ship<LTD_NUM_SHIPS; ship++) {
+    TOTAL(deaths.total);
+    TOTAL(deaths.potential);
+    TOTAL(deaths.converted);
+    TOTAL(deaths.dooshed);
+    TOTAL(deaths.phasered);
+    TOTAL(deaths.torped);
+    TOTAL(deaths.plasmaed);
+    TOTAL(deaths.acc);
 
-    if (ship == LTD_SB) continue;
+    TOTAL(planets.taken);
+    TOTAL(planets.destroyed);
 
-    total += p->p_stats.ltd[ship].kills.total;
-  }
-  p->p_stats.ltd[LTD_TOTAL].kills.total = total;
-#endif
+    TOTAL(bomb.planets);
+    TOTAL(bomb.planets_8);
+    TOTAL(bomb.planets_core);
+    TOTAL(bomb.armies);
+    TOTAL(bomb.armies_8);
+    TOTAL(bomb.armies_core);
 
-  if (p) return;
+    TOTAL(ogged.armies);
+    TOTAL(ogged.dooshed);
+    TOTAL(ogged.converted);
+    TOTAL(ogged.potential);
+    TOTAL(ogged.bigger_ship);
+    TOTAL(ogged.same_ship);
+    TOTAL(ogged.smaller_ship);
+    TOTAL(ogged.sb_armies);
+    TOTAL(ogged.friendly);
+    TOTAL(ogged.friendly_armies);
 
+    TOTAL(armies.total);
+    TOTAL(armies.attack);
+    TOTAL(armies.reinforce);
+    TOTAL(armies.ferries);
+    TOTAL(armies.killed);
+
+    TOTAL(carries.total);
+    TOTAL(carries.partial);
+    TOTAL(carries.completed);
+    TOTAL(carries.attack);
+    TOTAL(carries.reinforce);
+    TOTAL(carries.ferries);
+
+    TOTAL(ticks.total);
+    TOTAL(ticks.yellow);
+    TOTAL(ticks.red);
+    TOTAL(ticks.zone[0]);
+    TOTAL(ticks.zone[1]);
+    TOTAL(ticks.zone[2]);
+    TOTAL(ticks.zone[3]);
+    TOTAL(ticks.zone[4]);
+    TOTAL(ticks.zone[5]);
+    TOTAL(ticks.zone[6]);
+    TOTAL(ticks.zone[7]);
+    TOTAL(ticks.potential);
+    TOTAL(ticks.carrier);
+    TOTAL(ticks.repair);
+
+    TOTAL(damage_repaired);
+
+    TOTAL(weapons.phaser.fired);
+    TOTAL(weapons.phaser.hit);
+    TOTAL(weapons.phaser.damage.inflicted);
+    TOTAL(weapons.phaser.damage.taken);
+
+    TOTAL(weapons.torps.fired);
+    TOTAL(weapons.torps.hit);
+    TOTAL(weapons.torps.detted);
+    TOTAL(weapons.torps.selfdetted);
+    TOTAL(weapons.torps.wall);
+    TOTAL(weapons.torps.damage.inflicted);
+    TOTAL(weapons.torps.damage.taken);
+
+    TOTAL(weapons.plasma.fired);
+    TOTAL(weapons.plasma.hit);
+    TOTAL(weapons.plasma.phasered);
+    TOTAL(weapons.plasma.wall);
+    TOTAL(weapons.plasma.damage.inflicted);
+    TOTAL(weapons.plasma.damage.taken);
 }
 
 #endif /* LTD_STATS */

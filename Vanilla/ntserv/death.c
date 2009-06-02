@@ -65,9 +65,7 @@ void death(void)
     ltd_reset_hist(me);
 
     /* update the LTD totals group */
-
-    /* don't update for now, it is too expensive */
-    /* ltd_update_totals(me);*/
+    ltd_update_totals(me);
 
 #endif
 

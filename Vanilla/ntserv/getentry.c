@@ -21,6 +21,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "genspkt.h"
 #include "util.h"
 #include "ltd_stats.h"
 

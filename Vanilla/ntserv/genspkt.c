@@ -2799,7 +2799,8 @@ sendLtdPacket()
   lp.version = LTD_VERSION;
   lp.endian = 'l';
   lp.pad = ' ';
-  memcpy(&lp.ltd, &me->p_stats.ltd[0][LTD_TOTAL], sizeof(struct ltd_stats));
+  memcpy(&lp.ltd, &me->p_stats.ltd[ltd_race(me->p_team)][LTD_TOTAL],
+         sizeof(struct ltd_stats));
 
   sendClientPacket(&lp);
 }

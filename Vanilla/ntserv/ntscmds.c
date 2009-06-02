@@ -1571,6 +1571,8 @@ void do_ltd_query(char *comm, struct message *mess, int who)
   char name[256];
   int ticks;
 
+  sendLtdPacket();
+
   /* fail if the player has no player file position reference */
   if (me->p_pos < 0) {
     pmessage(who, MINDIV, addr_mess(who,MINDIV),
