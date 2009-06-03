@@ -196,6 +196,16 @@ typedef struct fat_node_t {
 
 int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 {
+    static int f_sp_rank_was = 0;
+
+    /* force resend if SP_RANK feature arrived since previous send */
+    if (f_sp_rank_was != F_sp_rank) {
+        if (F_sp_rank && pl->p_stats.st_rank > RANK_ADMIRAL) {
+            login->rank = -1; /* invalidate previous packet data */
+        }
+    }
+    f_sp_rank_was = F_sp_rank;
+
     if ( strcmp(pl->p_name, login->name)!=0 ||
 	 pl->p_stats.st_rank != login->rank ||
 	 strcmp(pl->p_monitor, login->monitor)!=0 ||
