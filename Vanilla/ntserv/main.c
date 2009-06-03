@@ -338,6 +338,7 @@ int main(int argc, char **argv)
     strcpy(me->p_ident, "unknown");
 
 #ifdef LTD_STATS
+    memset(&me->p_bogus, 0, sizeof(struct ltd_stats));
 
     startTkills   = ltd_kills(me, LTD_TOTAL);
     startTlosses  = ltd_deaths(me, LTD_TOTAL);

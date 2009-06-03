@@ -166,9 +166,7 @@ void ntorp(u_char course, int attributes)
 #ifdef LTD_STATS
 
   /* At this point, a torpedo was fired */
-  if (status->tourn) {
-    ltd_update_torp_fired(me);
-  }
+  ltd_update_torp_fired(me);
 
 #endif
 

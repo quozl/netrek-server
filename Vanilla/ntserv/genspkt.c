@@ -110,7 +110,9 @@ int sizes[TOTAL_SPACKETS] = {
     0,						/* 60 */
 #endif
     sizeof(struct rank_spacket),		/* SP_RANK */
+#ifdef LTD_STATS
     sizeof(struct ltd_spacket),			/* SP_LTD */
+#endif
     0,						/* 63 */
 };
 
@@ -2804,23 +2806,105 @@ sendRankPackets()
     sent = 1;
 }
 
+#ifdef LTD_STATS
 void
 sendLtdPacket()
 {
   struct ltd_spacket lp;
+  struct ltd_stats *ltd;
 
   if (!F_sp_ltd)
     return;
 
+  ltd = ltd_stat_ptr_total(me);
+
   memset(&lp, 0, sizeof(struct ltd_spacket));
   lp.type = SP_LTD;
   lp.version = LTD_VERSION;
-  lp.endian = 'l';
-  lp.pad = ' ';
-  memcpy(&lp.ltd, &me->p_stats.ltd[ltd_race(me->p_team)][LTD_TOTAL],
-         sizeof(struct ltd_stats));
+
+  lp.kt   = htonl(ltd->kills.total);
+  lp.kmax = htonl((int)(ltd->kills.max*100.0 + 0.5));
+  lp.k1   = htonl(ltd->kills.first);
+  lp.k1p  = htonl(ltd->kills.first_potential);
+  lp.k1c  = htonl(ltd->kills.first_converted);
+  lp.k2   = htonl(ltd->kills.second);
+  lp.k2p  = htonl(ltd->kills.second_potential);
+  lp.k2c  = htonl(ltd->kills.second_converted);
+  lp.kbp  = htonl(ltd->kills.phasered);
+  lp.kbt  = htonl(ltd->kills.torped);
+  lp.kbs  = htonl(ltd->kills.plasmaed);
+  lp.dt   = htonl(ltd->deaths.total);
+  lp.dpc  = htonl(ltd->deaths.potential);
+  lp.dcc  = htonl(ltd->deaths.converted);
+  lp.ddc  = htonl(ltd->deaths.dooshed);
+  lp.dbp  = htonl(ltd->deaths.phasered);
+  lp.dbt  = htonl(ltd->deaths.torped);
+  lp.dbs  = htonl(ltd->deaths.plasmaed);
+  lp.acc  = htonl(ltd->deaths.acc);
+  lp.ptt  = htonl(ltd->planets.taken);
+  lp.pdt  = htonl(ltd->planets.destroyed);
+  lp.bpt  = htonl(ltd->bomb.planets);
+  lp.bp8  = htonl(ltd->bomb.planets_8);
+  lp.bpc  = htonl(ltd->bomb.planets_core);
+  lp.bat  = htonl(ltd->bomb.armies);
+  lp.ba8  = htonl(ltd->bomb.armies_8);
+  lp.bac  = htonl(ltd->bomb.armies_core);
+  lp.oat  = htonl(ltd->ogged.armies);
+  lp.odc  = htonl(ltd->ogged.dooshed);
+  lp.occ  = htonl(ltd->ogged.converted);
+  lp.opc  = htonl(ltd->ogged.potential);
+  lp.ogc  = htonl(ltd->ogged.bigger_ship);
+  lp.oec  = htonl(ltd->ogged.same_ship);
+  lp.olc  = htonl(ltd->ogged.smaller_ship);
+  lp.osba = htonl(ltd->ogged.sb_armies);
+  lp.ofc  = htonl(ltd->ogged.friendly);
+  lp.ofa  = htonl(ltd->ogged.friendly_armies);
+  lp.at   = htonl(ltd->armies.total);
+  lp.aa   = htonl(ltd->armies.attack);
+  lp.ar   = htonl(ltd->armies.reinforce);
+  lp.af   = htonl(ltd->armies.ferries);
+  lp.ak   = htonl(ltd->armies.killed);
+  lp.ct   = htonl(ltd->carries.total);
+  lp.cp   = htonl(ltd->carries.partial);
+  lp.cc   = htonl(ltd->carries.completed);
+  lp.ca   = htonl(ltd->carries.attack);
+  lp.cr   = htonl(ltd->carries.reinforce);
+  lp.cf   = htonl(ltd->carries.ferries);
+  lp.tt   = htonl(ltd->ticks.total);
+  lp.tyel = htonl(ltd->ticks.yellow);
+  lp.tred = htonl(ltd->ticks.red);
+  lp.tz0  = htonl(ltd->ticks.zone[0]);
+  lp.tz1  = htonl(ltd->ticks.zone[1]);
+  lp.tz2  = htonl(ltd->ticks.zone[2]);
+  lp.tz3  = htonl(ltd->ticks.zone[3]);
+  lp.tz4  = htonl(ltd->ticks.zone[4]);
+  lp.tz5  = htonl(ltd->ticks.zone[5]);
+  lp.tz6  = htonl(ltd->ticks.zone[6]);
+  lp.tz7  = htonl(ltd->ticks.zone[7]);
+  lp.tpc  = htonl(ltd->ticks.potential);
+  lp.tcc  = htonl(ltd->ticks.carrier);
+  lp.tr   = htonl(ltd->ticks.repair);
+  lp.dr   = htonl(ltd->damage_repaired);
+  lp.wpf  = htonl(ltd->weapons.phaser.fired);
+  lp.wph  = htonl(ltd->weapons.phaser.hit);
+  lp.wpdi = htonl(ltd->weapons.phaser.damage.inflicted);
+  lp.wpdt = htonl(ltd->weapons.phaser.damage.taken);
+  lp.wtf  = htonl(ltd->weapons.torps.fired);
+  lp.wth  = htonl(ltd->weapons.torps.hit);
+  lp.wtd  = htonl(ltd->weapons.torps.detted);
+  lp.wts  = htonl(ltd->weapons.torps.selfdetted);
+  lp.wtw  = htonl(ltd->weapons.torps.wall);
+  lp.wtdi = htonl(ltd->weapons.torps.damage.inflicted);
+  lp.wtdt = htonl(ltd->weapons.torps.damage.taken);
+  lp.wsf  = htonl(ltd->weapons.plasma.fired);
+  lp.wsh  = htonl(ltd->weapons.plasma.hit);
+  lp.wsp  = htonl(ltd->weapons.plasma.phasered);
+  lp.wsw  = htonl(ltd->weapons.plasma.wall);
+  lp.wsdi = htonl(ltd->weapons.plasma.damage.inflicted);
+  lp.wsdt = htonl(ltd->weapons.plasma.damage.taken);
 
   sendClientPacket(&lp);
 }
+#endif /* LTD_STATS */
 
 /* Hey Emacs! -*- Mode: C; c-file-style: "bsd"; indent-tabs-mode: nil -*- */

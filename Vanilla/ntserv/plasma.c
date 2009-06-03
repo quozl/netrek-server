@@ -101,9 +101,7 @@ void nplasmatorp(u_char course, int attributes)
 #ifdef LTD_STATS
 
   /* At this point, a plasma was fired */
-  if (status->tourn) {
-    ltd_update_plasma_fired(me);
-  }
+  ltd_update_plasma_fired(me);
 
 #endif
 

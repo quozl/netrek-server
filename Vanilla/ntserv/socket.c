@@ -1370,9 +1370,7 @@ static void handleDetMReq(struct det_mytorp_cpacket *packet)
 		t->t_status = TOFF;
 #ifdef LTD_STATS
                 /* self detted torp */
-                if (status->tourn) {
-                  ltd_update_torp_selfdetted(me);
-                }
+                ltd_update_torp_selfdetted(me);
 #endif
             }
 	}
@@ -1383,9 +1381,7 @@ static void handleDetMReq(struct det_mytorp_cpacket *packet)
 	    t->t_status = TOFF;
 #ifdef LTD_STATS
             /* self detted torp */
-            if (status->tourn) {
-              ltd_update_torp_selfdetted(me);
-            }
+            ltd_update_torp_selfdetted(me);
 #endif
 	}
 }

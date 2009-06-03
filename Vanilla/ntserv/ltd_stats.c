@@ -345,7 +345,24 @@ inline static LTD_TZONE_T ltd_zone(struct player *p) {
 
 }
 
-#define ltd_stat_ptr(XX) (&((XX)->p_stats.ltd[ltd_race((XX)->p_team)][ltd_ship[(XX)->p_ship.s_type].index]))
+static struct ltd_stats *ltd_stat_ptr_by_ship(struct player *p, int ship_index)
+{
+  if (status->tourn) {
+    return &p->p_stats.ltd[ltd_race(p->p_team)][ship_index];
+  } else {
+    return &p->p_bogus;
+  }
+}
+
+struct ltd_stats *ltd_stat_ptr(struct player *p)
+{
+  return ltd_stat_ptr_by_ship(p, ltd_ship[p->p_ship.s_type].index);
+}
+
+struct ltd_stats *ltd_stat_ptr_total(struct player *p)
+{
+  return ltd_stat_ptr_by_ship(p, LTD_TOTAL);
+}
 
 void ltd_update_ticks(struct player *p) {
 

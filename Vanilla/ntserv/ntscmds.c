@@ -15,15 +15,19 @@
 #include <ctype.h>
 #include <signal.h>
 #include <unistd.h>
+#include <dirent.h>
+
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
-#include "gencmds.h"
+
 #include "proto.h"
+#include "gencmds.h"
 #include "util.h"
 #include "ip.h"
 #include "slotmaint.h"
-#include <dirent.h>
+#include "packets.h"
+#include "genspkt.h"
 
 #define EXPERIMENTAL_BE
 

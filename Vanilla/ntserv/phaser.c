@@ -220,9 +220,7 @@ void phaser(u_char course)
 #ifdef LTD_STATS
 
   /* Phaser was fired at this point */
-  if (status->tourn) {
-    ltd_update_phaser_fired(me);
-  }
+  ltd_update_phaser_fired(me);
 
 #endif
 
@@ -244,9 +242,7 @@ void phaser(u_char course)
 #ifdef LTD_STATS
 
   /* Phaser either hit a player or hit plasma, give credit for both cases */
-  if (status->tourn) {
-    ltd_update_phaser_hit(me);
-  }
+  ltd_update_phaser_hit(me);
 
 #endif
 
@@ -259,9 +255,7 @@ void phaser(u_char course)
 #ifdef LTD_STATS
 
     /* update phaser damage for shooter and victim */
-    if (status->tourn) {
-      ltd_update_phaser_damage(me, target_player, mine->ph_damage);
-    }
+    ltd_update_phaser_damage(me, target_player, mine->ph_damage);
 
 #endif
 
@@ -281,10 +275,7 @@ void phaser(u_char course)
 #ifdef LTD_STATS
 
    /* phaser hit plasma */
-
-   if (status->tourn) {
-     ltd_update_plasma_phasered(&(players[target_plasma->t_owner]));
-   }
+   ltd_update_plasma_phasered(&(players[target_plasma->t_owner]));
 
 #endif
 

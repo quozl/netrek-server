@@ -62,8 +62,7 @@ void detothers(void)
 	  t->t_whodet = me->p_no;
 #ifdef LTD_STATS
           /* torp was detted, update stats */
-          if (status->tourn)
-            ltd_update_torp_detted(j);
+          ltd_update_torp_detted(j);
 #endif
 	}
       }

@@ -464,6 +464,7 @@ struct player {
     struct stats p_stats;       /* player statistics */
 #ifdef LTD_STATS
     struct ltd_history p_hist;  /* player event history */
+    struct ltd_stats p_bogus;   /* unsaved session stats maintained outside t-mode */
 #endif
     short p_genoplanets;        /* planets taken since last genocide */
     short p_genoarmsbomb;       /* armies bombed since last genocide */

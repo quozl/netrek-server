@@ -1360,7 +1360,7 @@ static void udplayers_palive_update_stats(struct player *j)
                 ) {
         
 #ifdef LTD_STATS
-                if (status->tourn) ltd_update_ticks(j);
+                ltd_update_ticks(j);
                 if (j->p_ship.s_type != STARBASE)
                         status->timeprod++;
 #else
@@ -1664,8 +1664,7 @@ static void udplayers_palive_repair(struct player *j)
                 j->p_repair_time = repair_time;
                 if (j->p_subshield / 1000) {
 #ifdef LTD_STATS
-                        if (status->tourn)
-                                ltd_update_repaired(j, j->p_subshield / 1000);
+                        ltd_update_repaired(j, j->p_subshield / 1000);
 #endif
                         j->p_shield += j->p_subshield / 1000;
                         j->p_subshield %= 1000;
@@ -1701,8 +1700,7 @@ static void udplayers_palive_repair(struct player *j)
                         j->p_repair_time = repair_needed * 100 / repair_gained;
                 if (j->p_subdamage / 1000) {
 #ifdef LTD_STATS
-                        if (status->tourn)
-                                ltd_update_repaired(j, j->p_subdamage / 1000);
+                        ltd_update_repaired(j, j->p_subdamage / 1000);
 #endif
                         j->p_damage -= j->p_subdamage / 1000;
                         j->p_subdamage %= 1000;
@@ -2112,12 +2110,10 @@ static void t_hit_wall(struct torp *t)
         /* update torp hit wall stat */
         switch(t->t_type) {
         case TPHOTON:
-                if (status->tourn)
-                        ltd_update_torp_wall(&(players[t->t_owner]));
+                ltd_update_torp_wall(&(players[t->t_owner]));
                 break;
         case TPLASMA:
-                if (status->tourn)
-                        ltd_update_plasma_wall(&(players[t->t_owner]));
+                ltd_update_plasma_wall(&(players[t->t_owner]));
                 break;
         }
 #endif
@@ -2168,12 +2164,10 @@ static void t_hit_ship_credit(struct torp *t)
 #ifdef LTD_STATS
         switch(t->t_type) {
           case TPHOTON:
-            if (status->tourn)
-              ltd_update_torp_hit(&(players[t->t_owner]));
+            ltd_update_torp_hit(&(players[t->t_owner]));
             break;
           case TPLASMA:
-            if (status->tourn)
-              ltd_update_plasma_hit(&(players[t->t_owner]));
+            ltd_update_plasma_hit(&(players[t->t_owner]));
             break;
         }
 #endif
@@ -2417,12 +2411,10 @@ static void t_explosion(struct torp *torp)
       /* update torp damage stats */
       switch (torp->t_type) {
         case TPHOTON:
-          if (status->tourn)
-            ltd_update_torp_damage(&(players[torp->t_owner]), j, damage);
+          ltd_update_torp_damage(&(players[torp->t_owner]), j, damage);
           break;
         case TPLASMA:
-          if (status->tourn)
-            ltd_update_plasma_damage(&(players[torp->t_owner]), j, damage);
+          ltd_update_plasma_damage(&(players[torp->t_owner]), j, damage);
           break;
       }
 
@@ -2484,14 +2476,12 @@ static void t_explosion(struct torp *torp)
            j = victim */
 
         if (status->tourn) {
-
           status->kills++;
           status->losses++;
-
-          ltd_update_kills(k, &players[torp->t_owner], j);
-          ltd_update_deaths(j, k);
-
         }
+
+        ltd_update_kills(k, &players[torp->t_owner], j);
+        ltd_update_deaths(j, k);
 
 #endif /* LTD_STATS */
 
@@ -3032,17 +3022,14 @@ static void udphaser(void)
                                victim = dead guy */
 
                             if (status->tourn) {
-
                               status->kills++;
                               status->losses++;
-
-                              ltd_update_kills(&(players[i]), &(players[i]),
-                                               victim);
-                              ltd_update_deaths(victim, &players[i]);
-
                             }
-                            killmess(victim, &players[i], &players[i],
-                                     KPHASER);
+
+                            ltd_update_kills(&(players[i]), &(players[i]), victim);
+                            ltd_update_deaths(victim, &players[i]);
+
+                            killmess(victim, &players[i], &players[i], KPHASER);
 #endif /* LTD_STATS */
 
                         }
@@ -3140,11 +3127,9 @@ static void pldamageplayer(struct player *j)
          NULL = killed by planet */
 
       if (status->tourn) {
-
         status->losses++;
-        ltd_update_deaths(j, NULL);
-
       }
+      ltd_update_deaths(j, NULL);
 
 #endif /* LTD_STATS */
 
@@ -3276,20 +3261,18 @@ static void plfight(void)
 
     if (status->tourn)
     {
-
       status->armsbomb += ab;
-
-      /* j hasn't killed anyone, but does get kill credit for bombing */
-
-      ltd_update_kills_max(j);
-
-      /* j = player who has bombed the planet
-         l = planet that was just bombed
-         ab = number of armies that were just bombed */
-
-      ltd_update_bomb(j, l, ab);
-
     }
+
+    /* j hasn't killed anyone, but does get kill credit for bombing */
+
+    ltd_update_kills_max(j);
+
+    /* j = player who has bombed the planet
+       l = planet that was just bombed
+       ab = number of armies that were just bombed */
+
+    ltd_update_bomb(j, l, ab);
 
 #else /* LTD_STATS */
 
@@ -3367,9 +3350,7 @@ static void beam(void)
 
 #ifdef LTD_STATS
                 /* j = player, NULL = army beamed from planet */
-                if (status->tourn) {
-                    ltd_update_armies_carried(j, NULL);
-                }
+                ltd_update_armies_carried(j, NULL);
 #endif
             } else if (j->p_flags & PFDOCK) {
                 struct player *base = bay_owner(j);
@@ -3377,9 +3358,7 @@ static void beam(void)
                 army_track(AMT_TRANSUP, j, base, 1);
 
 #ifdef LTD_STATS
-                if (status->tourn) {
-                    ltd_update_armies_carried(j, base);
-                }
+                ltd_update_armies_carried(j, base);
 #endif
  
             }
@@ -3416,18 +3395,11 @@ static void beam(void)
 
 #ifdef LTD_STATS
 
-                        /* LTD is only for tournament stats */
+                        /* credit the player for beamdown
+                           j = player who just beamed down 1 army
+                           l = planet that just lost 1 army */
 
-                        if (status->tourn) {
-
-
-                            /* credit the player for beamdown
-                               j = player who just beamed down 1 army
-                               l = planet that just lost 1 army */
-
-                            ltd_update_armies(j, l);
-
-                        }
+                        ltd_update_armies(j, l);
 
                         /* update max kills for bomb kill credit */
 
@@ -3497,10 +3469,7 @@ static void beam(void)
                                j = player who just destroyed the planet
                                l = planet that is neutral */
 
-                            if (status->tourn)
-                            {
-                                ltd_update_planets(j, l);
-                            }
+                            ltd_update_planets(j, l);
 
 #endif /* LTD_STATS */
 
@@ -3571,29 +3540,25 @@ static void beam(void)
                         l->pl_owner = j->p_team;
                         l->pl_info = j->p_team;
 #ifdef LTD_STATS
-                        /* LTD is valid only for tourn mode */
-
                         if (status->tourn)
                         {
-
                             status->planets++;
+                        }
 
-                            /* credit the player for beamdown
-                               j = player who just beamed down 1 army
-                               l = planet that was just taken over,
-                                   has 1 friendly army */
+                        /* credit the player for beamdown
+                           j = player who just beamed down 1 army
+                           l = planet that was just taken over,
+                               has 1 friendly army */
 
-                            ltd_update_armies(j, l);
+                        ltd_update_armies(j, l);
 
 
-                            /* update planet stats
-                               j = planet taker
-                               l = planet just taken over (has 1 friendly
+                        /* update planet stats
+                           j = planet taker
+                           l = planet just taken over (has 1 friendly
                                army) */
 
-                            ltd_update_planets(j, l);
-
-                        }
+                        ltd_update_planets(j, l);
 
                         /* update the max kills regardless of tourn mode */
 
@@ -3657,9 +3622,7 @@ static void beam(void)
                            because if army == 1, it was neutral before
                            the drop */
 
-                    if (status->tourn) {
-                        ltd_update_armies(j, l);
-                    }
+                    ltd_update_armies(j, l);
 #endif /* LTD_STATS */
 
                 }
@@ -3674,9 +3637,7 @@ static void beam(void)
                     j->p_armies--;
                     base->p_armies ++;
 #ifdef LTD_STATS
-                    if (status->tourn) {
-                        ltd_update_armies_ferried(j, base);
-                    }
+                    ltd_update_armies_ferried(j, base);
 #endif /* LTD_STATS */
                         
                 }
@@ -3787,22 +3748,20 @@ static void blowup(struct player *sh)
 #ifdef LTD_STATS
 
                 if (status->tourn) {
-
                   status->kills++;
                   status->losses++;
-
-                  /* k = killer to be credited
-                     sh = ship explosion that dealt the killing damage
-                     j = victim */
-
-                  ltd_update_kills(k, sh, j);
-
-                  /* j = victim
-                     k = killer that was credited */
-
-                  ltd_update_deaths(j, k);
-
                 }
+
+                /* k = killer to be credited
+                   sh = ship explosion that dealt the killing damage
+                   j = victim */
+
+                ltd_update_kills(k, sh, j);
+
+                /* j = victim
+                   k = killer that was credited */
+
+                ltd_update_deaths(j, k);
 
 #endif /* LTD_STATS */
 

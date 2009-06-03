@@ -20,8 +20,6 @@
 
 #include "defs.h"	/* We need defines from this file */
 
-#define LTD_VERSION 'a' /* version for SP_LTD packet */
-
 typedef enum {
 
   LTD_TZONE_0		= 0,	/* Zone 0 = backfield */
@@ -375,6 +373,8 @@ void ltd_reset(struct player *);
 void ltd_reset_struct(struct ltd_stats (*) [LTD_NUM_SHIPS]);
 void ltd_reset_hist(struct player *);
 int ltd_can_rank(struct player *);
+struct ltd_stats *ltd_stat_ptr(struct player *p);
+struct ltd_stats *ltd_stat_ptr_total(struct player *p);
 void ltd_update_totals(struct player *);
 
 /* function prototypes for inlined functions */
