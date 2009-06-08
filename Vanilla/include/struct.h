@@ -663,9 +663,7 @@ struct planet {
 #ifdef STDBG
 #define MDBG   0x20
 #endif
-#ifdef FEATURES
 #define MCONFIG 0x40
-#endif
 #define MDIST  0x60
 #define DISTR  0x40 
 

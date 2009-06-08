@@ -248,9 +248,7 @@ char MakeMotd[FNAMESIZE];
 #endif
 char MesgLog[FNAMESIZE];
 char GodLog[FNAMESIZE];
-#ifdef FEATURES
 char Feature_File[FNAMESIZE];
-#endif
 #ifdef ONCHECK
 char On_File[FNAMESIZE];
 #endif

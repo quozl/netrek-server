@@ -14,9 +14,6 @@ that can change the server.
 	ERIKPLAGUE - Eric Mehlhaff's planet plague code that was used for
 		SINL 93.
 
-	FEATURES - This is for client/server communication. You can specify
-		options in the .features file that some servers may have.
-
 	INL_POP - This is the planet pop code used in SINL 93.
 
 	NEED_EXIT - Some systems need exit to be defined in socket.c

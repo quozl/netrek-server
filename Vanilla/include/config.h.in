@@ -167,10 +167,6 @@
                                                      Plagueing */
 #define ERIKPLAGUE
 
-                                /*  FEATURES       - Server/client
-                                                     communication */
-#define FEATURES
-
 				/*  REVERSED_HOSTNAMES - Truncate the short
                                                      hostname from the end
                                                      rather than the start */

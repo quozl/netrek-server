@@ -243,10 +243,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #endif
 #define N_MESGLOG	"mesg.LOG"
 #define N_GODLOG	"god.LOG"
-
-#ifdef FEATURES
 #define N_FEATURE_FILE	"features"
-#endif
 
 #ifdef ONCHECK
 #define N_ON_FILE	"on"

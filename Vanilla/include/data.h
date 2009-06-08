@@ -279,9 +279,7 @@ extern char MakeMotd[FNAMESIZE];
 #endif
 extern char MesgLog[FNAMESIZE];
 extern char GodLog[FNAMESIZE];
-#ifdef FEATURES
 extern char Feature_File[FNAMESIZE];
-#endif
 #ifdef ONCHECK
 extern char On_File[FNAMESIZE];
 #endif

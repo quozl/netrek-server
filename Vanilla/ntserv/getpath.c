@@ -87,10 +87,7 @@ void getpath()
 
   snprintf(MesgLog,x,"%s/%s",g->localstatedir,N_MESGLOG);
   snprintf(GodLog,x,"%s/%s",g->localstatedir,N_GODLOG);
-
-#ifdef FEATURES
   snprintf(Feature_File,x,"%s/%s",g->sysconfdir,N_FEATURE_FILE);
-#endif
 
 #ifdef ONCHECK
   snprintf(On_File,x,"%s/%s",g->sysconfdir,N_ON_FILE);
