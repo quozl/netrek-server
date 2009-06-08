@@ -110,9 +110,7 @@ static void handleSMessageReq(struct mesg_s_cpacket *packet);
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 static void handleOggV(struct oggv_cpacket *packet);
 #endif
-#ifdef FEATURE_PACKETS
 static void handleFeature(struct feature_cpacket *cpacket);
-#endif
 
 extern int ignored[];
 
@@ -212,11 +210,7 @@ struct packet_handler handlers[] = {
     { 0, NULL },					   /* 57 */
     { 0, NULL },					   /* 58 */
     { 0, NULL },					   /* 59 */
-#ifdef FEATURE_PACKETS
     { sizeof(struct feature_cpacket), handleFeature },	   /* CP_FEATURE */
-#else
-    { 0, NULL },					   /* 60 */
-#endif
 };
 
 extern int sizes[TOTAL_SPACKETS];
@@ -1093,9 +1087,7 @@ static int doRead(int asock)
 #ifdef RSA            		/* NEW -- fix ghostbust problem */
 		*bufptr== CP_RSA_KEY ||
 #endif
-#ifdef FEATURE_PACKETS
 		*bufptr == CP_FEATURE ||
-#endif
 #ifdef MESSAGES_ALL_TIME	/* off for the moment */
 		*bufptr == CP_MESSAGE ||
 		*bufptr == CP_S_MESSAGE ||
@@ -1957,11 +1949,9 @@ static void handleUpdatesReq(struct updates_cpacket *packet)
     per second */
     int ups = 1000000 / ntohl(packet->usecs);
     if (p_ups_set(me, ups)) {
-#ifdef FEATURE_PACKETS
         /* FIXME: only send this if the client has shown it
         understands feature packets, by sending us CP_FEATURE */
         sendFeatureUps();
-#endif /* FEATURE_PACKETS */
     }
 }
 
@@ -2170,8 +2160,6 @@ static void handleOggV(struct oggv_cpacket *packet)
 }
 #endif                          /* BASEPRACTICE || NEWBIESERVER */
 
-#ifdef FEATURE_PACKETS
-
 static void handleFeature(struct feature_cpacket *cpacket)
 {
     struct feature_spacket       spacket;
@@ -2190,8 +2178,6 @@ static void handleFeature(struct feature_cpacket *cpacket)
         sendLameBaseRefit();
     }
 }
-
-#endif /* FEATURE_PACKETS */
 
 /*
  * ---------------------------------------------------------------------------

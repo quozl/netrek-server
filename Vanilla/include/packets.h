@@ -119,9 +119,7 @@
 #define SP_S_PHASER     57      /* see struct */
 #define SP_S_KILLS      58      /* # of kills player have */
 #define SP_S_STATS      59      /* see SP_STATS */
-#ifdef FEATURE_PACKETS
 #define SP_FEATURE      60
-#endif
 #define SP_RANK         61
 #ifdef LTD_STATS
 #define SP_LTD          62      /* LTD stats for character */
@@ -186,9 +184,7 @@
 
 /* 51-54 */
 
-#ifdef FEATURE_PACKETS
 #define CP_FEATURE      60
-#endif
 
 #define MAX_CP_PACKETS	60
 
@@ -1056,7 +1052,6 @@ struct flags_all_spacket {
 #define FLAGS_ALL_CLOAK_OFF_SHIELDS_DOWN 3
 };
 
-#ifdef FEATURE_PACKETS
 struct feature_spacket { /* SP_FEATURE py-struct "!bcbbi80s" #60 */
    char                 type;
    char                 feature_type;   /* either 'C' or 'S' */
@@ -1074,7 +1069,6 @@ struct feature_cpacket { /* CP_FEATURE py-struct "!bcbbi80s" #60 */
    int                  value;
    char                 name[80];
 };
-#endif /* FEATURE_PACKETS */
 
 struct rank_spacket { /* SP_RANK py-struct pending #61 */
     char        type;

@@ -100,11 +100,7 @@ int sizes[TOTAL_SPACKETS] = {
     -1, /* variable  S_P2 */			/* SP_S_PHASER */
     -1, /* variable */				/* SP_S_KILLS */
     sizeof (struct stats_s_spacket),           /* SP_S_STATS */
-#ifdef FEATURE_PACKETS
     sizeof(struct feature_spacket),		/* SP_FEATURE */
-#else
-    0,						/* 60 */
-#endif
     sizeof(struct rank_spacket),		/* SP_RANK */
 #ifdef LTD_STATS
     sizeof(struct ltd_spacket),			/* SP_LTD */
@@ -2482,7 +2478,6 @@ clearSPackets(int update_all, int update_sall)
     clientSelfShip.damage = -1;
 }
 
-#ifdef FEATURE_PACKETS
 void
 sendFeature(struct feature_spacket *packet)
 {
@@ -2528,8 +2523,6 @@ sendLameBaseRefit()
     if (lame_base_refit != 1)
         send_server_feature("LAME_BASE_REFIT", lame_base_refit);
 }
-
-#endif /* FEATURE_PACKETS */
 
 /*
  * If we're in UDP mode, add a sequence number to the transmission buffer.

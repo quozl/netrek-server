@@ -332,10 +332,7 @@ extern int      num_distress;
 extern int      num_distress;
 extern struct dmacro_list distmacro[];
 
-#ifdef FEATURE_PACKETS
-extern int    F_client_feature_packets;
-#endif
-
+extern int F_client_feature_packets;
 extern int F_ship_cap;
 extern int F_cloak_maxwarp;
 extern int F_rc_distress;

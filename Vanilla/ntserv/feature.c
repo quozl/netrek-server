@@ -8,7 +8,6 @@
 #include "data.h"
 #include "packets.h"
 
-#ifdef FEATURE_PACKETS
 /*
  * Feature.c
  *
@@ -246,5 +245,3 @@ static int feature_cmp(char *f, char *s)
    }
    return !*f && !*s;
 }
-
-#endif

@@ -127,10 +127,7 @@ int main(int argc, char **argv)
     openmem(1);
     do_message_post_set(do_check_command);
     readsysdefaults();
-
-#ifdef FEATURE_PACKETS
     readFeatures();
-#endif
 
     me = NULL;			/* UDP fix (?) */
     if (callHost) {

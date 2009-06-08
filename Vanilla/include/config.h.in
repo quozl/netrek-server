@@ -47,9 +47,6 @@
 				/* This define has no meaning for the server */
 #define SPEEDUP
 
-                                /* FEATURE_PACKETS - feature packets */
-#define FEATURE_PACKETS
-
 				/* DEBUG   	   - Various useful debugging 
 						     stuff.  No signal trap */
 #undef  DEBUG

@@ -391,10 +391,7 @@ struct field_desc ship_fields[] = {
 	{0}
 };
 
-#ifdef FEATURE_PACKETS
-int	F_client_feature_packets = 0;
-#endif
-
+int F_client_feature_packets = 0;
 int F_ship_cap      = 0;
 int F_cloak_maxwarp = 0;
 int F_rc_distress   = 0;
