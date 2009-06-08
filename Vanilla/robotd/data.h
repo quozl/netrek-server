@@ -115,9 +115,7 @@ extern int udpClientRecv;       /* UDP */
 extern int udpSequenceChk;      /* UDP */
 #endif
 
-#ifdef SHORT_PACKETS
 extern int recv_short;
-#endif
 
 extern double	Sin[], Cos[];
 

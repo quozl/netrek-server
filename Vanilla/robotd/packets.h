@@ -126,6 +126,11 @@
 #endif
 
 #define CP_PING_RESPONSE 42             /* client response */
+#define CP_S_REQ        43
+#define CP_S_THRS       44
+#define CP_S_MESSAGE    45              /* vari. Message Packet */
+#define CP_S_RESERVED   46
+#define CP_S_DUMMY      47
 
 #define CP_OGGV         50
 
@@ -649,13 +654,11 @@ struct ping_spacket {
    unsigned char        iloss_cs;       /* inc. loss client-server 0-100% */
 };
 
-#ifdef SHORT_PACKETS
 struct shortreq_cpacket {	/* CP_S_REQ */
      char type;
      char req;
      char pad1,pad2;
 };
-#endif
 
 struct sc_sequence_spacket {    /* UDP */
     char type;          /* SP_CP_SEQUENCE */
@@ -663,7 +666,6 @@ struct sc_sequence_spacket {    /* UDP */
     unsigned short sequence;
 };
 
-#ifdef SHORT_PACKETS
 struct shortreply_spacket {	/* SP_S_REPLY */
      char type;
      char repl;
@@ -696,7 +698,6 @@ struct youss_spacket {		/* SP_S_YOU_SS */
      unsigned short	etemp;
      unsigned short	wtemp;
 };
-#endif
 
 struct udp_reply_spacket {      /* UDP */
     char type;          /* SP_UDP_REPLY */

@@ -104,9 +104,7 @@ int     udpClientRecv=1;                /* UDP: receive with fat UDP */
 int     udpSequenceChk=1;               /* UDP: check sequence numbers */
 #endif
 
-#ifdef SHORT_PACKETS
 int	recv_short = 0;
-#endif
 
 char teamlet[] = {'I', 'F', 'R', 'X', 'K', 'X', 'X', 'X', 'O'};
 char *teamshort[9] = {"IND", "FED", "ROM", "X", "KLI", "X", "X", "X", "ORI"};

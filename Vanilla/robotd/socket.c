@@ -907,7 +907,6 @@ struct torp_spacket *packet;
    }
 }
 
-#ifdef SHORT_PACKETS
 
 handleSTorp(sbuf)
 
@@ -1030,7 +1029,6 @@ handleSTorp(sbuf)
       }
    }
 }
-#endif
 
 handleTorpInfo(packet)
 struct torp_info_spacket *packet;
@@ -1164,7 +1162,6 @@ tors */
 #endif
 }
 
-#ifdef SHORT_PACKETS
 handleSelfShort(packet)
 
    struct youshort_spacket *packet;
@@ -1193,7 +1190,6 @@ handleSelfShip(packet)
    me->p_etemp = ntohs(packet->etemp);
    me->p_wtemp = ntohs(packet->wtemp);
 }
-#endif
 
 handlePlayer(packet)
 struct player_spacket *packet;
@@ -1243,7 +1239,6 @@ struct player_spacket *packet;
    redrawPlayer[packet->pnum]=1;
 }
 
-#ifdef SHORT_PACKETS
 handleSPlayer(sbuf)
 
    unsigned char        *sbuf;
@@ -1303,7 +1298,6 @@ handleSPlayer(sbuf)
       redrawPlayer[pl->p_no]=1;
    }
 }
-#endif
 
 handleWarning(packet)
 struct warning_spacket *packet;
@@ -2685,7 +2679,6 @@ static   struct you_spacket y;
    rsock = -1;
 }
 
-#ifdef SHORT_PACKETS
 handleShortReply(packet)
 
    struct shortreply_spacket *packet;
@@ -2697,7 +2690,6 @@ handleShortReply(packet)
 
    recv_short = packet->repl;
 }
-#endif
 
 get_dist_speed(oldx, oldy, newx, newy, dir)
 

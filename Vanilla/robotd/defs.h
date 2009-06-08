@@ -171,9 +171,7 @@ typedef enum {FALSE=0, TRUE} boolean;
 #define sendScanReq(who) sendShortPacket(CP_SCAN, who)          /* ATM */
 #endif
 
-#ifdef SHORT_PACKETS
 #define sendShortReq(state) sendShortPacket(CP_S_REQ, state)
-#endif
 
 /* This macro allows us to time things based upon # frames / sec.
  */

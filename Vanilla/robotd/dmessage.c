@@ -1123,14 +1123,12 @@ R_ProcMessage(message, flags, from, to, std, config)
 	 response("Sending udp update-all req");
       }
 #endif
-#ifdef SHORT_PACKETS
       else if(strncmp(m, "shortp", 6)==0){
 	 if(recv_short)
 	    sendShortReq(0);
 	 else
 	    sendShortReq(1);
       }
-#endif
       else if(strncmp(m, "log", 3)==0){
 	 setlog("./");
 	 response("logging on");
