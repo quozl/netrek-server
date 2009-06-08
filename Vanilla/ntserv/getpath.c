@@ -85,10 +85,8 @@ void getpath()
   snprintf(MakeMotd,x,"%s/motd/%s",g->localstatedir,N_MAKEMOTD);
 #endif
 
-#ifdef CHECKMESG
   snprintf(MesgLog,x,"%s/%s",g->localstatedir,N_MESGLOG);
   snprintf(GodLog,x,"%s/%s",g->localstatedir,N_GODLOG);
-#endif
 
 #ifdef FEATURES
   snprintf(Feature_File,x,"%s/%s",g->sysconfdir,N_FEATURE_FILE);

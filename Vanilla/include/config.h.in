@@ -163,10 +163,6 @@
                                                      12 hours */
 #undef AUTOMOTD
 
-                                /*  CHECKMESG      - Check for god messages
-                                                     and/or log all messages */
-#define CHECKMESG
-
                                 /*  ERIKPLAGUE     - Define for Erik's
                                                      Plagueing */
 #define ERIKPLAGUE

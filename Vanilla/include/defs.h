@@ -241,10 +241,8 @@ because they have initialisation of variables dependent on UPDATE. */
 #ifdef AUTOMOTD
 #define N_MAKEMOTD	"/makemotd"
 #endif
-#ifdef CHECKMESG
 #define N_MESGLOG	"mesg.LOG"
 #define N_GODLOG	"god.LOG"
-#endif
 
 #ifdef FEATURES
 #define N_FEATURE_FILE	"features"

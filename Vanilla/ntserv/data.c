@@ -105,12 +105,10 @@ int	RSA_Client;
 char	testdata[NAME_LEN];
 #endif
 
-#ifdef CHECKMESG		/* NBT added */
 int     checkmessage = 0;
 int     logall=0;
 int     loggod=0;
 int   eventlog=0;
-#endif
 
 int	manager_type = 0;
 int	manager_pid = 0;
@@ -248,10 +246,8 @@ char RSA_Key_File[FNAMESIZE];
 #ifdef AUTOMOTD
 char MakeMotd[FNAMESIZE];
 #endif
-#ifdef CHECKMESG
 char MesgLog[FNAMESIZE];
 char GodLog[FNAMESIZE];
-#endif
 #ifdef FEATURES
 char Feature_File[FNAMESIZE];
 #endif

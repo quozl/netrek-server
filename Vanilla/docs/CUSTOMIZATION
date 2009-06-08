@@ -11,9 +11,6 @@ that can change the server.
 	CHAIN_REACTION - This will not give credit for chain-reaction and
 		will also report how a player died.
 
-	CHECKMESG - log god or all messages. You should use LOGALL and
-		LOGGOD parameters in .sysdef with these.
-
 	ERIKPLAGUE - Eric Mehlhaff's planet plague code that was used for
 		SINL 93.
 

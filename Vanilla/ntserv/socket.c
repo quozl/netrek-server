@@ -298,9 +298,7 @@ FAT_LIST fatlist[MAX_FAT_LIST], tmplist[MAX_FAT_LIST];
 #define MAX_FAT_DATA	100		/* add at most this many bytes */
 #define MAX_NONFAT	10		/* if we have this much left, stop */
 
-#ifdef CHECKMESG
 static FILE	*mlog;
-#endif
 
 /*int           send_short        = 0;*/ /* is now in data.c , because of robotII.c */
 /* static int	send_mesg         = 1; */
@@ -499,13 +497,11 @@ void initClientData(void)
 {
     int i;
 
-#ifdef CHECKMESG
     if (logall) {
 	if (!mlog) mlog = fopen(MesgLog, "a");
 	if (!mlog) perror(MesgLog);
     }
     if (loggod) glog_open();
-#endif
 
     clientDead=0;
 
@@ -617,13 +613,11 @@ void updateClient(void)
        the log files if necessary.  What this has to do with sending messages -
        I dont know. */
     update_sys_defaults();
-#ifdef CHECKMESG
     if (logall) {
-	if(!mlog) mlog = fopen(MesgLog, "a");
-	if(!mlog) perror(MesgLog);
+        if (!mlog) mlog = fopen(MesgLog, "a");
+        if (!mlog) perror(MesgLog);
     }
     if (loggod) glog_open();
-#endif
 
     if(commMode == COMM_UDP) addSequenceFlags(udpbuf);
     if(send_short) {
@@ -1742,12 +1736,10 @@ static void handleMessageReq(struct mesg_cpacket *packet)
     }
     group |= packet->group;
     pmessage2(packet->indiv, group, addrbuf, me->p_no, "%s", packet->mesg);
-#ifdef CHECKMESG
-    if(checkmessage){
-	if(check_mesgs(packet))
-	    return;
+    if (checkmessage) {
+        if (check_mesgs(packet))
+            return;
     }
-#endif
     if ((clue) && (!clueVerified))
 	check_clue(packet);
 }
@@ -2952,8 +2944,6 @@ static void fatMerge(void)
     }
 }
 
-#ifdef CHECKMESG
-
 static int check_mesgs(struct mesg_cpacket  *packet)
 {
     /*
@@ -3048,7 +3038,6 @@ static void check_clue(struct mesg_cpacket  *packet)
 	}
     }
 }
-#endif /* CHECKMESG */
 
 
 /* return true if you should eat message */

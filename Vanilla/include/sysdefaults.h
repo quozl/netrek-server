@@ -54,18 +54,15 @@ struct sysdef_keywords {
     "Send in periodic killer robot"			},
   { "RESETGALAXY",	SYSDEF_INT,	&resetgalaxy,
     "Reset galaxy on daemon start"			},
-#ifdef CHECKMESG
   { "CHECKMESG",	SYSDEF_INT,	&checkmessage,
     "Check messages for configuration"			},
   /* CHECKMESG seems to do not much at all, internally. */
-
   { "LOGALL",		SYSDEF_INT,	&logall,
     "Log all messages to file"				},
   { "LOGGOD",		SYSDEF_INT,	&loggod,
     "Log messages to GOD in a separate file"		},
   { "EVENTLOG",		SYSDEF_INT,	&eventlog,
     "Record warnings in log for post-game parsing"	},
-#endif /* CHECKMESG */
   { "DOOSHER",		SYSDEF_INT,	&doosher,
     "Invent a message when armies die in flight"	},
   { "CHECKSCUM",	SYSDEF_INT,	&check_scum,

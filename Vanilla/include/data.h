@@ -165,12 +165,10 @@ extern int switch_to_observer;
 extern int switch_to_player;
 extern int SBhours;
 
-#ifdef CHECKMESG
 extern int	checkmessage;
 extern int	logall;
 extern int	loggod;
 extern int	eventlog;
-#endif
 
 extern int testtime;
 extern int tournplayers;
@@ -279,10 +277,8 @@ extern char RSA_Key_File[FNAMESIZE];
 #ifdef AUTOMOTD
 extern char MakeMotd[FNAMESIZE];
 #endif
-#ifdef CHECKMESG
 extern char MesgLog[FNAMESIZE];
 extern char GodLog[FNAMESIZE];
-#endif
 #ifdef FEATURES
 extern char Feature_File[FNAMESIZE];
 #endif

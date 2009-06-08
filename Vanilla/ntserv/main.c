@@ -700,14 +700,12 @@ static void sendConfigMsg(void)
       strcat(buf, "No");
     sendMotdLine(buf);
 
-#ifdef CHECKMESG
     sprintf(buf, "%-30s: ", "Message to GOD Log");
     if(loggod)
       strcat(buf, "Yes");
     else
       strcat(buf, "No");
     sendMotdLine(buf);
-#endif
 
    sprintf(buf, "%-30s: ", "SB Transwarp");
    if (twarpMode)
