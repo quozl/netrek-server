@@ -66,10 +66,8 @@ int main(int argc, char **argv)
     int sendMask=0;
     char header[20];
     struct torp *t;
-#ifdef RCD
     struct distress dist;
     char buf[MSG_LEN];
-#endif
 
     for (i=1; i<argc; i++) {
 	if (argv[i][0]=='-') {
@@ -271,7 +269,6 @@ int main(int argc, char **argv)
 	    wmove(mesg_w, messageline, 0);
 	    waddstr(mesg_w, ">");
 	    wclrtoeol(mesg_w);
-#ifdef RCD
 	    /* Fix for RCD distresses - 11/18/93 ATH */
 	    if (messages[oldmctl].m_flags == (MTEAM | MDISTR | MVALID)) {
 		buf[0]='\0';
@@ -286,7 +283,6 @@ int main(int argc, char **argv)
 		buf[MSG_LEN - strlen(messages[oldmctl].m_data)] = '\0';
 	 	strcpy(messages[oldmctl].m_data,buf);
 	    }
-#endif
 	    wspew_mess(&(messages[oldmctl]));
 	}
 	werase(main_w);

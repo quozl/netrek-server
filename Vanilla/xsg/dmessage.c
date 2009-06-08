@@ -26,10 +26,8 @@ int mess;
     register int len;
     W_Color color;
 
-#ifdef RCD
     struct distress dist;
-#endif
-    
+
     char message[MSG_LEN];
     unsigned char flags = (unsigned char)messages[mess].m_flags;
     unsigned char from  = (unsigned char)messages[mess].m_from;
@@ -61,9 +59,7 @@ int mess;
             return;
 	}
 
-#ifdef RCD
         /* kludge for clients that can't handle RCD's */
-
 	if (from < MAXPLAYER) {
           if (flags == (MTEAM | MDISTR | MVALID)) {
                 char buf[MSG_LEN];
@@ -76,8 +72,6 @@ int mess;
                 strcpy(message,buf);
 	  }
         }
-#endif
-
 
     /* Kludge stuff for report kills... 
      */

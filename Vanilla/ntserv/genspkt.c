@@ -1015,7 +1015,6 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
 	msg->m_recpt=cur->m_recpt;
 	msg->m_from=cur->m_from;
 
-#ifdef RCD
 	/* kludge for clients that can't handle RCD's */
 	/* if I understood heiko's short_packet code I would put this in
 	   the above ... but I dont - jmn */
@@ -1035,7 +1034,6 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
 	       so strncat is fine */
 	    strcpy(msg->mesg, buf);
 	}
-#endif
 
     }
     if (cur->m_from==DOOSHMSG) msg->m_from=255;	/* god */

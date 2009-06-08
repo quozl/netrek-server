@@ -305,7 +305,6 @@ int     dogcounts=0;
 char Cambot[FNAMESIZE];
 char Cambot_out[FNAMESIZE];
 
-#ifdef RCD
 int num_distress;
 
 /* the following copied out of BRM data.c */
@@ -343,7 +342,6 @@ struct  dmacro_list distmacro[] = {
 	{ 'E', "help", " %T%c->%O Help(%S)! %s%% shd, %d%% dmg, %f%% fuel,%?%S=SB%{ %w%% wtmp,%!%}%E%{ ETEMP!%}%W%{ WTEMP!%} %a armies!\0" },
 	{ '\0', '\0', '\0'},
 };
-#endif
 
 
 
@@ -405,9 +403,7 @@ int	F_client_feature_packets = 0;
 
 int F_ship_cap      = 0;
 int F_cloak_maxwarp = 0;
-#ifdef RCD
 int F_rc_distress   = 0;
-#endif
 int F_self_8flags   = 0;
 int F_19flags       = 0;	/* pack 19 flags into spare bytes */
 int F_show_all_tractors = 0;

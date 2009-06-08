@@ -61,9 +61,6 @@ that can change the server.
 	NEWMASK - Use a newer tournament mask function that is less rigid
 		than older version. Doesn't take preferences into account.
 
-	RCD - Support Receiver variable distresses. (Saves on a lot of network
-		traffic).
-
 	FLAT_BONUS - 5x bonus for killing last army on a planet
 
 	BASEPRACTICE - Base training server. (Need special robots, see

@@ -45,9 +45,7 @@ struct feature_var feature_vars[] = {
   {"SBHOURS",           &SBhours,                       NULL},
   {"SELF_8FLAGS",       &F_self_8flags,                 NULL},
   {"19FLAGS",           &F_19flags,                     NULL},
-#ifdef RCD
   { "RC_DISTRESS",      &F_rc_distress,                 NULL}, /* xx */
-#endif
   {"CLOAK_MAXWARP",     &F_cloak_maxwarp,               NULL},
   {"SHIP_CAP",          &F_ship_cap,                    NULL},
   {"DEAD_WARP",         &dead_warp,                     NULL},

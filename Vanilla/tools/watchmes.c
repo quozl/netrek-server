@@ -26,11 +26,9 @@ int main(int argc, char **argv)
 
     int filter;			/* 7/29/91 TC */
 
-#ifdef RCD
     int size;
     struct distress dist;
     char buf[MSG_LEN];
-#endif
     struct message msg;
 
     openmem(0);
@@ -41,7 +39,6 @@ int main(int argc, char **argv)
     if (!filter)
 	for (i=0; i<=oldmctl; i++) {
             MCOPY(&messages[i],&msg,sizeof(struct message));
-#ifdef RCD
 	    /* Fix for RCD distresses - 11/18/93 ATH */
 	    if (msg.m_flags == (MTEAM | MDISTR | MVALID)) {
 		buf[0]='\0';
@@ -50,7 +47,6 @@ int main(int argc, char **argv)
 		size = makedistress(&dist,buf,distmacro[dist.distype].macro);
 		strncpy(msg.m_data,buf,size+1);
 	    }
-#endif
 
 	    spew_mess(&msg);
 	}
@@ -63,7 +59,6 @@ int main(int argc, char **argv)
 		logmessage(&(messages[oldmctl]));
 	    else {
                 MCOPY(&messages[oldmctl],&msg,sizeof(struct message));
-#ifdef RCD
 		/* Fix for RCD distresses - 11/18/93 ATH */
 		if (msg.m_flags == (MTEAM | MDISTR | MVALID)) {
 		    buf[0]='\0';
@@ -72,7 +67,6 @@ int main(int argc, char **argv)
 		    size= makedistress(&dist,buf,distmacro[dist.distype].macro);
 		    strncpy(msg.m_data,buf,size+1);
 		}
-#endif
 		spew_mess(&msg);
 		fflush(stdout);
 	    }

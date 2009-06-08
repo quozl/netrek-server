@@ -38,9 +38,6 @@
 /*  	RSA 			- New RSA reserved packets stuff 		*/
 /* #define RSA  		- Defined in the Makefile 			*/
 
-#define RCD                     /* RCD             - Support Reciever variable
-                                                     distresses */
-
                                 /* SHORT_PACKETS   - Reduce Network load */
 				/* This define has no meaning for the server */
 #define SHORT_PACKETS

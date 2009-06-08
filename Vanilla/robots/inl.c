@@ -582,7 +582,6 @@ void checkmess()
 		 "If you want help, send the message 'help' to yourself.");
     }
 #endif
-#ifdef RCD
     if (messages[oldmctl].m_flags == (MTEAM | MDISTR | MVALID)) {
       struct message msg;
       int size;
@@ -599,9 +598,6 @@ void checkmess()
     } else {
       logmessage(&(messages[oldmctl]));
     }
-#else
-    logmessage(&(messages[oldmctl]));
-#endif
   }
 }
 

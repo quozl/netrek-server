@@ -332,13 +332,11 @@ extern int    contestsize;
 extern int      dogcounts;
 #endif
 
-#ifdef RCD
 extern int      num_distress;
 
 /* copied from BRM data.h */
 extern int      num_distress;
 extern struct dmacro_list distmacro[];
-#endif
 
 #ifdef FEATURE_PACKETS
 extern int    F_client_feature_packets;

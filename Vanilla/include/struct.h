@@ -769,8 +769,6 @@ struct rsa_key {
 };
 #endif
 
-#ifdef RCD
-
 /* from BRM struct.h */
 struct distress { /* py-struct "B7B6B7B4B" */
     u_char sender;
@@ -846,8 +844,6 @@ implemented that way yet.
    byte15++: the text to pre or append .. depending on termination above.
              text is null terminated and the last thing in this distress
 */
-
-#endif /* RCD */
 
 struct command_handler {
     char *command;
