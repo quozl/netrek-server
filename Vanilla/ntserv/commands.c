@@ -934,7 +934,6 @@ int bounceSBStats(int from)
 }
 
 
-#ifdef PING
 int bouncePingStats(int from)
 {
     if(me->p_avrt == -1){
@@ -953,7 +952,6 @@ int bouncePingStats(int from)
     }
     return 1;
 }
-#endif
 
 
 #if !defined (DOG) && !defined (PUCK) 		/* Server only */

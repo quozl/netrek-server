@@ -27,9 +27,6 @@ that can change the server.
 	NO_PLANET_PLAGUE - Don't allow planet plaguing. Don't use this with
 		ERIKPLAGUE.
 
-	PING - Allow ping stats support. This may increase the network load a
-		little.
-
 	RSA - Use RSA verification.  RSA is now deprecated.
 
 	SHOW_RSA - Display some messages like failed RSA verification message

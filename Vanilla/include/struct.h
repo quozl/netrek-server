@@ -488,12 +488,10 @@ struct player {
     int p_xblproxy;
     int p_sorbsproxy;
     int p_njablproxy;
-#ifdef PING
     int  p_avrt;                /* average round trip time */
     int  p_stdv;                /* standard deviation in round trip time */
     double  p_pkls_c_s;         /* packet loss (client to server) */
     double  p_pkls_s_c;         /* packet loss (server to client) */
-#endif
     int p_ups;                  /* updates per second */
     int p_fpu;                  /* frames per update (was p_timerdelay) */
     pid_t p_process;            /* process id number */

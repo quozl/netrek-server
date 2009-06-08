@@ -134,18 +134,14 @@ int main(int argc, char **argv)
 	  case 'v':
             fixed_name = name_fix(players[i].p_name);
 	    output("%5d %2s "
-#ifdef PING
 		   "%4d %3d %4.1f %4.1f "
-#endif
 		   "%s:%s@%s %c",
 		   players[i].p_process,
 		   players[i].p_mapchars, 
-#ifdef PING
 		   players[i].p_avrt,
 		   players[i].p_stdv,
 		   players[i].p_pkls_c_s,
 		   players[i].p_pkls_s_c,
-#endif
 		   (fixed_name) ? fixed_name : players[i].p_name,
 		   players[i].p_login,
 		   players[i].p_full_hostname,

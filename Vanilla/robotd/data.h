@@ -149,12 +149,10 @@ extern int		last_udcounter;
 extern int		defend_det_torps;
 extern int		no_tspeed;
 
-#ifdef PING
 extern int              ping;                   /* to ping or not to ping */
 extern long             packets_sent;           /* # all packets sent to server
 */
 extern long             packets_received;       /* # all packets received */
-#endif
 
 extern int		no_cloak;
 extern int		oggv_packet;

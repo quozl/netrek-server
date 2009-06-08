@@ -634,7 +634,6 @@ int bounceSBStats(int from)
 }
 
 
-#ifdef PING
 int bouncePingStats(int from)
 {
     if(me->p_avrt == -1){
@@ -653,7 +652,6 @@ int bouncePingStats(int from)
     }
     return 1;
 }
-#endif
 
 int bounceUDPStats(int from)
 {

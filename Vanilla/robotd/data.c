@@ -146,11 +146,9 @@ int		last_udcounter = 0;
 int		defend_det_torps;
 int		no_tspeed = 0;
 
-#ifdef PING
 int             ping = 0;               /* to ping or not to ping */
 long            packets_sent=0;         /* # all packets sent to server */
 long            packets_received=0;     /* # all packets received */
-#endif
 
 int		no_cloak = 0;
 int		oggv_packet=0;

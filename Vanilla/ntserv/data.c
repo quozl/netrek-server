@@ -195,7 +195,6 @@ int             startTkills, startTlosses, startTarms, startTplanets,
 
 int		startSBkills, startSBlosses, startSBticks;
 
-#ifdef PING
 int     ping=0;                 /* to ping or not to ping, client's decision*/
 LONG    packets_sent=0;         /* # all packets sent to client */
 LONG    packets_received=0;     /* # all packets received from client */
@@ -208,7 +207,6 @@ int     ping_allow_ghostbust=0; /* allow ghostbust detection from
                                    ping_ghostbust (cheating possible)*/
 int     ping_ghostbust_interval=5; /* in ping_freq, when to ghostbust
                                       if allowed */
-#endif
 
 int	ghostbust_timer=30;
 

@@ -62,10 +62,7 @@ int handleMasterComm();
 int handleUdpReply(), handleSequence();
 int handleScan();
 #endif /* ATM */
-
-#ifdef PING
-int	handlePing();	/* ping.c */
-#endif
+int handlePing(); /* ping.c */
 
 struct packet_handler handlers[] = {
     { 0, NULL },	/* record 0 */
@@ -123,10 +120,8 @@ struct packet_handler handlers[] = {
     { 0, NULL },                                            /* 42 */
     { 0, NULL },                                            /* 43 */
     { 0, NULL },                                            /* 44 */
-#ifdef PING
     { 0, NULL },                                            /* 45 */
     { sizeof(struct ping_spacket),       handlePing },      /* SP_PING */
-#endif
     { sizeof(struct mastercomm_spacket), handleMasterComm },/* SP_MASTER_COMM */
 
 };
@@ -184,9 +179,7 @@ int sizes[] = {
     0,                                          /* 39 */
     0,                                          /* 40 */
     0,                                          /* 41 */
-#ifdef PING
     sizeof(struct ping_cpacket),                /* CP_PING_RESPONSE */
-#endif
    0,                   /* 43 */
    0,                   /* 44 */
    0,                   /* 45 */
@@ -721,10 +714,8 @@ int asock;
             }
             if (handlers[*bufptr].handler != NULL) {
                 if ((asock != udpSock) || !drop_flag || *bufptr == SP_SEQUENCE){
-#ifdef PING
 	             if(asock == udpSock)
-	               packets_received ++;
-#endif
+	               packets_received++;
                      (*(handlers[*bufptr].handler))(bufptr);
 		}
                 else{
@@ -1452,14 +1443,10 @@ struct player_spacket *packet;
 #ifdef SCANNERS
         case CP_SCAN:
 #endif
-#ifdef PING
         case CP_PING_RESPONSE:
-#endif
             /* non-critical stuff, use UDP */
 send_udp:
-#ifdef PING
-            packets_sent ++;
-#endif
+            packets_sent++;
             V_UDPDIAG(("Sent %d on UDP port\n", packet->type));
             if (gwrite(udpSock, (char *) packet, size) != size) {
                 UDPDIAG(("gwrite on UDP failed.  Closing UDP connection\n"));
@@ -2640,11 +2627,9 @@ struct sequence_spacket *packet;
                 UDPDIAG(("sequence=%d, newseq=%d, ignoring transmission\n",
                     sequence, newseq));
             }
-#ifdef PING
             /* the remaining packets will be dropped and we shouldn't
                count the SP_SEQUENCE packet either */
-            packets_received --;
-#endif
+            packets_received--;
             drop_flag = 1;
         }
     }

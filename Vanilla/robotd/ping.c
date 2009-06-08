@@ -14,8 +14,6 @@
 #include "data.h"
 #include "packets.h"
 
-#ifdef PING
-
 static int	ping_iloss_sc=0; /* inc % loss 0--100, server to client */
 static int	ping_iloss_cs=0; /* inc % loss 0--100, client to server */
 static int	ping_tloss_sc=0; /* total % loss 0--100, server to client */
@@ -129,5 +127,3 @@ calc_lag()
    ping_av = M;
    ping_sd = (int)sqrt((double)var);
 }
-
-#endif /*PING*/

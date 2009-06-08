@@ -108,9 +108,7 @@
 #define SP_S_YOU        43              /* hostile,armies,whydead,etc .. */
 #define SP_S_YOU_SS     44              /* your ship status */
 #define SP_S_PLAYER     45              /* variable length player packet */
-#ifdef PING
 #define SP_PING         46              /* ping packet */
-#endif
 #define SP_S_TORP       47              /* variable length torp packet */
 #define SP_S_TORP_INFO  48              /* SP_S_TORP with TorpInfo */
 #define SP_S_8_TORP     49              /* optimized SP_S_TORP */
@@ -175,11 +173,7 @@
 #define CP_SEQUENCE	36		/* sequence # packet */
 #define CP_RSA_KEY	37		/* handles binary verification */
 #define CP_PLANET	38		/* cross-check planet info */
-
-#ifdef PING
 #define CP_PING_RESPONSE        42              /* client response */
-#endif
-
 #define CP_S_REQ	43
 #define CP_S_THRS	44
 #define CP_S_MESSAGE	45              /* vari. Message Packet */
@@ -341,7 +335,6 @@ struct planet_spacket { /* SP_PLANET py-struct "!bbbbhxxl" #15 */
     LONG  armies;
 };
 
-#ifdef PING
 struct ping_cpacket { /* CP_PING_RESPONSE py-struct "!bBbxll" #42 */
    char                 type;
    u_char	        number;         /* id */
@@ -364,7 +357,6 @@ struct ping_spacket { /* SP_PING py-struct "!bBHBBBB" #46 */
    u_char		iloss_cs;       /* inc. loss client-server 0-100% */
 
 };      /* 8 bytes */
-#endif
 
 struct pickok_spacket { /* SP_PICKOK py-struct "!bbxx" #16 */
     char type;

@@ -317,12 +317,10 @@ int main(int argc, char **argv)
       strcpy(me->p_ip, "127.0.0.1");
     }
 
-#ifdef PING     /* 0 might just be legit for a local player */
     me->p_avrt = -1;
     me->p_stdv = -1;
     me->p_pkls_c_s = -1;
     me->p_pkls_s_c = -1;
-#endif
 
     me->p_authorised = 0;
 

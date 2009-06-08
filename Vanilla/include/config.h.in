@@ -41,9 +41,6 @@
 #define RCD                     /* RCD             - Support Reciever variable
                                                      distresses */
 
-                                /* PING            - Ping statistics */
-#define PING
-
                                 /* SHORT_PACKETS   - Reduce Network load */
 				/* This define has no meaning for the server */
 #define SHORT_PACKETS

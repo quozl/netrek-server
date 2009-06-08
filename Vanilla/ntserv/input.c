@@ -38,7 +38,7 @@ static void setflag()
 
   if (do_update)
     intrupt();
-  else 	
+  else
     sendflag=1;
 
   if (me->p_updates > delay) {
@@ -47,19 +47,16 @@ static void setflag()
   if (me->p_updates > rdelay) {
     me->p_flags &= ~(PFREFITTING);
   }
-#ifdef PING
-  /* this will ghostbust a player if the number of missing pings from the
+  /* ghostbust a player if the number of missing pings from the
      client exceeds the ghostbust interval */
   if (ping_allow_ghostbust && me->p_status == PALIVE && ping_ghostbust >
       ping_ghostbust_interval) {
     /* ghostbusted */
     me->p_ghostbuster = GHOSTTIME;
     ping_ghostbust = 0;
-    ERROR(2,("%s: ghostbusted by ping loss\n", 
-	     me->p_mapchars));
+    ERROR(2,("%s: ghostbusted by ping loss\n", me->p_mapchars));
     fflush(stderr);
   }
-#endif /*PING*/
 }
 
 static void gamedown(why)
@@ -125,9 +122,7 @@ void input(void)
 	}
 	/* otherwise handle input from client */
 	do_update = 0;
-#ifdef PING                     /* reset this here also */
 	ping_ghostbust = 0;
-#endif
 
 	if (me->p_updates > delay) {
 	    me->p_flags &= ~(PFWAR);

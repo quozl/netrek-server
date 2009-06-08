@@ -86,11 +86,7 @@ int sizes[TOTAL_SPACKETS] = {
     sizeof(struct you_short_spacket),		/* SP_S_YOU */
     sizeof(struct youss_spacket),               /* SP_S_YOU_SS */
     -1, /* variable */                          /* SP_S_PLAYER */
-#ifdef PING
     sizeof(struct ping_spacket),                /* SP_PING */
-#else
-    0,						/* SP_PING */
-#endif
     -1, /* variable */                          /* SP_S_TORP  */
     -1, /* variable */				/* SP_S_TORP_INFO */
     20,                                         /* SP_S_8_TORP */
@@ -1572,10 +1568,8 @@ static int parseQuery(struct message *msg)
 
     if (*cchar == '?' && *(cchar+1) == '\0')
 	return bounceSessionStats(msg->m_from);
-#ifdef PING
     if (*cchar == '!' && *(cchar+1) == '\0')
 	return bouncePingStats(msg->m_from);
-#endif
 #ifdef RSA
     if (*cchar == '#' && *(cchar+1) == '\0')
 	return bounceRSAClientType(msg->m_from);
@@ -2553,16 +2547,7 @@ addSequence(char *outbuf, LONG *seq_no)
 {
     struct sequence_spacket *ssp;
 
-#ifdef nodef
-    /* assume true */
-    if (commMode != COMM_UDP || udpMode == MODE_TCP)
-	return (0);
-#endif
-
-#ifdef PING             /* this needs to be counted */
-    packets_sent ++;
-#endif
-
+    packets_sent++;
     ssp = (struct sequence_spacket *) outbuf;
     ssp->type = SP_SEQUENCE;
     ssp->sequence = htons((u_short) *seq_no);

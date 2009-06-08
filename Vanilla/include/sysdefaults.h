@@ -144,7 +144,6 @@ struct sysdef_keywords {
     "Use specific UDP port range rather than random"	},
   { "SURRSTART",	SYSDEF_INT,	&surrenderStart,
     "Number of planets at which surrender starts"	},
-#ifdef PING
   { "PING_FREQ",	SYSDEF_INT,	&ping_freq,
     "Frequency of ping packets to clients"		},
   { "PING_ILOSS_INTERVAL",SYSDEF_INT,	&ping_iloss_interval,
@@ -153,7 +152,6 @@ struct sysdef_keywords {
     "Ghostbust ships if we lose pings to client"	},
   { "PING_GHOSTBUST_INTERVAL", SYSDEF_INT, &ping_ghostbust_interval,
     "Interval without pings before ghostbust"		},
-#endif /* PING */
   { "GHOSTBUST_TIMER",	SYSDEF_INT,	&ghostbust_timer,
     "Time to ghostbust a slot in seconds" },
   { "TRANSWARP_ENABLE",	SYSDEF_INT,	&twarpMode,

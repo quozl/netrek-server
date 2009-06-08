@@ -72,9 +72,7 @@
 #define SP_RSA_KEY      31              /* handles binary verification */
 #endif
 
-#ifdef PING
 #define SP_PING         46              /* ping packet */
-#endif
 
 
 #define SP_MASTER_COMM	47
@@ -127,9 +125,7 @@
 #define CP_RSA_KEY      37              /* handles binary verification */
 #endif
 
-#ifdef PING
 #define CP_PING_RESPONSE 42             /* client response */
-#endif
 
 #define CP_OGGV         50
 
@@ -631,7 +627,6 @@ struct sequence_cpacket {       /* UDP */
     unsigned short sequence;
 };
 
-#ifdef PING
 struct ping_cpacket {
    char                 type;           /* CP_PING_RESPONSE */
    unsigned char        number;         /* id */
@@ -653,7 +648,6 @@ struct ping_spacket {
    unsigned char        iloss_sc;       /* inc. loss server-client 0-100% */
    unsigned char        iloss_cs;       /* inc. loss client-server 0-100% */
 };
-#endif
 
 #ifdef SHORT_PACKETS
 struct shortreq_cpacket {	/* CP_S_REQ */

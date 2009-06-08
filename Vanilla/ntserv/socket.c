@@ -120,10 +120,7 @@ extern int ignored[];
 static void handleRSAKey();
 #endif
 
-#ifdef PING
 static void handlePingResponse(struct ping_cpacket  *packet);
-#endif
-
 static void clientVersion(struct mesg_spacket *packet);
 static int doRead(int asock);
 static int gwrite(int fd, char *wbuf, size_t size);
@@ -193,11 +190,7 @@ struct packet_handler handlers[] = {
     { 0, NULL },					   /* 39 */
     { 0, NULL },					   /* 40 */
     { 0, NULL },					   /* 41 */
-#ifdef PING	
     { sizeof(struct ping_cpacket), handlePingResponse },   /* CP_PING_RESPONSE*/
-#else
-    { 0, NULL },					   /* 42 */
-#endif
     { sizeof(struct shortreq_cpacket), handleShortReq },   /* CP_S_REQ */
     { sizeof(struct threshold_cpacket), handleThresh },    /* CP_S_THRS */
     { -1, handleSMessageReq},                              /* CP_S_MESSAGE */
@@ -680,16 +673,14 @@ void updateClient(void)
     /* Question: Should i only test udpbuffer, or separate both? */
 #endif
 
-#ifdef PING
     /* NOTE: this must be the last thing we do before flushing
        the socket buffer. */
-    if (ping && (repCount % efticks(5*ping_freq) == 0) && testtime == 0 && 
+    if (ping && (repCount % efticks(5*ping_freq) == 0) && testtime == 0 &&
        /* these checks are here to make sure we don't ping from the
 	  updateClient call in death().  The reason is that savestats()
 	  can take > 100ms, invalidating the next ping lag calc */
        (me->p_status == PALIVE || me->p_status == POBSERV))
         sendClientPing();                /* ping.c */
-#endif
     flushSockBuf();
     repCount++;
 }
@@ -776,18 +767,14 @@ void sendClientPacket(void *void_packet)
 	case SP_STATS:
 /*	case SP_SCAN:*/
 	case SP_STATUS:	/* S_P2 */
-#ifdef PING
         case SP_PING:
-#endif
 	case SP_UDP_REPLY:	/* only reply when COMM_UDP is SWITCH_VERIFY */
 	case SP_GENERIC_32:
 	case SP_FLAGS_ALL:
 	    /* these are non-critical updates; send them via UDP */
 	    V_UDPDIAG(("Sending type %d\n", (int)packet->type));
 	    size=sizes[(int)packet->type];
-#ifdef PING
-            packets_sent ++;
-#endif
+            packets_sent++;
 	    if (udpbufptr-udpbuf+size >= UDPBUFSIZE) {
 		addSequenceFlags(udpbuf);
 		t=udpbufptr-udpbuf;
@@ -949,9 +936,7 @@ int readFromClient(void)
     return (retval != 0);               /* convert to 1/0 */
 }
 
-#ifdef PING
 static int      rsock;
-#endif
 
 /* ripped out of above routine */
 static int doRead(int asock)
@@ -968,9 +953,8 @@ static int doRead(int asock)
     socklen_t moolen;
 #endif
 
-#ifdef PING             /* need the socket in the ping handler routine */
+    /* need the socket in the ping handler routine */
     rsock = asock;
-#endif
 
 #ifdef UDP_PORTSWAP
 
@@ -1101,10 +1085,8 @@ static int doRead(int asock)
 	 * yet.
 	 */
 	packetsReceived[(int)*bufptr]++;
-#ifdef PING
 	if(asock == udpSock)
-	    packets_received ++;
-#endif
+	    packets_received++;
 	if (handlers[(int)*bufptr].handler != NULL) {
 	    if (((FD_ISSET(*bufptr, &inputMask)) &&
 		 (me==NULL || (me->p_status == POBSERV) ||
@@ -1112,9 +1094,8 @@ static int doRead(int asock)
 			  ))) || 
 		*bufptr==CP_RESETSTATS || *bufptr==CP_UPDATES ||
 		*bufptr==CP_OPTIONS || *bufptr==CP_RESERVED ||
-#ifdef PING 			/* ping response always valid */
+		/* ping response always valid */
 		*bufptr==CP_PING_RESPONSE ||
-#endif
 #ifdef RSA            		/* NEW -- fix ghostbust problem */
 		*bufptr== CP_RSA_KEY ||
 #endif
@@ -1129,9 +1110,8 @@ static int doRead(int asock)
 		*bufptr==CP_SOCKET || *bufptr==CP_BYE) {
 		if (me && me->p_flags & PFSELFDEST
 		    && *bufptr != CP_PLANET
-#ifdef PING /* don't let it undo self destruct */
+                    /* don't let it undo self destruct */
 		    && *bufptr != CP_PING_RESPONSE
-#endif
 		    ) {
 		    me->p_flags &= ~PFSELFDEST;
 		    new_warning(85,"Self Destruct has been canceled");
@@ -2146,7 +2126,6 @@ static void handleScan(struct scan_cpacket *packet)
   if (packet) return;
 }
 
-#ifdef PING
 static void handlePingResponse(struct ping_cpacket  *packet)
 {
     /* client requests pings by sending pingme == 1 on TCP socket */
@@ -2177,7 +2156,6 @@ static void handlePingResponse(struct ping_cpacket  *packet)
     }
     pingResponse(packet);        /* ping.c */
 }
-#endif /*PING*/
 
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 /* these are sent by the robots when a parameter changes */
@@ -2816,9 +2794,8 @@ static void fatten(void)
 		udpbufptr += fatp->pkt_size;
 		bytesleft -= fatp->pkt_size;
 
-#ifdef PING     /* counts as a udp packet sent */
-		packets_sent ++;
-#endif
+                /* counts as a udp packet sent */
+		packets_sent++;
 
 		/* move the packet to a higher queue (if there is one) */
 		dequeue(fatp);

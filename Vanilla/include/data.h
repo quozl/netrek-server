@@ -225,7 +225,6 @@ extern int startTkills, startTlosses, startTarms, startTplanets,
 
 extern int startSBkills, startSBlosses, startSBticks;
 
-#ifdef PING
 extern int  ping;               /* to ping or not to ping */
 extern LONG packets_sent;       /* # all packets sent to client */
 extern LONG packets_received;   /* # all packets recved from client */
@@ -239,7 +238,6 @@ extern int  ping_allow_ghostbust; /* allow ghostbust detection
                                      (cheating possible) */
 extern int  ping_ghostbust_interval; /* in ping_freq, when to ghostbust
                                         if allowed */
-#endif
 
 extern int ghostbust_timer;
 

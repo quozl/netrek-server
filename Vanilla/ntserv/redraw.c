@@ -158,9 +158,7 @@ static void check_observs(void)
 #ifdef RSA
         FD_SET (CP_RSA_KEY, &inputMask);
 #endif
-#ifdef PING
         FD_SET (CP_PING_RESPONSE, &inputMask);
-#endif
         FD_SET (CP_S_REQ, &inputMask);
         FD_SET (CP_S_THRS, &inputMask);
         FD_SET (CP_S_MESSAGE, &inputMask);

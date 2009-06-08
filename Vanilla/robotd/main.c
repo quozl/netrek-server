@@ -387,11 +387,7 @@ main(argc, argv)
    me->p_whydead = KQUIT;
    me->p_team = ALLTEAM;
 
-#ifdef PING
-    /* this will always be done once.  If the server doesn't support ping
-       packets it will ignore this request */
-    startPing();
-#endif
+   startPing();
 
    setjmp(env);			/* Reentry point of game */
    /* give the player the motd and find out which team he wants */
