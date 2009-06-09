@@ -276,12 +276,6 @@ VECTOR=0
 # 	Don't show far players in t-mode (0 = no, 1 = yes)
 HIDDEN=1
 #
-#	Check system load every 10 mins.
-LOADCHECK=0
-#
-# 	If load gets above this shut down server (Not sure if this still works)
-MAXLOAD=100.0
-#
 # 	The numbers of the home planets
 PLANETS=00,10,20,30
 #

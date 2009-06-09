@@ -424,16 +424,6 @@ for i in $dirs; do
   fi
 done
 
-AC_MSG_CHECKING(for uptime)
-dirs="/bsd /usr/bsd /etc /bin /usr/bin /usr/etc"
-for i in $dirs; do
-  if test -x $i/uptime; then
-     AC_DEFINE_UNQUOTED(UPTIME,"${i}/uptime")
-     AC_MSG_RESULT(yes)
-     break
-  fi
-done
-
 fi
 
 AC_OUTPUT(system.mk Makefile ntserv/Makefile tools/Makefile

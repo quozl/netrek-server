@@ -83,7 +83,6 @@ must be incremented), base rate is in ticks and not frames */
 #endif
 
 /* file scope prototypes */
-static void check_load(void);
 static int is_tournament_mode(void);
 static int check_scummers(int);
 static void move();
@@ -361,8 +360,6 @@ int main(int argc, char **argv)
 
     alarm_init();
     alarm_setitimer(distortion, fps);
-
-    check_load();
 
     /* signal parent ntserv that daemon is ready */
     if (opt_tell) kill(getppid(), SIGUSR1);
@@ -838,9 +835,6 @@ static void move()
     if (fuse(MINUTEFUSE)) {     /* was SURRENDFUSE 4/15/92 TC */
         udsurrend();
         advertise();
-    }
-    if (fuse(CHECKLOADFUSE)) {
-        check_load(); 
     }
 }
 
@@ -3874,49 +3868,6 @@ static void save_planets(void)
         (void) write(glfd, (char *) status, sizeof(struct status));
         (void) close(glfd);
     }
-}
-
-static void check_load(void)
-{
-    FILE *fp;
-    char buf[100];
-    char *s;
-    float load;
-
-  if (!loadcheck)
-        return;
-
-  if (fork() == 0) {
-    fp=popen(UPTIME_EXECUTABLE, "r");
-    if (fp==NULL) {
-        exit(0);
-    }
-    fgets(buf, 100, fp);
-    s=strrchr(buf, ':');
-    if (s==NULL) {
-        pclose(fp);
-        exit(0);
-    }
-    if (sscanf(s+1, " %f", &load) == 1) {
-        if (load>=maxload && (status->gameup & GU_GAMEOK)) {
-            status->gameup&=~(GU_GAMEOK);
-            pmessage(0, MALL, "GOD->ALL",
-                "The load is %f, this game is going down", load);
-        } else if (load<maxload && !(status->gameup & GU_GAMEOK)) {
-            status->gameup|=GU_GAMEOK;
-            pmessage(0, MALL, "GOD->ALL",
-                "The load is %f, this game is coming up", load);
-        }
-        else {
-            s[strlen(s)-1]='\0';
-            pmessage(0, MALL, "GOD->ALL","Load check%s", s);
-        }
-    } else {
-        pmessage(0, MALL, "GOD->ALL","Load check failed :-(");
-    }
-    pclose(fp);
-    exit(0);
-  }
 }
 
 /* This function checks to see if a team has been genocided --

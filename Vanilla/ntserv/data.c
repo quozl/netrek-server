@@ -155,8 +155,6 @@ int     clueFuse=0;
 int     clueCount=0;
 char	*clueString;
 int	hiddenenemy=1;
-int	loadcheck=0;
-float   maxload=0.7;
 int	vectortorps = 0;
 int	galactic_smooth = 0;
 

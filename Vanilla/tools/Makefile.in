@@ -23,7 +23,7 @@ LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
 OBJS = ../ntserv/libnetrek.a
 
 SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
-	${srcdir}/blotpassword.c ${srcdir}/loadchecker.c ${srcdir}/mess.c \
+	${srcdir}/blotpassword.c ${srcdir}/mess.c \
 	${srcdir}/mergescores.c \
 	${srcdir}/newscores.c ${srcdir}/planets.c ${srcdir}/players.c \
 	${srcdir}/scores.c ${srcdir}/setgalaxy.c \
@@ -37,7 +37,7 @@ SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
 	${srcdir}/setgame.c ${srcdir}/setplanet.c ${srcdir}/setteam.c \
 	${srcdir}/setship.c ${srcdir}/delist.c
 
-EXECS =	ban getpath blotpassword loadchecker mess message newscores planets players \
+EXECS =	ban getpath blotpassword mess message newscores planets players \
 	scores \
         setgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
@@ -72,7 +72,6 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) blog-update-all $(DESTDIR)$(LIBDIR)/blog-update-all
 	$(INSTALLPROG) $(INSTALLOPTS) blog-purge-old $(DESTDIR)$(LIBDIR)/blog-purge-old
 	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(DESTDIR)$(LIBDIR)/tools/blotpassword
-	$(INSTALLPROG) $(INSTALLOPTS) loadchecker $(DESTDIR)$(LIBDIR)/tools/loadchecker
 	$(INSTALLPROG) $(INSTALLOPTS) mess $(DESTDIR)$(LIBDIR)/tools/mess
 	$(INSTALLPROG) $(INSTALLOPTS) message $(DESTDIR)$(LIBDIR)/tools/message
 	$(INSTALLPROG) $(INSTALLOPTS) newscores $(DESTDIR)$(LIBDIR)/tools/newscores
@@ -115,9 +114,6 @@ sortdb: sortdb.o
 
 ntpasswd: ntpasswd.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(OBJS) $(LIBCRYPT) -lgdbm
-
-loadchecker: loadchecker.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} loadchecker.o $(OBJS) $(LIBS)
 
 mess: mess.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mess.o $(OBJS) $(LIBS)

@@ -199,8 +199,6 @@ extern int max_chaos_bases; /* added 7/7/95 JRP */
 extern int RSA_confirm;
 extern int hourratio;
 extern int hiddenenemy;
-extern int loadcheck;
-extern float maxload;
 extern int vectortorps;
 extern int galactic_smooth;
 
