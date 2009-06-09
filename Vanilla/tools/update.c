@@ -5,6 +5,7 @@
  * the daemon or newstartd could start this once a day. (-n option)
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,9 +15,10 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
-#include "defs.h"
 #include <sys/stat.h>
-#include INC_SYS_FCNTL
+#include <fcntl.h>
+#include <string.h>
+#include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "patchlevel.h"
@@ -96,7 +98,7 @@ void reaper()
 #ifdef DEBUG
     printf("UH-OH!!!!! Reaper was called\n");
 #endif
-    while (WAIT3(0, WNOHANG, 0) > 0)
+    while (wait3(0, WNOHANG, 0) > 0)
         ;
 }
 

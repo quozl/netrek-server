@@ -27,7 +27,7 @@ int torpGetVectorSpeed(u_char pdir, int pspeed, u_char  tdir, int tspeed)
   ntx = vsx + vtx;
   nty = vsy + vty;
 
-  newspeed = nint(sqrt(ntx*ntx + nty*nty));
+  newspeed = rint(sqrt(ntx*ntx + nty*nty));
   MATH_ERR_CHECK((int)(ntx*ntx + nty*nty));
 
 #if 0

@@ -14,11 +14,13 @@
 */
 
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <math.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -673,7 +675,7 @@ void cleanup(void)
     queues[QU_PICKUP].high_slot = MAXPLAYER - TESTERS;
 
     if (!practice) {
-	MCOPY(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+	memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
 	for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
 	    if ((j->p_status != PALIVE) || (j == me)) continue;
 	    getship(&(j->p_ship), j->p_ship.s_type);
@@ -1218,7 +1220,7 @@ void do_faceoff(void)
 	
 unsigned char getcourse(int x, int y)
 {
-	return((unsigned char) nint((atan2((double) (x - me->p_x),
+	return((unsigned char) rint((atan2((double) (x - me->p_x),
 	    (double) (me->p_y - y)) / 3.14159 * 128.)));
 }
 

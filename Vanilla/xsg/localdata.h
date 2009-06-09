@@ -2,28 +2,12 @@
  * data.h
  */
 #include "copyright.h"
+#include "config.h"
+#include <string.h>
 
 #ifdef NBR
 #include "data.h"
 #else
-
-#if defined(SYSV) && !defined(hpux)
-#define INC_STRINGS     <string.h>
-#else
-#define INC_STRINGS     <strings.h>
-#endif
-
-#if defined(SYSV)
-#include INC_STRINGS
-#define bcmp(x,y,z)     memcmp(x,y,z)
-#define bcopy(b1,b2,l)  memcpy(b2,b1,l)
-#define bzero(b1,l)     memset(b1,0,l)
-#define INDEX(s,c)      strchr(s,c)
-#define RINDEX(s,c)     strrchr(s,c)
-#else
-#define INDEX(s,c)      index(s,c)
-#define RINDEX(s,c)     rindex(s,c)
-#endif
 
 #define cloud_width 		9
 #define cloud_height 		9

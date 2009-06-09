@@ -2,6 +2,7 @@
  * enter.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -12,6 +13,9 @@
 #include <ctype.h>
 #include <time.h>		/* 7/16/91 TC */
 #include <netinet/in.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -57,7 +61,7 @@ static u_char face_enemy(void)
     }
 
     /* calculate course, modulus 32 (45 degrees) */
-    dir = ((u_char) nint(atan2((double) (x - me->p_x),
+    dir = ((u_char) rint(atan2((double) (x - me->p_x),
                                (double) (me->p_y - y))
                          / 3.14159 * 128.0 / 32.0) * 32);
     return dir;
@@ -93,7 +97,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 #endif
 
     do_message_force_player();
-    STRNCPY(me->p_name, name, NAME_LEN);
+    strncpy(me->p_name, name, NAME_LEN);
     me->p_name[NAME_LEN - 1] = '\0';
     getship(myship, s_type);
     join = (lastteam == -1);

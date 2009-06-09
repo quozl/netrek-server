@@ -7,8 +7,10 @@
    Many modifications done by Kevin O'Connor
 */
 
+#include "config.h"
 #include <stdio.h>
 #include <signal.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

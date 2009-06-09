@@ -2,11 +2,18 @@
  * distress.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 #include "defs.h"
 #ifndef SERVER
 #include "Wlib.h"
@@ -133,7 +140,7 @@ void HandleGenDistr (char *message, u_char from, u_char to,
 
   mtext = &message[ADDRLEN];
 
-  MZERO ((char *) dist, sizeof (dist));
+  memset((char *) dist, 0, sizeof (dist));
 
   dist->sender = from;
   dist->distype = mtext[0] & 0x1f;

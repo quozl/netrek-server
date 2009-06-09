@@ -4,6 +4,7 @@
  * RSA binary file.
  */
 
+#include "config.h"
 #include <stdio.h>
 
 #ifdef RSA
@@ -14,10 +15,9 @@
 #include <sys/stat.h> /* ultrix insists on types.h before stst.h */
 #include <time.h>
 #include <sys/file.h>
-#include "defs.h"
 #include <string.h>
-#include INC_STRINGS
-#include INC_FCNTL
+#include <fcntl.h>
+#include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
@@ -86,12 +86,12 @@ extern int                    link P_((const char *, const char *));
 extern int                    unlink P_((const char *));
 extern void                   free P_((void *));
 extern char *                 strstr P_((const char *, const char *));
-extern char *                 INDEX P_((const char *, int));
+extern char *                 strchr P_((const char *, int));
 extern int                    sscanf P_((const char *, const char *, ...));
 extern int                    printf P_((const char *, ...));
 extern int                    _filbuf P_((FILE *));
 extern int                    isspace P_((int));
-extern void                   MZERO P_((void *, size_t));
+extern void                   memset P_((void *, size_t));
 
 #endif	/* _NEED_SYS_PROTOS */
 
@@ -302,8 +302,8 @@ int exist(k)
     int count;
 
     for (count =0; count<key_count; count++) {
-          if ((!MCMP(k->global,key_list[count].global,KEY_SIZE)) &&
-             (!MCMP(k->public,key_list[count].public,KEY_SIZE))) {
+          if ((!memcmp(k->global,key_list[count].global,KEY_SIZE)) &&
+             (!memcmp(k->public,key_list[count].public,KEY_SIZE))) {
 		return 1;
           }
     }
@@ -470,11 +470,11 @@ kgetkeyname(src, dest)
    char	*src;
    char	*dest;
 {
-   char	*r = INDEX(src,SEP);
+   char	*r = strchr(src,SEP);
    int	l;
 
    if(!r) return 0;
-   l = (int) (INDEX(src,SEP)-src);
+   l = (int) (strchr(src,SEP)-src);
    strncpy(dest, src, l);
    dest[l] = 0;
    return 1;
@@ -496,7 +496,7 @@ kgetstr(src, field, dest)
       return 0;
    
    s += strlen(field);
-   r = INDEX(s, SEP);
+   r = strchr(s, SEP);
    if(!r) return 0;
    l = r - s;
    strncpy(dest, s, l);
@@ -561,7 +561,7 @@ read_exclude_file(n)
    fi = fopen(n, "r");
    l = 0;
    while(fgets(buf, 80, fi)){
-      if((nl = RINDEX(buf, '\n')))
+      if((nl = strchr(buf, '\n')))
 	 *nl = 0;
       s[l++] = strdup(buf);
    }
@@ -651,10 +651,10 @@ sort_motdlist(nk)
    if(!fi) { perror(motdlist); return; }
 
    keys = (struct motd_keylist *) malloc(sizeof(struct motd_keylist)*nk);
-   MZERO(keys, sizeof(struct motd_keylist) * nk);
+   memset(keys, 0, sizeof(struct motd_keylist) * nk);
    for(i=0; i< nk; i++){
       keys[i].arch = (char **) malloc(sizeof(char *) * nk);
-      MZERO(keys[i].arch, sizeof(char *) * nk);
+      memset(keys[i].arch, 0, sizeof(char *) * nk);
    }
 
    while(fgets(buf, 80, fi)){
@@ -730,7 +730,7 @@ class_ok(cl1, cl2)
 
    s1 = cl1;
    while(1){
-      r1 = INDEX(s1, ',');
+      r1 = strchr(s1, ',');
       if(!r1)
          l1 = strlen(s1);
       else
@@ -738,7 +738,7 @@ class_ok(cl1, cl2)
       /* class is s1, length l1 */
       s2 = cl2;
       while(1){
-         r2 = INDEX(s2, ',');
+         r2 = strchr(s2, ',');
          if(!r2)
             l2 = strlen(s2);
          else

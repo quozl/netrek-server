@@ -243,7 +243,7 @@ void orbit(void)
      * A successful orbit!
      * Adjust me and the planet orbited to reflect the new orbit situation.
      * In particular, my direction and x,y position probably change.  */
-    dir = (u_char) nint(atan2((double) (me->p_x - l->pl_x),
+    dir = (u_char) rint(atan2((double) (me->p_x - l->pl_x),
 			      (double) (l->pl_y - me->p_y)) / M_PI * 128.);
     /*
      * See if this is the first touch of this planet: */

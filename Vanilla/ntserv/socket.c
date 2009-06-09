@@ -9,6 +9,7 @@
  * Provides all of the support for sending packets to the client.
  */
 #include "copyright2.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -26,10 +27,18 @@
 #include <string.h>
 #include <ctype.h>
 #include "defs.h"
-#include INC_UNISTD
-#include INC_STRINGS
-#include INC_SYS_SELECT
-#include INC_SYS_FILIO
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+#ifdef HAVE_SYS_FILIO_H
+#include <sys/filio.h>
+#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
@@ -715,7 +724,7 @@ void sendClientPacket(void *void_packet)
 	    }
 	    bufptr=buf;
 	}
-	MCOPY(packet, bufptr, size);
+	memcpy(packet, bufptr, size);
 	bufptr+=size;
 
     } else {
@@ -779,11 +788,11 @@ void sendClientPacket(void *void_packet)
 #endif
 		udpbufptr=udpbuf + addSequence(udpbuf, &sequence);
 	    }
-	    MCOPY(packet, udpbufptr, size);
+	    memcpy(packet, udpbufptr, size);
 	    udpbufptr+=size;
 #ifdef DOUBLE_UDP
 	    if (issc && udpMode == MODE_DOUBLE) {
-		MCOPY(packet, scbufptr, size);
+		memcpy(packet, scbufptr, size);
 		scbufptr+=size;
 		V_UDPDIAG((" adding SC\n"));
 	    }
@@ -805,7 +814,7 @@ void sendClientPacket(void *void_packet)
 		}
 		bufptr=buf /*+ addSequence(buf)*/;
 	    }
-	    MCOPY(packet, bufptr, size);
+	    memcpy(packet, bufptr, size);
 	    bufptr+=size;
 	    break;
 	}
@@ -1097,7 +1106,7 @@ static int doRead(int asock)
 	}
 	bufptr+=size;
 	if (bufptr>buf+BUFSIZ) {
-	    MCOPY(buf+BUFSIZ, buf, BUFSIZ);
+	    memcpy(buf+BUFSIZ, buf, BUFSIZ);
 	    if (count==BUFSIZ*2) {
 		/*readfds = 1<<asock;*/
 		FD_ZERO(&readfds);
@@ -1242,15 +1251,15 @@ static void handleOutfit(struct outfit_cpacket *packet)
 static void handleLoginReq(struct login_cpacket *packet)
 {
     
-    STRNCPY(namePick, packet->name, NAME_LEN);
+    strncpy(namePick, packet->name, NAME_LEN);
     namePick[NAME_LEN-1]=0;
-    STRNCPY(passPick, packet->password, NAME_LEN);
+    strncpy(passPick, packet->password, NAME_LEN);
     passPick[NAME_LEN-1]=0;
     /* Is this a name query or a login? */
     if (packet->query) {
 	passPick[15]=1;
     }
-    STRNCPY(login, packet->login, NAME_LEN);
+    strncpy(login, packet->login, NAME_LEN);
     login[NAME_LEN-1]=0;
 }
 
@@ -1442,7 +1451,7 @@ static void handleSMessageReq(struct mesg_s_cpacket *packet)
     mesPacket.type =  CP_MESSAGE;
     mesPacket.group = packet->group;
     mesPacket.indiv  = packet->indiv;
-    STRNCPY(mesPacket.mesg, packet->mesg, MSG_LEN);
+    strncpy(mesPacket.mesg, packet->mesg, MSG_LEN);
     mesPacket.mesg[MSG_LEN - 1] = '\0';
     handleMessageReq(& mesPacket);
 /* I hope this was it */
@@ -1735,7 +1744,7 @@ static void handleQuitReq(struct quit_cpacket *packet)
 
 static void handleOptionsPacket(struct options_cpacket *packet)
 {
-    MCOPY(packet->keymap, mystats->st_keymap, 96);
+    memcpy(packet->keymap, mystats->st_keymap, 96);
 /*    mystats->st_flags = ntohl(packet->flags);*/
     mystats->st_flags = ntohl(packet->flags) |
 	(mystats->st_flags & ST_CYBORG); /* hacked fix 8/24/91 TC */
@@ -1759,7 +1768,7 @@ int checkVersion(void)
     struct badversion_spacket packet;
 
     if (userVersion != SOCKVERSION) {
-	memset(&packet, 0, sizeof(struct badversion_spacket));
+	memset(&packet, 0, sizeof(struct badversion_spacket)); /* bzero LEGACY POSIX.1-2001 */
 	packet.type = SP_BADVERSION;
 	packet.why = BADVERSION_SOCKET;
 	sendClientPacket((CVOID) &packet);
@@ -1814,7 +1823,7 @@ static int gwrite(int fd, char *wbuf, size_t size)
 		 * Yet, it happens.  I guess I just wait for 1/10 sec, and
 		 *  continue?
 		 */
-		USLEEP(100000);
+		usleep(100000);
 		errno = (-1);		/* paranoia */
 		continue;
 	    }
@@ -1973,7 +1982,7 @@ static void handleReserved(struct reserved_cpacket *packet)
     char serverName[64];
 
     if (testtime==1) return;
-    if (MCMP(packet->data, testdata, RESERVED_SIZE) != 0) {
+    if (memcmp(packet->data, testdata, RESERVED_SIZE) != 0) { /* bcmp LEGACY POSIX.1-2001 */
         testtime=1;
         return;
     }
@@ -1985,20 +1994,20 @@ static void handleReserved(struct reserved_cpacket *packet)
 	    /* This is the right major version */
 	    RSA_Client = 1;
 	    makeRSAPacket(&rsp);
-	    MCOPY(rsp.data, testdata, KEY_SIZE);
+	    memcpy(rsp.data, testdata, KEY_SIZE);
 	    sendClientPacket (&rsp);
 	    return;
 	}
 	testtime=1;
 	return;
     }
-    MCOPY(testdata, mysp.data, RESERVED_SIZE);
+    memcpy(testdata, mysp.data, RESERVED_SIZE); /* bcopy LEGACY POSIX.1-2001 */
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
 	ERROR(1,( "%s: gethostname() failed with %s", whoami(), 
 		  strerror(errno)));
     encryptReservedPacket(&mysp, &mycp, serverName, me->p_no);
-    if (MCMP(packet->resp, mycp.resp, RESERVED_SIZE) != 0) {
+    if (memcmp(packet->resp, mycp.resp, RESERVED_SIZE) != 0) {
         ERROR(3, ("%s: user verified incorrectly.\n", whoami()));
         testtime=1;
         return;
@@ -2017,7 +2026,7 @@ static void handleRSAKey(struct rsa_key_cpacket *packet)
 
     if (testtime==1) return;
     if (RSA_Client != 1) return;
-    MCOPY(testdata, mysp.data, KEY_SIZE);
+    memcpy(testdata, mysp.data, KEY_SIZE);
 
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
@@ -2042,17 +2051,17 @@ static void handleReserved(struct reserved_cpacket *packet)
     char serverName[64];
 
     if (testtime==1) return;
-    if (MCMP(packet->data, testdata, 16) != 0) {
+    if (memcmp(packet->data, testdata, 16) != 0) {
 	testtime=1;
 	return;
     }
-    MCOPY(testdata, mysp.data, 16);
+    memcpy(testdata, mysp.data, 16);
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
 	ERROR(1,( "%s: gethostname() failed, %s\n", whoami(), 
 		  strerror(errno)));
     encryptReservedPacket(&mysp, &mycp, serverName, me->p_no);
-    if (MCMP(packet->resp, mycp.resp, 16) != 0) {
+    if (memcmp(packet->resp, mycp.resp, 16) != 0) {
         ERROR(3,("%s: user verified incorrectly.\n", whoami()));
 	testtime=1;
 	return;
@@ -2068,7 +2077,7 @@ static void handleScan(struct scan_cpacket *packet)
   struct scan_spacket response;
   struct player *pp;
 
-  MZERO(&response, sizeof(struct scan_spacket));
+  memset(&response, 0, sizeof(struct scan_spacket));
   response.type = SP_SCAN;
   response.pnum = packet->pnum;
   if (!weaponsallowed[WP_SCANNER]) {
@@ -2444,6 +2453,7 @@ static int connUdpConn(void)
         UDPDIAG(("portswap mode -- putting of connect() until later\n"));
     }
     else
+#endif /* UDP_PORTSWAP */
     if (connect(udpSock, &addr, sizeof(addr)) < 0)
 #endif /* UDP_FIX */
     {
@@ -2744,7 +2754,7 @@ static void fatten(void)
 #endif
 	    if (fatp->pkt_size < bytesleft) {
 		/* got one! */
-		MCOPY(fatp->packet, udpbufptr, fatp->pkt_size);
+		memcpy(fatp->packet, udpbufptr, fatp->pkt_size);
 		udpbufptr += fatp->pkt_size;
 		bytesleft -= fatp->pkt_size;
 

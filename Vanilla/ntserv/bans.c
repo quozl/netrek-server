@@ -8,6 +8,9 @@
 
 #include "copyright.h"
 #include "config.h"
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -138,15 +141,15 @@ int bans_check_permanent(char *login, char *host)
     /* Split line up */
     if((*line_buf=='#')||(*line_buf=='\n'))
       continue;
-    if ((position = (char *) RINDEX(line_buf, '@')) == 0) {
+    if ((position = (char *) strrchr(line_buf, '@')) == 0) {
       ERROR(1,( "Bad line in banned file\n"));
       fflush(stderr);
       continue;
     }
     num1 = position - line_buf;
-    STRNCPY(log_buf, line_buf, num1); /* copy login name into log_buf */
+    strncpy(log_buf, line_buf, num1); /* copy login name into log_buf */
     log_buf[num1] = '\0';
-    STRNCPY(host_buf, position + 1, 64); /* copy host name into host_buf */
+    strncpy(host_buf, position + 1, 64); /* copy host name into host_buf */
     /* Cut off any extra spaces on the host buffer */
     position = host_buf;
     while (!isspace(*position))

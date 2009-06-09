@@ -8,10 +8,15 @@
  * Code to establish connection, maintain connection, and to send
  * packets remains in socket.c.
  */
-
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include <netinet/in.h>
 #include <signal.h>
 #include "defs.h"
@@ -200,11 +205,31 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
     }
   }
 
-  /* avoid resend if input data unchanged */
-  if (pl->p_stats.st_rank == login->rank &&
-      strcmp(pl->p_name, login->name) == 0 &&
-      strcmp(pl->p_monitor, login->monitor) == 0 &&
-      strcmp(pl->p_login, login->login) == 0) {
+    if ( strcmp(pl->p_name, login->name)!=0 ||
+	 pl->p_stats.st_rank != login->rank ||
+	 strcmp(pl->p_monitor, login->monitor)!=0 ||
+	 strcmp(pl->p_login, login->login)!=0) {
+	STRNCPY(login->name,pl->p_name,NAME_LEN);
+	STRNCPY(login->monitor,pl->p_monitor,NAME_LEN);
+	STRNCPY(login->login,pl->p_login,NAME_LEN);
+	login->name[NAME_LEN-1]=0;
+	login->monitor[NAME_LEN-1]=0;
+	login->login[NAME_LEN-1]=0;
+	login->type=SP_PL_LOGIN;
+	login->pnum=pl->p_no;
+	login->rank=pl->p_stats.st_rank;
+	if (pl->p_stats.st_rank > (RANK_ADMIRAL) && !F_sp_rank) {
+	    struct plyr_login_spacket limited;
+	    memcpy(&limited, login, sizeof(struct plyr_login_spacket));
+	    limited.rank=RANK_ADMIRAL;
+	    sendClientPacket(&limited);
+	} else {
+	    sendClientPacket(login);
+	}
+	/* on every change to player list, check saved ignore status */
+	if (me != pl && pl->p_status == PFREE) ip_ignore_login(me, pl);
+	return TRUE;
+    }
     return FALSE;
   }
 
@@ -1006,7 +1031,7 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
     }
     else {
 	msg->type=SP_MESSAGE;
-	STRNCPY(msg->mesg, cur->m_data, MSG_LEN);
+	strncpy(msg->mesg, cur->m_data, MSG_LEN);
 	msg->mesg[MSG_LEN-1]='\0';
 	msg->m_flags=cur->m_flags;
 	msg->m_recpt=cur->m_recpt;
@@ -2629,7 +2654,7 @@ sendClientLogin(struct stats *stats)
     } else {
 	logPacket.accept=1;
 	logPacket.flags=htonl(stats->st_flags);
-	MCOPY(stats->st_keymap, logPacket.keymap, 96);
+	memcpy(stats->st_keymap, logPacket.keymap, 96);
     }
     sendClientPacket((CVOID) &logPacket);
 }
@@ -2648,7 +2673,7 @@ sendMotdLine(char *line)
     if ((len = strlen(line)) < (MSG_LEN - 1)) { /* no need to wrap around */
 	memset(&motdPacket, 0, sizeof(struct motd_spacket));
 	motdPacket.type = SP_MOTD;
-	STRNCPY(motdPacket.line, line, MSG_LEN);
+	strncpy(motdPacket.line, line, MSG_LEN);
 	motdPacket.line[MSG_LEN-1]='\0';
 	sendClientPacket((CVOID) &motdPacket);
     }
@@ -2662,7 +2687,7 @@ sendMotdLine(char *line)
 	    for (j=0;j<MSG_LEN-1;j++) *ptr1++ = *ptr2++;
 	    memset(&motdPacket, 0, sizeof(struct motd_spacket));
 	    motdPacket.type = SP_MOTD;
-	    STRNCPY(motdPacket.line, dmy, MSG_LEN);
+	    strncpy(motdPacket.line, dmy, MSG_LEN);
 	    motdPacket.line[MSG_LEN-1]='\0';
 	    sendClientPacket((CVOID) &motdPacket);
 	}

@@ -6,6 +6,7 @@
 */
 
 
+#include "config.h"
 #include <stdio.h>
 #ifdef RSA
 #include <stdlib.h>
@@ -15,8 +16,7 @@
 #include <sys/file.h>
 #include "defs.h"
 #include <string.h>
-#include INC_STRINGS
-#include INC_FCNTL
+#include <fcntl.h>
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
@@ -471,8 +471,8 @@ void exist(int num)
     int count;
 
     for (count =0; count<key_count; count++) {
-          if ((!MCMP(key_list[num].global,key_list[count].global,KEY_SIZE)) &&
-             (!MCMP(key_list[num].public,key_list[count].public,KEY_SIZE))) {
+          if ((!memcmp(key_list[num].global,key_list[count].global,KEY_SIZE)) &&
+             (!memcmp(key_list[num].public,key_list[count].public,KEY_SIZE))) {
                 printf("That key is already in the database with type (%s | %s)\n"
                         ,key_list[count].client_type, key_list[count].architecture);
                 exit(0);
@@ -572,12 +572,12 @@ void reorder(int argc, char *argv[])
     }
 
 
-    MCOPY(temp_list,
+    memcpy(temp_list,
 	  key_list,
 	  key_count*(sizeof(struct rsa_key)));
 
     for (count=2; count<=argc; count++) {
-	MCOPY(&key_list[count-2],
+	memcpy(&key_list[count-2],
 		&temp_list[atoi(argv[count])],
 		(size_t)sizeof(struct rsa_key));
     }

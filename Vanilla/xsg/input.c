@@ -4,6 +4,7 @@
  * Modified to work as client in socket based protocol
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,10 +12,11 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <string.h>
 #include "Wlib.h"
 #include "defs.h"
 #include <time.h>
-#include INC_SYS_TIME
 #include "xsg_defs.h"
 #include "struct.h"
 #include "localdata.h"
@@ -32,7 +34,7 @@ static int intrupt_flag = 1;
 void
 intrupt_setflag()
 {
-   HANDLE_SIG(SIGALRM,intrupt_setflag);
+   signal(SIGALRM,intrupt_setflag);
    intrupt_flag = 1;
 }
 

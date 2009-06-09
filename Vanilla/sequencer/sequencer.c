@@ -1,6 +1,8 @@
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -19,7 +21,7 @@ void obliterate(int wflag, char kreason)
   struct player *j;
 
   /* clear torps and plasmas out */
-  MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
+  memset(torps, 0, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
   for (j = firstPlayer; j<=lastPlayer; j++) {
     if (j->p_status == PFREE)
       continue;

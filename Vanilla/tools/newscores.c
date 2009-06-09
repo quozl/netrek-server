@@ -6,11 +6,13 @@
  *  This program reads stdin for its data.
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
 #include "defs.h"
-#include INC_FCNTL
 #include "struct.h"
 #include "data.h"
 

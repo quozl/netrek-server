@@ -88,8 +88,8 @@ reaper(int sig)
     int stat=0;
     static int pid;
 
-    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
-    HANDLE_SIG(SIGCHLD,reaper);
+    while ((pid = wait3(&stat, WNOHANG, 0)) > 0) ;
+    signal(SIGCHLD,reaper);
 }
 
 #ifdef NEWBIESERVER
@@ -907,7 +907,7 @@ static void obliterate(int wflag, char kreason)
     struct player *j;
 
     /* clear torps and plasmas out */
-    MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
+    memset(torps, 0, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
     for (j = firstPlayer; j<=lastPlayer; j++) {
         if (j->p_status == PFREE)
             continue;

@@ -11,9 +11,11 @@
    setgalaxy Z              close up shop for maintenance
 */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -109,7 +111,7 @@ int main(int argc, char **argv)
     }
 
     if (*argv[1] == 't' || *argv[1] == 'r') { /* tourney reset resources, owners */
-	MCOPY(pl_virgin(), planets, pl_virgin_size());
+	memcpy(pl_virgin(), planets, pl_virgin_size());
 	for (i = 0; i < MAXPLANETS; i++) {
 	    planets[i].pl_armies = top_armies;
 	}

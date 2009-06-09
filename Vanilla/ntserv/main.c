@@ -2,6 +2,7 @@
  * main.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,8 +13,15 @@
 #include <arpa/inet.h>
 #include <signal.h>
 #include "defs.h"
-#include INC_UNISTD
-#include INC_SYS_WAIT
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
@@ -69,7 +77,7 @@ int main(int argc, char **argv)
 
     name = *argv++;
     argc--;
-    if ((ptr = RINDEX(name,'/')) != NULL)
+    if ((ptr = strrchr(name,'/')) != NULL)
 	name = ptr + 1;
     while (*argv) {
 	if (**argv == '-')
@@ -177,9 +185,9 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    SIGNAL(SIGALRM, SIG_IGN);
-    SIGNAL(SIGTERM, forceShutdown);
-    SIGNAL(SIGPIPE, SIG_IGN);
+    signal(SIGALRM, SIG_IGN);
+    signal(SIGTERM, forceShutdown);
+    signal(SIGPIPE, SIG_IGN);
 
     sendMotd();
 
@@ -208,8 +216,8 @@ int main(int argc, char **argv)
     myship = &me->p_ship;
     mystats = &me->p_stats;
     lastm = mctl->mc_current;
-    SIGNAL(SIGINT, SIG_IGN);
-    (void) SIGNAL(SIGCHLD, reaper);
+    signal(SIGINT, SIG_IGN);
+    (void) signal(SIGCHLD, reaper);
 
     /* erase prior slot login identity */
     me->p_login[0] = '\0';
@@ -272,7 +280,7 @@ int main(int argc, char **argv)
       me->p_weapons[i].sw_number = 0;
 #endif
 
-    STRNCPY(me->p_login, login, NAME_LEN);
+    strncpy(me->p_login, login, NAME_LEN);
     me->p_login[NAME_LEN - 1] = '\0';
 
     /* set initial ignore status */
@@ -284,20 +292,20 @@ int main(int argc, char **argv)
     /* 4/13/92 TC */
     ip_waitpid();
     if (strlen(me->p_full_hostname) == 0) {
-      STRNCPY(me->p_full_hostname, host, sizeof(me->p_full_hostname));
+      strncpy(me->p_full_hostname, host, sizeof(me->p_full_hostname));
       me->p_full_hostname[sizeof(me->p_full_hostname) - 1] = '\0';
     }
 
 #ifdef REVERSED_HOSTNAMES
     if (strlen(me->p_full_hostname) >= NAME_LEN) {
-      STRNCPY(me->p_monitor, me->p_full_hostname + (strlen(me->p_full_hostname) - NAME_LEN + 1), NAME_LEN);
+      strncpy(me->p_monitor, me->p_full_hostname + (strlen(me->p_full_hostname) - NAME_LEN + 1), NAME_LEN);
       /* The # denotes truncation */
       me->p_monitor[0] = '#';
     }
     else
 #endif
     {
-      STRNCPY(me->p_monitor, me->p_full_hostname, NAME_LEN);
+      strncpy(me->p_monitor, me->p_full_hostname, NAME_LEN);
       me->p_monitor[NAME_LEN - 1] = '\0';
     }
 
@@ -386,7 +394,7 @@ int main(int argc, char **argv)
    
 #ifndef DEBUG
         /* ignore all signals */
-        for (i = 1; i < NSIG; i++) SIGNAL(i, SIG_IGN);
+        for (i = 1; i < NSIG; i++) signal(i, SIG_IGN);
 #endif   
 
         /*
@@ -395,12 +403,12 @@ int main(int argc, char **argv)
         **  nothing.  The slot is marked free, but really isn't.
         **  Someone else joins the slot, and a copilot is formed.
         */
-        SIGNAL(SIGTERM, forceShutdown);
+        signal(SIGTERM, forceShutdown);
         /*
         **  Since illegal instruction is so rare this is an useful one
         **  to use to make core files for debugging
         */
-        SIGNAL(SIGILL, SIG_DFL);
+        signal(SIGILL, SIG_DFL);
 
 	/* handle a sub out */
 	if (me->p_sub_out && me->p_sub_out_for != -1) {
@@ -732,16 +740,16 @@ int CheckBypass(char *login, char *host, char *file)
     /* Split line up */
     if((*line_buf=='#')||(*line_buf=='\n'))
       continue;
-    if ((position = (char *) RINDEX(line_buf, '@')) == 0) {
+    if ((position = (char *) strrchr(line_buf, '@')) == 0) {
       ERROR(1,( "Bad line in bypass file\n"));
       fflush(stderr);
       continue;
     }
 
     num1 = position - line_buf;
-    STRNCPY(log_buf, line_buf, num1); /* copy login name into log_buf */
+    strncpy(log_buf, line_buf, num1); /* copy login name into log_buf */
     log_buf[num1] = '\0';
-    STRNCPY(host_buf, position + 1, 64); /* copy host name into host_buf */
+    strncpy(host_buf, position + 1, 64); /* copy host name into host_buf */
     /* Cut off any extra spaces on the host buffer */
     position = host_buf;
     while (!isspace((int) (*position)))
@@ -796,10 +804,10 @@ static void reaper(int sig)
     WAIT_TYPE stat=0;
     static int pid;
 
-    MZERO( &stat, sizeof(WAIT_TYPE) );
+    memset( &stat, 0, sizeof(WAIT_TYPE) );
 
-    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
-    HANDLE_SIG(SIGCHLD,reaper);
+    while ((pid = wait3(&stat, WNOHANG, 0)) > 0) ;
+    signal(SIGCHLD,reaper);
 
 /* added the below code to catch the reason for a child dying - NBT 9/28/92 */
 	if (!WIFEXITED(stat)) 

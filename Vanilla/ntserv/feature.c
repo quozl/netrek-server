@@ -1,9 +1,12 @@
 #include "copyright2.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "defs.h"
-#include INC_STRINGS
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
@@ -101,7 +104,7 @@ void readFeatures(void)
    while(fgets(buf, 512, f)){
       if(buf[0] == '#' || buf[0] == '\n') continue;
       /* old format. Ignore */
-      if(INDEX(buf, ':')) continue;
+      if(strchr(buf, ':')) continue;
       num_features++;
    }
    fclose(f);
@@ -123,7 +126,7 @@ void readFeatures(void)
       /* comment */
       if(buf[0] == '#' || buf[0] == '\n') continue;
       /* old format. Ignore */
-      if(INDEX(buf, ':')) continue;
+      if(strchr(buf, ':')) continue;
 
       *value_string = 0;
       a1 = 0;

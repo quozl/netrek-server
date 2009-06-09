@@ -162,7 +162,7 @@ struct obtype *target;
 	mpp = &players[target->o_num];
 	sprintf(buf, "Modifying player %s (%s)", mpp->p_name, mpp->p_mapchars);
 	warning(buf);
-	MCOPY(mpp, &pl, sizeof(struct player));
+	memcpy(mpp, &pl, sizeof(struct player));
 
 	p_team = 0;
 	switch (mpp->p_team) {
@@ -186,7 +186,7 @@ struct obtype *target;
 	mplp = &planets[target->o_num];
 	sprintf(buf, "Modifying planet %s", mplp->pl_name);
 	warning(buf);
-	MCOPY(mplp, &pln, sizeof(struct planet));
+	memcpy(mplp, &pln, sizeof(struct planet));
 
 	pl_team = 0;
 	switch (mplp->pl_owner) {

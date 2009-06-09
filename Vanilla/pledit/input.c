@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <curses.h>
+#include <string.h>
 #include "pledit.h"
 #include "defs.h"
 #include "struct.h"
@@ -346,7 +347,7 @@ int ich;
 
     alrm = (kbd_type == 1) ? 2 : 1;		/* ick! */
     alarm_hit = FALSE;
-    SIGNAL(SIGALRM, alarm_handler);
+    signal(SIGALRM, alarm_handler);
     alarm(alrm);
 
     matchstr[0] = (char) ich;
@@ -372,12 +373,12 @@ int ich;
 	    /* we have a single prefix match, but is it a complete match? */
 	    if (!strcmp(keytab[kbd_type].keys[last_match], matchstr)) {
 		alarm(0);
-		SIGNAL(SIGALRM, SIG_DFL);
+		signal(SIGALRM, SIG_DFL);
 		return (last_match);		/* yes!! */
 	    }
 	}
     }
-    SIGNAL(SIGALRM, SIG_DFL);
+    signal(SIGALRM, SIG_DFL);
 
     /* okay, we've got the whole thing, so take the first EXACT match */
     for (i = 0; i < KT_SIZE; i++) {
@@ -457,7 +458,7 @@ int get_line(WINDOW *w, int row, int col, int width, char *buf)
     mode = NOTHING;
     changed = 0;
     posn = 0;
-    STRNCPY(blanks, BLANKS, width);
+    strncpy(blanks, BLANKS, width);
     blanks[width] = '\0';
 
     while (1) {

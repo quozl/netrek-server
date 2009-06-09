@@ -126,7 +126,7 @@ int pl_virgin_size()
 void pl_reset(void)
 {
   int i, j, k, which, sanity;
-  MCOPY(pl_virgin(), planets, pl_virgin_size());
+  memcpy(pl_virgin(), planets, pl_virgin_size());
   for (i = 0; i < MAXPLANETS; i++) {
     planets[i].pl_armies = top_armies;
   }

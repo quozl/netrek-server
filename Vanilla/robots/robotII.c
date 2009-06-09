@@ -1,12 +1,14 @@
 /* robotII.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
 #include <signal.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

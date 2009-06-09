@@ -6,6 +6,7 @@
  * Mike Polek   11/92
  */
 #include "copyright2.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,9 +20,9 @@
 #include <netdb.h>
 #include <sys/file.h>
 #include <signal.h>
+#include <string.h>
+#include <sys/fcntl.h>
 #include "defs.h"
-#include INC_STRINGS
-#include INC_SYS_FCNTL
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
@@ -63,7 +64,7 @@ int decryptRSAPacket (void *s,
     int done, found;
     time_t curtime;
 
-/*    SIGNAL(SIGALRM, SIG_IGN);*/
+/*    signal(SIGALRM, SIG_IGN);*/
 
     addrlen = sizeof(saddr);
     if (getsockname(sock, (struct sockaddr *) &saddr, &addrlen) < 0) {
@@ -74,9 +75,9 @@ int decryptRSAPacket (void *s,
     /* replace the first few bytes of the message */
     /* will be the low order bytes of the number */
     data = spacket->data;
-    MCOPY (&saddr.sin_addr.s_addr, data, sizeof(saddr.sin_addr.s_addr));
+    memcpy (&saddr.sin_addr.s_addr, data, sizeof(saddr.sin_addr.s_addr));
     data += sizeof(saddr.sin_addr.s_addr);
-    MCOPY (&saddr.sin_port, data, sizeof(saddr.sin_port));
+    memcpy (&saddr.sin_port, data, sizeof(saddr.sin_port));
 
     fd = open(RSA_Key_File, O_RDONLY);
     if (fd < 0)
@@ -90,14 +91,14 @@ int decryptRSAPacket (void *s,
     {
 	if (read(fd, &key, sizeof(struct rsa_key)) != sizeof(struct rsa_key))
 	    done = 1;
-	if (! (MCMP(key.global, cpacket->global, KEY_SIZE) ||
-	       MCMP(key.public, cpacket->public, KEY_SIZE)))
+	if (! (memcmp(key.global, cpacket->global, KEY_SIZE) ||
+	       memcmp(key.public, cpacket->public, KEY_SIZE)))
 	    done = found = 1;
     } while (! done);
     
     close(fd);
 
-/*    SIGNAL(SIGALRM, SIG_IGN);*/
+/*    signal(SIGALRM, SIG_IGN);*/
 
     /* If he wasn't in the file, kick him out */
 
@@ -108,7 +109,7 @@ int decryptRSAPacket (void *s,
     rsa_encode(temp, cpacket->resp, key.public, key.global, KEY_SIZE);
 
     /* If we don't get the right answer, kick him out */
-    if (MCMP(temp, spacket->data, KEY_SIZE))
+    if (memcmp(temp, spacket->data, KEY_SIZE))
 	return 1;
     logfile=fopen(LogFileName, "a");
     if (!logfile) return 0;

@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -11,6 +12,7 @@
 #include <pwd.h>
 #include <ctype.h>
 #include <time.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -39,6 +41,7 @@ int main(int argc, char **argv)
     if (!filter)
 	for (i=0; i<=oldmctl; i++) {
             MCOPY(&messages[i],&msg,sizeof(struct message));
+#ifdef RCD
 	    /* Fix for RCD distresses - 11/18/93 ATH */
 	    if (msg.m_flags == (MTEAM | MDISTR | MVALID)) {
 		buf[0]='\0';
@@ -59,6 +62,7 @@ int main(int argc, char **argv)
 		logmessage(&(messages[oldmctl]));
 	    else {
                 MCOPY(&messages[oldmctl],&msg,sizeof(struct message));
+#ifdef RCD
 		/* Fix for RCD distresses - 11/18/93 ATH */
 		if (msg.m_flags == (MTEAM | MDISTR | MVALID)) {
 		    buf[0]='\0';

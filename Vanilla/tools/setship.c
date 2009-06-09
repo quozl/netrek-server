@@ -1,8 +1,10 @@
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

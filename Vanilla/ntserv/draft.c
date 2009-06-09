@@ -537,7 +537,7 @@ void inl_draft_update()
     dy = j->p_y - j->p_inl_y;
     if ((abs(dx) + abs(dy)) > 750) {
       p_x_y_go(j, j->p_x - (dx / 10), j->p_y - (dy / 10));
-      j->p_desdir = j->p_dir = (u_char) nint(((int)j->p_dir + 24) % 256);
+      j->p_desdir = j->p_dir = (u_char) rint(((int)j->p_dir + 24) % 256);
     } else {
       p_x_y_go(j, j->p_inl_x, j->p_inl_y);
       inl_draft_arrival(j);

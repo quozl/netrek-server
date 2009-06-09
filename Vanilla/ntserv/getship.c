@@ -2,10 +2,14 @@
  * getship.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

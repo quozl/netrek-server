@@ -16,11 +16,17 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <pwd.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <ctype.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include "defs.h"
-#include INC_SYS_FCNTL
+#ifdef HAVE_SYS_FCNTL_H
+#include <sys/fcntl.h>
+#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
@@ -74,7 +80,7 @@ static void handleLogin(void)
     if (is_guest(namePick)) {
 
 	hourratio=5;
-	MZERO(&player.stats, sizeof(struct stats));
+	memset(&player.stats, 0, sizeof(struct stats));
 #ifdef LTD_STATS
         /* reset both the player entry and stat entry */
         ltd_reset(me);
@@ -99,7 +105,7 @@ static void handleLogin(void)
 	flushSockBuf();
 	strcpy(me->p_name, namePick);
 	me->p_pos= -1;
-	MCOPY(&player.stats, &(me->p_stats), sizeof(struct stats));
+	memcpy(&player.stats, &(me->p_stats), sizeof(struct stats));
 	return;
     }
 
@@ -153,7 +159,7 @@ static void handleLogin(void)
     if (position == -1) {
 	strcpy(player.name, namePick);
 	strcpy(player.password, crypt_player(passPick, namePick));
-	MZERO(&player.stats, sizeof(struct stats));
+	memset(&player.stats, 0, sizeof(struct stats));
 #ifdef LTD_STATS
         ltd_reset_struct(player.stats.ltd);
 #else
@@ -167,7 +173,7 @@ static void handleLogin(void)
 	  sendClientLogin(NULL);
 	} else {
 	  me->p_pos = entries;
-	  MCOPY(&player.stats, &(me->p_stats), sizeof(struct stats));
+	  memcpy(&player.stats, &(me->p_stats), sizeof(struct stats));
 	  strcpy(me->p_name, namePick);
 	  sendClientLogin(&player.stats);
 	}
@@ -188,7 +194,7 @@ static void handleLogin(void)
     sendClientLogin(&player.stats);
     strcpy(me->p_name, namePick);
     me->p_pos=position;
-    MCOPY(&player.stats, &(me->p_stats), sizeof(struct stats));
+    memcpy(&player.stats, &(me->p_stats), sizeof(struct stats));
     if (!streq(player.password, newpass)) {
 	/* update db if we were misusing crypt() */
 	strcpy(player.password, newpass);

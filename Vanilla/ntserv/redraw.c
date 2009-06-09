@@ -2,14 +2,20 @@
  * redraw.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
 #include <math.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -38,7 +44,7 @@ void intrupt(void)
 #endif
         testtime = RSAREPLYTIMER * 10;
         makeReservedPacket(&sp);
-        MCOPY(sp.data, testdata, RESERVED_SIZE);
+        memcpy(sp.data, testdata, RESERVED_SIZE);
         sendClientPacket(&sp);
     } else if (testtime != 0) {
         testtime--;
@@ -646,7 +652,7 @@ static void auto_features(void)
 
 static u_char newcourse(int x, int y)
 {
-	return((u_char) nint(atan2((double) (x - me->p_x),
+	return((u_char) rint(atan2((double) (x - me->p_x),
 	    (double) (me->p_y - y)) / 3.14159 * 128.));
 }
 

@@ -5,9 +5,11 @@
  *
  */
 #include "copyright2.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <sys/types.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -41,11 +43,11 @@ int freeslot(struct player *who)
 #ifdef LTD_STATS
     ltd_reset(who);
 #else
-    MZERO(&who->p_stats, sizeof(struct stats));  
+    memset(&who->p_stats, 0, sizeof(struct stats));  
     who->p_stats.st_tticks=1;
 #endif
     queues[who->w_queue].free_slots++;
-    MZERO(who->voting, sizeof(time_t) * PV_TOTAL);
+    memset(who->voting, 0, sizeof(time_t) * PV_TOTAL);
     who->p_process     = 0;
     
     return retvalue;
@@ -80,7 +82,7 @@ static int pickslot_action(int w_queue, int i)
     players[i].p_flags       = 0;
     players[i].w_queue       = w_queue;
     players[i].p_pos         = -1;
-    MZERO(&players[i].p_stats, sizeof(struct stats));
+    memset(&players[i].p_stats, 0, sizeof(struct stats));
 #ifdef LTD_STATS
     ltd_reset(&players[i]);
 #else
@@ -92,7 +94,7 @@ static int pickslot_action(int w_queue, int i)
     players[i].p_stats.st_keymap[95]=0;
     players[i].p_stats.st_flags=ST_INITIAL;
     players[i].p_process     = 0;
-    MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
+    memset(players[i].voting, 0, sizeof(time_t) * PV_TOTAL);
     if (queues[w_queue].q_flags & QU_OBSERVER) Observer++;
     /* Update the queue info */
     queues[w_queue].free_slots--;

@@ -16,6 +16,7 @@
     to be declared static.
     */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +27,10 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
+#include <unistd.h>
+#include <sys/fcntl.h>
+#include <sys/time.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -39,10 +44,6 @@
 #include "draft.h"
 #include "solicit.h"
 #include "planet.h"
-
-#include INC_UNISTD
-#include INC_SYS_FCNTL
-#include INC_SYS_TIME
 
 #ifdef AUTOMOTD
 #include <sys/stat.h>
@@ -171,7 +172,7 @@ int tm_robots[MAXTEAM + 1];     /*!< fuse, per team, non-t rescue robot */
 static void restart_handler(int signum)
 {
   sig_restart++;
-  HANDLE_SIG(SIGHUP, restart_handler);
+  signal(SIGHUP, restart_handler);
 }
 
 /*! @brief Fork a script.
@@ -214,12 +215,12 @@ int main(int argc, char **argv)
     srandom(getpid());
     if (!opt_debug) {
         for (i = 1; i < NSIG; i++) {
-            (void) SIGNAL(i, exitDaemon);
+            (void) signal(i, exitDaemon);
         }
-        SIGNAL(SIGSTOP, SIG_DFL); /* accept SIGSTOP? 3/6/92 TC */
-        SIGNAL(SIGTSTP, SIG_DFL); /* accept SIGTSTP? 3/6/92 TC */
-        SIGNAL(SIGCONT, SIG_DFL); /* accept SIGCONT? 3/6/92 TC */
-        SIGNAL(SIGHUP, restart_handler);
+        signal(SIGSTOP, SIG_DFL); /* accept SIGSTOP? 3/6/92 TC */
+        signal(SIGTSTP, SIG_DFL); /* accept SIGTSTP? 3/6/92 TC */
+        signal(SIGCONT, SIG_DFL); /* accept SIGCONT? 3/6/92 TC */
+        signal(SIGHUP, restart_handler);
     }
     reaper_start();
 
@@ -268,7 +269,7 @@ int main(int argc, char **argv)
         players[i].p_no=i;
         players[i].p_ups = defups;
         players[i].p_fpu = fps / defups;
-        MZERO(players[i].voting, sizeof(time_t) * PV_TOTAL);
+        memset(players[i].voting, 0, sizeof(time_t) * PV_TOTAL);
     }
 
 #ifdef NEUTRAL
@@ -298,12 +299,12 @@ int main(int argc, char **argv)
     glfd = open(Global, O_RDWR, 0744);
     if (glfd < 0) {
         ERROR(1,("daemon: no global file, resetting stats\n"));
-        MZERO((char *) status, sizeof(struct status));
+        memset((char *) status, 0, sizeof(struct status));
     } else {
         if (read(glfd, (char *) status, sizeof(struct status)) != 
             sizeof(struct status)) {
             ERROR(1,("daemon: global file wrong size, resetting stats\n"));
-            MZERO((char *) status, sizeof(struct status));
+            memset((char *) status, 0, sizeof(struct status));
         }
         (void) close(glfd);
     }
@@ -450,8 +451,8 @@ static int is_tournament_mode(void)
     if (bot_in_game) return 0;
 #endif
 
-    MZERO((int *) count, sizeof(int) * (MAXTEAM+1));
-    MZERO((int *) quorum, sizeof(int) * (MAXTEAM+1));
+    memset((int *) count, 0, sizeof(int) * (MAXTEAM+1));
+    memset((int *) quorum, 0, sizeof(int) * (MAXTEAM+1));
 
     for (i=0, p=players; i<MAXPLAYER; i++, p++) {
         if (((p->p_status != PFREE) &&
@@ -2010,7 +2011,7 @@ static void t_track(struct torp *t)
     
     /*
      * Get the direction that the potential target is from the torp:  */
-    heading = -64 + nint(atan2((double) dy, (double) dx) / 3.14159 * 128.0);
+    heading = -64 + rint(atan2((double) dy, (double) dx) / 3.14159 * 128.0);
     if (heading < 0)
       heading += 256;
     /*
@@ -3776,7 +3777,7 @@ static void exitDaemon(int sig)
     register int i;
     register struct player *j;
 
-    if (sig) HANDLE_SIG(sig,exitDaemon);
+    if (sig) signal(sig,exitDaemon);
     if (sig!=SIGINT) {
         if(sig) {
             ERROR(2,("daemon: got signal %d\n", sig));
@@ -3839,7 +3840,7 @@ static void exitDaemon(int sig)
 #ifdef SIGSYS
         case SIGSYS:
 #endif
-            (void) SIGNAL(SIGABRT, SIG_DFL);
+            (void) signal(SIGABRT, SIG_DFL);
             abort();       /* get the coredump */
         default:
             break;
@@ -3886,12 +3887,12 @@ static void check_load(void)
         return;
 
   if (fork() == 0) {
-    fp=popen(UPTIME, "r");
+    fp=popen(UPTIME_EXECUTABLE, "r");
     if (fp==NULL) {
         exit(0);
     }
     fgets(buf, 100, fp);
-    s=RINDEX(buf, ':');
+    s=strrchr(buf, ':');
     if (s==NULL) {
         pclose(fp);
         exit(0);
@@ -4525,7 +4526,7 @@ static void displayBest(FILE *conqfile, int team, int type)
     int number;
 
     number=0;
-    MZERO(winners, sizeof(Players) * (MAXPLAYER+1));
+    memset(winners, 0, sizeof(Players) * (MAXPLAYER+1));
     for (i = 0, j = &players[0]; i < MAXPLAYER; i++, j++) {
         if (j->p_team != team || j->p_status == PFREE) continue;
 #ifdef GENO_COUNT
@@ -4553,8 +4554,8 @@ static void displayBest(FILE *conqfile, int team, int type)
         number++;
         winners[k].planets=planets;
         winners[k].armies=armies;
-        STRNCPY(winners[k].mapchars, j->p_mapchars, 2);
-        STRNCPY(winners[k].name, j->p_name, NAME_LEN);
+        strncpy(winners[k].mapchars, j->p_mapchars, 2);
+        strncpy(winners[k].name, j->p_name, NAME_LEN);
         winners[k].name[NAME_LEN-1]=0;  /* `Just in case' paranoia */
     }
     for (k=0; k < number; k++) {

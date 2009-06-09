@@ -24,12 +24,14 @@
  * derived from scores.c, newscores.c by Kevin Smith
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
 #include "defs.h"
-#include INC_FCNTL
 #include "struct.h"
 #include "data.h"
 #include "proto.h"

@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <curses.h>
 #include <time.h>
+#include <string.h>
 #include "pledit.h"
 #include "defs.h"
 #include "struct.h"
@@ -468,14 +469,14 @@ void add_player()
     int i;
 
     if (num_players == num_ent) {
-	/* about to run out of space; realloc buffer */
-	num_ent += ENT_QUANTUM;
-	realloc(player_st, sizeof(STATS) * num_ent);
+	    /* about to run out of space; realloc buffer */
+	    num_ent += ENT_QUANTUM;
+	    realloc(player_st, sizeof(STATS) * num_ent);
     }
 
     player_st[num_players].state = E_ALIVE;
     sep = &(player_st[num_players].se);
-    MZERO(sep, sizeof(struct statentry));
+    memset(sep, 0, sizeof(struct statentry));
     strcpy(sep->name, "New");
     strcpy(sep->password, "foo");
     sep->stats.st_tticks = 1;		/* prevent division errors */
@@ -777,8 +778,8 @@ int plyr;
 
     wclear(mainw);
     sep = &(player_st[plyr].se);
-    MCOPY(sep, &newse, sizeof(struct statentry));
-    MCOPY(&gl, &newgl, sizeof(struct status));
+    memcpy(sep, &newse, sizeof(struct statentry));
+    memcpy(&gl, &newgl, sizeof(struct status));
 
     print_player(&newse, &newgl);
 
@@ -816,12 +817,12 @@ int plyr;
 		newse.stats.st_tplanets != sep->stats.st_tplanets) {
 
 		if (update_global(sep, &newse, &newgl)) {
-		    MCOPY(&newgl, &gl, sizeof(struct status));
+		    memcpy(&newgl, &gl, sizeof(struct status));
 		    build_display(-1);		/* update all (DI) */
 		}
 	    }
 	    /* if nothing changed, this has no effect */
-	    MCOPY(&newse, sep, sizeof(struct statentry));
+	    memcpy(&newse, sep, sizeof(struct statentry));
 	    done = TRUE;
 	    break;
 	case '\014':	/* ^L */

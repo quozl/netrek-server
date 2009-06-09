@@ -1,4 +1,4 @@
-/* puck.c
+ /* puck.c
  */
 
 /*
@@ -8,12 +8,14 @@
 */
 
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
 #include <signal.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -145,10 +147,10 @@ char **argv;
 
     alarm_init();
     if (!debug)
-	SIGNAL(SIGINT, cleanup);
+	signal(SIGINT, cleanup);
 
     oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-    MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+    memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
     config(inhl);
     do_war();   /*added MK-9/20/92, to plague and fill slots immediately*/
     puck_rules();

@@ -3,6 +3,7 @@
  * Kevin P. Smith  6/11/89
  */
 #include "copyright2.h"
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include "Wlib.h"

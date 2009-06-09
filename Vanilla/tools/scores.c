@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -6,8 +7,9 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <time.h>
+#include <fcntl.h>
+#include <string.h>
 #include "defs.h"
-#include INC_FCNTL
 #include "struct.h"
 #include "data.h"
 

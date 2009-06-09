@@ -1,7 +1,9 @@
+#include "config.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

@@ -2,6 +2,7 @@
  * shmem.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,14 +29,14 @@ openmem()
        sharedMemory = (struct memory *)malloc(allocFrames * 
 	 sizeof(struct memory));
        if(sharedMemory)
-	  MZERO(sharedMemory, sizeof(struct memory) * allocFrames);
+	  memset(sharedMemory, 0, sizeof(struct memory) * allocFrames);
        while (sharedMemory == NULL && allocFrames > 10)
        {
 	   allocFrames -= 10;
 	   sharedMemory = (struct memory *)malloc(allocFrames * 
 	    sizeof(struct memory));
 	   if(sharedMemory)
-	      MZERO(sharedMemory, sizeof(struct memory) * allocFrames);
+	      memset(sharedMemory, 0, sizeof(struct memory) * allocFrames);
        }
 
        if (allocFrames <= 0)

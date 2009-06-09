@@ -92,9 +92,9 @@ static void reaper(int sig)
    int stat=0;
    int pid;
 
-   while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0)
+   while ((pid = wait3(&stat, WNOHANG, 0)) > 0)
        nb_robots--;
-   HANDLE_SIG(SIGCHLD,reaper);
+   signal(SIGCHLD,reaper);
 }
 
 #ifdef BASEPRACTICE
@@ -250,7 +250,7 @@ void fix_planets()
    char command[256];
 
    oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-   MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+   memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
 
    /* Standardize planet locations */
    sprintf(command, "%s/tools/setgalaxy r", LIBDIR);
@@ -517,7 +517,7 @@ void cleanup(int unused)
   } while (retry);		/* Some robots havn't terminated yet */
 
 	/* restore galaxy */
-        MCOPY(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+        memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
         for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
             if ((j->p_status != PALIVE) || (j == me)) continue;
             getship(&(j->p_ship), j->p_ship.s_type);
@@ -553,7 +553,7 @@ void obliterate(int wflag, char kreason)
   struct player *j;
 
   /* clear torps and plasmas out */
-  MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
+  memset(torps, 0, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
   for (j = firstPlayer; j<=lastPlayer; j++) {
     if (j->p_status == PFREE)
       continue;

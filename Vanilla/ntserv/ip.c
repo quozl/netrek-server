@@ -1,6 +1,9 @@
+#include "copyright.h"
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -8,9 +11,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <dirent.h>
-
-#include "copyright.h"
-#include "config.h"
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

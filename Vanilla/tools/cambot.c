@@ -3,12 +3,14 @@
  *            packets to be stored on disk for future playback.
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -101,7 +103,7 @@ void sendClientPacket(void *void_packet)
 void
 cb_updt(int unused)
 {
-    HANDLE_SIG(SIGALRM, cb_updt);
+    signal(SIGALRM, cb_updt);
 
     /*  updateTorps(); */
     {
@@ -303,20 +305,20 @@ main(int argc, char *argv[])
     /* HACK..  Some of the sockets code is hard linked to me->...
      * create a bogus player struct to prevent seg faults */
     me = &cambot_me;
-    MZERO(me, sizeof(struct player));
+    memset(me, 0, sizeof(struct player));
     p_ups_set(me, updates);
 
     /* Add setup packets now */
     sendFeature(&Many_Self_F);
 
-    SIGNAL(SIGALRM, cb_updt);
-    SIGNAL(SIGINT, cleanup);
-    SIGNAL(SIGTERM, cleanup);
+    signal(SIGALRM, cb_updt);
+    signal(SIGINT, cleanup);
+    signal(SIGTERM, cleanup);
 
     alarm_setitimer(distortion, updates);
     if (verbose) fprintf(stderr, "cambot: recording ...\n");
     for (;;) {
-        PAUSE(SIGALRM);
+        pause();
     }
 }
 

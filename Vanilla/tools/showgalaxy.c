@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -14,7 +15,7 @@
 #include <ctype.h>
 #include "defs.h"
 #include <curses.h>
-#include INC_STRINGS
+#include <string.h>
 #include "struct.h"
 #include "data.h"
 #include "ltd_stats.h"
@@ -87,8 +88,8 @@ int main(int argc, char **argv)
     oldmctl=mctl->mc_current;
 
     initscr();
-    SIGNAL(SIGINT, reaper);
-    SIGNAL(SIGTSTP, reaper);	/* I'm lazy, ok? */
+    signal(SIGINT, reaper);
+    signal(SIGTSTP, reaper);	/* I'm lazy, ok? */
     crmode();
     noecho();
     main_w=newwin(HEIGHT, WIDTH, 0, 0);
@@ -248,7 +249,7 @@ int main(int argc, char **argv)
 	    } else {
 		switch(command) {
 		case 'z':
-		    st=INDEX(ships,getch());
+		    st=strchr(ships,getch());
 		    if (st!=0) {
 			zoom=st-ships;
 		    }

@@ -4,6 +4,7 @@
  *
  *   Nick Trown (12/20/95)
  */
+#include "config.h"
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -12,6 +13,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

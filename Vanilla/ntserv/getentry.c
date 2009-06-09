@@ -9,13 +9,19 @@
  * mjk - June 1995 - Supports improved queue structure
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

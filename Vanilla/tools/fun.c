@@ -3,6 +3,7 @@
  * Top Gun + Moving Planets + Send Funny Messages
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -16,8 +17,8 @@
 #include <errno.h>
 #include <pwd.h>
 #include <ctype.h>
+#include <string.h>
 #include "defs.h"
-#include INC_STRINGS
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
@@ -144,7 +145,7 @@ int main(int argc, char **argv)
     rtimer = rotdelay;
     mtimer = mesdelay;
 
-    SIGNAL(SIGALRM, action);
+    signal(SIGALRM, action);
     udt.it_interval.tv_sec = PUPDATE_SEC;
     udt.it_interval.tv_usec = PUPDATE;
     udt.it_value.tv_sec = PUPDATE_SEC;
@@ -152,12 +153,12 @@ int main(int argc, char **argv)
     (void) setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0);
 
     for (;;)
-	PAUSE(SIGALRM);
+	pause;
 }
 
 void action(int ignored)
 {
-  HANDLE_SIG(SIGALRM,action);
+  signal(SIGALRM,action);
  
   if (rotall || rotcore)
      if (!(rtimer--)) {

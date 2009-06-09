@@ -1,4 +1,6 @@
+#include "config.h"
 #include <stdio.h>
+#include <string.h>
 #include "defs.h"
 
 int main(int argc, char **argv)

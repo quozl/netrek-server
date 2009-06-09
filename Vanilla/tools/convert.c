@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -5,6 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -33,7 +35,7 @@ int main(void)
     glfd = open(Global, O_RDWR, 0744);
     if (glfd < 0) {
         fprintf(stderr, "No global file.  Resetting all stats\n");
-        MZERO((char *) &old_stats, sizeof(struct old_status));
+        memset((char *) &old_stats, 0, sizeof(struct old_status));
 		glfd = open(Global, O_RDWR|O_CREAT, 0744);
 		if (glfd < 0) {
 			fprintf(stderr, "Unable to create new global file.");

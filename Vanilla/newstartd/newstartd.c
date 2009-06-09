@@ -32,6 +32,7 @@ static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
  *
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,9 +43,10 @@ static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <string.h>
+#include <fcntl.h>
 
 #include "defs.h"
-#include INC_FCNTL
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
@@ -239,10 +241,10 @@ int main (int argc, char *argv[])
 #ifdef REAPER_HANDLER
   handle_reaper();
 #else
-  SIGNAL (SIGCHLD, reaper);
+  signal(SIGCHLD, reaper);
 #endif
-  SIGNAL (SIGHUP, hangup);
-  SIGNAL (SIGUSR1, SIG_IGN);
+  signal(SIGHUP, hangup);
+  signal(SIGUSR1, SIG_IGN);
 
   /* open the connection log file */
   if ((fd = open (LogFile, O_CREAT | O_WRONLY | O_APPEND, 0600)) < 0) {
@@ -636,7 +638,7 @@ static void process (int port_idx, char *ip)
 static void hangup (int sig)
 {
   restart++;
-  HANDLE_SIG (SIGHUP, hangup);
+  signal(SIGHUP, hangup);
 
   /* get rid of compiler warning */
   if (sig) return;
@@ -669,7 +671,7 @@ static void reaper (int sig)
   pid_t pid;
 
   for (;;) {
-    pid = WAIT3 (&stat, WNOHANG, 0);
+    pid = wait3(&stat, WNOHANG, 0);
     if (pid > 0) {
       active--;
       if (debug) fprintf (stderr, "active--: %d: pid %d terminated\n",
@@ -689,7 +691,7 @@ static void reaper (int sig)
 #ifdef REAPER_HANDLER
   handle_reaper();
 #else
-  HANDLE_SIG (SIGCHLD, reaper);
+  signal(SIGCHLD, reaper);
 #endif
 
   if (sig) return;

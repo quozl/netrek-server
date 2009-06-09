@@ -6,6 +6,7 @@
  *  like 
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -13,6 +14,9 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <netinet/in.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

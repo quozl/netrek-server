@@ -9,14 +9,16 @@
 #include <errno.h>
 #include <time.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
 #ifdef PLAYER_INDEX
 #include <gdbm.h>
 #endif
-#ifdef linux
+#ifdef HAVE_CRYPT_H
 #include <crypt.h>
 #endif
 #include "defs.h"
-#include INC_UNISTD
+
 #include "struct.h"
 #include "data.h"
 #include "proto.h"

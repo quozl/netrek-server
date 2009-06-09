@@ -1,8 +1,11 @@
+#include "config.h"
+
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
+#include <unistd.h>
+#include <string.h>
 #include "defs.h"
-#include INC_UNISTD
 #include "struct.h"
 #include "data.h"
 #include "ip.h"
@@ -239,8 +242,8 @@ int queue_add(int w_queue)
         strcpy(lwait->ip, "127.0.0.1");
         strcpy(lwait->host, "hidden");
     } else {
-        STRNCPY(lwait->ip, ip, sizeof(lwait->ip));
-        STRNCPY(lwait->host, host, sizeof(lwait->host));
+        strncpy(lwait->ip, ip, sizeof(lwait->ip));
+        strncpy(lwait->host, host, sizeof(lwait->host));
     }
     ip_lookup(ip, lwait->host, lwait->host,
               NULL, NULL, NULL, sizeof(lwait->host));
@@ -304,7 +307,7 @@ int queue_setname(int w_queue, char *name)
       return 0;
     }
     
-    STRNCPY(queues[w_queue].q_name,name,QNAMESIZE-1);
+    strncpy(queues[w_queue].q_name,name,QNAMESIZE-1);
     queues[w_queue].q_name[QNAMESIZE-1] = '\0';
     return 1;
 }

@@ -2,12 +2,15 @@
  * startrobot.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
 #include "defs.h"
-#include INC_UNISTD
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
@@ -30,7 +33,7 @@ int practice_robo(void)
     }
 
     if ((int)fork() == 0) {
-	(void) SIGNAL(SIGALRM, SIG_DFL);
+	(void) signal(SIGALRM, SIG_DFL);
 	(void) close(0);
 	(void) close(1);
 	(void) close(2);

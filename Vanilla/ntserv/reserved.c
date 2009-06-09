@@ -3,9 +3,12 @@
  * Kevin P. Smith   7/3/89
  */
 #include "copyright2.h"
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <string.h>
 #include "defs.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -58,8 +61,8 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
     char buf[16];
     u_char *s;
     
-    MCOPY(spacket->data, cpacket->data, 16);
-    MCOPY(spacket->data, cpacket->resp, 16);
+    memcpy(spacket->data, cpacket->data, 16);
+    memcpy(spacket->data, cpacket->resp, 16);
     cpacket->type=CP_RESERVED;
 
     if ((address.s_addr = inet_addr(server)) == -1) {
@@ -90,7 +93,7 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
 	for (k=0; k<16; k++) {
 	    buf[k]=cpacket->resp[s[k]];
 	}
-	MCOPY(buf, cpacket->resp, 16);
+	memcpy(buf, cpacket->resp, 16);
     }
 }
 

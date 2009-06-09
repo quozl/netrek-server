@@ -2,11 +2,15 @@
  * warning.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <math.h>
 #include <signal.h>
 #include <stdarg.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -62,7 +66,7 @@ void warning(char *text) {
   if (!send_short) {
 
     warn.type = SP_WARNING;
-    STRNCPY(warn.mesg, text, MSG_LEN);
+    strncpy(warn.mesg, text, MSG_LEN);
     warn.mesg[MSG_LEN-1]='\0';
     sendClientPacket((CVOID) &warn);
 
@@ -70,7 +74,7 @@ void warning(char *text) {
   else {  /* send it like a CP_S_MESSAGE */
 
     int size;
-    STRNCPY(warn.mesg, text, MSG_LEN);
+    strncpy(warn.mesg, text, MSG_LEN);
     warn.mesg[MSG_LEN-1]='\0';
     size = strlen(warn.mesg);
     size += 5; /* 1 for '\0', 4 packetheader */
@@ -104,7 +108,7 @@ void spwarning(char *text, int index) {
   if (!send_short) {
 
     warn.type = SP_WARNING;
-    STRNCPY(warn.mesg, text, MSG_LEN);
+    strncpy(warn.mesg, text, MSG_LEN);
     warn.mesg[MSG_LEN-1]='\0';
     sendClientPacket((CVOID) &warn);
 
@@ -138,7 +142,7 @@ void s_warning(char *text, int index) {
   if (!send_short) {
 
     warn.type=SP_WARNING;
-    STRNCPY(warn.mesg, text, MSG_LEN);
+    strncpy(warn.mesg, text, MSG_LEN);
     warn.mesg[MSG_LEN-1]='\0';
     sendClientPacket((CVOID) &warn);
 
@@ -154,7 +158,7 @@ void s_warning(char *text, int index) {
   }
   else  { /* first time */
 
-    STRNCPY(warn.mesg, text, MSG_LEN);
+    strncpy(warn.mesg, text, MSG_LEN);
     warn.mesg[MSG_LEN-1]='\0';
     size = strlen(warn.mesg);
     size += 5; /* 1 for '\0', 4 packetheader */

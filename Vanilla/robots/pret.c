@@ -101,8 +101,8 @@ reaper(int sig)
 {
     int pid, stat = 0;
 
-    while ((pid = WAIT3(&stat, WNOHANG, 0)) > 0) ;
-    HANDLE_SIG(SIGCHLD, reaper);
+    while ((pid = wait3(&stat, WNOHANG, 0)) > 0) ;
+    signal(SIGCHLD, reaper);
 }
 
 #ifdef PRETSERVER
@@ -125,7 +125,7 @@ main(argc, argv)
     srandom(time(NULL));
 
     getpath();
-    (void) SIGNAL(SIGCHLD, reaper);
+    (void) signal(SIGCHLD, reaper);
     openmem(1);
     strcpy(robot_host,REMOTEHOST);
     readsysdefaults();
@@ -133,7 +133,7 @@ main(argc, argv)
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
     if (!debug)
-        SIGNAL(SIGINT, terminate);
+        signal(SIGINT, terminate);
 
     target = -1;                /* no target 7/27/91 TC */
     if ((pno = pickslot(QU_PRET_DMN)) < 0) {
@@ -773,7 +773,7 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
     struct player *j;
 
     /* clear torps and plasmas out */
-    MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
+    memset(torps, 0, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
     for (j = firstPlayer; j<=lastPlayer; j++) {
         if (j->p_status == PFREE) continue;
         if (j->p_status == POBSERV) continue;
@@ -811,12 +811,12 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
 
 static void savegalaxy(void)
 {
-    MCOPY(planets, savedplanets, sizeof(struct planet) * MAXPLANETS);
+    memcpy(planets, savedplanets, sizeof(struct planet) * MAXPLANETS);
 }
 
 static void restoregalaxy(void)
 {
-    MCOPY(savedplanets, planets, sizeof(struct planet) * MAXPLANETS);
+    memcpy(savedplanets, planets, sizeof(struct planet) * MAXPLANETS);
 }
 
 #endif  /* PRETSERVER */

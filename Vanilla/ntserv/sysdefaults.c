@@ -1,9 +1,13 @@
 /* $Id: sysdefaults.c,v 1.3 2006/05/06 14:02:39 quozl Exp $
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -80,7 +84,7 @@ void readsysdefaults(void)
 
     while (fgets(buf, 200, f)!=NULL) {
 	if (buf[0] == '#') continue; /* a comment */
-	s=INDEX(buf, '=');
+	s=strchr(buf, '='); /* index marked as LEGACY in POSIX.1-2001 */
 	if (s==NULL) continue;
 	*s='\0';
 	s++;

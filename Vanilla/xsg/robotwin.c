@@ -2,19 +2,21 @@
  * option.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/time.h>
+#include <string.h>
 #include "Wlib.h"
 #include "defs.h"
 #include "xsg_defs.h"
 #include "struct.h"
 #include "localdata.h"
 #include <time.h>
-#include INC_SYS_TIME
 #include <signal.h>
 
 static int notdone;		/* not done flag */
@@ -63,7 +65,7 @@ robotoptionwindow()
 
     /* Create window big enough to hold option windows */
     if (robotwin==NULL) {
-	SIGNAL(SIGCHLD, reaper);
+	signal(SIGCHLD, reaper);
 
 	robotwin = W_MakeMenu("robot", WINSIDE+10, -BORDER+10, 
 			      ROBOTOPTIONLEN, ROBOTNUMOPTION, 
@@ -190,7 +192,7 @@ W_Event *data;
 	    (void) close(2);
 	    */
     
-	    SIGNAL(SIGALRM, SIG_DFL);
+	    signal(SIGALRM, SIG_DFL);
 
 	    switch (op->op_num) {
 	    case 0:
@@ -254,7 +256,7 @@ reaper()
 #if defined (SYSV) && !defined(hpux)
   while (waitid(P_ALL, 0, (siginfo_t *)NULL, WNOHANG) > 0)
 #else
-  while (wait3((union wait *) 0, WNOHANG, (struct rusage *) 0) > 0)
+  while (wait3((int *) 0, WNOHANG, (struct rusage *) 0) > 0)
 #endif
     ;
 }

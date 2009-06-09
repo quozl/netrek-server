@@ -1,6 +1,7 @@
 /* Takes the output of scores A and generates an equivalent scores
  *  data file which has all the passwords blotted out with X.  */
 
+#include "config.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/file.h>
@@ -8,8 +9,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <fcntl.h>
+#include <string.h>
 #include "defs.h"
-#include INC_FCNTL
 #include "struct.h"
 #include "data.h"
 

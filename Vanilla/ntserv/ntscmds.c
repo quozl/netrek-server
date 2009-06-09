@@ -10,13 +10,13 @@
    routines that used to be grouped together in commands.c
 */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <signal.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#include <dirent.h>
-
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -377,7 +377,7 @@ void do_start_basep(void)
     return;
   }
   if (vfork() == 0) {
-    (void) SIGNAL(SIGALRM,SIG_DFL);
+    (void) signal(SIGALRM,SIG_DFL);
     execl(Basep, "basep", (char *) NULL);
     perror(Basep);
   }
@@ -393,7 +393,7 @@ void do_start_inl(void)
     return;
   }
   if (vfork() == 0) {
-    (void) SIGNAL(SIGALRM,SIG_DFL);
+    (void) signal(SIGALRM,SIG_DFL);
     execl(Inl, "inl", 0);
     perror(Inl);
   }
@@ -409,7 +409,7 @@ void do_start_puck(void)
     return;
   }
   if (vfork() == 0) {
-    (void) SIGNAL(SIGALRM,SIG_DFL);
+    (void) signal(SIGALRM,SIG_DFL);
     execl(Puck, "puck", (char *) NULL);
     perror(Puck);
   }
@@ -425,7 +425,7 @@ void do_start_mars(void)
     return;
   }
   if (vfork() == 0) {
-    (void) SIGNAL(SIGALRM,SIG_DFL);
+    (void) signal(SIGALRM,SIG_DFL);
     execl(Mars, "mars", (char *) NULL);
     perror(Mars);
   }
@@ -1622,7 +1622,7 @@ void do_ltd_query(char *comm, struct message *mess, int who)
 
   /* in a new process create the file and exit */
   if (fork() == 0) {
-    (void) SIGNAL(SIGALRM,SIG_DFL);
+    (void) signal(SIGALRM,SIG_DFL);
     FILE *fp = fopen(name, "w");
     if (fp == NULL) return;
     int fd = fileno(fp);

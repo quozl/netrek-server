@@ -1,4 +1,5 @@
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -9,6 +10,7 @@
 #include <sys/sem.h>
 #include <errno.h>
 #include <signal.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -273,7 +275,7 @@ int setupmem(void) {
     }
 
     /* Zero the memory vector */
-    MZERO((void *) sharedMemory, sizeof (struct memory));
+    memset((void *) sharedMemory, 0, sizeof (struct memory));
 
     setup_memory(sharedMemory);
     setupsem();

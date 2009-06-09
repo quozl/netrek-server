@@ -1,5 +1,7 @@
+#include "config.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -140,7 +142,7 @@ int game_resume(char *comm, struct message *mess)
  */
 u_char getcourse2(int x1, int y1, int x2, int y2)
 {
-    return((u_char) nint((atan2((double) (x2 - x1),
+    return((u_char) rint((atan2((double) (x2 - x1),
         (double) (y1 - y2)) / M_PI * 128.)));
 }
 

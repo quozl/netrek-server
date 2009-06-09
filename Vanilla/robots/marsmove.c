@@ -22,6 +22,7 @@
 */
 
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -650,7 +652,7 @@ void cleanup(void)
     }
 
     if (!practice) {
-	MCOPY(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+	memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
 	for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
 	    if ((j->p_status != PALIVE) || (j == me)) continue;
 	    getship(&(j->p_ship), j->p_ship.s_type);
@@ -1556,11 +1558,11 @@ void reset_all_players(void)
 
 void zero_stats(Track *track)
 {
-    MZERO(track->t_mutuals, sizeof(track->t_mutuals[0]) * MAXPLAYER);
-    MZERO(track->t_oggs, sizeof(track->t_oggs[0]) * MAXPLAYER);
-    MZERO(track->t_wins, sizeof(track->t_wins[0]) * MAXPLAYER);
+    memset(track->t_mutuals, 0, sizeof(track->t_mutuals[0]) * MAXPLAYER);
+    memset(track->t_oggs, 0, sizeof(track->t_oggs[0]) * MAXPLAYER);
+    memset(track->t_wins, 0, sizeof(track->t_wins[0]) * MAXPLAYER);
 /*
-    MZERO(track->t_votes, sizeof(track->t_votes[0]) * PV_TOTAL);
+    memset(track->t_votes, sizeof(track->t_votes[0]) * PV_TOTAL);
 */
 }
 
@@ -1630,7 +1632,7 @@ void free_player(int pno)
 
   /* resets tournament stats of player */
   track->t_pos = -1;
-  MZERO(&(track->t_stats), sizeof(DogStat));
+  memset(&(track->t_stats), 0, sizeof(DogStat));
   track->t_stats.d_ticks = 1;
 }
 
@@ -1881,8 +1883,8 @@ void get_dog_stats(struct player *j, Track *track)
 	  sizeof(DogStat),sizeof(DogStatEntry));
 */
 
-   MZERO(&(track->t_stats), sizeof(DogStat));
-   MZERO(&player, sizeof(DogStatEntry));
+   memset(&(track->t_stats), 0, sizeof(DogStat));
+   memset(&player, 0, sizeof(DogStatEntry));
 
    track->t_stats.d_ticks = 1;
    player.dstats.d_ticks = 1;
@@ -1916,7 +1918,7 @@ void get_dog_stats(struct player *j, Track *track)
    if (position == -1) 
      {
        strncpy(player.name, j->p_name, 16);
-       MZERO(&player.dstats, sizeof(DogStat));
+       memset(&player.dstats, 0, sizeof(DogStat));
        player.dstats.d_ticks = 1;
        
        plfd = open(DogStats, O_RDWR|O_CREAT, 0644);
@@ -1934,7 +1936,7 @@ void get_dog_stats(struct player *j, Track *track)
 	   write(plfd, (char *) &player, sizeof(DogStatEntry));
 	   close(plfd);
 	   track->t_pos = entries;
-	   MCOPY(&player.dstats, &(track->t_stats), sizeof(DogStat));
+	   memcpy(&player.dstats, &(track->t_stats), sizeof(DogStat));
 	 }
      }
    

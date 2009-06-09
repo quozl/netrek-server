@@ -2,6 +2,7 @@
  * redraw.c
  */
 #include "copyright.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>

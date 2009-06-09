@@ -4,7 +4,6 @@
 #ifndef _h_defs
 #define _h_defs
 
-
 #include "copyright.h"
 #include "config.h"
 

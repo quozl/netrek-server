@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 	gl_filename = Global;
 #endif
 
-    SIGNAL(SIGINT, signal_handler);
+    signal(SIGINT, signal_handler);
 
     /* init curses */
     if (initscr() == NULL) {

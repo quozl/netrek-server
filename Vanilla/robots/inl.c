@@ -10,6 +10,7 @@
  *
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,6 +20,7 @@
 #include <sys/shm.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -202,8 +204,8 @@ main(argc, argv)
   alarm_init();
   if (!debug)
     {
-      SIGNAL(SIGINT, cleanup);
-      SIGNAL(SIGTERM, cleanup);
+      signal(SIGINT, cleanup);
+      signal(SIGTERM, cleanup);
     }
 
   oldmctl = mctl->mc_current;
@@ -289,7 +291,7 @@ static void displayBest(FILE *conqfile, int team, int type)
     int number;
 
     number=0;
-    MZERO(winners, sizeof(Players) * (MAXPLAYER+1));
+    memset(winners, 0, sizeof(Players) * (MAXPLAYER+1));
     for (i = 0, j = &players[0]; i < MAXPLAYER; i++, j++) {
         if (j->p_team != team || j->p_status == PFREE) continue;
 #ifdef GENO_COUNT
@@ -317,8 +319,8 @@ static void displayBest(FILE *conqfile, int team, int type)
         number++;
         winners[k].planets=planets;
         winners[k].armies=armies;
-        STRNCPY(winners[k].mapchars, j->p_mapchars, 2);
-        STRNCPY(winners[k].name, j->p_name, NAME_LEN);
+        strncpy(winners[k].mapchars, j->p_mapchars, 2);
+        strncpy(winners[k].name, j->p_name, NAME_LEN);
         winners[k].name[NAME_LEN-1]=0;  /* `Just in case' paranoia */
     }
     for (k=0; k < number; k++) {
@@ -588,7 +590,7 @@ void checkmess()
       struct distress dist;
       char buf[MSG_LEN];
 
-      MCOPY(&messages[oldmctl],&msg,sizeof(struct message));
+      memcpy(&messages[oldmctl],&msg,sizeof(struct message));
       buf[0]='\0';
       msg.m_flags ^= MDISTR;
       HandleGenDistr(msg.m_data,msg.m_from,msg.m_recpt,&dist);
@@ -701,7 +703,7 @@ checkplanets()
   size = sizeof(struct planet);
 
   for (c=0; c < MAXPLANETS; c++ ) {
-    if (MCMP(&inl_planets[c], &planets[c], size) != 0) {
+    if (memcmp(&inl_planets[c], &planets[c], size) != 0) {
       /* Some planet information changed. Find out what it is and
 	 report it. */
 
@@ -1212,7 +1214,7 @@ void init_server()
 #ifdef nodef
   /* Fix planets */
   oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-  MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+  memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
 #endif
 
   /* Dont change the pickup queues around - just close them. */
@@ -1300,7 +1302,7 @@ cleanup()
 
 #ifdef nodef
   /* restore galaxy */
-  MCOPY(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+  memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
 #endif
 
   /* Dont mess with the queue information - it is set correctly in queue.c */
@@ -1458,8 +1460,8 @@ int start_tourney()
 
 #ifdef nodef
   inl_planets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-  /*	MCOPY(planets, oldplanets, sizeof(struct planet) * MAXPLANETS); */
-  MCOPY(planets, inl_planets, sizeof(struct planet) * MAXPLANETS);
+  /*	memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS); */
+  memcpy(planets, inl_planets, sizeof(struct planet) * MAXPLANETS);
 #endif
 
   inl_stat.flags |= S_TOURNEY;
@@ -1515,7 +1517,7 @@ void obliterate(int wflag, char kreason)
   obliterate_timer = 10;
 
   /* clear torps and plasmas out */
-  MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
+  memset(torps, 0, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
   for (j = firstPlayer; j<=lastPlayer; j++) {
     if (j->p_status == PFREE)
       continue;
@@ -1631,7 +1633,7 @@ void pl_reset_inl(int startup)
     }
   if (startup)
     {
-      MCOPY(pl_virgin(), planets, pl_virgin_size());
+      memcpy(pl_virgin(), planets, pl_virgin_size());
 
       for (i = 0; i < MAXPLANETS; i++)
 	{
@@ -1741,7 +1743,7 @@ void reset_stats()
     /* initial player state as given in getname */
     if (status->gameup & GU_INL_DRAFTED)
       rank = j->p_stats.st_rank;
-    MZERO(&(j->p_stats), sizeof(struct stats));
+    memset(&(j->p_stats), 0, sizeof(struct stats));
 #ifdef LTD_STATS
     ltd_reset(j);
 #else

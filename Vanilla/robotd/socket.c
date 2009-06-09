@@ -6,18 +6,14 @@
  * Routines to allow connection to the xtrek server.
  */
 #include "copyright2.h"
-
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <errno.h>
 #include <sys/types.h>
-#ifdef mips
 #include <fcntl.h>
-#else
-#include <sys/fcntl.h>
-#endif
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/errno.h>
@@ -29,6 +25,9 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+
+/* Hack! https://bugs.launchpad.net/netrek-server/+bug/384896 for details */
+#undef RSA
 
 /*#define AUK*/
 /* #define TORP_TIME */

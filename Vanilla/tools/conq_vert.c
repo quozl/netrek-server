@@ -30,12 +30,14 @@ ahabig@bigbang.astro.indiana.edu).  Make clean (to ensure that everything gets
 recompiled with the right structures), configure, recompile, reinstall, and
 start up the server.
 ******************************************************************************/
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 

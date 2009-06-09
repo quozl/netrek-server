@@ -160,7 +160,7 @@ void phaser(u_char course)
        * Adjust range and range_sq in order to narrow the search area
        * for later hit checks.                                       */
       range_sq = this_range_sq;
-      range = nint(sqrt((double)range_sq));
+      range = rint(sqrt((double)range_sq));
     }
   }
       
@@ -203,7 +203,7 @@ void phaser(u_char course)
       pstatus = PHHIT2;
       target_plasma = t;
       range_sq = this_range_sq;
-      range = nint(sqrt((double)range_sq));
+      range = rint(sqrt((double)range_sq));
     }
   }
 

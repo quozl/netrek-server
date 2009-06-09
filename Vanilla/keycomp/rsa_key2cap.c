@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 
 #ifdef RSA
@@ -5,8 +6,8 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/file.h>
+#include <string.h>
 #include "defs.h"
-#include INC_STRINGS
 #include "struct.h"
 
 #define SEP                     ':'
