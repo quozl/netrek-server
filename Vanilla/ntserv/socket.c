@@ -2453,8 +2453,7 @@ static int connUdpConn(void)
         UDPDIAG(("portswap mode -- putting of connect() until later\n"));
     }
     else
-#endif /* UDP_PORTSWAP */
-    if (connect(udpSock, &addr, sizeof(addr)) < 0)
+    if (connect(udpSock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
 #endif /* UDP_FIX */
     {
 	perror("ntserv: connect to client UDP port");

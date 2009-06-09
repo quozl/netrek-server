@@ -205,31 +205,11 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
     }
   }
 
-    if ( strcmp(pl->p_name, login->name)!=0 ||
-	 pl->p_stats.st_rank != login->rank ||
-	 strcmp(pl->p_monitor, login->monitor)!=0 ||
-	 strcmp(pl->p_login, login->login)!=0) {
-	STRNCPY(login->name,pl->p_name,NAME_LEN);
-	STRNCPY(login->monitor,pl->p_monitor,NAME_LEN);
-	STRNCPY(login->login,pl->p_login,NAME_LEN);
-	login->name[NAME_LEN-1]=0;
-	login->monitor[NAME_LEN-1]=0;
-	login->login[NAME_LEN-1]=0;
-	login->type=SP_PL_LOGIN;
-	login->pnum=pl->p_no;
-	login->rank=pl->p_stats.st_rank;
-	if (pl->p_stats.st_rank > (RANK_ADMIRAL) && !F_sp_rank) {
-	    struct plyr_login_spacket limited;
-	    memcpy(&limited, login, sizeof(struct plyr_login_spacket));
-	    limited.rank=RANK_ADMIRAL;
-	    sendClientPacket(&limited);
-	} else {
-	    sendClientPacket(login);
-	}
-	/* on every change to player list, check saved ignore status */
-	if (me != pl && pl->p_status == PFREE) ip_ignore_login(me, pl);
-	return TRUE;
-    }
+  /* avoid resend if input data unchanged */
+  if (pl->p_stats.st_rank == login->rank &&
+      strcmp(pl->p_name, login->name) == 0 &&
+      strcmp(pl->p_monitor, login->monitor) == 0 &&
+      strcmp(pl->p_login, login->login) == 0) {
     return FALSE;
   }
 
@@ -237,11 +217,11 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
 
   login->type = SP_PL_LOGIN;
   login->pnum = pl->p_no;
-  STRNCPY(login->name, pl->p_name, NAME_LEN);
+  strncpy(login->name, pl->p_name, NAME_LEN);
   login->name[NAME_LEN-1] = 0;
-  STRNCPY(login->monitor, pl->p_monitor, NAME_LEN);
+  strncpy(login->monitor, pl->p_monitor, NAME_LEN);
   login->monitor[NAME_LEN-1] = 0;
-  STRNCPY(login->login, pl->p_login, NAME_LEN);
+  strncpy(login->login, pl->p_login, NAME_LEN);
   login->login[NAME_LEN-1] = 0;
 
   /* limit the rank sent to clients that do not understand higher ranks */
