@@ -6,7 +6,6 @@
  * Routines to allow connection to the xtrek server.
  */
 #include "copyright2.h"
-#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
