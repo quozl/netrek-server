@@ -16,7 +16,7 @@ provided "as is" without express or implied warranty.
 ditto.
         Copyright (c) 1993      Tedd Hadley
                                 Heiko Wengler
-        ( SHORT_PACKETS Code)
+        (Short packets code, formerly marked with a #define SHORT_PACKETS)
 
 ditto.
 */

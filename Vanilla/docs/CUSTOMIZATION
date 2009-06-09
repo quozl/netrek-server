@@ -30,11 +30,11 @@ that can change the server.
 
 	SELF_RESET - galaxy will reset if daemon dies.
 
-	SHORT_PACKETS - Use short packets code. This may increase the load on
-		the server but will decrease the network load by up to %50.
-
-	SHORT_THRESHOLD - More support for Short packets. If you define
-		SHORT_PACKETS it's a good idea to use this also.
+	SHORT_THRESHOLD - More support for Short packets.  Causes the
+		update rate to halve under certain conditions.  With
+		modern networks, we do not need or want this, and we
+		have never seen it trigger anyways.  Save some CPU
+		cycles by defaulting it to off.
 
 	SURRENDER_SHORT - Cut the surrender time in half when the genocide
 		counter starts.

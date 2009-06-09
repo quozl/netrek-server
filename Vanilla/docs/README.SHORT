@@ -1,6 +1,4 @@
 Hello,
-compile all with -DSHORT_PACKETS to get SHORT_PACKET support.
-Otherwise it's an standard bronco.final server.
 Two patches are applied: a) pop patch from Brian Paulsen
 			 b) The better input.c from Tedd Hadley
 
@@ -11,12 +9,12 @@ Two patches are applied: a) pop patch from Brian Paulsen
 ----------------------------------------------------------------------
 
 From: hw@plato.chemietechnik.uni-dortmund.de (Heiko Wengler)
-Subject: SHORT_PACKETS README (from the coder)
+Subject: SHORT PACKETS README (from the coder)
 Date: 24 May 1993 14:49:13 GMT
 
-Hello!	Here is the Readme to SHORT_PACKETS.  You need a new client and
-the server must have SHORT_PACKETS to play with it.  The actual client
-informations how you can switch SHORT_PACKETS on could be wrong.
+Hello! Here is the Readme to short packets.  You need a new client and
+the server must have short packets to play with it.  The actual client
+informations how you can switch short packets on could be wrong.
 
 Short Packets Code by Tedd Hadley and Heiko Wengler.
 Send bugreports to hw@plato.Chemietechnik.Uni-Dortmund.DE.
@@ -112,7 +110,6 @@ Notice that the reduction in network traffic is very close to 40-75% of
 the original.
 
 Excerpt from packets.h:
-#ifdef SHORT_PACKETS
 #define SP_S_REPLY	40	/* reply to send-short request */
 #define SP_S_MESSAGE	41	/* var. Message Packet */
 #define SP_S_WARNING	42	/* Warnings with 4  Bytes */
@@ -123,8 +120,9 @@ Excerpt from packets.h:
 #define SP_S_TORP_INFO	48	/* SP_S_TORP with TorpInfo */
 #define SP_S_8_TORP	49	/* optimized SP_S_TORP */
 #define SP_S_PLANET	50	/* see SP_PLANET */
-#endif
+
 and client:
+
 #define CP_S_REQ	43	/* Req to server over tcp */
 #define CP_S_THRS	44
 #define CP_S_MESSAGE	45	/* vari. Message Packet */
@@ -256,7 +254,7 @@ b) The server removes the message header ( "GOD->All") and sends only
 
 
 I changed in the server:
-packets.h	added SHORT_PACKETS	
+packets.h	added short packets
 data.h		added send_short vari.
 defs.h		added endless defines.
 struct.h	IMPORTANT!!, made 'struct message' bigger. All
@@ -279,7 +277,7 @@ daemonII.c	implemented SHORT_DAEMON messages.
 		( Killmess, Planetmessages.)
 data.c		added global send_short variable.
 startdaemon.c	changed one warning.
-socket.c	Look at all SHORT_PACKETS code. 
+socket.c	Look at all short packets code. 
 *** Changed functions: updateClient, updatePlanets, updateMessages, 
 		updateShips,forceUpdate
 		IMPORTANT: changed the meaning of handleDetMReq.
@@ -298,7 +296,7 @@ Client:	socket.c , data.c
 
 Limitations: Only 64 Players can be send with SP_S_PLAYER.	 
 	     Ships are send with only 16 directions. 
-	     MAXSPEED of ships is warp 15. (Within the SHORT_PACKETS limits.)
+	     MAXSPEED of ships is warp 15. (Within the short packets limits.)
 
 Future features:
 a) 'compression' of client-server packets. ( Have an idea for 50% reduction.)

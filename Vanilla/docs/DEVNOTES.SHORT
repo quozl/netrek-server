@@ -1,4 +1,4 @@
-Compile all with -DSHORT_PACKETS.
+Compile all.
 
 That's all.
 
@@ -23,7 +23,7 @@ ntserv/socket.c	removed torpcount variable
 		changed sendClientPacket(): Logs only packets if server 
 		sends in short mode.
 
-		changed updateMessages(): moved the SHORT_PACKETS code before
+		changed updateMessages(): moved the short packets code before
 		the "strncpy(msg.mesg, cur->m_data, 80); ". Now the string is 
 		only copied one time.
 		
@@ -32,7 +32,7 @@ ntserv/socket.c	removed torpcount variable
 client/socket.c	changed doRead(): extended SP_S_PLAYER
 		handleVPlayer(): same here.
 
-client/redraw.c	removed SHORT_PACKETS Code ( not necessary)
+client/redraw.c	removed short packets Code ( not necessary)
 
 16.04.93:
 ntserv/socket.c	rewrote updateMessages. ( Was really to clumsy.)	
