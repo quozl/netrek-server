@@ -233,14 +233,11 @@ static char *scbufptr=scbuf;		/* (only used for double UDP) */
 int clientDead=0;
 static LONG sequence;			/* the holy sequence number */
 
-#ifdef UDP_PORTSWAP
 static int portswapflags = 0;
 
 #define PORTSWAP_ENABLED 1
 #define PORTSWAP_CONNECTED 2
 #define PORTSWAP_UDPRECEIVED 4
-
-#endif
 
 
 static int udpLocalPort = 0;
@@ -913,10 +910,7 @@ int readFromClient(void)
 	}
 	if (udpSock >= 0 && FD_ISSET(udpSock, &readfds)) {
 
-#ifdef UDP_PORTSWAP
             portswapflags |= PORTSWAP_UDPRECEIVED;
-#endif
-
 	    V_UDPDIAG(("Activity on UDP socket\n"));
 	    retval += doRead(udpSock);
 	}
@@ -936,18 +930,14 @@ static int doRead(int asock)
     int size;
     int count;
     int temp;
-#ifdef UDP_PORTSWAP
     struct sockaddr_in moo;
     socklen_t moolen;
-#endif
 
     /* need the socket in the ping handler routine */
     rsock = asock;
 
-#ifdef UDP_PORTSWAP
-
     /* read the source port of the first UDP packet that comes in, and
-       connect() to it -- PORTSWAP mode hack to work with NAT firewalls.
+       connect() to it -- hack to work with NAT firewalls.
 
        Note that if PORTSWAP_CONNECTED flag is set, the below 'if' block
        will not be executed.
@@ -971,8 +961,6 @@ static int doRead(int asock)
             }
         }
     }
-
-#endif
 
     timeout.tv_sec=0;
     timeout.tv_usec=0;
@@ -2331,11 +2319,9 @@ static void handleUdpReq(struct udp_req_cpacket *packet)
 			 me->p_name));
 		closeUdpConn();
 	    }
-#ifdef UDP_PORTSWAP
             if (packet->connmode == CONNMODE_PORT) {
                 portswapflags |= PORTSWAP_ENABLED;
             }
-#endif
 	    /* (note no openUdpConn(); we go straight to connect) */
 	    if (connUdpConn() < 0) {
 		response.reply = SWITCH_DENIED;
@@ -2440,7 +2426,6 @@ static int connUdpConn(void)
     caddr.sin_addr.s_addr = remoteaddr; /* addr of our client */
     caddr.sin_port = htons(udpClientPort);      /* client's port */
 
-#ifdef UDP_PORTSWAP
 
     UDPDIAG(("UDP_FIX code enabled.  portswapflags = %d\n", portswapflags));
 
@@ -2448,7 +2433,6 @@ static int connUdpConn(void)
         UDPDIAG(("portswap mode -- putting of connect() until later\n"));
     }
     else
-#endif /* UDP_PORTSWAP */
     if (connect(udpSock, (struct sockaddr *) &caddr, sizeof(caddr)) < 0)
 #else /* !UDP_FIX */
 
@@ -2456,15 +2440,12 @@ static int connUdpConn(void)
     addr.sin_addr.s_addr = remoteaddr;	/* addr of our client */
     addr.sin_port = htons(udpClientPort);	/* client's port */
 
-#ifdef UDP_PORTSWAP
-
     UDPDIAG(("UDP_FIX code disabled.  portswapflags = %d\n", portswapflags));
 
     if (portswapflags & PORTSWAP_ENABLED) { 
         UDPDIAG(("portswap mode -- putting of connect() until later\n"));
     }
     else
-#endif /* UDP_PORTSWAP */
     if (connect(udpSock, &addr, sizeof(addr)) < 0)
 #endif /* UDP_FIX */
     {
@@ -2506,11 +2487,8 @@ int closeUdpConn(void)
     close(udpSock);		/* bam */
     udpSock = -1;		/* (nah) */
 
-#ifdef UDP_PORTSWAP
     portswapflags &= ~(PORTSWAP_CONNECTED | PORTSWAP_ENABLED);
     UDPDIAG(("Disabling PORTSWAP mode.  Flags = %d\n", portswapflags));
-#endif
-
     return 0;
 }
 

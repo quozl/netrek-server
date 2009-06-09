@@ -405,13 +405,6 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef ROLLING_STATS_SLOTS
 #undef ROLLING_STATS_MASK
 
-				/* UDP_PORTSWAP - Allow the client to
-				initiate the UDP connection first if it so
-				chooses.  This allows UDP connections through
-				some packet filtering firewalls.
-				*/
-#define UDP_PORTSWAP
-
 				/* NO_CHUNG_CREDIT - Avoid crediting a player
 				for armies killed by their own death
 				due to a plasma owned by their team.  Not a
