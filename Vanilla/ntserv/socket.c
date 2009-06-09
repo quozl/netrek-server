@@ -909,8 +909,7 @@ int readFromClient(void)
 	    retval += doRead(sock);
 	}
 	if (udpSock >= 0 && FD_ISSET(udpSock, &readfds)) {
-
-            portswapflags |= PORTSWAP_UDPRECEIVED;
+	    portswapflags |= PORTSWAP_UDPRECEIVED;
 	    V_UDPDIAG(("Activity on UDP socket\n"));
 	    retval += doRead(udpSock);
 	}
@@ -2426,10 +2425,9 @@ static int connUdpConn(void)
     caddr.sin_addr.s_addr = remoteaddr; /* addr of our client */
     caddr.sin_port = htons(udpClientPort);      /* client's port */
 
-
     UDPDIAG(("UDP_FIX code enabled.  portswapflags = %d\n", portswapflags));
 
-    if (portswapflags & PORTSWAP_ENABLED) { 
+    if (portswapflags & PORTSWAP_ENABLED) {
         UDPDIAG(("portswap mode -- putting of connect() until later\n"));
     }
     else
@@ -2442,7 +2440,7 @@ static int connUdpConn(void)
 
     UDPDIAG(("UDP_FIX code disabled.  portswapflags = %d\n", portswapflags));
 
-    if (portswapflags & PORTSWAP_ENABLED) { 
+    if (portswapflags & PORTSWAP_ENABLED) {
         UDPDIAG(("portswap mode -- putting of connect() until later\n"));
     }
     else
