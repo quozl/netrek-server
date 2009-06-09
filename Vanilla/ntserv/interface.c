@@ -43,6 +43,7 @@ void set_speed(int speed)
     me->p_desspeed = speed;
     bay_release(me);
     me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    has_set_speed++;
 }
 
 void set_course(u_char dir)
@@ -52,23 +53,20 @@ void set_course(u_char dir)
     me->p_desdir = dir;
     bay_release(me);
     me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    has_set_course++;
 }
 
 void shield_up(void)
 {
     me->p_flags |= PFSHIELD;
     me->p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+    has_shield_up++;
 }
 
 void shield_down(void)
 {
     me->p_flags &= ~PFSHIELD;
-}
-
-void shield_tog(void)
-{
-    me->p_flags ^= PFSHIELD;
-    me->p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+    has_shield_down++;
 }
 
 void bomb_planet(void)
@@ -152,6 +150,7 @@ void bomb_planet(void)
 
     me->p_flags |= PFBOMB;
     me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+    has_bombed++;
 }
 
 void beam_up(void)
@@ -173,6 +172,7 @@ void beam_up(void)
     }
     me->p_flags |= PFBEAMUP;
     me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMDOWN);
+    has_beamed_up++;
 }
 
 void beam_down(void)
@@ -209,6 +209,7 @@ void beam_down(void)
     }
     me->p_flags |= PFBEAMDOWN;
     me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP);
+    has_beamed_down++;
 }
 
 void repair(void)
@@ -222,6 +223,7 @@ void repair(void)
 	me->p_desspeed = 0;
 	me->p_flags |= PFREPAIR;
 	me->p_flags &= ~(PFSHIELD | PFBOMB | PFBEAMUP | PFBEAMDOWN | PFPLOCK | PFPLLOCK);
+	has_repaired++;
     }
 }
 

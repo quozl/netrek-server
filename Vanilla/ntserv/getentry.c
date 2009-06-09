@@ -29,6 +29,127 @@
 static int deadTeam(int owner);
 static int tournamentMask(int team, int w_queue);
 
+static void tips() {
+  static int count = 0;
+  char *tip = NULL;
+
+  /* first time in, let them read the message of the day */
+  count++;
+  if (count == 1) return;
+
+  /* a default message of encouragement */
+  tip = "Well done, now come back and try some more Netrek!";
+
+  if (has_repaired == 0) {
+    tip = "Learn how to repair your ship.\n \n"
+      "You died without ever trying out the repair services of the\n"
+      "engineering deck.  The scotsman is unimpressed.\n \n"
+      "When you ask for repair, your shields will be down and you won't\n"
+      "be able to fire.  Raise your shields to cancel the repair work.\n \n"
+      "Keys: R (repair)";
+  }
+
+  if (has_beamed_down == 0 && me->p_armies > 0) {
+    tip = "Learn how to keep armies alive.\n \n"
+      "You died with armies but without ever beaming them down.\n"
+      "The armies are dead, and you lost your kills.\n \n"
+      "Let your team know that you are carrying, and they may be able to\n"
+      "protect you.  This depends on how good you seem to them.  Try to\n"
+      "avoid battle when you have armies on board unless as a last resort.\n \n"
+      "Keys: F (announce carrying armies) Control-T (taking to a planet)";
+  }
+
+  if (has_beamed_up == 0 && me->p_kills > 0) {
+    tip = "Learn how to carry.\n \n"
+      "You died with kills but without ever beaming up armies.\n \n"
+      "Once you feel you can get to an enemy planet either undetected or\n"
+      "with an escort, and especially once you have the confidence of your\n"
+      "team, it is time to learn how to make use of the kills to take planets.\n \n"
+      "Get a kill, fly to one of your planets with spare armies, beam them up,\n"
+      "take them to an enemy planet, and beam them down.\n \n"
+      "Keys: z (beam up) and x (beam down)";
+  }
+
+  if (has_bombed == 0) {
+    tip = "Learn how to bomb.\n \n"
+      "Bombing enemy planets helps your team, by preparing the planets for a take,\n"
+      "and by denying spare armies to the enemy, preventing them from taking\n"
+      "your team's planets.\n \n"
+      "Head for the nearest enemy planet with spare armies,\n"
+      "orbit it, then bomb until the spare armies are gone.\n"
+      "Then fly to another planet and repeat.\n \n"
+      "Keys: b (bomb)";
+      ;
+  }
+
+  if (has_shield_down == 0) {
+    tip = "Fuel efficiency.\n \n"
+      "You have not yet learned how to lower your shields.\n \n"
+      "Your shields are the ring around your ship, and they protect you\n"
+      "from attack until they are damaged.\n \n"
+      "Flying with your shields up costs more than having them down,\n"
+      "but remember to put them up when you are under attack.\n \n"
+      "Keys: s u\n";
+  }
+
+  /* detect death with shields down and capacity remaining */
+  if (!(me->p_flags & PFSHIELD) &&
+      me->p_shield > 0 &&
+      (me->p_whydead == KTORP ||
+       me->p_whydead == KPHASER ||
+       me->p_whydead == KPLASMA ||
+       me->p_whydead == KSHIP ||
+       me->p_whydead == KTORP2 ||
+       me->p_whydead == KSHIP2)) {
+    if (has_shield_up == 0) {
+      tip = "You forgot to raise your shields after you put them down.\n \n"
+        "Keys: s u\n";
+    } else {
+      tip = "You died with your shields down,\n"
+        "but the shields still had some power left in them.\n \n"
+        "Try to remember to raise your shields.";
+    }
+  }
+
+  /* detect non-moving death */
+  if (me->p_speed == 0 && me->p_whydead == KTORP) {
+    tip = "You died to an enemy torpedo while not moving,\n"
+      "so you had no way to dodge.\n \n"
+      "Next time, always keep moving when an enemy is nearby,\n \n"
+      "Use the number keys to set your speed.\n"
+      "Use the right-hand mouse button to turn.\n \n"
+      "Keys: 0 1 2 3 4 5 6 7 8 9 ! %\n"
+      "Keys: k\n";
+  }
+
+  if (has_set_course == 0 && has_set_speed > 0) {
+    tip = "Good, you've learned how to move, but you have to learn to turn.\n \n"
+      "Use the right-hand mouse button to turn.\n"
+      "Especially turn when you are under fire, to dodge torpedos.\n";
+  }
+
+  if (has_set_speed == 0) {
+    tip = "You haven't moved yet.  You were a sitting duck.\n \n"
+      "Use the number keys to set your speed.\n"
+      "Use the right-hand mouse button to turn.\n";
+  }
+
+  /* issue the tip to the client via message of the day clearing */
+  if (tip != NULL) {
+    char *line;
+    char *tip_c;
+
+#define MOTDCLEARLINE  "\033\030CLEAR_MOTD\000"
+    sendMotdLine(MOTDCLEARLINE);
+    tip_c = strdup(tip);
+    line = strtok(tip_c, "\n");
+    while (line != NULL) {
+      sendMotdLine(line);
+      line = strtok(NULL, "\n");
+    }
+    free(tip_c);
+  }
+}
 
 void getEntry(int *team, int *stype)
 {
@@ -44,6 +165,7 @@ void getEntry(int *team, int *stype)
     playerOffense = offenseRating(me);
     playerDefense = defenseRating(me);
 #endif
+    tips();
 
     FD_SET (CP_OUTFIT, &inputMask);
     for (;;) {

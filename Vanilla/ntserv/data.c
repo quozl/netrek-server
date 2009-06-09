@@ -491,3 +491,12 @@ int self_destruct_credit = 0;
 
 /* Whether to report the client identification of arriving players */
 int report_ident = 0;
+
+int has_set_speed = 0;
+int has_set_course = 0;
+int has_shield_up = 0;
+int has_shield_down = 0;
+int has_bombed = 0;
+int has_beamed_up = 0;
+int has_beamed_down = 0;
+int has_repaired = 0;

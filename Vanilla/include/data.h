@@ -420,4 +420,13 @@ extern double round(double);
 
 extern int report_ident;
 
+extern int has_set_speed;
+extern int has_set_course;
+extern int has_shield_up;
+extern int has_shield_down;
+extern int has_bombed;
+extern int has_beamed_up;
+extern int has_beamed_down;
+extern int has_repaired;
+
 #endif /* _h_data */
