@@ -29,6 +29,8 @@
 static int deadTeam(int owner);
 static int tournamentMask(int team, int w_queue);
 
+int tips_enabled = 0;
+
 static void tips() {
   static int count = 0;
   char *tip = NULL;
@@ -36,6 +38,8 @@ static void tips() {
   /* first time in, let them read the message of the day */
   count++;
   if (count == 1) return;
+
+  if (!tips_enabled) return;
 
   /* a default message of encouragement */
   tip = "Well done, now come back and try some more Netrek!";
@@ -149,14 +153,16 @@ static void tips() {
     tip_c = strdup(tip);
     line = strtok(tip_c, "\n");
     while (line != NULL) {
+      int len = strlen(line);
+      if (len == 0) continue;
+      len--;
+      if (line[len] == '\n') line[len] = '\0';
       sendMotdLine(line);
       line = strtok(NULL, "\n");
     }
     free(tip_c);
   }
 }
-
-int tips_enabled = 0;
 
 void getEntry(int *team, int *stype)
 {
@@ -172,7 +178,7 @@ void getEntry(int *team, int *stype)
     playerOffense = offenseRating(me);
     playerDefense = defenseRating(me);
 #endif
-    if (tips_enabled) tips();
+    tips();
 
     FD_SET (CP_OUTFIT, &inputMask);
     for (;;) {
