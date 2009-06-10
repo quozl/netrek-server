@@ -40,6 +40,9 @@ static void tips() {
   /* a default message of encouragement */
   tip = "Well done, now come back and try some more Netrek!";
 
+  // FIXME: if explosion did no damage, suggest that the explosion be
+  // positioned more carefully.
+
   if (has_repaired == 0) {
     tip = "Learn how to repair your ship.\n \n"
       "You died without ever trying out the repair services of the\n"
@@ -60,6 +63,7 @@ static void tips() {
   }
 
   if (has_beamed_up == 0 && me->p_kills > 0) {
+    // FIXME: only if kept kills for a reasonable time
     tip = "Learn how to carry.\n \n"
       "You died with kills but without ever beaming up armies.\n \n"
       "Once you feel you can get to an enemy planet either undetected or\n"
@@ -71,6 +75,7 @@ static void tips() {
   }
 
   if (has_bombed == 0) {
+    // FIXME: only if the enemy has planets that need bombing
     tip = "Learn how to bomb.\n \n"
       "Bombing enemy planets helps your team, by preparing the planets for a take,\n"
       "and by denying spare armies to the enemy, preventing them from taking\n"
@@ -151,6 +156,8 @@ static void tips() {
   }
 }
 
+int tips_enabled = 0;
+
 void getEntry(int *team, int *stype)
 {
     int i;
@@ -165,7 +172,7 @@ void getEntry(int *team, int *stype)
     playerOffense = offenseRating(me);
     playerDefense = defenseRating(me);
 #endif
-    tips();
+    if (tips_enabled) tips();
 
     FD_SET (CP_OUTFIT, &inputMask);
     for (;;) {

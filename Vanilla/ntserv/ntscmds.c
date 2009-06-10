@@ -64,6 +64,7 @@ void do_time_msg(char *comm, struct message *mess);
 void do_sbtime_msg(char *comm, struct message *mess);
 void do_queue_msg(char *comm, struct message *mess);
 void do_nowobble(char *comm, struct message *mess);
+void do_tips(char *comm, struct message *mess);
 #ifdef EXPERIMENTAL_BE
 void do_be(char *comm, struct message *mess);
 void do_sub(char *comm, struct message *mess);
@@ -177,6 +178,10 @@ static struct command_handler_2 nts_commands[] =
 		0,
 		"Test new wobble on planet lock fix.",
 		do_nowobble },			/* NOWOBBLE */
+    { "TIPS",
+		0,
+		"Test new tips feature, may require client support.",
+		do_tips },			/* TIPS */
 #ifdef EXPERIMENTAL_BE
     { "BE",
 		0,
@@ -959,6 +964,21 @@ void do_nowobble(char *comm, struct message *mess)
 
     pmessage(who, MINDIV, addr, "No wobble fix is now %s [%d] {%s}", 
 	     nowobble ? "on (new test mode)" : "off (classic mode)", nowobble, comm );
+}
+
+extern int tips_enabled;
+void do_tips(char *comm, struct message *mess)
+{
+    int who;
+    char *addr;
+
+    who = mess->m_from;
+    addr = addr_mess(who,MINDIV);
+
+    tips_enabled = !tips_enabled;
+
+    pmessage(who, MINDIV, addr, "Tips test mode is now %s", 
+	     tips_enabled ? "on (new test mode)" : "off (classic mode)");
 }
 
 #ifdef EXPERIMENTAL_BE
