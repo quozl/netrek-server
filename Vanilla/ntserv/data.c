@@ -417,6 +417,7 @@ int F_why_dead_2 = 0;			/* Use additional p_whydead states */
 int F_auto_weapons = 0;			/* allow client to autoaim/fire */
 int F_sp_rank = 0;			/* send rank_spacket */
 int F_sp_ltd = 0;			/* send ltd_spacket */
+int F_tips = 0;				/* supports motd clearing and tips */
 int mute = 0;
 int muteall = 0;
 int remoteaddr = -1;		/* inet address in net format */

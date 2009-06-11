@@ -111,6 +111,16 @@ AUTO_WEAPONS            S       OFF
 SP_RANK                 S       ON
 # Client can handle ltd_spacket
 SP_LTD                  S       ON
+# Client can handle motd clearing for tips, several clients have a
+# bug, which will cause them to crash if given a motd clear.
+# Affected: Netrek XP Mod
+# Affected: Netrek XP 2006
+# Affected: Netrek XP 2009
+# Affected: netrek-client-cow-3.2.10 and lower
+# Unaffected: brmh (usually built without #define EM)
+# Unaffected: netrek-client-pygame
+# Untested: MacTrek
+TIPS                    S       OFF
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
