@@ -120,7 +120,7 @@ SP_LTD                  S       ON
 # Unaffected: brmh (usually built without #define EM)
 # Unaffected: netrek-client-pygame
 # Untested: MacTrek
-TIPS                    S       OFF
+TIPS                    S       ON
 #
 #
 # OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
