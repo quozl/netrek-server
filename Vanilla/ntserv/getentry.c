@@ -29,7 +29,7 @@
 static int deadTeam(int owner);
 static int tournamentMask(int team, int w_queue);
 
-int tips_enabled = 0;
+int tips_enabled = 1;
 
 static void tips() {
   static int count = 0;
@@ -39,6 +39,10 @@ static void tips() {
   count++;
   if (count == 1) return;
 
+  /* do not proceed if client lacks support */
+  if (!F_tips) return;
+
+  /* do not proceed if user has toggled tips off */
   if (!tips_enabled) return;
 
   /* a default message of encouragement */
