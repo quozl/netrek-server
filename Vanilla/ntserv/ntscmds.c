@@ -966,19 +966,25 @@ void do_nowobble(char *comm, struct message *mess)
 	     nowobble ? "on (new test mode)" : "off (classic mode)", nowobble, comm );
 }
 
-extern int tips_enabled;
 void do_tips(char *comm, struct message *mess)
 {
     int who;
     char *addr;
+    extern int tips_enabled;
 
     who = mess->m_from;
     addr = addr_mess(who,MINDIV);
 
+    if (!F_tips) {
+      pmessage(who, MINDIV, addr,
+               "Your client does not support tips, please upgrade.");
+      return;
+    }
+
     tips_enabled = !tips_enabled;
 
-    pmessage(who, MINDIV, addr, "Tips test mode is now %s", 
-	     tips_enabled ? "on (new test mode)" : "off (classic mode)");
+    pmessage(who, MINDIV, addr, "Tips mode is now %s",
+             tips_enabled ? "on (send play tips on death)" : "off");
 }
 
 #ifdef EXPERIMENTAL_BE
