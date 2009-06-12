@@ -977,8 +977,7 @@ void do_tips(char *comm, struct message *mess)
 
     if (!F_tips) {
       pmessage(who, MINDIV, addr,
-               "Your client does not support tips, please upgrade.");
-      return;
+               "Your client does not support tips properly, please upgrade.");
     }
 
     tips_enabled = !tips_enabled;
