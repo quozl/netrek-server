@@ -4,9 +4,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "defs.h"
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"

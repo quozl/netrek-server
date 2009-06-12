@@ -103,8 +103,11 @@ static void checkmaxkills(int pl);
 #endif /* LTD_STATS */
 static void army_track(int type, void *who, void *what, int num);
 static void udplanets(void);
+#ifdef INL_POP
+
 static void PopPlanet(int plnum);
 static void RandomizePopOrder(void);
+#endif
 static void udsurrend(void);
 static void udphaser(void);
 static void teamtimers(void);

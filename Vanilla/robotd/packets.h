@@ -114,7 +114,7 @@
 #define CP_RESERVED	33		/* for future use */
 
 #ifdef ATM
-/* NOTE: not implemented.
+/* NOTE: not implemented. */
 #define CP_SCAN         34              /* ATM: request for player scan */
 
 #define CP_UDP_REQ      35              /* request UDP on/off */

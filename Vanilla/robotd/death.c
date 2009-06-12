@@ -7,15 +7,12 @@
 #include <signal.h>
 #include <setjmp.h>
 #include <sys/types.h>
-#ifdef hpux
-#include <time.h>
-#else
 #include <sys/time.h>
-#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "robot.h"
+#include "util.h"
 
 extern jmp_buf env;
 
@@ -25,7 +22,7 @@ static char *teamstring[9] = {"", "and the Federation",
 			 "and the Klingon Empire", "", "", "",
 			 "and the Orions"};
 
-death()
+void death()
 {
     char buf[80];
     int ghost = 0;

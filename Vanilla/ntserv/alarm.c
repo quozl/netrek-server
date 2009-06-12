@@ -4,9 +4,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include "defs.h"
 #include "alarm.h"
 

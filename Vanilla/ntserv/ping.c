@@ -10,9 +10,7 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <math.h>
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

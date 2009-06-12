@@ -6,13 +6,9 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 #include <ctype.h>
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
 #include "copyright.h"
 #include "defs.h"
 #include "struct.h"

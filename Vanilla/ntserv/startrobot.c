@@ -7,10 +7,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
-#include "defs.h"
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "proto.h"

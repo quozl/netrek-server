@@ -16,17 +16,11 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <pwd.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 #include <ctype.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include "defs.h"
-#ifdef HAVE_SYS_FCNTL_H
 #include <sys/fcntl.h>
-#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"

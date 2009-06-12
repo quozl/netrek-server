@@ -11,12 +11,8 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 #include <netinet/in.h>
 #include <signal.h>
 #include "defs.h"
@@ -2404,11 +2400,11 @@ void initSPackets(void)
     clientSelfShort.pnum = -1;
     clientGeneric32.type = 0;
     if (sizeof(struct generic_32_spacket_a) != GENERIC_32_LENGTH) {
-        fprintf(stderr, "SP_GENERIC_32 size a wrong at %d bytes\n",
+        fprintf(stderr, "SP_GENERIC_32 size a wrong at %lu bytes\n",
                 sizeof(struct generic_32_spacket_a));
     }
     if (sizeof(struct generic_32_spacket_b) != GENERIC_32_LENGTH) {
-        fprintf(stderr, "SP_GENERIC_32 size b wrong at %d bytes\n",
+        fprintf(stderr, "SP_GENERIC_32 size b wrong at %lu bytes\n",
                 sizeof(struct generic_32_spacket_b));
     }
 }

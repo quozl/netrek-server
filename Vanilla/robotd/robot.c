@@ -3,6 +3,7 @@
 #include <strings.h>
 #include <limits.h>
 #include <math.h>
+#include <unistd.h>
 #include <sys/time.h>
 #include "defs.h"
 #include "struct.h"
@@ -11,6 +12,7 @@
 #include "robot.h"
 
 /* XXX */
+void init_timers();
 static int	in_game;
 
 /*
@@ -2224,7 +2226,7 @@ myfight_speed()
    return s;
 }
 
-init_timers()
+void init_timers()
 {
    /* intervals */
    bzero(&_timers, sizeof(_timers));

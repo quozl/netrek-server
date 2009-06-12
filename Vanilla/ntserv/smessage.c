@@ -9,9 +9,7 @@
 #include <signal.h>
 #include <ctype.h>
 #include <stdarg.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

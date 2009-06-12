@@ -27,18 +27,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "defs.h"
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-#ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#endif
-#ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
-#endif
 #include "struct.h"
 #include "data.h"
 #include "packets.h"

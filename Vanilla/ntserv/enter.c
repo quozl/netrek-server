@@ -13,9 +13,7 @@
 #include <ctype.h>
 #include <time.h>		/* 7/16/91 TC */
 #include <netinet/in.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

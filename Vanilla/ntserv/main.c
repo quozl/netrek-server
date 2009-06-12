@@ -12,22 +12,15 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <signal.h>
-#include "defs.h"
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
-#endif
+#include "defs.h"
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
 #include "genspkt.h"
 #include "patchlevel.h"
-#define SVERS
 #include "version.h"
 #ifdef SENDFLAGS
 #include "../cflags.h"
