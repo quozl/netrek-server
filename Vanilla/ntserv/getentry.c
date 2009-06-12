@@ -31,22 +31,15 @@ static int tournamentMask(int team, int w_queue);
 
 int tips_enabled = 1;
 
-static void tips() {
-  static int count = 0;
+static char *tip_select() {
   char *tip = NULL;
 
-  /* first time in, let them read the message of the day */
-  count++;
-  if (count == 1) return;
-
-  /* do not proceed if client lacks support */
-  if (!F_tips) return;
-
-  /* do not proceed if user has toggled tips off */
-  if (!tips_enabled) return;
-
   /* a default message of encouragement */
-  tip = "Well done, now come back and try some more Netrek!";
+  if (F_tips) {
+    tip = "";
+  } else {
+    tip = "Well done, now come back and try some more Netrek!";
+  }
 
   // FIXME: if explosion did no damage, suggest that the explosion be
   // positioned more carefully.
@@ -70,10 +63,11 @@ static void tips() {
       "Keys: F (announce carrying armies) Control-T (taking to a planet)";
   }
 
-  if (has_beamed_up == 0 && me->p_kills > 0) {
+  if (has_beamed_up == 0 && me->p_kills > 2) {
     // FIXME: only if kept kills for a reasonable time
     tip = "Learn how to carry.\n \n"
-      "You died with kills but without ever beaming up armies.\n \n"
+      "You died with kills but without ever beaming up armies.\n"
+      "Your kills are lost, you will have to get them again.\n \n"
       "Once you feel you can get to an enemy planet either undetected or\n"
       "with an escort, and especially once you have the confidence of your\n"
       "team, it is time to learn how to make use of the kills to take planets.\n \n"
@@ -147,13 +141,41 @@ static void tips() {
       "Use the right-hand mouse button to turn.\n";
   }
 
-  /* issue the tip to the client via message of the day clearing */
-  if (tip != NULL) {
+  return tip;
+}
+
+static void tips() {
+  static int count = 0;
+  char *tip = NULL;
+
+  /* first time in, */
+  count++;
+  if (count == 1) {
+    /* do not show message based tips unless they ask after login */
+    if (!F_tips) tips_enabled = 0;
+    /* show no tip this once, let them read the message of the day */
+    return;
+  }
+
+  /* do not proceed if user has toggled tips off */
+  if (!tips_enabled) return;
+
+  /* select the most pertinent tip */
+  tip = tip_select();
+  if (strlen(tip) == 0) return;
+
+  /* issue the tip to the client */
+  {
     char *line;
     char *tip_c;
 
+    if (F_tips) {
 #define MOTDCLEARLINE  "\033\030CLEAR_MOTD\000"
-    sendMotdLine(MOTDCLEARLINE);
+      sendMotdLine(MOTDCLEARLINE);
+    } else {
+      if (!F_tips) pmessage(me->p_no, MINDIV, "-- -- -- -- -- --", line);
+    }
+
     tip_c = strdup(tip);
     line = strtok(tip_c, "\n");
     while (line != NULL) {
@@ -161,10 +183,16 @@ static void tips() {
       if (len == 0) continue;
       len--;
       if (line[len] == '\n') line[len] = '\0';
-      sendMotdLine(line);
+      if (F_tips) {
+        sendMotdLine(line);
+      } else {
+        if (strlen(line) > 1)
+          pmessage(me->p_no, MINDIV, "", line);
+      }
       line = strtok(NULL, "\n");
     }
     free(tip_c);
+    if (!F_tips) pmessage(me->p_no, MINDIV, "-- -- -- -- -- --", line);
   }
 }
 
