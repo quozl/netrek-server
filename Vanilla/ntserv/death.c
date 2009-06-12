@@ -39,8 +39,8 @@ void death(void)
     case TOURNSTART:
 	break;
     case KWINNER:
-        if ((queues[QU_PICKUP].q_flags & QU_OPEN) &&
-	    (queues[QU_PICKUP].count > 0) &&
+        if (genoquit && (queues[QU_PICKUP].q_flags & QU_OPEN) &&
+	    (queues[QU_PICKUP].count >= genoquit) &&
 	    !(me->p_flags & PFOBSERV)){
 	  mustexit = 1;
 	}

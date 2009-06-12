@@ -379,6 +379,7 @@ extern int eject_vote_vicious;
 extern int duplicates;
 extern int deny_duplicates;
 extern int blogging;
+extern int genoquit;
 
 #ifdef STURGEON
 #define SPECPLAS 1

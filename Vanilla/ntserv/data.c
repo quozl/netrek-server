@@ -437,6 +437,7 @@ int eject_vote_vicious=0;
 int duplicates=3;
 int deny_duplicates=0;
 int blogging=1;
+int genoquit=0;
 
 #ifdef STURGEON
 int sturgeon = 0;

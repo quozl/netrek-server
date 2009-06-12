@@ -39,6 +39,13 @@ EJECT_VOTE_ONLY_IF_QUEUE=0
 #	(requires EJECT_VOTE_ENABLE=1)
 EJECT_VOTE_VICIOUS=0
 #
+#	Force players to quit upon genocide if there is a wait queue
+#	to allow more equal playing time. This has the adverse side
+#	effect of causing players who might have continued playing to
+#	not return after being forced to quit.
+#       Set this to 0 to never force players to quit.
+FORCE_GENO_QUIT=8
+#
 #	Time distortion constant
 #	(Warning: intended for testing only, as changing this disturbs
 #	reaction times of players and they learn the new rate, resulting
