@@ -13,6 +13,9 @@
 #       work, if password is left as "password", it will NOT be accepted)
 ADMIN_PASSWORD=password
 #
+#       Allow admins to execute Unix shell commands on the host server
+ADMIN_EXEC=0
+#
 #	Enable voting by players
 VOTING=0
 #
