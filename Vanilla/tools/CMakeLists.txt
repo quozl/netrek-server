@@ -8,6 +8,10 @@ INCLUDE_DIRECTORIES (
 ### Defines
 #ADD_DEFINITIONS ("-DFEATURE_PACKETS")
 
+### Libraries
+IF (HAVE_LIBCRYPT)
+	SET (CRYPT_LIBRARIES crypt)
+ENDIF (HAVE_LIBCRYPT)
 
 ### Equivalent to SRCS in Makefile.in
 SET (all_SOURCES
@@ -62,7 +66,6 @@ SET (TOOLS
 	fun
 	convert
 	ltd_dump
-	ltd_dump_html
 	ltd_convert
 	conq_vert
 	metaget
@@ -90,7 +93,14 @@ TARGET_LINK_LIBRARIES (showgalaxy
 	${CURSES_LIBRARY}
 )
 
-### Not sure why it's called updated but build on update.[co] :-(
+### ltd_dump_html needs a little bit more LIBs and linker help
+ADD_EXECUTABLE (ltd_dump_html ltd_dump_html.c)
+TARGET_LINK_LIBRARIES (ltd_dump_html
+	netrek
+	${CRYPT_LIBRARIES}
+)
+
+### Not sure why it's called updated but build on update. :-(
 ADD_EXECUTABLE (updated update.c)
 TARGET_LINK_LIBRARIES (updated 
 	netrek
@@ -98,5 +108,5 @@ TARGET_LINK_LIBRARIES (updated
 
 ###	trekon required xbiff
 IF (XBIFF_EXECUTABLE)
-	MESSAGE (STATUS "No implemented yet.")
+	MESSAGE (STATUS "Not implemented yet.")
 ENDIF (XBIFF_EXECUTABLE)
