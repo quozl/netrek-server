@@ -1,3 +1,5 @@
+#include <sys/time.h>
+
 /* bind to any IP address available on the local host */
 #define SOLICIT_BIND_ANY 0
 
