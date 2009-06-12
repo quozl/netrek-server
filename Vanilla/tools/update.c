@@ -22,7 +22,6 @@
 #include "struct.h"
 #include "data.h"
 #include "patchlevel.h"
-#define SVERS
 #include "version.h"
 
 /* DEFINABLES. Set these to your enviroment */
