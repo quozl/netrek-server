@@ -173,7 +173,7 @@ static void tips() {
 #define MOTDCLEARLINE  "\033\030CLEAR_MOTD\000"
       sendMotdLine(MOTDCLEARLINE);
     } else {
-      if (!F_tips) pmessage(me->p_no, MINDIV, "-- -- -- -- -- --", line);
+      if (!F_tips) pmessage(me->p_no, MINDIV, "", "-- -- -- -- -- --");
     }
 
     tip_c = strdup(tip);
@@ -192,7 +192,7 @@ static void tips() {
       line = strtok(NULL, "\n");
     }
     free(tip_c);
-    if (!F_tips) pmessage(me->p_no, MINDIV, "-- -- -- -- -- --", line);
+    if (!F_tips) pmessage(me->p_no, MINDIV, "", "-- -- -- -- -- --");
   }
 }
 
