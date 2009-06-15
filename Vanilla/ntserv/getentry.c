@@ -41,6 +41,8 @@ static char *tip_select() {
     tip = "Well done, now come back and try some more Netrek!";
   }
 
+  // FIXME: translate keys using user keymap
+
   // FIXME: if explosion did no damage, suggest that the explosion be
   // positioned more carefully.
 
@@ -151,10 +153,11 @@ static void tips() {
   /* first time in, */
   count++;
   if (count == 1) {
-    /* do not show message based tips unless they ask after login */
-    if (!F_tips) tips_enabled = 0;
     /* show no tip this once, let them read the message of the day */
     return;
+  } else if (count == 2) {
+    /* do not show message based tips unless they ask after first death */
+    if (!F_tips) tips_enabled = 0;
   }
 
   /* do not proceed if user has toggled tips off */
