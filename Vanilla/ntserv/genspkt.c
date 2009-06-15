@@ -196,8 +196,8 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
   if (f_sp_rank_was != F_sp_rank) {
     if (F_sp_rank && pl->p_stats.st_rank > RANK_ADMIRAL) {
       login->rank = -1; /* invalidate previous packet data */
+      f_sp_rank_was = F_sp_rank; /* indicate correct rank was sent */
     }
-    f_sp_rank_was = F_sp_rank;
   }
 
   /* avoid resend if input data unchanged */
@@ -225,6 +225,7 @@ int sndLogin( struct plyr_login_spacket* login, struct player* pl)
     struct plyr_login_spacket limited;
     memcpy(&limited, login, sizeof(struct plyr_login_spacket));
     limited.rank = RANK_ADMIRAL;
+    f_sp_rank_was = 0; /* indicated limited rank was sent */
     sendClientPacket(&limited);
   } else {
     sendClientPacket(login);
