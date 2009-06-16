@@ -8,7 +8,6 @@ Summary
             (default path is /usr/local/games/netrek)
 	2)  type "make install",
 	3)  "cd" to the path you gave, or /usr/local/games/netrek,
-	    3a) Under Cygwin, ensure that /usr/sbin/cygserver.exe is running
 	4)  "bin/netrekd" to start the server,
 	5)  use a client to connect to the server.
 
