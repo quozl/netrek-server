@@ -147,7 +147,7 @@ FIND_PROGRAM (XBIFF_EXECUTABLE
 
 IF (RSA)
 	ADD_DEFINITIONS("-DRSA -DSHOW_RSA")
-	MESSAGE (STATS "Building with RSA components active")
+	MESSAGE (STATUS "Building with RSA components active")
 ENDIF (RSA)
 
 ADD_DEFINITIONS(
