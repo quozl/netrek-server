@@ -12,7 +12,7 @@
 #include "struct.h"
 #include "data.h"
 #include "robot.h"
-#include "util.h"
+#include "../include/util.h"
 
 extern jmp_buf env;
 

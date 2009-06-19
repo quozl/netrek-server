@@ -9,13 +9,16 @@
 #include <errno.h>
 #include <time.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <string.h>
 #ifdef PLAYER_INDEX
 #include <gdbm.h>
 #endif
 #ifdef HAVE_CRYPT_H
 #include <crypt.h>
+#include <unistd.h>
+#else
+#define __USE_XOPEN
+#include <unistd.h>
 #endif
 #include "defs.h"
 

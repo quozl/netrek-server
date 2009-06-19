@@ -1,9 +1,4 @@
 /* store the version info here */
 
-#ifdef SVERS
-static char serv_version[]="Vanilla server version 2.15";
-#endif
-
-#ifdef MVERS
-static char mvers[]="2.15";
-#endif
+#define SERVER_NAME "netrek-server vanilla"
+#define SERVER_VERSION "2.15"

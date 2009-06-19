@@ -648,10 +648,10 @@ void makemotd(char *motd_name, char *logo)
     }
 
     fprintf(motd,"\n-------------------------------------------------------------------------------\n");
-    fprintf(motd,"            Patchlevel %d of %s\n",PATCHLEVEL,serv_version);
+    fprintf(motd,"            %s.%d/n", SERVER_VERSION, PATCHLEVEL);
     fclose(motd);
 }
-		
+
 void addNewPlayer(char *name, struct player *pl, int mode)
 {
     struct rawdesc *temp;

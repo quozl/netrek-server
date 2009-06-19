@@ -153,7 +153,7 @@ int main(int argc, char **argv)
     (void) setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0);
 
     for (;;)
-	pause;
+      pause();
 }
 
 void action(int ignored)

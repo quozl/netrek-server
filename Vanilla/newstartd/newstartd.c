@@ -1,7 +1,3 @@
-#ifndef lint
-static char vcid[] = "$Id: newstartd.c,v 1.9 2006/05/08 08:50:21 quozl Exp $";
-#endif /* lint */
-
 /*
  *   There's a really bad hack in newstartd.c that refuses more than 1
  *   connection from any hostname.  It's bad because it uses /usr/ucb/netstat
@@ -259,9 +255,9 @@ int main (int argc, char *argv[])
 	perror("fork");
 	exit(1);
       }
-      fprintf (stderr, "netrekd: Vanilla Netrek Listener %s.%d started, pid %d,\n"
-	       "netrekd: logging to %s\n",
-	       mvers, PATCHLEVEL, pid, LogFile );
+      fprintf (stderr, "netrekd: %s %s.%d started, pid %d,\n"
+               "netrekd: logging to %s\n",
+               SERVER_NAME, SERVER_VERSION, PATCHLEVEL, pid, LogFile );
       exit(0);
     }
 
@@ -571,7 +567,7 @@ static void statistics (int port_idx, char *ip)
 		   prog[i].forks );
 	}
       }
-      fprintf (client, "%s\nVersion %spl%d\n", vcid, mvers, PATCHLEVEL );
+      fprintf(client, "%s\n%s.%d\n", SERVER_NAME, SERVER_VERSION, PATCHLEVEL);
       fflush (client);
       if (fclose (client) < 0) perror("fclose");
     } else {

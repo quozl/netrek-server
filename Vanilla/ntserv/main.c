@@ -541,7 +541,8 @@ static void sendMotd(void)
     int hour;
 
 #ifdef SENDPATCHLEVEL
-    sprintf(buf, "Welcome to %s, patchlevel %d", serv_version, PATCHLEVEL);
+    sprintf(buf, "Welcome to %s %s.%d", SERVER_NAME, SERVER_VERSION,
+            PATCHLEVEL);
     sendMotdLine(buf);
 #endif
 #ifdef SENDFLAGS
