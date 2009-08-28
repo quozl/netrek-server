@@ -646,15 +646,15 @@ static void cleanup(int terminate)
 {
     struct player *j;
     int i, retry;
-    char msg[80];
+    char why[80];
 
-    snprintf(msg, 80, " because %s is cleaning up.", roboname);
+    snprintf(why, 80, " because %s is cleaning up.", roboname);
 
     do {
         /* terminate all robots */
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
             if ((j->p_status == PALIVE) && j != me && is_robot(j))
-                stop_this_bot(j, msg);
+                stop_this_bot(j, why);
         }
 
         for (i=0; i<100; i++) {
