@@ -49,12 +49,12 @@ char *roboname = "Kathy";
 #define PLAYERFUSE      1
 
 static char    *names[NUMNAMES] =
-{"Annihilator", "Banisher", "Blaster",
- "Demolisher", "Destroyer", "Eliminator",
- "Eradicator", "Exiler", "Obliterator",
- "Razer", "Demoralizer", "Smasher",
- "Shredder", "Vanquisher", "Wrecker",
- "Ravager", "Despoiler", "Abolisher",
+{"Annihilator", "Banisher",    "Blaster",
+ "Demolisher",  "Destroyer",   "Eliminator",
+ "Eradicator",  "Exiler",      "Obliterator",
+ "Razer",       "Demoralizer", "Smasher",
+ "Shredder",    "Vanquisher",  "Wrecker",
+ "Ravager",     "Despoiler",   "Abolisher",
  "Emasculator", "Decimator"};
 
 static  char    hostname[64];
@@ -95,7 +95,7 @@ static void terminate(int);
 static void savegalaxy(void);
 static void restoregalaxy(void);
 static void save_carried_armies(void);
- 
+
 static void
 reaper(int sig)
 {
@@ -112,7 +112,7 @@ main(argc, argv)
      char           *argv[];
 {
     int pno;
- 
+
 #ifndef TREKSERVER
     if (gethostname(hostname, 64) != 0) {
         perror("gethostname");
@@ -137,8 +137,8 @@ main(argc, argv)
 
     target = -1;                /* no target 7/27/91 TC */
     if ((pno = pickslot(QU_PRET_DMN)) < 0) {
-       printf("exiting! due pickslot returning %d\n", pno);
-       exit(0);
+        printf("exiting! due pickslot returning %d\n", pno);
+        exit(0);
     }
     me = &players[pno];
     myship = &me->p_ship;
@@ -154,7 +154,7 @@ main(argc, argv)
 
     me->p_pos = -1;                     /* So robot stats don't get saved */
     me->p_flags |= (PFROBOT | PFCLOAK); /* Mark as a robot and hide it */
-    
+
     /* don't appear in the galaxy */
     p_x_y_set(me, -100000, -100000);
     me->p_hostile = 0;
@@ -163,12 +163,6 @@ main(argc, argv)
     me->p_team = 0;     /* indep */
 
     oldmctl = mctl->mc_current;
-
-#ifdef nodef
-    for (i = 0; i <= oldmctl; i++) {
-        check_command(&messages[i]);
-    }
-#endif
 
     if (status->tourn)
         realT = 1;
@@ -196,7 +190,7 @@ main(argc, argv)
 }
 
 void checkmess()
-{ 
+{
     static int no_bots = 0;
     static int time_in_T = 0;
 #ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
@@ -234,15 +228,15 @@ void checkmess()
     if ((ticks % ROBOCHECK) == 0) {
         if ((no_bots > time_in_T || no_bots >= 300) && realT) {
             if (pret_save_galaxy) {
-                messAll(255,roboname,"*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
-                messAll(255,roboname,"*** Galaxy will be restored if T-mode starts again within %d minutes ***", pret_galaxy_lifetime/60);
+                messAll(255, roboname, "*** Pre-T Entertainment restarting. T-mode galaxy saved. ***");
+                messAll(255, roboname, "*** Galaxy will be restored if T-mode starts again within %d minutes ***", pret_galaxy_lifetime/60);
                 if (pret_save_armies)
                     save_carried_armies();
                 savegalaxy();
                 galaxysaved = 1;
                 savedtime = time((time_t *) 0);
             } else {
-                messAll(255,roboname,"*** Pre-T Entertainment restarting. ***");
+                messAll(255, roboname, "*** Pre-T Entertainment restarting. ***");
             }
             resetPlanets();
             realT = 0;
@@ -250,14 +244,14 @@ void checkmess()
         }
 
         if (num_humans(0) < 8 && realT) {
-            if((no_bots % 60) == 0) {
-                messAll(255,roboname,"Pre-T Entertainment will start in %d minutes if T-mode doesn't return...",
-                        (((300<time_in_T)?300:time_in_T)-no_bots)/60);
+            if ((no_bots % 60) == 0) {
+                messAll(255, roboname, "Pre-T Entertainment will start in %d minutes if T-mode doesn't return...",
+                        (((300 < time_in_T) ? 300 : time_in_T) - no_bots) / 60);
             }
             no_bots += ROBOCHECK / PERSEC;
-        }
-        else
+        } else {
             no_bots = 0;
+        }
     }
 
     /* check if either side has won */
@@ -267,13 +261,13 @@ void checkmess()
 
     /* Stop a robot. */
     if ((ticks % ROBOEXITWAIT) == 0) {
-        if(robot_debug_target != -1) {
+        if (robot_debug_target != -1) {
             messOne(255, roboname, robot_debug_target,
                     "Total Players: %d  Current bots: %d  Current human players: %d",
                     totalPlayers(1), totalRobots(0), num_humans(0));
         }
-        if(totalPlayers(1) > PT_MAX_WITH_ROBOTS) {
-            if(robot_debug_target != -1) {
+        if (totalPlayers(1) > PT_MAX_WITH_ROBOTS) {
+            if (robot_debug_target != -1) {
                 messOne(255, roboname, robot_debug_target, "Stopping a robot");
                 messOne(255, roboname, robot_debug_target, "Current bots: %d  Current human players: %d",
                         totalRobots(0), num_humans(0));
@@ -314,23 +308,22 @@ void checkmess()
 
    /* Reset for real T mode ? */
    if ((ticks % ROBOCHECK) == 0) {
-        if(totalRobots(0) == 0 && totalPlayers(0) >= 8) {
+        if (totalRobots(0) == 0 && totalPlayers(0) >= 8) {
             time_in_T += ROBOCHECK / PERSEC;
-            if(realT == 0) {
+            if (realT == 0) {
                 time_in_T = 0;
                 realT = 1;
                 status->gameup &= ~GU_BOT_IN_GAME;
-                messAll(255,roboname,"Resetting for real T-mode!");
+                messAll(255, roboname, "Resetting for real T-mode!");
                 obliterate(0, TOURNSTART, 0, 1);
                 if (pret_save_galaxy) {
-                    if (galaxysaved)
-                    {
+                    if (galaxysaved) {
                         now = time((time_t *) 0);
                         if ((now - savedtime) < pret_galaxy_lifetime) {
-                            messAll(255,roboname,"Restoring previous T-mode galaxy.");
+                            messAll(255, roboname, "Restoring previous T-mode galaxy.");
                             restoregalaxy();
                         } else {
-                            messAll(255,roboname,"Saved T-mode galaxy expired - creating new galaxy");
+                            messAll(255, roboname, "Saved T-mode galaxy expired - creating new galaxy");
                             resetPlanets();
                         }
                         galaxysaved = 0;
@@ -345,21 +338,21 @@ void checkmess()
 
     if ((ticks % SENDINFO) == 0) {
         if (totalRobots(0) > 0) {
-            messAll(255,roboname,"              Welcome to the Pre-T Entertainment!");
-            messAll(255,roboname," ");
-            messAll(255,roboname,"During Pre-T mode you are permitted to bomb and take planets.");
-            messAll(255,roboname,"However, rank and your stats will NOT increase during this time.");
-            messAll(255,roboname," ");
-            messAll(255,roboname,"Your team wins if you're up by at least %d planets.", pret_planets);
-            messAll(255,roboname," ");
-            messAll(255,roboname,"Real t-mode will start as soon as there are a minimum of 4 human");
-            messAll(255,roboname,"players per team.  Until then robots will enter and exit to");
-            messAll(255,roboname,"maintain a minimum 4 vs 4 game.");
+            messAll(255, roboname, "              Welcome to the Pre-T Entertainment!");
+            messAll(255, roboname, " ");
+            messAll(255, roboname, "During Pre-T mode you are permitted to bomb and take planets.");
+            messAll(255, roboname, "However, rank and your stats will NOT increase during this time.");
+            messAll(255, roboname, " ");
+            messAll(255, roboname, "Your team wins if you're up by at least %d planets.", pret_planets);
+            messAll(255, roboname, " ");
+            messAll(255, roboname, "Real t-mode will start as soon as there are a minimum of 4 human");
+            messAll(255, roboname, "players per team.  Until then robots will enter and exit to");
+            messAll(255, roboname, "maintain a minimum 4 vs 4 game.");
         }
     }
-    while (oldmctl!=mctl->mc_current) {
+    while (oldmctl != mctl->mc_current) {
         oldmctl++;
-        if (oldmctl==MAXMESSAGE) oldmctl=0;
+        if (oldmctl == MAXMESSAGE) oldmctl = 0;
         robohelp(me, oldmctl, roboname);
     }
 }
@@ -379,14 +372,10 @@ static int totalPlayers(int noteam)
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j == me) continue;
-        if (j->p_status == PFREE)
-            continue;
-        if (j->p_flags & PFROBOT)
-            continue;
-        if (j->p_flags & PFOBSERV)
-            continue;
-        if (!noteam && (j->p_team == ALLTEAM))
-            continue;
+        if (j->p_status == PFREE) continue;
+        if (j->p_flags & PFROBOT) continue;
+        if (j->p_flags & PFOBSERV) continue;
+        if (!noteam && (j->p_team == ALLTEAM)) continue;
         count++;
    }
    return count;
@@ -400,25 +389,20 @@ static int num_humans(int team)
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j == me) continue;
-        if (j->p_status == PFREE)
-            continue;
-        if (j->p_flags & PFROBOT)
-            continue;
-        if (j->p_status == POBSERV)
-            continue;
-        if(team != 0 && j->p_team != team)
-            continue;
+        if (j->p_status == PFREE) continue;
+        if (j->p_flags & PFROBOT) continue;
+        if (j->p_status == POBSERV) continue;
+        if (team != 0 && j->p_team != team) continue;
         if (!is_robot(j)) {
             /* Found a human. */
             count++;
-            if(robot_debug_target != -1 && robot_debug_level >= 2) {
+            if (robot_debug_target != -1 && robot_debug_level >= 2) {
                 messOne(255, roboname, robot_debug_target,
                         "%d: Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
             }
-        }
-        else {
-            if(robot_debug_target != -1 && robot_debug_level >= 2) {
+        } else {
+            if (robot_debug_target != -1 && robot_debug_level >= 2) {
                 messOne(255, roboname, robot_debug_target,
                         "%d: NOT Counting %s (%s %s) as a human",
                         i, j->p_mapchars, j->p_login, j->p_full_hostname);
@@ -436,13 +420,10 @@ static int num_humans_alive()
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
         if (j == me) continue;
-        if (j->p_status != PALIVE)
-            continue;
-        if (j->p_flags & PFROBOT)
-            continue;
-        if (!is_robot(j)) {
-            count++;
-        }
+        if (j->p_status != PALIVE) continue;
+        if (j->p_flags & PFROBOT) continue;
+        if (is_robot(j)) continue;
+        count++;
    }
    return count;
 }
@@ -454,16 +435,16 @@ static void stop_a_robot(void)
     int teamToStop;
     char *why = " to make room for a human player.";
 
-    if(robot_debug_target != -1 && robot_debug_level >= 3) {
+    if (robot_debug_target != -1 && robot_debug_level >= 3) {
         messOne(255, roboname, robot_debug_target, "#1(%d): %d  #2(%d): %d",
                 team1, num_humans(team1), team2, num_humans(team2));
     }
-    if(num_humans(team1) < num_humans(team2))
+    if (num_humans(team1) < num_humans(team2))
         teamToStop = team1;
     else
         teamToStop = team2;
 
-    if(robot_debug_target != -1 && robot_debug_level >= 3) {
+    if (robot_debug_target != -1 && robot_debug_level >= 3) {
         messOne(255, roboname, robot_debug_target,
                 "Stopping from %d", teamToStop);
     }
@@ -474,10 +455,9 @@ static void stop_a_robot(void)
         if (j->p_team != teamToStop) continue;
         if (j->p_armies) continue;
         if (j == me) continue;
-        if (is_robot(j)) {
-            stop_this_bot(j, why);
-            return;
-        }
+        if (!is_robot(j)) continue;
+        stop_this_bot(j, why);
+        return;
     }
 
     /* then ignore the risk of them carrying */
@@ -485,10 +465,9 @@ static void stop_a_robot(void)
         if (j->p_status != PALIVE) continue;
         if (j->p_team != teamToStop) continue;
         if (j == me) continue;
-        if (is_robot(j)) {
-            stop_this_bot(j, why);
-            return;
-        }
+        if (!is_robot(j)) continue;
+        stop_this_bot(j, why);
+        return;
     }
 }
 
@@ -499,19 +478,14 @@ static int totalRobots(int team)
    int count = 0;
 
    for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-        if (j->p_status == PFREE)
-            continue;
-        if (j->p_flags & PFROBOT)
-            continue;
-        if (j->p_status == POBSERV)
-            continue;
+        if (j->p_status == PFREE) continue;
+        if (j->p_flags & PFROBOT) continue;
+        if (j->p_status == POBSERV) continue;
         if (j == me) continue;
-        if (team != 0 && j->p_team != team)
-            continue;
-
-        if (is_robot(j))
-            /* Found a robot. */
-            count++;
+        if (team != 0 && j->p_team != team) continue;
+        if (!is_robot(j)) continue;
+        /* Found a robot. */
+        count++;
    }
    return count;
 }
@@ -521,15 +495,15 @@ static void stop_this_bot(struct player *p, char *why)
     char msg[16];
 
     p->p_ship.s_type = STARBASE;
-    p->p_whydead=KQUIT;
-    p->p_explode=10;
-    p->p_status=PEXPLODE;
-    p->p_whodead=0;
+    p->p_whydead = KQUIT;
+    p->p_explode = 10;
+    p->p_status = PEXPLODE;
+    p->p_whodead = 0;
     sprintf(msg, "%s->ALL", roboname);
 
-    pmessage(0, MALL, msg, 
-        "Robot %s (%2s) was ejected%s",
-        p->p_name, p->p_mapchars, why);
+    pmessage(0, MALL, msg,
+             "Robot %s (%2s) was ejected%s",
+             p->p_name, p->p_mapchars, why);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
 }
 
@@ -538,20 +512,14 @@ static void save_carried_armies(void)
     int i;
     struct player *j;
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-        if (j->p_status == PFREE)
-            continue;
-        if (j->p_flags & PFROBOT)
-            continue;
-        if (j->p_status == POBSERV)
-            continue;
-        if (j->p_status == PDEAD)
-            continue;
+        if (j->p_status == PFREE) continue;
+        if (j->p_flags & PFROBOT) continue;
+        if (j->p_status == POBSERV) continue;
+        if (j->p_status == PDEAD) continue;
         if (j == me) continue;
-
-        if (j->p_armies > 0) {
-            save_armies(j);
-            j->p_armies = 0;
-        }
+        if (j->p_armies <= 0) continue;
+        save_armies(j);
+        j->p_armies = 0;
     }
 }
 
@@ -561,15 +529,15 @@ static void save_armies(struct player *p)
   char msg[16];
   sprintf (msg, "%s->ALL", roboname);
 
-  k=10*(remap[p->p_team]-1);
-  if (k>=0 && k<=30) for (i=0; i<10; i++) {
-    if (planets[i+k].pl_owner==p->p_team) {
-      planets[i+k].pl_armies += p->p_armies;
-      pmessage(0, MALL, msg, "%s's %d arm%s placed on %s",
-                     p->p_name, p->p_armies, (p->p_armies == 1) ? "y" : "ies",
-                     planets[k+i].pl_name);
-      break;
-    }
+  k = 10 * (remap[p->p_team] - 1);
+  if (k >= 0 && k <= 30) for (i=0; i<10; i++) {
+      if (planets[i+k].pl_owner == p->p_team) {
+          planets[i+k].pl_armies += p->p_armies;
+          pmessage(0, MALL, msg, "%s's %d arm%s placed on %s",
+                   p->p_name, p->p_armies, (p->p_armies == 1) ? "y" : "ies",
+                   planets[k+i].pl_name);
+          break;
+      }
   }
 }
 
@@ -588,27 +556,26 @@ num_players(int *next_team)
     team_count[ORI] = 0;
 
     for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
-        if (j->p_status != PFREE && j->p_status != POBSERV && j != me)
-            {
-                team_count[j->p_team]++;
-                c++;
-            }
+        if (j->p_status != PFREE && j->p_status != POBSERV && j != me) {
+          team_count[j->p_team]++;
+          c++;
+        }
     }
 
     /* team sanity check */
-    if(team_count[FED] != team_count[KLI]) {
-      int t = (team_count[FED]>team_count[KLI])?FED:KLI;
-      if(team1 != t) {
-        team1 = t;
-        resetPlanets();
-      }
+    if (team_count[FED] != team_count[KLI]) {
+        int t = (team_count[FED] > team_count[KLI]) ? FED : KLI;
+        if (team1 != t) {
+            team1 = t;
+            resetPlanets();
+        }
     }
-    if(team_count[ROM] != team_count[ORI]) {
-      int t = (team_count[ROM]>team_count[ORI])?ROM:ORI;
-      if(team2 != t) {
-        team2 = t;
-        resetPlanets();
-      }
+    if (team_count[ROM] != team_count[ORI]) {
+        int t = (team_count[ROM] > team_count[ORI]) ? ROM : ORI;
+        if (team2 != t) {
+            team2 = t;
+            resetPlanets();
+        }
     }
 
     /* Assign which team gets the next robot. */
@@ -691,11 +658,11 @@ static void cleanup(int terminate)
         }
 
         for (i=0; i<100; i++) {
-          usleep(20000);
-          me->p_ghostbuster = 0;
+            usleep(20000);
+            me->p_ghostbuster = 0;
         }
 
-        retry=0;
+        retry = 0;
         for (i = 0, j = players; i < MAXPLAYER; i++, j++) {
             if ((j->p_status != PFREE) && j != me && is_robot(j))
                 retry++;
@@ -710,7 +677,7 @@ static void cleanup(int terminate)
 
 /* terminate is called as a signal handler and is a wrapper for cleanup() */
 static void terminate (int ignored) {
-    cleanup (1);
+    cleanup(1);
 }
 
 /* a pre-t victory is when one team is up by pret_planets planets */
@@ -722,28 +689,28 @@ static void checkPreTVictory() {
     if (status->tourn) return;
 
     /* don't interfere with a real game */
-    if(totalRobots(0) == 0) return;
+    if (totalRobots(0) == 0) return;
 
     f = r = k = o = 0;
-    for(i=0;i<40;++i) {
-       if(planets[i].pl_owner == FED) f++; 
-       if(planets[i].pl_owner == ROM) r++; 
-       if(planets[i].pl_owner == KLI) k++; 
-       if(planets[i].pl_owner == ORI) o++; 
+    for (i=0;i<40;++i) {
+       if (planets[i].pl_owner == FED) f++;
+       if (planets[i].pl_owner == ROM) r++;
+       if (planets[i].pl_owner == KLI) k++;
+       if (planets[i].pl_owner == ORI) o++;
     }
-    if(f>=10+pret_planets) winner = FED;
-    if(r>=10+pret_planets) winner = ROM;
-    if(k>=10+pret_planets) winner = KLI;
-    if(o>=10+pret_planets) winner = ORI;
+    if (f >= 10 + pret_planets) winner = FED;
+    if (r >= 10 + pret_planets) winner = ROM;
+    if (k >= 10 + pret_planets) winner = KLI;
+    if (o >= 10 + pret_planets) winner = ORI;
 
-    if(winner > 0) {
-        messAll(255,roboname,
+    if (winner > 0) {
+        messAll(255, roboname,
                 "The %s have won this round of pre-T entertainment!",
                 team_name(winner));
         /* wait for conquer parade to complete */
         while ((status->gameup & GU_CONQUER)) {
-          usleep(20000);
-          me->p_ghostbuster = 0;
+            usleep(20000);
+            me->p_ghostbuster = 0;
         }
         obliterate(0, KWINNER, 0, 1);
         resetPlanets();
@@ -754,8 +721,9 @@ static void checkPreTVictory() {
 static void resetPlanets(void) {
     int i;
     int owner;
-    for(i=0;i<40;i++) {
-        switch(i/10) {
+
+    for (i=0;i<40;i++) {
+        switch (i/10) {
             case 0:
                 owner = FED;
                 break;
@@ -769,11 +737,11 @@ static void resetPlanets(void) {
                 owner = ORI;
                 break;
         }
-        if(planets[i].pl_armies < 3) 
+        if (planets[i].pl_armies < 3)
             planets[i].pl_armies += (random() % 3) + 2;
-        if(planets[i].pl_armies > 7) 
+        if (planets[i].pl_armies > 7)
             planets[i].pl_armies = 8 - (random() % 3);
-        if(owner != team1 && owner != team2)
+        if (owner != team1 && owner != team2)
             planets[i].pl_armies = 30;
         planets[i].pl_owner = owner;
     }
@@ -784,13 +752,12 @@ static void exitRobot(void)
 {
     if (me != NULL && me->p_team != ALLTEAM) {
         if (target >= 0) {
-            messAll(255,roboname, "I'll be back.");
-        }
-        else {
-            messAll(255,roboname,"#");
-            messAll(255,roboname,"#  %s is tired.  "
+            messAll(255, roboname, "I'll be back.");
+        } else {
+            messAll(255, roboname, "#");
+            messAll(255, roboname, "#  %s is tired.  "
                     "Pre-T Entertainment is over for now", roboname);
-            messAll(255,roboname,"#");
+            messAll(255, roboname, "#");
         }
     }
 
@@ -808,15 +775,11 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
     /* clear torps and plasmas out */
     MZERO(torps, sizeof(struct torp) * MAXPLAYER * (MAXTORP + MAXPLASMA));
     for (j = firstPlayer; j<=lastPlayer; j++) {
-        if (j->p_status == PFREE)
-            continue;
-        if (j->p_status == POBSERV)
-            continue;
-        if ((j->p_flags & PFROBOT) && killRobots == 0)
-            continue;
+        if (j->p_status == PFREE) continue;
+        if (j->p_status == POBSERV) continue;
+        if ((j->p_flags & PFROBOT) && killRobots == 0) continue;
         if (j == me) continue;
-        if ((kreason == TOURNSTART) && (j->p_ship.s_type == STARBASE))
-        {
+        if ((kreason == TOURNSTART) && (j->p_ship.s_type == STARBASE)) {
 #ifdef LTD_STATS
             if (ltd_offense_rating(j) < sb_minimal_offense)
 #else
@@ -829,8 +792,7 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
                 j->p_explode = 2 * SBEXPVIEWS / PLAYERFUSE;
             }
         }
-        if (resetShip)
-        {
+        if (resetShip) {
             j->p_kills = 0;
             if (j->p_ship.s_type != STARBASE)
                 j->p_ship.s_plasmacost = -1;
