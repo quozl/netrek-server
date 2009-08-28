@@ -1163,22 +1163,19 @@ struct player* enemy;
 void exitRobot()
 {
     if (me != NULL && me->p_team != ALLTEAM) {
-	if (target >= 0 && !quiet) {
-	    messAll(me->p_no,roboname,"I'll be back.");
-	}
-	else {
-	    messAll(me->p_no,&roboname[0],
-		    "%s %s (%s) leaving the game (%.16s@%.16s)", 
-		    ranks[me->p_stats.st_rank].name,
-		    me->p_name,
-		    me->p_mapchars, 
-		    me->p_login,
-		    me->p_monitor);
-	}
+        if (target >= 0 && !quiet) {
+            messAll(me->p_no,roboname, "I'll be back.");
+        } else {
+            messAll(me->p_no,&roboname[0],
+                    "%s %s (%s) leaving the game (%.16s@%.16s)",
+                    ranks[me->p_stats.st_rank].name,
+                    me->p_name,
+                    me->p_mapchars,
+                    me->p_login,
+                    me->p_monitor);
+        }
     }
-    
+
     freeslot(me);
     return;
 }
-
-
