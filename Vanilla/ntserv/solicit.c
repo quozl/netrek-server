@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -110,6 +111,11 @@ static int udp_attach(struct metaserver *m)
   return 1;
 }
 
+static void udp_detach(struct metaserver *m)
+{
+  close(m->sock);
+}
+
 /* transmit a packet to the metaserver */
 static int udp_tx(struct metaserver *m, char *buffer, int length)
 {
@@ -124,6 +130,131 @@ static int udp_tx(struct metaserver *m, char *buffer, int length)
   return 1;
 }
 
+static struct stat oldstat;
+
+static void initialise()
+{
+  int i;
+  FILE *file;
+
+  /* clear metaserver socket list */
+  for (i=0; i<MAXMETASERVERS; i++) metaservers[i].sock = -1;
+
+  /* open the metaserver list file */
+  file = fopen(SYSCONFDIR"/metaservers", "r");
+  if (file == NULL) file = fopen(SYSCONFDIR"/.metaservers", "r");
+  if (file == NULL) {
+    initialised++;
+    return;
+  }
+  stat(SYSCONFDIR"/metaservers", &oldstat);
+
+  /* read the metaserver list file */
+  for (i=0; i<MAXMETASERVERS; i++) {
+    struct metaserver *m = &metaservers[i];
+    char buffer[256];         /* where to hold the metaservers line */
+    char *line;               /* return from fgets() */
+    char *token;              /* current line token */
+
+    /* read a line */
+    line = fgets(buffer, 256, file);
+
+    /* if end of file reached, stop */
+    if (line == NULL) break;
+    if (feof(file)) break;
+
+    /* ignore comments */
+    if (line[0] == '#') continue;
+
+    /* parse each field, ignore the line if insufficient fields found */
+
+    token = strtok(line, " ");        /* meta host name */
+    if (token == NULL) continue;
+    strncpy(m->host, token, 32);
+
+    token = strtok(NULL, " ");        /* meta port */
+    if (token == NULL) continue;
+    m->port = atoi(token);
+
+    token = strtok(NULL, " ");        /* min solicit time */
+    if (token == NULL) continue;
+    m->minimum = atoi(token);
+
+    token = strtok(NULL, " ");        /* max solicit time */
+    if (token == NULL) continue;
+    m->maximum = atoi(token);
+
+    token = strtok(NULL, " ");        /* our host name */
+    if (token == NULL) continue;
+    strncpy(m->ours, token, 32);
+
+    token = strtok(NULL, " ");        /* server type */
+    if (token == NULL) continue;
+    strncpy(m->type, token, 2);
+
+    token = strtok(NULL, " ");        /* player port */
+    if (token == NULL) continue;
+    m->pport = atoi(token);
+
+    token = strtok(NULL, " ");        /* observer port */
+    if (token == NULL) continue;
+    m->oport = atoi(token);
+
+    token = strtok(NULL, "\n");       /* comment text */
+    if (token == NULL) continue;
+    strncpy(m->comment, token, 32);
+
+    /* force minimum and maximum delays (see note on #define) */
+    if (m->minimum < META_MINIMUM_DELAY)
+      m->minimum = META_MINIMUM_DELAY;
+    if (m->maximum > META_MAXIMUM_DELAY)
+      m->maximum = META_MAXIMUM_DELAY;
+
+    /* attach to the metaserver (DNS lookup is only delay) */
+    udp_attach(m);
+    /* place metaserver addresses in /etc/hosts to speed this */
+    /* use numeric metaserver address to speed this */
+
+    /* initialise the other parts of the structure */
+    m->sent = 0;
+    strcpy(m->prior, "");
+  }
+  initialised++;
+  fclose(file);
+}
+
+static void terminate()
+{
+  int i;
+
+  for (i=0; i<MAXMETASERVERS; i++) {
+    struct metaserver *m = &metaservers[i];
+    if (m->sock != -1) {
+      udp_detach(m);
+      m->sock = -1;
+    }
+  }
+}
+
+static void reload()
+{
+  terminate();
+  initialise();
+}
+
+static void recheck()
+{
+  struct stat newstat;
+
+  if (stat(SYSCONFDIR"/metaservers", &newstat) == 0) {
+    if (newstat.st_ino != oldstat.st_ino ||
+        newstat.st_mtime != oldstat.st_mtime) {
+      ERROR(1,("solicit: reloading %s\n", SYSCONFDIR"/metaservers"));
+      reload();
+    }
+  }
+}
+
 void solicit(int force)
 {
   int i, nplayers=0, nfree=0, nplayersall=0;
@@ -136,93 +267,11 @@ void solicit(int force)
   int gamefull = 0;               /* is the game full? */
   int isrsa = 0;                  /* is this server RSA? */
 
-  /* perform first time initialisation */
+  /* perform first time initialisation or recheck */
   if (initialised == 0) {
-    FILE *file;
-
-    /* clear metaserver socket list */
-    for (i=0; i<MAXMETASERVERS; i++) metaservers[i].sock = -1;
-
-    /* open the metaserver list file */
-    file = fopen(SYSCONFDIR"/metaservers", "r");
-    if (file == NULL) file = fopen(SYSCONFDIR"/.metaservers", "r");
-    if (file == NULL) {
-      initialised++;
-      return;
-    }
-
-    /* read the metaserver list file */
-    for (i=0; i<MAXMETASERVERS; i++) {
-      struct metaserver *m = &metaservers[i];
-      char buffer[256];         /* where to hold the metaservers line */
-      char *line;               /* return from fgets() */
-      char *token;              /* current line token */
-
-      /* read a line */
-      line = fgets(buffer, 256, file);
-
-      /* if end of file reached, stop */
-      if (line == NULL) break;
-      if (feof(file)) break;
-
-      /* ignore comments */
-      if (line[0] == '#') continue;
-
-      /* parse each field, ignore the line if insufficient fields found */
-
-      token = strtok(line, " ");        /* meta host name */
-      if (token == NULL) continue;
-      strncpy(m->host, token, 32);
-
-      token = strtok(NULL, " ");        /* meta port */
-      if (token == NULL) continue;
-      m->port = atoi(token);
-
-      token = strtok(NULL, " ");        /* min solicit time */
-      if (token == NULL) continue;
-      m->minimum = atoi(token);
-
-      token = strtok(NULL, " ");        /* max solicit time */
-      if (token == NULL) continue;
-      m->maximum = atoi(token);
-
-      token = strtok(NULL, " ");        /* our host name */
-      if (token == NULL) continue;
-      strncpy(m->ours, token, 32);
-
-      token = strtok(NULL, " ");        /* server type */
-      if (token == NULL) continue;
-      strncpy(m->type, token, 2);
-
-      token = strtok(NULL, " ");        /* player port */
-      if (token == NULL) continue;
-      m->pport = atoi(token);
-
-      token = strtok(NULL, " ");        /* observer port */
-      if (token == NULL) continue;
-      m->oport = atoi(token);
-
-      token = strtok(NULL, "\n");       /* comment text */
-      if (token == NULL) continue;
-      strncpy(m->comment, token, 32);
-
-      /* force minimum and maximum delays (see note on #define) */
-      if (m->minimum < META_MINIMUM_DELAY)
-        m->minimum = META_MINIMUM_DELAY;
-      if (m->maximum > META_MAXIMUM_DELAY)
-        m->maximum = META_MAXIMUM_DELAY;
-
-      /* attach to the metaserver (DNS lookup is only delay) */
-      udp_attach(m);
-      /* place metaserver addresses in /etc/hosts to speed this */
-      /* use numeric metaserver address to speed this */
-
-      /* initialise the other parts of the structure */
-      m->sent = 0;
-      strcpy(m->prior, "");
-    }
-    initialised++;
-    fclose(file);
+    initialise();
+  } else {
+    recheck();
   }
 
   /* Don't solicit in INL mode unless both sides have captains;

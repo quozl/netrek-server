@@ -35,7 +35,7 @@ struct metaserver
   int pport;			/* server main player port (e.g. 2592)	*/
   int oport;			/* server observer player port		*/
   char comment[32];		/* comment string			*/
-  
+
   /* our own data about the communication with the metaserver */
   int sock;			/* our socket number                    */
   struct sockaddr_in address;	/* address of metaserver		*/

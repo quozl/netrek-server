@@ -16,6 +16,10 @@
 #
 # See docs/metaservers-HowTo for how to configure this file.
 #
+# Changes to this file are automatically detected, and the change will
+# be reloaded by the daemon.  A reload will cause any host names to be
+# looked up again, which may cause a short delay in the simulation.
+#
 metaserver.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
 metaserver2.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open
 metaserver3.us.netrek.org 3521 60 900 this.host.name B 2592 2593 open

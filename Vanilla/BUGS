@@ -1,10 +1,6 @@
 
 List of things that are defects
 
-	- ntserv/solicit.c looks up an IP address only once and does not
-	  detect change of etc/metaservers, workaround is to SIGHUP the
-	  daemon.
-
 	- on first entry to an INL=1 server,
 	  INL->X0   You have been ejected due to player DB inconsistency.
 	  but does not hinder player or game.
