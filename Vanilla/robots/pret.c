@@ -499,7 +499,7 @@ static void stop_this_bot(struct player *p, char *why)
     p->p_explode = 10;
     p->p_status = PEXPLODE;
     p->p_whodead = 0;
-    sprintf(msg, "%s->ALL", roboname);
+    snprintf(msg, 16, "%s->ALL", roboname);
 
     pmessage(0, MALL, msg,
              "Robot %s (%2s) was ejected%s",
@@ -527,7 +527,7 @@ static void save_armies(struct player *p)
 {
   int i, k;
   char msg[16];
-  sprintf (msg, "%s->ALL", roboname);
+  snprintf(msg, 16, "%s->ALL", roboname);
 
   k = 10 * (remap[p->p_team] - 1);
   if (k >= 0 && k <= 30) for (i=0; i<10; i++) {
@@ -646,9 +646,9 @@ static void cleanup(int terminate)
 {
     struct player *j;
     int i, retry;
-    char msg[16];
+    char msg[80];
 
-    sprintf(msg, " because %s is cleaning up.", roboname);
+    snprintf(msg, 80, " because %s is cleaning up.", roboname);
 
     do {
         /* terminate all robots */
