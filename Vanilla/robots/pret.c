@@ -207,6 +207,7 @@ void checkmess()
     if (me->p_status != POBSERV){  /*So I'm not alive now...*/
         ERROR(2,("ERROR: %s died??\n", roboname));
         cleanup(0);   /* dead for some unpredicted reason like xsg */
+        exit(1);
     }
 
     /* exit if daemon terminates use of shared memory */
@@ -217,8 +218,10 @@ void checkmess()
 #ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
     /* End the current game if no humans for 60 seconds. */
     if ((ticks % ROBOCHECK) == 0) {
-        if (no_humans >= 60)
-            cleanup(0); /* Doesn't return. */
+        if (no_humans >= 60) {
+            cleanup(0);
+            exit(1);
+        }
 
         if (is_robots_only())
             no_humans += ROBOCHECK / PERSEC;
