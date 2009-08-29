@@ -572,14 +572,14 @@ void reorder(int argc, char *argv[])
     }
 
 
-    memcpy(temp_list,
-	  key_list,
-	  key_count*(sizeof(struct rsa_key)));
+    memcpy(key_list,
+           temp_list,
+           key_count*(sizeof(struct rsa_key)));
 
     for (count=2; count<=argc; count++) {
-	memcpy(&key_list[count-2],
-		&temp_list[atoi(argv[count])],
-		(size_t)sizeof(struct rsa_key));
+        memcpy(&temp_list[atoi(argv[count])],
+               &key_list[count-2],
+               (size_t)sizeof(struct rsa_key));
     }
 
     savekeys();

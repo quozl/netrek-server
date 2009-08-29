@@ -194,7 +194,7 @@ initData()
     me->p_ship.s_maxspeed = 40;	/* anything faster is just a blur */
 
     /* create "universe" from shared memory segment */
-    memcpy(players, universe.players, sizeof(universe.players));
+    memcpy(universe.players, players, sizeof(universe.players));
 
     if(playback)	/* no information until first frame read */
         return;
@@ -326,7 +326,7 @@ checkUpdates()
 	}
     }
 
-    memcpy(players, universe.players, sizeof(universe.players));
+    memcpy(universe.players, players, sizeof(universe.players));
 
     /*
      * For planets, daemonII sets PLREDRAW, so we don't have to worry about
@@ -349,7 +349,7 @@ checkUpdates()
 	}
     }
 
-    memcpy(planets, universe.planets, sizeof(universe.planets));
+    memcpy(universe.planets, planets, sizeof(universe.planets));
 }
 
 /*
@@ -895,91 +895,91 @@ shrink(m, len)
       if(memcmp(jn, jo, sizeof(struct player)) != 0){
 	 offset = (int) &mbufold->players[i] - (int) mbufold;
 	 size = sizeof(struct player);
-	 memcpy(&offset, mptr, sizeof(offset));
+	 memcpy(mptr, &offset, sizeof(offset));
 	 mptr += sizeof(offset);
-	 memcpy(&size, mptr, sizeof(size));
+	 memcpy(mptr, &size, sizeof(size));
 	 mptr += sizeof(size);
-	 memcpy(jn, mptr, size);
+	 memcpy(mptr, jn, size);
 	 mptr += size;
-	 memcpy(jn, jo, sizeof(struct player));	/* update mbufold */
+	 memcpy(jo, jn, sizeof(struct player));	/* update mbufold */
       }
    }
    for(i=0,to=mbufold->torps,tn=firstTorp; tn<=lastPlasma; tn++,i++,to++){
       if(memcmp(tn, to, sizeof(struct torp)) != 0){
 	 offset = (int) &mbufold->torps[i] - (int)mbufold;
 	 size = sizeof(struct torp);
-	 memcpy(&offset, mptr, sizeof(offset));
+	 memcpy(mptr, &offset, sizeof(offset));
 	 mptr += sizeof(offset);
-	 memcpy(&size, mptr, sizeof(size));
+	 memcpy(mptr, &size, sizeof(size));
 	 mptr += sizeof(size);
-	 memcpy(tn, mptr, size);
+	 memcpy(mptr, tn, size);
 	 mptr += size;
-	 memcpy(tn, to, sizeof(struct torp));	/* update mbufold */
+	 memcpy(to, tn, sizeof(struct torp));	/* update mbufold */
       }
    }
    if(memcmp(status, mbufold->status, sizeof(struct status)) != 0){
       offset = (int) mbufold->status - (int) mbufold;
       size = sizeof(struct status);
-      memcpy(&offset, mptr, sizeof(offset));
+      memcpy(mptr, &offset, sizeof(offset));
       mptr += sizeof(offset);
-      memcpy(&size, mptr, sizeof(size));
+      memcpy(mptr, &size, sizeof(size));
       mptr += sizeof(size);
-      memcpy(status, mptr, size);
+      memcpy(mptr, status, size);
       mptr += size;
-      memcpy(status, mbufold->status, sizeof(struct status));
+      memcpy(mbufold->status, status, sizeof(struct status));
    }
    for(i=0,pn=planets,po=mbufold->planets; i< MAXPLANETS; i++,pn++,po++){
       if(memcmp(pn, po, sizeof(struct planet)) != 0){
 	 offset = (int) &mbufold->planets[i] - (int)mbufold;
 	 size = sizeof(struct planet);
-	 memcpy(&offset, mptr, sizeof(offset));
+	 memcpy(mptr, &offset, sizeof(offset));
 	 mptr += sizeof(offset);
-	 memcpy(&size, mptr, sizeof(size));
+	 memcpy(mptr, &size, sizeof(size));
 	 mptr += sizeof(size);
-	 memcpy(pn, mptr, size);
+	 memcpy(mptr, pn, size);
 	 mptr += size;
-	 memcpy(pn, po, sizeof(struct planet)); /* update mbufold */
+	 memcpy(po, pn, sizeof(struct planet)); /* update mbufold */
       }
    }
    for(i=0,phn=phasers,pho=mbufold->phasers; i< MAXPLAYER; i++,phn++,pho++){
       if(memcmp(phn, pho, sizeof(struct phaser)) != 0){
 	 offset = (int) &mbufold->phasers[i] - (int) mbufold;
 	 size = sizeof(struct phaser);
-	 memcpy(&offset, mptr, sizeof(offset));
+	 memcpy(mptr, &offset, sizeof(offset));
 	 mptr += sizeof(offset);
-	 memcpy(&size, mptr, sizeof(size));
+	 memcpy(mptr, &size, sizeof(size));
 	 mptr += sizeof(size);
-	 memcpy(phn, mptr, size);
+	 memcpy(mptr, phn, size);
 	 mptr += size;
-	 memcpy(phn, pho, sizeof(struct phaser)); /* update mbufold */
+	 memcpy(pho, phn, sizeof(struct phaser)); /* update mbufold */
       }
    }
    if(memcmp(mctl, mbufold->mctl, sizeof(struct mctl)) != 0){
       offset = (int) mbufold->mctl - (int) mbufold;
       size = sizeof(struct mctl);
-      memcpy(&offset, mptr, sizeof(offset));
+      memcpy(mptr, &offset, sizeof(offset));
       mptr += sizeof(offset);
-      memcpy(&size, mptr, sizeof(size));
+      memcpy(mptr, &size, sizeof(size));
       mptr += sizeof(size);
-      memcpy(mctl, mptr, size);
+      memcpy(mptr, mctl, size);
       mptr += size;
-      memcpy(mctl, mbufold->mctl, sizeof(struct mctl)); /* update mbufold */
+      memcpy(mbufold->mctl, mctl, sizeof(struct mctl)); /* update mbufold */
    }
    while(s_oldmctl != mctl->mc_current){
       s_oldmctl ++;
       if(s_oldmctl >= MAXMESSAGE) s_oldmctl = 0;
 	 offset = (int) &mbufold->messages[s_oldmctl] - (int) mbufold;
 	 size = sizeof(struct message);
-	 memcpy(&offset, mptr, sizeof(offset));
+	 memcpy(mptr, &offset, sizeof(offset));
 	 mptr += sizeof(offset);
-	 memcpy(&size, mptr, sizeof(size));
+	 memcpy(mptr, &size, sizeof(size));
 	 mptr += sizeof(size);
-	 memcpy(&messages[s_oldmctl], mptr, size);
+	 memcpy(mptr, &messages[s_oldmctl], size);
 	 mptr += size;
    }
 
    *len = (int)(mptr - mbuf);
-   memcpy(len, mbuf, sizeof(int));
+   memcpy(mbuf, len, sizeof(int));
    return mbuf;
 }
 
@@ -998,7 +998,7 @@ fillframe(new_frame, last_frame, data, tsize)
    /* use the last frame as the basis for new changes if there is
       a last frame, otherwise zero it and start fresh */
    if(last_frame && udcounter > 0)
-      memcpy((char *)last_frame, nf, sizeof(struct memory));
+      memcpy(nf, (char *)last_frame, sizeof(struct memory));
    else
       memset(nf, 0, sizeof(struct memory));
 
@@ -1006,9 +1006,9 @@ fillframe(new_frame, last_frame, data, tsize)
       continue */
    
    while(tsize > 0){
-      memcpy(mptr, &offset, sizeof(int));
+      memcpy(&offset, mptr, sizeof(int));
       mptr += sizeof(int);
-      memcpy(mptr, &size, sizeof(int));
+      memcpy(&size, mptr, sizeof(int));
       mptr += sizeof(int);
       if(offset > sizeof(struct memory)){
 	 fprintf(stderr, "xsg: Corrupted or unknown format.\n");
@@ -1018,7 +1018,7 @@ fillframe(new_frame, last_frame, data, tsize)
 	 fprintf(stderr, "xsg: Corrupted or unknown format.\n");
 	 exit(1);
       }
-      memcpy(mptr, &nf[offset], size);
+      memcpy(&nf[offset], mptr, size);
       mptr += size;
       tsize -= sizeof(int) + sizeof(int) + size;
    }

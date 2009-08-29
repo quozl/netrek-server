@@ -778,8 +778,8 @@ int plyr;
 
     wclear(mainw);
     sep = &(player_st[plyr].se);
-    memcpy(sep, &newse, sizeof(struct statentry));
-    memcpy(&gl, &newgl, sizeof(struct status));
+    memcpy(&newse, sep, sizeof(struct statentry));
+    memcpy(&newgl, &gl, sizeof(struct status));
 
     print_player(&newse, &newgl);
 
@@ -817,12 +817,12 @@ int plyr;
 		newse.stats.st_tplanets != sep->stats.st_tplanets) {
 
 		if (update_global(sep, &newse, &newgl)) {
-		    memcpy(&newgl, &gl, sizeof(struct status));
+		    memcpy(&gl, &newgl, sizeof(struct status));
 		    build_display(-1);		/* update all (DI) */
 		}
 	    }
 	    /* if nothing changed, this has no effect */
-	    memcpy(&newse, sep, sizeof(struct statentry));
+	    memcpy(sep, &newse, sizeof(struct statentry));
 	    done = TRUE;
 	    break;
 	case '\014':	/* ^L */

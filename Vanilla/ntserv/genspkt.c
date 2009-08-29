@@ -2630,7 +2630,7 @@ sendClientLogin(struct stats *stats)
     } else {
 	logPacket.accept=1;
 	logPacket.flags=htonl(stats->st_flags);
-	memcpy(stats->st_keymap, logPacket.keymap, 96);
+	memcpy(logPacket.keymap, stats->st_keymap, 96);
     }
     sendClientPacket((CVOID) &logPacket);
 }

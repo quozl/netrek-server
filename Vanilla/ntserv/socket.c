@@ -715,7 +715,7 @@ void sendClientPacket(void *void_packet)
 	    }
 	    bufptr=buf;
 	}
-	memcpy(packet, bufptr, size);
+	memcpy(bufptr, packet, size);
 	bufptr+=size;
 
     } else {
@@ -777,13 +777,13 @@ void sendClientPacket(void *void_packet)
 #ifdef DOUBLE_UDP
 		sendSC();	/* send semi-critical info, if needed */
 #endif
-		udpbufptr=udpbuf + addSequence(udpbuf, &sequence);
+		udpbufptr = udpbuf + addSequence(udpbuf, &sequence);
 	    }
-	    memcpy(packet, udpbufptr, size);
+	    memcpy(udpbufptr, packet, size);
 	    udpbufptr+=size;
 #ifdef DOUBLE_UDP
 	    if (issc && udpMode == MODE_DOUBLE) {
-		memcpy(packet, scbufptr, size);
+		memcpy(scbufptr, packet, size);
 		scbufptr+=size;
 		V_UDPDIAG((" adding SC\n"));
 	    }
@@ -805,7 +805,7 @@ void sendClientPacket(void *void_packet)
 		}
 		bufptr=buf /*+ addSequence(buf)*/;
 	    }
-	    memcpy(packet, bufptr, size);
+	    memcpy(bufptr, packet, size);
 	    bufptr+=size;
 	    break;
 	}
@@ -1097,7 +1097,7 @@ static int doRead(int asock)
 	}
 	bufptr+=size;
 	if (bufptr>buf+BUFSIZ) {
-	    memcpy(buf+BUFSIZ, buf, BUFSIZ);
+	    memcpy(buf, buf+BUFSIZ, BUFSIZ);
 	    if (count==BUFSIZ*2) {
 		/*readfds = 1<<asock;*/
 		FD_ZERO(&readfds);
@@ -1735,7 +1735,7 @@ static void handleQuitReq(struct quit_cpacket *packet)
 
 static void handleOptionsPacket(struct options_cpacket *packet)
 {
-    memcpy(packet->keymap, mystats->st_keymap, 96);
+    memcpy(mystats->st_keymap, packet->keymap, 96);
 /*    mystats->st_flags = ntohl(packet->flags);*/
     mystats->st_flags = ntohl(packet->flags) |
 	(mystats->st_flags & ST_CYBORG); /* hacked fix 8/24/91 TC */
@@ -1985,14 +1985,14 @@ static void handleReserved(struct reserved_cpacket *packet)
 	    /* This is the right major version */
 	    RSA_Client = 1;
 	    makeRSAPacket(&rsp);
-	    memcpy(rsp.data, testdata, KEY_SIZE);
+	    memcpy(testdata, rsp.data, KEY_SIZE);
 	    sendClientPacket (&rsp);
 	    return;
 	}
 	testtime=1;
 	return;
     }
-    memcpy(testdata, mysp.data, RESERVED_SIZE); /* bcopy LEGACY POSIX.1-2001 */
+    memcpy(mysp.data, testdata, RESERVED_SIZE); /* bcopy LEGACY POSIX.1-2001 */
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
 	ERROR(1,( "%s: gethostname() failed with %s", whoami(), 
@@ -2017,7 +2017,7 @@ static void handleRSAKey(struct rsa_key_cpacket *packet)
 
     if (testtime==1) return;
     if (RSA_Client != 1) return;
-    memcpy(testdata, mysp.data, KEY_SIZE);
+    memcpy(mysp.data, testdata, KEY_SIZE);
 
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
@@ -2046,7 +2046,7 @@ static void handleReserved(struct reserved_cpacket *packet)
 	testtime=1;
 	return;
     }
-    memcpy(testdata, mysp.data, 16);
+    memcpy(mysp.data, testdata, 16);
     serverName[0] = '\0';
     if (gethostname(serverName, 64))
 	ERROR(1,( "%s: gethostname() failed, %s\n", whoami(), 
@@ -2744,7 +2744,7 @@ static void fatten(void)
 #endif
 	    if (fatp->pkt_size < bytesleft) {
 		/* got one! */
-		memcpy(fatp->packet, udpbufptr, fatp->pkt_size);
+		memcpy(udpbufptr, fatp->packet, fatp->pkt_size);
 		udpbufptr += fatp->pkt_size;
 		bytesleft -= fatp->pkt_size;
 

@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     }
 
     if (*argv[1] == 't' || *argv[1] == 'r') { /* tourney reset resources, owners */
-	memcpy(pl_virgin(), planets, pl_virgin_size());
+	memcpy(planets, pl_virgin(), pl_virgin_size());
 	for (i = 0; i < MAXPLANETS; i++) {
 	    planets[i].pl_armies = top_armies;
 	}

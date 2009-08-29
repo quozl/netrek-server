@@ -250,7 +250,7 @@ void fix_planets()
    char command[256];
 
    oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-   memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+   memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
 
    /* Standardize planet locations */
    sprintf(command, "%s/tools/setgalaxy r", LIBDIR);
@@ -517,7 +517,7 @@ void cleanup(int unused)
   } while (retry);		/* Some robots havn't terminated yet */
 
 	/* restore galaxy */
-        memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+        memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
         for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
             if ((j->p_status != PALIVE) || (j == me)) continue;
             getship(&(j->p_ship), j->p_ship.s_type);

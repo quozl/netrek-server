@@ -652,7 +652,7 @@ void cleanup(void)
     }
 
     if (!practice) {
-	memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+	memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
 	for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
 	    if ((j->p_status != PALIVE) || (j == me)) continue;
 	    getship(&(j->p_ship), j->p_ship.s_type);
@@ -1936,7 +1936,7 @@ void get_dog_stats(struct player *j, Track *track)
 	   write(plfd, (char *) &player, sizeof(DogStatEntry));
 	   close(plfd);
 	   track->t_pos = entries;
-	   memcpy(&player.dstats, &(track->t_stats), sizeof(DogStat));
+	   memcpy(&(track->t_stats), &player.dstats, sizeof(DogStat));
 	 }
      }
    

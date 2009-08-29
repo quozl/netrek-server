@@ -40,7 +40,7 @@ void intrupt(void)
 #endif
         testtime = RSAREPLYTIMER * 10;
         makeReservedPacket(&sp);
-        memcpy(sp.data, testdata, RESERVED_SIZE);
+        memcpy(testdata, sp.data, RESERVED_SIZE);
         sendClientPacket(&sp);
     } else if (testtime != 0) {
         testtime--;

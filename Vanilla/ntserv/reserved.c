@@ -60,9 +60,9 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
     int i,j,k;
     char buf[16];
     u_char *s;
-    
-    memcpy(spacket->data, cpacket->data, 16);
-    memcpy(spacket->data, cpacket->resp, 16);
+
+    memcpy(cpacket->data, spacket->data, 16);
+    memcpy(cpacket->resp, spacket->data, 16);
     cpacket->type=CP_RESERVED;
 
     if ((address.s_addr = inet_addr(server)) == -1) {
@@ -93,7 +93,7 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
 	for (k=0; k<16; k++) {
 	    buf[k]=cpacket->resp[s[k]];
 	}
-	memcpy(buf, cpacket->resp, 16);
+	memcpy(cpacket->resp, buf, 16);
     }
 }
 

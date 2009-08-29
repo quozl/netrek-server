@@ -150,7 +150,7 @@ char **argv;
 	signal(SIGINT, cleanup);
 
     oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-    memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+    memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
     config(inhl);
     do_war();   /*added MK-9/20/92, to plague and fill slots immediately*/
     puck_rules();

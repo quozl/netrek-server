@@ -75,9 +75,9 @@ int decryptRSAPacket (void *s,
     /* replace the first few bytes of the message */
     /* will be the low order bytes of the number */
     data = spacket->data;
-    memcpy (&saddr.sin_addr.s_addr, data, sizeof(saddr.sin_addr.s_addr));
+    memcpy(data, &saddr.sin_addr.s_addr, sizeof(saddr.sin_addr.s_addr));
     data += sizeof(saddr.sin_addr.s_addr);
-    memcpy (&saddr.sin_port, data, sizeof(saddr.sin_port));
+    memcpy(data, &saddr.sin_port, sizeof(saddr.sin_port));
 
     fd = open(RSA_Key_File, O_RDONLY);
     if (fd < 0)

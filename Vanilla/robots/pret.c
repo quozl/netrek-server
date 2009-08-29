@@ -811,12 +811,12 @@ static void obliterate(int wflag, char kreason, int killRobots, int resetShip)
 
 static void savegalaxy(void)
 {
-    memcpy(planets, savedplanets, sizeof(struct planet) * MAXPLANETS);
+    memcpy(savedplanets, planets, sizeof(struct planet) * MAXPLANETS);
 }
 
 static void restoregalaxy(void)
 {
-    memcpy(savedplanets, planets, sizeof(struct planet) * MAXPLANETS);
+    memcpy(planets, savedplanets, sizeof(struct planet) * MAXPLANETS);
 }
 
 #endif  /* PRETSERVER */

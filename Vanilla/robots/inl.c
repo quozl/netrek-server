@@ -590,7 +590,7 @@ void checkmess()
       struct distress dist;
       char buf[MSG_LEN];
 
-      memcpy(&messages[oldmctl],&msg,sizeof(struct message));
+      memcpy(&msg, &messages[oldmctl], sizeof(struct message));
       buf[0]='\0';
       msg.m_flags ^= MDISTR;
       HandleGenDistr(msg.m_data,msg.m_from,msg.m_recpt,&dist);
@@ -1214,7 +1214,7 @@ void init_server()
 #ifdef nodef
   /* Fix planets */
   oldplanets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-  memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
+  memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
 #endif
 
   /* Dont change the pickup queues around - just close them. */
@@ -1302,7 +1302,7 @@ cleanup()
 
 #ifdef nodef
   /* restore galaxy */
-  memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+  memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
 #endif
 
   /* Dont mess with the queue information - it is set correctly in queue.c */
@@ -1460,8 +1460,8 @@ int start_tourney()
 
 #ifdef nodef
   inl_planets = (struct planet *) malloc(sizeof(struct planet) * MAXPLANETS);
-  /*	memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS); */
-  memcpy(planets, inl_planets, sizeof(struct planet) * MAXPLANETS);
+  /*	memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS); */
+  memcpy(inl_planets, planets, sizeof(struct planet) * MAXPLANETS);
 #endif
 
   inl_stat.flags |= S_TOURNEY;
@@ -1633,7 +1633,7 @@ void pl_reset_inl(int startup)
     }
   if (startup)
     {
-      memcpy(pl_virgin(), planets, pl_virgin_size());
+      memcpy(planets, pl_virgin(), pl_virgin_size());
 
       for (i = 0; i < MAXPLANETS; i++)
 	{

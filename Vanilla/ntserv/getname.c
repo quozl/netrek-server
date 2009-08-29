@@ -99,7 +99,7 @@ static void handleLogin(void)
 	flushSockBuf();
 	strcpy(me->p_name, namePick);
 	me->p_pos= -1;
-	memcpy(&player.stats, &(me->p_stats), sizeof(struct stats));
+	memcpy(&(me->p_stats), &player.stats, sizeof(struct stats));
 	return;
     }
 
@@ -167,7 +167,7 @@ static void handleLogin(void)
 	  sendClientLogin(NULL);
 	} else {
 	  me->p_pos = entries;
-	  memcpy(&player.stats, &(me->p_stats), sizeof(struct stats));
+	  memcpy(&(me->p_stats), &player.stats, sizeof(struct stats));
 	  strcpy(me->p_name, namePick);
 	  sendClientLogin(&player.stats);
 	}
@@ -188,7 +188,7 @@ static void handleLogin(void)
     sendClientLogin(&player.stats);
     strcpy(me->p_name, namePick);
     me->p_pos=position;
-    memcpy(&player.stats, &(me->p_stats), sizeof(struct stats));
+    memcpy(&(me->p_stats), &player.stats, sizeof(struct stats));
     if (!streq(player.password, newpass)) {
 	/* update db if we were misusing crypt() */
 	strcpy(player.password, newpass);

@@ -675,7 +675,7 @@ void cleanup(void)
     queues[QU_PICKUP].high_slot = MAXPLAYER - TESTERS;
 
     if (!practice) {
-	memcpy(oldplanets, planets, sizeof(struct planet) * MAXPLANETS);
+	memcpy(planets, oldplanets, sizeof(struct planet) * MAXPLANETS);
 	for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) {
 	    if ((j->p_status != PALIVE) || (j == me)) continue;
 	    getship(&(j->p_ship), j->p_ship.s_type);
