@@ -40,8 +40,7 @@ int main(int argc, char **argv)
     oldmctl=mctl->mc_current;
     if (!filter)
 	for (i=0; i<=oldmctl; i++) {
-            MCOPY(&messages[i],&msg,sizeof(struct message));
-#ifdef RCD
+            memcpy(&msg, &messages[i], sizeof(struct message));
 	    /* Fix for RCD distresses - 11/18/93 ATH */
 	    if (msg.m_flags == (MTEAM | MDISTR | MVALID)) {
 		buf[0]='\0';
@@ -61,8 +60,7 @@ int main(int argc, char **argv)
 	    if (filter)
 		logmessage(&(messages[oldmctl]));
 	    else {
-                MCOPY(&messages[oldmctl],&msg,sizeof(struct message));
-#ifdef RCD
+                memcpy(&msg, &messages[oldmctl], sizeof(struct message));
 		/* Fix for RCD distresses - 11/18/93 ATH */
 		if (msg.m_flags == (MTEAM | MDISTR | MVALID)) {
 		    buf[0]='\0';
