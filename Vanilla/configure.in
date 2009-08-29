@@ -9,21 +9,9 @@ AC_PREFIX_DEFAULT("/usr/local/games/netrek-server-vanilla")
 #	For which code are we checking? (server, cow)
 #----------------------------------------------------
 
-AC_MSG_CHECKING(for used sources)
-if test -f "$srcdir/playerlist.c"; then
-  code=cow
-  AC_MSG_RESULT(COW)
-  AC_DEFINE(COW)
-elif test -f "$srcdir/ntserv/daemonII.c"; then
-  code=server
-  AC_MSG_RESULT(Vanilla SERVER)
-  AC_DEFINE(SERVER)
-else
-  echo "	Unknown Sources"
-  exit 1
-fi
- 
-if test "$code" = server; then
+code=server
+AC_DEFINE(SERVER)
+
   # default the prefix
   if test "x$prefix" = "xNONE"; then
     prefix=${ac_default_prefix}
@@ -59,24 +47,6 @@ if test "$code" = server; then
 	AC_SUBST(PKEY)
 	AC_SUBST(INL)
   fi
-
-  AC_ARG_WITH(gum, [  --with-gum              Compile and install gum ],
-	GUM=do_gum)
-  AC_SUBST(GUM)
-fi
-
-if test "$code" = cow; then
-echo "Produce a stable release (y/n)?"
-read stable
-
-AC_SUBST(stable)
- if test "$stable" = "y"; then
-  echo "Producing stable release"
-  AC_DEFINE(STABLE)
- else
-  stable=nope
- fi
-fi
 
 AC_PROG_INSTALL
 AC_PROG_CC
@@ -118,9 +88,7 @@ AC_CHECK_HEADERS(sys/wait.h netinet/in.h sys/filio.h gdbm.h)
 AC_CHECK_HEADERS(ncurses.h)
 
 AC_CHECK_LIB(gdbm, gdbm_open, [LIBS="$LIBS -lgdbm"])
-#AM_PATH_GLIB(1.2.10, [LIBS="$LIBS $GLIB_LIBS" CFLAGS="$CFLAGS $GLIB_CFLAGS"], [AC_MSG_ERROR(GLIB not in path)])
 
-AC_FUNC_WAIT3
 AC_TYPE_PID_T
 AC_TYPE_UID_T
 AC_TYPE_SIZE_T
@@ -184,23 +152,16 @@ if test "$MPINC" = nope; then
 fi
 
 if test "$MPINC" = nope; then
-
-  if test "$code" = cow; then
-# 	mp not supported with new mkkey.
-   AC_TRY_CPP([#include <mp.h>], MPINC=nope , MPINC=nope)
+  AC_TRY_CPP([#include <mp.h>], MPINC="" , MPINC=nope)
+  if test "$MPINC" = nope; then
+    MPINC="# -I."
+    NORSA="#"
+    AC_MSG_RESULT(no)
   else
-   AC_TRY_CPP([#include <mp.h>], MPINC="" , MPINC=nope)
+    AC_MSG_RESULT(yes)
   fi
-
-   if test "$MPINC" = nope; then
-      MPINC="# -I."
-      NORSA="#"
-      AC_MSG_RESULT(no)
-   else
-     AC_MSG_RESULT(yes)
-   fi
 else
-   AC_MSG_RESULT(yes)
+  AC_MSG_RESULT(yes)
 fi
 
 AC_SUBST(MPINC)
@@ -236,49 +197,26 @@ if test "$MPLIB" = nope; then
   fi
 fi
 if test "$MPLIB" = nope; then
-  if test "$code" = cow; then
-   AC_CHECK_LIB(mp, main, MPLIB=bsdmp, MPLIB=nope)
-  else
-   AC_CHECK_LIB(mp, main, MPLIB="-lmp", MPLIB=nope)
+  AC_CHECK_LIB(mp, main, MPLIB="-lmp", MPLIB=nope)
+  if test "$MPLIB" = nope; then
+    echo Warning mp or gmp library not found, turning RSA off.
+    MPLIB="# -L. -lmp -lgmp"
+    NORSA="#"
   fi
-   if test "$MPLIB" = bsdmp; then
-      echo "Sorry COW requires gmp not mp for RSA."
-      MPLIB="# -L. -lmp -lgmp"
-      NORSA="#"
-   fi
-   if test "$MPLIB" = nope; then
-      echo Warning mp or gmp library not found, turning RSA off.
-      MPLIB="# -L. -lmp -lgmp"
-      NORSA="#"
-   fi
 fi
 AC_SUBST(MPLIB)
 
-if test "$code" = cow; then
- if test -r "$srcdir/mkkey.c"; then
-    echo "	RSA utilities for cow build found."
- else
-    echo
-    echo Warning RSA utilities for cow build not found, turning RSA off.
-    NORSA="#"
-    echo Check your favorite ftp site for a blessed client.
-    echo In case you can not find one contact brmbugs.
-    echo
- fi
-fi
-if test "$code" = server; then
- AC_MSG_CHECKING(res-rsa/configure)
- if test -r "$srcdir/res-rsa/configure"; then
-    AC_CONFIG_SUBDIRS(res-rsa)
-    AC_MSG_RESULT(RSA utilities found)
-    RSAINC="-I${srcdir}/res-rsa"
-    RSALIB="-L`pwd`/res-rsa -lrsa"
-    NORSA=""
- else
-    echo no
-    AC_MSG_RESULT(Warning: RSA utilities for server build not found, turning RSA off)
-    NORSA="#"
- fi
+AC_MSG_CHECKING(res-rsa/configure)
+if test -r "$srcdir/res-rsa/configure"; then
+  AC_CONFIG_SUBDIRS(res-rsa)
+  AC_MSG_RESULT(RSA utilities found)
+  RSAINC="-I${srcdir}/res-rsa"
+  RSALIB="-L`pwd`/res-rsa -lrsa"
+  NORSA=""
+else
+  AC_MSG_RESULT(no)
+  echo Warning: RSA utilities for server build not found, turning RSA off
+  NORSA="#"
 fi
 
 AC_SUBST(RSAINC)
@@ -292,8 +230,6 @@ AC_SUBST(NORSA)
 #--------------------------------------------------------------------
 
 AC_CHECK_LIB(Xbsd, main, [LIBS="$LIBS -lXbsd"])
-# AC _CHECK_LIB(V3, main, [LIBS="$LIBS -lV3"])
-# AC _CHECK_LIB(PW, main, [LIBS="$LIBS -lPW"])
 AC_CHECK_LIB(socket, main, [LIBS="$LIBS -lsocket"])
 AC_CHECK_LIB(resolv, main, [LIBS="$LIBS -lresolv"])
 AC_CHECK_LIB(inet, main, [LIBS="$LIBS -linet"])
@@ -301,66 +237,20 @@ AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"])
 AC_CHECK_LIB(seq, main, [LIBS="$LIBS -lseq"])
 AC_CHECK_LIB(sun, main, [LIBS="$LIBS -lsun"])
 
-if test "$code" = server; then
 AC_CHECK_LIB(ipc, main, [LIBS="$LIBS -lipc"])
 AC_CHECK_LIB(shm, main, [LIBS="$LIBS -lshm"])
 AC_CHECK_LIB(stuff, main, [LIBS="$LIBS -lstuff"])
 
-AC_CHECK_LIB(crypt, crypt, [LIBCRYPT="-lcrypt"]) 
+AC_CHECK_LIB(crypt, crypt, [LIBCRYPT="-lcrypt"])
 AC_SUBST(LIBCRYPT)
 
-AC_CHECK_LIB(termcap, main, [LIBTERMCAP="-ltermcap"]) 
+AC_CHECK_LIB(termcap, main, [LIBTERMCAP="-ltermcap"])
 AC_SUBST(LIBTERMCAP)
 
-AC_CHECK_LIB(ncurses, newwin, [LIBCURSES="-lncurses"], 
+AC_CHECK_LIB(ncurses, newwin, [LIBCURSES="-lncurses"],
      AC_CHECK_LIB(curses, newwin, [LIBCURSES="-lcurses"])
-) 
+)
 AC_SUBST(LIBCURSES)
-
-fi
-
-#--------------------------------------------------------------------
-#    	Check for type of signals
-#--------------------------------------------------------------------
-
-AC_TYPE_SIGNAL
-AC_SYS_RESTARTABLE_SYSCALLS
-AC_CACHE_CHECK(for signals style,vanilla_cv_signals_type,
-AC_TRY_RUN([
-#include <signal.h>
-#include <sys/time.h>
-test(int x){ }
-int main(){
-int c;
-static struct itimerval udt;
-signal(SIGALRM,test);
-udt.it_interval.tv_sec = 1;
-udt.it_interval.tv_usec = 10;
-udt.it_value.tv_sec = 1;
-udt.it_value.tv_usec = 10;
-(void) setitimer(ITIMER_REAL, &udt, (struct itimerval *) 0);
-for (c=0; c<5; c++)
-pause();
-exit(0);}
-], vanilla_cv_signals_type=BSD,
-   vanilla_cv_signals_type=SYSV_or_POSIX,
-   vanilla_cv_signals_type=POSIX
-))
-
-if test "x$vanilla_cv_signals_type" = xBSD; then
-	AC_DEFINE(BSD_SIGNALS)
-else
-	if test "x$vanilla_cv_signals_type" = xSYSV_or_POSIX; then
-		AC_CHECK_FUNC(sigset, AC_DEFINE(SYSV_SIGNALS),
-				      AC_DEFINE(POSIX_SIGNALS))
-	else
-		AC_DEFINE(POSIX_SIGNALS)
-	fi
-fi
-
-
-# AC_CHECK_LIB(BSD, main, [LIBS="$LIBS -lBSD"])
-# AC_CHECK_LIB(bsd, main, [LIBS="$LIBS -lbsd"])
 
 AC_CHECK_FUNCS(usleep random setstate strftime ftime strcmpi strncmpi)
 
@@ -386,12 +276,7 @@ AC_SUBST(NINT_LIBS)
 
 AC_EGREP_HEADER(rint, math.h, , AC_DEFINE(NEED_RINT_DEC))
 
-if test "$code" = cow; then
-	AC_REPLACE_FUNCS(setstate strdup rint)
-fi
-if test "$code" = server; then
-	AC_REPLACE_FUNCS(random strdup rint)
-fi
+AC_REPLACE_FUNCS(random strdup rint)
 
 #--------------------------------------------------------------------
 #       Check for system dependend programs
@@ -410,33 +295,12 @@ fi
 
 AC_SUBST(RANLIB_FLAGS)
 
-if test "$code" = server; then
-
-AC_MSG_CHECKING(for netstat)
-dirs="/bsd /usr/bsd /etc /bin /usr/bin /usr/etc"
-NETSTAT="nice -20 /usr/ucb/netstat -f inet"
-for i in $dirs; do
-  if test -x $i/netstat; then
-     NETSTAT="nice -20 ${i}/netstat -a"
-     AC_DEFINE_UNQUOTED(NETSTAT,"$NETSTAT")
-     AC_MSG_RESULT(yes)
-     break
-  fi
-done
-
-fi
-
 AC_OUTPUT(system.mk Makefile ntserv/Makefile tools/Makefile
 	sequencer/Makefile newstartd/Makefile robots/Makefile
 	keycomp/Makefile robotd/Makefile
 	docs/Makefile tools/no_geno_timer tools/geno_timer
 	docs/sample_geno_timer_crontab docs/sample_sysdef
 	tools/setpath tools/setpath.csh tools/admin/Makefile)
-
-if test "x$GUM" = xdo_gum; then
-ifdef([AC_OUTPUT_SUBDIRS],[], [AC_DEFUN([AC_OUTPUT_SUBDIRS],[subdirs=$1; _AC_OUTPUT_SUBDIRS])])
-	AC_OUTPUT_SUBDIRS(gum)
-fi
 
 echo ""
 echo "Directories"

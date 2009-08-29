@@ -6,7 +6,6 @@
    Based on Kurt Siegl's base practice server.
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,6 +33,8 @@
 #include "slotmaint.h"
 
 int debug=0;
+
+#ifdef NEWBIESERVER
 
 /* define the name of the moderation bot - please note that due to the way */
 /* messages are handled and the formatting of those messages care must be  */
@@ -92,7 +93,6 @@ reaper(int sig)
     signal(SIGCHLD,reaper);
 }
 
-#ifdef NEWBIESERVER
 int
 main(argc, argv)
      int             argc;
@@ -936,7 +936,7 @@ main(argc, argv)
      char           *argv[];
 {
     printf("You don't have NEWBIESERVER option on.\n");
-    return 0;
+    return 1;
 }
 
 #endif /* NEWBIESERVER */

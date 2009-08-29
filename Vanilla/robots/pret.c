@@ -34,6 +34,8 @@
 #include "util.h"
 #include "slotmaint.h"
 
+#ifdef PRETSERVER
+
 int debug=0;
 
 /* define the name of the moderation bot - please note that due to the way */
@@ -105,7 +107,6 @@ reaper(int sig)
     signal(SIGCHLD, reaper);
 }
 
-#ifdef PRETSERVER
 int
 main(argc, argv)
      int             argc;

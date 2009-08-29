@@ -20,11 +20,11 @@ include $(CONFIG)
 
 all: null $(PMAKE) \
 	do_library do_server do_listener do_robots do_robotd \
-	do_utilities do_rsa_utilities @GUM@
+	do_utilities do_rsa_utilities
 
 minimal: null $(PMAKE) \
 	do_library do_server do_listener do_robots do_robotd \
-	do_utilities do_rsa_utilities 
+	do_utilities do_rsa_utilities
 
 depend: system.mk
 	cd ntserv;    $(MAKE) depend

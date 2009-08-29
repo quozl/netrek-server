@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <string.h>
 #include <errno.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>

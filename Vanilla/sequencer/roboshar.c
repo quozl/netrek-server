@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -64,14 +65,14 @@ void warning(char *mess)
 void robonameset(struct player *myself)
 {
 
-    (void) strncpy(myself->p_login, "Robot", sizeof (myself->p_login));
+    strncpy(myself->p_login, "Robot", sizeof (myself->p_login));
     myself->p_login[sizeof(myself->p_login) - 1] = '\0';
-    (void) strncpy(myself->p_monitor, "Nowhere", sizeof(myself->p_monitor));
+    strncpy(myself->p_monitor, "Nowhere", sizeof(myself->p_monitor));
     myself->p_monitor[sizeof(myself->p_monitor) - 1] = '\0';
 
     /* repeat "Nowhere" for completeness 4/13/92 TC */
-    (void) strncpy(myself->p_full_hostname, "Nowhere",
-		   sizeof(myself->p_full_hostname));
+    strncpy(myself->p_full_hostname, "Nowhere",
+            sizeof(myself->p_full_hostname));
     myself->p_full_hostname[sizeof(myself->p_full_hostname) - 1] = '\0';
 }
 

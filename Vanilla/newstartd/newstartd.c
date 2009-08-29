@@ -1,16 +1,4 @@
 /*
- *   There's a really bad hack in newstartd.c that refuses more than 1
- *   connection from any hostname.  It's bad because it uses /usr/ucb/netstat
- *   to figure out who's connected.
- *
- *   At this point, only the hostname of the caller is available.  The
- *   daemon in theory has access to both user name and (partial) hostname,
- *   so that's where multiple logins should be denied.
- *
- *   To bypass this check, create the file defined by NoCount_File in
- *   newaccess.c.  Usually .nocount in SYSCONFDIR.  Set by default normally.
- *
- *   4/13/92
  *
  *   Derived from distribution startd.c and xtrekII.sock.c (as of ~1/14/91).
  *

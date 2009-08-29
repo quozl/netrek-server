@@ -6,7 +6,6 @@
    Based on Ted Hadleys practice server and Vanilla 2.2 puck
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,6 +33,9 @@
 #include "slotmaint.h"
 
 int debug=0;
+
+#ifdef BASEPRACTICE
+
 int nb_robots=0;
 
 /* define the name of the moderation bot - please note that due to the way */
@@ -97,7 +99,6 @@ static void reaper(int sig)
    signal(SIGCHLD,reaper);
 }
 
-#ifdef BASEPRACTICE
 int
 main(argc, argv)
    int             argc;
@@ -582,6 +583,7 @@ main(argc, argv)
    char           *argv[];
 {
     printf("You don't have BASEPRACTICE option on.\n");
+    return 1;
 }
 
 #endif /* BASEPRACTICE */

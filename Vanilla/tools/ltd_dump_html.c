@@ -155,6 +155,8 @@ static void dump_full(const char *name, const char *race,
 
 }
 
+#if 0
+
 static void dump_sb_header1(void) {
 
   fprintf(fp,
@@ -229,6 +231,8 @@ static void dump_sb_stats2(char *name, char race, struct ltd_stats *ltd) {
           (float) ltd->damage_repaired * 600 / ltd->ticks.total);
 
 }
+
+#endif
 
 int main(const int argc, const char *argv[]) {
   struct statentry p;

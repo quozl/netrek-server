@@ -38,11 +38,6 @@
 /*  	RSA 			- New RSA reserved packets stuff 		*/
 /* #define RSA  		- Defined in the Makefile 			*/
 
-                                /* SPEEDUP         - Misc improvements to make
-                                                     the code faster */
-				/* This define has no meaning for the server */
-#define SPEEDUP
-
 				/* DEBUG   	   - Various useful debugging 
 						     stuff.  No signal trap */
 #undef  DEBUG
@@ -464,8 +459,6 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef POSIX_SIGNALS
 #undef RESTARTABLE_SYSCALLS  
 #undef NEED_MEMORY_H 
-#define STDC_HEADERS 1 		/* 13/01/94 omit hosed index [007] */
-#undef HAVE_WAIT3 
 #undef NEED_SYS_SELECT_H 
 				/* Guess we suck badly if that happens :( */
 #undef NO_FD_SET
@@ -565,38 +558,6 @@ only if you have no intention of retaining stats on the server for pickup */
 #define INC_STRINGS	<string.h>
 #else
 #define INC_STRINGS	<strings.h>
-#endif
-
-#ifdef STDC_HEADERS
-#define MCMP(x,y,z)     memcmp(x,y,z)
-#define MCOPY(b1,b2,l)  memcpy(b2,b1,l)
-#define MZERO(b1,l)     memset(b1,0,l)
-#define INDEX(s,c)      strchr(s,c)
-#define RINDEX(s,c)     strrchr(s,c)
-#else
-#define INDEX(s,c)	index(s,c)
-#define RINDEX(s,c)	rindex(s,c) 
-#define MCMP(x,y,z)     bcmp(x,y,z)
-#define MCOPY(b1,b2,l)  bcopy(b1,b2,l)
-#define MZERO(b1,l)     bzero(b1,l)
-#endif
-
-#ifdef SPEEDUP          /* strncpy is terrible slow */
-#ifdef NEED_MEMORY_H
-#include <memory.h>
-#else
-#include <string.h>
-#endif
-/* #define STRNCPY(x,y,z)	memcpy(x,y,z) */
-#define STRNCPY(x,y,z)  memccpy(x,y,'\0',z) 
-#else
-#define STRNCPY(x,y,z)	strncpy(x,y,z)
-#endif
-
-#ifndef HAVE_WAIT3
-#define WAIT3(x,y,z)  waitpid(-1, x, y ) 
-#else
-#define WAIT3(x,y,z)  wait3(x, y, z)
 #endif
 
 #if (defined(HAVE_RANDOM) && defined(HAVE_SETSTATE)) || !defined(HAVE_RANDOM)
