@@ -68,10 +68,6 @@
 #define SP_SC_SEQUENCE  30              /* this trans is semi-critical info */
 #endif /*ATM*/
 
-#ifdef RSA
-#define SP_RSA_KEY      31              /* handles binary verification */
-#endif
-
 #define SP_PING         46              /* ping packet */
 
 

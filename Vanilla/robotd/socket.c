@@ -25,9 +25,6 @@
 #include "packets.h"
 #include "robot.h"
 
-/* Hack! https://bugs.launchpad.net/netrek-server/+bug/384896 for details */
-#undef RSA
-
 /*#define AUK*/
 /* #define TORP_TIME */
 
@@ -100,11 +97,7 @@ struct packet_handler handlers[] = {
     { sizeof(struct sequence_spacket), handleSequence },    /* SP_SEQUENCE */
     { sizeof(struct sc_sequence_spacket), handleSequence }, /* SP_SC_SEQUENCE */
 #endif
-#ifdef RSA
-    { sizeof(struct rsa_key_spacket), handleRSAKey },       /* SP_RSA_KEY */
-#else
-    { 0, NULL }, /* #31 */
-#endif
+    { 0, NULL },                                            /* SP_RSA_KEY */
     { 0, NULL },                                            /* 32 */
     { 0, NULL },                                            /* 33 */
     { 0, NULL },                                            /* 34 */
@@ -168,11 +161,7 @@ int sizes[] = {
     sizeof(struct udp_req_cpacket),             /* CP_UDP_REQ */
     sizeof(struct sequence_cpacket),            /* CP_SEQUENCE */
 #endif
-#ifdef RSA
-    sizeof(struct rsa_key_cpacket),           /* CP_RSA_KEY */
-#else
-    0,                                          /* 37 */
-#endif
+    0,                                          /* CP_RSA_KEY */
     0,                                          /* 38 */
     0,                                          /* 39 */
     0,                                          /* 40 */
