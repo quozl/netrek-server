@@ -3,6 +3,7 @@
 CONFIG = ../system.mk
 VPATH = @srcdir@
 srcdir = @srcdir@
+DESTDIR = @prefix@
 
 # Do Not Change anything below this line. It should be setup in config
 
@@ -20,4 +21,7 @@ all: $(EXECS)
 
 install: $(EXECS) 
 	mkdir -p $(DESTDIR)$(ADMINDIR)
-	$(INSTALLPROG) $(INSTALLOPTS) $(EXECS) $(ADMINDIR)
+	$(INSTALLPROG) $(INSTALLOPTS) $(EXECS) $(DESTDIR)$(ADMINDIR)
+
+clean::
+	@rm -f $(EXECS)

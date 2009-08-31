@@ -103,6 +103,7 @@ clean:
 	cd robotd;    $(MAKE) clean
 	cd newstartd; $(MAKE) clean
 	cd tools;     $(MAKE) clean
+	cd tools/admin;     $(MAKE) clean
 	cd sequencer; $(MAKE) clean
 	cd keycomp;   $(MAKE) clean
 	-@if [ -f res-rsa/Makefile ]; then \
