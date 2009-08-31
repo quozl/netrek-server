@@ -3,6 +3,7 @@
 CONFIG = system.mk
 VPATH = @srcdir@
 srcdir = @srcdir@
+DESTDIR = @prefix@
 
 # Do Not Change anything below this line. It should be setup in config
 
