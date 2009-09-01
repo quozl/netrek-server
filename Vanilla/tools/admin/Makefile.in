@@ -24,4 +24,3 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) $(EXECS) $(DESTDIR)$(ADMINDIR)
 
 clean::
-	@rm -f $(EXECS)
