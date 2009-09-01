@@ -154,9 +154,9 @@ install: installbin
 	cd docs;   $(MAKE) install DESTDIR=$(DESTDIR)
 	cd tools;  $(MAKE) installtrekon DESTDIR=$(DESTDIR)
 	@echo
-	@echo "Vanilla Netrek Server installation is completed."
-	@echo "To start your Netrek server, type $(BINDIR)/netrekd"
-	@echo "Then start a Netrek client with '-h localhost'"
+	@echo "netrek-server-vanilla installation complete."
+	@echo "start the server with $(BINDIR)/netrekd"
+	@echo "then start a client to try it out."
 
 rmdependencies:
 	cd ntserv;    $(MAKE) rmdependencies
