@@ -4,7 +4,7 @@
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.15.0
+VERSION=2.16.0
 
 RANLIB=@RANLIB@
 VPATH=@srcdir@
@@ -179,14 +179,14 @@ dist:
         # what needs to change
 	cp -p BUGS PROJECTS $(NAME)/
         # top level documentation
-	cp -p INSTALL INSTALL.INL INSTALL.Newbie INSTALL.RSA README \
+	cp -p INSTALL INSTALL.INL INSTALL.Newbie README \
 	README.developers README.releasing CHANGES EXAMPLE $(NAME)/
         # configuration
 	cp -p configure.in Makefile.in system.mk.in configure config.sub \
 	config.guess install-sh $(NAME)/
         # subdirectories
 	cp -rp docs include keycomp motd newstartd ntserv php \
-	pledit res-rsa robotd robots sequencer tools xsg $(NAME)/
+	pledit robotd robots sequencer tools xsg $(NAME)/
         # packaging subdirectories (debian)
 	mkdir $(NAME)/debian $(NAME)/rpm
 	cp -p debian/README.Debian debian/changelog debian/control \

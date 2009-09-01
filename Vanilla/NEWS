@@ -1,3 +1,129 @@
+2.16.0: released 2009-09-01
+
+  Note: the change to enable LTD_STATS in config.h.in must be
+  carefully considered by anybody upgrading a server from the previous
+  release, as the binary player database file will become unusable.
+
+  * Add ADMIN_EXEC to sample_sysdef.in
+  * Fix multi-line config.h.in comments
+  * Allow variable forced-quit-on-geno behavior
+  * Add sys/time.h to fix OS X compile failure
+  * define DESTDIR in tools/, fixes LP #276625
+  * fix install target for tools/admin, LP #276631
+  * remove RSA from robotd, LP #384896
+  * remove support for less than C89
+  * swap args for MCOPY to memcpy transition
+  * fix version defines, remove warnings
+  * clean-up-in-source-detection-of-rsa.patch
+  * LTD_STATS-linker-errors-linux.patch
+  * cmake-build-ALONG-SIDE-autotools.patch
+  * fix compilation warnings
+  * remove load check
+  * port to Mac OS X
+  * solicit, metaservers file change detection
+  * change variable name to ease comprehension
+  * fix stack smashing exception
+  * trivial whitespace fix on sysdef documentation
+  * code review, style, indentation, pret.c
+  * exit on cleanup
+  * trivial style fix, rmove.c
+  * REPO update
+  * F_sp_rank, fix logic in sndLogin resend
+  * remove cygwin implied support, confusing
+  * fix race condition with F_tips
+  * tips, do not refuse command now that message mode available
+  * compile error fix
+  * tips, also include message method for old clients
+  * warn user if tips command tried without support
+  * enable TIPS
+  * enable tips if client has feature
+  * add TIPS feature
+  * tips, enable sooner, trip newlines
+  * tips, add temporary test mode command, default off
+  * experimental contextual tips
+  * remove config define UDP_PORTSWAP, peer review
+  * remove config define UDP_PORTSWAP
+  * remove config define SHORT_PACKETS from documentation
+  * remove config define SHORT_PACKETS
+  * remove config define FEATURE_PACKETS
+  * remove config define FEATURES
+  * remove config define CHECKMESG
+  * remove config define RCD
+  * remove config define PING
+  * SP_LTD, rework for network byte order, add non-t
+  * sndLogin, restructure, reindent, review
+  * SP_RANK, resend SP_PL_LOGIN if feature turns on
+  * SP_LTD, provide packet to client on death
+  * SP_LTD, add feature packet, default on
+  * SP_LTD, initial draft
+  * revise metaserver configuration instructions
+  * remove gum
+  * LTD stats query, move to var/www/stats
+  * warn about long passwords being irrelevant
+  * res-rsa removal
+  * final, addition of LTD stats query
+  * LTD_STATS enabling, BREAKS PLAYER DATABASE
+  * SP_RANK, include maximum rank number
+  * review, SP_RANK further edits
+  * RANK_ADMIRAL, use for draft captains
+  * SP_RANK, manually round
+  * SP_RANK, fix max rank sent to client
+  * SP_RANK, fix limited packet initialization
+  * Newbie, fix compiler warning
+  * SP_RANK, round() values for decimal precision
+  * SP_RANK, fix string length
+  * Self destruct credit, int overflow fix
+  * review, SP_RANKS
+  * Newbie, adopt PRETKEEPALIVE to keep robots full-time
+  * Robotd server name, change to localhost
+  * SP_RANKS, don't send ranks over admiral to old clients
+  * SP_RANKS, increase char size
+  * SP_RANKS, send to client
+  * SP_RANKS, add support for offense_rating
+  * SP_RANKS, fix variable type, add feature check
+  * SP_RANKS, new server packet
+  * Rank structure, add cname
+  * Sturgeon, update server name
+  * Feature packet, SP_RANKS
+  * solicit, reindent
+  * solicit, trailing whitespace
+  * etc/metaservers, add comment line handling
+  * update repository address
+  * Feature packet, AUTO_WEAPONS
+  * whitespace fixes and RSA comment
+  * fix for deprecated RSA, remove references to CVS
+  * newstartd, whitespace cleanup
+  * report client identification and allow user query
+  * autogen.sh, reduce noise
+  * dns, meta2 change
+  * fix configure substitution
+  * adopt pickled defaults for most items except DNS blocks
+  * autogen fix for ubuntu jaunty
+  * include client version in metaserver query
+  * remove old feature support, simplify client ident
+  * add client version part of protocol
+  * add client name to version packet and log
+  * deprecate RSA infrastructure
+  * report only t-mode surrender countdowns
+  * suppress time to die for kathy
+  * add ten second timeout to metaget
+  * move keys from metaserver to server source kit
+  * dns, inclusion of dns/dns2.gerdesas.com as slaves
+  * typo, orbitting -> orbiting
+  * DNS, rename wiki to old-wiki, add new wiki
+  * DNS, added new-wiki.us.netrek.org
+  * draft, addition of LTD stats query
+  * add metaserver1, rm ftp, rm cvs
+  * us.netrek.org-zonefile
+  * add missing libs
+  * ltd dump html, by player name
+  * db.c, add fast search capability
+  * ltd_dump_html added
+  * merge cow
+  * inl, allow admin commands and prevent info leak
+  * bring back downstream packaging for ubuntu
+  * fix compile error when PRETKEEPALIVE is not set
+
 2.15.0: released 2008-09-30
 
   * factorise killer credit
