@@ -24,7 +24,7 @@ chmod +x tools/mktrekon
 cd tools/admin && chmod +x `grep ^EXECS Makefile.in | cut -d '=' -f 2` && cd ../..
 chmod +x debian/rules debian/postinst debian/postrm
 chmod +x debian/netrek-server-vanilla.init
-chmod +x tests/build
+chmod +x tests/build tests/build-cmake
 echo "autogen.sh completed ok"
 
 # to test your build environment, read and run tests/build

@@ -1,0 +1,35 @@
+#!/bin/sh
+set -ev
+
+# test that current working directory matches darcs get expectation
+if [ ! -f CMakeLists.txt ]; then
+   echo "build: run in wrong directory";
+   exit 1;
+fi
+
+# where to build
+BUILDROOT=/tmp/netrek-server.$$
+
+# copy the repository there
+darcs get .. $BUILDROOT
+
+# go there
+cd $BUILDROOT/Vanilla
+
+# make a build tree directory
+mkdir build
+
+# wander into it
+cd build
+
+# prepare build tree
+cmake ..
+
+# compile
+make
+
+# install all
+make install
+
+# report success
+echo success
