@@ -64,9 +64,9 @@ int main(int argc, char **argv)
     getpath();	/* added 11/6/92 DRG */
     errors = open(Error_File, O_WRONLY | O_APPEND | O_CREAT, 0644);
     dup2(errors,2);
-    setbuf(stderr, NULL);
+    setlinebuf(stderr);
     dup2(errors,1);
-    setbuf(stdout, NULL);
+    setlinebuf(stdout);
 
     name = *argv++;
     argc--;

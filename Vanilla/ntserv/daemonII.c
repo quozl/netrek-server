@@ -206,6 +206,8 @@ int main(int argc, char **argv)
     struct stat   mstat;
 #endif
 
+    setlinebuf(stdout);
+    ERROR(1,("daemon: begin, pid %d\n", getpid()));
     i = 1;
     for(i=1;argc>i;i++) {
         if (!strcmp(argv[i], "--debug")) { opt_debug = 1; continue; }
@@ -3845,6 +3847,7 @@ static void exitDaemon(int sig)
 #ifdef ONCHECK
     unlink(On_File);
 #endif
+    ERROR(1,("daemon: normal exit, pid %d\n", getpid()));
     exit(0);
 }
 
