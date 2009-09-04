@@ -221,7 +221,7 @@ because they have initialisation of variables dependent on UPDATE. */
 #define N_PLFILE	"planets"
 #define N_MOTD		"motd"
 #define N_MOTD_CLUE	"motd_clue"
-#define N_DAEMON	"daemonII"
+#define N_DAEMON	"daemon"
 #define N_ROBOT		"robotII"
 #define N_LOGFILENAME	"logfile"
 #define N_PLAYERFILE	"players"

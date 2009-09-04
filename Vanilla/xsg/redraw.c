@@ -596,7 +596,7 @@ map()
 
     /*
      * Slight problem introduced in xsg: normally PLREDRAW comes from the
-     * server or checkRedraw, but now it comes from daemonII.  Since it will
+     * server or checkRedraw, but now it comes from daemon.  Since it will
      * be set when we orbit a planet, the ship will NOT be redrawn if
      * mapmode == 1, but the planet will be.  This is annoying.  One solution
      * is to do a reverse mapping from redrawn planets to nearby ships and

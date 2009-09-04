@@ -56,4 +56,4 @@ killall ntserv
 sleep 1
 
 # destroy daemon
-killall daemonII
+killall daemon

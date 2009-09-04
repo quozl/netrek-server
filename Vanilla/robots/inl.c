@@ -1728,7 +1728,7 @@ void reset_stats()
   struct player *j;
 
   /* Reset global stats. */
-  /* Taken from main() in daemonII.c */
+  /* Taken from main() in daemon.c */
   status->time = 10;
   status->timeprod = 10;
   status->planets = 10;

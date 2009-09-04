@@ -29,7 +29,7 @@ New tools (cruftiness is high):
   TOPGUN=1
 
 - wander2.c, wander3.c.  External tools to move planets.  A version of
-  wander2 was incorporated into my daemonII.c.
+  wander2 was incorporated into my daemon.c.
 
 - setgalaxy.c.  General purpose galaxy changing tool.
    usage:
@@ -140,7 +140,7 @@ Changes as of 4/13/92.
 
 - A background tool that reports CPU usage (0% to 99%) to ALL at
   regular intervals.  Works across daemon restarts (note -- a small
-  daemon mod is required; daemonII.c/freemem() should do a
+  daemon mod is required; daemon.c/freemem() should do a
   status->gameup = 0).  Not of much general interest -- it requires
   that /usr/ucb/vmstat exist and that vmstat's output match a certain
   pattern.  See source file for more details.

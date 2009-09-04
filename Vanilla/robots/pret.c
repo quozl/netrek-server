@@ -47,7 +47,7 @@ char *roboname = "Kathy";
 
 #define NUMNAMES        20
 
-/* borrowed from daemonII.c until we find a better place */
+/* borrowed from daemon.c until we find a better place */
 #define PLAYERFUSE      1
 
 static char    *names[NUMNAMES] =

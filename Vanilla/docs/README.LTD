@@ -92,7 +92,7 @@ mode to LTD_STATS mode:
 1. You should already be running Vanilla Server 2.9pl6 or higher.  If
 not, upgrade before proceeding.
 
-2. Take down the Vanilla server, and make sure that daemonII, netrekd
+2. Take down the Vanilla server, and make sure that daemon, netrekd
 and all ntserv processes are dead.  Use 'ipcs' to verify that the
 shared memory segment is free.
 

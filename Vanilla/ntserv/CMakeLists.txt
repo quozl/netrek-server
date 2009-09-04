@@ -21,8 +21,8 @@ set(ntserv_SOURCES
 )
 
 ### Equivalent to D_OBJS in Makefile.in
-SET (daemonII_SOURCES
-	daemonII.c
+SET (daemon_SOURCES
+	daemon.c
 	queue.c
 	wander2.c
 	solicit.c 
@@ -178,15 +178,15 @@ TARGET_LINK_LIBRARIES (
 	${MATH_LIBRARIES}
 )
 
-### daemonII linker instructions
+### daemon linker instructions
 
-ADD_EXECUTABLE (    
-	daemonII 
-	${daemonII_SOURCES}
+ADD_EXECUTABLE (
+	daemon
+	${daemon_SOURCES}
 )
 
 TARGET_LINK_LIBRARIES (
-	daemonII
+	daemon
 	netrek
 	${MATH_LIBRARIES}
 )

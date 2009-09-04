@@ -1,4 +1,4 @@
-/*! @file daemonII.c
+/*! @file daemon.c
     @brief Netrek universe simulation.
     @details Runs the simulation of the Netrek universe, in a
     step-wise frame by frame sequence, keeping only the current frame,
@@ -449,7 +449,7 @@ static int is_tournament_mode(void)
     struct player *p;
 
     if (practice_mode) return 0;
-#ifdef PRETSERVER    
+#ifdef PRETSERVER
     if (bot_in_game) return 0;
 #endif
 
@@ -3141,14 +3141,14 @@ static void plrescue(struct planet *l)
 {
     /* Send in a robot if there are no other defenders (or not Tmode)
        and the planet is in the team's home space */
-    
+
     if (!(inl_mode)) {
-      if (((tcount[l->pl_owner] == 0) || NotTmode) && 
-        (l->pl_flags & l->pl_owner) &&
+      if (((tcount[l->pl_owner] == 0) || NotTmode) &&
+          (l->pl_flags & l->pl_owner) &&
 #ifdef PRETSERVER
-    !bot_in_game &&
+          !bot_in_game &&
 #endif
-        tm_robots[l->pl_owner] <= 0) {
+          tm_robots[l->pl_owner] <= 0) {
 
         rescue(l->pl_owner, NotTmode);
 	/* todo: fps support, use of a fuse */

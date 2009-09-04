@@ -30,7 +30,7 @@ static int conquer_type;	/* type of parade		*/
 
 /* total bandwidth cost is 2000 bytes per second per slot over ten seconds */
 
-/* borrowed from daemonII.c until we find a better place */
+/* borrowed from daemon.c until we find a better place */
 #define TORPFUSE 1
 #define PLAYERFUSE 1
 

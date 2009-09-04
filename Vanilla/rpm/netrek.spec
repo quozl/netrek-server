@@ -285,7 +285,7 @@ su -c "ln -sf /usr/share/games/netrek/gum/pixmaps /usr/games/netrek/tools/pixmap
 %ghost /usr/games/netrek/ERRORS
 %ghost /usr/games/netrek/.newstartd.pid
 /usr/games/netrek/ntserv
-/usr/games/netrek/daemonII
+/usr/games/netrek/daemon
 /usr/games/netrek/puck
 /usr/games/netrek/mars
 /usr/games/netrek/robotII

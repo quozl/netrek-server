@@ -42,9 +42,9 @@ R_OBJS =    cluecheck.o death.o \
 	    queue.o libnetrek.a
 
 
-#	daemonII object files
+#	daemon object files
 
-D_OBJS =    daemonII.o \
+D_OBJS =    daemon.o \
 	    $(RANDOMO) queue.o \
 	    wander2.o solicit.o conquer.o \
 	    libnetrek.a
@@ -80,13 +80,13 @@ CFLAGS = $(FLAGS) $(INCS)
 LINTFLAGS = -habxc $(INCS)
 
 
-all: $(PMAKE) ntserv daemonII 
+all: $(PMAKE) ntserv daemon
 
 ntserv: $(PMAKE) $(R_OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o ntserv $(R_OBJS) $(LIBS) $(LIBCRYPT) -lgdbm
 
-daemonII: $(PMAKE) $(D_OBJS)
-	$(CC) $(CFLAGS) ${LDFLAGS} -o daemonII $(D_OBJS) $(EXTRALIBS)
+daemon: $(PMAKE) $(D_OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o daemon $(D_OBJS) $(EXTRALIBS)
 
 libnetrek.a: $(L_OBJS)
 	$(AR) cru $@ $(L_OBJS)
@@ -115,16 +115,16 @@ clean: rmdependencies
 	/bin/rm -f *.a *.o *.ln make.out core
 
 reallyclean:  clean
-	rm -f ntserv daemonII .motd *~ #*#
+	rm -f ntserv daemon .motd *~ #*#
 
 uninstall:
-	-cd $(XTREKDIR); rm -f daemonII .motd .sysdef; rm -rf slots
+	-cd $(XTREKDIR); rm -f daemon .motd .sysdef; rm -rf slots
 	-cd $(LIBDIR); rm -f ntserv ; rm -rf slots
 
-install: ntserv daemonII 
+install: ntserv daemon
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
-	$(INSTALLPROG) $(INSTALLOPTS) daemonII $(DESTDIR)$(LIBDIR)/daemonII
+	$(INSTALLPROG) $(INSTALLOPTS) daemon $(DESTDIR)$(LIBDIR)/daemon
 	touch $(DESTDIR)$(LOCALSTATEDIR)/planets
 	chmod 600 $(DESTDIR)$(LOCALSTATEDIR)/planets
 
@@ -133,10 +133,10 @@ install-ntserv: ntserv
 	mv $(DESTDIR)$(LIBDIR)/ntserv $(DESTDIR)$(LIBDIR)/ntserv-archive/ntserv.`date +%Y-%m-%d`.$$
 	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
 
-install-daemon: daemonII
+install-daemon: daemon
 	mkdir -p $(DESTDIR)$(LIBDIR)/daemon-archive
-	mv $(DESTDIR)$(LIBDIR)/daemonII $(DESTDIR)$(LIBDIR)/daemon-archive/daemon.`date +%Y-%m-%d`.$$
-	$(INSTALLPROG) $(INSTALLOPTS) daemonII $(DESTDIR)$(LIBDIR)/daemonII
+	mv $(DESTDIR)$(LIBDIR)/daemon $(DESTDIR)$(LIBDIR)/daemon-archive/daemon.`date +%Y-%m-%d`.$$
+	$(INSTALLPROG) $(INSTALLOPTS) daemon $(DESTDIR)$(LIBDIR)/daemon
 
 installbin: install
 	echo "target installbin deprecated, assumed install"

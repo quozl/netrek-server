@@ -108,7 +108,7 @@ Configuring the server
     sysdef
 
         Read on server startup.  readsysdefaults() in
-        ntserv/daemonII.c, ntserv/main.c.  To add a new option to
+        ntserv/daemon.c, ntserv/main.c.  To add a new option to
         sysdef, see the instructions in include/sysdefaults.h
 
     features

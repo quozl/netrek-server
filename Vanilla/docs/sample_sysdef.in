@@ -84,7 +84,7 @@ CLUERANK=4
 #	Send in iggy (ie hunterkillers) (0 = no, 1 = yes)
 #	Random destructive robots that attack anybody, in default mode
 #	when enabled they appear every 30 minutes, in topgun mode five
-#	minutes, see HOSEFUSE in ntserv/daemonII.c
+#	minutes, see HOSEFUSE in ntserv/daemon.c
 HUNTERKILLER=0
 #
 # 	Reset galaxy on daemon startup (which happens on the next player to
@@ -145,7 +145,7 @@ LOGINTIME=100
 #	into TS_SCUMMERS mode.  The best value is one below TOURN.  Setting it
 #	above TOURN defeats the check.  Setting it above DUPLICATES is
 #	pointless.  Setting it to zero disables the check.
-#	Reference: ntserv/daemonII.c check_scummers)
+#	Reference: ntserv/daemon.c check_scummers)
 CHECKSCUM=3
 #
 #	Do full reverse/forward lookup on IP addresses to check for matching

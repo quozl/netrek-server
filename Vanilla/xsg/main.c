@@ -329,7 +329,7 @@ checkUpdates()
     memcpy(universe.players, players, sizeof(universe.players));
 
     /*
-     * For planets, daemonII sets PLREDRAW, so we don't have to worry about
+     * For planets, daemon sets PLREDRAW, so we don't have to worry about
      * the galactic map.  However, we need something different for the
      * planetlist display, so that we can have it (a) update everything on
      * request, and (b) not update planets which are simply in range of ships.

@@ -270,7 +270,7 @@ This keeps info on planets between games.  Stores the current #of armies,
 current owner, whether a planet has fuel/repair/agri, etc.  If you truncate
 the file, a new set of planets will be generated the next time the daemon
 is started.  If you remove the file, a new set of planets will be generated
-EVERY TIME the daemon is started (daemonII only updates the file; it doesn't
+EVERY TIME the daemon is started (daemon only updates the file; it doesn't
 create it).
 
 If the game is running but you want to have it re-shuffle at a later date,
