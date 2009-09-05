@@ -174,7 +174,9 @@ goto_ogg(e)
    compute_course(crs, &crs_r, speed, &speed_r, &hittime, &lvorbit);
    if(_state.ogg && angdist(crs, crs_r) > 64){
       /* trust to det */
-      printf("overriding cc: crs: %d, sp: %d\n", crs, speed);
+      /*
+	printf("overriding cc: crs: %d, sp: %d\n", crs, speed);
+      */
       req_set_course(crs);
       req_set_speed(speed, __LINE__, __FILE__);
    }

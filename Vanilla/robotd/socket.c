@@ -452,8 +452,6 @@ char *server;
 
     serverDead=0;
 
-    printf("Calling %s.\n", server);
-
     if ((s=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 	printf("I can't create a socket\n");
 	exit(0);
@@ -491,7 +489,7 @@ char *server;
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    
+
     if ((addr.sin_addr.s_addr = inet_addr(server)) == -1) {
 	if ((hp = gethostbyname(server)) == NULL) {
 	    printf("Who is %s?\n", server);
@@ -510,7 +508,6 @@ char *server;
 	exit(0);
     }
 
-    printf("Got connection.\n");
     sock=s;
     pickSocket(port);	/* new socket != port */
 }
