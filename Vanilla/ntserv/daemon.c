@@ -840,6 +840,10 @@ static void move()
     if (fuse(MINUTEFUSE)) {     /* was SURRENDFUSE 4/15/92 TC */
         udsurrend();
         advertise();
+        if (manager_type && manager_pid == 0) {
+            ERROR(1,("daemon: manager restart\n"));
+            fork_robot(manager_type);
+        }
     }
 }
 
@@ -4328,9 +4332,39 @@ static void reaper(int sig)
 {
     int pid, status;
 
-    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        ERROR(1,("daemon: child process %d terminated with status %d\n",
-                 pid, status));
+    ERROR(1,("daemon: reaper on signal %d\n", sig));
+    if (sig != SIGCHLD) return;
+
+    while (1) {
+        pid = waitpid(-1, &status, WNOHANG);
+        if (pid == 0) return;
+        if (pid < 0) {
+            if (errno == ECHILD) return;
+            perror("waitpid");
+        }
+        if (WIFEXITED(status)) {
+            ERROR(1,("daemon: child %d exited, status=%d\n",
+                     pid, WEXITSTATUS(status)));
+        } else if (WIFSIGNALED(status)) {
+            ERROR(1,("daemon: child %d killed by signal %d\n",
+                     pid, WTERMSIG(status)));
+#ifdef WCOREDUMP
+            if (WCOREDUMP(status)) {
+                ERROR(1,("daemon: child %d dumped core\n", pid));
+            }
+#endif
+        } else if (WIFSTOPPED(status)) {
+            ERROR(1,("daemon: child %d stopped by signal %d\n",
+                     pid, WSTOPSIG(status)));
+            continue;
+        } else if (WIFCONTINUED(status)) {
+            ERROR(1,("daemon: child %d continued\n", pid));
+            continue;
+        }
+        if (pid == manager_pid) {
+            ERROR(1,("daemon: manager died\n"));
+            manager_pid = 0;
+        }
     }
 }
 
@@ -4339,9 +4373,8 @@ static void reaper_start()
   /* ask for the reaper to be called on SIGCHLD */
   struct sigaction action;
   action.sa_handler = reaper;
-  action.sa_sigaction = NULL;
   sigemptyset(&(action.sa_mask));
-  action.sa_flags = SA_NOCLDWAIT | SA_NOCLDSTOP;
+  action.sa_flags = 0;
   if (sigaction(SIGCHLD, &action, NULL) < 0) {
     perror("sigaction: SIGCHLD");
   }
@@ -4600,7 +4633,7 @@ static void signal_puck(void)
             {
                 if (errno == ESRCH) 
                 {
-                    ERROR(1,("daemon/signal_puck: slot %d missing\n", i));
+                    ERROR(1,("daemon/signal_puck: slot %c missing\n", slot_char(i)));
                     freeslot(j);
                 }
             }
@@ -4632,7 +4665,7 @@ static void signal_servers(void)
 #ifdef PUCK_FIRST
         if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
             strcmp(j->p_name, "Puck") == 0) {
-            continue; 
+            continue;
         }
 #endif /*PUCK_FIRST*/
 
@@ -4648,7 +4681,12 @@ static void signal_servers(void)
         if (t == 1 || (((counter + i) % t) == 0)) {
             if (alarm_send(j->p_process) < 0) {
                 if (errno == ESRCH) {
-                    ERROR(1,("daemon: signal_servers: slot %d missing\n", i)); 
+                    ERROR(1,("daemon: signal_servers: slot %c missing\n",
+                             slot_char(i)));
+                    if (j->p_process == manager_pid) {
+                        ERROR(1,("daemon: manager missing pid %d\n", manager_pid));
+                        manager_pid = 0;
+                    }
                     freeslot(j);
                 }
             }

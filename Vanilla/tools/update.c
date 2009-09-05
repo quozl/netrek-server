@@ -169,28 +169,14 @@ static int open_port(char *host, int port, int verbose)
 #define SA_NOCLDWAIT	0
 #endif
 
-/*
-  from man sigaction on linux red hat 6.1 alpha
-
-       The sa_restorer element is  obsolete  and  should  not  be
-       used.  POSIX does not specify a sa_restorer element.
-
-#ifdef linux
-#undef sa_sigaction
-#define sa_sigaction sa_restorer
-#endif
-*/
-
-void no_zombies(void) {
-
+void no_zombies(void)
+{
   struct sigaction action;
 
   action.sa_flags = SA_NOCLDWAIT;
   action.sa_handler = SIG_DFL;
   sigemptyset(&(action.sa_mask));
-  action.sa_sigaction = NULL;
   sigaction(SIGCHLD, &action, NULL);
-
 }
 
 int main(int argc, char **argv)

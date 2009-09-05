@@ -100,17 +100,12 @@ int fd;					/* log file file descriptor	*/
 
 #ifdef REAPER_HANDLER
 
-#ifdef linux
-#define sa_sigaction sa_restorer
-#endif
-
 void handle_reaper(void) {
   struct sigaction action;
 
   action.sa_flags = SA_NOCLDWAIT;
   action.sa_handler = reaper;
   sigemptyset(&(action.sa_mask));
-  action.sa_sigaction = NULL;
   sigaction(SIGCHLD, &action, NULL);
 }
 
