@@ -1,0 +1,514 @@
+#
+#       The server defaults, or configuration file.
+#
+#       Changes to this file usually take effect immediately, even
+#       during a running game, which can lead to disturbance of the
+#       social dynamics.
+#
+#       Developers: see tail of include/sysdefaults.h for the procedure to
+#       add new names and values.
+#
+
+#
+#       Admin password for using admin command (change in order for it to
+#       work, if password is left as "password", it will NOT be accepted)
+ADMIN_PASSWORD=password
+#
+#       Allow admins to execute Unix shell commands on the host server.
+ADMIN_EXEC=0
+#
+#	Enable voting by players
+VOTING=0
+#
+#	Enable vote for temporary ban
+#	(requires VOTING=1)
+BAN_VOTE_ENABLE=0
+#
+#	Length of ban in seconds.  One hour is 3600 seconds.
+#	(requires BAN_VOTE_ENABLE=1)
+BAN_VOTE_DURATION=3600
+#
+#	Deny permanently banned players a slot
+BAN_NOCONNECT=0
+#
+#	Enable vote for ejection
+#	(requires VOTING=1)
+EJECT_VOTE_ENABLE=0
+#
+#	Only allow ejection if there is a queue of players
+#	(requires EJECT_VOTE_ENABLE=1)
+EJECT_VOTE_ONLY_IF_QUEUE=0
+#
+#	Kill ntserv process to eject, causes some client problems
+#	(requires EJECT_VOTE_ENABLE=1)
+EJECT_VOTE_VICIOUS=0
+#
+#	Force players to quit upon genocide if there is a wait queue
+#	to allow more equal playing time. This has the adverse side
+#	effect of causing players who might have continued playing to
+#	not return after being forced to quit.
+#       Set this to 0 to never force players to quit.
+FORCE_GENO_QUIT=8
+#
+#	Time distortion constant
+#	(Warning: intended for testing only, as changing this disturbs
+#	reaction times of players and they learn the new rate, resulting
+#       in a performance decline in normal mode ... is also useful in
+#       controlled player environments for teaching).
+DISTORTION=10
+#
+#	Frames per second
+#	(The number of times per second the daemon wakes to move objects
+#	in the universe, and the basis of the update rate observed by
+#	clients.  Was 10 from 1986, was 50 from 2007)
+FPS=50
+#
+#	Minimum client update rate per second
+MINUPS=1
+#
+#	Maximum client update rate per second
+MAXUPS=50
+#
+#       Default client update rate per second
+#       (Clients may or may not send a CP_UPDATES request during startup.
+#       If they do not this is the default rate they are provided with.)
+DEFUPS=25
+#
+# 	Do clue checks (0 = no, 1 = keyword, 2 = question and answer)
+#	(We need more twinks, don't turn this on lightly)
+CLUE=0
+#
+#	Do not cluecheck this rank or higher
+CLUERANK=4
+#
+#	Send in iggy (ie hunterkillers) (0 = no, 1 = yes)
+#	Random destructive robots that attack anybody, in default mode
+#	when enabled they appear every 30 minutes, in topgun mode five
+#	minutes, see HOSEFUSE in ntserv/daemon.c
+HUNTERKILLER=0
+#
+# 	Reset galaxy on daemon startup (which happens on the next player to
+#	log in after the daemon has gone because everybody left).
+RESETGALAXY=1
+#
+#	Enable blogging of server events
+BLOGGING=1
+#
+# 	Log all messages (0 = no, 1 = yes)
+LOGALL=0
+#
+# 	Log messages to god (0 = no, 1 = yes)
+LOGGOD=1
+#
+# 	Check messages for configuration... (0 = no, 1 = yes)?
+CHECKMESG=1
+#
+#       Log all warnings as messages (0 = no, 1 = yes)
+EVENTLOG=0
+#
+# 	Auto-Doosh messages (0 = no, 1 = yes)
+DOOSHER=0
+#
+# 	Show why dead messages (0 = no, 1 = yes)?
+WHYMESS=1
+#
+# 	Show sysdef on galaxy map upon startup (0 = no, 1 = yes)
+SHOWSYSDEF=1
+#
+# 	make planets move around (0 = no, 1 = yes)
+PLANET_MOVE=0
+#
+#	Maximum number of duplicate connections from a single IP address
+#	(Connections that arrive above this number are given a special
+#	queue response and do not enter the game or wait queue.  This limits
+#	the number of players who can play behind a single IP address NAT
+#	implementation.)
+DUPLICATES=3
+#
+#	Automatically deny any IP addresses who exceed duplicate count by
+#	adding to the etc/deny directory (0 = no, 1 = yes)
+DENY_DUPLICATES=0
+#
+#	Maximum time to allow for login.  This value multiplied by
+#	DUPLICATES+1 determines how long a legitimate player will have to
+#	wait during a CP_SOCKET style denial of service attack.  Set this
+#	value lower during an attack, and restore it after the attack.
+#	The default is derived from the Netrek XP client which ceases a
+#	login attempt after 99 seconds.
+LOGINTIME=100
+#
+#	Have the server check for t-mode scummers.
+#	(A t-mode scummer is an IP address that has more than one client
+#	running, however it is hard to tell if the IP address might represent
+#	a NAT gateway with several real players behind it.  This parameter
+#	sets the number of scummers that may exist before the server goes
+#	into TS_SCUMMERS mode.  The best value is one below TOURN.  Setting it
+#	above TOURN defeats the check.  Setting it above DUPLICATES is
+#	pointless.  Setting it to zero disables the check.
+#	Reference: ntserv/daemon.c check_scummers)
+CHECKSCUM=3
+#
+#	Do full reverse/forward lookup on IP addresses to check for matching
+#	DNS entries, and make mismatches show in a 'WHOIS'/'@' (0 = no, 1 = yes)
+IP_CHECK_DNS=1
+#
+#	Announce to ALL when a player's host does not forward resolve, and show
+#	what the IP resolved to.  Requires IP_CHECK_DNS=1 (0 = no, 1 = yes).
+IP_CHECK_DNS_VERBOSE=0
+#
+# 	number of players per team for t-mode
+TOURN=4
+#
+#       scripts to run when t-mode starts and ends
+SCRIPT_TOURN_START=
+SCRIPT_TOURN_END=
+#
+# 	allow cloakers on homeworld to idle safely if no t-mode
+# 	(0 = no, 1 = yes)
+SAFE_IDLE=1
+#
+#	Whether to emulate old tournamentMask() behavior by removing the
+#	restrictions on joining a diagonal race if 2 players are present on
+#	the opposing diagonal, and remove the logic not allowing teams to
+#	grow past 4 humans before T mode starts.
+CLASSICTOURN=0
+#
+#	Rebuild time of starbase, in minutes
+STARBASE_REBUILD_TIME=30
+#
+#       Require offense for higher ranks, to alleviate the problem of
+#       players who only play when there is much DI to be had. This
+#       makes Commodore require 1.0, Rear Adm 1.2, and Admiral 1.4.
+OFFENSE_RANK=0
+#
+# 	Which ship types are allowed
+SHIPS=SC,DD,CA,BB,AS,SB
+#
+# 	Which additional weapon systems are allowed
+WEAPONS=PLASMA,TRACTOR
+#
+# 	Number of kills for plasma torpedos
+PLKILLS=2
+#
+#       Rank needed to fly a destroyer (0 = Ensign)
+DDRANK=0
+#
+#	Offense needed to take out DD (0.0 = None)
+DD_MINIMAL_OFFENSE=0.0
+#
+#       Rank needed to fly a galaxy class ship (0 = Ensign)
+GARANK=0
+#
+# 	Rank needed to take out starbase (3 = Commander)
+SBRANK=3
+#
+#	Offense needed to take out starbase (0.0 = None)
+SB_MINIMAL_OFFENSE=0.0
+#
+#	Planets needed to take out starbase
+SBPLANETS=5
+#
+#	Bases can orbit enemy planets (0 = no, 1 = yes)
+#	(Bronco style says not, as it dramatically affects game balance)
+SBORBIT=0
+#
+# 	Use Chaos mode (0 = no, 1 = yes)
+CHAOS=0
+#
+#	Use Sturgeon mode (0 = no, 1 = yes)
+STURGEON=0
+#
+#	Allow special weapons (nukes, drones, mines, plasmas 1-5)
+STURGEON_SPECIAL_WEAPONS=1
+#
+#	Maximum number of kills that can be spent on upgrades.
+#	(0 = no limit)
+STURGEON_MAXUPGRADES=100
+#
+#	Give .15 kill credit per upgrade on ships that are killed
+#	(0 = no, 1 = yes)
+STURGEON_EXTRAKILLS=0
+#
+#	Get free upgrades for taking planet in enemy space.  Can go
+#	over MAXUPGRADES with this on (0 = no, 1 = yes)
+STURGEON_PLANETUPGRADES=0
+#
+#	Only lose most expensive upgrade on death (0 = no, 1 = yes)
+STURGEON_LITE=0
+#
+#       Use "wrap around" style galaxy (0 = no, 1 = yes)
+WRAP_GALAXY=0
+#
+#       Use "Ping-Pong" plasma mode (0 = no, 1 = yes)
+PINGPONG_PLASMA=0
+#
+#       Maximum number of Starbases allowed in Chaos mode
+MAX_CHAOS_BASES=2
+#
+#       Disallow dropping on 3rd space planets (1 = no dropping)
+RESTRICT_3RD_DROP=1
+#
+#       Disallow bombing out of t-mode (1 = no bombing)
+RESTRICT_BOMB=1
+#
+#       Disallow 3rd space bombing (1 = no bombing)
+NO_UNWARRING_BOMBING=1
+#
+#	Credit nearest enemy with the death of a ship that has quit.
+SELF_DESTRUCT_CREDIT=0
+#
+#	Turn off messaging for observers
+OBSERVER_MUTING=0
+#
+#	Allow whitelisted users to override player's :i ignore setting
+WHITELIST_INDIV=0
+#
+#	Allow whitelisted users to override player's :t ignore setting
+WHITELIST_TEAM=0
+#
+#	Allow whitelisted users to override player's :a ignore setting
+WHITELIST_ALL=0
+#
+#	Whether observers on an empty server will keep the game alive.
+OBSERVER_KEEPS_GAME_ALIVE=0
+#
+#       Whether player counts are listed on the metaservers
+REPORT_USERS=1
+#
+# 	Use topgun mode (0 = no, 1 = yes)
+TOPGUN=0
+#
+# 	Use new turn mods (0 = no, 1 = yes)
+NEWTURN=0
+#
+#       Use vector torps (0 = no, 1 = yes)
+VECTOR=0
+#
+# 	Don't show far players in t-mode (0 = no, 1 = yes)
+HIDDEN=1
+#
+# 	The numbers of the home planets
+PLANETS=00,10,20,30
+#
+# 	Use binary confirmation (0 = no, 1 = RSA, 2 = RSA and reserved.c)
+CONFIRM=0
+#
+#       Whether to report the client identification of arriving players.
+REPORT_IDENT=0
+#
+#	For use with config.h's NEWMASK define. restrict diagonal games.
+NODIAG=1
+#
+# 	Allow UDP connections (0 = no, 1 = yes)
+UDP=1
+#
+#       Bind UDP port base (0 = off, n = port number)
+#
+#       Sets the base port number used for the server side during the switch
+#       to UDP mode, instead of using an operating system allocated sequential
+#       or random port number.  This is useful for servers that have port based
+#       firewall protection, since it reduces the outbound rule set.
+BIND_UDP_PORT_BASE=0
+#
+# 	Number of planets to start surrender counter
+SURRSTART=1
+#
+# 	Frequency of pings in seconds
+PING_FREQ=2
+#
+#       Incremental packet loss sampling interval
+PING_ILOSS_INTERVAL=10
+#
+# 	Allow ghostbusting based on ping stats
+PING_GHOSTBUST=1
+#
+# 	How many pings before we ghostbust the client
+PING_GHOSTBUST_INTERVAL=60
+#
+#       Seconds that may elapse without any input from client before
+#       the slot is freed.  The standard ghostbust timer.  Determines
+#       how quickly a slot is freed if the client crashes, or the
+#       player does not select a team.
+#
+#       For INL servers increase this to 120 to help a TRADE during a
+#       PAUSE not free a player that has taken a biological break.
+GHOSTBUST_TIMER=30
+#
+#	Set the max. # of armies a planet can have out of t-mode.
+MAX_POP=70
+#
+#	The amount of error messages the server will send to ERROR file. (1-3)
+ERROR_LEVEL=2
+#
+#	The amount of armies the planets will be created with.
+START_ARMIES=30
+#
+#	Turn on transwarp capabilities. (1 = on, 0 = off)
+TRANSWARP_ENABLE=0
+#
+#	How fast transwarp is.
+TRANSWARP_SPEED=60
+#
+#       Initiation delay after lock in milliseconds
+#       (to improve equity between clients that have a function that
+#       locates the base in player list vs clients that require a player
+#       to find the base in melee)
+TRANSWARP_DELAY=1
+#
+#	Enable the advertising of other servers with players, to assist
+#	with concentrating the playerbase.
+SERVER_ADVERTISE_ENABLE=0
+#
+#	Filter to apply against server names, as a substring match.
+SERVER_ADVERTISE_FILTER=
+#
+#	Special Motd for Robots
+#MOTD=.motd_basep
+#
+#       Basepractice Server
+BASEPRACTICE=0
+#
+#	Host to which to connect with robots
+ROBOTHOST=127.0.0.1
+#
+#       Whether to assume that a slot accessing the server from the
+#       matching ROBOTHOST above is a robot, regardless of the flags.
+IS_ROBOT_BY_HOST=1
+#
+#    Newbie Server
+NEWBIE=0
+#
+#	Target number that sets the minimum number of total players (robots
+#	+ humans) that is maintained at all times.  If there are less humans
+#	than this number, the rest of the slots will be filled with robots
+#	until this number of slots is reached.  If there are an equal number
+#	or more humans than this number, there will be no robots in game.
+MIN_NEWBIE_SLOTS=12
+#
+#       Maximum number of newbie server players to allow at once
+MAX_NEWBIE_PLAYERS=8
+#
+#       Keep number of humans per team balanced (1 = balance,
+#       0 = fill one side entirely with humans first)
+NEWBIE_BALANCE_HUMANS=1
+#
+#       Pre T-mode Entertainment (maintains 4 on 4 with robots)
+PRET=0
+#
+#       Use guest logins instead of random logins
+PRET_GUEST=0
+#
+#       Set win condition for pre-t mode; a team must be up by this
+#       number of planets to win a round of pre-t entertainment
+PRET_PLANETS=3
+#
+#       Save t-mode galaxy during transition from t-mode to pre-t mode
+PRET_SAVE_GALAXY=1
+#
+#       Number of seconds the saved t-mode galaxy is eligible to be
+#       restored if t-mode starts up again.
+PRET_GALAXY_LIFETIME=600
+#
+#       Save carried armies to homeworlds at start of pre-t
+PRET_SAVE_ARMIES=1
+#
+#	Slot number to send debug output to for newbie and pret process.  -1
+#       turns this off.
+ROBOT_DEBUG_TARGET=-1
+#
+#	Level of verbosity of debug information (0 is minimum, 3 is maximum)
+ROBOT_DEBUG_LEVEL=0
+#
+#	Hockey Server
+HOCKEY=0
+#
+#       Cause galactic to be updated at same rate as tactical
+#       (needed for hockey).
+GALACTIC_SMOOTH=1
+#
+#	Enable INL server mode.
+#	INL server installers should set this to 1.
+#	WARNING: This hoses pickup stats database in this implementation.
+INL=@INL@
+#
+#	Record INL games server side with CamBot.  (0 = no, 1 = yes)
+INL_RECORD=@INL@
+#
+#	Style of INL draft tactical layout
+#	0 = pool horizontal centre, captains above and below, pick nearest race
+#	1 = pool on left, pick on right beyond each captain,
+#	2 = pool on bottom, pick on top beyond each captain,
+#	(may be changed during a draft to explore the preferred style)
+INL_DRAFT_STYLE=0
+#
+#       Enable classical refit criteria.  Historically ships were allowed
+#       to refit at less than 75% hull damage.  This is clearly against the
+#       original authors intentions as the other criteria is > 75% fuel and
+#       > 75% shields remaining.  Setting this to 0 will change this so that
+#       all 3 factors (fuel, shields and hull) are at their respective 25%
+#       values.
+LAME_REFIT=1
+#
+#       Base specific lame refit setting.  This only applies to bases;
+#       this will allow a server to honor the historic criteria for
+#       normal ships (LAME_REFIT=1) while preventing a base from
+#       refitting at damage > 25%.
+LAME_BASE_REFIT=1
+#
+#	Enable Dogfight practice robot.
+DOGFIGHT=0
+#
+#	Dog-fighter: Number of the contestants needed before starting
+CONTESTSIZE=4
+#
+#	Dog-Fighter: Number of matches per contest
+NUMMATCH=10
+#
+#	Dog-Fighter: Save the player stats?	(not implemented yet..)
+SAVE_DOG_STAT=1
+#
+#########################################
+#	BigBang Ships: Make SHIP=1 if you want bigbang style ships.
+#
+SHIP=0
+DD PLASMADAMAGE 85
+DD MAXFUEL 7500
+BB TORPCOST 320
+BB PHASERCOST 945
+!	Warpcost should ONLY be defined when TRANSWARP=1
+SB WARPCOST 20
+!	Recharge should ONLY be defined when TRANSWARP=1
+SB RECHARGE 45
+!	MaxWpnTemp should ONLY be defined when non-chaos mode.
+SB MAXWPNTEMP 1500
+END
+#
+#########################################
+#	NewShip Ships: Make SHIP=1 if you want NEWSHIP ships.
+#
+SHIP=0
+BB PHASERCOST 945
+AS TORPCOST 210
+!	MaxWpnTemp should ONLY be defined when non-chaos mode.
+SB MAXWPNTEMP 1500
+END
+#########################################
+#       Hockey Ships: Make SHIP=1 if you want hockey ships.
+#
+SHIP=0
+SC   TRACTSTR  1000
+SC   TRACTRNG  .56
+DD   TRACTSTR  1250
+DD   TRACTRNG  .72
+BB   TRACTSTR  1850
+BB   TRACTRNG  .96
+AS   TRACTSTR  1850
+AS   TRACTRNG  .96
+SB   TRACTSTR  4000
+SB   TRACTRNG  1.2
+CA   TRACTSTR  1500
+CA   TRACTRNG  .8
+GA   TRACTSTR  1500
+GA   TRACTRNG  .8
+END
+# End of hockey ships section.

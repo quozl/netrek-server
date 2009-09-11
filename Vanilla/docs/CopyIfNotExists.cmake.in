@@ -1,0 +1,73 @@
+### Parameterized cmake script
+
+INCLUDE ("@CMAKE_CURRENT_SOURCE_DIR@/CustomCopy.cmake")
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_features" 
+	"@CMAKE_INSTALL_PREFIX@/etc/etc/features"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_motdclue"
+	"@CMAKE_INSTALL_PREFIX@/etc/motd_clue"
+)
+
+COPY_IF_NOT_EXISTS ( 
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_motdclue"
+    "@CMAKE_INSTALL_PREFIX@/etc/motd_clue_logo.MASTER"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_motdbasep"
+    "@CMAKE_INSTALL_PREFIX@/etc/motd_basep_logo.MASTER"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_sysdef"
+    "@CMAKE_INSTALL_PREFIX@/etc/sysdef"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_motd"
+    "@CMAKE_INSTALL_PREFIX@/etc/motd"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_motd"
+    "@CMAKE_INSTALL_PREFIX@/etc/motd_logo.MASTER"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_ports"
+    "@CMAKE_INSTALL_PREFIX@/etc/ports"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_time"
+    "@CMAKE_INSTALL_PREFIX@/etc/time"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_motdbasep"
+    "@CMAKE_INSTALL_PREFIX@/etc/motd_basep"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_reserved"
+    "@CMAKE_INSTALL_PREFIX@/etc/reserved"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_tourn.map"
+    "@CMAKE_INSTALL_PREFIX@/etc/tourn.map"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_comment"
+    "@CMAKE_INSTALL_PREFIX@/etc/comment"
+)
+
+COPY_IF_NOT_EXISTS (
+	"@CMAKE_CURRENT_SOURCE_DIR@/sample_blosxom.conf"
+    "@CMAKE_INSTALL_PREFIX@/etc blosxom.conf"
+)
