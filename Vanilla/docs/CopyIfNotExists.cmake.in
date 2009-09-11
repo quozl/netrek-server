@@ -69,5 +69,5 @@ COPY_IF_NOT_EXISTS (
 
 COPY_IF_NOT_EXISTS (
 	"@CMAKE_CURRENT_SOURCE_DIR@/sample_blosxom.conf"
-    "@CMAKE_INSTALL_PREFIX@/etc blosxom.conf"
+    "@CMAKE_INSTALL_PREFIX@/etc/blosxom.conf"
 )
