@@ -4,7 +4,7 @@ INCLUDE ("@CMAKE_CURRENT_SOURCE_DIR@/CustomCopy.cmake")
 
 COPY_IF_NOT_EXISTS (
 	"@CMAKE_CURRENT_SOURCE_DIR@/sample_features" 
-	"@CMAKE_INSTALL_PREFIX@/etc/etc/features"
+	"@CMAKE_INSTALL_PREFIX@/etc/features"
 )
 
 COPY_IF_NOT_EXISTS (
