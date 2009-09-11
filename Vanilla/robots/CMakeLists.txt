@@ -181,11 +181,22 @@ SET (inl_SOURCES
 ### inl linker instructions
 ADD_EXECUTABLE (    
 	inl 
-    ${inl_SOURCES}
+	${inl_SOURCES}
 )
 
 TARGET_LINK_LIBRARIES (
 	inl
 	netrek
 	${MATH_LIBRARIES}
+)
+
+### Install targets
+INSTALL (
+	TARGETS puck mars robotII basep newbie pret inl
+	RUNTIME DESTINATION lib
+)
+
+INSTALL (
+	FILES end_tourney.pl auto-archive.pl
+	DESTINATION lib
 )

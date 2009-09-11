@@ -23,3 +23,19 @@ TARGET_LINK_LIBRARIES (
 	netrek
 	${MATH_LIBRARIES}
 )
+
+### Install targets
+INSTALL (
+	TARGETS newstartd
+	RUNTIME DESTINATION lib
+)
+
+### Symlink hacking. Should install it in bin or lib, not both?
+# Symlink aren't all that platform independent so I think that is why making
+# symlinks in cmake is convoluted (at least how I've figure them out).
+#
+INSTALL (DIRECTORY DESTINATION bin)
+INSTALL (CODE "EXECUTE_PROCESS (
+	COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}lib/newstartd ${CMAKE_INSTALL_PREFIX}/bin/netrekd
+    )"
+)

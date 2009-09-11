@@ -26,3 +26,9 @@ TARGET_LINK_LIBRARIES (pledit
 	${CRYPT_LIBRARIES}
 	${CURSES_LIBRARY}
 )
+
+### Install targets
+INSTALL (
+	TARGETS pledit
+	RUNTIME DESTINATION lib
+)

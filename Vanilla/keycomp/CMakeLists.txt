@@ -17,3 +17,9 @@ FOREACH (tool ${TOOLS})
 	ADD_EXECUTABLE (${tool} ${tool}.c)
 	TARGET_LINK_LIBRARIES (${tool} netrek)
 ENDFOREACH(tool)
+
+### Install targets
+INSTALL (
+	TARGETS ${TOOLS}
+        RUNTIME DESTINATION lib
+)

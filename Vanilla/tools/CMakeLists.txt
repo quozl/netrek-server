@@ -76,6 +76,28 @@ SET (TOOLS
 	delist
 	ban
 	getpath
+	ntpasswd
+)
+
+SET (SCRIPTS
+	updatekeys
+	blosxom
+	blog
+	blog-file
+	blog-update
+	blog-update-all
+	blog-purge-old
+	cambot-clean
+	cambot-cyclic
+	ignore-clean
+)
+
+SET (ADMIN_SCRIPTS
+	admin/ban
+	admin/free
+	admin/kill
+	admin/quit
+	admin/reset
 )
 
 FOREACH (tool ${TOOLS})
@@ -110,3 +132,23 @@ TARGET_LINK_LIBRARIES (updated
 IF (XBIFF_EXECUTABLE)
 	MESSAGE (STATUS "Not implemented yet.")
 ENDIF (XBIFF_EXECUTABLE)
+
+### Install targets
+INSTALL (
+	TARGETS ${TOOLS}
+	RUNTIME DESTINATION lib/tools
+)
+
+INSTALL (
+	FILES ${SCRIPTS}
+	DESTINATION lib/tools
+)
+
+INSTALL (
+	FILES ${ADMIN_SCRIPTS}
+	DESTINATION lib/tools/admin
+)
+
+# Need to work trekon installation, see installtrekon in Makefile.in
+# Will post to netrek-devel and promote decprecation of this legacy code
+# Quozl says, "etc/sysdef SCRIPT_TOURN_{START,END}= are more useful."

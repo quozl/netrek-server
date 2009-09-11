@@ -59,3 +59,8 @@ TARGET_LINK_LIBRARIES (
 	${MATH_LIBRARIES}
 )
 
+### Install targets
+INSTALL (
+        TARGETS robot
+        RUNTIME DESTINATION lib/og
+)

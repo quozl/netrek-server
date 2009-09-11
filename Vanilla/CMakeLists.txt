@@ -202,3 +202,5 @@ ADD_SUBDIRECTORY (xsg)
 ADD_SUBDIRECTORY (pledit)
 
 
+# install docs
+ADD_SUBDIRECTORY (docs)

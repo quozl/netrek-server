@@ -24,3 +24,9 @@ SET (sequencer_SOURCES
 ### sequencer
 ADD_EXECUTABLE (sequencer ${sequencer_SOURCES})
 TARGET_LINK_LIBRARIES (sequencer netrek)
+
+### Install targets
+INSTALL (
+	TARGETS sequencer
+        RUNTIME DESTINATION lib
+)
