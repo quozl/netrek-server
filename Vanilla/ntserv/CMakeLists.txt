@@ -197,11 +197,3 @@ INSTALL (
 	TARGETS ntserv daemon
 	RUNTIME DESTINATION lib
 )
-
-# Need to confirm with James, ok to have zero byte files in source tree or
-# should I figure out how to do a "touch planets"
-INSTALL (
-	FILES planets
-	DESTINATION var
-	PERMISSIONS OWNER_READ OWNER_WRITE
-)

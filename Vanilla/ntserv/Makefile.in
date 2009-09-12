@@ -125,8 +125,6 @@ install: ntserv daemon
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	$(INSTALLPROG) $(INSTALLOPTS) ntserv $(DESTDIR)$(LIBDIR)/ntserv
 	$(INSTALLPROG) $(INSTALLOPTS) daemon $(DESTDIR)$(LIBDIR)/daemon
-	touch $(DESTDIR)$(LOCALSTATEDIR)/planets
-	chmod 600 $(DESTDIR)$(LOCALSTATEDIR)/planets
 
 install-ntserv: ntserv
 	mkdir -p $(DESTDIR)$(LIBDIR)/ntserv-archive
