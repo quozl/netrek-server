@@ -65,13 +65,30 @@ cp $PN-$VS.tar.gz $PN-$VS.tar.gz.md5sum ~/public_html/external/mine/netrek/
 cp $PN-$VS.tar.gz /tmp
 cd /tmp
 tar xfz $PN-$VS.tar.gz 
+mv $PN-$VS $PN-$VS.orig
+tar xfz $PN-$VS.tar.gz 
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make
-# FUTURE, ensure that the tree is returned to pristine condition by distclean
 
 # test install kit
 make install
+
+# ensure that the tree is returned to pristine condition by distclean
+make distclean
+cd /tmp
+diff -ur $PN-$VS.orig $PN-$VS
++++ netrek-server-vanilla-2.16.0/docs/sample_geno_timer_crontab 2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/include/config.h       2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/robotd/Makefile        2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/Makefile 2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/admin/Makefile   2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/geno_timer       2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/no_geno_timer    2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/setpath  2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/setpath.csh      2009-09-01 17:23:59.000000000 +1000
+
+# test run
 /tmp/$VS/bin/netrekd
 
 # test client
