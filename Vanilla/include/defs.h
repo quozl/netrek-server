@@ -16,7 +16,7 @@
 #define SA_NOCLDWAIT	0
 #endif
 
-#define ERROR(l,x)	{ if (errorlevel >= l ) { printf x; }}
+#define ERROR(l,x)	{ if (errorlevel >= l) { printf x; } }
 
 #define FNAMESIZE	256
 
