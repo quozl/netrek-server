@@ -276,28 +276,21 @@ int main(int argc, char **argv)
         memset(players[i].voting, 0, sizeof(time_t) * PV_TOTAL);
     }
 
-#ifdef NEUTRAL
-    plfd = open(NeutFile, O_RDWR, 0744);
-#else
-    plfd = open(PlFile, O_RDWR, 0744);
-#endif
-
     if (resetgalaxy) {          /* added 2/6/93 NBT */
         pl_reset();
-    }
-    else {
-      if (plfd < 0) {
-        ERROR(1,("daemon: no planet file, restarting galaxy\n"));
-        pl_reset();
-      }
-      else {
-        int psize = sizeof(struct planet) * MAXPLANETS;
-        if (read(plfd, (char *) planets, psize) != psize) {
-            ERROR(1,("daemon: planet file wrong size, restarting galaxy\n"));
+    } else {
+        plfd = open(PlFile, O_RDWR, 0744);
+        if (plfd < 0) {
+            ERROR(1,("daemon: no planet file, restarting galaxy\n"));
             pl_reset();
+        } else {
+            int psize = sizeof(struct planet) * MAXPLANETS;
+            if (read(plfd, (char *) planets, psize) != psize) {
+                ERROR(1,("daemon: planet file bad size, restarting galaxy\n"));
+                pl_reset();
+            }
+            close(plfd);
         }
-        (void) close(plfd);
-      }
     }
 
     glfd = open(Global, O_RDWR, 0744);
@@ -310,7 +303,7 @@ int main(int argc, char **argv)
             ERROR(1,("daemon: global file wrong size, resetting stats\n"));
             memset((char *) status, 0, sizeof(struct status));
         }
-        (void) close(glfd);
+        close(glfd);
     }
     if (status->time==0) {
         /* Start all stats at 1 to prevent overflow */
@@ -3859,24 +3852,18 @@ static void save_planets(void)
 {
     int plfd, glfd;
 
-#ifdef NEUTRAL
-    plfd = open(NeutFile, O_RDWR|O_CREAT, 0744);
-#else
     plfd = open(PlFile, O_RDWR|O_CREAT, 0744);
-#endif
-
     glfd = open(Global, O_RDWR|O_CREAT, 0744);
-
     if (plfd >= 0) {
         int psize = sizeof(struct planet) * MAXPLANETS;
-        (void) lseek(plfd, (off_t) 0, 0);
-        (void) write(plfd, (char *) planets, psize);
-        (void) close(plfd);
+        lseek(plfd, (off_t) 0, 0);
+        write(plfd, (char *) planets, psize);
+        close(plfd);
     }
     if (glfd >= 0) {
-        (void) lseek(glfd, (off_t) 0, 0);
-        (void) write(glfd, (char *) status, sizeof(struct status));
-        (void) close(glfd);
+        lseek(glfd, (off_t) 0, 0);
+        write(glfd, (char *) status, sizeof(struct status));
+        close(glfd);
     }
 }
 
