@@ -123,7 +123,7 @@ reallyclean:
 		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
 		$(MAKE) reallyclean; \
 	fi
-	rm -f make.out cflags.h config.cache config.log tools/trekon *~ null #*#
+	rm -f make.out cflags.h config.cache config.log *~ null #*#
 
 distclean: clean reallyclean rmdependencies
 
@@ -152,7 +152,6 @@ installbin: all
 install: installbin
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(BINDIR) $(DESTDIR)$(SYSCONFDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	cd docs;   $(MAKE) install DESTDIR=$(DESTDIR)
-	cd tools;  $(MAKE) installtrekon DESTDIR=$(DESTDIR)
 	@echo
 	@echo "netrek-server-vanilla installation complete."
 	@echo "start the server with $(BINDIR)/netrekd"
@@ -172,7 +171,7 @@ rmdependencies:
 
 NAME=$(PACKAGE)-$(VERSION)
 dist:
-	chmod +x debian/rules tools/mktrekon configure
+	chmod +x debian/rules configure
 	mkdir $(NAME)
         # what has changed
 	cp -p ChangeLog NEWS $(NAME)/

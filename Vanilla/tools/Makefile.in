@@ -42,7 +42,7 @@ EXECS =	ban getpath blotpassword mess message newscores planets players \
 	scores \
         setgalaxy stat trimscores watchmes xtkill \
         mergescores keyman updated fun conq_vert convert sortdb cambot \
-        ntpasswd ltd_dump ltd_dump_html ltd_convert nuke trekon metaget \
+        ntpasswd ltd_dump ltd_dump_html ltd_convert nuke metaget \
 	setgame setplanet setteam setship delist
 
 all: $(PMAKE) $(EXECS)
@@ -208,21 +208,6 @@ ban: ban.o $(OBJS)
 
 getpath: getpath.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} getpath.o $(OBJS)
-
-trekon: ${srcdir}/mktrekon ${srcdir}/trekon.bitmap ${srcdir}/trekoff.bitmap
-	${srcdir}/mktrekon $(LIBDIR)
-	chmod a+x trekon
-
-installtrekon: trekon
-	@if [ -f $(DESTDIR)$(LIBDIR)/trekon ]; then touch $(DESTDIR)$(LIBDIR)/trekon; \
-	 else cp trekon $(DESTDIR)$(LIBDIR)/trekon; \
-	 fi
-	@if [ -f $(DESTDIR)$(LIBDIR)/trekon.bitmap ]; then touch $(DESTDIR)$(LIBDIR)/trekon.bitmap; \
-	 else cp ${srcdir}/trekon.bitmap $(DESTDIR)$(LIBDIR)/trekon.bitmap; \
-	 fi
-	@if [ -f $(DESTDIR)$(LIBDIR)/trekoff.bitmap ]; then touch $(DESTDIR)$(LIBDIR)/trekoff.bitmap; \
-	 else cp ${srcdir}/trekoff.bitmap $(DESTDIR)$(LIBDIR)/trekoff.bitmap; \
-	 fi
 
 lint: $(SRCS)
 	lint $(LINTFLAGS) -u $?

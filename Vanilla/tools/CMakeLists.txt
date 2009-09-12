@@ -148,7 +148,3 @@ INSTALL (
 	FILES ${ADMIN_SCRIPTS}
 	DESTINATION lib/tools/admin
 )
-
-# Need to work trekon installation, see installtrekon in Makefile.in
-# Will post to netrek-devel and promote decprecation of this legacy code
-# Quozl says, "etc/sysdef SCRIPT_TOURN_{START,END}= are more useful."
