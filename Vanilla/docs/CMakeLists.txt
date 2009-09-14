@@ -15,6 +15,12 @@ CONFIGURE_FILE (
 	${CMAKE_CURRENT_BINARY_DIR}/CopyIfNotExists.cmake
 )
 
+CONFIGURE_FILE (
+	${CMAKE_CURRENT_SOURCE_DIR}/sample_sysdef.in
+	${CMAKE_CURRENT_BINARY_DIR}/sysdef
+)
+
+
 ### Equivalent to DOCS in Makefile.in
 SET (all_DOCS
 	sample_features 

@@ -22,8 +22,9 @@ COPY_IF_NOT_EXISTS (
     "@CMAKE_INSTALL_PREFIX@/etc/motd_basep_logo.MASTER"
 )
 
+# The sysdef file is created from the doc/sample_sysdef.in template
 COPY_IF_NOT_EXISTS (
-	"@CMAKE_CURRENT_SOURCE_DIR@/sample_sysdef"
+	"@CMAKE_CURRENT_BINARY_DIR@/sysdef"
     "@CMAKE_INSTALL_PREFIX@/etc/sysdef"
 )
 

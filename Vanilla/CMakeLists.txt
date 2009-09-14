@@ -21,12 +21,23 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
 project(netrek-server-vanilla C)
-set(VERSION "2.15")
+set(VERSION "2.16")
 
 ### Command line options
+
+# cmake -DWITH_ANSI:BOOLEAN=True variable names is case sensitive!
 OPTION(WITH_ANSI "enforce strict ISO C++ conforming" ON)
+
+# cmake -DVERBOSE:BOOLEAN=True variable names is case sensitive!
 OPTION(VERBOSE "show cmake command line" OFF)
+
+# cmake -DRSA:BOOLEAN=True variable names is case sensitive!
 OPTION(RSA "build with RSA components on" OFF)
+
+# cmake -DINL:BOOLEAN=True variable names is case sensitive!
+# Set INL to 0 (zero) since cmake wants to default to a string (OFF)
+OPTION(INL "build INL server" OFF)
+SET (INL 0)
 
 IF (VERBOSE)
 	SET (CMAKE_VERBOSE_MAKEFILE ON)
@@ -142,6 +153,17 @@ FIND_PROGRAM (XBIFF_EXECUTABLE
     	PATHS /usr/bin /usr/local/bin /opt/local/bin
     	DOC "xbiff executable"
 )
+
+IF (INL)
+	ADD_DEFINITIONS (
+		"-DINL=1"
+		"-DLTD_PER_RACE"
+		"-DPKEY=129"
+#		"-DLTD_STATS" 		# Default, see ADD_DEFINITIONS below
+	)
+	SET (INL 1)
+	MESSAGE (STATUS "Building INL Server")
+ENDIF (INL)
 
 ### Defined in include/config.h.in but looks to always be on?
 
