@@ -104,6 +104,7 @@ FOREACH (tool ${TOOLS})
 	ADD_EXECUTABLE (${tool} ${tool}.c)
 	TARGET_LINK_LIBRARIES (${tool} 
 		netrek
+		${CRYPT_LIBRARIES}
 		${MATH_LIBRARIES}
 	)
 ENDFOREACH(tool)
