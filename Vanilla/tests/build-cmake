@@ -23,7 +23,7 @@ mkdir build
 cd build
 
 # prepare build tree
-cmake ..
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$BUILDROOT/out/ ..
 
 # compile
 make
