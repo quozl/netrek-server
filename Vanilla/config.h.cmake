@@ -2,13 +2,13 @@
 #define NETREK_SERVER_CONFIG_H
 
 #cmakedefine VERSION "@VERSION@"
-#cmakedefine BINDIR "@BIN_INSTALL_DIR"
-#cmakedefine SBINDIR "@SBIN_INSTALL_DIR"
-#cmakedefine SYSCONFDIR "@SYSCONF_INSTALL_DIR"
-#cmakedefine LOCALSTATEDIR "@LOCALSTATE_INSTALL_DIR"
-#cmakedefine MANDIR "@MAN_INSTALL_DIR"
-#cmakedefine DATADIR "@DATA_INSTALL_DIR"
-#cmakedefine LIBDIR "@LIB_INSTALL_DIR"
+#cmakedefine BINDIR "@BIN_INSTALL_DIR@"
+#cmakedefine SBINDIR "@SBIN_INSTALL_DIR@"
+#cmakedefine SYSCONFDIR "@SYSCONF_INSTALL_DIR@"
+#cmakedefine LOCALSTATEDIR "@LOCALSTATE_INSTALL_DIR@"
+#cmakedefine MANDIR "@MAN_INSTALL_DIR@"
+#cmakedefine DATADIR "@DATA_INSTALL_DIR@"
+#cmakedefine LIBDIR "@LIB_INSTALL_DIR@"
 
 #cmakedefine HAVE_FCNTL_H
 #cmakedefine HAVE_SYS_TIME_H
