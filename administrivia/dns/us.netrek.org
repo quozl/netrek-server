@@ -1,7 +1,7 @@
 $TTL 86400
 
 @	IN	SOA 	ns.real-time.com.	hostmaster.real-time.com. (
-               2009041800       ; Serial Number of this file
+               2010012500       ; Serial Number of this file
                     86400       ; Refresh after 1 day
                      7200       ; Retry after 2 hours
                    604800       ; Expires after 1 week
@@ -23,8 +23,8 @@ www				IN	CNAME	crusader.real-time.com.
 archives			IN	CNAME	shadowknight.real-time.com.
 metaserver			IN	CNAME	sage.real-time.com.
 metaserver1			IN	CNAME	sage.real-time.com.
-metaserver2			IN	CNAME	metaserver.psychosis.net.
-metaserver3			IN	CNAME	metaserver.psychosis.net.
+metaserver2			IN	CNAME	metaserver2.psychosis.net
+metaserver3			IN	CNAME	metaserver3.psychosis.net.
 
 continuum			IN	CNAME	sage.real-time.com.
 lexus				IN	CNAME	lexus.physics.indiana.edu.
