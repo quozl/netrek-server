@@ -256,6 +256,7 @@ int time_access(void);
 /* torp.c */
 int torpGetVectorSpeed(u_char pdir, int pspeed, u_char tdir, int speed);
 void ntorp(u_char course, int attributes);
+int getAdjTorpCost(u_char torpdir, int adjType);
 
 /* transwarp.c */
 int handleTranswarp(void);

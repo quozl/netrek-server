@@ -307,6 +307,14 @@ struct sysdef_keywords {
     "Whether nearby enemy ships are given kill credits for a quit scummer."},
   { "REPORT_IDENT",        SYSDEF_INT,     &report_ident,
     "Whether to report the client identification of arriving players."},
+  { "ASSTORP_FUEL_MULT",        SYSDEF_FLOAT,   &asstorp_fuel_mult,
+    "Fuel multiplier cost for rear-fired torps."},
+  { "ASSTORP_WTEMP_MULT",       SYSDEF_FLOAT, &asstorp_wtemp_mult,
+    "WTEMP multiplier cost for rear-fired torps."},
+  { "ASSTORP_ETEMP_MULT",       SYSDEF_FLOAT, &asstorp_etemp_mult,
+    "ETEMP multiplier cost for rear-fired torps."},
+  { "ASSTORP_BASE",       SYSDEF_INT, &asstorp_base,
+    "Apply any asstorp multipliers to SB."},
   { "",			SYSDEF_END,	NULL		}
 };
 

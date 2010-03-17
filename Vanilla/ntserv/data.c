@@ -501,3 +501,10 @@ int has_bombed = 0;
 int has_beamed_up = 0;
 int has_beamed_down = 0;
 int has_repaired = 0;
+
+/* Asstorp penalties.  Adjust values will be a mutiplier of this value, so
+ * a value of 1.0 gives the standard bronco behaviour of "no changes" */
+float asstorp_fuel_mult = 1.0;
+float asstorp_etemp_mult = 1.0;
+float asstorp_wtemp_mult = 1.0;
+int asstorp_base = 0;

@@ -512,3 +512,11 @@ GA   TRACTSTR  1500
 GA   TRACTRNG  .8
 END
 # End of hockey ships section.
+#########################################################
+# Asstorping cost multipliers.    Actual multiplier will
+# be reduced based on ship direction and speed
+#
+ASSTORP_FUEL_MULT=1.0
+ASSTORP_WTEMP_MULT=1.0
+ASSTORP_ETEMP_MULT=1.0
+ASSTORP_BASE=0

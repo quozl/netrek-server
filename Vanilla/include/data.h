@@ -429,4 +429,9 @@ extern int has_beamed_up;
 extern int has_beamed_down;
 extern int has_repaired;
 
+extern float asstorp_fuel_mult;
+extern float asstorp_etemp_mult;
+extern float asstorp_wtemp_mult;
+extern int asstorp_base;
+
 #endif /* _h_data */

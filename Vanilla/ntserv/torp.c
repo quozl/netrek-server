@@ -12,6 +12,10 @@
 #include "proto.h"
 #include "util.h"
 
+#define TORP_ADJ_FUEL 0
+#define TORP_ADJ_ETEMP 1
+#define TORP_ADJ_WTEMP 2
+
 int torpGetVectorSpeed(u_char pdir, int pspeed, u_char  tdir, int tspeed)
 {
   double		vsx, vsy, vtx, vty, ntx, nty;
@@ -53,8 +57,13 @@ void ntorp(u_char course, int attributes)
 {
   static LONG last_torp_fired_update = 0;
   struct torp *k;
+  int c_fuel, c_etemp, c_wtemp;
 
   if (status->gameup & GU_CONQUER) return;
+
+  c_fuel = getAdjTorpCost(course, TORP_ADJ_FUEL);
+  c_etemp = getAdjTorpCost(course, TORP_ADJ_ETEMP);
+  c_wtemp = getAdjTorpCost(course, TORP_ADJ_WTEMP);
 
   /*
    * Prevent player from firing more than one torp per update.  */
@@ -70,7 +79,7 @@ void ntorp(u_char course, int attributes)
     new_warning(26, "Our computers limit us to having 8 live torpedos at a time captain!");
     return;
   }
-  if (me->p_fuel < myship->s_torpcost) {
+  if (me->p_fuel < c_fuel) {
     new_warning(27, "We don't have enough fuel to fire photon torpedos!");
     return;
   }
@@ -113,6 +122,11 @@ void ntorp(u_char course, int attributes)
     }
   }
 
+  /* can't fire if we're etemp and firing has an etemp cost */
+  if ((me->p_flags & PFENG) && (c_etemp > 0)) {
+    new_warning(UNDEF,"Engines have overheated rear torpedos tubes.");
+    return;
+  }
 
   /*
    * Find a free torp to use */
@@ -130,13 +144,9 @@ void ntorp(u_char course, int attributes)
   /*
    * Change my ship state: less fuel, more weapon temp  */
   me->p_ntorp++;
-#ifdef STURGEON
-  if (sturgeon && me->p_cloakphase)
-    me->p_fuel -= myship->s_torpcost * 2;
-  else
-#endif
-  me->p_fuel -= myship->s_torpcost;
-  me->p_wtemp += (myship->s_torpcost / 10) - 10;	/* Heat weapons */
+  me->p_fuel -= c_fuel;
+  me->p_wtemp += c_wtemp;
+  me->p_etemp += c_etemp;
 
   /* 
    * Initialize torp: */
@@ -172,3 +182,70 @@ void ntorp(u_char course, int attributes)
 
 }
 
+/*
+ * get torp cost (fuel, etemp, wtemp) including asstorp multipliers. */
+int getAdjTorpCost( u_char torpdir, int adjType)
+{
+  int base_cost;
+  int adj_cost;
+  int delta;
+
+  float base_adj;
+  float speed_adj;
+  float dir_adj;
+  float net_adj;
+
+  /* delta is the difference in direction between the ship and the torp,
+   * from 0 to 128 == 0 to 180 degrees
+   */
+  delta = (int) me->p_dir - (int) torpdir;
+  delta = (delta < 0) ? -delta : delta;
+  if (delta > 128) delta = 255 - delta;
+
+  switch (adjType) {
+  case TORP_ADJ_FUEL:
+    base_cost = myship->s_torpcost;
+    base_adj = asstorp_fuel_mult;
+    /* sturgeon firing while cloaked  - 2 x fuel */
+    if ((me->p_cloakphase) && (myship->s_type != ATT))
+      base_cost = 2 * base_cost;
+    break;
+
+  case TORP_ADJ_WTEMP:
+    base_cost = myship->s_torpcost / 10 - 10;
+    base_adj = asstorp_wtemp_mult;
+    break;
+
+    /* bronco has no etemp cost for weapons firing; use wtemp */
+  case TORP_ADJ_ETEMP:
+    base_adj = asstorp_etemp_mult;
+    base_cost = myship->s_torpcost / 10 - 10;
+    if (delta < 33) base_cost = 0;
+    break;
+
+  default:
+    base_cost = 0;
+    base_adj = 1.0;
+    break;
+  } /* switch(adjType) */
+
+  if ((myship->s_type == STARBASE) && (asstorp_base == 0))
+    return base_cost;
+
+  /*
+   * catch underflow stupidities; negative torp cost => twinks paradise.
+   * For what it's worth, also avoid the extra floating ops. */
+  if (base_adj <= 1.0) return base_cost;
+  if (base_cost <= 0) return 0;
+  if (delta < 33) return base_cost; /* yay -- firing forward */
+
+  speed_adj = (float) me->p_speed / myship->s_maxspeed;
+
+  if (delta > 98) dir_adj = 1.0;
+  else dir_adj = 0.5;
+
+  net_adj = 1.0 + (base_adj - 1.0) * speed_adj * dir_adj;
+  adj_cost = (int) (base_cost * net_adj);
+
+  return adj_cost;
+}
