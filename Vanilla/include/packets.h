@@ -337,10 +337,10 @@ struct player_spacket { /* SP_PLAYER py-struct "!bbBbll" #4 */
 
 struct torp_info_spacket { /* SP_TORP_INFO py-struct "!bbbxhxx" #5 */
     char  type;
-    char  war;
-    char  status;	/* TFREE, TDET, etc... */
+    char  war;		/* mask of teams the torp is hostile toward */
+    char  status;	/* new status of this torp, TFREE, TDET, etc... */
     char  pad1;		/* pad needed for cross cpu compatibility */
-    short tnum;
+    short tnum;		/* the torpedo number */
     short pad2;
 };
 
