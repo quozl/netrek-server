@@ -1,3 +1,10 @@
 #!/bin/sh
-echo "`date` $1 `basename $0` $2 $3" >> $LOCALSTATEDIR/admin.log
-$LIBDIR/tools/setgalaxy t
+# default to standard reset
+type="t"
+
+if [ "$2" = "d" ]
+then
+	type="d"
+fi
+echo "`date` $1 `basename $0` ${type}" >> $LOCALSTATEDIR/admin.log
+$LIBDIR/tools/setgalaxy ${type}

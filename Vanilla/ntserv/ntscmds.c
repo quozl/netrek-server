@@ -1492,9 +1492,13 @@ void do_admin(char *comm, struct message *mess)
     system(command);
     pmessage(who, MINDIV, addr, "admin: player %s banned.", two);
   } else if (!strcmp(one, "reset")) {
-    sprintf(command, "%s/tools/admin/reset %s", LIBDIR, p->p_full_hostname);
+    sprintf(command, "%s/tools/admin/reset %s t", LIBDIR, p->p_full_hostname);
     system(command);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
+  } else if (!strcmp(one, "dfreset")) {
+    sprintf(command, "%s/tools/admin/reset %s d", LIBDIR, p->p_full_hostname);
+    system(command);
+    pmessage(who, MINDIV, addr, "admin: galactic has been reset for df'ing.");
   } else if (!strcmp(one, "exec")) {
     if (!adminexec)
       pmessage(who, MINDIV, addr, "admin: exec is not enabled.");
