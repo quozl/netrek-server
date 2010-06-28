@@ -467,6 +467,9 @@ NUMMATCH=10
 #	Dog-Fighter: Save the player stats?	(not implemented yet..)
 SAVE_DOG_STAT=1
 #
+#	Generate planets as all INDI|FUEL|REPAIR|0 armies|known to all teams
+DF_PLANETS=0
+#
 #########################################
 #	BigBang Ships: Make SHIP=1 if you want bigbang style ships.
 #

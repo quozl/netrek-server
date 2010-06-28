@@ -127,6 +127,18 @@ void pl_reset(void)
 {
   int i, j, k, which, sanity;
   memcpy(planets, pl_virgin(), pl_virgin_size());
+/* if we are generating a df-friendly galaxy do that first and return */
+  if (df_planets) {
+    for (i = 0; i < MAXPLANETS; i++) {
+      planets[i].pl_armies = 0;
+      planets[i].pl_owner = NOBODY;
+      planets[i].pl_flags |= PLREPAIR;
+      planets[i].pl_flags |= PLFUEL;
+      planets[i].pl_info = ALLTEAM;
+    }
+    return;
+  }
+
   for (i = 0; i < MAXPLANETS; i++) {
     planets[i].pl_armies = top_armies;
   }

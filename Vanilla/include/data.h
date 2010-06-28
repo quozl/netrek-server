@@ -434,4 +434,6 @@ extern float asstorp_etemp_mult;
 extern float asstorp_wtemp_mult;
 extern int asstorp_base;
 
+extern int df_planets;
+
 #endif /* _h_data */

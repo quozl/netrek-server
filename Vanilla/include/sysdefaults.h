@@ -315,6 +315,8 @@ struct sysdef_keywords {
     "ETEMP multiplier cost for rear-fired torps."},
   { "ASSTORP_BASE",       SYSDEF_INT, &asstorp_base,
     "Apply any asstorp multipliers to SB."},
+  { "DF_PLANETS",       SYSDEF_INT, &df_planets,
+    "Generate planets as all INDI|FUEL|REPAIR|0 armies|known to all teams."},
   { "",			SYSDEF_END,	NULL		}
 };
 

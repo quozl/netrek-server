@@ -4,6 +4,7 @@
    setgalaxy l              restore planet locations
    setgalaxy r              standard reset of galaxy
    setgalaxy t              tourney reset of galaxy - equal agris
+   setgalaxy d              dogfight-friendly reset galaxy
    setgalaxy f              flatten all planets to 1 army
    setgalaxy F              top out all planets at START_ARMIES
    setgalaxy n <num>:<str>  rename planet <num> to <str>
@@ -34,6 +35,7 @@ static void usage(void)
     printf("   usage:\n");
     printf("   setgalaxy l              restore planet locations\n");
     printf("   setgalaxy t              reset of galaxy - equal agris\n");
+    printf("   setgalaxy d              reset of galaxy - dogfight-friendly\n");
     printf("   setgalaxy f              flatten all planets to 1 army\n");
     printf("   setgalaxy F (num)        top out all planets at (num) armies\n");
     printf("   setgalaxy n <num>:<str>  rename planet <num> to <str>\n");
@@ -120,6 +122,18 @@ int main(int argc, char **argv)
 	for (i = 0; i <= MAXTEAM; i++) {
 	  teams[i].te_turns = 0;
 	  teams[i].te_surrender = 0;
+	}
+	return 0;
+    }
+
+    if (*argv[1] == 'd') { /* dogfight-friendly galaxy reset */
+	memcpy(planets, pl_virgin(), pl_virgin_size());
+	for (i = 0; i < MAXPLANETS; i++) {
+	    planets[i].pl_armies = 0;
+	    planets[i].pl_owner = NOBODY;
+	    planets[i].pl_flags |= PLREPAIR;
+	    planets[i].pl_flags |= PLFUEL;
+	    planets[i].pl_info = ALLTEAM;
 	}
 	return 0;
     }
