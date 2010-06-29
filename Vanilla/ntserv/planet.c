@@ -128,7 +128,7 @@ void pl_reset(void)
   int i, j, k, which, sanity;
   memcpy(planets, pl_virgin(), pl_virgin_size());
 /* if we are generating a df-friendly galaxy do that first and return */
-  if (df_planets) {
+  if (recreational_dogfight_mode) {
     for (i = 0; i < MAXPLANETS; i++) {
       planets[i].pl_armies = 0;
       planets[i].pl_owner = NOBODY;

@@ -246,11 +246,11 @@ that can change the server.
 	LAME_BASE_REFIT - (0 or 1) Same as LAME_REFIT but exclusively
 		for starbases.
 
-	DF_PLANETS - (0 or 1) If 1 pl_reset() will generate a galaxy where
-		each planet is INDI owned, FUEL/REPAIR with no armies that
-		is known by all teams.  This is used for servers whose intent
-		is to provide a location for dogfight practice without
-		interference from any bots that may be present.
+	RECREATIONAL_DOGFIGHT_MODE - (0 or 1) If 1 pl_reset() will generate
+		a galaxy where each planet is INDI owned, FUEL/REPAIR with
+		no armies and that is known by all teams.  This is used for
+		servers whose intent is to provide a location for dogfight
+		practice without interference from any bots that may be present.
 		NOTE: for such a server seting TOURN=99 is also recommended
 		to prevent t-mode from starting.
 		NOTE: it may be necessary to run "tools/setgalaxy d" to force

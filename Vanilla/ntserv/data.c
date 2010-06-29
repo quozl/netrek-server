@@ -509,5 +509,4 @@ float asstorp_etemp_mult = 1.0;
 float asstorp_wtemp_mult = 1.0;
 int asstorp_base = 0;
 
-/* generate df-friendly galaxy */
-int df_planets = 0;
+int recreational_dogfight_mode = 0;

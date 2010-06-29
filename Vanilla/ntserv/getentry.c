@@ -436,7 +436,7 @@ static int tournamentMask(int team, int queue)
     if (me->p_authorised && (me->p_flags & PFOBSERV))
         return ALLTEAM;
     /* df_galaxy set - permit all teams */
-    if (df_planets)
+    if (recreational_dogfight_mode)
 	return ALLTEAM;
     /* Chaos or topgun mode */
     if (chaos || topgun)

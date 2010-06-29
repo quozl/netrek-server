@@ -4247,19 +4247,16 @@ static void killmess(struct player *victim, struct player *credit_killer,
             else pmessage2(0,MALL | MKILLA,"DOOSH!",DOOSHMSG," ");
         }
     }
-    if (df_planets) {
+    if (recreational_dogfight_mode) {
         pmessage(0, MALL, "GOD->ALL", 
-            "WINNER: %s (%s) Shields: %d%% Damage: %d%% Fuel: %d%%",
+            "WINNER: %s (%s) Shields: %d%%   Damage: %d%%   Fuel: %d%%",
                 k->p_name,
                 k->p_mapchars,
                 (100*k->p_shield)/(k->p_ship.s_maxshield),
                 (100*k->p_damage)/(k->p_ship.s_maxdamage),
                 (100*k->p_fuel)/(k->p_ship.s_maxfuel));
         /* repair the winner */
-        k->p_shield = k->p_ship.s_maxshield;
-        k->p_damage = 0;
-        k->p_fuel = k->p_ship.s_maxfuel;
-        k->p_wtemp = 0;
+        p_heal(k);
     }
 }
 
