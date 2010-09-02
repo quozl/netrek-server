@@ -1,7 +1,8 @@
 #	$Id: INSTALL.Newbie,v 1.2 2005/09/28 12:14:04 quozl Exp $	
 Instructions for installing the Vanilla Netrek Server as a Newbie Server
 
-- install as described in INSTALL
+- install as described in INSTALL, except
+  - edit include/config.h.in and define NEWBIESERVER before configure
 - change etc/sysdef to include NEWBIE=1
 - change etc/syddef the following modes to 0 
 	INL=0
