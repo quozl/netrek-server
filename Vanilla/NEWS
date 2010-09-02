@@ -1,3 +1,31 @@
+2.17.0: released 2009-09-02
+
+  * better describe need for define for newbie server
+  * df_planets -> recreational_dogfight_mode change
+  * df announce winner / repair
+  * admin df-friendly reset
+  * df_planets oversight
+  * df-friendly galaxy generation
+  * autogen.sh, remove mktrekon reference
+  * better document torp packet
+  * asstorp_modifiers (Ben Dehner)
+  * rework netrek protocol definition
+  * fix link creation of netrekd in cmake build
+  * encourage cmake to place files in a build specific location
+  * ntpasswd and lt_dump_html require crypt libraries under linux.
+  * indentation of error macro
+  * etc/og/og bug note
+  * review var/planets handling
+  * remove planets file
+  * remove duplicate sample_sysdef
+  * deprecate trekon
+  * space in the blosxom.conf path fixed.
+  * sa_sigaction usage correction, daemon manager restart
+  * remove superfluous robot message from ERRORS
+  * change daemonII to daemon
+  * adopt line buffered output
+  * add cmake documentation
+
 2.16.0: released 2009-09-01
 
   Note: the change to enable LTD_STATS in config.h.in must be

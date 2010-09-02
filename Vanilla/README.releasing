@@ -4,7 +4,7 @@ Release Procedure
 cd Vanilla
 
 # set variables
-VS=2.16.0
+VS=2.17.0
 PN=netrek-server-vanilla
 
 # check version numbers in files
