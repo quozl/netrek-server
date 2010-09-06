@@ -208,11 +208,6 @@
 
 #undef LTD_PER_RACE
 
-				/*  ARMYTRACK	   - Generate army tracking
-						     WRN messages in log */
-
-#define ARMYTRACK
-
                                 /* SHOW_RSA        - Display the client type
                                                      at login */
 #define SHOW_RSA

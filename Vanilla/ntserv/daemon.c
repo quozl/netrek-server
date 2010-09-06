@@ -2572,7 +2572,6 @@ static void checkmaxkills(int pl)
 
 inline static void army_track(int type, void *who, void *what, int num)
 {
-#ifdef ARMYTRACK
     static char * amt_list[AMT_MAX] =
     {
         "popped",
@@ -2631,8 +2630,6 @@ inline static void army_track(int type, void *who, void *what, int num)
                  teamshort[sb->p_team]);
         break;
     }
-
-#endif
 }
 
 /* updates planets, grows armies on them, etc */
