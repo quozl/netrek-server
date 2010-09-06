@@ -254,12 +254,12 @@ that can change the server.
 		a galaxy reset if a normal galaxy currently exists.
 
 	PLANET_PLAGUE
-		Planet plague simulates the effects of plague on a planet's
-		army count; the more armies on a planet and the higher the
-		chances are that some will "die off" due to plague.  Note that
-		plague can never cause a planet to fall below 4 armies and that
-		the chances of a planet at 5 armies being plagued is *extremely*
-		small.
+		Simulates the effects of plague on a planet's army
+		count; the more armies on a planet and the higher the
+		chances are that some will "die off" due to plague.
+		Plague can never cause a planet to fall below 4 armies
+		and that the chances of a planet at 5 armies being
+		plagued is extremely small.
 
 	Dog-Fighter Specific Defines:
 		CONTESTSIZE - ( >0) Number of the contestants needed
