@@ -181,10 +181,6 @@
                                 a possibly infected host */
 #endif
 
-                                /*  INL_POP        - Use INL style planet
-                                                     popping scheme */
-#define INL_POP
-
 				/* PKEY		   - shared memory key, to
 						     override key specified
 						     in ntserv/defs.h */

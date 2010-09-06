@@ -103,11 +103,8 @@ static void checkmaxkills(int pl);
 #endif /* LTD_STATS */
 static void army_track(int type, void *who, void *what, int num);
 static void udplanets(void);
-#ifdef INL_POP
-
 static void PopPlanet(int plnum);
 static void RandomizePopOrder(void);
-#endif
 static void udsurrend(void);
 static void udphaser(void);
 static void teamtimers(void);
@@ -400,28 +397,12 @@ int main(int argc, char **argv)
 #define DRAFTFUSE       1
 #define PMOVEFUSE       300      /* planet movement fuse 07/26/95 JRP */
 #define QUEUEFUSE       600     /* cleanup every 60 seconds */
-#ifdef INL_POP
 #define PLANETFUSE      400/MAXPLANETS  /* INL 3.9 POP */
-#else
-#define PLANETFUSE      400     /* scott 8/25/90 -- was 600 */
-#endif
 #define MINUTEFUSE      600     /* 1 minute, surrender funct etc. 4/15/92 TC */
 #define SYNCFUSE        3000
 #define CHECKLOADFUSE   6000    /* 10 min. */
 #define HOSEFUSE        18000   /* 30 min., was 20 minutes 6/7/95 JRP */
 #define HOSEFUSE2       3000    /*  5 min., was  3 minutes 6/29/92 TC */
-
-#ifndef INL_POP
-#define PLANETSTAGGER   4       /* how many udplanets calls we want
-                                   to replace the original call.  #ifdef 
-                                   this out for just 1 call.  4/15/92 TC */
-
-#endif
-
-#ifdef PLANETSTAGGER            /* (shorten planetfuse here) */
-#undef PLANETFUSE
-#define PLANETFUSE      400/PLANETSTAGGER
-#endif
 
 #define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE) /* default 30 secs */
 #define KGHOSTTIME      ((ghostbust_timer + 2) * 1000000 / UPDATE) /* default 32 secs */
@@ -2654,7 +2635,6 @@ inline static void army_track(int type, void *who, void *what, int num)
 #endif
 }
 
-#ifdef INL_POP
 /* updates planets, grows armies on them, etc */
 static int pl_poporder[MAXPLANETS]= { -1 } ;   /* planet number to pop next */
 static int lastpop;     /* pl_poporder index number of planet last popped */
@@ -2765,61 +2745,6 @@ static void RandomizePopOrder(void)
 
      lastpop=MAXPLANETS-1;
 }
-
-#else /* NORMAL POPPING SCHEME */
-static void udplanets(void)
-{
-  register int i;
-  register struct planet *l;
-  
-  for (i = 0, l = &planets[i]; i < MAXPLANETS; i++, l++) {
-    
-#ifdef PLANETSTAGGER
-    /* since we only want to run the pop code on about */
-    /* MAXPLANETS/PLANETSTAGGER planets on average, there should be */
-    /* a corresponding probability that we do so; otherwise, we just */
-    /* skip the planet.  Note that randomly choosing a planet */
-    /* MAXPLANETS/PLANETSTAGGER times to pop results in much wilder */
-    /* pop distributions.  Also note that we can't just scale down */
-    /* the probabilities in each (random() % X), because not each */
-    /* statement below involves a probability.  4/15/92 TC */
-    
-    if ((random() % PLANETSTAGGER) > 0)
-      continue;
-#endif
-
-    if ((l->pl_armies >= max_pop) && !(status->tourn))
-        return;
-    
-    /* moved to udsurrend
-       if (l->pl_couptime)      / Decrement coup counter one minute /
-            l->pl_couptime--;
-            */
-    if (l->pl_armies == 0)
-            continue;
-    if ((random() % 3000) < l->pl_armies) {
-      l->pl_armies -= (random() % l->pl_armies);
-      if (l->pl_armies < 5) l->pl_flags |= PLREDRAW;
-    }
-    if (l->pl_armies < 4) {
-      if ((random() % 20) == 0) {
-        l->pl_armies++;
-      }
-      if (l->pl_flags & PLAGRI) { /* Always grow 1 if Agricultural. */
-        if (++l->pl_armies > 4) l->pl_flags |= PLREDRAW;
-      }
-    }
-    if ((random() % 10) == 0) {  /* Chance for extra armies. */
-      if (l->pl_armies < 5) l->pl_flags |= PLREDRAW;
-      l->pl_armies += (random() % 3) + 1;
-    }
-    /* Argicultural worlds have extra chance for army growth. */
-    if (((random() % 5) == 0) && (l->pl_flags & PLAGRI)) {
-      if (++l->pl_armies > 4) l->pl_flags |= PLREDRAW;
-    }
-  }
-}
-#endif /* INL_POP */
 
 /* new code TC */
 static void udsurrend(void)
