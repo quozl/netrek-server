@@ -436,4 +436,6 @@ extern int asstorp_base;
 
 extern int recreational_dogfight_mode;
 
+extern int planet_plague;
+
 #endif /* _h_data */

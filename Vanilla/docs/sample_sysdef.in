@@ -470,6 +470,11 @@ SAVE_DOG_STAT=1
 #	Generate planets as all INDI|FUEL|REPAIR|0 armies|known to all teams
 RECREATIONAL_DOGFIGHT_MODE=0
 #
+#	Planet plague simulates the effects of plague on a planet's army
+#	count; the more armies on a planet and the higher the chances are that
+#	some will "die off" due to plague.
+PLANET_PLAGUE=1
+#
 #########################################
 #	BigBang Ships: Make SHIP=1 if you want bigbang style ships.
 #

@@ -2687,30 +2687,21 @@ static void PopPlanet(int plnum)
     if ((l->pl_armies >= max_pop) && !(status->tourn))
         return;
 
-#ifndef NO_PLANET_PLAGUE
-#ifdef ERIKPLAGUE
-    if (l->pl_armies > 5) {
-        /* This barely plagues unless you have a HUGE number of armies;
-           if you happen to have ~4500, though, you could end up with < 0! */
-        num = ((random() % 4500) + (l->pl_armies * l->pl_armies)) / 4500;
-        if (num) {
-            army_track(AMT_PLAGUE, NULL, l, num);
-            l->pl_armies -= num;
-/* not needed since armies never < 5
-            if (l->pl_armies < 5)
-                l->pl_flags |= PLREDRAW ;
-*/
+    if (planet_plague) {
+        if (l->pl_armies > 5) {
+            /* This barely plagues unless you have a HUGE number of armies;
+               if you happen to have ~4500, though, you could end up with < 0! */
+            num = ((random() % 4500) + (l->pl_armies * l->pl_armies)) / 4500;
+            if (num) {
+                army_track(AMT_PLAGUE, NULL, l, num);
+                l->pl_armies -= num;
+    /* not needed since armies never < 5
+                if (l->pl_armies < 5)
+                    l->pl_flags |= PLREDRAW ;
+    */
+            }
         }
     }
-#else
-    if ((random() % 3000) < l->pl_armies) { /* plague! */
-        num = (random() % l->pl_armies);
-        l->pl_armies -= num;
-        army_track(AMT_PLAGUE, NULL, l, num);
-        if (l->pl_armies < 5) l->pl_flags |= PLREDRAW /* XXX put in client! */;
-    }
-#endif
-#endif
 
     orig_armies = l->pl_armies;
 

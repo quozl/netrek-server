@@ -151,10 +151,6 @@
                                                      12 hours */
 #undef AUTOMOTD
 
-                                /*  ERIKPLAGUE     - Define for Erik's
-                                                     Plagueing */
-#define ERIKPLAGUE
-
 				/*  REVERSED_HOSTNAMES - Truncate the short
                                                      hostname from the end
                                                      rather than the start */
@@ -220,11 +216,6 @@
 						     WRN messages in log */
 
 #define ARMYTRACK
-
-                                /*  NO_PLANET_PLAGUE -Define for plagueing
-                                                     (Don't use with
-                                                     ERIKPLAGUE) */
-#undef  NO_PLANET_PLAGUE
 
                                 /* SHOW_RSA        - Display the client type
                                                      at login */

@@ -317,6 +317,8 @@ struct sysdef_keywords {
     "Apply any asstorp multipliers to SB."},
   { "RECREATIONAL_DOGFIGHT_MODE",       SYSDEF_INT, &recreational_dogfight_mode,
     "Generate planets as all INDI|FUEL|REPAIR|0 armies|known to all teams."},
+  { "PLANET_PLAGUE",       SYSDEF_INT, &planet_plague,
+    "Planet plaguing; 0: no plague, 1: plague."},
   { "",			SYSDEF_END,	NULL		}
 };
 

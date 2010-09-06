@@ -510,3 +510,4 @@ float asstorp_wtemp_mult = 1.0;
 int asstorp_base = 0;
 
 int recreational_dogfight_mode = 0;
+int planet_plague = 1;
