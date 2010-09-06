@@ -21,9 +21,15 @@ if [ -d res-rsa ]; then
     cd res-rsa && autoconf && cd ..
 fi
 cd tools/admin && chmod +x `grep ^EXECS Makefile.in | cut -d '=' -f 2` && cd ../..
-chmod +x debian/rules debian/postinst debian/postrm
-chmod +x debian/netrek-server-vanilla.init
-chmod +x tests/build tests/build-cmake
+
+if [ -d debian ]; then
+    chmod +x debian/rules debian/postinst debian/netrek-server-vanilla.init
+fi
+
+if [ -f tests/build ]; then
+    chmod +x tests/build tests/build-cmake
+fi
+
 echo "autogen.sh completed ok"
 
 # to test your build environment, read and run tests/build
