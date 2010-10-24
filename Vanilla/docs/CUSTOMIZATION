@@ -131,8 +131,17 @@ that can change the server.
 	DDRANK - ( 0 - 7 ) Rank needed to get a DD.
 		0 = Ensign , 7 = Admiral
 
+	AS_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get an
+		assault ship.
+
+	BB_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		battleship.
+
 	DD_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
 		destroyer.
+
+	SC_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		scout.
 
 	GARANK - ( 0 - 7 ) Rank needed to get a GA.
 		0 = Ensign , 7 = Admiral

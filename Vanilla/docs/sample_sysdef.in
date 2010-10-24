@@ -190,11 +190,20 @@ WEAPONS=PLASMA,TRACTOR
 # 	Number of kills for plasma torpedos
 PLKILLS=2
 #
+#	Offense needed to fly an AS (0.0 = None)
+AS_MINIMAL_OFFENSE=0.0
+#
+#	Offense needed to fly a BB (0.0 = None)
+BB_MINIMAL_OFFENSE=0.0
+#
 #       Rank needed to fly a destroyer (0 = Ensign)
 DDRANK=0
 #
-#	Offense needed to take out DD (0.0 = None)
+#	Offense needed to fly a DD (0.0 = None)
 DD_MINIMAL_OFFENSE=0.0
+#
+#	Offense needed to fly a SC (0.0 = None)
+SC_MINIMAL_OFFENSE=0.0
 #
 #       Rank needed to fly a galaxy class ship (0 = Ensign)
 GARANK=0

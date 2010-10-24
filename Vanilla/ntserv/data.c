@@ -476,8 +476,11 @@ int whitelist_all = 0;
 int server_advertise_enable = 0;
 char server_advertise_filter[MSG_LEN];
 
-float sb_minimal_offense = 0.0;
+float as_minimal_offense = 0.0;
+float bb_minimal_offense = 0.0;
 float dd_minimal_offense = 0.0;
+float sb_minimal_offense = 0.0;
+float sc_minimal_offense = 0.0;
 
 /* classical style refit at < 75% hull damage */
 int lame_refit = 1;

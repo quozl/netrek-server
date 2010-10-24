@@ -563,6 +563,22 @@ void do_refit(int type)
 	return;
     }
 
+    if (type == ASSAULT) {
+        if ((!inl_mode) && (!practice_mode)) {
+            if (playerOffense < as_minimal_offense) {
+                new_warning(UNDEF,"You need an offense of %2.1f or higher to command an assault ship!", as_minimal_offense);
+                return;
+            }
+        }
+    }
+    if (type == BATTLESHIP) {
+        if ((!inl_mode) && (!practice_mode)) {
+            if (playerOffense < bb_minimal_offense) {
+                new_warning(UNDEF,"You need an offense of %2.1f or higher to command a battleship!", bb_minimal_offense);
+                return;
+            }
+        }
+    }
     if (type == DESTROYER) {
         if (me->p_stats.st_rank < ddrank) {
             new_warning(UNDEF,"You need a rank of %s or higher to command a destroyer!", ranks[ddrank].name);
@@ -570,7 +586,15 @@ void do_refit(int type)
         }
         if ((!inl_mode) && (!practice_mode)) {
             if (playerOffense < dd_minimal_offense) {
-                new_warning(UNDEF,"You need an offense of %2.2f or higher to command a destroyer!", dd_minimal_offense);
+                new_warning(UNDEF,"You need an offense of %2.1f or higher to command a destroyer!", dd_minimal_offense);
+                return;
+            }
+        }
+    }
+    if (type == SCOUT) {
+        if ((!inl_mode) && (!practice_mode)) {
+            if (playerOffense < sc_minimal_offense) {
+                new_warning(UNDEF,"You need an offense of %2.1f or higher to command a scout!", sc_minimal_offense);
                 return;
             }
         }
@@ -594,7 +618,7 @@ void do_refit(int type)
 	}
 	if ((!inl_mode) && (!practice_mode) && (!pre_t_mode)) {
         if (playerOffense < sb_minimal_offense) {
-            new_warning(UNDEF,"You need an offense of %2.2f or higher to command a starbase!", sb_minimal_offense);
+            new_warning(UNDEF,"You need an offense of %2.1f or higher to command a starbase!", sb_minimal_offense);
             return;
         }
 	}

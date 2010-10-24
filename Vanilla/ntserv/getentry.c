@@ -284,21 +284,51 @@ void getEntry(int *team, int *stype)
 		teamPick= -1;
 		continue;
 	    }
-        if (shipPick==DESTROYER) {
-            if (mystats->st_rank < ddrank) {
-                new_warning(UNDEF,"You need a rank of %s or higher to command a destroyer!", ranks[ddrank].name);
-                sendPickokPacket(0);
-                teamPick= -1;
-                continue;
+            if (shipPick==ASSAULT) {
+                if ((!inl_mode) && (!practice_mode)) {
+                    if (playerOffense < as_minimal_offense) {
+                        new_warning(UNDEF,"You need an offense of %2.1f or higher to command an assault ship!", as_minimal_offense);
+                        sendPickokPacket(0);
+                        teamPick= -1;
+                        continue;
+                    }
+                }
             }
-            if ((!inl_mode) && (!practice_mode)) {
-                if (playerOffense < dd_minimal_offense) {
-                    new_warning(UNDEF,"You need an offense of %2.2f or higher to command a destroyer!", dd_minimal_offense);
+            if (shipPick==BATTLESHIP) {
+                if ((!inl_mode) && (!practice_mode)) {
+                    if (playerOffense < bb_minimal_offense) {
+                        new_warning(UNDEF,"You need an offense of %2.1f or higher to command a battleship!", bb_minimal_offense);
+                        sendPickokPacket(0);
+                        teamPick= -1;
+                        continue;
+                    }
+                }
+            }
+            if (shipPick==DESTROYER) {
+                if (mystats->st_rank < ddrank) {
+                    new_warning(UNDEF,"You need a rank of %s or higher to command a destroyer!", ranks[ddrank].name);
                     sendPickokPacket(0);
                     teamPick= -1;
                     continue;
                 }
+                if ((!inl_mode) && (!practice_mode)) {
+                    if (playerOffense < dd_minimal_offense) {
+                        new_warning(UNDEF,"You need an offense of %2.1f or higher to command a destroyer!", dd_minimal_offense);
+                        sendPickokPacket(0);
+                        teamPick= -1;
+                        continue;
+                    }
+                }
             }
+            if (shipPick==SCOUT) {
+                if ((!inl_mode) && (!practice_mode)) {
+                    if (playerOffense < sc_minimal_offense) {
+                        new_warning(UNDEF,"You need an offense of %2.1f or higher to command a scout!", sc_minimal_offense);
+                        sendPickokPacket(0);
+                        teamPick= -1;
+                        continue;
+                    }
+                }
             }
             if (shipPick==SGALAXY) {
                 if (mystats->st_rank < garank) {
@@ -309,88 +339,83 @@ void getEntry(int *team, int *stype)
                 }
             }
 	    if (shipPick==STARBASE) {
-		if (teams[1<<teamPick].te_turns > 0 && !chaos && !topgun) {
-
-		    new_warning(UNDEF,"Not constructed yet. %d minute%s required for completion",teams[1<<teamPick].te_turns, (teams[1<<teamPick].te_turns == 1) ? "" : "s");
-		    sendPickokPacket(0);
-		    teamPick= -1;
-		    continue;
-		}
-		if (mystats->st_rank < sbrank) {
+	        if (teams[1<<teamPick].te_turns > 0 && !chaos && !topgun) {
+	            new_warning(UNDEF,"Not constructed yet. %d minute%s required for completion",teams[1<<teamPick].te_turns, (teams[1<<teamPick].te_turns == 1) ? "" : "s");
+	            sendPickokPacket(0);
+	            teamPick= -1;
+	            continue;
+	        }
+	        if (mystats->st_rank < sbrank) {
                     if(send_short){
                         swarning(SBRANK_TEXT,sbrank,0);
-                    }
-                    else {
-                      new_warning(UNDEF,"You need a rank of %s or higher to command a starbase!", ranks[sbrank].name);
+                    } else {
+                        new_warning(UNDEF,"You need a rank of %s or higher to command a starbase!", ranks[sbrank].name);
                     }
 
 		    sendPickokPacket(0);
 		    teamPick= -1;
 		    continue;
-		}
-               if ((!inl_mode) && (!practice_mode) && (!pre_t_mode)) {
-            if (playerOffense < sb_minimal_offense) {
-			    new_warning(UNDEF,"You need an offense of %2.2f or higher to command a starbase!", sb_minimal_offense);
-			    sendPickokPacket(0);
-			    teamPick= -1;
-			    continue;
-            }
+	        }
+                if ((!inl_mode) && (!practice_mode) && (!pre_t_mode)) {
+                    if (playerOffense < sb_minimal_offense) {
+                        new_warning(UNDEF,"You need an offense of %2.1f or higher to command a starbase!", sb_minimal_offense);
+                        sendPickokPacket(0);
+                        teamPick= -1;
+                        continue;
+                    }
 		}
 		if (realNumShips(1<<teamPick) < 3 && !chaos && !topgun) {
-		if(send_short){
-		  swarning(TEXTE,14,0);
-		}
-		else
-		    new_warning(UNDEF,"Your team is not capable of defending such an expensive ship!");
+                    if(send_short){
+                        swarning(TEXTE,14,0);
+                    } else
+		        new_warning(UNDEF,"Your team is not capable of defending such an expensive ship!");
 		    sendPickokPacket(0);
 		    teamPick= -1;
 		    continue;
 		}
 		if (numPlanets(1<<teamPick) < sbplanets && !topgun) {
-        	if(send_short){
-                  swarning(TEXTE,15,0);
-		}
-		else
-		    new_warning(UNDEF,"Your team's stuggling economy cannot support such an expenditure!");
+        	    if(send_short){
+                        swarning(TEXTE,15,0);
+		    } else
+		        new_warning(UNDEF,"Your team's stuggling economy cannot support such an expenditure!");
 		    sendPickokPacket(0);
 		    teamPick= -1;
 		    continue;
 		}
 		if (chaos) {
-		  int num_bases = 0;
-		  for (i=0; i<MAXPLAYER; i++) {
-		    if (i != me->p_no &&
-			players[i].p_status == PALIVE &&
-			players[i].p_team == (1<<teamPick) &&
-			players[i].p_ship.s_type == STARBASE) {
-			num_bases++;
-		    }
-        	    if (num_bases >= max_chaos_bases) {
-			new_warning(UNDEF,"Your side already has %d starbase%s",max_chaos_bases,(max_chaos_bases>1) ? "s!":"!");
-			sendPickokPacket(0);
-			teamPick= -1;
-			break;
-		    }
-		  }
+                    int num_bases = 0;
+                    for (i=0; i<MAXPLAYER; i++) {
+                        if (i != me->p_no &&
+			  players[i].p_status == PALIVE &&
+			  players[i].p_team == (1<<teamPick) &&
+			  players[i].p_ship.s_type == STARBASE) {
+			    num_bases++;
+		        }
+        	        if (num_bases >= max_chaos_bases) {
+			    new_warning(UNDEF,"Your side already has %d starbase%s",max_chaos_bases,(max_chaos_bases>1) ? "s!":"!");
+			    sendPickokPacket(0);
+			    teamPick= -1;
+			    break;
+		        }
+                    }
 		}
 		if (!chaos) {
-		  for (i=0; i<MAXPLAYER; i++) {
-		    if (i != me->p_no &&
-			players[i].p_status == PALIVE &&
-			players[i].p_team == (1<<teamPick) &&
-			players[i].p_ship.s_type == STARBASE && !chaos) {
-		      if(send_short){
-		        swarning(TEXTE,16,0);
-		      }
-		    else
-			new_warning(UNDEF,"Your side already has a starbase!");
-			sendPickokPacket(0);
-			teamPick= -1;
-			break;
-		    }
-		  }
-		}
-	    }
+                    for (i=0; i<MAXPLAYER; i++) {
+                        if (i != me->p_no &&
+			  players[i].p_status == PALIVE &&
+			  players[i].p_team == (1<<teamPick) &&
+			  players[i].p_ship.s_type == STARBASE && !chaos) {
+                            if(send_short){
+                                swarning(TEXTE,16,0);
+                            } else
+			        new_warning(UNDEF,"Your side already has a starbase!");
+                            sendPickokPacket(0);
+                            teamPick= -1;
+                            break;
+                        }
+                    }
+                }
+            }
 	    if (teamPick==-1) continue;
 	    break;
 	}
