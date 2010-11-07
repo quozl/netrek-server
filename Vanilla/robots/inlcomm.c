@@ -750,7 +750,7 @@ int do_resetgalaxy(comm,mess)
   pl_reset_inl(1);
 
   pmessage (0, MALL, inl_from,
-	    "Game restarting with new galaxy.  Teams should be reselected");
+	    "Game restarting with new galaxy.  Captains begin race pick again.");
   return 0;
 }
 
