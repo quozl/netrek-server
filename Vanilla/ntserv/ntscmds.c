@@ -33,10 +33,16 @@
 #include "packets.h"
 #include "genspkt.h"
 
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
+
 #define EXPERIMENTAL_BE
 
 void do_player_eject(int who, int player, int mflags, int sendto);
 void do_player_ban(int who, int player, int mflags, int sendto);
+void do_player_nopick(int who, int player, int mflags, int sendto);
 
 #if defined (AUTO_INL)
 void do_start_inl(void);
@@ -230,6 +236,11 @@ static struct command_handler_2 nts_commands[] =
 	"Eject and ban a player       e.g. 'BAN 0'", 
 	do_player_ban,					/* BAN */
 	4, PV_BAN, 120, 120},
+    { "NOPICK",
+	C_VC_TEAM | C_GLOG | C_PLAYER | C_PR_INPICKUP | C_PR_VOTE,
+	"Prevent player from picking, e.g. 'NOPICK 0'", 
+	do_player_nopick,				/* NOPICK */
+	4, PV_NOPICK, 120, 120},
 #if defined(TRIPLE_PLANET_MAYHEM)
     { "TRIPLE",
         C_VC_ALL | C_GLOG | C_PR_INPICKUP | C_PR_VOTE,
@@ -370,6 +381,37 @@ void do_player_ban(int who, int player, int mflags, int sendto)
       pmessage(0, MALL, addr_mess(who,MALL), 
 	       " temporary ban list is full, ban ineffective");
     }
+}
+
+void do_player_nopick(int who, int player, int mflags, int sendto)
+{
+    register struct player *j;
+    char *reason = NULL;
+
+    j = &players[player];
+
+    if (!nopick_vote_enable) {
+      reason = "Nopick voting disabled in server configuration.";
+    } else if (j->p_status == PFREE) {
+      reason = "You may not vote for a free slot.";
+    } else if (j->p_flags & PFROBOT) {
+      reason = "You may not prevent a robot from picking.";
+    } else if (j->p_team != players[who].p_team) {
+      reason = "You may not vote for players of the other team.";
+    }
+
+    if (reason != NULL) {
+      pmessage(players[who].p_team, MTEAM, 
+	       addr_mess(players[who].p_team,MTEAM), 
+	       reason);
+      return;
+    }
+
+    pmessage(me->p_team, MTEAM, addr_mess(me->p_team,MTEAM), 
+	"%2s is no longer able to pick up armies", j->p_mapchars);
+
+    j->p_can_beam_up = FALSE;
+    return;
 }
 
 #if defined(AUTO_PRACTICE)

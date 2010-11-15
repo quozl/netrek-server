@@ -43,6 +43,10 @@ EJECT_VOTE_ONLY_IF_QUEUE=0
 #	(requires EJECT_VOTE_ENABLE=1)
 EJECT_VOTE_VICIOUS=0
 #
+#	Enable vote to prevent a player from picking up armies
+#	(requires VOTING=1)
+NOPICK_VOTE_ENABLE=0
+#
 #	Force players to quit upon genocide if there is a wait queue
 #	to allow more equal playing time. This has the adverse side
 #	effect of causing players who might have continued playing to

@@ -326,12 +326,14 @@ int main(int argc, char **argv)
 
     me->p_inl_captain = 0;
 
-    me->p_sub_in = 0;        /* flag, willingness to sub in */
-    me->p_sub_in_for = -1;   /* slot, the other player, or -1 */
-    me->p_sub_out = 0;       /* flag, substitution on death */
-    me->p_sub_out_for = -1;  /* slot, the other player, or -1 */
+    me->p_sub_in = 0;           /* flag, willingness to sub in */
+    me->p_sub_in_for = -1;      /* slot, the other player, or -1 */
+    me->p_sub_out = 0;          /* flag, substitution on death */
+    me->p_sub_out_for = -1;     /* slot, the other player, or -1 */
 
     strcpy(me->p_ident, "unknown");
+
+    me->p_can_beam_up = TRUE;   /* permit player to pick armies by default */
 
 #ifdef LTD_STATS
     memset(&me->p_bogus, 0, sizeof(struct ltd_stats));

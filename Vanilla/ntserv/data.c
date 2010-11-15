@@ -434,6 +434,7 @@ int ban_noconnect=0;
 int eject_vote_enable=0;
 int eject_vote_only_if_queue=0;
 int eject_vote_vicious=0;
+int nopick_vote_enable=0;
 int duplicates=3;
 int deny_duplicates=0;
 int blogging=1;

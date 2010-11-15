@@ -172,6 +172,10 @@ void beam_up(void)
 	    return;
 	}
     }
+    if (!(me->p_can_beam_up)) {
+        new_warning(UNDEF,"Your team will not permit you to beam up armies");
+        return;
+    }
     me->p_flags |= PFBEAMUP;
     me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMDOWN);
     has_beamed_up++;

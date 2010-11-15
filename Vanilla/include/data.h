@@ -376,6 +376,7 @@ extern int ban_noconnect;
 extern int eject_vote_enable;
 extern int eject_vote_only_if_queue;
 extern int eject_vote_vicious;
+extern int nopick_vote_enable;
 extern int duplicates;
 extern int deny_duplicates;
 extern int blogging;
