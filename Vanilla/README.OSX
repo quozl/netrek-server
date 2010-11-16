@@ -1,3 +1,8 @@
+To build on Mac OS X, download latest xcode from
+http://developer.apple.com/ and install (cannot be done on command line
+it is said), then configure and make in the usual way, see README.
+
+--
 
 To build this project using darwinports, use the following ./configure line:
 
