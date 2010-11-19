@@ -241,9 +241,6 @@ int main(int argc, char **argv)
     }
     if (!opt_restart)
         if (!setupmem()) {
-#ifdef ONCHECK
-            unlink(On_File);
-#endif
             exit(1);
         }
 
@@ -3754,9 +3751,6 @@ static void exitDaemon(int sig)
         default:
             break;
     }
-#ifdef ONCHECK
-    unlink(On_File);
-#endif
     ERROR(1,("daemon: normal exit, pid %d\n", getpid()));
     exit(0);
 }

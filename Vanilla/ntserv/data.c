@@ -248,9 +248,6 @@ char MakeMotd[FNAMESIZE];
 char MesgLog[FNAMESIZE];
 char GodLog[FNAMESIZE];
 char Feature_File[FNAMESIZE];
-#ifdef ONCHECK
-char On_File[FNAMESIZE];
-#endif
 #ifdef BASEPRACTICE
 char Basep[FNAMESIZE];
 #endif

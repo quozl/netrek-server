@@ -43,8 +43,6 @@ that can change the server.
 
 	GPPRINT - Print the path that is being used to find the system files.
 
-	ONCHECK - trekon (xbiff) support for checking if the logins.
-
 	NEWMASK - Use a newer tournament mask function that is less rigid
 		than older version. Doesn't take preferences into account.
 

@@ -30,12 +30,6 @@
 static void auto_peace(void);
 static void placeIndependent(void);
 
-/* Enter the game */
-
-#if defined (ONCHECK) && !defined(ROBOT)
-static int first_time = 1;
-#endif
-
 static u_char face_enemy(void)
 {
     int team_other, x, y;
@@ -83,16 +77,6 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     /* Use local variables, not the globals */
     struct player *me = &players[pno], *j;
     struct ship *myship = &me->p_ship;
-
-#if defined (ONCHECK) && !defined(ROBOT)
-/* produces a file for xbiff to watch daemon start */
-    if (first_time) {
-	char buf[80];
-	sprintf(buf,"echo on >> %s",On_File);
-	system(buf);
-	first_time = 0;
-    }
-#endif
 
     do_message_force_player();
     strncpy(me->p_name, name, NAME_LEN);

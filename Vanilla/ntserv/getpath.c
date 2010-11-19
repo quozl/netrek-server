@@ -90,10 +90,6 @@ void getpath()
   snprintf(GodLog,x,"%s/%s",g->localstatedir,N_GODLOG);
   snprintf(Feature_File,x,"%s/%s",g->sysconfdir,N_FEATURE_FILE);
 
-#ifdef ONCHECK
-  snprintf(On_File,x,"%s/%s",g->sysconfdir,N_ON_FILE);
-#endif
-
 #ifdef BASEPRACTICE
   snprintf(Basep,x,"%s/%s",g->libdir,N_BASEP);
 #endif

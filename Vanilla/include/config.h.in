@@ -240,10 +240,6 @@
                                                      files */
 #undef  GPPRINT
 
-                                /* ONCHECK         - support for trekon player
-                                                     check */
-#undef  ONCHECK
-
                                 /* NBR             - Leave in for server. It
                                                      tells programs like xsg
                                                      that it is this code. */

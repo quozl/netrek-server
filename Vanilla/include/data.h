@@ -278,9 +278,6 @@ extern char MakeMotd[FNAMESIZE];
 extern char MesgLog[FNAMESIZE];
 extern char GodLog[FNAMESIZE];
 extern char Feature_File[FNAMESIZE];
-#ifdef ONCHECK
-extern char On_File[FNAMESIZE];
-#endif
 #ifdef BASEPRACTICE
 extern char Basep[FNAMESIZE];
 #endif

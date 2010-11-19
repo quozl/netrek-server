@@ -245,10 +245,6 @@ because they have initialisation of variables dependent on UPDATE. */
 #define N_GODLOG	"god.LOG"
 #define N_FEATURE_FILE	"features"
 
-#ifdef ONCHECK
-#define N_ON_FILE	"on"
-#endif
-
 #define N_NOCOUNT_FILE	"nocount"
 #define N_PROG		"ntserv"
 #define N_LOGFILE	"log"
