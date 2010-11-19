@@ -54,6 +54,8 @@ struct sysdef_keywords {
     "Send in periodic killer robot"			},
   { "RESETGALAXY",	SYSDEF_INT,	&resetgalaxy,
     "Reset galaxy on daemon start"			},
+  { "SELF_RESET",	SYSDEF_INT,	&self_reset,
+    "Galaxy will reset if the daemon dies"		},
   { "CHECKMESG",	SYSDEF_INT,	&checkmessage,
     "Check messages for configuration"			},
   /* CHECKMESG seems to do not much at all, internally. */

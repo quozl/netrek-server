@@ -23,8 +23,6 @@ that can change the server.
 
 	RESETGALAXY - Every time a conquer occurs reset the galaxy.
 
-	SELF_RESET - galaxy will reset if daemon dies.
-
 	SHORT_THRESHOLD - More support for Short packets.  Causes the
 		update rate to halve under certain conditions.  With
 		modern networks, we do not need or want this, and we
@@ -90,6 +88,8 @@ that can change the server.
 	HUNTERKILLER - (0 or 1) Have the hunterkiller on the server
 
 	RESETGALAXY - (0 or 1) reset the galaxy every time the daemon starts
+
+	SELF_RESET - (0 or 1) galaxy will reset if daemon dies.
 
 	LOGALL - (0 or 1) log all messages. Use with CHECKMESG.
 

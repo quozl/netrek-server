@@ -663,10 +663,10 @@ static void move()
         }
         else {
             ERROR(3,("daemon: self-destructing\n"));
-#ifdef SELF_RESET /* isae -- reset the galaxy when the daemon dies */
-            ERROR(3,("daemon: resetting galaxy!\n"));
-            pl_reset();
-#endif
+	    if (self_reset) {
+		    ERROR(3,("daemon: resetting galaxy!\n"));
+		    pl_reset();
+	    }
         }
         exitDaemon(0);
     }

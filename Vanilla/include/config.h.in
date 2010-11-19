@@ -212,14 +212,6 @@
                                                      at login */
 #define SHOW_RSA
 
-                                /* RESETGALAXY     - Reset the galaxy after
-                                                     each conquer */
-#define RESETGALAXY
-
-                                /* SELF_RESET      - Galaxy will reset if the
-                                                     daemon dies */
-#define SELF_RESET
-
                                 /* SHORT_THRESHOLD - For Short Packets */
 #undef SHORT_THRESHOLD
 

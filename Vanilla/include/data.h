@@ -442,4 +442,6 @@ extern int recreational_dogfight_mode;
 
 extern int planet_plague;
 
+extern int self_reset;
+
 #endif /* _h_data */

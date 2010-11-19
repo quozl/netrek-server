@@ -95,6 +95,9 @@ HUNTERKILLER=0
 #	log in after the daemon has gone because everybody left).
 RESETGALAXY=1
 #
+#	Galaxy will reset if the daemon dies
+SELF_RESET=1
+#
 #	Enable blogging of server events
 BLOGGING=1
 #

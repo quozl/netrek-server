@@ -515,3 +515,4 @@ int asstorp_base = 0;
 
 int recreational_dogfight_mode = 0;
 int planet_plague = 1;
+int self_reset = 1;
