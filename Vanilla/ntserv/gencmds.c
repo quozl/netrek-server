@@ -183,7 +183,7 @@ int do_vote(char *comm, struct message *mess, struct command_handler_2 *votes,
   int mflag = 0;
   int sendto = 0;
   int who;
-  char nv[MAXPLAYER*3+1];
+  char nv[PV_TOTAL+1];
 
   who = mess->m_from;
 
