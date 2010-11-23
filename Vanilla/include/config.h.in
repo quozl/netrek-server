@@ -574,7 +574,7 @@ extern long random ();
 #if defined (hpux) || defined(__osf__)
 #define SETPGRP()       setsid()
 #else
-#if defined (linux) || defined(sgi) || (defined(sparc) && defined(sun))
+#if defined (linux) || defined(sgi) || (defined(sparc) && defined(sun)) || defined(__APPLE__)
 #define SETPGRP()       setpgrp()
 #else
 #define SETPGRP()       setpgrp (0, 0)
