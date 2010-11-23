@@ -122,8 +122,10 @@ void ntorp(u_char course, int attributes)
     }
   }
 
-  /* can't fire if we're etemp and firing has an etemp cost */
-  if ((me->p_flags & PFENG) && (c_etemp > 0)) {
+  /* can't fire if we're etemp and firing has an etemp cost and an
+     etemp multiplier greater than 1.0 (ASSTORP_ETEMP_MULT) */
+  if ((me->p_flags & PFENG) && (c_etemp > 0) && (asstorp_etemp_mult > 1.0) &&
+     ((myship->s_type != STARBASE) || asstorp_base)) {
     new_warning(UNDEF,"Engines have overheated rear torpedos tubes.");
     return;
   }
