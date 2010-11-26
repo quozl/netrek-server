@@ -218,11 +218,14 @@ int getAdjTorpCost( u_char torpdir, int adjType)
     base_adj = asstorp_wtemp_mult;
     break;
 
-    /* bronco has no etemp cost for weapons firing; use wtemp */
+    /* bronco has no etemp cost for weapons firing; use wtemp.  Make sure
+     * we don't add a cost if no multiplier is used */
   case TORP_ADJ_ETEMP:
-    base_adj = asstorp_etemp_mult;
     base_cost = myship->s_torpcost / 10 - 10;
-    if (delta < 33) base_cost = 0;
+    if ( ( (myship->s_type == STARBASE) && (asstorp_base == 0)) ||
+         (asstorp_etemp_mult <= 1.0) || (delta < 42) )
+      base_cost = 0;
+    base_adj = asstorp_etemp_mult;
     break;
 
   default:
@@ -239,14 +242,18 @@ int getAdjTorpCost( u_char torpdir, int adjType)
    * For what it's worth, also avoid the extra floating ops. */
   if (base_adj <= 1.0) return base_cost;
   if (base_cost <= 0) return 0;
-  if (delta < 33) return base_cost; /* yay -- firing forward */
+  if (delta < 42) return base_cost; /* yay -- firing forward */
 
   speed_adj = (float) me->p_speed / myship->s_maxspeed;
 
-  if (delta > 98) dir_adj = 1.0;
+  /* adjust for direction; side torp penalties reduced by 50% */
+  if (delta > 92) dir_adj = 1.0;
   else dir_adj = 0.5;
 
+  /* calculate the total adjustment multiplier */
   net_adj = 1.0 + (base_adj - 1.0) * speed_adj * dir_adj;
+
+  /* calculate adjusted cost */
   adj_cost = (int) (base_cost * net_adj);
 
   return adj_cost;
