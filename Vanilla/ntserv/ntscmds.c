@@ -530,6 +530,7 @@ int bounceSessionStats(int from)
                                    deltaTicks;
     char                           bufPlanets[8], bufBombing[8],
                                    bufOffense[8], bufDefense[8];
+    char                           msgbuf[32];
 
 #ifdef LTD_STATS
 
@@ -587,6 +588,9 @@ int bounceSessionStats(int from)
          bufDefense,
          (float) deltaKills /
          (float) ((deltaLosses == 0) ? 1 : deltaLosses));
+    snprintf(msgbuf, 32, (me->p_can_beam_up == TRUE) ?
+             "Carry status: permitted" : "Carry status: prohibited");
+    god (from, msgbuf);
     return 1;
 }
 
