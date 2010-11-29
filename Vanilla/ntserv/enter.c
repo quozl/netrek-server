@@ -23,6 +23,11 @@
 #include "planet.h"
 #include "util.h"
 
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
+
 #define DNSBL_WARN_WEBSITE "http://psychosis.net/exploits/"
 
 /* file scope prototypes */
@@ -172,6 +177,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	  if (lastteam >= 0)
 	    declare_war(1<<lastteam, 0);
 	}
+	/* reset carry flag */
+	me->p_can_beam_up = TRUE;
 	if (lastrank==-1) lastrank=mystats->st_rank;	/* NBT patch */
 	lastteam=tno;
 	sprintf(addrbuf, " %s->ALL", me->p_mapchars);
