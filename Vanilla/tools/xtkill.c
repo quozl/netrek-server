@@ -11,6 +11,11 @@
 #include "util.h"
 #include "slotmaint.h"
 
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
+
 static void Usage(void);
 
 static void Usage(void)
@@ -40,6 +45,7 @@ static void Usage(void)
       R(obot obliterate)            (like obliterate, but only for robots)\n\
       r(epair)                      (full repair [shields + hull + fuel])\n\
       f(latten)                     (remove kills / armies)\n\
+      n(opick) toggle               (toggle ability to pick armies)\n\
 ");
   exit(1);
 }
@@ -304,6 +310,20 @@ int main(int argc, char **argv)
     case 'f':		/* flatten kills / armies */
       players[player].p_kills = 0;
       players[player].p_armies = 0;
+      break;
+    case 'n':		/* toggle carry flag */
+      if (players[player].p_can_beam_up == TRUE) {
+          players[player].p_can_beam_up = FALSE;
+          sprintf(buf, "GOD->%s  %s is no longer able to pick up armies.", 
+	    team_code(players[player].p_team),
+	    players[player].p_longname);		    
+      } else {
+          players[player].p_can_beam_up = TRUE;
+          sprintf(buf, "GOD->%s  %s can once again pick up armies.", 
+	      team_code(players[player].p_team),
+	      players[player].p_longname);		    
+      }
+      amessage(buf, players[player].p_team, MTEAM);
       break;
     default:
       Usage();
