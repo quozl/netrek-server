@@ -24,9 +24,6 @@
 #include "ip.h"
 #include "util.h"
 
-#define FALSE 0
-#define TRUE 1
-
 /* file scope prototypes */
 static void updateFlagsAll(int offset);
 static void updateVPlayer(struct player_spacket *p);
@@ -249,7 +246,7 @@ sndHostile( struct hostile_spacket *hostile, struct player *pl, int howmuch)
 	    hostile->hostile=pl->p_hostile;
 	    hostile->pnum=pl->p_no;
 	    sendClientPacket(hostile);
-	    return (TRUE);
+	    return TRUE;
 	}
     } else {
 	if ( (pl->p_swar & me->p_team)!=hostile->war
@@ -259,10 +256,10 @@ sndHostile( struct hostile_spacket *hostile, struct player *pl, int howmuch)
 	    hostile->hostile=(pl->p_hostile & me->p_team);
 	    hostile->pnum=pl->p_no;
 	    sendClientPacket(hostile);
-	    return (TRUE);
+	    return TRUE;
 	}
     }
-    return (FALSE);
+    return FALSE;
 }
 
 int sndPlayerInfo( struct plyr_info_spacket *cpli, struct player *pl)
@@ -274,9 +271,9 @@ int sndPlayerInfo( struct plyr_info_spacket *cpli, struct player *pl)
 	cpli->shiptype=pl->p_ship.s_type;
 	cpli->team=pl->p_team;
 	sendClientPacket(cpli);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 inline static int updtKills( struct kills_spacket *kills, struct player *pl)
@@ -285,9 +282,9 @@ inline static int updtKills( struct kills_spacket *kills, struct player *pl)
 	kills->type=SP_KILLS;
 	kills->pnum=pl->p_no;
 	kills->kills=htonl((int) (pl->p_kills*100));
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 inline static void addVKills( struct player *pl)
@@ -303,7 +300,7 @@ inline static void addVKills( struct player *pl)
     shiftkills = pl->p_kills * 100;
     shiftkills |= (pl->p_no << 10);
     *vkills++ = (unsigned char) shiftkills & 0xff;
-    *vkills++ = (shiftkills >> 8) & 0xff; 		
+    *vkills++ = (shiftkills >> 8) & 0xff;
 }
 
 int sndKills( struct kills_spacket *kills, struct player *pl)
@@ -314,9 +311,9 @@ int sndKills( struct kills_spacket *kills, struct player *pl)
 	    addVKills(pl);
 	else
 	    sendClientPacket(kills);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 void sendVKills(void)
@@ -375,7 +372,7 @@ int sndFlags( struct flags_spacket *flags, struct player *pl, int howmuch)
     flags->tractor = tractor;
 
     sendClientPacket(flags);
-    return (TRUE);
+    return TRUE;
 }
 
 /* Only called if clients send SP_FLAGS_ALL,
@@ -450,7 +447,7 @@ int updtPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 {
     if ( howmuch == UPDT_LEAST ) {
 	if (ntohl(cpl->x) == -10000 && ntohl(cpl->y) == -10000)
-	    return (FALSE);
+	    return FALSE;
 
 	/* Make player disappear */
 	cpl->type = SP_PLAYER;
@@ -458,7 +455,7 @@ int updtPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 	cpl->pnum = pl->p_no;
 
 	/* FEATURE: dead_warp */
-	if ( (pl->p_status == PDEAD || pl->p_status == PEXPLODE) && 
+	if ( (pl->p_status == PDEAD || pl->p_status == PEXPLODE) &&
 	     dead_warp) {
 	    cpl->dir = dead_warp++;
 	    cpl->speed = 0xe;                   /* 14 = dead */
@@ -466,7 +463,7 @@ int updtPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 	    cpl->dir = 0;
 	    cpl->speed = 0;
 	}
-	return (TRUE);
+	return TRUE;
     }
 
     if ( pl->p_x != ntohl(cpl->x) || pl->p_y != ntohl(cpl->y)
@@ -480,12 +477,12 @@ int updtPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 	    cpl->dir = dead_warp++;
 	    cpl->speed = 0xe;                   /* 14 = dead */
 	    cpl->x = cpl->y = htonl(-10000);
-	    return (TRUE);
+	    return TRUE;
 	}
 
 	if (howmuch == UPDT_LITTLE) {
 	    /* NEW: Send old position again */
-	    return(TRUE);
+	    return TRUE;
 	}
 
 	cpl->type=SP_PLAYER;
@@ -514,9 +511,9 @@ int updtPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 		cpl->speed = 0xf;   /* NEW: Joe Rumsey, 15 == cloaked */
 	}
 
-	return (TRUE);
+	return TRUE;
     }
-    return(FALSE);
+    return FALSE;
 }
 
 inline static int
@@ -527,9 +524,9 @@ sndPlayer( struct player_spacket *cpl, struct player *pl, int howmuch)
 	    updateVPlayer(cpl);
 	else
 	    sendClientPacket(cpl);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 int sndSelfShip(struct youss_spacket *self, struct player *pl)
@@ -576,9 +573,9 @@ int sndSelfShip(struct youss_spacket *self, struct player *pl)
 	self->etemp=htons(pl->p_etemp);
 	self->wtemp=htons(pl->p_wtemp);
 	sendClientPacket((CVOID) self);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
@@ -587,7 +584,7 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
     /*
      * If it was free before, and is still, do nothing.   */
     if ((t->t_status == TFREE) && (tpi->status == TFREE))
-	return (FALSE);
+	return FALSE;
 
     if (howmuch == UPDT_ALL) {
 	if ((t->t_war != tpi->war) || (t->t_status != tpi->status)) {
@@ -596,7 +593,7 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 	    tpi->status = t->t_status;
 	    tpi->tnum   = htons(i);
 	    sendClientPacket(tpi);
-/*	    return (TRUE);*/
+/*	    return TRUE;*/
 	}
 	if ((tp->x != htonl(t->t_x)) || (tp->y != htonl(t->t_y))) {
 	    tp->type = SP_TORP;
@@ -605,7 +602,7 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 	    tp->dir  = t->t_dir;
 	    tp->tnum = htons(i);
 	    sendClientPacket(tp);
-	    return (TRUE);
+	    return TRUE;
 	}
     } else if (howmuch == UPDT_MOST) {
 	tp->type = SP_TORP;
@@ -622,21 +619,21 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 	    tpi->status = t->t_status;
 	    sendClientPacket(tpi);
 	}
-	return (TRUE);
+	return TRUE;
     } else {
 	if ((t->t_status == TFREE) && (tpi->status == TEXPLODE)) {
 	    tpi->status = TFREE;
-	    return (FALSE);
+	    return FALSE;
 	}
 	if (tpi->status != TFREE) {
 	    tpi->type   = SP_TORP_INFO;
 	    tpi->status = TFREE;
 	    tpi->tnum   = htons(i);
 	    sendClientPacket(tpi);
-	    return (TRUE);
+	    return TRUE;
 	}
     }
-    return (FALSE);
+    return FALSE;
 }
 
 int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
@@ -645,7 +642,7 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
     /*
      * If it was free before, and is still, do nothing.   */
     if ((t->t_status == TFREE) && (tpi->status == TFREE))
-	return (FALSE);
+	return FALSE;
 
     if (howmuch == UPDT_ALL) {
 	if ((t->t_war != tpi->war) || (t->t_status != tpi->status)) {
@@ -654,7 +651,7 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	    tpi->status = t->t_status;
 	    tpi->pnum   = htons(i);
 	    sendClientPacket(tpi);
-/*	    return (TRUE);*/
+/*	    return TRUE;*/
 	}
 	if ((tp->x != htonl(t->t_x)) || (tp->y != htonl(t->t_y))) {
 	    tp->type = SP_PLASMA;
@@ -662,7 +659,7 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	    tp->y    = htonl(t->t_y);
 	    tp->pnum = htons(i);
 	    sendClientPacket(tp);
-	    return (TRUE);
+	    return TRUE;
 	}
     } else if (howmuch == UPDT_MOST) {
 	tp->type = SP_PLASMA;
@@ -683,21 +680,21 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	    tpi->status = t->t_status;
 	    sendClientPacket(tpi);
 	}
-	return (TRUE);
+	return TRUE;
     } else {
 	if ((t->t_status == TFREE) && (tpi->status == TEXPLODE)) {
 	    tpi->status = TFREE;
-	    return (FALSE);
+	    return FALSE;
 	}
 	if (tpi->status != TFREE) {
 	    tpi->type   = SP_PLASMA_INFO;
 	    tpi->status = TFREE;
 	    tpi->pnum   = htons(i);
 	    sendClientPacket(tpi);
-	    return (TRUE);
+	    return TRUE;
 	}
     }
-    return (FALSE);
+    return FALSE;
 }
 
 inline static int
@@ -707,7 +704,7 @@ updtPhaser(struct phaser_spacket *ph, struct phaser *phase,
     if (howmuch == UPDT_ALL) {
 	if ( ph->status!=phase->ph_status
 	     || ph->dir!=phase->ph_dir
-	     || ph->target!=htonl(phase->ph_target)) { 
+	     || ph->target!=htonl(phase->ph_target)) {
 	    ph->pnum=i;
 	    ph->type=SP_PHASER;
 	    ph->status=phase->ph_status;
@@ -715,17 +712,17 @@ updtPhaser(struct phaser_spacket *ph, struct phaser *phase,
 	    ph->x=htonl(phase->ph_x);
 	    ph->y=htonl(phase->ph_y);
 	    ph->target=htonl(phase->ph_target);
-	    return (TRUE);
+	    return TRUE;
 	}
     } else {
 	if (ph->status!=PHFREE) {
 	    ph->pnum=i;
 	    ph->type=SP_PHASER;
 	    ph->status=PHFREE;
-	    return (TRUE);
+	    return TRUE;
 	}
     }
-    return (FALSE);
+    return FALSE;
 }
 
 inline static int
@@ -788,7 +785,7 @@ addVPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
 	sendClientPacket (phs);
 	break;
     }
-    return (TRUE);
+    return TRUE;
 }
 
 int sndPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
@@ -808,9 +805,9 @@ int sndPhaser(struct phaser_spacket *ph, struct phaser_s_spacket *phs,
 	    addVPhaser(ph, phs, phase, i, howmuch);
 	else
 	    sendClientPacket(ph);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 /* Determines if the planet's info has changed since it was last sent to the
@@ -830,8 +827,8 @@ updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 	    pl->flags=htons((short) (plan->pl_flags & PLFLAGMASK));
 	    pl->armies=htonl(plan->pl_armies);
 	    pl->owner=plan->pl_owner;
-	    return (TRUE);
-	} 
+	    return TRUE;
+	}
     } else { /* UPDT_LITTLE */
 	if (pl->info & me->p_team) {
 	    pl->type=SP_PLANET;
@@ -840,10 +837,10 @@ updtPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 	    pl->flags=0;
 	    pl->armies=0;
 	    pl->owner=0;
-	    return (TRUE);
+	    return TRUE;
 	}
     }
-    return (FALSE);
+    return FALSE;
 }
 
 /* Given a normal planet packet in pl, pack the data onto the end of the
@@ -863,7 +860,7 @@ addVPlanet(struct planet_spacket *pl)
     npl->owner=pl->owner;
     npl++;
     clientVPlanetCount++;
-    return (TRUE);
+    return TRUE;
 }
 
 /* howmuch is how much info to send, UPDT_LITTLE means just the information
@@ -878,9 +875,9 @@ int sndPlanet(struct planet_spacket *pl, struct planet *plan, int howmuch)
 	    addVPlanet(pl);
 	else
 	    sendClientPacket(pl);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 void
@@ -908,9 +905,9 @@ int sndPlanetLoc(struct planet_loc_spacket *pll, struct planet *plan)
 	strcpy(pll->name, plan->pl_name);
 	pll->type=SP_PLANET_LOC;
 	sendClientPacket(pll);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
     /* TODO: planet name changes by server admin are not propogated to client until planet is moved */
 }
 
@@ -922,18 +919,17 @@ int updtMessageSMessage(struct message *cur)
 	     && cur->args[1] < 64 && cur->args[2] < 64 ) {
 	    u_short tmp;
 
-	    tmp= cur->args[3] | 
-		((cur->args[4] & 16) << 11);
+	    tmp = cur->args[3] | ((cur->args[4] & 16) << 11);
 	    swarning(KILLARGS,(u_char)(tmp & 0xff),
 		     (u_char)((tmp >> 8) & 0xff));
 	    if (why_dead) {
 		swarning(KILLARGS2,(u_char)cur->args[5],0);
 	    }
-	    tmp= (u_char)(cur->args[2] |
+	    tmp = (u_char)(cur->args[2] |
 			  ((cur->args[4] & 12)<< 4));
 	    swarning(DMKILL,(u_char)(cur->args[1]
 				     | ((cur->args[4] & 3)<< 6)), tmp);
-	    return(TRUE);
+	    return TRUE;
 	}
 	break;
     case KILLARGS: /* Only to help the compiler */
@@ -945,17 +941,17 @@ int updtMessageSMessage(struct message *cur)
 	    swarning(KILLARGS2,(u_char)cur->args[5],(u_char)cur->args[4]);
 	}
 	swarning(DMKILLP, (u_char)cur->args[1], (u_char)cur->args[2]);
-	return(TRUE);
+	return TRUE;
     case DMBOMB:
 	swarning(ARGUMENTS, (u_char)cur->args[2],0); /* Damage */
 	swarning(DMBOMB, (u_char)cur->args[1], (u_char)cur->args[3]); /* To get the vital info in one packet */
-	return(TRUE);
+	return TRUE;
     case DMDEST:
 	swarning(DMDEST, (u_char)cur->args[1], (u_char)cur->args[2]);
-	return(TRUE);
+	return TRUE;
     case DMTAKE:
 	swarning(DMTAKE, (u_char)cur->args[1], (u_char)cur->args[2]);
-	return(TRUE);
+	return TRUE;
     case DGHOSTKILL:
 	if(cur->args[2] < 64000){
 	    swarning(KILLARGS,(u_char)(cur->args[2] & 0xff), (u_char)((cur->args[2] >> 8) & 0xff));
@@ -963,7 +959,7 @@ int updtMessageSMessage(struct message *cur)
 		swarning(KILLARGS2,(u_char)cur->args[5],0);
 	    }
 	    swarning(DGHOSTKILL, (u_char)cur->args[1], 0);
-	    return(TRUE);
+	    return TRUE;
 	}
 	break;
     case SVALID:      /* We can send it over SP_S_MESSAGE HW */
@@ -978,7 +974,7 @@ int updtMessageSMessage(struct message *cur)
 	    cur->args[0] = SVALID; /* It has a real header */
 	break;
     }
-    return(FALSE);
+    return FALSE;
 }
 
 void updtMessage(struct mesg_spacket *msg, struct message *cur)
@@ -1046,12 +1042,12 @@ updateStatus(int force)
 /* if force is true, send every 10 seconds as long as timeprod has changed */
 {
     if ((clientStatus.tourn != status->tourn) ||
-    	(force && !(repCount%efticks(50)) && 
+    	(force && !(repCount%efticks(50)) &&
 	 ntohl(clientStatus.timeprod) != timeprod_int()))  {
 #ifdef LTD_STATS
 	/* Hey, Tmode changed.  Do I have an enemy? */
 	setEnemy(me->p_team, me);
-#endif /* LTD_STATS */	    
+#endif /* LTD_STATS */
 	clientStatus.type=SP_STATUS;
 	clientStatus.tourn=status->tourn;
 	clientStatus.armsbomb=htonl(status->armsbomb/10);
@@ -1129,9 +1125,9 @@ int sndSSelf(struct you_short_spacket *youp, struct player* pl, int howmuch)
 	youp->whodead = pl->p_whodead;
 	youp->flags = htonl(pl->p_flags);
 	sendClientPacket((CVOID) youp);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 inline static int
@@ -1149,7 +1145,7 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	 || youp->swar != pl->p_swar
 	 || ntohs(youp->whydead) != legacy_whydead(pl->p_whydead)
 	 || ntohs(youp->whodead) != pl->p_whodead
-	 || youp->tractor != tractor 
+	 || youp->tractor != tractor
 	 || youp->pnum != pl->p_no) {
 
 	/* we want to send it, but how? */
@@ -1171,9 +1167,9 @@ sndSelf(struct you_spacket* youp, struct player* pl, int howmuch)
 	youp->damage=htonl(pl->p_damage);
 	youp->tractor=tractor;
 	sendClientPacket((CVOID) youp);
-	return (TRUE);
+	return TRUE;
     }
-    return (FALSE);
+    return FALSE;
 }
 
 void
@@ -1336,7 +1332,7 @@ updateShips(void)
 	 * 2) he is on the screen
 	 * 3) he was on the screen recently.
 	 */
-	if (!update && !galactic_smooth && repCount % efticks(9) != 0 && 
+	if (!update && !galactic_smooth && repCount % efticks(9) != 0 &&
 	    (ntohl(cpl->x) < me->p_x - SCALE*WINSIDE/2 ||
 	     ntohl(cpl->x) > me->p_x + SCALE*WINSIDE/2 ||
 	     ntohl(cpl->y) > me->p_y + SCALE*WINSIDE/2 ||
@@ -1351,8 +1347,8 @@ updateShips(void)
 	 * Also, we don't give a direction.  The client has no reason
 	 *  to know.
 	 */
-	if ( (pl->p_flags & PFCLOAK) && 
-	     (pl->p_cloakphase == (CLOAK_PHASES - 1)) && 
+	if ( (pl->p_flags & PFCLOAK) &&
+	     (pl->p_cloakphase == (CLOAK_PHASES - 1)) &&
 	     (me != pl) && !mustUpdate[i]) {
 	    if (repCount % efticks(9) != 0) {
 		/* Player is cloaked on users screen,
@@ -1977,11 +1973,11 @@ void SupdateTorps(void)
 		    continue;
 		if (torp->t_war!=tpi->war ||
 		    torp->t_status!=tpi->status) {
-		    if (torp->t_war == tpi->war){ 
+		    if (torp->t_war == tpi->war){
 			/* Don't send TMOVE/TFREE . It's encoded in
 			   the SP_S_TORP bitset. */
 			switch(torp->t_status){
-			case TFREE: 	
+			case TFREE:
 			    if (tpi->status == TEXPLODE){
 				/* Send real TFREE if torp exploded */
 
@@ -2002,9 +1998,9 @@ void SupdateTorps(void)
 					 obsolete data otherwise */
 			case TMOVE:
 			    tpi->status=torp->t_status;
-			    break;				
+			    break;
 			default:
-			    tpi->status=torp->t_status; 
+			    tpi->status=torp->t_status;
 			    /* set bit for torp */
 			    infobitset = infobitset | ( 01  << i);
 			    *tinfo++ = ((u_char)tpi->war & 0x0f)
@@ -2015,7 +2011,7 @@ void SupdateTorps(void)
 		    else {
 			tpi->war=torp->t_war;
 			/* set bit for torp */
-			tpi->status=torp->t_status; 
+			tpi->status=torp->t_status;
 			infobitset = infobitset | ( 01  << i);
 			*tinfo++ = ((u_char)tpi->war & 0x0f)
 			    |((u_char) tpi->status << 4);
@@ -2048,11 +2044,11 @@ void SupdateTorps(void)
 			*torp_xy++  |= (dy & 255);
 			*torp_xy = (((u_int) dy >> 8) & 255);
 			shift++;
-			if ( shift == 8){ 
+			if ( shift == 8){
 			    shift = 0;
 			    torp_xy++;
 			    *torp_xy = 0;
-			}	     	
+			}
 			continue;
 		    }
 		    /*

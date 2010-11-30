@@ -51,11 +51,6 @@
 
 /* end of DEFINABLES */
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 /* There is a time bias towards people with at least 4 hours of play... */
 #define TIMEBIAS 4
 

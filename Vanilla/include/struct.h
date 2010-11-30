@@ -529,7 +529,7 @@ struct player {
     int p_sub_out;              /* flag, substitution on death */
     int p_sub_out_for;          /* slot, the other player, or -1 */
     char p_ident[80];           /* client name and version supplied */
-    int p_no_pick;              /* team voted to prevent beam up */
+    int p_no_pick;              /* flag, team voted to prevent beam up */
     /* add initialisation of new variables in enter(), or ntserv main() */
 };
 

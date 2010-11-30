@@ -11,6 +11,11 @@
 #define NULL	((char *) 0)
 #endif
 
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
+
 /* some OS's don't define SA_NOCLDWAIT */
 #ifndef SA_NOCLDWAIT
 #define SA_NOCLDWAIT	0

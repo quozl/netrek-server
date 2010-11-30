@@ -30,11 +30,6 @@
 #include "util.h"
 #include "slotmaint.h"
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 /* file scope prototypes */
 static void noplay(int reason);
 static void reaper(int);
@@ -146,8 +141,8 @@ int main(int argc, char **argv)
     if (ban_noconnect) {
         /* note: etc/bypass is not checked */
         if (host && ip) {
-            if ((bans_check_permanent(login, host) == TRUE) ||
-                (bans_check_permanent(login, ip) == TRUE)) {
+            if ((bans_check_permanent(login, host)) ||
+                (bans_check_permanent(login, ip))) {
                 noplay(BADVERSION_BANNED);
                 ERROR(2,("ntserv/main.c: premature disconnect of %s due to permanent ban\n", ip));
                 exit(1);
@@ -376,7 +371,7 @@ int main(int argc, char **argv)
         if (team == -1) {
             exitGame(0);
         }
-        bypassed = (CheckBypass(login,host,Bypass_File) == TRUE);
+        bypassed = (CheckBypass(login,host,Bypass_File));
 
         if (indie) team = 4;    /* force to independent 8/28/91 TC */
         redrawall = 1;
@@ -723,17 +718,17 @@ int CheckBypass(char *login, char *host, char *file)
   FILE  *bypassfile;
   char  log_buf[64], host_buf[64], line_buf[160];
   char  *position;
-  int   num1; 
-  int Hits=0;
+  int   num1;
+  int   hits = 0;
 
   if ((bypassfile = fopen(file, "r")) == NULL) {
     ERROR(1,( "No bypass file %s\n", file));
     fflush(stderr);
-    return(FALSE);
+    return FALSE;
   }
-  while(fgets(line_buf, 160, bypassfile) != NULL) {
+  while (fgets(line_buf, 160, bypassfile) != NULL) {
     /* Split line up */
-    if((*line_buf=='#')||(*line_buf=='\n'))
+    if ((*line_buf == '#') || (*line_buf == '\n'))
       continue;
     if ((position = (char *) strrchr(line_buf, '@')) == 0) {
       ERROR(1,( "Bad line in bypass file\n"));
@@ -756,40 +751,35 @@ int CheckBypass(char *login, char *host, char *file)
     ERROR(1,("    Checking Bypass <%s> and <%s>.\n",log_buf,host_buf));
     */
 
-    if (*log_buf=='*')
-      Hits=1;
+    if (*log_buf == '*')
+      hits = 1;
     else if (!strcasecmp(login, log_buf)){
-      Hits=1;
+      hits = 1;
     }
-    if(Hits==1)
-      {
-        if (*host_buf == '*'){  /* Bypass any host */
-          Hits++;
-          break;                /* break out now. otherwise Hits will get reset
-                                   to one */
-        }
-        else if (!strcasecmp(host,host_buf) ||   /* Bypass subdomains */
-	        (strstr(host,host_buf)!=NULL)) { /* (eg, "*@usc.edu" */
-          Hits++;
-          break;                /* break out now. otherwise Hits will get reset
-                                   to one */
-        }
+
+    if(hits == 1) {
+      if (*host_buf == '*'){  /* Bypass any host */
+        hits++;
+        break; /* break out now. otherwise hits will get reset to one */
+      } else if (!strcasecmp(host, host_buf) ||   /* Bypass subdomains */
+                (strstr(host, host_buf) != NULL)) { /* (eg, "*@usc.edu" */
+        hits++;
+        break; /* break out now. otherwise hits will get reset to one */
       }
+    }
   }
   fclose(bypassfile);
-  if(Hits>=2)
-    {
-      /*
+  if (hits >= 2) {
+    /*
       ERROR(1,("Bypassing %s@%s\n",login,host));
       fflush(stderr);
-      */
-      return(TRUE);
-    }
-  else{
-    /*
-    ERROR(1,("NOT Bypassing %s@%s\n",login,host));
     */
-    return(FALSE);
+    return TRUE;
+  } else {
+    /*
+      ERROR(1,("NOT Bypassing %s@%s\n",login,host));
+    */
+    return FALSE;
   }
 }
 
@@ -895,11 +885,11 @@ static void bans_check()
 {
   if (!bypassed) {
     char *reason = NULL;
-    if (bans_check_permanent(login, host) == TRUE) {
+    if (bans_check_permanent(login, host)) {
       reason = "banned by the administrator";
-    } else if (bans_check_permanent(login, me->p_ip) == TRUE) {
+    } else if (bans_check_permanent(login, me->p_ip)) {
       reason = "banned by the administrator";
-    } else if (bans_check_temporary(me->p_ip) == TRUE) {
+    } else if (bans_check_temporary(me->p_ip)) {
       reason = "banned by the players";
     }
     if (reason != NULL) {

@@ -14,11 +14,6 @@
 #include "data.h"
 #include "blog.h"
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 /*! @brief Add a ban given a player slot number.
     @details Adds a temporary ban to the next empty slot in the list
     of bans, reports the action to the error log, and blogs about it.

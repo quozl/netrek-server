@@ -55,9 +55,6 @@
 #endif /* MIPSEL */
 #endif /* OOPS */
 
-#define FALSE 0
-#define TRUE 1
-
 #undef DOUBLE_UDP	/* comment this out to disable it */
 
 #undef BROKEN		/* for local stress testing; drops 20% of packets */
