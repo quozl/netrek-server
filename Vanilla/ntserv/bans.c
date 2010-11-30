@@ -37,11 +37,11 @@ int bans_add_temporary_by_player(int who, char *by)
       b->b_remain = ban_vote_duration;
       ERROR(2,( "ban of %s was voted\n", b->b_ip));
       blog_printf("bans", "%s banned\n\nThe player on IP address %s "
-		  "has been temporarily banned%s.\n"
-		  "slot=%s character name=%s user name=%s "
-		  "translated host name=%s ban duration=%d\n",
-		  b->b_ip, b->b_ip, by, j->p_mapchars, j->p_name, j->p_login,
-		  j->p_full_hostname, b->b_remain);
+                  "has been temporarily banned%s.\n"
+                  "slot=%s character name=%s user name=%s "
+                  "translated host name=%s ban duration=%d\n",
+                  b->b_ip, b->b_ip, by, j->p_mapchars, j->p_name, j->p_login,
+                  j->p_full_hostname, b->b_remain);
       return 1;
     }
   }
@@ -58,7 +58,7 @@ void bans_age_temporary(int elapsed) {
   int i;
 
   if (elapsed == 0) {
-    ERROR(2,("bans_age_temporary: elapsed zero\n")); 
+    ERROR(2,("bans_age_temporary: elapsed zero\n"));
     return;
   }
 
@@ -67,7 +67,10 @@ void bans_age_temporary(int elapsed) {
     if (b->b_remain == 0) continue;
     if (b->b_remain < elapsed) {
       b->b_remain = 0;
-      blog_printf("bans", "Temporary ban of %s expired\n\nThe temporary ban of %s which was voted earlier, or set by the administrator, has now expired.", b->b_ip, b->b_ip);
+      blog_printf("bans", "Temporary ban of %s expired\n\n"
+                  "The temporary ban of %s which was voted earlier, "
+                  "or set by the administrator, has now expired.",
+                  b->b_ip, b->b_ip);
     } else {
       b->b_remain -= elapsed;
     }
@@ -105,9 +108,9 @@ int bans_check_temporary(char *ip)
     struct ban *b = &bans[i];
     if (b->b_remain) {
       if (!strcmp(b->b_ip, ip)) {
-	ERROR(2,( "ban of %s is still current\n", b->b_ip));
-	bans_check_temporary_identified = b;
-	return TRUE;
+        ERROR(2,( "ban of %s is still current\n", b->b_ip));
+        bans_check_temporary_identified = b;
+        return TRUE;
       }
     }
   }
@@ -128,19 +131,19 @@ int bans_check_permanent(char *login, char *host)
   char  log_buf[64], host_buf[64], line_buf[160];
   char  *position;
   int   num1;
-  int   Hits=0;                 /* Hits==2 means we're banned */
+  int   hits = 0; /* (hits == 2) means we're banned */
 
   if ((bannedfile = fopen(Banned_File, "r")) == NULL) {
-    ERROR(1,( "No banned file %s\n", Banned_File));
+    ERROR(1,("No banned file %s\n", Banned_File));
     fflush(stderr);
-    return(FALSE);
+    return FALSE;
   }
-  while(fgets(line_buf, 160, bannedfile) != NULL) {
+  while (fgets(line_buf, 160, bannedfile) != NULL) {
     /* Split line up */
-    if((*line_buf=='#')||(*line_buf=='\n'))
+    if ((*line_buf == '#') || (*line_buf == '\n'))
       continue;
     if ((position = (char *) strrchr(line_buf, '@')) == 0) {
-      ERROR(1,( "Bad line in banned file\n"));
+      ERROR(1,("Bad line in banned file\n"));
       fflush(stderr);
       continue;
     }
@@ -155,37 +158,32 @@ int bans_check_permanent(char *login, char *host)
     *position = '\0';
 
     /*
-      ERROR(1,( "Login: <%s>; host: <%s>\n", login, host));
+    ERROR(1,( "Login: <%s>; host: <%s>\n", login, host));
     ERROR(1,("    Checking Banned <%s> and <%s>.\n",log_buf,host_buf));
     */
-    if(*log_buf=='*')
-
-      Hits=1;
+    if (*log_buf == '*')
+      hits = 1;
     else if (!strcmp(login, log_buf))
-      Hits=1;
-    if(Hits==1)
-      {
-        if (*host_buf == '*'){  /* Lock out any host */
-          Hits++;
-          break;                /* break out now. otherwise Hits will get reset
-                                   to one */
-        }
-        else if(strstr(host,host_buf)!=NULL){ /* Lock out subdomains (eg, "*@usc
-.edu" */
-          Hits++;
-          break;                /* break out now. otherwise Hits will get reset
-                                   to one */
-        }
-        else if (!strcmp(host, host_buf)){ /* Lock out specific host */
-          Hits++;
-          break;                /* break out now. otherwise Hits will get reset
-                                   to one */
-        }
+      hits = 1;
+
+    if (hits == 1) {
+      if (*host_buf == '*'){  /* Lock out any host */
+	hits++;
+	break; /* break out now. otherwise hits will get reset to one */
+      } else if (strstr(host, host_buf) != NULL) {
+	/* Lock out subdomains (eg, "*@usc.edu" */
+	hits++;
+	break; /* break out now. otherwise hits will get reset to one */
+      } else if (!strcmp(host, host_buf)) {
+	/* Lock out specific host */
+	hits++;
+	break; /* break out now. otherwise hits will get reset to one */
       }
+    }
   }
   fclose(bannedfile);
-  if(Hits>=2)
-    return(TRUE);
+  if (hits >= 2)
+    return TRUE;
   else
-    return(FALSE);
+    return FALSE;
 }
