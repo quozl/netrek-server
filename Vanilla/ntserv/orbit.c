@@ -23,13 +23,6 @@
 
 #define isAlive(p)              ((p)->p_status == PALIVE)
 
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE 1
-#endif
-
 void de_lock(struct player *me)
 {
   me->p_flags   &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);

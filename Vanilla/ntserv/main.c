@@ -332,8 +332,7 @@ int main(int argc, char **argv)
     me->p_sub_out_for = -1;     /* slot, the other player, or -1 */
 
     strcpy(me->p_ident, "unknown");
-
-    me->p_can_beam_up = TRUE;   /* permit player to pick armies by default */
+    me->p_no_pick = 0;
 
 #ifdef LTD_STATS
     memset(&me->p_bogus, 0, sizeof(struct ltd_stats));

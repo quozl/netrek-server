@@ -11,11 +11,6 @@
 #include "util.h"
 #include "slotmaint.h"
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 static void Usage(void);
 
 static void Usage(void)
@@ -312,17 +307,12 @@ int main(int argc, char **argv)
       players[player].p_armies = 0;
       break;
     case 'n':		/* toggle carry flag */
-      if (players[player].p_can_beam_up == TRUE) {
-          players[player].p_can_beam_up = FALSE;
-          sprintf(buf, "GOD->%s  %s is no longer able to pick up armies.", 
-	    team_code(players[player].p_team),
-	    players[player].p_longname);		    
-      } else {
-          players[player].p_can_beam_up = TRUE;
-          sprintf(buf, "GOD->%s  %s can once again pick up armies.", 
-	      team_code(players[player].p_team),
-	      players[player].p_longname);		    
-      }
+      players[player].p_no_pick = !players[player].p_no_pick;
+      sprintf(buf, "GOD->%s  %s %s pick up armies",
+              team_code(players[player].p_team),
+              players[player].p_longname,
+              players[player].p_no_pick ?
+                  "is no longer able to" : "can once again");
       amessage(buf, players[player].p_team, MTEAM);
       break;
     default:

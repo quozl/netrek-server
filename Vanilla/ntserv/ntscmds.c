@@ -33,11 +33,6 @@
 #include "packets.h"
 #include "genspkt.h"
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 #define EXPERIMENTAL_BE
 
 void do_player_eject(int who, int player, int mflags, int sendto);
@@ -401,16 +396,16 @@ void do_player_nopick(int who, int player, int mflags, int sendto)
     }
 
     if (reason != NULL) {
-      pmessage(players[who].p_team, MTEAM, 
-	       addr_mess(players[who].p_team,MTEAM), 
-	       reason);
+      pmessage(players[who].p_team, MTEAM,
+               addr_mess(players[who].p_team, MTEAM),
+               reason);
       return;
     }
 
-    pmessage(me->p_team, MTEAM, addr_mess(me->p_team,MTEAM), 
-	"%2s is no longer able to pick up armies", j->p_mapchars);
+    j->p_no_pick = 1;
 
-    j->p_can_beam_up = FALSE;
+    pmessage(me->p_team, MTEAM, addr_mess(me->p_team, MTEAM),
+             "%2s is no longer able to pick up armies", j->p_mapchars);
     return;
 }
 
@@ -588,9 +583,7 @@ int bounceSessionStats(int from)
          bufDefense,
          (float) deltaKills /
          (float) ((deltaLosses == 0) ? 1 : deltaLosses));
-    snprintf(msgbuf, 32, (me->p_can_beam_up == TRUE) ?
-             "Carry status: permitted" : "Carry status: prohibited");
-    god (from, msgbuf);
+    godf(from, "Carry status: %s", me->p_no_pick ? "prohibited" : "permitted");
     return 1;
 }
 
