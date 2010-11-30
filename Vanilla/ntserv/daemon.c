@@ -49,21 +49,21 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef PUCK_FIRST 
-#include <sys/sem.h> 
+#ifdef PUCK_FIRST
+#include <sys/sem.h>
 /* this is from a semctl man page */
-#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED) 
-/* union semun is defined by including <sys/sem.h> */ 
+#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
+/* union semun is defined by including <sys/sem.h> */
 #else /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
-/* according to X/OPEN we have to define it ourselves */ 
+/* according to X/OPEN we have to define it ourselves */
 union semun {
-   int val;                                   /* value for SETVAL */
+   int val;                           /* value for SETVAL */
    struct semid_ds *buf;              /* buffer for IPC_STAT, IPC_SET */
    unsigned short int *array;         /* array for GETALL, SETALL */
-   struct seminfo *__buf;             /* buffer for IPC_INFO */ 
-   }; 
+   struct seminfo *__buf;             /* buffer for IPC_INFO */
+   };
 #endif /*__GNU_LIBRARY__ && !__SEM_SEMUN_UNDEFINED */
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 
 /* fuse macro, true every so often, relative to frames per second and
 time distortion value, only valid outside pause (since context->frame
@@ -134,7 +134,7 @@ static void signal_servers(void);
 
 #ifdef PUCK_FIRST
 static void signal_puck(void);
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 static void message_flag(struct message *cur, char *address);
 
 /* external scope prototypes */
@@ -159,7 +159,7 @@ static int arg[8];                      /*!< short message arg list       */
 static int pucksem_id;
 static union semun pucksem_arg;
 static struct sembuf pucksem_op[1];
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 
 int pl_warning[MAXPLANETS];     /*!< fuse, per planet, under attack msg */
 int tm_robots[MAXTEAM + 1];     /*!< fuse, per team, non-t rescue robot */
@@ -251,7 +251,7 @@ int main(int argc, char **argv)
         ERROR(1,("daemon: warm start\n"));
         goto restart;
     }
-    
+
     ERROR(1,("daemon: cold start\n"));
     context->daemon = getpid();
     context->frame = context->frame_tourn_start = context->frame_tourn_end = 0;
@@ -292,7 +292,7 @@ int main(int argc, char **argv)
         ERROR(1,("daemon: no global file, resetting stats\n"));
         memset((char *) status, 0, sizeof(struct status));
     } else {
-        if (read(glfd, (char *) status, sizeof(struct status)) != 
+        if (read(glfd, (char *) status, sizeof(struct status)) !=
             sizeof(struct status)) {
             ERROR(1,("daemon: global file wrong size, resetting stats\n"));
             memset((char *) status, 0, sizeof(struct status));
@@ -334,18 +334,15 @@ int main(int argc, char **argv)
 
 #ifdef PUCK_FIRST
     if ((pucksem_id = semget(PUCK_FIRST, 1, 0600 | IPC_CREAT)) != -1 ||
-        (pucksem_id = semget(PUCK_FIRST, 1, 0600)) != -1) 
-    {
+        (pucksem_id = semget(PUCK_FIRST, 1, 0600)) != -1) {
         pucksem_arg.val = 0;
         pucksem_op[0].sem_num = 0;
         pucksem_op[0].sem_op = -1;
         pucksem_op[0].sem_flg = 0;
-    }
-    else 
-    {
+    } else {
         ERROR(1,("daemon: unable to get puck semaphore."));
     }
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 
     /* initialize the planet movement capabilities */
     pinit();
@@ -401,8 +398,12 @@ int main(int argc, char **argv)
 #define HOSEFUSE        18000   /* 30 min., was 20 minutes 6/7/95 JRP */
 #define HOSEFUSE2       3000    /*  5 min., was  3 minutes 6/29/92 TC */
 
-#define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE) /* default 30 secs */
-#define KGHOSTTIME      ((ghostbust_timer + 2) * 1000000 / UPDATE) /* default 32 secs */
+/* default 30 secs */
+#define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE)
+
+/* default 32 secs */
+#define KGHOSTTIME      ((ghostbust_timer + 2) * 1000000 / UPDATE)
+
 #define OUTFITTIME      (3 * AUTOQUIT * 1000000 / UPDATE) /* minutes */
 
 #define HUNTERKILLER    (-1)
@@ -477,7 +478,7 @@ static int check_scummers(int verbose)
         for (j=i+1; j<MAXPLAYER; j++) {
           struct player *them = &players[j];
           if (them->p_status == PFREE) continue;
-	  if (is_robot(them)) continue;
+          if (is_robot(them)) continue;
           if (them->p_status == POBSERV) continue;
 #ifdef LTD_STATS
           if (ltd_ticks(them, LTD_TOTAL) != 0)
@@ -505,7 +506,7 @@ static int check_scummers(int verbose)
             }
             fprintf(fp,"POSSIBLE T-MODE SCUMMERS FOUND!!! (slots %d and %d) ",i,who);
             gmtsecs = time(NULL);
-            today = localtime(&gmtsecs); 
+            today = localtime(&gmtsecs);
             fprintf(fp,"on %d-%02d-%02d at %d:%d.%d\n",
                 today->tm_year+1900,(today->tm_mon)+1,today->tm_mday,
                 today->tm_hour,today->tm_min,today->tm_sec);
@@ -613,7 +614,7 @@ static void move()
     static int oldmessage;
     int old_manager_type, old_distortion, old_fps;
     static enum ts {
-            TS_PICKUP, 
+            TS_PICKUP,
             TS_SCUMMERS,
             TS_BEGIN,
             TS_TOURNAMENT,
@@ -657,13 +658,12 @@ static void move()
         blog_game_over(&context->start, status);
         if (opt_debug) {
             ERROR(1,("daemon: ho hum, no activity...\n"));
-        }
-        else {
+        } else {
             ERROR(3,("daemon: self-destructing\n"));
-	    if (self_reset) {
-		    ERROR(3,("daemon: resetting galaxy!\n"));
-		    pl_reset();
-	    }
+            if (self_reset) {
+                    ERROR(3,("daemon: resetting galaxy!\n"));
+                    pl_reset();
+            }
         }
         exitDaemon(0);
     }
@@ -756,7 +756,7 @@ static void move()
 
 #ifdef PUCK_FIRST
     signal_puck();
-#endif /*PUCK_FIRST */
+#endif /* PUCK_FIRST */
 
     udships();
     if (fuse(PLAYERFUSE)) {
@@ -823,8 +823,8 @@ static void killer_credit(struct player *killer, struct player *died)
 {
         killer->p_kills += 1.0 + died->p_armies * 0.1 + died->p_kills * 0.1;
 #ifdef STURGEON
-	if (sturgeon && sturgeon_extrakills)
-		killer->p_kills += died->p_upgrades * 0.15;
+        if (sturgeon && sturgeon_extrakills)
+                killer->p_kills += died->p_upgrades * 0.15;
 #endif
 }
 
@@ -851,13 +851,13 @@ static void udplayersight(void)
     max_dist    = (j->p_flags & PFCLOAK) ? (GWIDTH/7) : (GWIDTH/3);
     max_dist_sq = (j->p_flags & PFCLOAK) ? (GWIDTH/7)*(GWIDTH/7) :
       (GWIDTH/3)*(GWIDTH/3);
-    
+
     if (j->p_lastseenby != VACANT) {
       k = player_(j->p_lastseenby);
       /*
-       * If existent, check the player K who last saw player J.  
+       * If existent, check the player K who last saw player J.
        * There is a very good chance that K can still see J.
-       * 
+       *
        * The only way p_lastseenby gets set to non-VACANT is in the for-loop
        * below; hence, we don't have to check whether K is a robot or whether
        * K is on the same team as J; we know neither of these was true when
@@ -871,18 +871,18 @@ static void udplayersight(void)
         continue;
       }
     }
-        
+
     j->p_flags &= ~PFSEEN;
     j->p_lastseenby = VACANT;
-    
+
     /*
      * Search enemy team to see if they see this player.  */
     for (k = firstPlayer; k <= lastPlayer; k++) {
       /*
        * Player must be alive, not a robot, and an enemy  */
-      if (k->p_status != PALIVE) 
+      if (k->p_status != PALIVE)
         continue;
-      if (k->p_flags & PFROBOT) 
+      if (k->p_flags & PFROBOT)
         continue;
       if (k->p_team == j->p_team)
         continue;
@@ -994,8 +994,8 @@ static void udplayers_pause(void) {
     }
 
     if (++(j->p_ghostbuster) > GHOSTTIME) {
-      ERROR(4,("daemon/udplayers_pause: %s: ship ghostbusted (wd=%d)\n", 
-                   j->p_mapchars, j->p_whydead));
+      ERROR(4,("daemon/udplayers_pause: %s: ship ghostbusted (wd=%d)\n",
+               j->p_mapchars, j->p_whydead));
       ghostmess(j, "no ping in pause");
       j->p_status = PDEAD;
       j->p_whydead = KGHOST;
@@ -1007,7 +1007,7 @@ static void udplayers_pause(void) {
       j->p_ghostbuster = 0;
 
       saveplayer(j);
-      ERROR(8,("daemon/udplayers_pause: %s: sending SIGTERM to %d\n", 
+      ERROR(8,("daemon/udplayers_pause: %s: sending SIGTERM to %d\n",
                j->p_mapchars, j->p_process));
 
       if (kill (j->p_process, SIGTERM) < 0)
@@ -1049,7 +1049,7 @@ static void udplayers_poutfit(struct player *j)
         }
 
         if (++(j->p_ghostbuster) > outfitdelay) {
-                ERROR(4,("daemon: %s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n", 
+                ERROR(4,("daemon: %s: ship in POUTFIT too long (gb=%d/%d,wd=%d)\n",
                          j->p_mapchars, j->p_ghostbuster,
                          outfitdelay, j->p_whydead));
                 if (j->p_whydead == KGHOST) {
@@ -1092,22 +1092,22 @@ static void udplayers_pexplode(struct player *j)
 {
         j->p_updates++;
         j->p_flags &= ~PFCLOAK;
-        if ((j->p_ship.s_type == STARBASE) && 
+        if ((j->p_ship.s_type == STARBASE) &&
             /* todo: fps support, use of fuse for explosion time */
             (j->p_explode == ((2*SBEXPVIEWS-3)/PLAYERFUSE)))
                 blowup(j);  /* damdiffe everyone else around */
         else if (j->p_explode == ((10-3)/PLAYERFUSE))
                 blowup(j);      /* damdiffe everyone else around */
-        
+
         if (--j->p_explode <= 0) {
                 j->p_status = PDEAD;
                 j->p_explode = 600/PLAYERFUSE; /* set PDEAD time limit */
         }
-        
+
         udplayers_pexplode_bays(j);
         /* And he is ejected from orbit. */
         j->p_flags &= ~PFORBIT;
-        
+
         /* Reduce any torp or plasma timers longer than 5 seconds,
            mainly for ATT torps/plasmas, and sturgeon weapons */
         struct torp *t;
@@ -1175,7 +1175,7 @@ static void udplayers_palive_move_in_space(struct player *j)
 
         if ((j->p_dir != j->p_desdir) && (j->p_status != PEXPLODE))
                 changedir(j);
-        
+
         if (j->p_flags & PFTWARP) return; /* udtwarp() to handle ship */
 #ifdef NEW_ETEMP
         if (j->p_flags & PFENG)
@@ -1221,13 +1221,13 @@ static void udplayers_palive_move_in_space(struct player *j)
                         j->p_etemp += .7*(j->p_speed * bays);
                 }
         }
-        
+
         if (j->p_desspeed > j->p_speed) {
                 j->p_subspeed += j->p_ship.s_accint;
         }
         if (j->p_desspeed < j->p_speed)
                 j->p_subspeed -= j->p_ship.s_decint;
-        
+
         if (j->p_subspeed / 1000) {
                 j->p_speed += j->p_subspeed / 1000;
                 j->p_subspeed %= 1000;
@@ -1258,7 +1258,7 @@ static void udships_palive_move_in_space(struct player *j)
                                 j->p_dir = j->p_desdir = 64;
                         else
                                 j->p_dir = j->p_desdir = 64 - (j->p_dir - 192);
-                } else 
+                } else
                         j->p_x_internal = j->p_x_max - dx;
         } else if (j->p_x_internal > j->p_x_max) {
                 int dx = j->p_x_internal - j->p_x_max;
@@ -1268,7 +1268,7 @@ static void udships_palive_move_in_space(struct player *j)
                                 j->p_dir = j->p_desdir = 192;
                         else
                                 j->p_dir = j->p_desdir = 192 - (j->p_dir - 64);
-                } else 
+                } else
                         j->p_x_internal = j->p_x_min + dx;
         }
 
@@ -1280,7 +1280,7 @@ static void udships_palive_move_in_space(struct player *j)
                                 j->p_dir = j->p_desdir = 128;
                         else
                                 j->p_dir = j->p_desdir = 128 - j->p_dir;
-                } else 
+                } else
                         j->p_y_internal = j->p_y_max - dy;
         } else if (j->p_y_internal > j->p_y_max) {
                 int dy = j->p_y_internal - j->p_y_max;
@@ -1290,7 +1290,7 @@ static void udships_palive_move_in_space(struct player *j)
                                 j->p_dir = j->p_desdir = 0;
                         else
                                 j->p_dir = j->p_desdir = 0 - (j->p_dir - 128);
-                } else 
+                } else
                         j->p_y_internal = j->p_y_min + dy;
         }
 
@@ -1333,7 +1333,7 @@ static void udplayers_palive_update_stats(struct player *j)
             || practice_mode
 #endif
                 ) {
-        
+
 #ifdef LTD_STATS
                 ltd_update_ticks(j);
                 if (j->p_ship.s_type != STARBASE)
@@ -1357,11 +1357,11 @@ static void udplayers_palive_update_stats(struct player *j)
                         **  equivalent of "m" sample intervals.
                         **
                         **  ROLLING_STATS_MASK must be one less than a
-                        **  power of two for this conditional to work 
+                        **  power of two for this conditional to work
                         **  properly.  A value of 32767 yields 3276.7
                         **  seconds per slot, which if ROLLING_STATS_SLOTS
                         **  is set to 10, total statistics will be 9.1
-                        **  hours of play. 
+                        **  hours of play.
                         */
                         if ((j->p_stats.st_tticks&ROLLING_STATS_MASK)==0)
                         {
@@ -1453,7 +1453,7 @@ static void udplayers_palive_fuel_shields(struct player *j)
                 case SCOUT:
                         j->p_fuel -= 2;
                         break;
-                case DESTROYER: 
+                case DESTROYER:
                 case CRUISER:
                 case BATTLESHIP:
                 case ASSAULT:
@@ -1477,20 +1477,20 @@ static void udplayers_palive_tractor(struct player *j)
         if ((isAlive(&players[j->p_tractor])) &&
             ((j->p_fuel > TRACTCOST) && !(j->p_flags & PFENG)) &&
             ((dist=hypot((double)(j->p_x-players[j->p_tractor].p_x),
-                         (double)(j->p_y-players[j->p_tractor].p_y))) 
+                         (double)(j->p_y-players[j->p_tractor].p_y)))
              < ((double) TRACTDIST)*j->p_ship.s_tractrng) &&
             (!(j->p_flags & (PFORBIT | PFDOCK))) &&
             (!(players[j->p_tractor].p_flags & PFDOCK))) {
                 float cosTheta, sinTheta;  /* Cos and Sin from me to him */
                 int halfforce; /* Half force of tractor */
                 int dir;       /* -1 for repress, otherwise 1 */
-                
+
                 if (players[j->p_tractor].p_flags & PFORBIT)
                         players[j->p_tractor].p_flags &= ~PFORBIT;
-                
+
                 j->p_fuel -= TRACTCOST;
                 j->p_etemp += TRACTEHEAT;
-                
+
                 cosTheta = players[j->p_tractor].p_x - j->p_x;
                 sinTheta = players[j->p_tractor].p_y - j->p_y;
                 if (dist == 0) dist = 1; /* prevent divide by zero */
@@ -1498,7 +1498,7 @@ static void udplayers_palive_tractor(struct player *j)
                 sinTheta /= dist;
                 /* force of tractor is WARP2 * tractstr */
                 halfforce = (WARP1*j->p_ship.s_tractstr);
-                
+
                 dir = 1;
                 if (j->p_flags & PFPRESS) dir = -1;
                 /* change in position is tractor strength over mass */
@@ -1514,7 +1514,7 @@ static void udplayers_palive_tractor(struct player *j)
                 p_x_y_to_internal(&players[j->p_tractor]);
         } else {
                 j->p_flags &= ~(PFTRACT | PFPRESS);
-        }     
+        }
 }
 
 static void udplayers_palive_cool_weapons(struct player *j)
@@ -1578,7 +1578,7 @@ static void udplayers_palive_make_fuel(struct player *j)
             (planets[j->p_planet].pl_flags & PLFUEL) &&
             (!(planets[j->p_planet].pl_owner & j->p_war))) {
                 j->p_fuel += 6 * j->p_ship.s_recharge;
-        } else if ((j->p_flags & PFDOCK) && 
+        } else if ((j->p_flags & PFDOCK) &&
                    (j->p_fuel < j->p_ship.s_maxfuel) &&
                    (players[j->p_dock_with].p_fuel > SBFUELMIN)) {
                 int fc = MIN(10*j->p_ship.s_recharge,
@@ -1607,7 +1607,7 @@ static void udplayers_palive_make_fuel(struct player *j)
                 j->p_desspeed = 0;
                 j->p_flags &= ~PFCLOAK;
         }
-}        
+}
 
 static void udplayers_palive_repair(struct player *j)
 {
@@ -1622,14 +1622,14 @@ static void udplayers_palive_repair(struct player *j)
                             (planets[j->p_planet].pl_flags & PLREPAIR) &&
                             (!(planets[j->p_planet].pl_owner & j->p_war))) {
                                 j->p_subshield += j->p_ship.s_repair * 4;
-                        } 
+                        }
                         if (j->p_flags & PFDOCK)  {
                                 j->p_subshield += j->p_ship.s_repair * 6;
                         }
                 } else {
                         j->p_subshield += j->p_ship.s_repair * 2;
                 }
-                /* 1000 subshield  =  1 shield or hull repaired 
+                /* 1000 subshield  =  1 shield or hull repaired
                    This routine is used by server every update
                    Repair time assumes 10 updates/sec */
                 repair_needed = j->p_ship.s_maxshield - j->p_shield;
@@ -1649,7 +1649,7 @@ static void udplayers_palive_repair(struct player *j)
                         j->p_subshield = 0;
                 }
         }
-        
+
         /* repair damage */
         if (j->p_damage && !(j->p_flags & PFSHIELD)) {
                 repair_progress_old = j->p_subdamage;
@@ -1859,7 +1859,7 @@ static void changedir(struct player *sp)
     }
     else {
         /* todo: fps support */
-        if (newturn) 
+        if (newturn)
             sp->p_subdir += sp->p_ship.s_turns/(speed*speed);
         else
             sp->p_subdir += sp->p_ship.s_turns/((sp->p_speed<30)?(1<<sp->p_speed):1000000000);
@@ -1877,7 +1877,7 @@ static void changedir(struct player *sp)
                 sp->p_dir = sp->p_desdir;
             else if ((u_char) ((int)sp->p_dir - (int)sp->p_desdir) > 127)
                 sp->p_dir += ticks;
-            else 
+            else
                 sp->p_dir -= ticks;
             sp->p_subdir %= 1000;
         }
@@ -1904,10 +1904,10 @@ position hidden      0000000000000011111111110000000000000
 
   for (i=0; i<MAXPLAYER; i++) {
     if (isAlive(&players[i])) {
-      if ((players[i].p_flags & PFCLOAK) && 
+      if ((players[i].p_flags & PFCLOAK) &&
           (players[i].p_cloakphase < (CLOAK_PHASES-1))) {
         players[i].p_cloakphase++;
-      } else if (!(players[i].p_flags & PFCLOAK) && 
+      } else if (!(players[i].p_flags & PFCLOAK) &&
                  (players[i].p_cloakphase > 0)) {
         players[i].p_cloakphase--;
       }
@@ -1946,7 +1946,7 @@ static void udtwarp(void)
     }
 }
 
-/* 
+/*
  * Find nearest hostile vessel and turn toward it
  */
 static void t_track(struct torp *t)
@@ -1982,7 +1982,7 @@ static void t_track(struct torp *t)
     dy = spo(t->t_y_internal - j->p_y_internal);
     if ((dy >= range) || (dy <= -range))
       continue;
-    
+
     /*
      * Get the direction that the potential target is from the torp:  */
     heading = -64 + rint(atan2((double) dy, (double) dx) / 3.14159 * 128.0);
@@ -1996,7 +1996,7 @@ static void t_track(struct torp *t)
     else
       bearing = heading - t->t_dir + 256;
 
-    /* 
+    /*
      * To prevent the torpedo from tracking unreachable targets:
      * If target is in an arc that the torp might reach, then it is valid. */
     /* todo: fps support, use of a fuse */
@@ -2097,13 +2097,13 @@ static void t_hit_wall(struct torp *t)
 static void t_wobble(struct torp *t)
 {
 #ifdef STURGEON
-	/* mines spin in a constant position */
-	if (sturgeon && t->t_spinspeed) {
-		t->t_dir = (t->t_dir + t->t_spinspeed) % 256;
-		return;
-	}
+        /* mines spin in a constant position */
+        if (sturgeon && t->t_spinspeed) {
+                t->t_dir = (t->t_dir + t->t_spinspeed) % 256;
+                return;
+        }
 #endif
-	t->t_dir += (random() % 3) - 1;
+        t->t_dir += (random() % 3) - 1;
 }
 
 /* see if there is someone close enough to explode for */
@@ -2111,7 +2111,7 @@ static int t_near(struct torp *t)
 {
         int dx, dy;
         struct player *j;
-        
+
         for (j = firstPlayer; j <= lastPlayer; j++) {
                 if (j->p_status != PALIVE)
                         continue;
@@ -2132,7 +2132,7 @@ static int t_near(struct torp *t)
         }
         return 0;
 }
-    
+
 
 static void t_hit_ship_credit(struct torp *t)
 {
@@ -2181,7 +2181,7 @@ static void udtorps(void)
                         if (t->t_fuse % T_FUSE_SCALE == 0)
                                 if (t->t_turns > 0)
                                         t_track(t);
-                
+
                         /* move the torp, checking for wall hits */
                         t_move(t);
                         if (t_check_wall(t)) {
@@ -2370,7 +2370,7 @@ static void t_explosion(struct torp *torp)
       continue;
 
     /*
-     * Ouch!  
+     * Ouch!
      * Damage the player: */
     if (dist <= EXPDIST * EXPDIST)
       damage = torp->t_damage;
@@ -2395,7 +2395,7 @@ static void t_explosion(struct torp *torp)
 
 #endif
 
-      /* 
+      /*
        * First, check to see if torp owner has started a war.
        * Note that if a player is at peace with the victim, then
        * the torp has caused damage either accidently, or because
@@ -2419,17 +2419,17 @@ static void t_explosion(struct torp *torp)
         j->p_damage += damage;
       }
 
-      /* 
+      /*
        * Check for kill:  */
       if (j->p_damage >= j->p_ship.s_maxdamage) {
-        if ((torp->t_whodet != NODET) 
-            && (torp->t_whodet != j->p_no) 
+        if ((torp->t_whodet != NODET)
+            && (torp->t_whodet != j->p_no)
             && (players[(int)torp->t_whodet].p_team != j->p_team))
           k = player_(torp->t_whodet);
-        else 
+        else
           k = player_(torp->t_owner);
         p_explosion(j, t_whydead(k, torp), k->p_no);
-        if ((k->p_team != j->p_team) || 
+        if ((k->p_team != j->p_team) ||
             ((k->p_team == j->p_team) && (j->p_flags & PFPRACTR)))
         {
           killer_credit(k, j);
@@ -2460,17 +2460,17 @@ static void t_explosion(struct torp *torp)
 
 #endif /* LTD_STATS */
 
-        killmess(j, k, player_(torp->t_owner), 
-                 (k->p_no != torp->t_owner) ? 
-                 ((torp->t_type == TPHOTON) ? KTORP2 : KPLASMA2) 
+        killmess(j, k, player_(torp->t_owner),
+                 (k->p_no != torp->t_owner) ?
+                 ((torp->t_type == TPHOTON) ? KTORP2 : KPLASMA2)
                  : j->p_whydead);
 
-      } 
-    } 
-  } 
-  torp->t_status = TEXPLODE; 
+      }
+    }
+  }
+  torp->t_status = TEXPLODE;
   torp->t_fuse = 10 * T_FUSE_SCALE;
-} 
+}
 
 #ifndef LTD_STATS
 
@@ -2643,7 +2643,7 @@ static void udplanets(void)
 }
 
 
-static void PopPlanet(int plnum) 
+static void PopPlanet(int plnum)
 {
     register struct planet *l;
     int num;
@@ -2776,12 +2776,12 @@ static void udsurrend(void)
             rescue(TERMINATOR, j->p_no);
     }
 
-    /* 
+    /*
      * Bump observers of non-Tmode races to selection screen to choose
      * T mode teams
      */
     for (i = 0, j = &players[0]; i < MAXPLAYER; i++, j++) {
-        if( (j->p_status == POBSERV) && 
+        if( (j->p_status == POBSERV) &&
             (j->p_team != NOBODY) &&
             (realNumShips(j->p_team) < tournplayers) &&
             !j->p_authorised) {
@@ -2819,7 +2819,7 @@ static void udsurrend(void)
                 team_name(t), team_verb(t));
             pmessage(0, MALL, " ", " ");
             surrenderMessage(t);
-            
+
             /* neutralize race t's planets  */
 
             for (i = 0, l = &planets[i]; i < MAXPLANETS; i++, l++) {
@@ -2851,7 +2851,7 @@ static void udsurrend(void)
                     p_explosion(j, KPROVIDENCE, 0);
                 }
             }                   /* end for */
-            
+
         }                       /* end if */
         else {                  /* surrender countdown */
             if ((teams[t].te_surrender % 5) == 0) {
@@ -2884,7 +2884,7 @@ static void udphaser(void)
                 continue;
             case PHMISS:
             case PHHIT2:
-		    /* todo: fps support, use of a fuse */
+                /* todo: fps support, use of a fuse */
                 if (j->ph_fuse-- == 1)
                     j->ph_status = PHFREE;
                 break;
@@ -2959,10 +2959,10 @@ static void teamtimers(void)
 }
 
 
-/* 
- * Have planet(s) do damage to player j.  
+/*
+ * Have planet(s) do damage to player j.
  * This is some of the more inefficient code in the game.  If you really
- * need cycles, change the code to have planets only attack ships that are 
+ * need cycles, change the code to have planets only attack ships that are
  * in orbit.
  */
 static void pldamageplayer(struct player *j)
@@ -2993,9 +2993,9 @@ static void pldamageplayer(struct player *j)
       continue;
     if (dx*dx + dy*dy > PFIREDIST*PFIREDIST)
       continue;
-    
+
     damage = l->pl_armies / 10 + 2;
-    
+
     if (j->p_flags & PFSHIELD) {
       j->p_shield -= damage;
       if (j->p_shield < 0) {
@@ -3058,7 +3058,7 @@ static void plrescue(struct planet *l)
           tm_robots[l->pl_owner] <= 0) {
 
         rescue(l->pl_owner, NotTmode);
-	/* todo: fps support, use of a fuse */
+        /* todo: fps support, use of a fuse */
         tm_robots[l->pl_owner] = (1800 + (random() % 1800)) / TEAMFUSE;
       }
     }
@@ -3078,7 +3078,7 @@ static void plfight(void)
     if (l->pl_flags & PLCOUP) {
       l->pl_flags &= ~PLCOUP;
       sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
-      pmessage(l->pl_owner, MTEAM | MCOUP1, addrbuf, 
+      pmessage(l->pl_owner, MTEAM | MCOUP1, addrbuf,
                "Planet lost in political struggle");
       l->pl_owner = (l->pl_flags & ALLTEAM);
       l->pl_armies = 4;
@@ -3096,7 +3096,7 @@ static void plfight(void)
       continue;
 
     pldamageplayer(j);
-    
+
     /* do bombing */
     if ((!(j->p_flags & PFORBIT)) || (!(j->p_flags & PFBOMB)))
       continue;
@@ -3113,14 +3113,14 @@ static void plfight(void)
     if (pl_warning[j->p_planet] <= 0)
     {
       /* todo: fps support, use of a fuse */
-      pl_warning[j->p_planet] = 50/PLFIGHTFUSE; 
+      pl_warning[j->p_planet] = 50/PLFIGHTFUSE;
       (void) sprintf(buf, "%-3s->%-3s",
                      l->pl_name, teamshort[l->pl_owner]);
       arg[0] = DMBOMB; /* type */
       arg[1] = j->p_no;
       arg[2] =(100*j->p_damage)/(j->p_ship.s_maxdamage)  ;
       arg[3] = l->pl_no;
-      pmessage(l->pl_owner, MTEAM | MBOMB, buf, 
+      pmessage(l->pl_owner, MTEAM | MBOMB, buf,
                "We are being attacked by %s %s who is %d%% damaged.",
                j->p_name,
                j->p_mapchars,
@@ -3128,15 +3128,15 @@ static void plfight(void)
       (void) sprintf(buf, "%-3s->%-3s",
                      l->pl_name, teamshort[l->pl_owner]);
     }
-    
+
     /* start the war (if necessary) */
     j->p_swar |= l->pl_owner;
-    
+
     rnd = random() % 100;
     if (rnd < 50) {
       continue;
-    } 
-    
+    }
+
     if (rnd < 80)
       ab = 1;
     else if (rnd < 90)
@@ -3248,7 +3248,7 @@ static void beam(void)
                     continue;
                 if (j->p_war & l->pl_owner)
                     continue;
-            } 
+            }
 
             j->p_armies++;
             if (j->p_flags & PFORBIT) {
@@ -3267,7 +3267,7 @@ static void beam(void)
 #ifdef LTD_STATS
                 ltd_update_armies_carried(j, base);
 #endif
- 
+
             }
 
             continue;
@@ -3342,7 +3342,7 @@ static void beam(void)
                             {
                                 j->p_stats.st_tplanets++;
                                 status->planets++;
-                                if ((l->pl_flags & PLCORE) && 
+                                if ((l->pl_flags & PLCORE) &&
                                   !(j->p_team & l->pl_flags) &&
                                   (realNumShips(ALLTEAM & l->pl_flags)>2))
                                 {
@@ -3361,9 +3361,9 @@ static void beam(void)
                                 "%s destroyed by %s",
                                 l->pl_name,
                                 j->p_longname);
-                            if (status->tourn && 
+                            if (status->tourn &&
                                   realNumShips(l->pl_owner) < 2 &&
-                                  realNumShips(l->pl_flags & 
+                                  realNumShips(l->pl_flags &
                                     (FED|ROM|ORI|KLI)) < 2) {
                                 l->pl_flags |= PLCHEAP;
                                 /* Next person to take this planet will */
@@ -3412,7 +3412,7 @@ static void beam(void)
                             j->p_stats.st_tplanets++;
                             status->planets++;
 #endif /* NEW_CREDIT */
-                            if ((l->pl_flags & PLCORE) && 
+                            if ((l->pl_flags & PLCORE) &&
                               !(j->p_team & l->pl_flags) &&
                               (realNumShips(ALLTEAM & l->pl_flags)>2)) {
 #ifdef NEW_CREDIT
@@ -3512,7 +3512,7 @@ static void beam(void)
 
 #ifndef LTD_STATS
 
-                    if (status->tourn && l->pl_armies < 4 && 
+                    if (status->tourn && l->pl_armies < 4 &&
                           j->p_ship.s_type!=STARBASE) {
                         j->p_stats.st_tarmsbomb+=(4 - l->pl_armies);
                         status->armsbomb+=(4 - l->pl_armies);
@@ -3546,7 +3546,7 @@ static void beam(void)
 #ifdef LTD_STATS
                     ltd_update_armies_ferried(j, base);
 #endif /* LTD_STATS */
-                        
+
                 }
             }
         }
@@ -3573,8 +3573,8 @@ static void blowup(struct player *sh)
             continue;
         if ((me->p_whydead == KQUIT) && (friendlyPlayer(j)))
             continue;
-        /* isae -- nuked/ejected players do no damage */ 
-        if ((me->p_whydead == KGHOST) || (me->p_whydead == KPROVIDENCE)) 
+        /* isae -- nuked/ejected players do no damage */
+        if ((me->p_whydead == KGHOST) || (me->p_whydead == KPROVIDENCE))
           /* ghostbusted ships do no damage 7/19/92 TC */
             continue;
         dx = sh->p_x - j->p_x;
@@ -3629,7 +3629,7 @@ static void blowup(struct player *sh)
                 if ((j->p_no != sh->p_whodead) && (j->p_team != players[sh->p_whodead].p_team)
                     && (sh->p_whydead == KSHIP ||  sh->p_whydead == KTORP ||
                         sh->p_whydead == KPHASER || sh->p_whydead == KPLASMA))
-                  k = &players[sh->p_whodead]; 
+                  k = &players[sh->p_whodead];
                 else
                   k = sh;
                 if (k->p_no != sh->p_no)
@@ -3736,7 +3736,7 @@ static void exitDaemon(int sig)
     if(pucksem_id != -1)
         if (semctl(pucksem_id, 0, IPC_RMID, pucksem_arg) == -1)
           ERROR(1,("daemon: cannot remove puck semaphore"));
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 
     switch(sig){
         case SIGSEGV:
@@ -3909,7 +3909,7 @@ static int checkwin(struct player *winner)
         team[1<<i] = 0;
         teams[1<<i].te_plcount = 0;
     }
-    
+
     /* count the number of home systems owned by one team */
     for (i = 0; i < 4; i++) {
         teamtemp[NOBODY] = teamtemp[FED] = teamtemp[ROM] = teamtemp[KLI] =
@@ -4016,7 +4016,7 @@ static void saveplayer(struct player *victim)
 
     fd = open(PlayerFile, O_WRONLY, 0644);
     if (fd >= 0) {
-        lseek(fd, victim->p_pos * sizeof(struct statentry) + 
+        lseek(fd, victim->p_pos * sizeof(struct statentry) +
               offsetof(struct statentry, stats), SEEK_SET);
         write(fd, (char *) &victim->p_stats, sizeof(struct stats));
         close(fd);
@@ -4025,10 +4025,10 @@ static void saveplayer(struct player *victim)
 
 /* NBT 2/20/93 */
 
-static char *whydeadmess[] = { 
-  " ", 
+static char *whydeadmess[] = {
+  " ",
   "[quit]",            /* KQUIT        */
-  "[photon]",          /* KTORP        */   
+  "[photon]",          /* KTORP        */
   "[phaser]",          /* KPHASER      */
   "[planet]",          /* KPLANET      */
   "[explosion]",       /* KSHIP        */
@@ -4078,7 +4078,7 @@ static void killmess(struct player *victim, struct player *credit_killer,
         arg[4] = victim->p_armies;
         arg[5] = whydead;
         if (inl_mode) {
-            pmessage(0, MALL | MKILL, "GOD->ALL", 
+            pmessage(0, MALL | MKILL, "GOD->ALL",
                 "%s {%s} was kill %s for %s {%s} %s",
                  victim->p_longname,
                  shiptypes[victim->p_ship.s_type],
@@ -4087,7 +4087,7 @@ static void killmess(struct player *victim, struct player *credit_killer,
                  shiptypes[k->p_ship.s_type],
                  why);
         } else {
-            pmessage(0, MALL | MKILL, "GOD->ALL", 
+            pmessage(0, MALL | MKILL, "GOD->ALL",
                 "%s was kill %s for %s %s",
                  victim->p_longname,
                  kills,
@@ -4130,7 +4130,7 @@ static void killmess(struct player *victim, struct player *credit_killer,
                    why);
         }
         if(k != credit_killer){
-            pmessage(0, MALL | MKILLA, "GOD->ALL", 
+            pmessage(0, MALL | MKILLA, "GOD->ALL",
                 "Credit for %s+%d arm%s awarded to %s, kill %0.2f",
                        victim->p_mapchars,
                        victim->p_armies,
@@ -4140,7 +4140,7 @@ static void killmess(struct player *victim, struct player *credit_killer,
         }
 
         /*
-         * Auto-doosher: 
+         * Auto-doosher:
          * Will send a message to all when a player is killed with
          * armies. Where did 'doosh' come from?  2/19/93 NBT
          */
@@ -4155,7 +4155,7 @@ static void killmess(struct player *victim, struct player *credit_killer,
         }
     }
     if (recreational_dogfight_mode) {
-        pmessage(0, MALL, "GOD->ALL", 
+        pmessage(0, MALL, "GOD->ALL",
             "WINNER: %s (%s) Shields: %d%%   Damage: %d%%   Fuel: %d%%",
                 k->p_name,
                 k->p_mapchars,
@@ -4309,9 +4309,9 @@ static void addTroops(int loser, int winner)
     if (count<6 && (random() % count)==0) return;
     /* Always give armies if 6+ defenders */
     sprintf(addrbuf, "GOD->%s ", teamshort[winner]);
-    pmessage(winner, MTEAM, addrbuf, 
+    pmessage(winner, MTEAM, addrbuf,
         "The recent victory has boosted enrollment!");
-    for (i=0; i<MAXPLANETS; i++) { 
+    for (i=0; i<MAXPLANETS; i++) {
         if (planets[i].pl_owner==winner) {
             planets[i].pl_armies+=random() % (2*count);
         }
@@ -4437,7 +4437,7 @@ static void displayBest(FILE *conqfile, int team, int type)
             armies=j->p_armsbomb;
         }
         for (k = 0; k < number; k++) {
-            if (30 * winners[k].planets + winners[k].armies < 
+            if (30 * winners[k].planets + winners[k].armies <
                 30 * planets + armies) {
                 /* insert person at location k */
                 break;
@@ -4455,7 +4455,7 @@ static void displayBest(FILE *conqfile, int team, int type)
     }
     for (k=0; k < number; k++) {
         if (winners[k].planets != 0 || winners[k].armies != 0) {
-            sprintf(buf, "  %16s (%2.2s) with %d planets and %d armies.", 
+            sprintf(buf, "  %16s (%2.2s) with %d planets and %d armies.",
                 winners[k].name, winners[k].mapchars, winners[k].planets, winners[k].armies);
             pmessage(0, MALL | MCONQ, " ",buf);
             fprintf(conqfile, "  %s\n", buf);
@@ -4521,39 +4521,32 @@ static void signal_puck(void)
     int i;
     struct player *j;
     int puckwait = 0;
-    
+
     for (i = 0, j = players; i < MAXPLAYER; i++, j++)
         if (j->p_status != PFREE && j->w_queue == QU_ROBOT &&
-            strcmp(j->p_name, "Puck") == 0) 
-        { 
+            strcmp(j->p_name, "Puck") == 0) {
             /* Set semaphore to 0 in case there are multiple pucks. Yuck. */
             if (pucksem_id != -1 &&
-                semctl(pucksem_id, 0, SETVAL, pucksem_arg) == -1) 
-            {
+                semctl(pucksem_id, 0, SETVAL, pucksem_arg) == -1) {
                 perror("signal_puck semctl");
                 pucksem_id = -1;
                 /* are there any errors that would 'fix themselves?' */
             }
-            if (alarm_send(j->p_process) < 0) 
-            {
-                if (errno == ESRCH) 
-                {
+            if (alarm_send(j->p_process) < 0) {
+                if (errno == ESRCH) {
                     ERROR(1,("daemon/signal_puck: slot %c missing\n", slot_char(i)));
                     freeslot(j);
                 }
-            }
-            else if (pucksem_id != -1) 
-            {
+            } else if (pucksem_id != -1) {
                 puckwait = 1;
             }
         }
-    
-    if (puckwait)
-    {
+
+    if (puckwait) {
         semop(pucksem_id, pucksem_op, 1);
     }
 }
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 
 static void signal_servers(void)
 {
@@ -4572,7 +4565,7 @@ static void signal_servers(void)
             strcmp(j->p_name, "Puck") == 0) {
             continue;
         }
-#endif /*PUCK_FIRST*/
+#endif /* PUCK_FIRST */
 
         t = j->p_fpu;
         if (!t) t = 5; /* paranoia */
