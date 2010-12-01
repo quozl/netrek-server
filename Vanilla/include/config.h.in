@@ -415,6 +415,13 @@ only if you have no intention of retaining stats on the server for pickup */
 				robots to be refitted into SBs */
 #undef ALLOW_PRACTICE_ROBOT_SB
 
+                                /* CARRY_STATUS_SHOW_ALL - show carry status
+                                on a '?' query to all players, not just those
+                                on the queried player's team (note that this
+                                creates an information leak as it allows the
+                                other team to see if a player is NOPICKed) */
+#undef CARRY_STATUS_SHOW_ALL
+
 #endif		/* SERVER */
 
 

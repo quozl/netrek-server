@@ -525,7 +525,6 @@ int bounceSessionStats(int from)
                                    deltaTicks;
     char                           bufPlanets[8], bufBombing[8],
                                    bufOffense[8], bufDefense[8];
-    char                           msgbuf[32];
 
 #ifdef LTD_STATS
 
@@ -583,7 +582,11 @@ int bounceSessionStats(int from)
          bufDefense,
          (float) deltaKills /
          (float) ((deltaLosses == 0) ? 1 : deltaLosses));
-    godf(from, "Carry status: %s", me->p_no_pick ? "prohibited" : "permitted");
+#ifndef CARRY_STATUS_SHOW_ALL
+    if (players[from].p_team == me->p_team)
+#endif
+        if (me->p_no_pick)
+            god(from, "Carry status: Prohibited");
     return 1;
 }
 
