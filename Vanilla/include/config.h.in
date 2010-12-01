@@ -212,6 +212,10 @@
                                                      at login */
 #define SHOW_RSA
 
+                                /* SHOW_RSA_FAILURE   - Display RSA failures
+                                                        at login */
+#undef SHOW_RSA_FAILURE
+
                                 /* SHORT_THRESHOLD - For Short Packets */
 #undef SHORT_THRESHOLD
 
