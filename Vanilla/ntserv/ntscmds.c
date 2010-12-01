@@ -33,7 +33,10 @@
 #include "packets.h"
 #include "genspkt.h"
 
-#define EXPERIMENTAL_BE
+/* Enable to allow BE support to move players between slots; disabled by
+   default as the code is experimental and may cause problems with certain
+   clients */
+#undef EXPERIMENTAL_BE
 
 void do_player_eject(int who, int player, int mflags, int sendto);
 void do_player_ban(int who, int player, int mflags, int sendto);
