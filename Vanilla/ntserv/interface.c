@@ -173,7 +173,7 @@ void beam_up(void)
 	}
     }
     if (me->p_no_pick) {
-        new_warning(UNDEF,"Your team does not permit you to beam up armies");
+        new_warning(UNDEF,"Your team has banned you from beaming up armies");
         return;
     }
     me->p_flags |= PFBEAMUP;
