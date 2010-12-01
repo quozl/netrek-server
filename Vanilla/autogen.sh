@@ -18,7 +18,8 @@ if [ ! -f config.sub ]; then
 fi
 autoconf
 if [ -d res-rsa ]; then
-    cd res-rsa && autoconf && cd ..
+    cd res-rsa && autoconf
+    cd ..
 fi
 cd tools/admin && chmod +x `grep ^EXECS Makefile.in | cut -d '=' -f 2` && cd ../..
 
