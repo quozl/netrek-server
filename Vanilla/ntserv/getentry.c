@@ -61,8 +61,8 @@ static char *tip_select() {
       "You died with armies but without ever beaming them down.\n"
       "The armies are dead, and you lost your kills.\n \n"
       "Let your team know that you are carrying, and they may be able to\n"
-      "protect you.  This depends on how good you seem to them.  Try to\n"
-      "avoid battle when you have armies on board unless as a last resort.\n \n"
+      "protect you.  This depends on how good you seem to them.  Battle\n"
+      "other ships with caution when you have armies on board!\n \n"
       "Keys: F (announce carrying armies) Control-T (taking to a planet)";
   }
 
@@ -70,8 +70,8 @@ static char *tip_select() {
     // FIXME: only if kept kills for a reasonable time
     tip = "Learn how to carry.\n \n"
       "You died with kills but without ever beaming up armies.\n"
-      "Your kills are lost, you will have to get them again.\n \n"
-      "Once you feel you can get to an enemy planet either undetected or\n"
+      "Your kills are lost, but you can always get more kills.\n \n"
+      "Once you feel you can get to an enemy planet either unchallenged or\n"
       "with an escort, and especially once you have the confidence of your\n"
       "team, it is time to learn how to make use of the kills to take planets.\n \n"
       "Get a kill, fly to one of your planets with spare armies, beam them up,\n"
@@ -97,7 +97,7 @@ static char *tip_select() {
       "You have not yet learned how to lower your shields.\n \n"
       "Your shields are the ring around your ship, and they protect you\n"
       "from attack until they are damaged.\n \n"
-      "Flying with your shields up costs more than having them down,\n"
+      "Flying with your shields up costs more fuel than having them down,\n"
       "but remember to put them up when you are under attack.\n \n"
       "Keys: s u\n";
   }
@@ -123,6 +123,7 @@ static char *tip_select() {
 
   /* detect non-moving death */
   if (me->p_speed == 0 && me->p_whydead == KTORP) {
+	// FIXME: Don't issue this message if the torps were detted
     tip = "You died to an enemy torpedo while not moving,\n"
       "so you had no way to dodge.\n \n"
       "Next time, always keep moving when an enemy is nearby,\n \n"
