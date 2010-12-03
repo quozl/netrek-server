@@ -68,7 +68,6 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
     if ((address.s_addr = inet_addr(server)) == -1) {
 	if ((hp = gethostbyname(server)) == NULL) {
 	    ERROR(1,("I don't know any %s!\n", server));
-	    exit(1);
 	} else {
 	    address.s_addr = *(LONG *) hp->h_addr;
 	}
