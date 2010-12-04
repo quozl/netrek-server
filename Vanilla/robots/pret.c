@@ -495,10 +495,8 @@ static void stop_this_bot(struct player *p, char *why)
 {
     char msg[16];
 
-    p->p_ship.s_type = STARBASE;
     p->p_whydead = KQUIT;
-    p->p_explode = 10;
-    p->p_status = PEXPLODE;
+    p->p_status = PDEAD;
     p->p_whodead = 0;
     snprintf(msg, 16, "%s->ALL", roboname);
 
