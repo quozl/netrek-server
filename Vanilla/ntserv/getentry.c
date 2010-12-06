@@ -440,7 +440,8 @@ void getEntry(int *team, int *stype)
 
 static int tournamentMask(int team, int queue)
 {
-    int mask = queues[queue].tournmask;
+    int origmask = queues[queue].tournmask;
+    int mask = origmask;
     int large[2] = {0, 0};
     int count[NUMTEAM];
     int i;
@@ -462,13 +463,13 @@ static int tournamentMask(int team, int queue)
         return ALLTEAM;
     /* df_galaxy set - permit all teams */
     if (recreational_dogfight_mode)
-	return ALLTEAM;
+        return ALLTEAM;
     /* Chaos or topgun mode */
     if (chaos || topgun)
-        return mask;
+        return origmask;
     /* Queue with no restrictions */
     if (!(queues[queue].q_flags & QU_RESTRICT))
-        return queues[queue].tournmask;
+        return origmask;
 
     /* Find the two largest teams, include bots in the count if in
        pre-T mode */
@@ -498,7 +499,7 @@ static int tournamentMask(int team, int queue)
        old team and disallow the two largest teams (may overlap)
        Return early so we can't diagonal-mask out all 4 teams */
     if (deadTeam(team)) {
-        mask &= ~team;
+        mask = origmask & ~team;
         mask &= ~(1 << large[0]);
         mask &= ~(1 << large[1]);
         return mask;
