@@ -43,13 +43,27 @@ int debug=0;
 /* taken to ensure that the bot name does not exceed 5 characters.  If the */
 /* desired name is larger than 5 chars the message routines will need to   */
 /* have their formatting and contents corrected */
+#ifdef CHRISTMAS
+char *roboname = "Santa";
+#else
 char *roboname = "Kathy";
+#endif
 
+#ifdef CHRISTMAS
+#define NUMNAMES        9
+#else
 #define NUMNAMES        20
+#endif
 
 /* borrowed from daemon.c until we find a better place */
 #define PLAYERFUSE      1
 
+#ifdef CHRISTMAS
+static char    *names[NUMNAMES] =
+{"Rudolph",     "Dasher",      "Dancer",
+ "Prancer",     "Vixen",       "Comet",
+ "Cupid",       "Donner",      "Blitzen"};
+#else
 static char    *names[NUMNAMES] =
 {"Annihilator", "Banisher",    "Blaster",
  "Demolisher",  "Destroyer",   "Eliminator",
@@ -58,6 +72,7 @@ static char    *names[NUMNAMES] =
  "Shredder",    "Vanquisher",  "Wrecker",
  "Ravager",     "Despoiler",   "Abolisher",
  "Emasculator", "Decimator"};
+#endif
 
 static  char    hostname[64];
 

@@ -76,6 +76,10 @@ that can change the server.
 	ALLOW_PRACTICE_ROBOT_SB	- allows practice robots to be refit into
 				  starbases if defined.
 
+	CHRISTMAS	- replace pre-t bot names; Kathy becomes Santa and the
+			  other bots are replaced with the names of the 9
+			  reindeer.
+
 2) .sysdef parameters:
 
 	All parameters follow the rule: <PARAM> <VALUE>

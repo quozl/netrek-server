@@ -422,6 +422,12 @@ only if you have no intention of retaining stats on the server for pickup */
                                 other team to see if a player is NOPICKed) */
 #undef CARRY_STATUS_SHOW_ALL
 
+                                /* CHRISTMAS - replace Kathy with Santa and
+                                replace standard bot names with the names of
+                                the nine reindeer */
+#undef CHRISTMAS
+
+
 #endif		/* SERVER */
 
 
