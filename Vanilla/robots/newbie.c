@@ -538,7 +538,11 @@ static void stop_this_bot(struct player *p)
     p->p_whodead=0;
 
     pmessage(0, MALL, "Merlin->ALL", 
+#ifdef CHRISTMAS
+        "Reindeer %s (%2s) was ejected to make room for a human player.",
+#else
         "Robot %s (%2s) was ejected to make room for a human player.",
+#endif
         p->p_name, p->p_mapchars);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
 }

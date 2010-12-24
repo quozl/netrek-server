@@ -516,7 +516,11 @@ static void stop_this_bot(struct player *p, char *why)
     snprintf(msg, 16, "%s->ALL", roboname);
 
     pmessage(0, MALL, msg,
+#ifdef CHRISTMAS
+             "Reindeer %s (%2s) was ejected%s",
+#else
              "Robot %s (%2s) was ejected%s",
+#endif
              p->p_name, p->p_mapchars, why);
     if ((p->p_status != POBSERV) && (p->p_armies>0)) save_armies(p);
 }

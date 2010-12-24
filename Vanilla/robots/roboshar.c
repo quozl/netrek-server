@@ -61,13 +61,25 @@ void warning(char *mess)
 void robonameset(struct player *myself)
 {
 
+#ifdef CHRISTMAS
+    (void) strncpy(myself->p_login, "Claus", sizeof (myself->p_login));
+#else
     (void) strncpy(myself->p_login, "Robot", sizeof (myself->p_login));
+#endif
     myself->p_login[sizeof(myself->p_login) - 1] = '\0';
+#ifdef CHRISTMAS
+    (void) strncpy(myself->p_monitor, "workshop1.npole", sizeof(myself->p_monitor));
+#else
     (void) strncpy(myself->p_monitor, "Nowhere", sizeof(myself->p_monitor));
+#endif
     myself->p_monitor[sizeof(myself->p_monitor) - 1] = '\0';
 
     /* repeat "Nowhere" for completeness 4/13/92 TC */
+#ifdef CHRISTMAS
+    (void) strncpy(myself->p_full_hostname, "workshop1.npole",
+#else
     (void) strncpy(myself->p_full_hostname, "Nowhere",
+#endif
 		   sizeof(myself->p_full_hostname));
     myself->p_full_hostname[sizeof(myself->p_full_hostname) - 1] = '\0';
 }

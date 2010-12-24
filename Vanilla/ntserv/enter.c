@@ -177,7 +177,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	lastteam=tno;
 	sprintf(addrbuf, " %s->ALL", me->p_mapchars);
 	if ((tno == 4) &&
-	    (strcmp(me->p_monitor, "Nowhere") == 0) &&
+	    ((strcmp(me->p_monitor, "Nowhere") == 0) ||
+	    (strcmp(me->p_monitor, "workshop1.npole") == 0)) &&
 	    (strcmp(me->p_name, "Kathy") != 0) &&
 	    (strcmp(me->p_name, "Santa") != 0)) {
 	    /* change 5/10/91, 8/28/91 TC */
