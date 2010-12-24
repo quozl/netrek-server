@@ -178,11 +178,8 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
 	sprintf(addrbuf, " %s->ALL", me->p_mapchars);
 	if ((tno == 4) &&
 	    (strcmp(me->p_monitor, "Nowhere") == 0) &&
-#ifdef CHRISTMAS
+	    (strcmp(me->p_name, "Kathy") != 0) &&
 	    (strcmp(me->p_name, "Santa") != 0)) {
-#else
-	    (strcmp(me->p_name, "Kathy") != 0)) {
-#endif
 	    /* change 5/10/91, 8/28/91 TC */
 	    time_t curtime;
 	    struct tm *tmstruct;
