@@ -235,3 +235,7 @@ char *getdefault();
 
 /* define this if you do not wish the bots to respond to commands */
 #undef	BOTS_IGNORE_COMMANDS
+
+/* redefine this to your local robot password */
+#error REMOVE/COMMENT OUT this line and set ROBOTPASS in defs.h to a unique password
+#define ROBOTPASS "CHANGEME"
