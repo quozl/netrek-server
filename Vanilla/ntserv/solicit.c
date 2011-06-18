@@ -278,11 +278,11 @@ void solicit(int force)
      this fixes the problem of the server sticking around post-game
      due to player slots remaining in the game */
   if (inl_mode) {
-    int h, k;
+    int h;
     struct player *j;
     int captains = 0;
 
-    for (h = 0, j = &players[0], k = 0; h < MAXPLAYER; h++, j++) {
+    for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
       if (j->p_inl_captain && (j->p_status != PFREE))
         captains++;
     }

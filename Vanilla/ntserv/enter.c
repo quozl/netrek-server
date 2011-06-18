@@ -72,7 +72,10 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     static int lastteam= -1;
     static int lastrank= -1;
     char addrbuf[10];
-    int i, join;
+    int i;
+#ifdef DNSBL_CHECK
+    int join;
+#endif
 
     /* Use local variables, not the globals */
     struct player *me = &players[pno], *j;
@@ -82,7 +85,9 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     strncpy(me->p_name, name, NAME_LEN);
     me->p_name[NAME_LEN - 1] = '\0';
     getship(myship, s_type);
+#ifdef DNSBL_CHECK
     join = (lastteam == -1);
+#endif
 
 #ifdef STURGEON
     if (sturgeon) sturgeon_hook_enter(me, s_type, tno);
@@ -283,7 +288,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
           }
 #endif
       }
-#endif
+#endif /* DNSBL_CHECK */
 	}
 
 	lastrank = mystats->st_rank;

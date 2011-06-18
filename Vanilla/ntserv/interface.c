@@ -502,14 +502,12 @@ static void sendwarn(char *string, int atwar, int team)
 void do_refit(int type)
 {	
     int i=0;
-    float playerOffense, playerDefense, damageFactor;
+    float playerOffense, damageFactor;
 
 #ifdef LTD_STATS
     playerOffense = ltd_offense_rating(me);
-    playerDefense = ltd_defense_rating(me);
 #else
     playerOffense = offenseRating(me);
-    playerDefense = defenseRating(me);
 #endif
 
     if (type<0 || type>ATT) return;

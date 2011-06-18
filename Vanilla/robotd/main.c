@@ -357,7 +357,11 @@ main(argc, argv)
    if(password[0])
       renter(pseudo, password, login);
    else
+#ifdef ROBOTPASS
       renter(pseudo, ROBOTPASS, login);
+#else
+      renter(pseudo, "p\001", login);
+#endif
    /* FLAW: cannot send an empty password */
 
    mprintf("\n");

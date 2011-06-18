@@ -205,15 +205,13 @@ void getEntry(int *team, int *stype)
 {
     int i;
     int switching = -1;		/* confirm switches 7/27/91 TC */
-    float playerOffense, playerDefense;
+    float playerOffense;
 
 #ifdef LTD_STATS
     playerOffense = ltd_offense_rating(me);
-    playerDefense = ltd_defense_rating(me);
     sendLtdPacket();
 #else
     playerOffense = offenseRating(me);
-    playerDefense = defenseRating(me);
 #endif
     tips();
 

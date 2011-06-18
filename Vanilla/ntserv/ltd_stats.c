@@ -1236,12 +1236,11 @@ int ltd_can_rank(struct player *p) {
 
   /* This is the old-style COMPAT mode ranking system */
 
-  float offense_rating, defense_rating, bombing_rating, planet_rating;
+  float offense_rating, bombing_rating, planet_rating;
   float total_rating, total_hours, total_di, required_di;
   int rank, nextrank;
 
   offense_rating = ltd_offense_rating(p);
-  defense_rating = ltd_defense_rating(p);
   bombing_rating = ltd_bombing_rating(p);
   planet_rating = ltd_planet_rating(p);
   total_rating = offense_rating + bombing_rating + planet_rating;

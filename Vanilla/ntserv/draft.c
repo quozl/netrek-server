@@ -392,7 +392,7 @@ static void inl_draft_assign_to_pool(struct player *j)
 
 void inl_draft_begin()
 {
-  int h, i;
+  int h;
   struct player *j;
 
   status->gameup &= ~GU_INL_DRAFTED;
@@ -402,7 +402,7 @@ void inl_draft_begin()
   context->inl_home_pick = 0;
   context->inl_away_pick = 0;
 
-  for (h = 0, i = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+  for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
     if (inl_draft_ignore(j)) continue;
     j->p_desspeed = 0;
     bay_release(j);
@@ -413,7 +413,7 @@ void inl_draft_begin()
     inl_draft_assign_to_pool(j);
     inl_draft_place(j);
   }
-  
+
   status->gameup |= GU_INL_DRAFTING;
   pmessage(0, MALL, "GOD->ALL", "The captains have agreed to hold a draft.");
 }
