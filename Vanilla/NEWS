@@ -1,3 +1,17 @@
+2.18.0: released 2011-06-18
+
+  by Karthik Arumugham, John R. Dennison, and James Cameron.
+
+  * Christmas holiday theme for robots,
+  * Revise tips,
+  * Fix inability to rejoin after a timercide,
+  * Stop ejected pre-t bots from damaging players,
+  * NOPICK team vote and related support, carrying status query,
+  * Remove ONCHECK
+  * SELF_RESET/RESETGALAXY cleanup
+  * Add additional offense restrictions
+  * remove many conditionals
+
 2.17.0: released 2010-09-02
 
   * better describe need for define for newbie server

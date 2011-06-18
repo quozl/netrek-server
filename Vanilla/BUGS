@@ -1,3 +1,11 @@
+<Gerdesas> I must say I don't concur with some of these changes.  "Your
+team has prohibited you beaming up" is not concise for new players;
+there is no rhyme nor reason to parts of the code base that use
+TRUE/FALSE and those that do not.  TRUE and FALSE make for more readable
+code and on top of that there was no such review push for my original
+work on this that added TRUE/FALSE to other files.  TRUE/FALSE
+<Gerdesas> should be defined in in a top-level include, also.
+
 
 List of things that are defects
 
