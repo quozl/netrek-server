@@ -5,13 +5,6 @@ AC_INIT(ntserv/daemon.c)
 AC_CONFIG_HEADER(include/config.h)
 AC_PREFIX_DEFAULT("/usr/local/games/netrek-server-vanilla")
 
-#----------------------------------------------------
-#	For which code are we checking? (server, cow)
-#----------------------------------------------------
-
-code=server
-AC_DEFINE(SERVER)
-
   # default the prefix
   if test "x$prefix" = "xNONE"; then
     prefix=${ac_default_prefix}
