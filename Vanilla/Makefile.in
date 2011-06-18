@@ -37,7 +37,7 @@ depend: system.mk
 		(cd res-rsa; $(MAKE) depend) \
 	fi
 
-null: 
+null:
 	touch null
 	$(MAKE) depend
 
@@ -60,22 +60,22 @@ do_server: null do_rsa_library
 do_robots: do_library
 	cd robots; $(MAKE)
 
-do_robotd: 
+do_robotd:
 	cd robotd; $(MAKE)
 
 do_xsg: do_library
 	cd xsg; $(MAKE);
 
 do_pledit: do_library
-	cd pledit; $(MAKE) 
+	cd pledit; $(MAKE)
 
-do_rsa_library:	
+do_rsa_library:
 	-@if [ -f res-rsa/Makefile ]; then \
 		(cd res-rsa; $(MAKE) librsa.a) \
 	fi
 
 do_utilities: do_rsa_library do_library
-	cd tools; $(MAKE) 
+	cd tools; $(MAKE)
 	cd sequencer; $(MAKE)
 
 do_rsa_utilities: do_library
@@ -179,10 +179,10 @@ dist:
 	cp -p BUGS PROJECTS $(NAME)/
         # top level documentation
 	cp -p INSTALL INSTALL.INL INSTALL.Newbie README \
-	README.developers README.releasing CHANGES EXAMPLE $(NAME)/
+	README.developers README.releasing CHANGES $(NAME)/
         # configuration
 	cp -p configure.in Makefile.in system.mk.in configure config.sub \
-	config.guess install-sh $(NAME)/
+	config.guess install-sh lt-main.sh $(NAME)/
         # subdirectories
 	cp -rp docs include keycomp motd newstartd ntserv php \
 	pledit robotd robots sequencer tools xsg $(NAME)/
@@ -195,7 +195,7 @@ dist:
         # packaging subdirectories (rpm)
 	cp -rp rpm $(NAME)/
         # strip out surplus
-	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS 
+	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS
 	rm -rf $(NAME)/.cvsignore $(NAME)/*/.cvsignore
 	rm -rf $(NAME)/*/.deps $(NAME)/*~ $(NAME)/*/*~
         # build
@@ -223,7 +223,7 @@ dist-minimal:
         # packaging subdirectories (rpm)
 	cp -rp rpm $(NAME)-minimal/
         # strip out surplus
-	rm -rf $(NAME)-minimal/*/CVS $(NAME)-minimal/*/*/CVS 
+	rm -rf $(NAME)-minimal/*/CVS $(NAME)-minimal/*/*/CVS
 	rm -rf $(NAME)-minimal/.cvsignore $(NAME)-minimal/*/.cvsignore
 	rm -rf $(NAME)-minimal/*/.deps $(NAME)-minimal/*~ $(NAME)-minimal/*/*~
         # build
