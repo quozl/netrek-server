@@ -182,7 +182,7 @@ dist:
 	README.developers README.releasing CHANGES $(NAME)/
         # configuration
 	cp -p configure.in Makefile.in system.mk.in configure config.sub \
-	config.guess install-sh lt-main.sh $(NAME)/
+	config.guess install-sh ltmain.sh aclocal.m4 $(NAME)/
         # subdirectories
 	cp -rp docs include keycomp motd newstartd ntserv php \
 	pledit robotd robots sequencer tools xsg $(NAME)/
