@@ -11,7 +11,6 @@
 ################################################################################
 */
 
-#undef COW
 #undef SERVER
 
 #undef STABLE
@@ -41,104 +40,6 @@
 				/* DEBUG   	   - Various useful debugging 
 						     stuff.  No signal trap */
 #undef  DEBUG
-
-/* 
-   ------------------------------------------------------------
-	 	COW only defines
-   ------------------------------------------------------------
-*/
-#ifdef COW
-
-/*	NBT 			- Nick trown's macro code			*/
-#define NBT
-
-/*	MAXPLAYER		- Maximal number of players + observers	     */
-/*                                REMOVED from config.h.in due to redundancy */
-/*                                Look for it in ntserv/defs.h               */
-
-/*	CORRUPTED_PACKETS 	- prevents some seg faults but verbose output	*/
-#define CORRUPTED_PACKETS
-
-/*	EXPIRE=#      		- number of days this version will work for	*/
-#ifndef STABLE
-#define EXPIRE 365
-#endif
-
-/*	ARMY_SLIDER   		- some sort of funky status window thing	*/
-#define ARMY_SLIDER
-
-/*	META          		- show active servers via metaserver - NBT	*/
-#define META
-
-/*	PACKET_LOG    		- log packets to stdout (for bandwith measurement) */
-#define PACKET_LOG
-
-/*	NEWMACRO 		- newmacro language				*/
-#define NEWMACRO 
-
-/*	SMARTMACRO 		- macro extension (needs NEWMACRO)		*/
-#define SMARTMACRO
-
-/*	MULTILINE_MACROS	- enables multiline macros			*/
-#define MULTILINE_MACROS
-
-/*	XTREKRC_HELP 		- Hadley's xtrekrc window (stolden by KP)	*/
-#define XTREKRC_HELP
-
-/*	TOOLS			- Various tools, like shell escape, ...		*/
-#define TOOLS
-
-/*	SOUND			- support of external sound players		*/
-#define SOUND
-
-/*      HOCKEY_LINES            - allow showing of hockey lines			*/
-#define HOCKEY_LINES
-
-/*	SMALL_SCREEN		- for 800x600 resolution screens		*/
-/* #define SMALL_SCREEN */
-
-/*	BEEPLITE		- player and planets highlighting		*/
-#define BEEPLITE
-
-/*	VSHIELD_BITMAPS		- damage dependent shields (hull)		*/
-#define VSHIELD_BITMAPS
-#define VARY_HULL 
-
-/*      WARP_DEAD		- Use death detection
-*/
-#undef  WARP_DEAD
-
-/*    RCM                     	- Receiver configurable Server messages 	*/
-#define RCM
-
-/* 	RACE_COLORS		- additional bitplane for race colors		*/
-#define RACE_COLORS
-
-/* XTRA_MESSAGE_UI  - Show message being typed on the local display */
-#define  XTRA_MESSAGE_UI
-
-#define PLIST1 
-#define PLIST 
-#define CONTROL_KEY
-#define BRMH 
-#define DOC_WIN
-#define RABBIT_EARS 
-#define ROTATERACE
-#define FUNCTION_KEYS
-
-/* client options */
-#define IGNORE_SIGNALS_SEGV_BUS
-#define NEW_DASHBOARD_2
-#define MOUSE_AS_SHIFT
-#define SHIFTED_MOUSE
-#define TNG_FED_BITMAPS
-#define MOTION_MOUSE
-#define DIST_KEY_NAME
-#define PHASER_STATS
-#define RECORDGAME
-
-#endif		/* COW */
-
 
 /* 
    ------------------------------------------------------------
