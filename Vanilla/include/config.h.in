@@ -1,346 +1,266 @@
-/*      Netrek Configuration file       -              by Kurt Siegl
- *
- */
+/*
+** Netrek Server Configuration file
+** by Kurt Siegl
+**
+** Certain configuration settings require a recompile, and these
+** settings are described here.  The file config.h.in is used by
+** configure script to generate config.h.  Make your changes to
+** config.h.in and rerun configure, or config.status, then run make.
+*/
 
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-/*
-################################################################################
-        Type of code (select in configure.in)
-################################################################################
-*/
+/* DEBUG - Various useful debugging stuff.  No signal trap */
+#undef DEBUG
 
-#undef SERVER
-
-#undef STABLE
-
-/*
-################################################################################
-        All The fun defines
-################################################################################
-*/
-
-/*
-   Defines
-      Some possible values:
-   NOTE: Only NON-system specific defines belong here
-*/
-
-/*
-   ------------------------------------------------------------
-                Common defines
-   ------------------------------------------------------------
-*/
-
-
-/*      RSA                     - New RSA reserved packets stuff                */
-/* #define RSA                  - Defined in the Makefile                       */
-
-                                /* DEBUG           - Various useful debugging
-                                                     stuff.  No signal trap */
-#undef  DEBUG
-
-/*
-   ------------------------------------------------------------
-                SERVER only defines
-   ------------------------------------------------------------
-*/
-#ifdef SERVER
-
-                                /*  AUTOMOTD       - Updates your MOTD every
-                                                     12 hours */
+/* AUTOMOTD - Updates the MOTD (message of the day) every 12 hours */
 #undef AUTOMOTD
 
-                                /*  REVERSED_HOSTNAMES - Truncate the short
-                                                     hostname from the end
-                                                     rather than the start */
+/* REVERSED_HOSTNAMES - Truncate the short hostname from the end
+rather than the start */
 #define REVERSED_HOSTNAMES
 
+/* DNSBL_CHECK - Check player IPs against public DNS blacklists to
+detect open proxies as well as possibly infected computers. */
 #undef DNSBL_CHECK
-                                /*  DNSBL_CHECK - Check player IPs against
-                                public DNS blacklists to detect open proxies
-                                as well as possibly infected computers. */
 
 #ifdef DNSBL_CHECK
+
+/* DNSBL_SHOW - Show possible proxies to ALL and in WHOIS, otherwise
+just log it */
 #undef DNSBL_SHOW
-                                /*  DNSBL_SHOW - Show possible proxies to ALL
-                                and in WHOIS, otherwise just log it */
 
+/* DNSBL_PROXY_MUTE - Automatically mute hosts that are detected as
+possible open proxies */
 #define DNSBL_PROXY_MUTE
-                                /*  DNSBL_PROXY_MUTE - Automatically mute
-                                hosts that are detected as possible open
-                                proxies */
 
+/* DNSBL_WARN - Warn players who appear on the infected host lists
+with a private message */
 #define DNSBL_WARN
-                                /*  DNSBL_WARN - Warn players who appear on
-                                the infected host lists with a private
-                                message */
 
+/* DNSBL_WARN_VERBOSE - Alert all players of a possibly infected host
+*/
 #undef DNSBL_WARN_VERBOSE
-                                /*  DNSBL_WARN_VERBOSE - Alert all players of
-                                a possibly infected host */
+
 #endif
 
-                                /* PKEY            - shared memory key, to
-                                                     override key specified
-                                                     in ntserv/defs.h */
+/* PKEY - shared memory key, to override key specified in
+ntserv/defs.h, must be unique on a host for each netrek server,
+normally provided to configure */
 #undef PKEY
 
-                                /* LTD_STATS       - Leonard/Tom/Dave extended
-                                                     player statistics.  See
-                                                     README.LTD for details.
-                                                     THIS BREAKS PLAYERDB
-                                                     COMPATIBILITY!! */
-
+/* LTD_STATS - Leonard/Tom/Dave extended player statistics.  See
+README.LTD for details.  This breaks player database compatibility, so
+do not change once you have a player database!! */
 #define LTD_STATS
 
-                                /* LTD_PER_RACE    - LTD stats are normally
-                                                     combined regardless
-                                                     of which race the player
-                                                     is playing.  Define
-                                                     this to further split
-                                                     the stats by race.
-                                                     NOTE: THIS IS REQUIRED
-                                                     for LTD enabled INL
-                                                     servers. */
-                                /* NOTE: DO NOT USE THIS WITH PICKUP SERVERS
-                                   AT THIS TIME */
-
+/* LTD_PER_RACE - LTD stats are normally combined regardless of which
+race the player is playing.  Define this to further split the stats by
+race.  NOTE: THIS IS REQUIRED for LTD enabled INL servers. */
+/* NOTE: DO NOT USE THIS WITH PICKUP SERVERS AT THIS TIME */
 #undef LTD_PER_RACE
 
-                                /* SHOW_RSA        - Display the client type
-                                                     at login */
+/* SHOW_RSA - Display the client type at login */
 #define SHOW_RSA
 
-                                /* SHOW_RSA_FAILURE   - Display RSA failures
-                                                        at login */
+/* SHOW_RSA_FAILURE - Display RSA failures at login */
 #undef SHOW_RSA_FAILURE
 
-                                /* SHORT_THRESHOLD - For Short Packets */
+/* SHORT_THRESHOLD - For Short Packets */
 #undef SHORT_THRESHOLD
 
-                                /* SURRENDER_SHORT - Cut surrender time in
-                                                     half */
-#undef  SURRENDER_SHORT
+/* SURRENDER_SHORT - Cut surrender time in half */
+#undef SURRENDER_SHORT
 
-                                /* TWO_RACE        - Conquer only a 1/4 of the
-                                                     galaxy for reset */
+/* TWO_RACE - Conquer only a 1/4 of the galaxy for reset */
 #define TWO_RACE
 
-                                /* SENDFLAGS       - Print flags set in MOTD */
-#undef  SENDFLAGS
+/* SENDFLAGS - Print flags set in MOTD */
+#undef SENDFLAGS
 
-                                /* SENDPATCHLEVEL - Print release and
-                                   patch level in MOTD */
+/* SENDPATCHLEVEL - Print release and patch level in MOTD */
 #define SENDPATCHLEVEL
 
+/* CHECK_ENV - Check environment variable NTSERV_PATH for location of
+system files */
+#undef CHECK_ENV
 
-                                /* CHECK_ENV       - Check environment variable                                                     NTSERV_PATH for location
-                                                     of system files */
-#undef  CHECK_ENV
+/* GPPRINT - Print which path is being used to find the system files
+*/
+#undef GPPRINT
 
-                                /* GPPRINT         - Print which path is being
-                                                     used to find the system
-                                                     files */
-#undef  GPPRINT
-
-                                /* NBR             - Leave in for server. It
-                                                     tells programs like xsg
-                                                     that it is this code. */
+/* NBR - Leave in for server. It tells programs like xsg that it is
+this code. */
 #define NBR
 
-                                /* NEED_EXIT       - For systems that need exit                                                     defined */
+/* NEED_EXIT - For systems that need exit defined */
 #define NEED_EXIT
 
-                                /* SB_CALVINWARP   - calvin style transwarp */
-#undef  SB_CALVINWARP
+/* SB_CALVINWARP - calvin style transwarp */
+#undef SB_CALVINWARP
 
-                                /* FLAT_BONUS      - 3x bonus for killing last
-                                                     army on a planet */
+/* FLAT_BONUS - 3x bonus for killing last army on a planet */
 #undef FLAT_BONUS
 
-                                /* BASEPRACTICE    - trainingserver support */
+/* BASEPRACTICE - trainingserver support */
 #undef BASEPRACTICE
 
-                                /* NEWBIESERVER    - twinkserver support */
+/* NEWBIESERVER - twinkserver support */
 #undef NEWBIESERVER
 
-                                /* PRETSERVER      - pre-T bot  support */
+/* PRETSERVER - pre-T bot support */
 #define PRETSERVER
 
-                                /* ROBOTS_STAY_IF_PLAYERS_LEAVE   - keep pre-T mode going even
-                                                     if there are no humans; this
-                                                     works around a stuck Kathy
-                                                     bug that should be fixed */
+/* ROBOTS_STAY_IF_PLAYERS_LEAVE - keep pre-T mode going even if there
+are no humans; this works around a stuck Kathy bug that should be
+fixed */
 #define ROBOTS_STAY_IF_PLAYERS_LEAVE
 
-                                /* STURGEON        - sturgeon mode support */
+/* STURGEON - sturgeon mode support */
 #undef STURGEON
 
-                                /* NEW_CREDIT      - give 1 planet for
-                                                     destroying, two planets
-                                                     for taking.  Be sure to
-                                                     scale your player
-                                                     database's planet counts
-                                                     by a factor of three -
-                                                     running newscores as
-                                                     compiled with a -DCONVERT
-                                                     _once_ will do this
-                                                     scaling for you */
+/* NEW_CREDIT - give 1 planet for destroying, two planets for taking.
+If you have a player database already, be sure to rescale your planet
+counts by a factor of three - running newscores as compiled with a
+-DCONVERT _once_ will do this scaling for you */
 #undef NEW_CREDIT
 
-                                /* SBFUEL_FIX      - fix starbase re-fueling */
+/* SBFUEL_FIX - fix starbase re-fueling */
 #define SBFUEL_FIX
 
-                                /* NEW_ETEMP       - Wreck's etemp fix */
+/* NEW_ETEMP - Wreck's etemp fix */
 #undef NEW_ETEMP
 
-                                /* DOGFIGHT        - .sysdef interface
-                                                   for dogfight robot */
-                                /* CLUE2           - include harder clue
-                                                     questions */
-#undef CLUE2
+/* DOGFIGHT - .sysdef interface for dogfight robot */
 #undef DOGFIGHT
 
-#define NODOCK          /* NODOCK allow per-slot docking priveledges */
+/* CLUE2 - include harder clue questions */
+#undef CLUE2
 
-#define NOTRANSWARP     /* NOTRANSWARP  - allow starbase to set transwarp
-                                          initiation restrictions */
+/* NODOCK - allow per-slot docking rights */
+#define NODOCK
 
-                                /* NO_BRUTALITY    - disallow fighting between
-                                                     waiting players in the
-                                                     dogfighting mode */
+/* NOTRANSWARP - allow starbase to set transwarp initiation
+restrictions */
+#define NOTRANSWARP
+
+/* NO_BRUTALITY - disallow fighting between waiting players in the
+dogfighting mode */
 #ifdef DOGFIGHT
 #define NO_BRUTALITY
 #endif
 
-                                /* AS_CLOAK        - gives cloaked AS's more
-                                                     randomness in their
-                                                     apparent positions */
+/* AS_CLOAK - gives cloaked AS's more randomness in their apparent
+positions */
 #undef AS_CLOAK
 
-                                /* GENO_COUNT      - keep track of a player's
-                                                     winning genocides, see
-                                                     tools/conq_vert.c for a
-                                                     description of how to use
-                                                     this define. */
+/* GENO_COUNT - keep track of a player's winning genocides, see
+tools/conq_vert.c for a description of how to use this define. */
 #undef GENO_COUNT
 
-                                /* AUTO_INL        - starts up INL robot
-                                                     by majority vote   */
+/* AUTO_INL - starts up INL robot by majority vote */
 
-/* WARNING: AUTO_INL as currently implemented may hose your player database
-because the INL server must provide cleared stats at startup.  Enable this
-only if you have no intention of retaining stats on the server for pickup */
+/* WARNING: AUTO_INL as currently implemented may hose your player
+database because the INL server must provide cleared stats at startup.
+Enable this only if you have no intention of retaining stats on the
+server for pickup */
 
 #undef AUTO_INL
-                                /* AUTO_PRACTICE   - starts up PRACTICE robot
-                                                     by majority vote   */
+
+/* AUTO_PRACTICE - starts up PRACTICE robot by majority vote */
 #ifdef BASEPRACTICE
 #define AUTO_PRACTICE
 #endif
-                                /* AUTO_HOCKEY     - starts up HOCKEY robot
-                                                     by majority vote   */
+
+/* AUTO_HOCKEY - starts up HOCKEY robot by majority vote */
 #undef AUTO_HOCKEY
-                                /* AUTO_DOGFIGHT   - starts up DOGFIGHT robot
-                                                     by majority vote   */
-                                /* DOG_RANDOM      - somewhat random player
-                                                     placement in arena */
+
 #ifdef DOGFIGHT
+
+/* AUTO_DOGFIGHT - starts up DOGFIGHT robot by majority vote */
 #define AUTO_DOGFIGHT
-/* #define DOG_RANDOM */
+
+/* DOG_RANDOM - somewhat random player placement in arena */
+#undef DOG_RANDOM
+
 #endif
 
-                                /* TRIPLE_PLANET_MAYHEM - enable voting
-                                for the three planet cool server idea
-                                by felix@coop.com */
+/* TRIPLE_PLANET_MAYHEM - enable voting for the three planet cool
+server idea by felix@coop.com */
 #undef TRIPLE_PLANET_MAYHEM
-                                /* Balance vote weightings; how important each
-                                t-mode stat is for calculating a player value */
+
+/* Balance vote weightings; how important each t-mode stat is for
+calculating a player value */
 #define BALANCE_BOMBING 100
 #define BALANCE_PLANET  100
 #define BALANCE_DEFENSE   0
 #define BALANCE_OFFENSE 100
-                                /* MESSAGES_ALL_TIME - allow messaging during
-                                freezes like twarp, refit, and war decl.
-                                required to be set for INL robot use. */
+
+/* MESSAGES_ALL_TIME - allow messaging during freezes like twarp,
+refit, and war decl.  required to be set for INL robot use. */
 #define MESSAGES_ALL_TIME
-                                /* RANDOM_PRACTICE_ROBOT - Gives the practice
-                                robot (Hoser) the option of comming out in
-                                a random ship type. */
+
+/* RANDOM_PRACTICE_ROBOT - Gives the practice robot (Hoser) the option
+of coming out in a random ship type. */
 #define RANDOM_PRACTICE_ROBOT
 
-                                /* Rolling statistics - makes the player stats
-                                reflect the immediate playing history of each
-                                player, for office games using BALANCE.  Set
-                                slots to 20 and mask to 32767 for 18 hours. */
+/* Rolling statistics - makes the player stats reflect the immediate
+playing history of each player, for office games using BALANCE.  Set
+slots to 20 and mask to 32767 for 18 hours. */
 #undef ROLLING_STATS
 #undef ROLLING_STATS_SLOTS
 #undef ROLLING_STATS_MASK
 
-                                /* NO_CHUNG_CREDIT - Avoid crediting a player
-                                for armies killed by their own death
-                                due to a plasma owned by their team.  Not a
-                                particularly common misuse but a few
-                                people asked for this, apparently just
-                                because of one player.
-                                */
+/* NO_CHUNG_CREDIT - Avoid crediting a player for armies killed by
+their own death due to a plasma owned by their team.  Not a
+particularly common misuse but a few people asked for this, apparently
+just because of one player. */
 #define NO_CHUNG_CREDIT
 
-                                /* NO_BEAM_DOWN_OUT_OF_T_MODE - Prevent
-                                beaming down from working if t-mode is not
-                                active. */
+/* NO_BEAM_DOWN_OUT_OF_T_MODE - Prevent beaming down from working if
+t-mode is not active. */
 #undef NO_BEAM_DOWN_OUT_OF_T_MODE
 
-                                /* PLAYER_INDEX - create and maintain
-                                an index of the player database, to
-                                reduce time to log in for servers with
-                                large or untrimmed player databases,
-                                requires libgdbm, and indexes only
-                                characters who return to the
-                                server. */
+/* PLAYER_INDEX - create and maintain an index of the player database,
+to reduce time to log in for servers with large or untrimmed player
+databases, requires libgdbm, and indexes only characters who return to
+the server. */
 #define PLAYER_INDEX
 
-                                /* ROBOT_OBSERVER_OFFSET - force observers
-                                to start in slot 'h' thereby forcing the
-                                moderation bots to occupy slot 'g'. */
+/* ROBOT_OBSERVER_OFFSET - force observers to start in slot 'h'
+thereby forcing the moderation bots to occupy slot 'g'. */
 #undef ROBOT_OBSERVER_OFFSET
 
-                                /* SB_RAPID_COOLDOWN - enables twice the
-                                normal rate of weapon cool down.  Useful in
-                                base practice mode */
+/* SB_RAPID_COOLDOWN - enables twice the normal rate of weapon cool
+down.  Useful in base practice mode */
 #undef SB_RAPID_COOLDOWN
 
-                                /* ALLOW_PRACTICE_ROBOT_SB - allows practice
-                                robots to be refitted into SBs */
+/* ALLOW_PRACTICE_ROBOT_SB - allows practice robots to be refitted
+into SBs */
 #undef ALLOW_PRACTICE_ROBOT_SB
 
-                                /* CARRY_STATUS_SHOW_ALL - show carry status
-                                on a '?' query to all players, not just those
-                                on the queried player's team (note that this
-                                creates an information leak as it allows the
-                                other team to see if a player is NOPICKed) */
+/* CARRY_STATUS_SHOW_ALL - show carry status on a '?' query to all
+players, not just those on the queried player's team (note that this
+creates an information leak as it allows the other team to see if a
+player is NOPICKed) */
 #undef CARRY_STATUS_SHOW_ALL
 
-                                /* CHRISTMAS - replace Kathy with Santa and
-                                replace standard bot names with the names of
-                                the nine reindeer */
+/* CHRISTMAS - replace Kathy with Santa and replace standard bot names
+with the names of the nine reindeer */
 #undef CHRISTMAS
 
-
-#endif          /* SERVER */
-
-
 /*
-##############################################################################
-       All system dependencies should be defined here
-##############################################################################
+
+end of feature configuration,
+start of compiler and operating system configuration.
+
 */
 
 #define NEED_EXIT
 
-/* Automatic generated system dependend defines                         */
+/* Automatic generated system dependent defines, adjusted by configure
+when this file is used as input to generate config.h */
 
 #undef HAVE_MATH_H
 #undef HAVE_STDLIB_H
@@ -393,21 +313,6 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef NO_PATH_MAX
 #undef inline
 
-#ifdef COW
-#undef HAVE_X11
-#undef HAVE_WIN32
-#undef HAVE_XPM
-#undef HAVE_X11_XPM_H
-
-/* Autodetection error with GNU win32 */
-#ifdef HAVE_WIN32
-#define HAVE_STRCMPI
-#define HAVE_STRNCMPI
-#endif
-
-#endif
-
-#ifdef SERVER
 /* paths substituted by configure, see AC_DEFINE_UNQUOTED in configure.in */
 #define LIBDIR "/usr/local/games/netrek"
 #define BINDIR "/usr/local/games/netrek"
@@ -422,9 +327,8 @@ only if you have no intention of retaining stats on the server for pickup */
 #ifdef HAVE_UNISTD_H
 #define UDP_FIX
 #endif
-#endif
 
-/* System dependend macros                                              */
+/* System dependent macros                                              */
 
 /* SYSV signal handling */
 #ifdef SYSV_SIGNALS
@@ -475,9 +379,6 @@ extern long random ();
 #define LONG long
 #define U_LONG u_long
 #endif
-
-/*      Some Server specific programs */
-#ifdef SERVER
 
 #include <sys/types.h>
 /* SYSV Types */
@@ -555,23 +456,14 @@ extern long random ();
 #define WAIT_TYPE int
 #endif
 
-#endif          /* SERVER programs */
+/*  System dependent Include files */
 
-
-/*  System dependend Include files */
-
-#ifdef SERVER
 #define NULLFILE                "../null"
-#else
-#define NULLFILE                "null"
-#endif
 
 #ifdef NEED_SYS_SELECT_H
 #define INC_SYS_SELECT <sys/select.h>
-#ifdef SERVER
 /* fd_set is used in data.h of the server */
 #include <sys/select.h>
-#endif
 #else
 #define INC_SYS_SELECT NULLFILE
 #endif
@@ -689,16 +581,6 @@ extern long random ();
 #define INC_LIMITS      <limits.h>
 #endif
 
-#ifdef HAVE_XPM
-#ifdef HAVE_X11_XPM_H
-#define INC_XPM <X11/xpm.h>
-#else
-#define INC_XPM <xpm.h>
-#endif
-#else
-#define INC_XPM NULLFILE
-#endif
-
 /* Unchecked machine dependencies */
 
 #ifdef linux
@@ -727,16 +609,6 @@ extern double rint(double);
 #endif
 #endif
 
-#ifdef VMS
-#define  R_OK  04
-typedef unsigned short int ushort;
-#define Sin sinetable
-#define Cos cosinetable
-#define strncasecmp strncmp
-#include <socket.h>    /* for struct timeval */
-#include "vmsutils.h"  /* for typedef fd_set & FD_ macros */
-#endif
-
 /*
    Some systems, most notably SunOS 4.1.3, don't include function definitions
    in the libraries.  This results in some warning we don't want.
@@ -762,19 +634,6 @@ char _filbuf(FILE *);
 int _flsbuf(unsigned char, FILE *);
 
 #endif /* defined sun4 */
-
-#ifdef WIN32
-typedef unsigned short int ushort;
-#define strncasecmp strncmp
-#ifdef THREADED
-#define THREAD(fn) { DWORD junk; CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)f
-#define ENDTHREAD ExitThread(0);
-typedef unsigned long int SEMAPHORE;
-#define CREATE_SEMAPHORE(initstate) CreateEvent(NULL, 1, initstate, NULL)
-#define SET_SEMAPHORE(sem) SetEvent((HANDLE)sem)
-#define RESET_SEMAPHORE(sem) ResetEvent((HANDLE)sem)
-#endif
-#endif
 
 #ifdef _MSC_VER
 #define INC_STRINGS     <ntstring.h>

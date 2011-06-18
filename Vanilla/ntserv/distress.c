@@ -11,9 +11,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include "defs.h"
-#ifndef SERVER
-#include "Wlib.h"
-#endif
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
@@ -21,13 +18,11 @@
 /* #$!@$#% length of address field of messages */
 #define ADDRLEN 10
 
-#ifdef SERVER
 #define MAXMACLEN 85
 extern char *shiptypes[];
 #define warning(x)	ERROR(1,(x))
 #ifndef new_warning
 #define new_warning(x,y)        warning(y)
-#endif
 #endif
 
 /* file scope prototypes */
@@ -104,12 +99,7 @@ static int itoa2(int n, char s[])
 /* ARGSUSED */
 static void dist_error(char *str, char *macro, char ch)
 {
-#if defined (SERVER) && defined(NBR)
               new_warning(UNDEF,"Bad Macro character in distress!");
-#else
-              warning ("Bad Macro character in distress!");
-#endif
-#ifdef SERVER
               ERROR(1,("Unrecognizable special character in distress\n"));
               ERROR(1,("From: %s@%s. %s: %s (%c)\n",
                         me->p_name,
@@ -117,9 +107,6 @@ static void dist_error(char *str, char *macro, char ch)
                         str,
                         macro,
                         ch));
-#else
-              fprintf (stderr,"Unrecognizable special character in distress %s: %c\n", str, *(pm-1));
-#endif
 }
 
 
@@ -249,12 +236,6 @@ int makedistress (struct distress *dist, /* the info */
   struct player *sender;
   struct player *j;
   struct planet *l;
-#ifndef SERVER
-  extern int ping_tloss_sc;	/* total % loss 0--100, server to client */
-  extern int ping_tloss_cs;	/* total % loss 0--100, client to server */
-  extern int ping_av;		/* average rt */
-  extern int ping_sd;		/* standard deviation */
-#endif
   char c;
   char *macro;
 
@@ -450,14 +431,8 @@ int makedistress (struct distress *dist, /* the info */
 	      cap = 0;
 	      break;
 	    case 'S':		/* push ship type into buf */
-#ifndef SERVER
-	      APPEND (pbuf1, classes[sender->p_ship.s_type]);
-#else
               APPEND (pbuf1, shiptypes[sender->p_ship.s_type]);
-#endif
 	      break;
-
-#ifdef SERVER
                  case 'v':      /* push average ping round trip time into buf */
                  case 'V':      /* push ping stdev into buf */
                  case 'y':      /* push packet loss into buf */
@@ -465,28 +440,6 @@ int makedistress (struct distress *dist, /* the info */
             case 'M':           /* push capitalized lastMessage into buf */
             case 'm':           /* push lastMessage into buf */
                    break;
-#else
-            case 'M':           /* push capitalized lastMessage into buf */
-              cap = 1;
-            case 'm':           /* push lastMessage into buf */
-              APPEND_CAP (pbuf1, cap, lastMessage);
-              cap = 0;
-	      break;
-
-	    case 'v':		/* push average ping round trip time into buf */
-	      APPEND_INT (pbuf1, ping_av);
-	      break;
-
-	    case 'V':		/* push ping stdev into buf */
-	      APPEND_INT (pbuf1, ping_sd);
-	      break;
-
-	    case 'y':		/* push packet loss into buf */
-	      /* this is the weighting formula used be socket.c ntserv */
-	      APPEND_INT (pbuf1, (2 * ping_tloss_sc + ping_tloss_cs) / 3);
-	      break;
-#endif 
-
 	    case '*':		/* push %} into buf */
 	      APPEND (pbuf1, "%*\0");
 	      break;
