@@ -1,13 +1,13 @@
 /*      Netrek Configuration file       -              by Kurt Siegl
- * 
+ *
  */
 
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-/* 
+/*
 ################################################################################
-	Type of code (select in configure.in)    
+        Type of code (select in configure.in)
 ################################################################################
 */
 
@@ -15,9 +15,9 @@
 
 #undef STABLE
 
-/* 
+/*
 ################################################################################
-	All The fun defines      
+        All The fun defines
 ################################################################################
 */
 
@@ -27,23 +27,23 @@
    NOTE: Only NON-system specific defines belong here
 */
 
-/* 
+/*
    ------------------------------------------------------------
-	 	Common defines
+                Common defines
    ------------------------------------------------------------
 */
 
 
-/*  	RSA 			- New RSA reserved packets stuff 		*/
-/* #define RSA  		- Defined in the Makefile 			*/
+/*      RSA                     - New RSA reserved packets stuff                */
+/* #define RSA                  - Defined in the Makefile                       */
 
-				/* DEBUG   	   - Various useful debugging 
-						     stuff.  No signal trap */
+                                /* DEBUG           - Various useful debugging
+                                                     stuff.  No signal trap */
 #undef  DEBUG
 
-/* 
+/*
    ------------------------------------------------------------
-	 	SERVER only defines
+                SERVER only defines
    ------------------------------------------------------------
 */
 #ifdef SERVER
@@ -52,7 +52,7 @@
                                                      12 hours */
 #undef AUTOMOTD
 
-				/*  REVERSED_HOSTNAMES - Truncate the short
+                                /*  REVERSED_HOSTNAMES - Truncate the short
                                                      hostname from the end
                                                      rather than the start */
 #define REVERSED_HOSTNAMES
@@ -82,12 +82,12 @@
                                 a possibly infected host */
 #endif
 
-				/* PKEY		   - shared memory key, to
-						     override key specified
-						     in ntserv/defs.h */
+                                /* PKEY            - shared memory key, to
+                                                     override key specified
+                                                     in ntserv/defs.h */
 #undef PKEY
 
-				/* LTD_STATS       - Leonard/Tom/Dave extended
+                                /* LTD_STATS       - Leonard/Tom/Dave extended
                                                      player statistics.  See
                                                      README.LTD for details.
                                                      THIS BREAKS PLAYERDB
@@ -95,17 +95,17 @@
 
 #define LTD_STATS
 
-				/* LTD_PER_RACE    - LTD stats are normally
-				                     combined regardless
-				                     of which race the player
-				                     is playing.  Define
-				                     this to further split
-				                     the stats by race.
-				                     NOTE: THIS IS REQUIRED
-				                     for LTD enabled INL
-				                     servers. */
-				/* NOTE: DO NOT USE THIS WITH PICKUP SERVERS
-				   AT THIS TIME */
+                                /* LTD_PER_RACE    - LTD stats are normally
+                                                     combined regardless
+                                                     of which race the player
+                                                     is playing.  Define
+                                                     this to further split
+                                                     the stats by race.
+                                                     NOTE: THIS IS REQUIRED
+                                                     for LTD enabled INL
+                                                     servers. */
+                                /* NOTE: DO NOT USE THIS WITH PICKUP SERVERS
+                                   AT THIS TIME */
 
 #undef LTD_PER_RACE
 
@@ -131,8 +131,8 @@
                                 /* SENDFLAGS       - Print flags set in MOTD */
 #undef  SENDFLAGS
 
-				/* SENDPATCHLEVEL - Print release and
-                                   patch level in MOTD */ 
+                                /* SENDPATCHLEVEL - Print release and
+                                   patch level in MOTD */
 #define SENDPATCHLEVEL
 
 
@@ -153,7 +153,7 @@
                                 /* NEED_EXIT       - For systems that need exit                                                     defined */
 #define NEED_EXIT
 
-				/* SB_CALVINWARP   - calvin style transwarp */
+                                /* SB_CALVINWARP   - calvin style transwarp */
 #undef  SB_CALVINWARP
 
                                 /* FLAT_BONUS      - 3x bonus for killing last
@@ -181,13 +181,13 @@
                                 /* NEW_CREDIT      - give 1 planet for
                                                      destroying, two planets
                                                      for taking.  Be sure to
-						     scale your player
-						     database's planet counts
-						     by a factor of three -
-						     running newscores as
-						     compiled with a -DCONVERT
-						     _once_ will do this
-						     scaling for you */
+                                                     scale your player
+                                                     database's planet counts
+                                                     by a factor of three -
+                                                     running newscores as
+                                                     compiled with a -DCONVERT
+                                                     _once_ will do this
+                                                     scaling for you */
 #undef NEW_CREDIT
 
                                 /* SBFUEL_FIX      - fix starbase re-fueling */
@@ -198,15 +198,15 @@
 
                                 /* DOGFIGHT        - .sysdef interface
                                                    for dogfight robot */
-				/* CLUE2	   - include harder clue
-						     questions */
+                                /* CLUE2           - include harder clue
+                                                     questions */
 #undef CLUE2
 #undef DOGFIGHT
 
 #define NODOCK          /* NODOCK allow per-slot docking priveledges */
 
-#define NOTRANSWARP	/* NOTRANSWARP	- allow starbase to set transwarp
-					  initiation restrictions */
+#define NOTRANSWARP     /* NOTRANSWARP  - allow starbase to set transwarp
+                                          initiation restrictions */
 
                                 /* NO_BRUTALITY    - disallow fighting between
                                                      waiting players in the
@@ -222,9 +222,9 @@
 
                                 /* GENO_COUNT      - keep track of a player's
                                                      winning genocides, see
-						     tools/conq_vert.c for a
-						     description of how to use
-						     this define. */
+                                                     tools/conq_vert.c for a
+                                                     description of how to use
+                                                     this define. */
 #undef GENO_COUNT
 
                                 /* AUTO_INL        - starts up INL robot
@@ -245,8 +245,8 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef AUTO_HOCKEY
                                 /* AUTO_DOGFIGHT   - starts up DOGFIGHT robot
                                                      by majority vote   */
-				/* DOG_RANDOM      - somewhat random player
-						     placement in arena */
+                                /* DOG_RANDOM      - somewhat random player
+                                                     placement in arena */
 #ifdef DOGFIGHT
 #define AUTO_DOGFIGHT
 /* #define DOG_RANDOM */
@@ -256,50 +256,50 @@ only if you have no intention of retaining stats on the server for pickup */
                                 for the three planet cool server idea
                                 by felix@coop.com */
 #undef TRIPLE_PLANET_MAYHEM
-				/* Balance vote weightings; how important each
-				t-mode stat is for calculating a player value */
+                                /* Balance vote weightings; how important each
+                                t-mode stat is for calculating a player value */
 #define BALANCE_BOMBING 100
 #define BALANCE_PLANET  100
 #define BALANCE_DEFENSE   0
 #define BALANCE_OFFENSE 100
                                 /* MESSAGES_ALL_TIME - allow messaging during
-                                freezes like twarp, refit, and war decl. 
-				required to be set for INL robot use. */
+                                freezes like twarp, refit, and war decl.
+                                required to be set for INL robot use. */
 #define MESSAGES_ALL_TIME
-				/* RANDOM_PRACTICE_ROBOT - Gives the practice
-				robot (Hoser) the option of comming out in
-				a random ship type. */
+                                /* RANDOM_PRACTICE_ROBOT - Gives the practice
+                                robot (Hoser) the option of comming out in
+                                a random ship type. */
 #define RANDOM_PRACTICE_ROBOT
 
-				/* Rolling statistics - makes the player stats
-				reflect the immediate playing history of each
-				player, for office games using BALANCE.  Set
-				slots to 20 and mask to 32767 for 18 hours. */
+                                /* Rolling statistics - makes the player stats
+                                reflect the immediate playing history of each
+                                player, for office games using BALANCE.  Set
+                                slots to 20 and mask to 32767 for 18 hours. */
 #undef ROLLING_STATS
 #undef ROLLING_STATS_SLOTS
 #undef ROLLING_STATS_MASK
 
-				/* NO_CHUNG_CREDIT - Avoid crediting a player
-				for armies killed by their own death
-				due to a plasma owned by their team.  Not a
-				particularly common misuse but a few
-				people asked for this, apparently just
-				because of one player.
-				*/
+                                /* NO_CHUNG_CREDIT - Avoid crediting a player
+                                for armies killed by their own death
+                                due to a plasma owned by their team.  Not a
+                                particularly common misuse but a few
+                                people asked for this, apparently just
+                                because of one player.
+                                */
 #define NO_CHUNG_CREDIT
 
-				/* NO_BEAM_DOWN_OUT_OF_T_MODE - Prevent
-				beaming down from working if t-mode is not
-				active. */
+                                /* NO_BEAM_DOWN_OUT_OF_T_MODE - Prevent
+                                beaming down from working if t-mode is not
+                                active. */
 #undef NO_BEAM_DOWN_OUT_OF_T_MODE
 
-				/* PLAYER_INDEX - create and maintain
-				an index of the player database, to
-				reduce time to log in for servers with
-				large or untrimmed player databases,
-				requires libgdbm, and indexes only
-				characters who return to the
-				server. */
+                                /* PLAYER_INDEX - create and maintain
+                                an index of the player database, to
+                                reduce time to log in for servers with
+                                large or untrimmed player databases,
+                                requires libgdbm, and indexes only
+                                characters who return to the
+                                server. */
 #define PLAYER_INDEX
 
                                 /* ROBOT_OBSERVER_OFFSET - force observers
@@ -307,13 +307,13 @@ only if you have no intention of retaining stats on the server for pickup */
                                 moderation bots to occupy slot 'g'. */
 #undef ROBOT_OBSERVER_OFFSET
 
-				/* SB_RAPID_COOLDOWN - enables twice the
-				normal rate of weapon cool down.  Useful in
-				base practice mode */
+                                /* SB_RAPID_COOLDOWN - enables twice the
+                                normal rate of weapon cool down.  Useful in
+                                base practice mode */
 #undef SB_RAPID_COOLDOWN
 
-				/* ALLOW_PRACTICE_ROBOT_SB - allows practice
-				robots to be refitted into SBs */
+                                /* ALLOW_PRACTICE_ROBOT_SB - allows practice
+                                robots to be refitted into SBs */
 #undef ALLOW_PRACTICE_ROBOT_SB
 
                                 /* CARRY_STATUS_SHOW_ALL - show carry status
@@ -329,37 +329,37 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef CHRISTMAS
 
 
-#endif		/* SERVER */
+#endif          /* SERVER */
 
 
 /*
 ##############################################################################
-       All system dependencies should be defined here 
+       All system dependencies should be defined here
 ##############################################################################
 */
 
 #define NEED_EXIT
 
-/* Automatic generated system dependend defines 			*/
+/* Automatic generated system dependend defines                         */
 
 #undef HAVE_MATH_H
 #undef HAVE_STDLIB_H
 #undef _ALL_SOURCES
 #undef HAVE_SYS_SIGNAL_H
-#undef BSD_SIGNALS 
-#undef SYSV_SIGNALS 
+#undef BSD_SIGNALS
+#undef SYSV_SIGNALS
 #undef POSIX_SIGNALS
-#undef RESTARTABLE_SYSCALLS  
-#undef NEED_MEMORY_H 
-#undef NEED_SYS_SELECT_H 
-				/* Guess we suck badly if that happens :( */
+#undef RESTARTABLE_SYSCALLS
+#undef NEED_MEMORY_H
+#undef NEED_SYS_SELECT_H
+                                /* Guess we suck badly if that happens :( */
 #undef NO_FD_SET
-#undef HAVE_UNISTD_H 
+#undef HAVE_UNISTD_H
 #undef HAVE_SYS_TIMEB_H
-#undef TM_IN_SYS_TIME 
+#undef TM_IN_SYS_TIME
 #undef TIME_WITH_SYS_TIME
-#undef NEED_SYS_TIME_H 
-#undef HAVE_SYS_PTYIO_H 
+#undef NEED_SYS_TIME_H
+#undef HAVE_SYS_PTYIO_H
 #undef HAVE_SYS_FCNTL_H
 #undef HAVE_FCNTL_H
 #undef HAVE_CTYPE_H
@@ -367,12 +367,12 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef HAVE_SYS_RESOURCE_H
 #undef HAVE_SYS_WAIT_H
 #undef HAVE_NETINET_IN_H
-				/* Needed for Solaris 2.x */
+                                /* Needed for Solaris 2.x */
 #undef HAVE_SYS_FILIO_H
 #undef HAVE_GMP2_H
-#undef NO_U_INT 
+#undef NO_U_INT
 #undef SIZEOF_LONG
-#undef HAVE_USLEEP 
+#undef HAVE_USLEEP
 #undef HAVE_SETSTATE
 #undef HAVE_RANDOM
 #undef HAVE_STRFTIME
@@ -382,11 +382,11 @@ only if you have no intention of retaining stats on the server for pickup */
 #undef HAVE_NINT
 #undef NEED_RINT_DEC
 #undef RETSIGTYPE
-#undef pid_t 
-#undef uid_t 
+#undef pid_t
+#undef uid_t
 #undef gid_t
-#undef size_t 
-#undef vfork 
+#undef size_t
+#undef vfork
 #if (defined(sparc) && defined(sun))
   #define vfork fork
 #endif
@@ -424,7 +424,7 @@ only if you have no intention of retaining stats on the server for pickup */
 #endif
 #endif
 
-/* System dependend macros						*/
+/* System dependend macros                                              */
 
 /* SYSV signal handling */
 #ifdef SYSV_SIGNALS
@@ -439,7 +439,7 @@ only if you have no intention of retaining stats on the server for pickup */
 #endif
 
 #ifdef POSIX_SIGNALS
-#define HANDLE_SIG(s,h)	signal(s,h)
+#define HANDLE_SIG(s,h) signal(s,h)
 #define setjmp(x) sigsetjmp(x,1)
 #define longjmp(x,y) siglongjmp(x,y)
 #else
@@ -447,9 +447,9 @@ only if you have no intention of retaining stats on the server for pickup */
 #endif
 
 #ifdef STDC_HEADERS
-#define INC_STRINGS	<string.h>
+#define INC_STRINGS     <string.h>
 #else
-#define INC_STRINGS	<strings.h>
+#define INC_STRINGS     <strings.h>
 #endif
 
 #if (defined(HAVE_RANDOM) && defined(HAVE_SETSTATE)) || !defined(HAVE_RANDOM)
@@ -476,7 +476,7 @@ extern long random ();
 #define U_LONG u_long
 #endif
 
-/*	Some Server specific programs */
+/*      Some Server specific programs */
 #ifdef SERVER
 
 #include <sys/types.h>
@@ -555,15 +555,15 @@ extern long random ();
 #define WAIT_TYPE int
 #endif
 
-#endif		/* SERVER programs */
+#endif          /* SERVER programs */
 
 
 /*  System dependend Include files */
 
 #ifdef SERVER
-#define NULLFILE		"../null"
+#define NULLFILE                "../null"
 #else
-#define NULLFILE        	"null"
+#define NULLFILE                "null"
 #endif
 
 #ifdef NEED_SYS_SELECT_H
@@ -602,7 +602,7 @@ extern long random ();
 #define INC_FCNTL       NULLFILE
 #endif
 #else
-#define INC_FCNTL 	<file.h>
+#define INC_FCNTL       <file.h>
 #endif
 
 
@@ -620,9 +620,9 @@ extern long random ();
 #endif
 
 #ifdef HAVE_CTYPE_H
-#define INC_CTYPE	<ctype.h>
+#define INC_CTYPE       <ctype.h>
 #else
-#define INC_CTYPE 	NULLFILE
+#define INC_CTYPE       NULLFILE
 #endif
 
 #ifdef HAVE_MACHINE_ENDIAN_H
@@ -638,16 +638,16 @@ extern long random ();
 #endif
 
 #ifdef HAVE_SYS_WAIT_H
-#define INC_SYS_WAIT 	<sys/wait.h>
+#define INC_SYS_WAIT    <sys/wait.h>
 #else
-#define INC_SYS_WAIT 	NULLFILE
+#define INC_SYS_WAIT    NULLFILE
 #endif
- 
+
 #ifdef HAVE_NETINET_IN_H
-#define INC_NETINET_IN 	<netinet/in.h>
+#define INC_NETINET_IN  <netinet/in.h>
 #else
-#define INC_NETINET_IN 	NULLFILE
-#endif 
+#define INC_NETINET_IN  NULLFILE
+#endif
 
 /* Replace outdated ftime with gettimeofday */
 #if defined(HAVE_SYS_TIMEB_H) && defined(HAVE_FTIME)
@@ -659,7 +659,7 @@ extern long random ();
 
 #ifdef HAVE_GMP2_H
 #define INC_MP <gmp.h>
-#define MPTYPEDEF typedef mpz_t MPTYPE; 
+#define MPTYPEDEF typedef mpz_t MPTYPE;
 
 #define assignItom(x,i) {mpz_init(x); mpz_set_ui(x,i);}
 #define madd(x, y, z) mpz_add(z, x, y)
@@ -674,7 +674,7 @@ extern long random ();
 #define min(x) mpz_min(x)
 #define mout(x) mpz_mout(x)
 #define mfree(x) mpz_clear(x)
- 
+
 #else
 #define MPTYPEDEF typedef MINT *MPTYPE;
 #define assignItom(x,i) x= itom(i)
@@ -684,9 +684,9 @@ extern long random ();
 
 #ifdef NO_PATH_MAX
 #define PATH_MAX 255
-#define INC_LIMITS	NULLFILE
+#define INC_LIMITS      NULLFILE
 #else
-#define INC_LIMITS	<limits.h>
+#define INC_LIMITS      <limits.h>
 #endif
 
 #ifdef HAVE_XPM
@@ -708,14 +708,14 @@ extern long random ();
 #endif
 
 #if defined(sun3)
-#define INC_STDLIB 	NULLFILE
+#define INC_STDLIB      NULLFILE
 #else
-#define INC_STDLIB	<stdlib.h>
+#define INC_STDLIB      <stdlib.h>
 #endif
 
 #ifndef sun4
 #if defined(HAVE_NINT) && defined(HAVE_MATH_H)
-#define INC_MATH	<math.h>
+#define INC_MATH        <math.h>
 #else
 #if defined(NEED_RINT_DEC)
 extern double rint(double);
@@ -783,7 +783,7 @@ typedef unsigned long int SEMAPHORE;
 #define INC_IO       NULLFILE
 #endif
 
-	/* Solaris specific stuff */
+        /* Solaris specific stuff */
 
 #if defined(HAVE_SYS_FILIO_H)
 #define INC_SYS_FILIO <sys/filio.h>
