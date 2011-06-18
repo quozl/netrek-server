@@ -64,9 +64,9 @@ cp $PN-$VS.tar.gz $PN-$VS.tar.gz.md5sum ~/public_html/external/mine/netrek/
 # test build kit
 cp $PN-$VS.tar.gz /tmp
 cd /tmp
-tar xfz $PN-$VS.tar.gz 
+tar xfz $PN-$VS.tar.gz
 mv $PN-$VS $PN-$VS.orig
-tar xfz $PN-$VS.tar.gz 
+tar xfz $PN-$VS.tar.gz
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make
@@ -101,7 +101,7 @@ cd
 
 # debian packaging (from tar.gz) [not working]
 cd /tmp
-tar xfz $PN-$VS.tar.gz 
+tar xfz $PN-$VS.tar.gz
 cd $PN-$VS
 ./configure --prefix=/tmp/$VS
 make release
