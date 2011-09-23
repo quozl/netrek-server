@@ -130,6 +130,22 @@ void ntorp(u_char course, int attributes)
     return;
   }
 
+  if (context->teacher_torps_none) {
+    new_warning(UNDEF,"Teacher has locked out the torpedo controls!  Use phasers.  Middle button.");
+    return;
+  }
+
+  if (context->teacher_torps_some) {
+    if (me->p_flags & PFGREEN) {
+      new_warning(UNDEF,"Green alert. Teacher says there's nothing here to shoot at! Fly forward.");
+      return;
+    }
+    if (me->p_kills < 1.0) {
+      new_warning(UNDEF,"No kills. Teacher says you should learn phasers first! Middle button.");
+      return;
+    }
+  }
+
   /*
    * Find a free torp to use */
   for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)

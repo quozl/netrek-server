@@ -74,6 +74,22 @@ void nplasmatorp(u_char course, int attributes)
     error();
 #endif
 
+  if (context->teacher_torps_none) {
+    new_warning(UNDEF,"Teacher has locked out the plasma controls!");
+    return;
+  }
+
+  if (context->teacher_torps_some) {
+    if (me->p_flags & PFGREEN) {
+      new_warning(UNDEF,"Green alert. Teacher says there's nothing here to shoot at! Fly forward.");
+      return;
+    }
+    if (me->p_kills < 1.0) {
+      new_warning(UNDEF,"No kills. Teacher says you should learn phasers first! Middle button.");
+      return;
+    }
+  }
+
   me->p_nplasmatorp++;
   me->p_fuel -= myship->s_plasmacost;
   me->p_wtemp += (myship->s_plasmacost / 10) - 8;  /* Heat weapons */

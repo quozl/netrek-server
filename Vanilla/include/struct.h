@@ -115,6 +115,8 @@ struct context {
     int conquer_trigger;        /* supervisory robot triggers a parade */
     int inl_game_ticks;         /* ticks passed in INL game */
     int inl_remaining;          /* remaining ticks in INL game */
+    int teacher_torps_none;     /* teacher mode, no torps at all */
+    int teacher_torps_some;     /* teacher mode, no torps until kills */
 };
 
 /* The following defines are for gameup field and SP_GENERIC_32 'b' */

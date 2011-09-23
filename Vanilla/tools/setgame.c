@@ -281,6 +281,24 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
+    if (!strcmp(argv[i], "teacher-torps-none")) {
+      context->teacher_torps_none = 1;
+      context->teacher_torps_some = 0;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "teacher-torps-some")) {
+      context->teacher_torps_none = 0;
+      context->teacher_torps_some = 1;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "teacher-torps-all")) {
+      context->teacher_torps_none = 0;
+      context->teacher_torps_some = 0;
+      goto state_0;
+    }
+
     if (!strcmp(argv[i], "pfwep")) {  /* make all ships weapons hot */
         int h;
         struct player *j;
