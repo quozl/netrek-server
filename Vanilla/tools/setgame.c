@@ -59,7 +59,7 @@ static void say(const char *fmt, ...)
 
 int main(int argc, char **argv)
 {
-    int i, verbose = 0;
+    int i, verbose = 0, frame;
 
     if (argc == 1) { usage(); return 1; }
     openmem(0);
@@ -68,6 +68,19 @@ int main(int argc, char **argv)
 
  state_0:
     if (++i == argc) return 0;
+
+    frame = context->frame;
+    if (!strcmp(argv[i], "many")) {  /* continually repeat the commands */
+      i = 0;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "frame")) {  /* wait for next frame */
+      while (context->frame == frame) {
+        usleep(5000);
+      }
+      goto state_0;
+    }
 
     if (!strcmp(argv[i], "verbose")) {
       verbose++;
@@ -265,6 +278,20 @@ int main(int argc, char **argv)
     if (!strcmp(argv[i], "conquer-trigger")) {
       context->conquer_trigger++;
       status->gameup |= GU_PAUSED;
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "pfwep")) {  /* make all ships weapons hot */
+        int h;
+        struct player *j;
+
+        for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
+        if (j->p_status != PFREE) {
+          j->p_wtemp = j->p_ship.s_maxwpntemp + 9;
+          j->p_flags |= PFWEP;
+          j->p_wtime = 100;
+        }
+      }
       goto state_0;
     }
 
