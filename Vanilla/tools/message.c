@@ -80,14 +80,29 @@ int main(int argc, char **argv)
     openmem(0);
     if (argc == 1) return prior();
 
-    if (strcmp(argv[i], "forge-to-self")) return 1;
+    /*
+
+    usage: either a message to all, or the keyword forge-to-self
+    followed by a slot number and a message.  examples:
+
+    % message "GOD->ALL hello world"
+    % message forge-to-self 0 @
+
+    */
+    if (strcmp(argv[i], "forge-to-self")) {
+        amessage(argv[i], 0, MALL);
+        return 0;
+    }
     if (++i == argc) return 1;
 
     struct player *me = player_by_number(argv[i]);
-    if (me == NULL) return 1;
-    if (++i == argc) return 1;
+    if (me != NULL) {
+        if (++i == argc) return 1;
 
-    pmessage2(me->p_no, MINDIV, "", me->p_no,
-              " %s->%s   %s", me->p_mapchars, me->p_mapchars, argv[i]);
-    return 0;
+        pmessage2(me->p_no, MINDIV, "", me->p_no,
+                  " %s->%s   %s", me->p_mapchars, me->p_mapchars, argv[i]);
+        return 0;
+    }
+
+    return 1;
 }
