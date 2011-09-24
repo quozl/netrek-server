@@ -303,21 +303,36 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
-    if (!strcmp(argv[i], "teacher-torps-none")) {
+    if (!strcmp(argv[i], "phasers-off")) {
+      context->teacher_phasers_none = 1;
+      if (verbose) say("Phasers off");
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "phasers-on")) {
+      context->teacher_phasers_none = 0;
+      if (verbose) say("Phasers on");
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "torps-off")) {
       context->teacher_torps_none = 1;
       context->teacher_torps_some = 0;
+      if (verbose) say("Torpedoes off");
       goto state_0;
     }
 
-    if (!strcmp(argv[i], "teacher-torps-some")) {
+    if (!strcmp(argv[i], "torps-some")) {
       context->teacher_torps_none = 0;
       context->teacher_torps_some = 1;
+      if (verbose) say("Torpedoes for kills");
       goto state_0;
     }
 
-    if (!strcmp(argv[i], "teacher-torps-all")) {
+    if (!strcmp(argv[i], "torps-on")) {
       context->teacher_torps_none = 0;
       context->teacher_torps_some = 0;
+      if (verbose) say("Torpedoes on");
       goto state_0;
     }
 
