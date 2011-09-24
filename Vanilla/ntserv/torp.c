@@ -131,7 +131,11 @@ void ntorp(u_char course, int attributes)
   }
 
   if (context->teacher_torps_none) {
-    new_warning(UNDEF,"Teacher has locked out the torpedo controls!  Use phasers.  Middle button.");
+    if (context->teacher_phasers_none) {
+      new_warning(UNDEF,"Teacher has locked out the torpedo controls!");
+    } else {
+      new_warning(UNDEF,"Teacher has locked out the torpedo controls!  Use phasers.  Middle button.");
+    }
     return;
   }
 

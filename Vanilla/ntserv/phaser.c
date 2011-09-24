@@ -58,6 +58,11 @@ void phaser(u_char course)
     return;
   }
 
+  if (context->teacher_phasers_none) {
+    new_warning(UNDEF,"Teacher has locked out the phaser controls!");
+    return;
+  }
+
   /*
    * (C, D) is a point on the my phaser line, relative to me.  It 
    * doesn't matter what point is used, so long as it is reasonably
