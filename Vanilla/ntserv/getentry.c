@@ -219,7 +219,8 @@ void getEntry(int *team, int *stype)
     for (;;) {
 	/* updateShips so he knows how many players on each team */
 	updateShips();
-	sendMaskPacket(tournamentMask(me->p_team,me->w_queue));
+	sendMaskPacket(tournamentMask(me->p_team, me->w_queue) &
+		       (~context->teacher_blocked_teams));
 	flushSockBuf();
 	/* Have we been busted? */
 	if (me->p_status == PFREE) {
@@ -240,7 +241,9 @@ void getEntry(int *team, int *stype)
 		teamPick= -1;
 		continue;
 	    }
-	    if (!(tournamentMask(me->p_team,me->w_queue) & (1<<teamPick))) {
+	    if (!(tournamentMask(me->p_team,me->w_queue) &
+		  (~context->teacher_blocked_teams) &
+		  (1<<teamPick))) {
                 new_warning(9,"I cannot allow that.  Pick another team");
 		sendPickokPacket(0);
 		teamPick= -1;
