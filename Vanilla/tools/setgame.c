@@ -62,7 +62,19 @@ int main(int argc, char **argv)
     int i, verbose = 0, frame;
 
     if (argc == 1) { usage(); return 1; }
-    openmem(0);
+
+    if (!strcmp(argv[1], "wait-for-start")) {
+      if (!openmem(-1)) {
+        fprintf(stderr, "waiting for daemon to start\n");
+        usleep(100000);
+        while (!openmem(-1)) {
+          usleep(100000);
+        }
+        fprintf(stderr, "daemon has started\n");
+      }
+    } else {
+      openmem(0);
+    }
 
     i = 0;
 
