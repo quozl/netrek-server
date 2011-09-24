@@ -136,6 +136,16 @@ int main(int argc, char **argv)
       goto state_0;
     }
 
+    if (!strcmp(argv[i], "wait-for-tournament-start")) {
+      while (!status->tourn) sleep(1);
+      goto state_0;
+    }
+
+    if (!strcmp(argv[i], "wait-for-tournament-end")) {
+      while (status->tourn) sleep(1);
+      goto state_0;
+    }
+
     if (!strcmp(argv[i], "wait-for-inl-start")) {
       while (status->gameup & (GU_GAMEOK|GU_INROBOT)) {
         sleep(1);
