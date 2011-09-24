@@ -11,8 +11,6 @@
 #include "util.h"
 #include "slotmaint.h"
 
-static void Usage(void);
-
 static void Usage(void)
 {
   printf("\
