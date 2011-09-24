@@ -1,0 +1,90 @@
+#!/bin/bash
+#
+# a teaching lesson plan for classroom use
+#
+# waits for the first client to connect, disables the klingon and
+# orion races to avoid confusion, and turns off torpedos and phasers,
+#
+# waits until the required minimum players have arrived
+# (see TOURN=? in etc/sysdef),
+#
+# provides five minutes of play with weapons disabled, for navigation
+# and bombing learning, (future, wait until every player has bombed
+# once)
+#
+# provides five minutes of play with phasers enabled, for phaser
+# learning, (future, wait until every player has scored a phaser hit)
+#
+# provides five minutes of play with torpedoes enabled only in yellow
+# and red alert and only when a player has killed with a phaser or
+# det,
+#
+# releases restrictions and waits for the tournament to end.
+#
+
+# support functions
+# if a process identifier is non blank, kill it and wait for it to die
+cease() {
+    [[ -n $1 ]] && \
+	kill $1 2>/dev/null && \
+	wait $1 2>/dev/null
+}
+
+setgame wait-for-start frame frame frame
+setteam kli block
+setteam ori block
+setteam no-klingons no-orions
+setgame pfwep frame many > /dev/null &
+PFWEP_PID=$!
+
+setgame verbose torps-off phasers-off
+setgame wait-for-tournament-start
+cease ${PFWEP_PID}
+
+cambot --verbose --output $(date +%s).cambot &
+CAMBOT_PID=$!
+
+message 'GOD->ALL  five minutes left in weapons disabled mode'
+sleep 60
+message 'GOD->ALL  four minutes left in weapons disabled mode'
+sleep 60
+message 'GOD->ALL  three minutes left in weapons disabled mode'
+sleep 60
+message 'GOD->ALL  two minutes left in weapons disabled mode'
+sleep 60
+message 'GOD->ALL  one minute left in weapons disabled mode'
+sleep 60
+
+setgame verbose phasers-on
+
+message 'GOD->ALL  five minutes left in torps disabled mode'
+sleep 60
+message 'GOD->ALL  four minutes left in torps disabled mode'
+sleep 60
+message 'GOD->ALL  three minutes left in torps disabled mode'
+sleep 60
+message 'GOD->ALL  two minutes left in torps disabled mode'
+sleep 60
+message 'GOD->ALL  one minute left in torps disabled mode'
+sleep 60
+
+setgame verbose torps-some
+
+message 'GOD->ALL  five minutes left in torps limited mode'
+sleep 60
+message 'GOD->ALL  four minutes left in torps limited mode'
+sleep 60
+message 'GOD->ALL  three minutes left in torps limited mode'
+sleep 60
+message 'GOD->ALL  two minutes left in torps limited mode'
+sleep 60
+message 'GOD->ALL  one minute left in torps limited mode'
+sleep 60
+
+setgame verbose torps-on
+setgame wait-for-tournament-end
+setteam kli unblock
+setteam ori unblock
+setgame wait-for-terminate
+sleep 2
+cease ${CAMBOT_PID}
