@@ -377,8 +377,7 @@ goto_protect(pl, p, dock)
       else  if(!p){
 	 if(MYFUEL() < 100 || MYDAMAGE() > 0 || MYSHIELD() < 100){
 	    if(DEBUG & DEBUG_PROTECT){
-	       printf("protect closer than 5000 -- setting disengage.\n", 
-		  defd);
+	       printf("protect closer than 5000 -- setting disengage.\n");
 	    }
 	    disengage_c(EPROTECT, NULL, "ship not perfect.");
 	    _timers.disengage_time = mtime(0);

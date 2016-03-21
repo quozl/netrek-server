@@ -1502,7 +1502,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
     case MTEAM:
 	if (packet->indiv != FED && packet->indiv != ROM &&
 	    packet->indiv != KLI && packet->indiv != ORI) return;
-	sprintf(addrbuf+5, teamshort[packet->indiv]);
+	sprintf(addrbuf+5, "%s", teamshort[packet->indiv]);
 	clueFuse = 0;
 	break;
     case MINDIV:

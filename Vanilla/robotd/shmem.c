@@ -135,7 +135,7 @@ shmem_open()
    }
 
    r_shmem = (struct r_shmemt *) shmat(shmid, 0, 0);
-   if((int)r_shmem < 0){
+   if(r_shmem == (void *) -1){
       perror("shmat");
       shmem = 0;
       return;

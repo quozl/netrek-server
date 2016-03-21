@@ -303,7 +303,7 @@ main(argc, argv)
 
    if(rwatch == 1){
       if(fork() == 0){
-	 execl("./rwatch", "rwatch", 0);
+	 execl("./rwatch", "rwatch", NULL);
 	 perror("execl");
       }
       for(i=0; i< 10; i++){

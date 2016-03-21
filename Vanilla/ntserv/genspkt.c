@@ -2397,11 +2397,11 @@ void initSPackets(void)
     clientGeneric32.type = 0;
     if (sizeof(struct generic_32_spacket_a) != GENERIC_32_LENGTH) {
         fprintf(stderr, "SP_GENERIC_32 size a wrong at %u bytes\n",
-                sizeof(struct generic_32_spacket_a));
+                (int) sizeof(struct generic_32_spacket_a));
     }
     if (sizeof(struct generic_32_spacket_b) != GENERIC_32_LENGTH) {
         fprintf(stderr, "SP_GENERIC_32 size b wrong at %u bytes\n",
-                sizeof(struct generic_32_spacket_b));
+                (int) sizeof(struct generic_32_spacket_b));
     }
 }
 

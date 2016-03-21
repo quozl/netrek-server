@@ -18,6 +18,7 @@
 #include <sys/errno.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include "defs.h"
 #include "struct.h"
@@ -361,11 +362,11 @@ tryagain:
             serverName = (char *) malloc(strlen(hp->h_name)+1);
             strcpy(serverName, hp->h_name);
         } else {
-            serverName = (char *) malloc(strlen((char *)inet_ntoa(addr.sin_addr))+1);
-            strcpy(serverName, (char *)inet_ntoa(addr.sin_addr));
+            serverName = (char *) malloc(strlen(inet_ntoa(addr.sin_addr))+1);
+            strcpy(serverName, inet_ntoa(addr.sin_addr));
         }
     }
-    printf("Connection from server %s (0x%x)\n", serverName, serveraddr);
+    printf("Connection from server %s (%s)\n", serverName, inet_ntoa(addr.sin_addr));
 }
 
 set_tcp_opts(s)
@@ -2428,7 +2429,7 @@ openUdpConn()
             }
         }
         serveraddr = addr.sin_addr.s_addr;
-        UDPDIAG(("Found serveraddr == 0x%x\n", serveraddr));
+        UDPDIAG(("Found serveraddr\n"));
     }
     return (0);
 }
@@ -2496,8 +2497,7 @@ select_again:;
     }
 
     if (from.sin_addr.s_addr != serveraddr) {
-        UDPDIAG(("Warning: from 0x%x, but server is 0x%x\n",
-                from.sin_addr.s_addr, serveraddr));
+        UDPDIAG(("Warning: from different IP\n"));
     }
     if (from.sin_family != AF_INET) {
         UDPDIAG(("Warning: not AF_INET (%d)\n", from.sin_family));
@@ -2594,7 +2594,7 @@ struct sequence_spacket *packet;
                 recent_dropped += (newseq-sequence)-1;
 		recent_count += (newseq-sequence)-1;
                 UDPDIAG(("sequence=%d, newseq=%d, we lost some\n",
-                        sequence, newseq));
+			 (int) sequence, (int) newseq));
             }
             sequence = newseq;
         } else {
@@ -2603,7 +2603,7 @@ struct sequence_spacket *packet;
                 V_UDPDIAG(("(ignoring repeat %d)\n", newseq));
             } else {
                 UDPDIAG(("sequence=%d, newseq=%d, ignoring transmission\n",
-                    sequence, newseq));
+			 (int) sequence, (int) newseq));
             }
             /* the remaining packets will be dropped and we shouldn't
                count the SP_SEQUENCE packet either */

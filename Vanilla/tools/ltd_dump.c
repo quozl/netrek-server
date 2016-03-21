@@ -80,7 +80,7 @@ static void dump_prefix(const char *abbr, const char *name) {
   strcat(buf, fmt_name(name));
   pad(buf, 38);
 
-  fprintf(fp, buf);
+  fprintf(fp, "%s", buf);
 
 }
 

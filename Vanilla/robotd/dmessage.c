@@ -1797,7 +1797,7 @@ setlog(dir)
 int_var(x, name, desc, in, rnd)
 
    int	*x, rnd;
-   char	*desc, *in;
+   char	*name, *desc, *in;
 {
    char	buf[80];
    int	f = 1;
