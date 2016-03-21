@@ -108,7 +108,7 @@ install: $(EXECS)
 	$(INSTALLPROG) $(INSTALLOPTS) ignore-clean $(DESTDIR)$(LIBDIR)/
 
 cambot: cambot.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB) $(LIBS)
 
 sortdb: sortdb.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} sortdb.o
@@ -192,10 +192,10 @@ setgame: setgame.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgame.o $(OBJS) $(LIBS)
 
 setplanet: setplanet.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setplanet.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setplanet.o $(OBJS) $(LIBS)
 
 setteam: setteam.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setteam.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setteam.o $(OBJS) $(LIBS)
 
 setship: setship.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setship.o $(OBJS) $(LIBS)
@@ -204,7 +204,7 @@ delist: delist.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} delist.o $(OBJS) $(LIBS)
 
 ban: ban.o $(OBJS)
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS) $(LIBS)
 
 getpath: getpath.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} getpath.o $(OBJS)
