@@ -27,12 +27,12 @@ minimal: null $(PMAKE) \
 	do_utilities do_rsa_utilities
 
 depend: system.mk
-	cd ntserv;    $(MAKE) depend
-	cd robots;    $(MAKE) depend
-	cd newstartd; $(MAKE) depend
-	cd tools;     $(MAKE) depend
-	cd keycomp;   $(MAKE) depend
-	cd sequencer; $(MAKE) depend
+	@cd ntserv;    $(MAKE) depend
+	@cd robots;    $(MAKE) depend
+	@cd newstartd; $(MAKE) depend
+	@cd tools;     $(MAKE) depend
+	@cd keycomp;   $(MAKE) depend
+	@cd sequencer; $(MAKE) depend
 	-@if [ -f res-rsa/Makefile ]; then \
 		(cd res-rsa; $(MAKE) depend) \
 	fi
@@ -52,22 +52,22 @@ config.h: system.mk
 	touch config.h
 
 do_library: null
-	cd ntserv; $(MAKE) libnetrek.a
+	@cd ntserv; $(MAKE) libnetrek.a
 
 do_server: null do_rsa_library
-	cd ntserv; $(MAKE)
+	@cd ntserv; $(MAKE)
 
 do_robots: do_library
-	cd robots; $(MAKE)
+	@cd robots; $(MAKE)
 
 do_robotd:
-	cd robotd; $(MAKE)
+	@cd robotd; $(MAKE)
 
 do_xsg: do_library
-	cd xsg; $(MAKE);
+	@cd xsg; $(MAKE);
 
 do_pledit: do_library
-	cd pledit; $(MAKE)
+	@cd pledit; $(MAKE)
 
 do_rsa_library:
 	-@if [ -f res-rsa/Makefile ]; then \
@@ -75,50 +75,50 @@ do_rsa_library:
 	fi
 
 do_utilities: do_rsa_library do_library
-	cd tools; $(MAKE)
-	cd sequencer; $(MAKE)
+	@cd tools; $(MAKE)
+	@cd sequencer; $(MAKE)
 
 do_rsa_utilities: do_library
-	cd keycomp; $(MAKE)
+	@cd keycomp; $(MAKE)
 
 do_listener: do_library
-	cd newstartd; $(MAKE)
+	@cd newstartd; $(MAKE)
 
 cflags.h: Makefile $(CONFIG)
-	cd ntserv;  $(MAKE) cflags
+	@cd ntserv;  $(MAKE) cflags
 
 lint:
-	cd ntserv;  $(MAKE) lint
-	cd robots;  $(MAKE) lint
-	cd keycomp; $(MAKE) lint
-	cd tools;   $(MAKE) lint
+	@cd ntserv;  $(MAKE) lint
+	@cd robots;  $(MAKE) lint
+	@cd keycomp; $(MAKE) lint
+	@cd tools;   $(MAKE) lint
 
 doxygen:
 	rm -rf html
 	doxygen doxygen.conf
 
 clean:
-	cd ntserv;    $(MAKE) clean
-	cd robots;    $(MAKE) clean
-	cd robotd;    $(MAKE) clean
-	cd newstartd; $(MAKE) clean
-	cd tools;     $(MAKE) clean
-	cd tools/admin;     $(MAKE) clean
-	cd sequencer; $(MAKE) clean
-	cd keycomp;   $(MAKE) clean
+	@cd ntserv;    $(MAKE) clean
+	@cd robots;    $(MAKE) clean
+	@cd robotd;    $(MAKE) clean
+	@cd newstartd; $(MAKE) clean
+	@cd tools;     $(MAKE) clean
+	@cd tools/admin;     $(MAKE) clean
+	@cd sequencer; $(MAKE) clean
+	@cd keycomp;   $(MAKE) clean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
 	fi
 	rm -f make.out cflags.h *~ null #*#
 
 reallyclean:
-	cd ntserv;    $(MAKE) reallyclean
-	cd robots;    $(MAKE) reallyclean
-	cd robotd;    $(MAKE) reallyclean
-	cd newstartd; $(MAKE) reallyclean
-	cd tools;     $(MAKE) reallyclean
-	cd sequencer; $(MAKE) reallyclean
-	cd keycomp;   $(MAKE) reallyclean
+	@cd ntserv;    $(MAKE) reallyclean
+	@cd robots;    $(MAKE) reallyclean
+	@cd robotd;    $(MAKE) reallyclean
+	@cd newstartd; $(MAKE) reallyclean
+	@cd tools;     $(MAKE) reallyclean
+	@cd sequencer; $(MAKE) reallyclean
+	@cd keycomp;   $(MAKE) reallyclean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
 		$(MAKE) reallyclean; \
@@ -137,17 +137,17 @@ maintainer-clean: distclean
 	rm -f docs/sample_sysdef
 
 installbin: all
-	cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
-	cd robots;    $(MAKE) install DESTDIR=$(DESTDIR)
-	cd robotd;    $(MAKE) install DESTDIR=$(DESTDIR)
-	cd newstartd; $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd robots;    $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd robotd;    $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd newstartd; $(MAKE) install DESTDIR=$(DESTDIR)
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install DESTDIR=$(DESTDIR); \
 	fi
-	cd tools;     $(MAKE) install DESTDIR=$(DESTDIR)
-	cd tools/admin; $(MAKE) install DESTDIR=$(DESTDIR)
-	cd keycomp;   $(MAKE) install DESTDIR=$(DESTDIR)
-	cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd tools;     $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd tools/admin; $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd keycomp;   $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
 
 install: installbin
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(BINDIR) $(DESTDIR)$(SYSCONFDIR) $(DESTDIR)$(LOCALSTATEDIR)
@@ -158,12 +158,12 @@ install: installbin
 	@echo "then start a client to try it out."
 
 rmdependencies:
-	cd ntserv;    $(MAKE) rmdependencies
-	cd robots;    $(MAKE) rmdependencies
-	cd newstartd; $(MAKE) rmdependencies
-	cd tools;     $(MAKE) rmdependencies
-	cd keycomp;   $(MAKE) rmdependencies
-	cd sequencer; $(MAKE) rmdependencies
+	@cd ntserv;    $(MAKE) rmdependencies
+	@cd robots;    $(MAKE) rmdependencies
+	@cd newstartd; $(MAKE) rmdependencies
+	@cd tools;     $(MAKE) rmdependencies
+	@cd keycomp;   $(MAKE) rmdependencies
+	@cd sequencer; $(MAKE) rmdependencies
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "      cd res-rsa; make rmdependencies"; \
 		$(MAKE) rmdependencies; \
