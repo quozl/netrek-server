@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <math.h>
 #include <string.h>
+#include <math.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -561,8 +561,7 @@ void rmove()
 u_char getcourse(x, y)
 int x, y;
 {
-	return((u_char) rint((atan2((double) (x - me->p_x),
-	    (double) (me->p_y - y)) / 3.14159 * 128.)));
+    return to_dir(x, y, me->p_x, me->p_y);
 }
 
 struct {

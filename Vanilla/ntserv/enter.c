@@ -5,7 +5,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -53,9 +52,7 @@ static u_char face_enemy(void)
     }
 
     /* calculate course, modulus 32 (45 degrees) */
-    dir = ((u_char) rint(atan2((double) (x - me->p_x),
-                               (double) (me->p_y - y))
-                         / 3.14159 * 128.0 / 32.0) * 32);
+    dir = to_dir(x, y, me->p_x, me->p_y) / 32 * 32;
     return dir;
 }
 

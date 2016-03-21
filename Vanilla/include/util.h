@@ -1,5 +1,6 @@
 /* util.c */
 int angdist(u_char x, u_char y);
+unsigned char to_dir(int x, int y, int mx, int my);
 #ifdef DEFINE_NINT
 int nint(double x);
 #endif

@@ -5,12 +5,9 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "util.h"
 #include "proto.h"
 #include "roboshar.h"
-
-#ifndef M_PI
-#include <math.h>
-#endif
 
 extern void do_message(int recip, int group, char *address, u_char from,
 		       const char *fmt, va_list args);
@@ -154,8 +151,7 @@ int game_resume(char *comm, struct message *mess)
  */
 u_char getcourse2(int x1, int y1, int x2, int y2)
 {
-    return((u_char) rint((atan2((double) (x2 - x1),
-        (double) (y1 - y2)) / M_PI * 128.)));
+    return to_dir(x2, y2, x1, y1);
 }
 
 /*

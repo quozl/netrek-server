@@ -21,7 +21,6 @@
 #include "util.h"
 
 /* file scope prototypes */
-static u_char newcourse(int x, int y);
 static void auto_features(void);
 
 extern int living;
@@ -572,7 +571,7 @@ static void auto_features(void)
 	    }
 	}
 	if (me->p_flags & PFPLOCK) {
-	    course = newcourse(pl->p_x, pl->p_y);
+	    course = to_dir(pl->p_x, pl->p_y, me->p_x, me->p_y);
 	    if (me->p_flags & PFTWARP)
 		me->p_dir = course;
 	    else
@@ -606,7 +605,7 @@ static void auto_features(void)
 	    extern int nowobble;
 
 	    /* calculate course to planet from current coordinates */
-	    course = newcourse(pln->pl_x, pln->pl_y);
+	    course = to_dir(pln->pl_x, pln->pl_y, me->p_x, me->p_y);
 
             /* avoid superfluous midflight wobble */
 	    if (nowobble) {
@@ -644,12 +643,6 @@ static void auto_features(void)
         }
     }
 #endif
-}
-
-static u_char newcourse(int x, int y)
-{
-	return((u_char) rint(atan2((double) (x - me->p_x),
-	    (double) (me->p_y - y)) / 3.14159 * 128.));
 }
 
 /*

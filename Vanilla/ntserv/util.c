@@ -9,6 +9,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include <math.h>
 #include "copyright.h"
 #include "defs.h"
 #include "struct.h"
@@ -31,6 +32,18 @@ int angdist(u_char x, u_char y)
     if (res > 128)
 	return(256 - (int) res);
     return((int) res);
+}
+
+/*
+** Calculate a course from (mx, my) to (x, y)
+*/
+
+unsigned char to_dir(int x, int y, int mx, int my)
+{
+    double course = rint(atan2((double) (x - mx), (double) (my - y))
+                         / 3.14159 * 128.);
+    if (course < 0) course += 256.;
+    return (unsigned char) course;
 }
 
 #ifdef DEFINE_NINT
