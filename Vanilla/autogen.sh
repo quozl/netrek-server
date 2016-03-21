@@ -1,5 +1,5 @@
 #!/bin/sh
-# autogen.sh prepares a source tree after a darcs get, see README.darcs
+# autogen.sh prepares a source tree after a git clone
 # you need tools, see README.developers "Setting up a Build Environment"
 
 for file in config.guess config.sub ltmain.sh;
@@ -20,15 +20,6 @@ autoconf
 if [ -d res-rsa ]; then
     cd res-rsa && autoconf
     cd ..
-fi
-cd tools/admin && chmod +x `grep ^EXECS Makefile.in | cut -d '=' -f 2` && cd ../..
-
-if [ -d debian ]; then
-    chmod +x debian/rules debian/postinst debian/netrek-server-vanilla.init
-fi
-
-if [ -f tests/build ]; then
-    chmod +x tests/build tests/build-cmake
 fi
 
 echo "autogen.sh completed ok"
