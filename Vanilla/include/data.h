@@ -441,4 +441,11 @@ extern int planet_plague;
 
 extern int self_reset;
 
+extern int basep_robot;
+extern int mars_robot;
+extern int puck_robot;
+extern int inl_robot;
+extern int newbie_robot;
+extern int pret_robot;
+
 #endif /* _h_data */

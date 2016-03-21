@@ -27,6 +27,47 @@ static void setarray ( struct sysdef_array *a, int v )
   for (i=0; i<a->max; i++) a->p[i] = v;
 }
 
+static void set_manager_type(int *p)
+{
+#ifdef BASEPRACTICE
+  if (p == &basep_robot) {
+    manager_type = BASEP_ROBOT;
+    return;
+  }
+#endif
+
+#ifdef DOGFIGHT
+  if (p == &mars_robot) {
+    manager_type = MARS_ROBOT;
+    return;
+  }
+#endif
+
+  if (p == &puck_robot) {
+    manager_type = PUCK_ROBOT;
+    return;
+  }
+
+  if (p == &inl_robot) {
+    manager_type = INL_ROBOT;
+    return;
+  }
+
+#ifdef NEWBIESERVER
+  if (p == &newbie_robot) {
+    manager_type = NEWBIE_ROBOT;
+    return;
+  }
+#endif
+
+#ifdef PRETSERVER
+  if (p == &pret_robot) {
+    manager_type = PRET_ROBOT;
+    return;
+  }
+#endif
+}
+
 void readsysdefaults(void)
 {
     int i,j;
@@ -116,8 +157,11 @@ void readsysdefaults(void)
 		    }
 		    break;
 		case SYSDEF_ROBOT:
-		    /* cast from pointer to integer of different size [ok] */
-		    if (atoi(s)) manager_type = (int) sysdef_keywords[j].p;
+		    {
+			int *p = (int *) sysdef_keywords[j].p;
+			*p = atoi(s);
+			if (*p) set_manager_type(p);
+		    }
 		    break;
 		case SYSDEF_SHIP:
 		    shipdefs (atoi(s),f);

@@ -513,3 +513,10 @@ int asstorp_base = 0;
 int recreational_dogfight_mode = 0;
 int planet_plague = 1;
 int self_reset = 1;
+
+int basep_robot = 0;
+int mars_robot = 0;
+int puck_robot = 0;
+int inl_robot = 0;
+int newbie_robot = 0;
+int pret_robot = 0;

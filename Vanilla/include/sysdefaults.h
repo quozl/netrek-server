@@ -162,11 +162,11 @@ struct sysdef_keywords {
   { "ERROR_LEVEL",	SYSDEF_INT,	&errorlevel,
     "Server error log verbosity level" },
 #ifdef BASEPRACTICE
-  { "BASEPRACTICE",	SYSDEF_ROBOT,	(void *) BASEP_ROBOT,
+  { "BASEPRACTICE",	SYSDEF_ROBOT,	&basep_robot,
     "Enable base practice robot on startup" },
 #endif
 #ifdef NEWBIESERVER
-  { "NEWBIE",	SYSDEF_ROBOT,	(void *) NEWBIE_ROBOT,
+  { "NEWBIE",	SYSDEF_ROBOT,	&newbie_robot,
     "Enable newbie server robot on startup" },
   { "MIN_NEWBIE_SLOTS",     SYSDEF_INT,     &min_newbie_slots,
     "Minimum number of total (human + robot) players to maintain" },
@@ -176,7 +176,7 @@ struct sysdef_keywords {
     "Keep number of humans on each team balanced" },
 #endif
 #ifdef PRETSERVER
-  { "PRET",	SYSDEF_ROBOT,	(void *) PRET_ROBOT,
+  { "PRET",	SYSDEF_ROBOT,	&pret_robot,
     "Enable pre T entertainment robot on startup" },
   { "PRET_GUEST",	SYSDEF_INT,	&pret_guest,
     "Use guest logins instead of random logins" },
@@ -199,18 +199,18 @@ struct sysdef_keywords {
     "Slot # to send newbie/pret debug output to" },
   { "ROBOT_DEBUG_LEVEL",	SYSDEF_INT,	&robot_debug_level,
     "Level for verbosity of robot debug output" },
-  { "HOCKEY",		SYSDEF_ROBOT,	(void *) PUCK_ROBOT,
+  { "HOCKEY",		SYSDEF_ROBOT,	&puck_robot,
     "Enable Puck (hockey) robot on startup" },
   { "GALACTIC_SMOOTH",	SYSDEF_INT,	&galactic_smooth,
     "Cause galactic to be updated at same rate as tactical" },
-  { "INL",		SYSDEF_ROBOT,	(void *) INL_ROBOT,
+  { "INL",		SYSDEF_ROBOT,	&inl_robot,
     "Enable INL (league) robot on startup" },
   { "INL_RECORD",	SYSDEF_INT,	&inl_record,
     "Record INL games server side with CamBot" },
   { "INL_DRAFT_STYLE",	SYSDEF_INT,	&inl_draft_style,
     "Style of INL draft layout on tactical" },
 #ifdef DOGFIGHT
-  { "DOGFIGHT",		SYSDEF_ROBOT,	(void *) MARS_ROBOT,
+  { "DOGFIGHT",		SYSDEF_ROBOT,	&mars_robot,
     "Enable Mars (dogfight) robot on startup" },
   { "CONTESTSIZE",	SYSDEF_INT,	&contestsize,
     "Size of dogfight practice contest" },
