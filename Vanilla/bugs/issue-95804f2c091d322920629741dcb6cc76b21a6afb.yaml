@@ -1,0 +1,25 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: netrekd fails to start if previous pid owned by another user
+desc: |-
+  netrekd: failed on test of pid 1198 existence
+  kill: Operation not permitted
+  
+  var/netrekd.pid contained 1198, and 1198 was an apache process on this
+  particular machine.
+  
+  workaround: remove var/netrekd.pid and retry
+type: :bugfix
+component: netrek-server-vanilla
+release: 
+reporter: James Cameron <quozl@us.netrek.org>
+status: :unstarted
+disposition: 
+creation_time: 2012-03-12 03:50:12.335800 Z
+references: []
+
+id: 95804f2c091d322920629741dcb6cc76b21a6afb
+log_events: 
+- - 2012-03-12 03:50:14.255705 Z
+  - James Cameron <quozl@us.netrek.org>
+  - created
+  - ""

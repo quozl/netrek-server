@@ -1,0 +1,92 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: quit in progress before parade cancels quit
+desc: |-
+  Date: Fri, 5 Mar 2010 13:33:53 -0500
+  From: Zachary Uram <netrek@gmail.com>
+  To: Netrek Development Mailing List <netrek-dev@us.netrek.org>
+  Subject: [netrek-dev] minor bug?
+  
+  I was quitting and during countdown someone geno'd in PreT and it
+  froze my countdown during the geno parade and then cancelled it so I
+  had to press shift-q again.
+  
+  Zach
+  
+  [full explanation posted in followup on mailing list]
+type: :bugfix
+component: netrek-server-vanilla
+release: 
+reporter: Zachary Uram <netrek@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2010-03-07 10:28:50.728437 Z
+references: []
+
+id: c0a211eead1332fbfe7c44f20af88b064dfcb927
+log_events: 
+- - 2010-03-07 10:29:12.620555 Z
+  - James Cameron <quozl@us.netrek.org>
+  - created
+  - |-
+    Date: Sun, 7 Mar 2010 21:24:51 +1100
+    From: James Cameron <quozl@us.netrek.org>
+    To: Netrek Development Mailing List <netrek-dev@us.netrek.org>
+    Subject: Re: [netrek-dev] minor bug?
+    
+    On Fri, Mar 05, 2010 at 01:33:53PM -0500, Zachary Uram wrote:
+    > I was quitting and during countdown someone geno'd in PreT and it
+    > froze my countdown during the geno parade and then cancelled it so I
+    > had to press shift-q again.
+    
+    There are two critical data values;
+    
+    - p_flags & PFSELFDEST, a bit in the player flags variable, which means
+    that a self destruct timer is running,
+    
+    - p_selfdest, a player variable, an integer representing the future game
+    time (in terms of p_updates) that the self destruct will take effect
+    if not cancelled.
+    
+    PFSELFDEST is set in socket.c at the same point that you get the warning
+    "Self destruct initiated".  If you get that warning, PFSELFDEST is
+    certainly set.  Check your logs.  p_selfdest is set at the same moment,
+    to a time in the future (p_updates plus something).  See function
+    handleQuitReq.
+    
+    PFSELFDEST is explicitly cleared under two conditions only:
+    
+    1.  the self destruct timer expires, in which case your ship begins to
+    explode, and if the parade triggers at that point your explosion will
+    join the parade (your client may render this as a ship), and then the
+    end of parade explosion will change the reason for your death from what
+    you selected (you quit) to whatever triggered the parade (genocide),
+    
+    2.  if a packet is received from the client forcing the cancel, in which
+    case you are told "Self Destruct has been canceled".  If you saw that
+    message, then your client sent a packet after the quit request.  Check
+    your logs.
+    
+    PFSELFDEST is not cleared by the conquer parade, and the parade halts
+    the p_updates increment (it is a pause), so once the pause is finished
+    the fact that the ship is dead for reasons of genocide would hide the
+    PFSELFDEST flag.
+    
+    PFSELFDEST is also cleared at the point a ship enters the game.  See
+    enter.c, function enter(), where p_flags is assigned rather than bit
+    manipulated.  Therefore the pending self destruct won't be seen by the
+    next ship in that slot.
+    
+    In theory, the same problem you observe (self destruct ineffective)
+    might also occur if you are killed by an enemy before the timer
+    expires.  However, the typical client remembers you asked to quit.  COW
+    doesn't use PFSELFDEST at all.
+    
+    The problem is no doubt caused by the original design overloading the
+    cause of death ... and offering only *one* cause of death in any
+    circumstance, instead of whatever causes are available.  Cause of death
+    should be a bit mask of possibilities, rather than a constant single
+    value.  Unlikely to change.
+    
+    --
+    James Cameron
+    http://quozl.linux.org.au/
