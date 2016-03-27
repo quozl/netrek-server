@@ -56,8 +56,7 @@ keep_reading:
       if (isServerDead())
          exitRobot(0);
       if(!pollmode){
-	 int	now = time(NULL)-3;
-	 mprintf("sending wakeup packet at %s", ctime(&now));
+	 mprintf("sending wakeup packet\n");
 	 sendWarReq(me->p_hostile);
       }
    }
