@@ -353,7 +353,7 @@ main(argc, argv)
       pseudo[sizeof(pseudo) - 1] = '\0';
    }
 
-   mprintf("login ..."); fflush(stdout);
+   mprintf("login ...\n"); fflush(stdout);
    if(password[0])
       renter(pseudo, password, login);
    else
