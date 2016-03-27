@@ -50,13 +50,14 @@ struct torp *t_find(struct player *me, int status)
 int t_attribute = TOWNERSAFE | TDETTEAMSAFE;
 int t_torpspeed = -1;
 
-int setship(char *cmds)
+int setship(const char *cmds)
 {
   const char delimiters[] = " ";
-  char *token;
+  char *copy, *token;
   struct player *me;
 
-  token = strtok(cmds, delimiters);
+  copy = strdup(cmds);
+  token = strtok(copy, delimiters);
   if (!token) { usage(); return 1; }
   openmem(0);
 
