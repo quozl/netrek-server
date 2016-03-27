@@ -1,0 +1,82 @@
+# http://wiki.tinycorelinux.com/tiki-index.php?page=Creating+Extensions
+
+# upstream source
+darcs get ~/src/netrek-server
+
+# configure and build
+cd netrek-server/Vanilla
+export CFLAGS="-march=i486 -mtune=i686 -Os -pipe"
+export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -fno-exceptions -fno-rtti"
+sh autogen.sh
+./configure --prefix=/usr/local
+make -j3
+
+# install into a destination tree
+mkdir /tmp/package
+make DESTDIR=/tmp/package install
+cd /tmp/package
+
+# strip
+find . | xargs file | grep "executable" | grep ELF | grep "not stripped" | \
+  cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
+
+# configuration files
+mv usr/local/etc/sysdef usr/local/etc/sysdef.sample
+
+# startup
+mkdir usr/local/tce.installed
+cat << EOF > usr/local/tce.installed/netrekd
+#!/bin/sh
+cd /usr/local/etc/
+[ ! -e sysdef ] && cp -p sysdef.sample sysdef
+cd
+/usr/local/bin/netrekd
+EOF
+chmod +x usr/local/tce.installed/netrekd
+
+# FIXME: above runs netrekd as root, works fine, but unwise
+
+# netrekd is run as user tc (1001) group staff (50)
+chmod -R o+w usr/local/var
+
+# some assembly required
+cd /tmp
+mksquashfs package netrekd.tcz
+cd /tmp/package
+mv ../netrekd.tcz .
+find usr -not -type d > netrekd.tcz.list
+rm -rf usr
+
+# needed libgdbm
+echo libgdbm.tcz > netrekd.tcz.dep
+
+# test usefulness on tc 2.10
+tce-load -w -i openssh
+cd /tmp/tce/optional
+scp james@dors:/tmp/package/netrekd .
+tce-load -w -i libgdbm
+tce-load netrekd
+
+# worked!  client connected fine.
+# multicast discovery didn't detect, probably a virtualbox issue
+
+# FIXME: install the extension inside the iso file and remaster it
+# http://wiki.tinycorelinux.com/tiki-index.php?page=Integrating+Extensions
+mount -o loop,ro tinycore_2.10.iso /mnt
+mkdir /tmp/tc
+mkdir /tmp/tc/tce
+cp -a /mnt/boot /tmp/tc
+umount /mnt
+cp /usr/local/games/netrek-server-vanilla/tinycore/* /tmp/tc/tce
+cd /tmp
+mkisofs -l -J -V TC-custom \
+  -no-emul-boot -boot-load-size 4 -boot-info-table \
+  -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat \
+  -o /d/isos/tinycore_2.10_netrekd.iso tc
+# FIXME: contrary to the wiki, it does not load these extensions on boot
+
+# client notes
+# append to /home/tc/.xsession on tce-load
+netrek-client-cow &
+
+# pygame is not present as an extension, but sdl is, and python is
