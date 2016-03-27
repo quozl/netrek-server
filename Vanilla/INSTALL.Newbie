@@ -15,13 +15,14 @@ configure
 make
 make install
 
-3.  edit the etc/sysdef file and change two critical values:
+3.  edit the etc/sysdef file and change two values:
 
 NEWBIE=1
 CHECKSCUM=0
 
-4.  edit the etc/ports file, removing the comment prefix from these
-lines:
+4.  edit the etc/ports file, disable the standard ports 2592 and 2593
+by adding a comment prefix "#", then enable by removing comment prefix
+from these lines:
 
 2592 ntserv "ntserv" -q 9
 3592 ntserv "ntserv" -q 10
