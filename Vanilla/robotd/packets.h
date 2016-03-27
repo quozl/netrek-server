@@ -4,6 +4,7 @@
  * Kevin P. Smith 1/29/89
  */
 #include "copyright2.h"
+#include <inttypes.h>
 
 #ifdef ATM
 #define STATUS_TOKEN    "\t@@@"         /* ATM */
@@ -180,19 +181,19 @@ struct stats_spacket {
     char pnum;
     char pad1;
     char pad2;
-    long tkills;	/* Tournament kills */
-    long tlosses;	/* Tournament losses */
-    long kills;		/* overall */
-    long losses;	/* overall */
-    long tticks;	/* ticks of tournament play time */
-    long tplanets;	/* Tournament planets */
-    long tarmies;	/* Tournament armies */
-    long sbkills;	/* Starbase kills */
-    long sblosses;	/* Starbase losses */
-    long armies;	/* non-tourn armies */
-    long planets;	/* non-tourn planets */
-    long maxkills;	/* max kills as player * 100 */
-    long sbmaxkills;	/* max kills as sb * 100 */
+    int32_t tkills;	/* Tournament kills */
+    int32_t tlosses;	/* Tournament losses */
+    int32_t kills;		/* overall */
+    int32_t losses;	/* overall */
+    int32_t tticks;	/* ticks of tournament play time */
+    int32_t tplanets;	/* Tournament planets */
+    int32_t tarmies;	/* Tournament armies */
+    int32_t sbkills;	/* Starbase kills */
+    int32_t sblosses;	/* Starbase losses */
+    int32_t armies;	/* non-tourn armies */
+    int32_t planets;	/* non-tourn planets */
+    int32_t maxkills;	/* max kills as player * 100 */
+    int32_t sbmaxkills;	/* max kills as sb * 100 */
 };
 
 struct flags_spacket {
@@ -200,7 +201,7 @@ struct flags_spacket {
     char pnum;		/* whose flags are they? */
     char pad1;
     char pad2;
-    unsigned flags;
+    uint32_t flags;
 };
 
 struct kills_spacket {
@@ -208,7 +209,7 @@ struct kills_spacket {
     char pnum;
     char pad1;
     char pad2;
-    unsigned kills;	/* where 1234=12.34 kills and 0=0.00 kills */
+    uint32_t kills;	/* where 1234=12.34 kills and 0=0.00 kills */
 };
 
 struct player_spacket {
@@ -216,7 +217,7 @@ struct player_spacket {
     char pnum;		
     unsigned char dir;
     char speed;
-    long x,y;
+    int32_t x,y;
 };
 
 struct torp_info_spacket {
@@ -232,7 +233,7 @@ struct torp_spacket {
     char  type;		/* SP_TORP */
     unsigned char dir;
     short tnum;
-    long  x,y;
+    int32_t  x,y;
 };
 
 struct phaser_spacket {
@@ -240,8 +241,8 @@ struct phaser_spacket {
     char pnum;
     char status;	/* PH_HIT, etc... */
     unsigned char dir;
-    long x,y;
-    long target;
+    int32_t x,y;
+    int32_t target;
 };
 
 struct you_spacket {
@@ -253,10 +254,10 @@ struct you_spacket {
     char pad1;
     char pad2;
     char pad3;
-    unsigned flags;
-    long damage;
-    long shield;
-    long fuel;
+    uint32_t flags;
+    int32_t damage;
+    int32_t shield;
+    int32_t fuel;
     short etemp;
     short wtemp;
     short whydead;
@@ -268,12 +269,12 @@ struct status_spacket {
     char tourn;
     char pad1;
     char pad2;
-    unsigned armsbomb;
-    unsigned planets;
-    unsigned kills;
-    unsigned losses;
-    unsigned time;
-    unsigned long timeprod;
+    uint32_t armsbomb;
+    uint32_t planets;
+    uint32_t kills;
+    uint32_t losses;
+    uint32_t time;
+    uint32_t timeprod;
 };
 
 struct warning_spacket {
@@ -291,7 +292,7 @@ struct planet_spacket {
     char  info;		
     short flags;
     short pad2;
-    long  armies;
+    int32_t  armies;
 };
 
 struct torp_cpacket {
@@ -420,7 +421,7 @@ struct login_spacket {
     char accept;	/* 1/0 */
     char pad2;
     char pad3;
-    long flags;
+    int32_t flags;
     char keymap[96];
 };
 
@@ -478,7 +479,7 @@ struct plasma_spacket {
     char  type;		/* SP_PLASMA */
     char  pad1;
     short pnum;
-    long  x,y;
+    int32_t  x,y;
 };
 
 struct playlock_cpacket {
@@ -548,7 +549,7 @@ struct socket_cpacket {
     char pad2;
 #endif /*ATM*/
     char pad3;
-    unsigned socket;
+    uint32_t socket;
 };
 
 struct options_cpacket {
@@ -556,7 +557,7 @@ struct options_cpacket {
     char pad1;
     char pad2;
     char pad3;
-    unsigned flags;
+    uint32_t flags;
     char keymap[96];
 };
 
@@ -586,7 +587,7 @@ struct updates_cpacket {
     char pad1;
     char pad2;
     char pad3;
-    unsigned usecs;
+    uint32_t usecs;
 };
 
 struct resetstats_cpacket {
@@ -619,13 +620,13 @@ struct udp_req_cpacket {        /* UDP */
     char request;
     char connmode;      /* respond with port # or just send UDP packet? */
     char pad2;
-    int  port;          /* compensate for hosed recvfrom() */
+    int32_t port;          /* compensate for hosed recvfrom() */
 };
 
 struct sequence_cpacket {       /* UDP */
     char type;          /* CP_SEQUENCE */
     char pad1;
-    unsigned short sequence;
+    uint16_t sequence;
 };
 
 struct ping_cpacket {
@@ -634,14 +635,14 @@ struct ping_cpacket {
    char                 pingme;         /* if client wants server to ping */
    char			pad1;
 
-   long                 cp_sent;        /* # packets sent to server */
-   long                 cp_recv;        /* # packets recv from server */
+   int32_t                 cp_sent;        /* # packets sent to server */
+   int32_t                 cp_recv;        /* # packets recv from server */
 };
 
 struct ping_spacket {
    char                 type;           /* SP_PING */
    unsigned char        number;         /* id */
-   unsigned short       lag;            /* delay in ms */
+   uint16_t             lag;            /* delay in ms */
 
    unsigned char        tloss_sc;       /* total loss server-client 0-100% */
    unsigned char        tloss_cs;       /* total loss client-server 0-100% */
@@ -659,7 +660,7 @@ struct shortreq_cpacket {	/* CP_S_REQ */
 struct sc_sequence_spacket {    /* UDP */
     char type;          /* SP_CP_SEQUENCE */
     char pad1;
-    unsigned short sequence;
+    uint16_t sequence;
 };
 
 struct shortreply_spacket {	/* SP_S_REPLY */
@@ -681,7 +682,7 @@ struct youshort_spacket {	/* SP_S_YOU */
 
      char	pad1;
 
-     unsigned	flags;
+     uint32_t	flags;
 };
 
 struct youss_spacket {		/* SP_S_YOU_SS */
@@ -700,13 +701,13 @@ struct udp_reply_spacket {      /* UDP */
     char reply;
     char pad1;
     char pad2;
-    int  port;
+    int32_t  port;
 };
 
 struct sequence_spacket {       /* UDP */
     char type;          /* SP_SEQUENCE */
     char pad1;
-    unsigned short sequence;
+    uint16_t sequence;
 };
 #endif /*ATM*/
 
@@ -716,8 +717,8 @@ struct planet_loc_spacket {
     char pnum;
     char pad2;
     char pad3;
-    long x;
-    long y;
+    int32_t x;
+    int32_t y;
     char name[16];
 };
 
