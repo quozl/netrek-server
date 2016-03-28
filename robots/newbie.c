@@ -570,7 +570,6 @@ num_players(int *next_team)
     int tc, team_count[MAXTEAM+1];
     long int rt;
     int c = 0;
-    int feds = 0, roms = 0, klis = 0, oris = 0;
 
     team_count[ROM] = 0;
     team_count[FED] = 0;
@@ -591,19 +590,15 @@ num_players(int *next_team)
     /* Count number of teams, and flag team as having at least 1 player */
     if (team_count[ROM] > 0) {
         tc++;
-        roms=1;
     }
     if (team_count[FED] > 0) {
         tc++;
-        feds=1;
     }
     if (team_count[KLI] > 0) {
         tc++;
-        klis=1;
     }
     if (team_count[ORI] > 0) {
         tc++;
-        oris=1;
     }
 
    if(robot_debug_target != -1 && robot_debug_level >= 2)
