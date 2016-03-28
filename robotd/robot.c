@@ -12,6 +12,28 @@
 #include "robot.h"
 
 /* XXX */
+void goto_state();
+void s_no_hostile();
+void s_update();
+void s_refit();
+void s_engage();
+void s_assault();
+void s_getarmies();
+void s_ogg();
+void s_escort();
+void s_comehere();
+void do_defense();
+void s_defense();
+void s_disengage();
+void s_recharge();
+void phaser_plasmas();
+void req_pressor_on();
+void _reset_initial(int *team_r, int *ship_r, char *login);
+void ignore_edefault(char *s);
+void handle_unknown_problems();
+void init_servername();
+void init_playertype(char *login);
+
 void init_timers();
 static int	in_game;
 
@@ -1999,7 +2021,8 @@ int reset_r_info(team_r, ship_r, first, login)
 }
 
 void _reset_initial(team_r, ship_r, login)
-   int	*team_r, *ship_r, *login;
+     int	*team_r, *ship_r;
+     char	*login;
 {
    /* debug */
    extern int dgo;
