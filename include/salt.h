@@ -1,7 +1,11 @@
 #ifndef SALT_H
 #define SALT_H
 
-typedef char saltbuf[3];
+/* Salt is a two-character string. */
+#define SALT_LEN 2
+
+/* Salt buffers contain the two-character string followed by '\0'. */
+typedef char saltbuf[SALT_LEN + 1];
 
 char* salt(const char*, saltbuf);
 

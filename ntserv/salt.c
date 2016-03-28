@@ -19,19 +19,24 @@ static char saltchar(char ch)
 /* Sets sb to a valid salt argument for crypt(), based on s. */
 char* salt(const char* s, saltbuf sb)
 {
-    int i;
-    int end = 0;
-    int saltlen = sizeof(sb) - 2;
-    
-    for (i=0; i<saltlen; i++) {
-	if (!end) end = (*s == '\0');
-	if (end) {
-	    sb[i] = DEFAULT;
-	} else {
-	    sb[i] = saltchar(*s);
-	    s++;
-	}
+    char *out_p = &sb[0];
+    char *out_end = &sb[SALT_LEN];
+
+    while (out_p < out_end) {
+        char c = *s++;
+
+        if (c == '\0') {
+            /* String ended early. Pad with DEFAULT. */
+            do {
+                *out_p++ = DEFAULT;
+            } while (out_p < out_end);
+            break;
+        }
+
+        *out_p++ = saltchar(c);
     }
-    sb[saltlen] = '\0';
+
+    *out_end = '\0';
+
     return sb;
 }
