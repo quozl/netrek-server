@@ -14,7 +14,7 @@
 
 /* Decide next course of action */
 
-decide()
+void decide()
 {
    static int	_donedead;
    static int	 needswardecs=1; /* track t-mode start and war declarations */
@@ -153,7 +153,7 @@ decide()
 }
 
 /* currently protecting.  Do we continue to protect or do something else? */
-decide_protect()
+void decide_protect()
 {
    struct planet	*pl = _state.protect_planet;
 
@@ -170,7 +170,7 @@ decide_protect()
       unprotectp_c("no protect");
 }
 
-decide_defend()
+void decide_defend()
 {
    Player	*p = _state.protect_player;
    if(!p || !p->p || !isAlive(p->p)){
@@ -185,7 +185,7 @@ decide_defend()
    }
 }
 
-decide_take()
+void decide_take()
 {
    PlanetRec		*pls = _state.planets;
    struct planet *tpl = _state.assault_planet;
@@ -241,7 +241,7 @@ decide_take()
    }
 }
 
-decide_bomb()
+void decide_bomb()
 {
    struct planet	*pl = me_p->closest_pl;
    int			dist = pl?pl->pl_mydist:INT_MAX;
@@ -304,8 +304,8 @@ decide_bomb()
       }
    }
 }
-check_bombdamage(pl)
-   
+
+void check_bombdamage(pl)
    struct planet	*pl;
 {
    if(me->p_ship.s_type == SCOUT &&
@@ -325,11 +325,11 @@ check_bombdamage(pl)
       disengage_c(EDAMAGE, NULL, "dam > 75");
 }
 
-decide_disengage()
+void decide_disengage()
 {
 }
 
-decide_ogg()
+int decide_ogg()
 {
    Player *p = _state.current_target;
 
@@ -367,13 +367,13 @@ decide_ogg()
    return 1;
 }
 
-decide_escort()
+void decide_escort()
 {
    return;
 }
 
 /* decide to do something */
-decide_default()
+void decide_default()
 {
    int	ship = _state.ship;
    struct planet *pl = _state.protect_planet;
@@ -465,7 +465,7 @@ decide_default()
    }
 }
 
-pick_df_ship()
+int pick_df_ship()
 {
    int	r = RANDOM()%10;
    if(_state.galaxy && _state.chaos){
@@ -483,14 +483,13 @@ pick_df_ship()
 }
 
 /* Examine our planets -- determine if we should protect planet */
-check_protect(min_pl, ship, value)
-   
+int check_protect(min_pl, ship, value)
    int	min_pl;
    int	*ship;
    int	value;
 {
    PlanetRec		*pls = _state.planets;
-   register		i,j;
+   register int		i,j;
    register Player	*p;
    int			plc[MAXPLANETS];
    int			min_p = INT_MAX-1;
@@ -582,12 +581,11 @@ check_protect(min_pl, ship, value)
    return 1;
 }
 
-check_bomb(ship)
-   
+int check_bomb(ship)
    int	*ship;
 {
    PlanetRec			*pls = _state.planets;
-   register			k;
+   register int			k;
    register struct planet	*pl;
    register int			ac,mac=0;
    int				cof;
@@ -680,12 +678,11 @@ check_bomb(ship)
    return 0;
 }
 
-check_take(ship)
-   
+int check_take(ship)
    int	*ship;
 {
    PlanetRec			*pls = _state.planets;
-   register			k;
+   register int			k;
    register struct planet	*pl, *tpl = NULL;
    int				hd = home_dist();
    int				min_dist = GWIDTH;
@@ -767,13 +764,12 @@ check_take(ship)
    return 0;
 }
 
-check_ogg(ship, dist)
-   
+int check_ogg(ship, dist)
    int	*ship;
    int	dist;
 {
    register Player	*p, *op = NULL;
-   register		i;
+   register int		i;
    int			mindist = INT_MAX;
    Player 		*co = _state.current_target;
 
@@ -828,12 +824,12 @@ check_ogg(ship, dist)
    return 0;
 }
 
-check_escort()
+int check_escort()
 {
    return 0;
 }
 
-protectp_c(p, s)
+void protectp_c(p, s)
 
    struct planet	*p;
    char			*s;
@@ -847,8 +843,7 @@ protectp_c(p, s)
    _state.arrived_at_planet = 0;
 }
 
-unprotectp_c(s)
-   
+void unprotectp_c(s)
    char	*s;
 {
    if(!_state.protect) return;
@@ -858,8 +853,7 @@ unprotectp_c(s)
    _state.protect_planet = NULL;
 }
 
-bomb_c(p, s)
-
+void bomb_c(p, s)
    struct planet	*p;
    char			*s;
 {
@@ -873,8 +867,7 @@ bomb_c(p, s)
    _state.lock = 0;
 }
 
-unassault_c(s)
-   
+void unassault_c(s)
    char	*s;
 {
    if(_state.assault_req == 0) return;
@@ -887,7 +880,7 @@ unassault_c(s)
    _state.arrived_at_planet = 0;
 }
 
-ogg_c(p, s)
+void ogg_c(p, s)
    Player	*p;
    char		*s;
 {
@@ -902,7 +895,7 @@ ogg_c(p, s)
    _state.ogg = 0;
 }
 
-unogg_c(s)
+void unogg_c(s)
    char	*s;
 {
    if(_state.ogg_req == 0) return;
@@ -911,8 +904,7 @@ unogg_c(s)
    _state.ogg = 0;
 }
 
-take_c(p, s)
-
+void take_c(p, s)
    struct planet	*p;
    char			*s;
 {
@@ -925,8 +917,7 @@ take_c(p, s)
    _state.arrived_at_planet = 0;
 }
 
-untake_c(s)
-   
+void untake_c(s)
    char	*s;
 {
    if(_state.assault_req == 0) return;
@@ -939,8 +930,7 @@ untake_c(s)
    _state.arrived_at_planet = 0;
 }
 
-refit_c(s)
-   
+void refit_c(s)
    char	*s;
 {
    if(_server == SERVER_GRIT && MYDAMAGE() < 50){
@@ -958,8 +948,7 @@ refit_c(s)
    }
 }
 
-unrefit_c(s)
-
+void unrefit_c(s)
    char	*s;
 {
    if(!_state.refit_req) return;
@@ -969,7 +958,7 @@ unrefit_c(s)
    _state.planet = NULL;
 }
 
-disengage_c(w, p, s)
+void disengage_c(w, p, s)
    ediswhy		w;
    struct planet	*p;
    char			*s;
@@ -984,8 +973,7 @@ disengage_c(w, p, s)
    _state.ogg_req	= 0;
 }
 
-rdisengage_c(s)
-   
+void rdisengage_c(s)
    char	*s;
 {
    if(!_state.disengage) return;
@@ -997,8 +985,7 @@ rdisengage_c(s)
    _state.lock = 0;
 }
 
-escort_c(p, pl, s)
-
+void escort_c(p, pl, s)
    Player		*p;
    struct planet	*pl;
    char			*s;
@@ -1010,7 +997,7 @@ escort_c(p, pl, s)
    _state.escort = 0;
 }
 
-rescort_c(s)
+void rescort_c(s)
    char	*s;
 {
    if(!_state.escort_req) return;
@@ -1021,8 +1008,7 @@ rescort_c(s)
    _state.escort_planet = NULL;
 }
 
-defend_c(p, s)
-
+void defend_c(p, s)
    Player	*p;
    char	*s;
 {
@@ -1040,8 +1026,7 @@ defend_c(p, s)
    _state.protect_player = p;
 }
 
-rall_c(s)
-   
+void rall_c(s)
    char	*s;
 {
    /*	XX
@@ -1060,8 +1045,7 @@ rall_c(s)
       rdefend_c(s);
 }
 
-rrecharge_c(s)
-
+void rrecharge_c(s)
    char	*s;
 {
    if(!_state.recharge) return;
@@ -1069,8 +1053,7 @@ rrecharge_c(s)
    _state.recharge = 0;
 }
 
-rdefend_c(s)
-
+void rdefend_c(s)
    char	*s;
 {
    if(!_state.defend) return;
@@ -1080,8 +1063,7 @@ rdefend_c(s)
 }
 
 
-decideNotify(com, s, s2)
-
+void decideNotify(com, s, s2)
    char	*com,*s, *s2;
 {
    static char	buf[80];
@@ -1092,12 +1074,11 @@ decideNotify(com, s, s2)
    }
 }
 
-me_closest_to_planet(pl, dist)
-   
+int me_closest_to_planet(pl, dist)
    struct planet	*pl;
    int			dist;
 {
-   register		i;
+   register int		i;
    register Player	*p;
 
    for(i=0, p=_state.players; i < MAXPLAYER; i++,p++){
@@ -1112,12 +1093,11 @@ me_closest_to_planet(pl, dist)
    return 1;
 }
 
-myteam_bombing(pl, dist)
-
+int myteam_bombing(pl, dist)
    struct planet	*pl;
    int			dist;
 {
-   register		i;
+   register int		i;
    register Player	*p;
 
    for(i=0,p=_state.players; i < MAXPLAYER; i++,p++){
@@ -1132,13 +1112,12 @@ myteam_bombing(pl, dist)
    return 0;
 }
 
-pl_defended(pl, c)
-
+int pl_defended(pl, c)
    struct planet	*pl;
    int			c;
 {
    PlanetRec		*pls = _state.planets;
-   register		i, fc=0, ec=0;
+   register	int	i, fc=0, ec=0;
    register	Player	*p;
 
    /* kludge to force bombing if half planets there -- much more important */
@@ -1166,9 +1145,9 @@ pl_defended(pl, c)
    return 0;
 }
 
-pl_attacking()
+int pl_attacking()
 {
-   register		i, ec=0;
+   register	int	i, ec=0;
    register	Player	*p;
    int			m = me->p_no;
 
@@ -1182,8 +1161,7 @@ pl_attacking()
    return ec;
 }
 
-time_to_refit(p)
-   
+int time_to_refit(p)
    Player	*p;
 {
    if(p->dist < 25000 && MYFUEL() > 100)
@@ -1196,9 +1174,9 @@ time_to_refit(p)
    return 1;
 }
 
-check_alldistress()
+void check_alldistress()
 {
-   register		i;
+   register int		i;
    register Player	*p;
 
    if(_state.escort_req || _state.defend)
@@ -1217,11 +1195,10 @@ check_alldistress()
 /* player sent a distress call in the last 15 seconds. Decide to defend or 
    not */
 
-check_distress(p)
-
+int check_distress(p)
    Player	*p;
 {
-   register		i;
+   register int		i;
    register Player	*e;
 
    /* don't get distracted */

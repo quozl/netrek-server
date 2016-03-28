@@ -105,8 +105,7 @@ void R_NextCommand()
    _waiting_for_input = mtime(0);
 }
 
-goto_state()
-
+void goto_state()
 {
    switch(_state.state){
       
@@ -163,7 +162,7 @@ goto_state()
 }
 
 /* NS: 	S_UPDATE */
-s_no_hostile()
+void s_no_hostile()
 {
    int	f = MYFUEL() < 90;
    int  d = MYDAMAGE() > 0 || MYSHIELD() < 100;
@@ -203,7 +202,7 @@ s_no_hostile()
 
 /* just entered */
 /* NS: S_ENGAGE, S_UPDATE */
-s_update()
+void s_update()
 {
    int	f = fuel_check(), d = repair_check();
 
@@ -296,7 +295,7 @@ s_update()
       _state.state = S_NO_HOSTILE;
 }
 
-s_refit()
+void s_refit()
 {
    static int	refitting;
 
@@ -375,7 +374,7 @@ s_refit()
 
 /* plot course towards player */
 /* NS: S_DEFENSE, S_UPDATE */
-s_engage()
+void s_engage()
 {
    Player		*e = _state.current_target;
 
@@ -384,28 +383,28 @@ s_engage()
    engage(e);	/* engage.c */
 }
 
-s_assault()
+void s_assault()
 {
    _state.state = S_DEFENSE;
 
    assault();
 }
 
-s_getarmies()
+void s_getarmies()
 {
    _state.state = S_DEFENSE;
 
    getarmies();
 }
 
-s_ogg()
+void s_ogg()
 {
    _state.state = S_DEFENSE;
 
    ogg();
 }
 
-s_escort()
+void s_escort()
 {
    _state.state = S_DEFENSE;
 
@@ -413,7 +412,7 @@ s_escort()
 }
 
 /* go to controller */
-s_comehere()
+void s_comehere()
 {
    struct player	*j;
    unsigned char	crs, crs_r;
@@ -453,7 +452,7 @@ s_comehere()
    _state.state = S_DEFENSE;
 }
 
-do_defense()
+void do_defense()
 {
    Player		*e = _state.closest_e;
    int			speed = _state.p_desspeed, edist, phrange;
@@ -514,7 +513,7 @@ do_defense()
 }
 
 /* check for incoming and ready phaser & torps */
-s_defense()
+void s_defense()
 {
    Player		*e = _state.closest_e;
    int			num_hits;
@@ -578,7 +577,7 @@ s_defense()
    }
 }
 
-check_me_explode()
+void check_me_explode()
 {
    Player	*p = _state.closest_f;
    int		mdam;
@@ -603,8 +602,7 @@ check_me_explode()
 }
 
 
-check_dethis(num_hits, hittime)
-
+void check_dethis(num_hits, hittime)
    int	num_hits, hittime;
 {
    int	detconst;
@@ -654,7 +652,7 @@ check_dethis(num_hits, hittime)
       req_detonate("det");
 }
 
-s_disengage()
+void s_disengage()
 {
    disengage();		/* disengage.c */
 
@@ -662,7 +660,7 @@ s_disengage()
 }
 
 /* NS: S_DEFENSE */
-s_recharge()
+void s_recharge()
 {
    /* add shields? */
    int	damage = MYDAMAGE();
@@ -886,7 +884,7 @@ struct planet *find_safe_planet(e, dist, team)
    int			*dist;	/* returned */
    int			team;
 {
-   register		k;
+   register int		k;
    struct planet	*pl, *cpl=NULL;
    Player		*p;
    int			pdist, mindist=INT_MAX, ed;
@@ -992,8 +990,7 @@ int pltype_needed()
    return r;
 }
 
-plmatch(pl, r)
-
+int plmatch(pl, r)
    struct planet	*pl;
    int			r;
 {
@@ -1004,7 +1001,7 @@ plmatch(pl, r)
 
 struct planet *nearest_safe_planet()
 {
-   register			i;
+   register int			i;
    register struct planet	*pl;
    PlanetRec			*pls = _state.planets;
    int				r = pltype_needed();
@@ -1026,7 +1023,7 @@ struct planet *nearest_safe_planet()
    return home_planet();
 }
 
-rship_dist()
+int rship_dist()
 {
    int	dm = MYDAMAGE();
    switch(me->p_ship.s_type){
@@ -1048,15 +1045,15 @@ rship_dist()
    return 5000;
 }
 
-not_safe(pl, pcrs, pdist)
-
+int not_safe(pl, pcrs, pdist)
    struct planet	*pl;
    unsigned char	pcrs;
    int			pdist;
 {
-   register		i;
+   register int		i;
    register Player	*p;
    struct planet	*team_planet();
+   int			in_team_area();
 
    if(DEBUG & DEBUG_DISENGAGE)
       printf("Is planet %s safe: ", pl->pl_name);
@@ -1101,7 +1098,7 @@ not_safe(pl, pcrs, pdist)
 
 
 /* TODO: incorporate in dodge.c */
-phaser_plasmas()
+void phaser_plasmas()
 {
    register struct plasmatorp *pt;
    register int i, x, y;
@@ -1185,7 +1182,7 @@ phaser_plasmas()
 }
 
 /* needs repair */
-repair_check()
+int repair_check()
 {
    int	v = MYDAMAGE(), s = MYSHIELD(), vd = 0;
    switch(me->p_ship.s_type){
@@ -1261,7 +1258,7 @@ repair_check()
 }
 
 /* needs fuel */
-fuel_check()
+int fuel_check()
 {
    int v = MYFUEL();
 
@@ -1291,7 +1288,7 @@ fuel_check()
    return 0;
 }
 
-output_stats()
+void output_stats()
 {
    char	buf[80];
    /* include temperatures here*/
@@ -1302,8 +1299,7 @@ output_stats()
    response(buf);
 }
 
-output_pstats(p, s)
-   
+void output_pstats(p, s)
    Player	*p;
    char		*s;
 {
@@ -1336,9 +1332,9 @@ char *bp(p)
 }
 
 /* bomb & take stats */
-output_astats()
+void output_astats()
 {
-   register		i;
+   register int		i;
    register Player	*p;
 
    mprintf("team bombers: ");
@@ -1383,8 +1379,7 @@ output_astats()
    mprintf("\n");
 }
 
-req_set_speed(s, l, f)
-
+int req_set_speed(s, l, f)
    int	s;
    int	l;
    char	*f;
@@ -1396,7 +1391,7 @@ req_set_speed(s, l, f)
    if(s > _state.maxspeed) s = _state.maxspeed;
 
    if(inl && !status->tourn && !_state.itourn && !ignoreTMode)
-      return;
+      return 0;
 
    if(_state.p_desspeed != s){
       _state.p_desspeed = s;
@@ -1414,8 +1409,7 @@ static int		tfired, pfired, turned;
 static unsigned char	turned_dir, tfire_dir, pfired_dir;
 
 
-req_set_course(c)
-
+int req_set_course(c)
    unsigned char	c;
 {
    if(me->p_speed == 0) return 0;
@@ -1455,15 +1449,14 @@ req_set_course(c)
    return 0;
 }
 
-req_torp(crs)
-
+int req_torp(crs)
    unsigned char	crs;
 {
    extern	int	_tsent;
    int			now = mtime(0), t=0;
 
    if(expltest){
-      if(MYDAMAGE() < 50) return;
+      if(MYDAMAGE() < 50) return 0;
    }
 
    if(_state.no_weapon) return 0;
@@ -1520,8 +1513,7 @@ req_torp(crs)
       return -1; /* low on fuel or too many torps */
 }
 
-req_pltorp(dir)
-
+void req_pltorp(dir)
    unsigned char	dir;
 {
    if(_state.no_weapon) return;
@@ -1540,13 +1532,12 @@ req_pltorp(dir)
    sendPlasmaReq(dir);
 }
 
-req_phaser(crs, f)
-
+int req_phaser(crs, f)
    unsigned char	crs;
    int			f;
 {
    if(expltest){
-      if(MYDAMAGE() < 90) return;
+      if(MYDAMAGE() < 90) return 0;
    }
 
    if(_state.no_weapon /*&& !Xplhit*/) return 0;
@@ -1614,9 +1605,9 @@ req_phaser(crs, f)
    return 0;
 }
 
-req_planetlock(n)
+int req_planetlock(n)
 
-   int			n;
+     int			n;
 {
    sendPlanlockReq(n);
    if((DEBUG & DEBUG_DISENGAGE) && (me->p_flags & (PFORBIT|PFDOCK))){
@@ -1630,8 +1621,7 @@ req_planetlock(n)
    return 1;
 }
 
-req_playerlock(n)
-
+int req_playerlock(n)
    int			n;
 {
    sendPlaylockReq(n);
@@ -1643,7 +1633,7 @@ req_playerlock(n)
    return 1;
 }
 
-req_shields_up()
+int req_shields_up()
 {
    if(!(me->p_flags & PFSHIELD)){
       if(DEBUG & DEBUG_DISENGAGE){
@@ -1655,7 +1645,7 @@ req_shields_up()
    return 0;
 }
 
-req_shields_down()
+int req_shields_down()
 {
    if(me->p_flags & PFSHIELD){
       sendShieldReq(0);
@@ -1664,7 +1654,7 @@ req_shields_down()
    return 0;
 }
 
-req_repair_on()
+int req_repair_on()
 {
    if(!(me->p_flags & PFREPAIR)){
       if(DEBUG & DEBUG_DISENGAGE){
@@ -1678,8 +1668,7 @@ req_repair_on()
    return 0;
 }
 
-req_detonate(s)
-   
+int req_detonate(s)
    char	*s;
 {
    if(s)
@@ -1688,7 +1677,7 @@ req_detonate(s)
    return 1;
 }
 
-req_repair_off()
+int req_repair_off()
 {
    /* just in case */
    _state.p_desspeed = me->p_speed;
@@ -1701,7 +1690,7 @@ req_repair_off()
    return 0;
 }
 
-req_orbit()
+int req_orbit()
 {
    if(!(me->p_flags & PFORBIT)){
       /* note: _state.p_desdir is wrong after this */
@@ -1712,7 +1701,7 @@ req_orbit()
    return 0;
 }
 
-req_det_mytorps()
+void req_det_mytorps()
 {
    register int i;
 
@@ -1723,15 +1712,13 @@ req_det_mytorps()
    }
 }
 
-req_det_mytorp(i)
-
+void req_det_mytorp(i)
    int	i;
 {
    sendDetMineReq(i + (me->p_no * MAXTORP));
 }
 
-req_tractor_on(n)
-
+void req_tractor_on(n)
    int	n;
 {
    if(_state.no_weapon) return;
@@ -1750,8 +1737,7 @@ req_tractor_on(n)
    sendTractorReq(1, n);
 }
 
-req_tractor_off(s)
-   
+void req_tractor_off(s)
    char	*s;
 {
    if(me->p_flags & (PFTRACT | PFPRESS)){
@@ -1763,8 +1749,7 @@ req_tractor_off(s)
    _timers.tractor_limit = TRACTOR_TIME + rrnd(10);
 }
 
-req_pressor_on(n)
-
+void req_pressor_on(n)
    int	n;
 {
    if(_state.no_weapon) return;
@@ -1781,7 +1766,7 @@ req_pressor_on(n)
    sendRepressReq(1, n);
 }
 
-req_pressor_off()
+void req_pressor_off()
 {
    if(me->p_flags & (PFTRACT | PFPRESS)){
       sendRepressReq(0, me->p_no);
@@ -1792,7 +1777,7 @@ req_pressor_off()
    _timers.tractor_limit = TRACTOR_TIME + rrnd(10);
 }
 
-req_cloak_on()
+int req_cloak_on()
 {
    if(no_cloak) return 0;
 
@@ -1803,7 +1788,7 @@ req_cloak_on()
    return 0;
 }
 
-req_cloak_off(s)
+int req_cloak_off(s)
    char	*s;
 {
    if(me->p_flags & PFCLOAK){
@@ -1814,7 +1799,7 @@ req_cloak_off(s)
    return 0;
 }
 
-req_dock_on()
+int req_dock_on()
 {
    if(!(me->p_flags & PFDOCKOK)){
       sendDockingReq(1);
@@ -1823,7 +1808,7 @@ req_dock_on()
    return 0;
 }
 
-req_dock_off()
+int req_dock_off()
 {
    if(me->p_flags & PFDOCKOK){
       sendDockingReq(0);
@@ -1832,7 +1817,7 @@ req_dock_off()
    return 0;
 }
 
-req_bomb()
+int req_bomb()
 {
    if(!(me->p_flags & PFBOMB)){
       sendBombReq(1);
@@ -1841,7 +1826,7 @@ req_bomb()
    return 0;
 }
 
-req_beamdown()
+int req_beamdown()
 {
    if(!(me->p_flags & PFBEAMDOWN)){
       sendBeamReq(2);
@@ -1850,7 +1835,7 @@ req_beamdown()
    return 0;
 }
 
-req_beamup()
+int req_beamup()
 {
    if(!(me->p_flags & PFBEAMUP)){
       sendBeamReq(1);
@@ -1859,8 +1844,7 @@ req_beamup()
    return 0;
 }
 
-
-mtime(x)
+int mtime(x)
    int	x;
 {
    struct timeval tm;
@@ -1875,8 +1859,7 @@ mtime(x)
    return mtime_cache;
 }
 
-reset_r_info(team_r, ship_r, first, login)
-   
+int reset_r_info(team_r, ship_r, first, login)
    int	*team_r, *ship_r, first;
    char	*login;
 {
@@ -2015,8 +1998,7 @@ reset_r_info(team_r, ship_r, first, login)
    }
 }
 
-_reset_initial(team_r, ship_r, login)
-
+void _reset_initial(team_r, ship_r, login)
    int	*team_r, *ship_r, *login;
 {
    /* debug */
@@ -2066,7 +2048,7 @@ _reset_initial(team_r, ship_r, login)
    init_playertype(login);
 }
 
-send_initial()
+void send_initial()
 {
    mprintf("sending update %d\n", (int)(_state.timer_delay_ms * 100000.));
 
@@ -2074,25 +2056,22 @@ send_initial()
    init_comm();
 }
 
-ignore_edefault(s)
-
+void ignore_edefault(s)
    char	*s;	/* length MAXPLAYER+1 */
 {
-   register	i;
+   register int	i;
    for(i=0; i< MAXPLAYER; i++)
       s[i] = '0';
    s[i] = '\0';
 }
 
-ignore_enemy(p)
-
+int ignore_enemy(p)
    int	p;
 {
    return (_state.ignore_e[p] == '1');
 }
 
-ignoring_e(e)
-
+int ignoring_e(e)
    Player	*e;
 {
    if(!e || !e->p || !isAlive(e->p))
@@ -2105,14 +2084,13 @@ ignoring_e(e)
    return _state.ignore_e[e->p->p_no] == '1';
 }
 
-set_team(t)
-
+void set_team(t)
    int	t;
 {
    _state.team = t;
 }
 
-mymax_safe_speed()
+int mymax_safe_speed()
 {
    int	s;
    switch(me->p_ship.s_type){
@@ -2143,7 +2121,7 @@ mymax_safe_speed()
    return s;
 }
 
-myemg_speed()
+int myemg_speed()
 {
    int	s;
 
@@ -2161,7 +2139,7 @@ myemg_speed()
    return s;
 }
       
-mylowfuel_speed()
+int mylowfuel_speed()
 {
    int	s;
    switch(me->p_ship.s_type){
@@ -2196,7 +2174,7 @@ mylowfuel_speed()
    return s;
 }
 
-myfight_speed()
+int myfight_speed()
 {
    int	s;
    switch(me->p_ship.s_type){
@@ -2234,7 +2212,6 @@ void init_timers()
 }
 
 char *state_name(s)
-
    estate	s;
 {
    switch(s){
@@ -2258,7 +2235,7 @@ char *state_name(s)
 }
 
 /* every once in a while the server misses a crucial packet. */
-handle_unknown_problems()
+void handle_unknown_problems()
 {
    static int	last;
 
@@ -2276,8 +2253,7 @@ handle_unknown_problems()
       _state.lock = 0;
 }
 
-enemy_near_dead(e)
-
+int enemy_near_dead(e)
    Player	*e;
 {
    if(!e || !e->p || !isAlive(e->p))
@@ -2295,7 +2271,7 @@ enemy_near_dead(e)
       return 0;
 }
 
-init_servername()
+void init_servername()
 {
    extern char	*serverName;
    char		*s = serverName;
@@ -2328,8 +2304,7 @@ init_servername()
 }
 
 /* player type based on name */
-init_playertype(login)
-   
+void init_playertype(login)
    char	*login;
 {
    int	v = -1;

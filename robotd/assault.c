@@ -15,7 +15,7 @@ unsigned char get_pl_course();
 
 /* assault planet */
 
-assault()
+void assault()
 {
    if(!_state.assault || !_state.assault_planet){
       return;
@@ -80,7 +80,7 @@ static int risk_res_death(struct planet *pl)
    return 0;
 }
 
-goto_assault_planet()
+void goto_assault_planet()
 {
    Player		*e = _state.closest_e;
    struct player	*j = e?e->p:NULL;
@@ -161,8 +161,7 @@ goto_assault_planet()
 }
 
 /* UNUSED */
-do_cloak(pdist)
-   
+int do_cloak(pdist)
    int	pdist;	/* unused */
 {
    Player	*e = _state.closest_e;
@@ -179,7 +178,7 @@ do_cloak(pdist)
    return 1;
 }
 
-assault_planet()
+void assault_planet()
 {
   Player         *e = _state.closest_e;
   struct player	 *j = e?e->p:NULL;
@@ -260,7 +259,7 @@ assault_planet()
  * Called from s_defense when orbiting a planet we want to assault.
  */
 
-defend_enemy_planet()
+void defend_enemy_planet()
 {
    Player		*e = _state.closest_e;
    int			num_hits;
@@ -423,13 +422,12 @@ unsigned char assault_course(pl, pdist, crs, c)
 }
 
 /* NOTUSED */
-accavdir_nd(avdir, dir)
-
+int accavdir_nd(avdir, dir)
    int			avdir;
    unsigned char	dir;
 {
    register int	dif = angdist((unsigned char)avdir, dir);
-   register	n;
+   register int n;
 
    n = dir+dif;
    if(NORMALIZE(n) == avdir)
@@ -441,13 +439,12 @@ accavdir_nd(avdir, dir)
 }
 
 unsigned char get_pl_course(pl, speed, cloak)
-
    struct planet	*pl;
    int			*speed;
    int			*cloak;
 {
    int			pldist, edist;
-   register		i, de=0;
+   register int		i, de=0;
    register Player	*p;
    unsigned char	pdcrs, pcrs;
    bool			first = 1;
@@ -534,7 +531,6 @@ unsigned char get_pl_course(pl, speed, cloak)
    printf("weighted average direction to avoid = %d\n", avcrs);
    */
 
-
    avoiddir(avcrs, &pdcrs, (unsigned char)_state.assault_range);
 
    /* "oscillation damper" */
@@ -572,8 +568,7 @@ unsigned char get_pl_course(pl, speed, cloak)
    return pdcrs;
 }
 
-check_ship_speed(p, v)
-
+int check_ship_speed(p, v)
    Player	*p;
    int		v;
 {

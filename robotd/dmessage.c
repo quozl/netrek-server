@@ -159,16 +159,16 @@ char *version()
    return buf;
 }
 
-dmessage(message,flags,from,to)
-char *message;
-unsigned char flags, from, to;
+void dmessage(message,flags,from,to)
+    char *message;
+    unsigned char flags, from, to;
 {
     /* Message from someone.
       Pass it on to robot for processing */
     R_ProcMessage(message, flags, from, to, 0, 0);
 }
 
-init_comm()
+void init_comm()
 {
    extern	char *commfile;		/* main.c */
    FILE		*fi;
@@ -187,8 +187,8 @@ init_comm()
    fclose(fi);
 }
 
-instr(string1, string2)
-char *string1, *string2;
+int instr(string1, string2)
+    char *string1, *string2;
 {
     char *s;
     int length;
@@ -200,8 +200,7 @@ char *string1, *string2;
     return(0);
 }
 
-R_ProcMessage(message, flags, from, to, std, config)
-
+void R_ProcMessage(message, flags, from, to, std, config)
    char			*message;
    unsigned char	flags, from, to;
    int			std;
@@ -1054,7 +1053,7 @@ R_ProcMessage(message, flags, from, to, std, config)
       }
       else if(strncmp(m, "rwatch", 6)==0){
 	 char	*h = &m[6];
-	 register	i;
+	 register int	i;
 	 while(isspace(*h)) h++;
 	 if(*h){
 	    strcpy(rw_host, h);
@@ -1203,22 +1202,19 @@ R_ProcMessage(message, flags, from, to, std, config)
    }
 }
 
-set_ignore(pno)
-
+void set_ignore(pno)
    int	pno;
 {
    _state.ignore_e[pno] = '1';
 }
 
-set_unignore(pno)
-
+void set_unignore(pno)
    int	pno;
 {
    _state.ignore_e[pno] = '0';
 }
 
-team_int(m)
-
+int team_int(m)
    char	*m;
 {
    if(strncmp(m, "fed", 1)==0){
@@ -1238,7 +1234,6 @@ team_int(m)
 }
 
 char team_bit(m)
-
    char	*m;
 {
    if(strncmp(m, "fed", 1)==0){
@@ -1257,8 +1252,7 @@ char team_bit(m)
       return 0;
 }
 
-team_inttobit(t)
-
+char team_inttobit(t)
    int	t;
 {
    switch(t){
@@ -1270,8 +1264,7 @@ team_inttobit(t)
    }
 }
 
-ship_int(s, name)
-
+int ship_int(s, name)
    char *s, **name;
 {
    if(strncasecmp(s, "scout", 2)==0){
@@ -1306,8 +1299,7 @@ ship_int(s, name)
    return -1;
 }
 
-response(buf)
-
+void response(buf)
    char	*buf;
 {
    if(_state.controller){
@@ -1316,8 +1308,7 @@ response(buf)
    warning(buf, 1);
 }
 
-pmessage(c, buf)
-
+void pmessage(c, buf)
    char	c, *buf;
 {
    int	pno;
@@ -1354,8 +1345,7 @@ pmessage(c, buf)
    }
 }
 
-player_no(c)
-
+int player_no(c)
    char	c;
 {
    if(isdigit(c))
@@ -1365,11 +1355,10 @@ player_no(c)
 }
       
 struct planet *name_to_planet(s, h)
-
    char	*s;
    int	h;
 {
-   register	i;
+   register	int		i;
    register	struct planet	*pl;
    char		buf[32];
    int		l = 3, not_hostile;
@@ -1408,7 +1397,6 @@ struct planet *name_to_planet(s, h)
 }
 
 Player *id_to_player(s, t)
-
    char	*s;
    int	t;
 {
@@ -1433,7 +1421,6 @@ Player *id_to_player(s, t)
 }
 
 eoggtype oggtype(s)
-
    char	*s;
 {
    switch(*s){
@@ -1451,7 +1438,6 @@ eoggtype oggtype(s)
 }
 
 char *oggtype_to_string(ot)
-   
    eoggtype	ot;
 {
    switch(ot){
@@ -1463,7 +1449,6 @@ char *oggtype_to_string(ot)
 }
 
 char *team_to_string(t)
-
    int	t;
 {
    switch(t){
@@ -1477,7 +1462,6 @@ char *team_to_string(t)
 }
 
 char *diswhy_string(e)
-
    ediswhy	e;
 {
    switch(e){
@@ -1493,7 +1477,7 @@ char *diswhy_string(e)
    }
 }
 
-show_serverst()
+void show_serverst()
 {
    mprintf("server: ");
    switch(_server){
@@ -1515,8 +1499,7 @@ show_serverst()
    mprintf("plasma bounce: %s\n", _state.torp_bounce?"true":"false");
 }
 
-handle_generic_req(m)
-   
+void handle_generic_req(m)
    char	*m;
 {
    char	*arg;
@@ -1552,7 +1535,7 @@ handle_generic_req(m)
    sendShortPacket(req_no, arg_no);
 }
 
-list_reqs()
+void list_reqs()
 {
    mprintf("CP_TORP (dir)     : %10d\n", CP_TORP);
    mprintf("CP_PHASER (dir)   : %10d\n", CP_PHASER);
@@ -1572,7 +1555,7 @@ list_reqs()
    mprintf("CP_RESETSTATS 89  : %10d\n", CP_RESETSTATS);
 }
 
-show_state()
+void show_state()
 {
    mprintf("STATE:\n");
    mprintf("%-30s%d\n", "status:", _state.status);
@@ -1676,8 +1659,7 @@ show_state()
    mprintf("%-30s%g\n", "_avsdelay:", _avsdelay);
 }
 
-list_all(m)
-   
+void list_all(m)
    char	*m;
 {
    char	**s = _commands;
@@ -1707,7 +1689,7 @@ list_all(m)
 
 #ifdef ATM
 
-udpaction(com)
+void udpaction(com)
    int	com;
 {
    char		buf[80];
@@ -1776,8 +1758,7 @@ udpaction(com)
 }
 #endif
 
-setlog(dir)
-   
+void setlog(dir)
    char	*dir;
 {
    char	buf[128];
@@ -1794,8 +1775,7 @@ setlog(dir)
    sprintf(buf, "logging (%d)", getpid());
 }
 
-int_var(x, name, desc, in, rnd)
-
+int int_var(x, name, desc, in, rnd)
    int	*x, rnd;
    char	*name, *desc, *in;
 {

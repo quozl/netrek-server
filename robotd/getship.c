@@ -13,11 +13,11 @@
 
 /* fill in ship characteristics */
 
-getship(shipp, s_type)
-struct ship *shipp;
-int s_type;
+void getship(shipp, s_type)
+    struct ship *shipp;
+    int s_type;
 {
-    register i=0;
+    register int i = 0;
     
     if(!_state.chaos){
 	switch (s_type) {
@@ -657,5 +657,4 @@ int s_type;
 	}
     }
 }
-
 

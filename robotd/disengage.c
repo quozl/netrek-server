@@ -12,7 +12,7 @@
 
 extern unsigned char get_pl_course();
 
-disengage()
+void disengage()
 {
    /* one way to know we are recharging */
    if((me->p_flags & PFORBIT) && !hostilepl(&planets[me->p_planet])){
@@ -62,7 +62,7 @@ disengage()
       disengage_normal();
 }
 
-disengage_defend()
+void disengage_defend()
 {
    Player		*e = _state.closest_e;
    Player		*p = _state.protect_player;
@@ -131,7 +131,7 @@ disengage_defend()
    req_set_speed(speed_r, __LINE__, __FILE__);
 }
 
-disengage_normal()
+void disengage_normal()
 {
    Player		*e = _state.closest_e, *sb, *sb_check();
    struct planet	*pl;
@@ -201,10 +201,9 @@ disengage_normal()
 }
 
 Player *sb_check(dist)
-
    int	*dist;
 {
-   register			i,j, c = 0;
+   register int			i,j, c = 0;
    register Player		*p, *sb = NULL;
 
    *dist = INT_MAX;
@@ -243,8 +242,7 @@ Player *sb_check(dist)
    return sb;
 }
 
-runaway(e)
-
+void runaway(e)
    Player	*e;
 {
    unsigned char	crs, crse, crs_r;
@@ -308,16 +306,14 @@ runaway(e)
    req_set_speed(speed_r, __LINE__, __FILE__);
 }
 
-edistfunc(e, j)
-
+int edistfunc(e, j)
    Player		*e;
    struct player	*j;
 {
    return 10000;
 }
 
-goto_planet(pl)
-
+void goto_planet(pl)
    struct planet	*pl;
 {
    Player		*e = _state.closest_e;
@@ -397,8 +393,7 @@ goto_planet(pl)
  * _state.recharge/_state.disengage, etc. 
  */
 
-handle_disvars(e, speed)
-   
+void handle_disvars(e, speed)
    Player	*e;
    int		*speed;
 {
@@ -473,8 +468,7 @@ handle_disvars(e, speed)
    }
 }
 
-edang(e, r)
-
+int edang(e, r)
    Player	*e;
    int		r;
 {
@@ -490,8 +484,7 @@ edang(e, r)
    return 1;
 }
 
-dng_speed(e)
-
+int dng_speed(e)
    Player	*e;
 {
    int	s = e->p->p_speed;
@@ -518,8 +511,7 @@ dng_speed(e)
 
 /* When to attack player at dangerous speed */
 
-dng_speed_dist(e)
-
+int dng_speed_dist(e)
    Player	*e;
 {
    int	s = e->p->p_speed;
@@ -543,10 +535,8 @@ dng_speed_dist(e)
    return 6000;	/* XX starbase */
 }
 
-recharge_off(s)
-
+void recharge_off(s)
    char	*s;
-
 {
    if(_state.recharge){
       _state.recharge = 0;
@@ -561,7 +551,7 @@ recharge_off(s)
    _state.lock = 0;
 }
 
-reset_planet()
+void reset_planet()
 {
    if(!_state.protect){
       if(!(_state.disengage && _state.diswhy == EREFIT))
@@ -582,12 +572,12 @@ struct {
                 {0, 0},
                 {GWIDTH * 3 / 4, GWIDTH * 3 / 4}};      /* Ori */
 
-home_crs()
+unsigned char home_crs()
 {
    return get_wrapcourse(center[me->p_team].x, center[me->p_team].y);
 }
 
-home_dist()
+int home_dist()
 {
    double	dx = (me->p_x - center[me->p_team].x),
 		dy = (me->p_y - center[me->p_team].y);
@@ -596,12 +586,12 @@ home_dist()
 
 #define NEUTRAL_ZONE	500
 
-in_home_area()
+int in_home_area()
 {
    return in_team_area(me->p_team);
 }
 
-in_team_area(team)
+int in_team_area(team)
    int	team;
 {
    switch(team){
@@ -622,9 +612,9 @@ in_team_area(team)
 }
 
 /* true if we have to go towards enemy home area */
-dangerous_dir(pcrs, r)
-
+int dangerous_dir(pcrs, r)
    unsigned char	pcrs;
+   int			r;
 {
    int			t = _state.warteam;
    unsigned char hcrs = 
@@ -656,7 +646,6 @@ struct planet *team_planet(team)
 }
 
 unsigned char to_team_planet(team)
-
    int	team;
 {
    struct planet *hp = team_planet(team);
@@ -664,7 +653,7 @@ unsigned char to_team_planet(team)
    return get_wrapcourse(hp->pl_x, hp->pl_y);
 }
 
-orbiting_home()
+int orbiting_home()
 {
    struct planet	*h = home_planet();
    if(DEBUG & DEBUG_DISENGAGE){
@@ -676,8 +665,7 @@ orbiting_home()
 
 /* runaway disengage speed */
 
-disengage_speed(e, j, dplanet, pdist)
-
+int disengage_speed(e, j, dplanet, pdist)
    Player		*e;
    struct player	*j;
    int			dplanet;	/* bool */

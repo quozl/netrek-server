@@ -38,7 +38,7 @@ int	recflag = 0;
  * Function may still break if unix super-user executes 
  * set-time-of-day function, via unix command. 
  */ 
-setflag()
+void setflag()
 {
    static int start=0; /* start of the robot program */
    static int cycle=0; /* how many times udtime cycles */
@@ -69,7 +69,7 @@ setflag()
 
 }
 
-input()
+void input()
 {
 #ifdef nodef
    struct itimerval	udt;
@@ -108,7 +108,7 @@ input()
 
 static char	_buf[80];
 
-process_stdin()
+void process_stdin()
 {
    struct timeval	timeout;
    fd_set		readfd;

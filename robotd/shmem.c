@@ -39,8 +39,7 @@ struct r_shmemt {
 static struct r_shmemt 	*r_shmem;
 static int		shmid;
 
-shmem_rloc(i, x, y)
-
+void shmem_rloc(i, x, y)
    int	i;
    int	*x,*y;
 {
@@ -57,8 +56,7 @@ shmem_rloc(i, x, y)
    *y = r_shmem->ty[i];
 }
 
-shmem_updmyloc(x, y)
-
+void shmem_updmyloc(x, y)
    int	x,y;
 {
    if(!shmem) return;
@@ -66,8 +64,7 @@ shmem_updmyloc(x, y)
    r_shmem->ty[me->p_no] = y;
 }
 
-shmem_rtarg(i)
-
+int shmem_rtarg(i)
    int	i;
 {
    if(!shmem) return -1;
@@ -76,8 +73,7 @@ shmem_rtarg(i)
    return r_shmem->target[i]-1;
 }
 
-shmem_updmytarg(t)
-
+void shmem_updmytarg(t)
    int	t;
 {
    if(!shmem) return;
@@ -85,8 +81,7 @@ shmem_updmytarg(t)
    r_shmem->target[me->p_no] = t+1;
 }
 
-shmem_rsync(i)
-
+int shmem_rsync(i)
    int	i;
 {
    if(!shmem) return -1;
@@ -95,8 +90,7 @@ shmem_rsync(i)
    return r_shmem->sync[i] -1;
 }
 
-shmem_updmysync(t)
-
+void shmem_updmysync(t)
    int	t;
 {
    if(!shmem) return;
@@ -106,7 +100,7 @@ shmem_updmysync(t)
 
 /* on startup */
 
-shmem_open()
+void shmem_open()
 {
    int	create = 0;
 
@@ -154,7 +148,7 @@ shmem_open()
 
 /* on exit */
 
-shmem_check()
+void shmem_check()
 {
    r_shmem->robot[me->p_no] = 0;
    r_shmem->num_robots --;
@@ -166,12 +160,11 @@ shmem_check()
 }
 
 /* functions */
-shmem_cloakd(j)
-
+int shmem_cloakd(j)
    struct player	*j;
 {
-   register		i, k=0;
-   register		sumx=0, sumy=0;
+   register int		i, k=0;
+   register int		sumx=0, sumy=0;
    int			tv = mtime(0), htv;
 
    if(!(j->p_flags & PFCLOAK)){

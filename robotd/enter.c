@@ -21,7 +21,7 @@ long random();
 /* Doesn't really openmem, but it will
  * set some stuff up...
  */
-openmem()
+void openmem()
 {
     int i;
 

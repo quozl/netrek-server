@@ -20,7 +20,7 @@ static int 	odist;
 
 /* actual firing doesn't occur until _state.ogg = 1 */
 
-ogg()
+void ogg()
 {
    Player	*e = _state.current_target;
    int		p;
@@ -87,7 +87,7 @@ ogg()
    }
 }
 
-friend_uncloak(e_num)
+int friend_uncloak(e_num)
    int	e_num;
 {
    Player		*p = _state.closest_f;
@@ -102,8 +102,7 @@ friend_uncloak(e_num)
    return 0;
 }
 
-goto_ogg(e)
-
+void goto_ogg(e)
    Player	*e;
 {
    unsigned char	crs, crs_r, ogg_course();
@@ -190,7 +189,6 @@ goto_ogg(e)
 }
 
 unsigned char ogg_course(o, c)
-
    Player	*o;
    int		*c;
 {
@@ -264,7 +262,6 @@ unsigned char ogg_course(o, c)
 }
 
 unsigned char ocourse(o)
-   
    Player	*o;
 {
    int	r, dist;
@@ -274,7 +271,6 @@ unsigned char ocourse(o)
    if(j->p_ship.s_type != STARBASE){
       return (unsigned char) ((int)o->icrs);
    }
-
 
    if(!ogg_state){
       int	a;
@@ -316,7 +312,6 @@ unsigned char ocourse(o)
 }
 
 int modspeed(sp, p, e)
-   
    int		sp;
    Player	*p, *e;
 {
@@ -366,7 +361,7 @@ int modspeed(sp, p, e)
    1: uncloak
  */
 
-wait_on_sync()
+int wait_on_sync()
 {
    Player	*p;
    static int	timer;
@@ -396,7 +391,7 @@ wait_on_sync()
 
 unsigned char	ogg_incoming_dir = 0;
 
-set_ogg_vars()
+void set_ogg_vars()
 {
    int			r;
    Player		*e = _state.current_target;

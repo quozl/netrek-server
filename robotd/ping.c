@@ -25,7 +25,7 @@ static int	ping_sd=0;	/* std deviation */
 static int	sum, n, s2;
 static int	M, var;
 
-handlePing(packet)                         /* SP_PING */
+void handlePing(packet)                         /* SP_PING */
    struct ping_spacket *packet;
 { 
    ping = 1;		/* we got a ping */
@@ -43,7 +43,7 @@ printf("ping received at %d (lag: %d)\n", msetime(), (int)packet->lag);
    calc_lag();
 }
 
-startPing()
+void startPing()
 {
    static
    struct ping_cpacket 	packet;
@@ -59,7 +59,7 @@ startPing()
    }
 }
 
-stopPing()
+void stopPing()
 {
    static
    struct ping_cpacket 	packet;
@@ -75,8 +75,7 @@ stopPing()
    }
 }
    
-
-sendServerPingResponse(number)     	/* CP_PING_RESPONSE */
+void sendServerPingResponse(number)     	/* CP_PING_RESPONSE */
    int number;
 {
    struct ping_cpacket 	packet;
@@ -108,7 +107,7 @@ printf("ping response sent at %d\n", msetime());
    }
 }
 
-calc_lag()
+void calc_lag()
 {
 #ifdef nodef
    /* probably ghostbusted */

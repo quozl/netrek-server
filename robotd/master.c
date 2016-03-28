@@ -20,13 +20,13 @@
 #include "packets.h"
 #include "robot.h"
 
-master()
-{}
+void master()
+{
+}
 
 /* slave robot */
 
-connect_master(m)
-
+int connect_master(m)
    char	*m;
 {
    int			v, ms = -1;
@@ -74,8 +74,7 @@ connect_master(m)
 
 /* slave sends master packets */
 
-send_to_master(p, s)
-   
+void send_to_master(p, s)
    struct player_spacket	*p;
    int				s;
 {
@@ -88,8 +87,7 @@ send_to_master(p, s)
    }
 }
 
-recv_from_master(p)
-
+void recv_from_master(p)
    struct mastercomm_spacket	*p;
 {
 }

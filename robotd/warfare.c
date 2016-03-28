@@ -19,8 +19,7 @@ int		dtint;
 int		dgo;
 
 
-warfare(type)
-   
+void warfare(type)
    int	type;
 {
    Player		*e = _state.current_target;
@@ -81,8 +80,7 @@ warfare(type)
    }
 }
 
-rship_ok(n, s)
-
+int rship_ok(n, s)
    char		*n;
    int		s;
 {
@@ -103,12 +101,11 @@ rship_ok(n, s)
    }
 }
 
-qtorps(size, urnd, tcrs)
-
+void qtorps(size, urnd, tcrs)
    int	size, urnd;
    unsigned char	tcrs;
 {
-   register	i;
+   register int i;
    int	v;
 
    for(i=0; i < size; i++){
@@ -123,8 +120,7 @@ qtorps(size, urnd, tcrs)
    }
 }
 
-qtorp(crs)
-
+void qtorp(crs)
    unsigned char        crs;
 {
    TorpQ	*tq = _state.torpq;
@@ -142,7 +138,7 @@ qtorp(crs)
 }
 
 /* called from intrupt() */
-do_torps()
+void do_torps()
 {
    int  		r;
    unsigned char	tdir;
@@ -167,15 +163,14 @@ do_torps()
    /* otherwise just mistimed */
 }
 
-emptytorpq()
+void emptytorpq()
 {
    TorpQ	*tq = _state.torpq;
    tq->ntorps = 0;
    tq->ipos = tq->opos = 0;
 }
 
-get_torp_course(j, crs, cx,cy)
-
+int get_torp_course(j, crs, cx,cy)
    struct player        *j;
    unsigned char        *crs;
    int			cx,cy;
@@ -257,16 +252,14 @@ get_torp_course(j, crs, cx,cy)
    return 0;
 }
 
-get_orbit_torp_course(j, crs, cx, cy)
-   
+void get_orbit_torp_course(j, crs, cx, cy)
    struct player	*j;
    unsigned char	*crs;
    int			cx,cy;
 {
-   register		x,y, px,py;
+   register int		x, y, px, py;
    int			edist,cycles;
    unsigned char	dir;
-   double		dx,dy;
 
    px = planets[j->p_planet].pl_x;
    py = planets[j->p_planet].pl_y;
@@ -288,8 +281,7 @@ get_orbit_torp_course(j, crs, cx, cy)
 }
 
 /* called from update_players */
-planet_from_ppos(j)
-
+int planet_from_ppos(j)
    struct player	*j;
 {
    int				x,y;
@@ -325,8 +317,7 @@ planet_from_ppos(j)
    return -1;
 }
       
-phaser_condition(e, edist)
-
+int phaser_condition(e, edist)
    Player	*e;
    int		edist;
 {

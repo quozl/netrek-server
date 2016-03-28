@@ -16,8 +16,7 @@
 
 static struct planet *_find_planet_by_name();
 
-parse_message(m, p, fl)
-
+void parse_message(m, p, fl)
    char		*m;
    Player	*p;
    int		fl;
@@ -35,8 +34,7 @@ parse_message(m, p, fl)
    proc_other(p, m);
 }
 
-proc_distress_call(p, m)
-
+void proc_distress_call(p, m)
    Player	*p;
    char		*m;
 {
@@ -86,8 +84,7 @@ proc_distress_call(p, m)
       check_distress(p);
 }
 
-proc_other(p, m)
-   
+void proc_other(p, m)
    Player	*p;
    char		*m;
 {
@@ -98,8 +95,7 @@ proc_other(p, m)
    /* ... */
 }
 
-proc_hostile_planet_mesg(p, m)
-   
+void proc_hostile_planet_mesg(p, m)
    Player	*p;
    char		*m;
 {
@@ -133,8 +129,7 @@ proc_hostile_planet_mesg(p, m)
    }
 }
 
-check_hostile_planet_word(p, w)
-
+int check_hostile_planet_word(p, w)
    Player	*p;
    char		*w;
 {
@@ -150,7 +145,6 @@ check_hostile_planet_word(p, w)
    
    if(me->p_armies > 0 || (inl && me->p_kills >= 2.0))
       return;
-   
    
    if(pl){
 
@@ -179,15 +173,14 @@ check_hostile_planet_word(p, w)
       return 0;
 }
 
-inl_prot()
+int inl_prot()
 {
    if(inl && _state.planets->num_teamsp > 3 && _state.protect)
       return 1;
    return 0;
 }
 
-rndesc(p)
-   
+int rndesc(p)
    Player	*p;
 {
    int		armies;
@@ -212,10 +205,8 @@ rndesc(p)
    mprintf("rndesc: unknown\n");
    return 0;
 }
-      
 
-ship_match(p)
-   
+int ship_match(p)
    Player	*p;
 {
    if(!p || !p->p || !isAlive(p->p))
@@ -246,9 +237,9 @@ ship_match(p)
    return 0;
 }
 
-init_plarray()
+void init_plarray()
 {
-   register	i;
+   register int	i;
    char 	*short_name();
    int		plcmp_long();
 
@@ -272,7 +263,6 @@ init_plarray()
  */
 
 struct planet *find_planet_by_shortname(n, f)
-
    char	*n;
    int	f;	/* for short names -- look for friendly or hostile */
 {
@@ -306,7 +296,6 @@ struct planet *find_planet_by_shortname(n, f)
  */
 
 struct planet *find_planet_by_longname(n)
-
    char	*n;
 {
    struct planet	*p;
@@ -323,7 +312,6 @@ struct planet *find_planet_by_longname(n)
 }
 
 static struct planet *_find_planet_by_name(n, l, d)
-
    char	*n;
    int	l;
    int	d;
@@ -352,22 +340,19 @@ static struct planet *_find_planet_by_name(n, l, d)
    return r->pm_planet;
 }
 
-plcmp_short(p1, p2)
-
+int plcmp_short(p1, p2)
    struct planetmatch	*p1, *p2;
 {
    return strcmp(p1->pm_short, p2->pm_short);
 }
 
-plcmp_long(p1, p2)
-
+int plcmp_long(p1, p2)
    struct planetmatch	*p1, *p2;
 {
    return strcmp(p1->pm_name, p2->pm_name);
 }
 
 char *short_name(pl)
-
    struct planet        *pl;
 {
    char         *n = pl->pl_name;
@@ -393,7 +378,6 @@ char *short_name(pl)
 }
 
 char *short_name_print(pl)
-
    struct planet        *pl;
 {
    char         *n = pl->pl_name;
@@ -411,8 +395,7 @@ char *short_name_print(pl)
    return sname;
 }
 
-esc_too_far(p, pl)
-   
+int esc_too_far(p, pl)
    Player		*p;
    struct planet	*pl;
 {
@@ -426,8 +409,7 @@ esc_too_far(p, pl)
       return pl->pl_mydist > dist_to_planet(p, pl) - 3000;
 }
 
-his_ship_faster(p)
-
+int his_ship_faster(p)
    Player	*p;
 {
    int	sh, sm;
@@ -536,8 +518,7 @@ his_ship_faster(p)
    return 0; /* xx */
 }
 
-get_distress(m, dam, shield, arm, wpn, woe, eoe)
-   
+void get_distress(m, dam, shield, arm, wpn, woe, eoe)
    char	*m;
    int	*dam,*shield,*arm,*wpn, *woe, *eoe;
 {

@@ -61,7 +61,7 @@ static void setflag()
   }
 }
 
-static void gamedown(why)
+static void gamedown(int why)
 {
   struct badversion_spacket packet;
   memset(&packet, 0, sizeof(struct badversion_spacket));

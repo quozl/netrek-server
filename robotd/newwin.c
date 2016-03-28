@@ -18,8 +18,8 @@
 #include "packets.h"
 
 /* Attempt to pick specified team & ship */
-teamRequest(team, ship) 
-int team,ship;
+int teamRequest(team, ship) 
+    int team,ship;
 {
     int lastTime;
 
@@ -62,13 +62,14 @@ int team,ship;
     return(pickOk);
 }
 
-showteams()
+void showteams()
 {
    mprintf("FED: %d, ROM: %d, KLI: %d, ORI: %d\n",
       numShips(FED), numShips(ROM), numShips(KLI), numShips(ORI));
 }
 
-numShips(owner)
+int numShips(owner)
+	int		owner;
 {
 	int		i, num = 0;
 	struct player	*p;
@@ -79,7 +80,8 @@ numShips(owner)
 	return (num);
 }
 
-realNumShips(owner)
+int realNumShips(owner)
+	int		owner;
 {
 	int		i, num = 0;
 	struct player	*p;
@@ -91,8 +93,8 @@ realNumShips(owner)
 	return (num);
 }
 
-deadTeam(owner)
-int owner;
+int deadTeam(owner)
+    int owner;
 /* The team is dead if it has no planets and cannot coup it's home planet */
 {
     int i,num=0;
@@ -108,7 +110,7 @@ int owner;
     return(1);
 }
 
-do_refit(type)
+void do_refit(type)
     int type;
 {	
     sendRefitReq(type);

@@ -17,9 +17,9 @@ struct planet *find_army_planet();
 
 /* get armies */
 
-getarmies()
+void getarmies()
 {
-   register			i;
+   register int			i;
    register struct planet	*pl;
    struct planet		*aspl = _state.assault_planet;
    struct planet		*apl = _state.army_planet;
@@ -79,8 +79,7 @@ getarmies()
 }
 
 /* UNUSED */
-goto_armypl(pl)
-
+void goto_armypl(pl)
    struct	planet	*pl;
 {
    Player		*e = _state.closest_e;
@@ -156,8 +155,7 @@ goto_armypl(pl)
    }
 }
 
-beam_up_armies(pl)
-   
+void beam_up_armies(pl)
    struct planet	*pl;
 {
    int		armies = pl->pl_armies;
@@ -179,8 +177,7 @@ beam_up_armies(pl)
    }
 }
 
-troop_capacity(j)
-   
+int troop_capacity(j)
    struct player	*j;
 {
    if (j->p_ship.s_type == ASSAULT)
@@ -193,12 +190,10 @@ troop_capacity(j)
       return j->p_ship.s_maxarmies;
 }
 
-
-others_taking_armies(pl)
-
+int others_taking_armies(pl)
    struct planet	*pl;
 {
-   register			i;
+   register int			i;
    register Player		*p;
    register struct player	*j;
 
@@ -220,10 +215,9 @@ others_taking_armies(pl)
 }
 
 struct planet *find_army_planet(pl)
-
    struct planet	*pl;
 {
-   register			i;
+   register int			i;
    register struct planet	*k, *mp = NULL;
    int				mdist = INT_MAX, pdist, hdist;
    Player			*p, *get_nearest_to_pl_dist();
@@ -267,8 +261,7 @@ struct planet *find_army_planet(pl)
    return mp;
 }
 
-orbiting(pl)
-
+int orbiting(pl)
    struct planet	*pl;
 {
    if(!pl){
@@ -278,7 +271,7 @@ orbiting(pl)
    return (me->p_flags & PFORBIT) && me->p_planet == pl->pl_no;
 }
 
-need_armies()
+int need_armies()
 {
    int	tarmy;
 
@@ -293,8 +286,7 @@ need_armies()
    return me->p_armies < tarmy;
 }
 
-notify_take(aspl, phase)
-   
+void notify_take(aspl, phase)
    struct planet	*aspl;
    int			phase;
 {

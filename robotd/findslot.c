@@ -16,7 +16,7 @@
 #include "struct.h"
 #include "data.h"
 
-findslot()
+void findslot()
 {
     int oldcount= -1;
 

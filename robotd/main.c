@@ -34,7 +34,7 @@ static   int    first = 1;
 jmp_buf         env;
 char	*commfile = NULL;
 
-main(argc, argv)
+int main(argc, argv)
    int             argc;
    char          **argv;
 {
@@ -43,11 +43,11 @@ main(argc, argv)
    int             usage = 0;
    int             err = 0;
    char           *name, *ptr, *cp, *rindex();
-   int             dcore(), resetRobot();
+   void            dcore(), resetRobot();
    void            reaper(int), kill_rwatch(int), exitRobot(int);
    int             passive = 0;
    char           *defaultsFile = NULL;
-   register        i;
+   register int    i;
    int             rwatch=0;
    static int      switchedteams=0;
    char            password[64];
@@ -481,9 +481,11 @@ main(argc, argv)
    }
 
    input();
+
+   return 0;
 }
 
-printUsage(prog)
+void printUsage(prog)
    char           *prog;
 {
    static char *list[] = {
@@ -563,14 +565,14 @@ void exitRobot(int sig)
    }
 }
 
-resetRobot()
+void resetRobot()
 {
    fprintf(stderr, "BUS or SEGV\n");
    _state.command = C_RESET;
    longjmp(env,0);
 }
 
-dcore()
+void dcore()
 {
    abort();
 }
@@ -585,7 +587,7 @@ void kill_rwatch(int sig)
    /* exit otherwise? */
 }
 
-getteam()
+int getteam()
 {
    int	nf= -1, nk= -1, nr= -1, no= -1;
 

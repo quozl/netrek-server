@@ -41,7 +41,7 @@ struct tpos {
 
 struct tpos _etorps[MAXPLAYER * (MAXTORP+MAXPLASMA) + 1];
 
-init_dodge()
+void init_dodge()
 {
    /* set max speed if damaged */
    set_maxspeed();
@@ -57,10 +57,10 @@ init_dodge()
  * Update enemy torps, friendly damage
  */
 
-init_torps()
+void init_torps()
 {
    int				i;
-   register			k,l;
+   register int			k,l;
    struct player		*j;
    register struct torp		*t;
    register struct tpos		*tp;
@@ -288,7 +288,7 @@ check_plasma:;
    _state.maxfuse = maxfuse;
 }
 
-set_maxspeed()
+void set_maxspeed()
 {
    if(!me->p_damage)
       _state.maxspeed = me->p_ship.s_maxspeed;
@@ -307,14 +307,13 @@ set_maxspeed()
  * Returns number of immediate hits.
  */
 
-compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
-
+void compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
    unsigned char	d_crs, *crs_r;
    int			d_speed, *speed_r, *hittime_r;
    int			*lvorbit;
 {
    static int	r = -1;
-   register	i;
+   register int	i;
    int		hits;
 
    if(!(me->p_flags & PFORBIT) && !(me->p_flags & PFDOCK)){
@@ -427,16 +426,15 @@ compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
 static int chks[4] = { 4, 8, 16, 32 };
 
 /* NOT USED */
-_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
-
+int _compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
    unsigned char	d_crs, *crs_r;
    int			d_speed, *speed_r, *hittime_r;
    int			lvorbit;
 {
-   register		i;
+   register int		i;
    int			hits;
    int			avdir= -1, hittime, damage;
-   register		mindamage = INT_MAX, cavdir;
+   register int		mindamage = INT_MAX, cavdir;
 
 
    hits = update_torps(&avdir, d_crs, d_speed, &hittime, &damage, lvorbit);
@@ -485,8 +483,7 @@ _compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
       lvorbit);
 }
 
-_try_others(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
-
+int _try_others(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
    unsigned char	d_crs;		/* desired course */
    unsigned char	*crs_r;		/* returned course */
    int			d_speed;	/* desired speed */
@@ -496,7 +493,7 @@ _try_others(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
    int			damage;		/* current damage */
    int			lvorbit;
 {
-   register			i, j;
+   register int			i, j;
    register unsigned char	n_crs;
    register int			dif, dchange, n_speed = d_speed;
    register int			mindamage = damage, hits;
@@ -538,8 +535,7 @@ _try_others(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
 }
 
 /* NOT USED */
-_try_others1(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
-
+int _try_others1(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
    unsigned char	d_crs;		/* desired course */
    unsigned char	*crs_r;		/* returned course */
    int			d_speed;	/* desired speed */
@@ -549,7 +545,7 @@ _try_others1(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
    int			damage;		/* current damage */
    int			lvorbit;
 {
-   register			i, j;
+   register int			i, j;
    register unsigned char	n_crs;
    register int			dif, dchange, n_speed = d_speed;
    register int			mindamage = damage, hits;
@@ -617,8 +613,7 @@ _try_others1(d_crs, crs_r, d_speed, speed_r, hittime_r, cavdir, damage, lvorbit)
    return 1;
 }
 
-update_torps(avdir_r, dir, speed, mintime_r, damage_r, lvorbit)
-   
+int update_torps(avdir_r, dir, speed, mintime_r, damage_r, lvorbit)
    int			*avdir_r;
    unsigned char	dir;		/* desired direction */
    int			speed;		/* desired speed */
@@ -626,10 +621,10 @@ update_torps(avdir_r, dir, speed, mintime_r, damage_r, lvorbit)
    int			*damage_r;	/* amount of damage */
    int			lvorbit;
 {
-   register			i, dx,dy;
+   register int			i, dx,dy;
    register struct tpos		*tp;
    register struct pos		*fp;
-   register			cx = me->p_x, cy = me->p_y;
+   register int			cx = me->p_x, cy = me->p_y;
    int				mx,my, damage;
    int				ddist, minhittime, hits,
 				tdamage, expdist;
@@ -764,8 +759,7 @@ update_torps(avdir_r, dir, speed, mintime_r, damage_r, lvorbit)
    return hits;
 }
 
-torp_seek_ship(s)
-
+int torp_seek_ship(s)
    int	s;
 {
    if(!_state.torp_seek) return 0;
@@ -779,8 +773,7 @@ torp_seek_ship(s)
    }
 }
 
-accavdir(avdir, damage, tdir, tdamage)
-
+int accavdir(avdir, damage, tdir, tdamage)
    int	avdir;		/* original direction average */
    int	damage;		/* damage to be associated with avdir */
    unsigned char tdir;	/* torp direction */
@@ -803,7 +796,7 @@ accavdir(avdir, damage, tdir, tdamage)
    return NORMALIZE(av);
 }
 
-initppos()
+void initppos()
 {
    _myspeed = me->p_speed;
    _mydir = me->p_dir;
@@ -812,9 +805,8 @@ initppos()
    _cticks = 1;
 }
 
-getppos(cx,cy, rx, ry, dir, speed, lvorbit)
-
-   register		cx,cy;
+void getppos(cx, cy, rx, ry, dir, speed, lvorbit)
+   register int		cx, cy;
    int			*rx, *ry;
    unsigned char	dir;
    int			speed;
@@ -904,12 +896,11 @@ getppos(cx,cy, rx, ry, dir, speed, lvorbit)
    _cticks++;
 }
 
-getorbit_ppos(cx,cy, rx, ry)
-
-   register		cx,cy;
+void getorbit_ppos(cx, cy, rx, ry)
+   register int		cx, cy;
    int			*rx, *ry;
 {
-   register		px,py;
+   register int		px, py;
 
 #ifdef nodef
    if(_state.planet && (&planets[me->p_planet] != _state.planet)){
@@ -926,9 +917,9 @@ getorbit_ppos(cx,cy, rx, ry)
    *ry = py+ORBDIST * Sin[(unsigned char)(_mydir - (unsigned char) 64)];
 }
 
-update_hplanets()
+void update_hplanets()
 {
-   register                     i;
+   register int                 i;
    register struct planet       *pl;
    double                       dx,dy;
    register int                 pdist, mindist = INT_MAX;
@@ -964,8 +955,7 @@ update_hplanets()
 #endif 
 }
 
-
-fixfuse(tx,ty, tf, j, tdx, tdy)
+void fixfuse(tx,ty, tf, j, tdx, tdy)
    int			tx,ty;
    int                  *tf;
    struct player        *j;
@@ -984,8 +974,7 @@ fixfuse(tx,ty, tf, j, tdx, tdy)
 }
  
 /* xx */
-c_lookahead(v)
-
+void c_lookahead(v)
    int	v;
 {
    static int	prevf;
@@ -998,8 +987,8 @@ c_lookahead(v)
       _state.lookahead = prevf;
 }
 
-set_lookahead(v, b)
-   int	v;
+void set_lookahead(v, b)
+   int	v, b;
 {
    static int	prevf;
    if(b){
@@ -1018,13 +1007,12 @@ set_lookahead(v, b)
  
  
 #define MINDIST		3700
-check_gboundary(mycrs, range)
- 
+void check_gboundary(mycrs, range)
    unsigned char        *mycrs;
    int			range;
 {
    int  			l = 0, r = 0;
-   register			x = me->p_x, y = me->p_y;
+   register int			x = me->p_x, y = me->p_y;
    register unsigned char	crs = *mycrs;
  
    if(x < MINDIST && crs > 128){
@@ -1056,12 +1044,11 @@ check_gboundary(mycrs, range)
    }
 }
  
-init_ftorps(i, j)
-
+void init_ftorps(i, j)
    int                  i;
    struct player        *j;
 {
-   register             k;
+   register int         k;
    register struct torp *t;
 
    for(k=0, t= &torps[i*MAXTORP] ; k < MAXTORP; k++, t++){
@@ -1082,8 +1069,7 @@ init_ftorps(i, j)
    }
 }
 
-init_phasers(p, j, ph)
- 
+void init_phasers(p, j, ph)
    Player               *p;
    struct player        *j;
    struct phaser        *ph;
@@ -1095,8 +1081,7 @@ init_phasers(p, j, ph)
    p->wpntemp += (SH_PHASERCOST(j)/10);
 }
 
-do_phaserdamage(p, j, ph)
-
+void do_phaserdamage(p, j, ph)
    Player               *p;
    struct player        *j;
    struct phaser        *ph;
@@ -1137,14 +1122,13 @@ do_phaserdamage(p, j, ph)
    }
 }
 
-do_plasmadamage(po, jo, pt)
-
+void do_plasmadamage(po, jo, pt)
    Player               *po;
    struct player        *jo;
    struct plasmatorp	*pt;
 {
-   register 			i;
-   register 			dx,dy,dist;
+   register int			i;
+   register int			dx, dy, dist;
    int			  	damage, pldamage;
    register struct player 	*j;
    register Player		*p;
@@ -1181,13 +1165,12 @@ do_plasmadamage(po, jo, pt)
    }
 }
 
-check_damage(enemy, t, td)
-
+void check_damage(enemy, t, td)
    int		enemy;
    struct torp  *t;
    int          td;
 {
-   register             i;
+   register int         i;
    register Player     *p;
    for(i=0, p=_state.players; i< MAXPLAYER; i++, p++){
       if(p->p && !p->invisible){
@@ -1198,13 +1181,12 @@ check_damage(enemy, t, td)
    }
 }
  
-check_dettorps(t,k)
-
+void check_dettorps(t, k)
    struct torp  *t;
    int          k;
 {
    Player		*ct = _state.current_target;
-   register             x = 0, y = 0;
+   register int         x = 0, y = 0;
    unsigned char        tdir, hcrs = 0;
    double		dx,dy;
 
@@ -1294,7 +1276,7 @@ check_dettorps(t,k)
    }
 
    if(_state.human || detall){
-      register	h;
+      register int	h;
       register struct torp	*l;
       for(h=0,l= &torps[MAXTORP*me->p_no]; h< me->p_ntorp; h++,l++){
 	 if(!l->t_shoulddet)
@@ -1306,8 +1288,7 @@ check_dettorps(t,k)
    }
 }
 
-cloaked(p)
-
+int cloaked(p)
    Player	*p;
 {
    if(!p || !p->p || !isAlive(p->p))
@@ -1318,13 +1299,13 @@ cloaked(p)
 unsigned char get_new_course1();
 unsigned char get_new_course2();
 unsigned char get_new_course3();
-_old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
 
+int _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
    unsigned char        d_crs, *crs_r;
    int                  d_speed, *speed_r, *hittime_r;
    int			*lvorbit;
 {
-   register             i, nh;
+   register int         i, nh;
    int                  hittime, minhits = INT_MAX, minhittime = INT_MAX,
                         mindamage = INT_MAX,
 #ifdef nodef
@@ -1491,7 +1472,6 @@ _old_compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
 }
 
 unsigned char get_new_course1(avdir, hittime, d_crs, it)
-
    int                  avdir, hittime, it;
    unsigned char        d_crs;
 {
@@ -1506,7 +1486,6 @@ unsigned char get_new_course1(avdir, hittime, d_crs, it)
 }
 
 unsigned char get_new_course2(avdir, hittime, dc, i)
-
    int                  avdir;
    int			hittime;
    unsigned char        dc;
@@ -1523,7 +1502,6 @@ unsigned char get_new_course2(avdir, hittime, dc, i)
 
 /* for _state.human */
 unsigned char get_new_course3(avdir, hittime, dc, i)
-
    int                  avdir;
    int			hittime;
    unsigned char        dc;
@@ -1554,8 +1532,7 @@ unsigned char get_new_course3(avdir, hittime, dc, i)
    }
 }
 
-mod_torp_speed(pdir, pspeed, tdir, tspeed)
-   
+int mod_torp_speed(pdir, pspeed, tdir, tspeed)
    unsigned char	pdir,tdir;
    int			pspeed, tspeed;
 {
@@ -1580,14 +1557,13 @@ mod_torp_speed(pdir, pspeed, tdir, tspeed)
    return newspeed;
 }
 
-check_server_response(x, y, cycles, e, j)
-
+void check_server_response(x, y, cycles, e, j)
    int                  *x,*y;
    int			cycles;
    Player		*e;
    struct player	*j;
 {
-   register             i;
+   register int         i;
    int                  accint = SH_ACCINT(me),
                         decint = SH_DECINT(me),
                         turns = SH_TURNS(me),
@@ -1665,8 +1641,7 @@ check_server_response(x, y, cycles, e, j)
    }
 }
 
-add_tractor(e, j, x, y, cycles)
-
+void add_tractor(e, j, x, y, cycles)
    Player		*e;
    struct player	*j;
    int			*x,*y;
@@ -1683,8 +1658,7 @@ add_tractor(e, j, x, y, cycles)
    tp_change(me, e->p, dist, 1, x, y, &dm, &dm);
 }
 
-add_pressor(e, j, x, y)
-
+void add_pressor(e, j, x, y)
    Player		*e;
    struct player	*j;
    int			*x,*y;
@@ -1694,8 +1668,7 @@ add_pressor(e, j, x, y)
    tp_change(me, e->p, e->dist, -1, x, y, &dm, &dm);
 }
 
-add_mytractor(x, y)
-
+void add_mytractor(x, y)
    int	*x,*y;
 {
    struct player	*j = &players[me->p_tractor];
@@ -1710,8 +1683,7 @@ add_mytractor(x, y)
    tp_change(j, me, dist, 1, x, y, &dm, &dm);
 }
 
-add_mypressor(x, y)
-
+void add_mypressor(x, y)
    int	*x,*y;
 {
    struct player	*j = &players[me->p_tractor];
@@ -1728,8 +1700,7 @@ add_mypressor(x, y)
 
 
 /* j2 -- tractor, j1 -- tractee */
-tp_change(j1, j2, dist, dir, x, y, hx, hy)
-
+void tp_change(j1, j2, dist, dir, x, y, hx, hy)
    struct player 	*j1, *j2;
    int			dist, dir;
    int			*x,*y;		/* change to j1 */
@@ -1758,8 +1729,7 @@ tp_change(j1, j2, dist, dir, x, y, hx, hy)
    *y -= dir * sinTheta * halfforce/(SH_MASS(j2));
 }
 
-predict_pltorp(j, pt_dir, pt_x, pt_y, mx,my)
-   
+void predict_pltorp(j, pt_dir, pt_x, pt_y, mx,my)
    struct player	*j;		/* ptorp owner */
    unsigned char	*pt_dir;	/* torp direction */
    int			*pt_x, *pt_y;	/* ptorp position */
@@ -1790,8 +1760,7 @@ predict_pltorp(j, pt_dir, pt_x, pt_y, mx,my)
    *pt_y += (double) j->p_ship.s_plasmaspeed * Sin[*pt_dir] * WARP1;
 }
 
-predict_storp(j, pt_dir, pt_x, pt_y, mx,my)
-   
+void predict_storp(j, pt_dir, pt_x, pt_y, mx,my)
    struct player	*j;		/* ptorp owner */
    unsigned char	*pt_dir;	/* torp direction */
    int			*pt_x, *pt_y;	/* ptorp position */
@@ -1817,7 +1786,8 @@ predict_storp(j, pt_dir, pt_x, pt_y, mx,my)
 
 unsigned char
 get_bearing(xme, yme, x, y, dir)
-int x, y;
+  int xme, yme, x, y;
+  int dir;
 {
   int phi=0;
 
@@ -1829,4 +1799,3 @@ int x, y;
   else
     return((unsigned char) (256 + phi - dir));
 }
-

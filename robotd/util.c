@@ -17,7 +17,7 @@
 
 struct distress *loaddistress(enum dist_type i);
 
-mprintf(char *format, ...)
+void mprintf(char *format, ...)
 {
    va_list	ap;
 
@@ -33,8 +33,8 @@ mprintf(char *format, ...)
 /*
 ** Provide the angular distance between two angles.
 */
-angdist(x, y)
-unsigned char x, y;
+int angdist(x, y)
+    unsigned char x, y;
 {
     register unsigned char res;
 
@@ -47,13 +47,13 @@ unsigned char x, y;
 
 #ifdef hpux
 
-srandom(foo)
-int foo;
+void srandom(foo)
+    int foo;
 {
     rand(foo);
 }
 
-random()
+int random()
 {
     return(rand());
 }
@@ -61,9 +61,9 @@ random()
 #include <time.h>
 #include <sys/resource.h>
 
-getrusage(foo, buf)
-int foo;
-struct rusage *buf;
+void getrusage(foo, buf)
+    int foo;
+    struct rusage *buf;
 {
     buf->ru_utime.tv_sec = 0;
     buf->ru_stime.tv_sec = 0;
@@ -71,10 +71,9 @@ struct rusage *buf;
 
 #include <sys/signal.h>
 
-int (*
-signal(sig, funct))()
-int sig;
-int (*funct)();
+int (*signal(sig, funct))()
+    int sig;
+    int (*funct)();
 {
     struct sigvec vec, oldvec;
 
@@ -84,8 +83,7 @@ int (*funct)();
 }
 #endif
 
-warning(s, o)
-
+void warning(s, o)
    char	*s;
    int	o;
 {
@@ -98,15 +96,13 @@ warning(s, o)
 
 
 /* return rnd between -range & range */
-rrnd(range)
-
+int rrnd(range)
    int  range;
 {
    return RANDOM() % (2*range) - range;
 }
 
-edist_to_me(j)
-
+int edist_to_me(j)
    struct player        *j;
 {
    if(_state.wrap_around)
@@ -118,8 +114,7 @@ edist_to_me(j)
    }
 }
 
-pdist_to_p(j1, j2)
-
+int pdist_to_p(j1, j2)
    struct player	*j1,*j2;
 {
    if(_state.wrap_around)
@@ -131,18 +126,19 @@ pdist_to_p(j1, j2)
    }
 }
 
-unsigned char get_wrapcourse(x,y)
-
-   int	x,y;
+unsigned char get_wrapcourse(x, y)
+   int x, y;
 {
-   if(!_state.wrap_around) return get_course(x,y);
+   if(!_state.wrap_around)
+      return get_course(x,y);
    else
       return get_course(wrap_x(x, me->p_x), wrap_y(y, me->p_y));
 }
 
-wrap_x(x, mx)
+int wrap_x(x, mx)
+   int x, mx;
 {
-   register	xd = x - mx;
+   register int xd = x - mx;
 
    if(xd < 0){
       if(-xd > GWIDTH/2)
@@ -155,9 +151,10 @@ wrap_x(x, mx)
    return x;
 }
 
-wrap_y(y, my)
+int wrap_y(y, my)
+   int y, my;
 {
-   register	yd = y - my;
+   register int yd = y - my;
    if(yd < 0){
       if(-yd > GWIDTH/2)
 	 y = GWIDTH + y;
@@ -169,7 +166,8 @@ wrap_y(y, my)
    return y;
 }
 
-wrap_dist(x1, y1, x,y)
+int wrap_dist(x1, y1, x, y)
+   int x1, y1, x, y;
 {
    int	xr = wrap_x(x, x1),
 	yr = wrap_y(y, y1);
@@ -180,8 +178,8 @@ wrap_dist(x1, y1, x,y)
 }
 
 /* get course from me to x,y */
-unsigned char get_course(x,y)
-int     x,y;
+unsigned char get_course(x, y)
+   int     x, y;
 {
    unsigned char	ret_crs;
 
@@ -193,9 +191,8 @@ int     x,y;
 }
 
 /* get course from (mx,my) to (x,y) */
-unsigned char get_acourse(x,y, mx,my)
-
-   int	x,y,mx,my;
+unsigned char get_acourse(x, y, mx, my)
+   int x, y, mx, my;
 {
    if(x == mx && y == my)
       return 0;
@@ -204,25 +201,23 @@ unsigned char get_acourse(x,y, mx,my)
       (double) (my - y)) / 3.14159 * 128.);
 }
 
-unsigned char get_awrapcourse(x,y, mx,my)
-
-   int	x,y;
+unsigned char get_awrapcourse(x, y, mx, my)
+   int x, y, mx, my;
 {
-   if(!_state.wrap_around) return get_acourse(x,y,mx,my);
+   if(!_state.wrap_around)
+      return get_acourse(x,y,mx,my);
    else
       return get_course(wrap_x(x, mx), wrap_y(y,my));
 }
 
 /* return distance of closest enemy to planet in question */
-edist_to_planet(pl)
-
+int edist_to_planet(pl)
    struct planet        *pl;
 {
    return dist_to_planet(_state.closest_e, pl);
 }
 
-dist_to_planet(e,pl)
-
+int dist_to_planet(e, pl)
    Player		*e;
    struct planet	*pl;
 {
@@ -243,8 +238,7 @@ dist_to_planet(e,pl)
    return d;
 }
 
-mydist_to_planet(pl)
-
+int mydist_to_planet(pl)
    struct planet        *pl;
 {
    return dist_to_planet(me_p, pl);
@@ -252,10 +246,10 @@ mydist_to_planet(pl)
 
 /* returns angdst of enemy course & given course <= range given,
    i.e. is difference of enemy course to given course within range? */
-running_away(e, crs, r)
-
+int running_away(e, crs, r)
    Player                *e;
    unsigned char        crs;
+   int	                  r;
 {
    return angdist(e->p->p_dir, crs) <= r;
 }
@@ -263,10 +257,10 @@ running_away(e, crs, r)
 /* returns true if enemy 'e' is "attacking" the specified
    approaching course */
 
-attacking(e, crs, r)
-
+int attacking(e, crs, r)
    Player                *e;
    unsigned char        crs;
+   int	                  r;
 {
    unsigned char        ecrs = e->p->p_dir;
    unsigned int		rd = crs - 128;
@@ -275,8 +269,7 @@ attacking(e, crs, r)
    return angdist((unsigned char)rd, ecrs) <= r;
 }
 
-avoiddir(dir, mcrs, r)
-
+int avoiddir(dir, mcrs, r)
    unsigned char	dir, 	/* course to be avoided */
 			r;	/* range of direction change */
    unsigned char        *mcrs;	/* my course -- used and returned */
@@ -307,8 +300,7 @@ avoiddir(dir, mcrs, r)
 /* defend */
 
 /* how close do we get? */
-defend_dist(p)
-
+int defend_dist(p)
    Player	*p;
 {
    struct planet	*pl, *team_planet();
@@ -328,7 +320,7 @@ defend_dist(p)
 }
 
 /* what's too close */
-tdefend_dist()
+int tdefend_dist()
 {
    if(starbase(_state.protect_player))
       return 4000;
@@ -337,13 +329,12 @@ tdefend_dist()
 }
 
 /* how close to enemy before attack */
-edefend_dist()
+int edefend_dist()
 {
    return 9000;
 }
 
 unsigned char choose_course(scrs, ecrs)
-
    unsigned char scrs;
    unsigned char ecrs;
 {
@@ -358,11 +349,10 @@ unsigned char choose_course(scrs, ecrs)
       return (unsigned char) (ecrs + 80);
 }
 
-on_screen(p)
-
+int on_screen(p)
    Player	*p;
 {
-   register	x,y;
+   register int x, y;
    if(!p || !p->p || !isAlive(p->p))
       return 0;
    
@@ -376,7 +366,7 @@ on_screen(p)
 
 #define TIME(x)		((_udcounter - (x))/10)
 
-do_alert()
+void do_alert()
 {
    static int	lastalert;
    int		critical = 0;
@@ -405,7 +395,7 @@ do_alert()
    }
 }
 
-emergency()
+void emergency()
 {
     struct distress *dist;
 
@@ -422,7 +412,7 @@ emergency()
 int ihypot(xd1, yd1)
    double xd1, yd1;
 {
-   register 	x1 = (int)xd1,
+   register int	x1 = (int)xd1,
 		y1 = (int)yd1,
 		x2 = 0, 
 		y2 = 0;
@@ -433,8 +423,7 @@ int ihypot(xd1, yd1)
 }
 
 #if ! HAVE_NINT
-nint(x)
-   
+int nint(x)
    double x;
 {
    double	rint();
@@ -442,7 +431,7 @@ nint(x)
 }
 #endif
 
-mfprintf(FILE *fo, char *format, ...)
+void mfprintf(FILE *fo, char *format, ...)
 {
    va_list	ap;
 
@@ -454,4 +443,3 @@ mfprintf(FILE *fo, char *format, ...)
    fflush(fo);
    va_end(ap);
 }
-

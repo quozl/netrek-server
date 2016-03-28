@@ -10,9 +10,9 @@
 #include "packets.h"
 #include "robot.h"
 
-init_ships()
+void init_ships()
 {
-   register			i;
+   register int			i;
    register struct player	*p;
    if(!players) return;
 

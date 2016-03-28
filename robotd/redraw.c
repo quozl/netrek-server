@@ -14,7 +14,7 @@
 
 int	_tcheck;
 
-intrupt()
+void intrupt()
 {
    static long     lastread;
    static int      prevread;
@@ -69,12 +69,12 @@ keep_reading:
 
 /* borg detect */
 
-borg_detect()
+void borg_detect()
 {
    register Player		*p;
    register struct player	*j;
    int				last_speedc, last_dirc;
-   register			i;
+   register int			i;
 
    for(i=0, p=_state.players; i < MAXPLAYER; i++,p++){
       if(!p->p || (p->p->p_status != PALIVE) || p->invisible)

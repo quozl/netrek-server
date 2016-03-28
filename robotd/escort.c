@@ -16,7 +16,7 @@
 static int	_esc_dist;
 
 /* escort player to planet */
-escort()
+void escort()
 {
    Player		*escp  = _state.escort_player;
    struct planet 	*escpl = _state.escort_planet;
@@ -104,8 +104,7 @@ escort()
  */
 
 /* 0 */
-goto_escort_planet(p, pl)
-   
+void goto_escort_planet(p, pl)
    Player		*p;
    struct planet	*pl;
 {
@@ -139,8 +138,7 @@ goto_escort_planet(p, pl)
 }
 
 /* 1 */
-wait_for_escort(p, pl)
-   
+void wait_for_escort(p, pl)
    Player		*p;
    struct planet	*pl;
 {
@@ -186,8 +184,7 @@ wait_for_escort(p, pl)
 }
 
 /* 2 */
-goto_defender(p, pl)
-   
+void goto_defender(p, pl)
    Player		*p;
    struct planet	*pl;
 {
@@ -214,8 +211,7 @@ goto_defender(p, pl)
 }
 
 /* 3 */
-ogg_defender(p, pl)
-
+void ogg_defender(p, pl)
    Player		*p;
    struct planet	*pl;
 {
@@ -244,12 +240,11 @@ ogg_defender(p, pl)
 /* UNUSED */
 /* the further away the player is the more likely to be an interference. */
 
-find_interference(ie, d)
-
+int find_interference(ie, d)
    Player	*ie[MAXPLAYER];	/* used */
    int		d;
 {
-   register		i, j=0;
+   register int		i, j=0;
    register Player	*p;
 
    for(i=0, p=_state.players; i< MAXPLAYER; i++,p++){
@@ -262,8 +257,7 @@ find_interference(ie, d)
    return j;
 }
 
-on_my_course(p)
-
+int on_my_course(p)
    Player	*p;
 {
    unsigned char	mycrs = _state.p_desdir;
@@ -272,7 +266,7 @@ on_my_course(p)
    return angdist(mycrs, ecrs) < 16;
 }
 
-do_course_speed(crs, speed)
+void do_course_speed(crs, speed)
    unsigned char	crs;
    int			speed;
 {

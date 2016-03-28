@@ -10,8 +10,7 @@
 #include "packets.h"
 #include "robot.h"
 
-torp_attack_robot(e, j, edist)
-
+void torp_attack_robot(e, j, edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -24,8 +23,7 @@ torp_attack_robot(e, j, edist)
    attack_robot(e, j, edist);
 }
 
-phaser_attack_robot(e, j, edist)
-
+void phaser_attack_robot(e, j, edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -59,7 +57,6 @@ phaser_attack_robot(e, j, edist)
 }
 
 unsigned char predict_dir(odir, ndir, dist)
-
    unsigned char	odir, ndir;
    int			dist;
 {
@@ -86,8 +83,7 @@ unsigned char predict_dir(odir, ndir, dist)
       return ndir - NORMALIZE(x);
 }
 
-attack_robot(e, j, edist)
-   
+void attack_robot(e, j, edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -227,8 +223,7 @@ attack_robot(e, j, edist)
    mprintf("unknown phase. %d\n", _timers.robot_attack);
 }
 
-ship_factor(s)
-
+int ship_factor(s)
    int	s;
 {
    switch(s){

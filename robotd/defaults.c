@@ -19,8 +19,8 @@ struct stringlist *defaults=NULL;
 char *getenv();
 #endif
 
-initDefaults(deffile)
-char *deffile;		/* As opposed to defile? */
+void initDefaults(deffile)
+    char *deffile;		/* As opposed to defile? */
 {
     FILE *fp;
     char file[100];
@@ -65,7 +65,7 @@ char *deffile;		/* As opposed to defile? */
 }
 
 char *getdefault(str)
-char *str;
+    char *str;
 {
     struct stringlist *sl;
 
@@ -79,7 +79,7 @@ char *str;
     return(NULL);
 }
 
-strcmpi(const char * str1, const char * str2)
+int strcmpi(const char * str1, const char * str2)
 {
 /*#ifdef strcasecmp */
     return (strcasecmp(str1,str2));
@@ -99,9 +99,9 @@ strcmpi(const char * str1, const char * str2)
 */
 }
 
-booleanDefault(def, preferred)
-char *def;
-int preferred;
+int booleanDefault(def, preferred)
+    char *def;
+    int preferred;
 {
     char *str;
 

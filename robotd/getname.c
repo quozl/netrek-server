@@ -18,7 +18,7 @@
 #include "struct.h"
 #include "data.h"
 
-renter(pseudo, pss, log)
+void renter(pseudo, pss, log)
    char           *pseudo, *pss, *log;
 {
    int		   guest = (strcmp(pseudo, "guest") == 0);

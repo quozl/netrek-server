@@ -14,8 +14,7 @@ unsigned char choose_ecourse();
 
 /* called from s_target in robot.c */
 
-engage(e)
-
+void engage(e)
    Player		*e;
 {
    /* right place? */
@@ -29,7 +28,7 @@ engage(e)
       pengage(e);
 }
 
-plengage()
+void plengage()
 {
    Player		*e;
    unsigned char	crs = _state.p_desdir, crs_r;
@@ -111,8 +110,7 @@ plengage()
       pengage(e);
 }
 
-dengage(e)
-
+void dengage(e)
    Player	*e;
 {
    unsigned char	crs = _state.p_desdir, crs_r;
@@ -218,8 +216,7 @@ dengage(e)
       pengage(e);
 }
 
-pengage(e)
-
+void pengage(e)
    Player	*e;
 {
    int			edist, e_dist;
@@ -276,8 +273,7 @@ pengage(e)
    req_set_speed(speed_r, __LINE__, __FILE__);
 }
 
-goto_protect(pl, p, dock)
-   
+void goto_protect(pl, p, dock)
    struct planet	*pl;
    Player		*p;
    int			dock;
@@ -410,10 +406,8 @@ goto_protect(pl, p, dock)
    }
 }
 
-
 /* enemy */
 Player	*get_nearest_to_pl(pl)
-
    struct planet	*pl;
 {
    Player *get_nearest_to_pl_dist();
@@ -446,7 +440,6 @@ Player *get_nearest_to_pl_dist(pl, rdist)
 }
 
 Player *get_nearest_to_p(p, d)
-
    Player	*p;
    int		*d;
 {
@@ -473,16 +466,14 @@ Player *get_nearest_to_p(p, d)
 }
 
 /* make sure  */
-hostilepl(pl)
-
+int hostilepl(pl)
    struct planet	*pl;
 {
    return (me->p_team != pl->pl_owner) &&
       ((me->p_swar | me->p_hostile) & pl->pl_owner);
 }
 
-unknownpl(pl)
-
+int unknownpl(pl)
    struct planet	*pl;
 {
    if(!pl) return 0;
@@ -491,11 +482,10 @@ unknownpl(pl)
 
 /* likely team for unknown planet */
 
-team_areapl(pl)
-
+int team_areapl(pl)
    struct planet	*pl;
 {
-   register	x = pl->pl_x, y = pl->pl_y;
+   register int	x = pl->pl_x, y = pl->pl_y;
 
    if(!unknownpl(pl))
       return pl->pl_owner;
@@ -509,8 +499,7 @@ team_areapl(pl)
 }
 
 /* unknown planet -- guess what team it is */
-guess_team(pl)
-
+int guess_team(pl)
    struct planet	*pl;
 {
    int	plteam = team_areapl(pl);
@@ -526,7 +515,7 @@ guess_team(pl)
    return team;
 }
 
-war_team()
+int war_team()
 {
    switch(me->p_team){
       case FED:
@@ -552,9 +541,7 @@ war_team()
    return FED;
 }
 
-
-alter_course_distance(e, e_dist, crs)
-
+void alter_course_distance(e, e_dist, crs)
    Player		*e;
    int			e_dist;
    unsigned char	*crs;
@@ -650,8 +637,7 @@ alter_course_distance(e, e_dist, crs)
    }
 }
 
-mod_fight_dist(e)
-
+int mod_fight_dist(e)
    Player	*e;
 {
    int	sh	= me->p_ship.s_type;
@@ -722,7 +708,6 @@ mod_fight_dist(e)
 }
 
 unsigned char choose_ecourse(p, j, edist)
-
    Player		*p;
    struct player	*j;
    int			edist;
@@ -761,8 +746,7 @@ unsigned char choose_ecourse(p, j, edist)
 #define EDGE_DIST	20000
 
 /* Try to force player into the edge */
-edge_course(j, edist, crs)
-
+void edge_course(j, edist, crs)
    struct player	*j;
    int			edist;
    unsigned char	*crs;
@@ -776,8 +760,7 @@ edge_course(j, edist, crs)
 }
 
 /* based on get_torp_course */
-get_intercept_course(p, j, edist, crs)
-
+int get_intercept_course(p, j, edist, crs)
    Player		*p;
    struct player	*j;
    int			edist;

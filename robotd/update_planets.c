@@ -10,12 +10,12 @@
 #include "packets.h"
 #include "robot.h"
 
-update_planets()
+void update_planets()
 {
-   register			k;
+   register int			k;
    register struct planet	*pl;
    PlanetRec			*pls = _state.planets;
-   register			d;
+   register int			d;
 
    pls->total_tarmies 		= 0;
    pls->total_textra_armies	= 0;
@@ -100,14 +100,14 @@ update_planets()
 #endif
 }
 
-_plcmp(el1, el2)
+int _plcmp(el1, el2)
 
    struct planet **el1, **el2;
 {
    return (*el1)->pl_mydist - (*el2)->pl_mydist;
 }
 
-sort_planets_by_distance()
+void sort_planets_by_distance()
 {
    PlanetRec			*pls = _state.planets;
 

@@ -14,13 +14,11 @@ static int	_special_tr;
 
 #define PDEFEND	(_state.defend || _state.player_type == PT_DEFENDER)
 
-pwarfare(type, e, j, edist)
-
+void pwarfare(type, e, j, edist)
    int			type;
    Player		*e;
    struct player	*j;
    int			edist;
-   
 {
    if(_state.ignore_sudden && should_ignore(e,j,edist)){
       return;
@@ -108,8 +106,7 @@ pwarfare(type, e, j, edist)
    }
 }
 
-should_ignore(e,j,edist)
-   
+int should_ignore(e,j,edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -120,13 +117,12 @@ should_ignore(e,j,edist)
    return 0;
 }
 
-ttime()
+int ttime()
 {
    return (_udcounter - _timers.tractor_time) >= _timers.tractor_limit;
 }
 
-handle_tractors(e, j, edist, tractor, s, m)
-
+void handle_tractors(e, j, edist, tractor, s, m)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -158,8 +154,7 @@ handle_tractors(e, j, edist, tractor, s, m)
    }
 }
 
-check_pressor(e)
-
+void check_pressor(e)
    Player	*e;
 {
    struct player	*j;
@@ -188,8 +183,7 @@ check_pressor(e)
    }
 }
    
-ptorp_attack(e, j, edist)
-
+void ptorp_attack(e, j, edist)
    Player		*e;
    struct player 	*j;
    int			edist;
@@ -577,8 +571,7 @@ ptorp_attack(e, j, edist)
    }
 }
 
-plasma_attack(e,j,edist)
-
+void plasma_attack(e,j,edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -606,7 +599,7 @@ plasma_attack(e,j,edist)
    }
 }
 
-have_plasma()
+int have_plasma()
 {
    if(_state.chaos){
       switch(me->p_ship.s_type){
@@ -626,8 +619,7 @@ have_plasma()
       return _state.have_plasma;
 }
 
-pphaser_attack(e, j, edist)
-
+void pphaser_attack(e, j, edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -795,8 +787,7 @@ pphaser_attack(e, j, edist)
    }
 }
 
-active(p)
-
+int active(p)
    Player	*p;
 {
    if(!p || !p->p || !isAlive(p->p) || PL_FUEL(p) < 5)
@@ -804,8 +795,7 @@ active(p)
    return 1;
 }
 
-starbase(e)
-
+int starbase(e)
    Player	*e;
 {
    if(!e || !e->p || !isAlive(e->p)) return 0;
@@ -813,8 +803,7 @@ starbase(e)
    return e->p->p_ship.s_type == STARBASE;
 }
 
-oggwarfare(type, e, j, edist)
-
+void oggwarfare(type, e, j, edist)
    int			type;
    Player		*e;
    struct player	*j;
@@ -838,8 +827,7 @@ oggwarfare(type, e, j, edist)
    }
 }
 
-too_close(e)
-
+int too_close(e)
    Player	*e;
 {
    return e->dist < e->hispr+2000;
@@ -847,8 +835,7 @@ too_close(e)
 
 /* was 5000 */
 
-get_fire_dist(e, j, edist)
-   
+int get_fire_dist(e, j, edist)
    Player		*e;
    struct player	*j;
    int			edist;
@@ -861,8 +848,7 @@ get_fire_dist(e, j, edist)
    return 4000;
 }
 
-in_danger(p)
-
+int in_danger(p)
    Player	*p;
 {
    if(PL_DAMAGE(p) > 50 && PL_SHIELD(p) < 50)

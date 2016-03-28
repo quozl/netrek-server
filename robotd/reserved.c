@@ -12,8 +12,8 @@
 #include <netdb.h>
 #include "packets.h"
 
-makeReservedPacket(packet)
-struct reserved_spacket *packet;
+void makeReservedPacket(packet)
+    struct reserved_spacket *packet;
 {
     int i;
 
@@ -23,11 +23,11 @@ struct reserved_spacket *packet;
     packet->type = SP_RESERVED;
 }
 
-encryptReservedPacket(spacket, cpacket, server, pno)
-struct reserved_spacket *spacket;
-struct reserved_cpacket *cpacket;
-char *server;
-int pno;
+void encryptReservedPacket(spacket, cpacket, server, pno)
+    struct reserved_spacket *spacket;
+    struct reserved_cpacket *cpacket;
+    char *server;
+    int pno;
 {
     struct hostent *hp;
     struct in_addr address;

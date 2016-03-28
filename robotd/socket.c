@@ -42,23 +42,23 @@ static int	debug;
 int	_tsent;
 
 
-int handleMessage(), handlePhaser(), handlePlyrInfo();
-int handlePlayer(), handleSelf(), handleStatus();
-int handleWarning(), handleTorp(), handleTorpInfo();
-int handlePlanet(), handleQueue(), handlePickok(), handleLogin();
-int handlePlasmaInfo(), handlePlasma();
-int handleKills(), handleFlags(), handlePStatus();
-int handleMotd(), handleMask();
-int handleBadVersion(), handlePlanetLoc();
-int handleHostile(), handleStats(), handlePlyrLogin();
-int handleReserved();
-int handleScan(), handleUdpReply(), handleSequence();
-int handleMasterComm();
+void handleMessage(), handlePhaser(), handlePlyrInfo();
+void handlePlayer(), handleSelf(), handleStatus();
+void handleWarning(), handleTorp(), handleTorpInfo();
+void handlePlanet(), handleQueue(), handlePickok(), handleLogin();
+void handlePlasmaInfo(), handlePlasma();
+void handleKills(), handleFlags(), handlePStatus();
+void handleMotd(), handleMask();
+void handleBadVersion(), handlePlanetLoc();
+void handleHostile(), handleStats(), handlePlyrLogin();
+void handleReserved();
+void handleScan(), handleUdpReply(), handleSequence();
+void handleMasterComm();
 #ifdef ATM
-int handleUdpReply(), handleSequence();
-int handleScan();
+void handleUdpReply(), handleSequence();
+void handleScan();
 #endif /* ATM */
-int handlePing(); /* ping.c */
+void handlePing(); /* ping.c */
 
 struct packet_handler handlers[] = {
     { 0, NULL },	/* record 0 */
@@ -195,7 +195,7 @@ static short fSpeed, fDirection, fShield, fOrbit, fRepair, fBeamup, fBeamdown,
         fCloak, fBomb, fDockperm, fPhaser, fPlasma, fPlayLock, fPlanLock,
         fTractor, fRepress;
 /* reset all the "force command" variables */
-resetForce()
+void resetForce()
 {
     fSpeed = fDirection = fShield = fOrbit = fRepair = fBeamup = fBeamdown =
     fCloak = fBomb = fDockperm = fPhaser = fPlasma = fPlayLock = fPlanLock =
@@ -250,7 +250,7 @@ resetForce()
                 force = -1;        }                                                       \
 }
 
-checkForce()
+void checkForce()
 {
     struct speed_cpacket speedReq;
     struct tractor_cpacket tractorReq;
@@ -275,8 +275,8 @@ checkForce()
 }
 #endif /* ATM */
 
-connectToServer(port)
-int port;
+void connectToServer(port)
+    int port;
 {
     int s;
     struct sockaddr_in addr;
@@ -369,7 +369,7 @@ tryagain:
     printf("Connection from server %s (%s)\n", serverName, inet_ntoa(addr.sin_addr));
 }
 
-set_tcp_opts(s)
+void set_tcp_opts(s)
    int  s;
 {
    int          optval=1, optlen;
@@ -384,9 +384,9 @@ set_tcp_opts(s)
       perror("setsockopt");
 }
 
-connectToRWatch(machine, port)
-char *machine;
-int port;
+int connectToRWatch(machine, port)
+    char *machine;
+    int port;
 {
     int ns;
     struct sockaddr_in addr;
@@ -434,7 +434,7 @@ int port;
 #define O_NDELAY O_NONBLOCK
 #endif /* !defined(O_NDELAY) */
 
-set_rsock_nowait()
+int set_rsock_nowait()
 {
    if(fcntl(rsock, F_SETFL, O_NDELAY) < 0) {
    perror("fcntl");
@@ -443,9 +443,9 @@ set_rsock_nowait()
    return 1;
 }
 
-callServer(port, server)
-int port;
-char *server;
+void callServer(port, server)
+    int port;
+    char *server;
 {
     int s;
     struct sockaddr_in addr;
@@ -487,7 +487,6 @@ char *server;
    }
 #endif
 
-
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
 
@@ -513,12 +512,12 @@ char *server;
     pickSocket(port);	/* new socket != port */
 }
 
-isServerDead()
+int isServerDead()
 {
     return(serverDead);
 }
 
-socketPause()
+void socketPause()
 {
     struct timeval timeout;
     fd_set	readfds;
@@ -536,8 +535,7 @@ socketPause()
 
 static    char _buf[BUFSIZ*2];
 #ifdef ATM
-readFromServer(pollmode)
-   
+void readFromServer(pollmode)
    int	pollmode;
 {
     struct timeval timeout;
@@ -612,8 +610,8 @@ sel_again:;
     return (retval != 0);               /* convert to 1/0 */
 }
 
-doRead(asock)
-int asock;
+int doRead(asock)
+    int asock;
 {
     struct timeval timeout;
     fd_set readfds;
@@ -738,7 +736,7 @@ int asock;
 }
 
 #else
-readFromServer()
+int readFromServer()
 {
     struct timeval timeout;
     fd_set readfds;
@@ -860,8 +858,8 @@ readFromServer()
 }
 #endif
 
-handleTorp(packet)
-struct torp_spacket *packet;
+void handleTorp(packet)
+    struct torp_spacket *packet;
 {
     struct torp *thetorp;
     extern int _tcheck;
@@ -883,26 +881,21 @@ struct torp_spacket *packet;
     thetorp->t_y=ntohl(packet->y);
     thetorp->t_dir=packet->dir;
 
-      
-
-   if(_state.borg_detect){
+    if(_state.borg_detect){
       Player	*p = &_state.players[thetorp->t_owner];
       if(p->tfire_dir < 0)
 	 p->tfire_dir = (int)thetorp->t_dir;
-   }
+    }
 }
 
-
-handleSTorp(sbuf)
-
+void handleSTorp(sbuf)
    unsigned char        *sbuf;
 {
-   register     i;
+   register int i;
    int          size;
    struct torp *thetorp, torp;
    struct player *j;
    register Player	*p;
-
 
    size = (int)sbuf[1];
    if(debug)
@@ -1015,8 +1008,8 @@ handleSTorp(sbuf)
    }
 }
 
-handleTorpInfo(packet)
-struct torp_info_spacket *packet;
+void handleTorpInfo(packet)
+    struct torp_info_spacket *packet;
 {
     struct torp *thetorp;
     struct player	*j;
@@ -1096,8 +1089,8 @@ struct torp_info_spacket *packet;
 #endif
 }
 
-handleStatus(packet)
-struct status_spacket *packet;
+void handleStatus(packet)
+    struct status_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleStatus");
@@ -1115,8 +1108,8 @@ struct status_spacket *packet;
     status->timeprod=ntohl(packet->timeprod);
 }
 
-handleSelf(packet)
-struct you_spacket *packet;
+void handleSelf(packet)
+    struct you_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleSelf");
@@ -1147,8 +1140,7 @@ tors */
 #endif
 }
 
-handleSelfShort(packet)
-
+void handleSelfShort(packet)
    struct youshort_spacket *packet;
 {
    me = &players[packet->pnum];
@@ -1162,8 +1154,7 @@ handleSelfShort(packet)
    me->p_whodead = packet->whodead;
 }
 
-handleSelfShip(packet)
-
+void handleSelfShip(packet)
    struct youss_spacket *packet;
 {
    if(!me)
@@ -1176,8 +1167,8 @@ handleSelfShip(packet)
    me->p_wtemp = ntohs(packet->wtemp);
 }
 
-handlePlayer(packet)
-struct player_spacket *packet;
+void handlePlayer(packet)
+   struct player_spacket *packet;
 {
    register struct player 	*pl;
    Player			*p;
@@ -1224,14 +1215,13 @@ struct player_spacket *packet;
    redrawPlayer[packet->pnum]=1;
 }
 
-handleSPlayer(sbuf)
-
+void handleSPlayer(sbuf)
    unsigned char        *sbuf;
 {
-   register                     i;
+   register int                 i;
    int                          size;
    register struct player       *pl;
-   register                     px,py;
+   register int                 px, py;
    unsigned char                dir;
    int                          offscreen;
    Player			*p;
@@ -1284,8 +1274,8 @@ handleSPlayer(sbuf)
    }
 }
 
-handleWarning(packet)
-struct warning_spacket *packet;
+void handleWarning(packet)
+    struct warning_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleWarning");
@@ -1298,12 +1288,12 @@ struct warning_spacket *packet;
 #endif
 }
 
-sendShortPacket(type, state)
-char type, state;
+void sendShortPacket(type, state)
+    char type, state;
 {
     struct speed_cpacket speedReq;
 
-   if(DEBUG & DEBUG_SERVER){
+    if(DEBUG & DEBUG_SERVER){
       switch(type){
 	 case CP_TORP:		printf("sendTorp: %d\n", state); break;
 	 case CP_PHASER:	printf("sendPhaser: %d\n", state); break;
@@ -1314,7 +1304,7 @@ char type, state;
 	 case CP_REPAIR:	printf("sendRepair: %d\n", state); break;
 	 default:		printf("unknownReq: %d %d\n", type, state);
       }
-   }
+    }
 
     speedReq.type=type;
     speedReq.speed=state;
@@ -1352,9 +1342,9 @@ char type, state;
 }
 
 #ifdef ATM
-sendServerPacket(packet)
+void sendServerPacket(packet)
 /* Pick a random type for the packet */
-struct player_spacket *packet;
+    struct player_spacket *packet;
 {
     int size;
 
@@ -1450,8 +1440,8 @@ send_udp:
 }
 #endif
 
-handlePlanet(packet)
-struct planet_spacket *packet;
+void handlePlanet(packet)
+   struct planet_spacket *packet;
 {
    struct planet *plan;
 
@@ -1477,8 +1467,8 @@ struct planet_spacket *packet;
    }
 }
 
-handlePhaser(packet)
-struct phaser_spacket *packet;
+void handlePhaser(packet)
+   struct phaser_spacket *packet;
 {
    struct phaser *phas;
    register Player	*p;
@@ -1514,8 +1504,8 @@ struct phaser_spacket *packet;
 #endif
 }
 
-handleMessage(packet)
-struct mesg_spacket *packet;
+void handleMessage(packet)
+    struct mesg_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleMessage");
@@ -1524,8 +1514,8 @@ struct mesg_spacket *packet;
     dmessage(packet->mesg, packet->m_flags, packet->m_from, packet->m_recpt);
 }
 
-handleQueue(packet)
-struct queue_spacket *packet;
+void handleQueue(packet)
+    struct queue_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleQueue");
@@ -1533,8 +1523,8 @@ struct queue_spacket *packet;
     queuePos = ntohs(packet->pos);
 }
 
-sendTeamReq(team,ship)
-int team, ship;
+void sendTeamReq(team,ship)
+    int team, ship;
 {
     struct outfit_cpacket outfitReq;
 
@@ -1545,8 +1535,8 @@ int team, ship;
     sendServerPacket(&outfitReq);
 }
 
-handlePickok(packet)
-struct pickok_spacket *packet;
+void handlePickok(packet)
+    struct pickok_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePickok");
@@ -1555,14 +1545,14 @@ struct pickok_spacket *packet;
     mprintf("got pickOk = %d\n", pickOk);
 }
 
-sendLoginReq(name,pass,login,query)
-char *name, *pass;
-char *login;
-char query;
+void sendLoginReq(name,pass,login,query)
+    char *name, *pass;
+    char *login;
+    char query;
 {
     struct login_cpacket packet;
     /* tmp */
-    register	i;
+    register int	i;
     strcpy(packet.name, name);
     strcpy(packet.password, pass);
     if (strlen(login)>15) login[15]=0;
@@ -1572,8 +1562,8 @@ char query;
     sendServerPacket(&packet);
 }
 
-handleLogin(packet)
-struct login_spacket *packet;
+void handleLogin(packet)
+    struct login_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleLogin");
@@ -1591,9 +1581,9 @@ struct login_spacket *packet;
     }
 }
 
-sendTractorReq(state, pnum)
-char state;
-char pnum;
+void sendTractorReq(state, pnum)
+    char state;
+    char pnum;
 {
     struct tractor_cpacket tractorReq;
 
@@ -1611,9 +1601,9 @@ char pnum;
 
 }
 
-sendRepressReq(state, pnum)
-char state;
-char pnum;
+void sendRepressReq(state, pnum)
+    char state;
+    char pnum;
 {
     struct repress_cpacket repressReq;
 
@@ -1631,8 +1621,8 @@ char pnum;
 
 }
 
-sendDetMineReq(torp)
-short torp;
+void sendDetMineReq(torp)
+    short torp;
 {
     struct det_mytorp_cpacket detReq;
 
@@ -1641,8 +1631,8 @@ short torp;
     sendServerPacket(&detReq);
 }
 
-handlePlasmaInfo(packet)
-struct plasma_info_spacket *packet;
+void handlePlasmaInfo(packet)
+   struct plasma_info_spacket *packet;
 {
    struct plasmatorp *thetorp;
    struct player	*j;
@@ -1686,8 +1676,8 @@ struct plasma_info_spacket *packet;
    }
 }
 
-handlePlasma(packet)
-struct plasma_spacket *packet;
+void handlePlasma(packet)
+    struct plasma_spacket *packet;
 {
     struct plasmatorp 	*thetorp;
 
@@ -1706,8 +1696,8 @@ struct plasma_spacket *packet;
 
 }
 
-handleFlags(packet)
-struct flags_spacket *packet;
+void handleFlags(packet)
+   struct flags_spacket *packet;
 {
    Player		*p;
    struct player	*j;
@@ -1746,11 +1736,10 @@ M - visible tractors */
         players[packet->pnum].p_tractor = -1;
 #endif
 #endif
-
 }
 
-handleKills(packet)
-struct kills_spacket *packet;
+void handleKills(packet)
+    struct kills_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleKills");
@@ -1759,8 +1748,8 @@ struct kills_spacket *packet;
     updatePlayer[packet->pnum]=1;
 }
 
-handlePStatus(packet)
-struct pstatus_spacket *packet;
+void handlePStatus(packet)
+    struct pstatus_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handlePStatus");
@@ -1787,8 +1776,8 @@ struct pstatus_spacket *packet;
     updatePlayer[packet->pnum]=1;
 }
 
-handleMotd(packet)
-struct motd_spacket *packet;
+void handleMotd(packet)
+    struct motd_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleMotd");
@@ -1798,9 +1787,9 @@ struct motd_spacket *packet;
 #endif
 }
 
-sendMessage(mes, group, indiv)
-char *mes;
-int group, indiv;
+void sendMessage(mes, group, indiv)
+    char *mes;
+    int group, indiv;
 {
     struct mesg_cpacket mesPacket;
 
@@ -1811,8 +1800,8 @@ int group, indiv;
     sendServerPacket(&mesPacket);
 }
 
-handleMask(packet)
-struct mask_spacket *packet;
+void handleMask(packet)
+    struct mask_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleMask");
@@ -1820,7 +1809,7 @@ struct mask_spacket *packet;
     tournMask=packet->mask;
 }
 
-sendOptionsPacket()
+void sendOptionsPacket()
 {
     struct options_cpacket optPacket;
 
@@ -1836,8 +1825,8 @@ sendOptionsPacket()
     sendServerPacket(&optPacket);
 }
 
-pickSocket(old)
-int old;
+void pickSocket(old)
+    int old;
 {
     int newsocket;
     struct socket_cpacket sockPack;
@@ -1858,8 +1847,8 @@ int old;
     nextSocket=newsocket;
 }
 
-handleBadVersion(packet)
-struct badversion_spacket *packet;
+void handleBadVersion(packet)
+    struct badversion_spacket *packet;
 {
 #ifdef DEBUG_SCK
     DEBUG_SOCKET("handleBadVersion");
@@ -1877,10 +1866,10 @@ struct badversion_spacket *packet;
     exit(1);
 }
 
-gwrite(fd, buf, bytes)
-int fd;
-char *buf;
-register int bytes;
+int gwrite(fd, buf, bytes)
+    int fd;
+    char *buf;
+    register int bytes;
 {
     long orig = bytes;
     register long n;
@@ -1903,8 +1892,8 @@ register int bytes;
     return(orig);
 }
 
-handleHostile(packet)
-struct hostile_spacket *packet;
+void handleHostile(packet)
+    struct hostile_spacket *packet;
 {
     register struct player *pl;
 
@@ -1918,8 +1907,8 @@ struct hostile_spacket *packet;
     redrawPlayer[packet->pnum]=1;
 }
 
-handlePlyrLogin(packet)
-struct plyr_login_spacket *packet;
+void handlePlyrLogin(packet)
+    struct plyr_login_spacket *packet;
 {
     register struct player *pl;
 
@@ -1948,8 +1937,8 @@ struct plyr_login_spacket *packet;
     }
 }
 
-handleStats(packet)
-struct stats_spacket *packet;
+void handleStats(packet)
+    struct stats_spacket *packet;
 {
     register struct player *pl;
 
@@ -1973,8 +1962,8 @@ struct stats_spacket *packet;
     pl->p_stats.st_sbmaxkills=ntohl(packet->sbmaxkills) / 100.0;
 }
 
-handlePlyrInfo(packet)
-struct plyr_info_spacket *packet;
+void handlePlyrInfo(packet)
+    struct plyr_info_spacket *packet;
 {
     register struct player *pl;
     static int lastship= -1;
@@ -1999,8 +1988,8 @@ struct plyr_info_spacket *packet;
     redrawPlayer[packet->pnum]=1;
 }
 
-sendUpdatePacket(speed)
-long speed;
+void sendUpdatePacket(speed)
+    long speed;
 {
     struct updates_cpacket packet;
 
@@ -2013,7 +2002,7 @@ long speed;
     sendServerPacket(&packet);
 }
 
-sendOggVPacket()
+void sendOggVPacket()
 {
    struct oggv_cpacket	packet;
    int			upd;
@@ -2086,11 +2075,11 @@ sendOggVPacket()
    sendServerPacket(&packet);
 }
 
-handlePlanetLoc(packet)
-struct planet_loc_spacket *packet;
+void handlePlanetLoc(packet)
+    struct planet_loc_spacket *packet;
 {
     struct planet *pl;
-static int plc;
+    static int plc;
 
     plc++;
     if(plc == MAXPLANETS)
@@ -2108,8 +2097,8 @@ static int plc;
     reinitPlanets=1;
 }
 
-handleReserved(packet)
-struct reserved_spacket *packet;
+void handleReserved(packet)
+    struct reserved_spacket *packet;
 {
     static struct reserved_cpacket response;
 
@@ -2127,8 +2116,7 @@ struct reserved_spacket *packet;
     sendServerPacket(&response);
 }
 
-updateR(j)
-
+void updateR(j)
    struct player	*j;
 {
    struct you_spacket	packet;
@@ -2161,8 +2149,7 @@ updateR(j)
    sendRPacket((struct player_spacket *) &packet, sizeof(packet));
 }
 
-sendRPacket(p, s)
-
+void sendRPacket(p, s)
    struct player_spacket *p;
    int			s;
 {
@@ -2172,7 +2159,7 @@ sendRPacket(p, s)
 
 #ifdef SCANNERS
 handleScan(packet)
-struct scan_spacket *packet;
+    struct scan_spacket *packet;
 {
     struct player *pp;
 
@@ -2188,8 +2175,7 @@ struct scan_spacket *packet;
     }
 }
 
-informScan(p)
-
+void informScan(p)
    int  p;
 {
 }
@@ -2200,8 +2186,8 @@ informScan(p)
 /*
  * UDP stuff
  */
-sendUdpReq(req)
-int req;
+void sendUdpReq(req)
+    int req;
 {
     struct udp_req_cpacket packet;
 
@@ -2283,8 +2269,8 @@ int req;
 #endif
 }
 
-handleUdpReply(packet)
-struct udp_reply_spacket *packet;
+void handleUdpReply(packet)
+    struct udp_reply_spacket *packet;
 {
     struct udp_req_cpacket response;
 
@@ -2369,7 +2355,7 @@ send:
 }
 
 #define MAX_PORT_RETRY  10
-openUdpConn()
+int openUdpConn()
 {
     struct sockaddr_in addr;
     struct hostent *hp;
@@ -2434,7 +2420,7 @@ openUdpConn()
     return (0);
 }
 #ifdef USE_PORTSWAP
-connUdpConn()
+int connUdpConn()
 {
     struct sockaddr_in addr;
 
@@ -2455,7 +2441,7 @@ connUdpConn()
 #endif
 
 #ifndef USE_PORTSWAP
-recvUdpConn()
+int recvUdpConn()
 {
     fd_set              readfds;
     struct timeval      to;
@@ -2523,7 +2509,7 @@ select_again:;
 }
 #endif
 
-closeUdpConn()
+int closeUdpConn()
 {
     V_UDPDIAG(("Closing UDP socket\n"));
     if (udpSock < 0) {
@@ -2537,7 +2523,7 @@ closeUdpConn()
     return 0;
 }
 
-printUdpInfo()
+void printUdpInfo()
 {
     struct sockaddr_in addr;
     socklen_t len;
@@ -2558,8 +2544,8 @@ printUdpInfo()
         addr.sin_family, ntohs(addr.sin_port)));
 }
 
-handleSequence(packet)
-struct sequence_spacket *packet;
+void handleSequence(packet)
+    struct sequence_spacket *packet;
 {
     static int recent_count=0, recent_dropped=0;
     long newseq;
@@ -2622,15 +2608,14 @@ struct sequence_spacket *packet;
 #endif
 
 
-handleMasterComm(packet)
-
+void handleMasterComm(packet)
    struct mastercomm_spacket	*packet;
 {
    recv_from_master(packet);
 }
 
    /* TMP */
-testcl(packet, response)
+void testcl(packet, response)
    struct reserved_spacket *packet;
    struct reserved_cpacket *response;
 {
@@ -2663,8 +2648,7 @@ static   struct you_spacket y;
    rsock = -1;
 }
 
-handleShortReply(packet)
-
+void handleShortReply(packet)
    struct shortreply_spacket *packet;
 {
    char	buf[60];
@@ -2675,8 +2659,7 @@ handleShortReply(packet)
    recv_short = packet->repl;
 }
 
-get_dist_speed(oldx, oldy, newx, newy, dir)
-
+int get_dist_speed(oldx, oldy, newx, newy, dir)
    int			oldx,oldy,newx,newy;
    unsigned char	dir;
 {

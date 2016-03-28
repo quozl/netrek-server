@@ -21,11 +21,11 @@
 Player 		*get_target();
 struct planet	*closest_planet();
 
-update_players()
+void update_players()
 {
    register struct player	*j, *closest = NULL;
    register Player		*p, *ce = NULL, *cf = NULL, *ct = NULL;
-   register			i;
+   register int			i;
    int				mce = INT_MAX, mcf = INT_MAX, mct = INT_MAX, d;
    int				pldist;
    int				predictx, predicty, rx,ry;
@@ -277,9 +277,9 @@ update_players()
    check_active_enemies();
 }
 
-check_active_enemies()
+void check_active_enemies()
 {
-   static timer;
+   static int timer;
 
    if(_state.total_enemies == 0){
       if(_state.player_type == PT_OGGER || _state.player_type == PT_DOGFIGHTER){
@@ -307,14 +307,10 @@ check_active_enemies()
    }
 }
 
-orbit_check(p, j)
-
+void orbit_check(p, j)
    Player		*p;
    struct player	*j;
 {
-
-
-
 /* begin -- only if PFORBIT not given by server */
 #ifdef NO_PFORBIT
    /* assume nothing has changed. */
@@ -407,8 +403,7 @@ orbit_check(p, j)
       p->pl_armies = 0;
 }
 
-army_check1(p, j)
-
+void army_check1(p, j)
    Player		*p;
    struct player	*j;
 {
@@ -451,11 +446,9 @@ army_check1(p, j)
       p->armies = 0;
    if(p->armies > troop_capacity(j))
       p->armies = troop_capacity(j);
-
 }
 
-army_check2(p, j)
-
+void army_check2(p, j)
    Player		*p;
    struct player	*j;
 {
@@ -541,15 +534,11 @@ army_check2(p, j)
    if(p->armies < 0) p->armies = 0;
    if(p->armies > troop_capacity(j))
       p->armies = troop_capacity(j);
-
-
 }
-
 
 /* A more intuitive way of figuring out who carries in 
    a pickup game. Only works with humans */
-army_check3(p, j)
-
+void army_check3(p, j)
    Player		*p;
    struct player	*j;
 {
@@ -583,22 +572,18 @@ army_check3(p, j)
 
 }
 
-NotRobot(p, j)
-
+int NotRobot(p, j)
    Player		*p;
    struct player	*j;
 {
-
     if ( (strcmp(j->p_login,"robot!") != 0) || !(j->p_flags&PFBPROBOT) ) { 
        return 1;
     } else {
        return 0;
     }
-
 }
 
-calc_speed(p, j)
-   
+int calc_speed(p, j)
    Player		*p;
    struct player	*j;
 {
@@ -633,8 +618,7 @@ calc_speed(p, j)
    return s;
 }
 
-cloak_check(p, j)
-
+void cloak_check(p, j)
    Player		*p;
    struct player	*j;
 {
@@ -718,8 +702,7 @@ cloak_check(p, j)
    */
 }
 
-init_sstats(p)
-
+void init_sstats(p)
    Player	*p;
 {
    register struct player	*j = p->p;
@@ -743,8 +726,7 @@ init_sstats(p)
    p->pl_armies	= 0;
 }
 
-update_sstats(e, ct)
-
+void update_sstats(e, ct)
    Player	*e;
    int		ct;
 {
@@ -770,8 +752,7 @@ update_sstats(e, ct)
    if(e->wpntemp < 0) e->wpntemp = 0;
 }
 
-addfuel(k, cycletime)
-
+int addfuel(k, cycletime)
    struct player	*k;
    int			cycletime;
 {
@@ -786,8 +767,7 @@ addfuel(k, cycletime)
 }
 
 /* xx -- put in util.c */
-fuel_planet(n)
-
+int fuel_planet(n)
    int	n;
 {
    struct planet	*pl = &planets[n];
@@ -796,8 +776,7 @@ fuel_planet(n)
    return (pl->pl_flags & PLFUEL);
 }
 
-repair_planet(n)
-
+int repair_planet(n)
    int	n;
 {
    struct planet	*pl = &planets[n];
@@ -806,8 +785,7 @@ repair_planet(n)
    return (pl->pl_flags & PLREPAIR);
 }
 
-subfuel(k, cycletime)
-   
+int subfuel(k, cycletime)
    struct player	*k;
    int			cycletime;
 {
@@ -835,8 +813,7 @@ subfuel(k, cycletime)
    return dfuel;
 }
 
-repair_shield(k,e, cycletime)
-
+void repair_shield(k,e, cycletime)
    struct player	*k;
    Player		*e;
    int			cycletime;
@@ -862,8 +839,7 @@ repair_shield(k,e, cycletime)
    }
 }
 
-repair_damage(k, e, cycletime)
-
+void repair_damage(k, e, cycletime)
    struct player	*k;
    Player		*e;
    int			cycletime;
@@ -890,8 +866,7 @@ repair_damage(k, e, cycletime)
 }
 
 /* called from init_dodge */
-add_damage(t, td, e)
-
+void add_damage(t, td, e)
    struct torp	*t;
    int		td;
    Player	*e;
@@ -940,8 +915,7 @@ add_damage(t, td, e)
    dodamage(e, j, dam);
 }
 
-dodamage(e, j, dam)
-
+void dodamage(e, j, dam)
    Player		*e;
    struct player	*j;
    int			dam;
@@ -970,11 +944,10 @@ dodamage(e, j, dam)
 
 /* sh just exploded */
 
-do_expdamage(sh)
-
+void do_expdamage(sh)
    struct player	*sh;
 {
-   register			i;
+   register int			i;
    int				dx,dy,dist;
    int				damage;
    register struct player	*j;
@@ -1037,7 +1010,7 @@ do_expdamage(sh)
 */
 int declare_intents(int peaceonly)
 {
-   register			i;
+   register int			i;
    register struct player	*j;
    int				teams[16], maxt=0, maxcount=0;
    int				maxt2=0, maxcount2=0;
@@ -1124,8 +1097,7 @@ int declare_intents(int peaceonly)
 
 /* DEBUG*/
 
-print_player(e)
-
+void print_player(e)
    Player	*e;
 {
    printf("name: \"%s\"(%d)\n", e->p->p_name, e->p->p_no);
@@ -1138,11 +1110,8 @@ print_player(e)
    printf("damage: %d%%\n", PL_DAMAGE(e));
 }
 
-
 Player *get_target(closest_target)
-   
    Player	*closest_target;
-
 {
    Player	*l;
    Player	*getany(), *getabase();
@@ -1210,8 +1179,7 @@ Player *get_target(closest_target)
       return closest_target;
 }
 
-process_general_message(message, flags, from, to)
-   
+void process_general_message(message, flags, from, to)
    char			*message;
    unsigned char	flags,from,to;
 {
@@ -1245,17 +1213,15 @@ process_general_message(message, flags, from, to)
    }
 }
 
-tractor_check(e, j)
-   
+void tractor_check(e, j)
    Player		*e;
    struct player	*j;
 {
 
    int			predictx, predicty, 
 			predict_trx, predict_try, edist;
-   register		currx, curry, rtx, rty, rx, ry;
+   register int		currx, curry, rtx, rty, rx, ry;
    int			trx, try;
-
 
 #ifndef NO_PFTRACT
    e->pp_flags &= ~PFTRACT;
@@ -1322,10 +1288,10 @@ tractor_check(e, j)
 #endif /* NO_PFTRACT */
 }
 
-update_player_density()
+void update_player_density()
 {
-   register			i,j;
-   register Player		*p,*e;
+   register int			i, j;
+   register Player		*p, *e;
    register struct player	*fr, *en;
    int				st;
    unsigned char		crs;
@@ -1426,9 +1392,9 @@ update_player_density()
 #endif
 }
 
-calc_attackdiff()
+void calc_attackdiff()
 {
-   register		i,j;
+   register int		i, j;
    register Player	*p;
    Player		*pe[MAXPLAYER];
    int	    		my_pno = me->p_no;
@@ -1480,15 +1446,13 @@ calc_attackdiff()
 
 /* SSS: speed critical */
 struct planet	*closest_planet(j, dist, opl)
-
    struct player	*j;
    int			*dist;
    struct planet	*opl;
-
 {
-   register			k;
+   register int			k;
    register struct planet	*pl, *rp = opl;
-   register			d, mdist = INT_MAX;
+   register int			d, mdist = INT_MAX;
 
    if(opl && (mdist = ihypot((double)(j->p_x - opl->pl_x), 
 			     (double)(j->p_y - opl->pl_y))) < 3000){
@@ -1515,7 +1479,7 @@ struct planet	*closest_planet(j, dist, opl)
 
 Player *getany()
 {
-   register 		i;
+   register int		i;
    register Player	*p;
    struct planet	*hp, *team_planet();
 
@@ -1541,7 +1505,7 @@ Player *getany()
 
 Player *getabase()
 {
-   register 		i;
+   register int		i;
    register Player	*p;
    struct planet	*hp, *team_planet();
    int			sbs[MAXPLAYER], sbf = 0;
@@ -1573,18 +1537,16 @@ Player *getabase()
 
 /* make sure edge didn't set off explosion */
 
-edge_expl(t)
-
+int edge_expl(t)
    struct torp	*t;
 {
-   register	i = t->t_x,
+   register int	i = t->t_x,
 		j = t->t_y;
    
    return (!i || i == GWIDTH || !j || j == GWIDTH);
 }
 
-sync_check(t)
-   
+int sync_check(t)
    Player	**t;
 {
    Player	*targ = *t;
@@ -1611,11 +1573,11 @@ sync_check(t)
    return 1;
 }
 
-check_sync_loop()
+void check_sync_loop()
 {
    struct player	*j;
    char			buf[30];
-   register		i = _state.ogg_pno-1, k=0, q;
+   register int		i = _state.ogg_pno-1, k=0, q;
    for(k=0; k< MAXPLAYER+1; k++){
       q = shmem_rsync(i);
       /*
