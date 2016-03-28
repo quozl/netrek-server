@@ -12,6 +12,33 @@
 
 #define MAX_SCOUT_BOMB		30
 
+void decide_protect(void);
+void decide_defend(void);
+void decide_take(void);
+void decide_bomb(void);
+void check_bombdamage(struct planet *pl);
+void decide_disengage(void);
+void decide_escort(void);
+void decide_default(void);
+void protectp_c(struct planet *p, char *s);
+void unprotectp_c(char *s);
+void bomb_c(struct planet *p, char *s);
+void unassault_c(char *s);
+void ogg_c(Player *p, char *s);
+void unogg_c(char *s);
+void take_c(struct planet *p, char *s);
+void untake_c(char *s);
+void refit_c(char *s);
+void unrefit_c(char *s);
+void disengage_c(ediswhy w, struct planet *p, char *s);
+void rdisengage_c(char *s);
+void defend_c(Player *p, char *s);
+void rall_c(char *s);
+void rrecharge_c(char *s);
+void rdefend_c(char *s);
+void decideNotify(char *com, char *s, char *s2);
+void check_alldistress(void);
+
 /* Decide next course of action */
 
 void decide()
@@ -990,7 +1017,7 @@ void escort_c(p, pl, s)
    struct planet	*pl;
    char			*s;
 {
-   decideNotify("ESCORT", p->p->p_mapchars, pl->pl_name, s);
+   decideNotify("ESCORT", pl->pl_name, s);
    _state.escort_req = 1;
    _state.escort_player = p;
    _state.escort_planet = pl;
