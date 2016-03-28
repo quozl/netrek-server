@@ -11,9 +11,13 @@
 #include "packets.h"
 #include "robot.h"
 
-struct distress *loaddistress(enum dist_type i);
-void send_RCD(struct distress *dist);
-struct planet *find_army_planet();
+extern struct distress *loaddistress(enum dist_type i);
+extern void send_RCD(struct distress *dist);
+
+void notify_take(struct planet *aspl, int phase);
+
+static void beam_up_armies(struct planet *pl);
+static struct planet *find_army_planet();
 
 /* get armies */
 

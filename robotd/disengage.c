@@ -12,6 +12,14 @@
 
 extern unsigned char get_pl_course();
 
+void recharge_off(char *s);
+void reset_planet(void);
+void goto_planet(struct planet *pl);
+
+static void disengage_defend(void);
+static void disengage_normal(void);
+static void runaway(Player *e);
+
 void disengage()
 {
    /* one way to know we are recharging */

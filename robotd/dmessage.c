@@ -16,8 +16,23 @@
 #include "packets.h"
 #include "robot.h"
 
-char * randbye();
-char * ogg_targ();
+void response(char *buf);
+void setlog(char *dir);
+void R_ProcMessage(char *message, int flags, int from, int to, int std, int config);
+
+static char *randbye();
+static char *ogg_targ();
+static void set_ignore(int pno);
+static void set_unignore(int pno);
+static void pmessage(int c, char *buf);
+static void show_serverst(void);
+static void handle_generic_req(char *m);
+static void list_reqs(void);
+static void show_state(void);
+static void list_all(char *m);
+#ifdef ATM
+static void udpaction(int com);
+#endif
 
 static char *_commands[] = {
 

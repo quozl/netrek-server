@@ -14,6 +14,11 @@
 #include "packets.h"
 #include "robot.h"
 
+static void proc_distress_call(Player *p, char *m);
+static void proc_other(Player *p, char *m);
+static void proc_hostile_planet_mesg(Player *p, char *m);
+static void get_distress(char *m, int *dam, int *shield, int *arm, int *wpn, int *woe, int *eoe);
+
 static struct planet *_find_planet_by_name();
 
 void parse_message(m, p, fl)

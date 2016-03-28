@@ -17,9 +17,25 @@
 
 #define NO_PFTRACT
 
+void dodamage(Player *e, struct player *j, int dam);
 
-Player 		*get_target();
-struct planet	*closest_planet();
+static Player 		*get_target();
+static struct planet	*closest_planet();
+static void check_active_enemies(void);
+static void orbit_check(Player *p, struct player *j);
+static void army_check1(Player *p, struct player *j);
+static void army_check2(Player *p, struct player *j);
+static void army_check3(Player *p, struct player *j);
+static void cloak_check(Player *p, struct player *j);
+static void init_sstats(Player *p);
+static void update_sstats(Player *e, int ct);
+static void repair_shield(struct player *k, Player *e, int cycletime);
+static void repair_damage(struct player *k, Player *e, int cycletime);
+static void do_expdamage(struct player *sh);
+static void tractor_check(Player *e, struct player *j);
+static void update_player_density(void);
+static void calc_attackdiff(void);
+static void check_sync_loop(void);
 
 void update_players()
 {

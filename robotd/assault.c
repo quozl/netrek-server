@@ -10,8 +10,11 @@
 #include "packets.h"
 #include "robot.h"
 
-unsigned char assault_course();
 unsigned char get_pl_course();
+
+static unsigned char assault_course();
+static void goto_assault_planet(void);
+static void assault_planet(void);
 
 /* assault planet */
 

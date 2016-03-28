@@ -10,6 +10,13 @@
 #include "packets.h"
 #include "robot.h"
 
+void handle_tractors(Player *e, struct player *j, int edist, int tractor, char *s, int m);
+
+static void ptorp_attack(Player *e, struct player *j, int edist);
+static void plasma_attack(Player *e, struct player *j, int edist);
+static void pphaser_attack(Player *e, struct player *j, int edist);
+static void oggwarfare(int type, Player *e, struct player *j, int edist);
+
 static int	_special_tr;
 
 #define PDEFEND	(_state.defend || _state.player_type == PT_DEFENDER)

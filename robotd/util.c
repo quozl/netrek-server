@@ -15,6 +15,8 @@
 
 #define ADDRLEN		10
 
+static void emergency();
+
 struct distress *loaddistress(enum dist_type i);
 
 void mprintf(char *format, ...)

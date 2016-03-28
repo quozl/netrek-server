@@ -12,6 +12,12 @@
 #include "packets.h"
 #include "robot.h"
 
+void emptytorpq(void);
+
+static void qtorps(int size, int urnd, int tcrs);
+static void qtorp(int crs);
+static void get_orbit_torp_course(struct player *j, unsigned char *crs, int cx, int cy);
+
 /* debug */
 int		dntorps;
 unsigned char	dtcrs;

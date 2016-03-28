@@ -12,7 +12,10 @@
 
 #define OCOURSE_DIST		20000
 
-unsigned char ocourse();
+void set_ogg_vars(void);
+
+static void goto_ogg(Player *e);
+static unsigned char ocourse();
 
 static int 	odist;
 

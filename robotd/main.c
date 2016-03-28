@@ -28,6 +28,8 @@
 #define TIMEOUT1		50
 #define TIMEOUT2		50
 
+static void printUsage(char *prog);
+
 char	revision[] = "$Revision: 1.3 $";
 
 static   int    first = 1;

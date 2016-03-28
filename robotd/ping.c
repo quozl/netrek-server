@@ -14,6 +14,9 @@
 #include "data.h"
 #include "packets.h"
 
+static void sendServerPingResponse(int number);
+static void calc_lag(void);
+
 static int	ping_iloss_sc=0; /* inc % loss 0--100, server to client */
 static int	ping_iloss_cs=0; /* inc % loss 0--100, client to server */
 static int	ping_tloss_sc=0; /* total % loss 0--100, server to client */

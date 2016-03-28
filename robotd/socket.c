@@ -31,6 +31,13 @@
 
 /* #define DEBUG_SCK */
 
+void sendUdpReq(int req);
+
+static void pickSocket(int old);
+static void sendRPacket(struct player_spacket *p, int s);
+static void sendServerPacket(void *);
+static void printUdpInfo();
+
 #ifdef DEBUG_SCK
 
 #define DEBUG_SOCKET(p)		printf("%s at %d\n", p, mtime(1)-_read_time);
@@ -535,7 +542,7 @@ void socketPause()
 
 static    char _buf[BUFSIZ*2];
 #ifdef ATM
-void readFromServer(pollmode)
+int readFromServer(pollmode)
    int	pollmode;
 {
     struct timeval timeout;
@@ -1342,10 +1349,10 @@ void sendShortPacket(type, state)
 }
 
 #ifdef ATM
-void sendServerPacket(packet)
-/* Pick a random type for the packet */
-    struct player_spacket *packet;
+void sendServerPacket(void_packet)
+    void *void_packet;
 {
+    struct player_spacket *packet = (struct player_spacket *) void_packet;
     int size;
 
     /* TMP */

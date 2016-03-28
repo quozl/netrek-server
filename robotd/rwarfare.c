@@ -10,6 +10,11 @@
 #include "packets.h"
 #include "robot.h"
 
+void torp_attack_robot(Player *e, struct player *j, int edist);
+void phaser_attack_robot(Player *e, struct player *j, int edist);
+
+static void attack_robot(Player *e, struct player *j, int edist);
+
 void torp_attack_robot(e, j, edist)
    Player		*e;
    struct player	*j;

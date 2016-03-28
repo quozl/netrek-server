@@ -20,6 +20,8 @@
 #include "data.h"
 #include "packets.h"
 
+void process_stdin();
+
 int	recflag = 0;
 
 

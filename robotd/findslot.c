@@ -34,7 +34,7 @@ void findslot()
 #endif
 	if (me!=NULL) {
 	    /* We are in! */
-	    return(me->p_no);
+	    return;
 	}
     }
 
@@ -53,8 +53,7 @@ void findslot()
 	    printf("%d ", queuePos); fflush(stdout);
 	    oldcount=queuePos;
 	}
-	if (me!=NULL) {
-	    return(me->p_no);
-	}
+	if (me!=NULL)
+	    return;
     }
 }

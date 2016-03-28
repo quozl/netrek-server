@@ -12,6 +12,12 @@
 
 #define ESCORT1_DIST		20000
 
+static void goto_escort_planet(Player *p, struct planet *pl);
+static void wait_for_escort(Player *p, struct planet *pl);
+static void goto_defender(Player *p, struct planet *pl);
+static void ogg_defender(Player *p, struct planet *pl);
+static void do_course_speed(int crs, int speed);
+
 /* escort dist to planet */
 static int	_esc_dist;
 

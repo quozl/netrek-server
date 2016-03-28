@@ -13,6 +13,28 @@
 
 #define END		-1
 
+void check_gboundary(unsigned char *mycrs, int range);
+
+static void init_torps(void);
+static void set_maxspeed(void);
+static void initppos(void);
+static void getppos(register int cx, register int cy, int *rx, int *ry, int dir, int speed, int lvorbit);
+static void getorbit_ppos(register int cx, register int cy, int *rx, int *ry);
+static void update_hplanets(void);
+static void fixfuse(int tx, int ty, int *tf, struct player *j, double tdx, double tdy);
+static void c_lookahead(int v);
+static void init_ftorps(int i, struct player *j);
+static void do_phaserdamage(Player *p, struct player *j, struct phaser *ph);
+static void check_damage(int enemy, struct torp *t, int td);
+static void check_dettorps(struct torp *t, int k);
+static void add_tractor(Player *e, struct player *j, int *x, int *y, int cycles);
+static void add_pressor(Player *e, struct player *j, int *x, int *y);
+static void add_mytractor(int *x, int *y);
+static void add_mypressor(int *x, int *y);
+static void tp_change(struct player *j1, struct player *j2, int dist, int dir, int *x, int *y, int *hx, int *hy);
+static void predict_pltorp(struct player *j, unsigned char *pt_dir, int *pt_x, int *pt_y, int mx, int my);
+static void predict_storp(struct player *j, unsigned char *pt_dir, int *pt_x, int *pt_y, int mx, int my);
+
 static int 		_myspeed;
 static unsigned char	_mydir;
 static int		_subspeed, _subdir, _plhit;
@@ -307,7 +329,7 @@ void set_maxspeed()
  * Returns number of immediate hits.
  */
 
-void compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
+int compute_course(d_crs, crs_r, d_speed, speed_r, hittime_r, lvorbit)
    unsigned char	d_crs, *crs_r;
    int			d_speed, *speed_r, *hittime_r;
    int			*lvorbit;

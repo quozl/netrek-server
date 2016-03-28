@@ -12,6 +12,8 @@
 #include "packets.h"
 #include "robot.h"
 
+static void borg_detect();
+
 int	_tcheck;
 
 void intrupt()

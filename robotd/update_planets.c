@@ -10,6 +10,8 @@
 #include "packets.h"
 #include "robot.h"
 
+static void sort_planets_by_distance(void);
+
 void update_planets()
 {
    register int			k;

@@ -10,7 +10,14 @@
 #include "packets.h"
 #include "robot.h"
 
-unsigned char choose_ecourse();
+void goto_protect(struct planet *pl, Player *p, int dock);
+
+static unsigned char choose_ecourse();
+static void plengage(void);
+static void dengage(Player *e);
+static void pengage(Player *e);
+static void alter_course_distance(Player *e, int e_dist, unsigned char *crs);
+static void edge_course(struct player *j, int edist, unsigned char *crs);
 
 /* called from s_target in robot.c */
 
