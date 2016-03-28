@@ -9,6 +9,6 @@ Check out the vanilla development web-site at
 The development team is at netrek-dev@us.netrek.org,
 send context diffs or subscribe for ongoing discussions.
 
-Current source is in darcs repository, to obtain it ...
+Current source is in git repository, to obtain it ...
 
-darcs get http://netrek.org/repos/netrek-server
+git clone http://github.com/quozl/netrek-server
