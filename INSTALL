@@ -14,8 +14,6 @@ Summary
 Details
 -------
 
-Refer to INSTALL.RSA if you want your server to authenticate clients.
-
 Edit the file config.h.in to meet your requirements.  You may choose to
 leave this as is for a pure Vanilla default server.
 
@@ -58,8 +56,7 @@ they do:
 	ports		- specifies ports used to connect to this server
 	time		- playable/clue hours in it
 	banned		- list of players that are banned from server
-	bypass		- list of players that are allowed on an RSA server
-			  if playing with a non-RSA client.
+	bypass		- deprecated
 	clue-bypass	- list of players that don't have to go through
 			  clue checking
 	conquer		- server's conquest stats output
@@ -69,26 +66,20 @@ they do:
 	motd		- this is the information about the server for the
 			  players
 	motd_clue	- another motd for clue playing hours
-	reserved	- RSA public/global key listing for verification
+	reserved	- deprecated
 
 Normally, these files are located in the "etc" sub-directory of the
 directory you installed the server into.  But you can also configure
 the source with --sysconfdir to place them somewhere else.
 
-If the install worked then go to the installation directory. There are two
-programs that should be running all the time.  They are:
+If the install worked then go to the installation directory. There is
+one program that should be running all the time.  netrekd - waits
+around for a connection from a client. It then forks and execs an
+ntserv.  This also accepts connections from the metaserver and via
+telnet for the current player list.
 
-    1.  netrekd - waits around for a connection from a client. It then forks
-	and execs an ntserv.  This also accepts connections from the metaserver
-	and via telnet for the current player list.
-
-    2.	update - wakes up once a day and gets a new key list from the
-	metaserver port 3530.  It then makes a new .reserved through
-	rsa_keycomp and reconstructs your .motd file.  [Note that this program
-	need not run if you are behind a firewall or if you are not using RSA].
-
-Start these two programs.  Once they are running then try connecting to the
-server and check things out.  If there is a problem then check out the
+Start netrekd.  Once it is running try connecting to the server and
+check things out.  If there is a problem then check out the
 docs/DEBUG.HELP file for possible solutions.
 
 See docs/metaservers-HowTo for soliciting players via the metaservers.
