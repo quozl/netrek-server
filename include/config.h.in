@@ -155,8 +155,7 @@ dogfighting mode */
 positions */
 #undef AS_CLOAK
 
-/* GENO_COUNT - keep track of a player's winning genocides, see
-tools/conq_vert.c for a description of how to use this define. */
+/* GENO_COUNT - keep track of a player's winning genocides */
 #undef GENO_COUNT
 
 /* AUTO_INL - starts up INL robot by majority vote */

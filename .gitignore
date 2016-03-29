@@ -35,8 +35,6 @@ sequencer/sequencer
 tools/ban
 tools/blotpassword
 tools/cambot
-tools/conq_vert
-tools/convert
 tools/delist
 tools/fun
 tools/geno_timer

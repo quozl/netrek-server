@@ -31,8 +31,7 @@ SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
 	${srcdir}/stat.c ${srcdir}/trimscores.c ${srcdir}/watchmes.c \
 	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c \
 	${srcdir}/nuke.c ${srcdir}/metaget.c \
-	${srcdir}/update.c ${srcdir}/convert.c \
-	${srcdir}/conq_vert.c $(RANDOMC) \
+	${srcdir}/update.c \
 	${srcdir}/sortdb.c \
 	${srcdir}/ntpasswd.c \
 	${srcdir}/setgame.c ${srcdir}/setplanet.c ${srcdir}/setteam.c \
@@ -41,7 +40,7 @@ SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
 EXECS =	ban getpath blotpassword mess message newscores planets players \
 	scores \
         setgalaxy stat trimscores watchmes xtkill \
-        mergescores keyman updated fun conq_vert convert sortdb cambot \
+        mergescores keyman updated fun sortdb cambot \
         ntpasswd ltd_dump ltd_dump_html ltd_convert nuke metaget \
 	setgame setplanet setteam setship delist
 
@@ -167,9 +166,6 @@ keyman: keyman.o $(OBJS)
 fun: $(RANDOMO) fun.o $(OBJS)
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} fun.o $(RANDOMO) $(OBJS) $(LIBS)
 
-convert: $(OBJS) convert.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} convert.o $(OBJS) $(LIBS)
-
 updated: update.o $(OBJS)
 	$(CC) $(CFLAGS) ${LDFLAGS} -o updated update.o $(OBJS) $(EXTRALIBS)
 
@@ -181,9 +177,6 @@ ltd_dump_html: ltd_dump_html.o
 
 ltd_convert: ltd_convert.o
 	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o $(OBJS)
-
-conq_vert: conq_vert.o
-	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} conq_vert.o
 
 metaget: metaget.o
 	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o $(EXTRALIBS)

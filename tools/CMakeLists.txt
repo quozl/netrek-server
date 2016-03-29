@@ -35,8 +35,6 @@ SET (all_SOURCES
 	nuke.c
 	metaget.c
 	update.c
-	convert.c
-	conq_vert.c
 	sortdb.c
 	ntpasswd.c
 	setgame.c
@@ -64,10 +62,8 @@ SET (TOOLS
 	xtkill
 	keyman
 	fun
-	convert
 	ltd_dump
 	ltd_convert
-	conq_vert
 	metaget
 	setgame
 	setplanet
