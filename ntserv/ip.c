@@ -343,7 +343,9 @@ int ip_ignore_ip(char *us, char *them) {
   FILE *file = fopen(name, "r");
   int mask = 0;
   if (file == NULL) return mask;
-  fscanf(file, "%d\n", &mask);
+  if (fscanf(file, "%d\n", &mask) == EOF)
+    if (ferror(file))
+      perror("ip_ignore_ip");
   fclose(file);
   return mask;
 }

@@ -642,7 +642,8 @@ void printout(char *format, ...)
    else {
       char      buf[512];
       vsprintf(buf, format, args);
-      write(out, buf, strlen(buf));
+      if (write(out, buf, strlen(buf)) == -1)
+	perror("scores: printout: write");
    }
    va_end(args);
 }

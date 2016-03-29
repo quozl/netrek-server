@@ -38,13 +38,15 @@ int time_access(void)
     if (tstat.st_mtime > hr_loaded) {
 	hr_loaded = tstat.st_mtime;
 
-        tfd=fopen(Time_File,"r");
+        tfd = fopen(Time_File,"r");
 
         for (day=0; day<=6; day++) {
-	  fscanf(tfd,"%s",hours[day]);
-	}
-    
-        fclose(tfd); 
+          if (fscanf(tfd, "%s", hours[day]) == EOF)
+            if (ferror(tfd))
+              perror("time_access: fscanf");
+        }
+
+        fclose(tfd);
     }
 
     if (hours[tm->tm_wday][tm->tm_hour]=='X') return 0;

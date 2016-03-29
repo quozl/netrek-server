@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
   char *portfile = N_PORTS;
   int port_idx = -1;
   int i;
-  pid_t pid;
+  pid_t pid = 0;
   FILE *file;
 
   active = 0;
@@ -135,7 +135,9 @@ int main (int argc, char *argv[])
   /* fetch our previous pid if available */
   file = fopen (N_NETREKDPID, "r");
   if (file != NULL) {
-    fscanf (file, "%d", &pid);
+    if (fscanf (file, "%d", &pid) == EOF)
+      if (ferror(file))
+        perror("netrekd: pid fscanf");
     fclose (file);
   } else {
     /* only a total lack of the file is acceptable */
@@ -149,6 +151,10 @@ int main (int argc, char *argv[])
   if (argc == 2) {
     if (!strcmp (argv[1], "stop")) {
       if (file != NULL) {
+	if (pid == 0) {
+	  fprintf (stderr, "netrekd: cannot stop, no pid\n");
+	  exit (1);
+	}
 	if (kill (pid, SIGINT) == 0) {
 	  remove (N_NETREKDPID);
 	  fprintf (stderr, "netrekd: stopped pid %d\n", pid);
@@ -163,6 +169,10 @@ int main (int argc, char *argv[])
     }
     if (!strcmp (argv[1], "reload")) {
       if (file != NULL) {
+	if (pid == 0) {
+	  fprintf (stderr, "netrekd: cannot reload, no pid\n");
+	  exit (1);
+	}
 	if (kill (pid, SIGHUP) == 0) {
 	  fprintf (stderr, "netrekd: sent SIGHUP to pid %d\n", pid);
 	  exit (0);
@@ -516,7 +526,8 @@ static void deny(char *ip)
     sprintf (logname, "Denied %-32.32s %s",
 	     ip,
 	     ctime(&curtime));
-    write (fd, logname, strlen(logname));
+    if (write (fd, logname, strlen(logname)) == -1)
+      perror("deny: log write");
   }
 
   /* issue a bad version packet to the client */
@@ -524,7 +535,8 @@ static void deny(char *ip)
   packet.type = SP_BADVERSION;
 #define BADVERSION_DENIED 1 /* access denied by netrekd */
   packet.why = BADVERSION_DENIED;
-  write (0, (char *) &packet, sizeof(packet));
+  if (write (0, (char *) &packet, sizeof(packet)) == -1)
+    perror("deny: packet write");
 
   sleep (2);
 }
@@ -580,7 +592,8 @@ static void process (int port_idx, char *ip)
     sprintf (logname, "       %-32.32s %s",
 	     ip,
 	     ctime(&curtime));
-    write (fd, logname, strlen(logname));
+    if (write (fd, logname, strlen(logname)) == -1)
+      perror("process: log write");
     close (fd);
   }
 

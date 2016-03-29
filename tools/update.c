@@ -110,7 +110,7 @@ void backup(char *f)
    backup_f = (char *)malloc(strlen(f)+2);
    if(!backup_f) { perror("malloc"); exit(1); }
    sprintf(backup_f, "%s~", f);
-   (void)link(f, backup_f);
+   if (link(f, backup_f) == -1) { perror("link"); }
    (void)unlink(f);
    free((char *)backup_f);
 }
@@ -733,7 +733,8 @@ void scores(int mode, FILE *out)
 	ERROR(1,("Cannot open the global file!\n"));
 	return;
     }
-    read(fd, (char *) status, sizeof(struct status));
+    if (read(fd, (char *) status, sizeof(struct status)) == -1)
+        perror("scores: global read");
     close(fd);
     fd = open(PlayerFile, O_RDONLY, 0777);
     if (fd < 0) {

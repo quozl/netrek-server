@@ -23,7 +23,8 @@ void blog_file(char *class, char *file)
 
   if (fork() == 0) {
     alarm_prevent_inheritance();
-    nice(1);
+    if (nice(1) == -1)
+      perror("nice");
     execl(blog, blog, class, file, NULL);
     perror(blog);
     _exit(1);

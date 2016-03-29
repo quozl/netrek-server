@@ -182,7 +182,8 @@ void savepass(const struct statentry* se)
     if (fd >= 0) {
 	lseek(fd, me->p_pos * sizeof(struct statentry) +
 	      offsetof(struct statentry, password), SEEK_SET);
-	write(fd, &se->password, sizeof(se->password));
+	if (write(fd, &se->password, sizeof(se->password)) == -1)
+	    perror("savepass: write");
 	close(fd);
     }
 }
@@ -215,7 +216,8 @@ void savestats(void)
 	me->p_stats.st_lastlogin = time(NULL);
 	lseek(fd, me->p_pos * sizeof(struct statentry) +
 	      offsetof(struct statentry, stats), SEEK_SET);
-	write(fd, (char *) &me->p_stats, sizeof(struct stats));
+	if (write(fd, (char *) &me->p_stats, sizeof(struct stats)) == -1)
+	    perror("savestats: write");
 	close(fd);
     }
 }
@@ -239,7 +241,8 @@ int newplayer(struct statentry *player)
     ERROR(8,("db.c: newplayer: truncated offset '%d'\n", offset));
     if ((offset = lseek(fd, offset, SEEK_SET)) < 0) goto failed_close;
   }
-  write(fd, (char *) player, sizeof(struct statentry));
+  if (write(fd, (char *) player, sizeof(struct statentry)) == -1)
+    perror("newplayer: write");
   close(fd);
   lock_off(LOCK_PLAYER_ADD);
 

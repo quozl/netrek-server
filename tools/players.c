@@ -334,7 +334,8 @@ static void output(const char *fmt, ...)
   } else {
     char      buf[512];
     vsnprintf(buf, 511, fmt, args);
-    write(fd, buf, strlen(buf));
+    if (write(fd, buf, strlen(buf)) == -1)
+      perror("players: output: write");
   }
   va_end(args);
 }

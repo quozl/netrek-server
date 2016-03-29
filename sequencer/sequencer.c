@@ -150,7 +150,7 @@ void
 do_shell ( char *command )
 {
     if ( command == NULL ) return;
-    system ( command );
+    if ( system ( command ) == -1 ) perror("system");
 }
 
 /*

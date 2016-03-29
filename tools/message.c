@@ -13,11 +13,13 @@ int prior()
     char *to;
 
     printf("Enter Message:\n");
-    fgets(message, MSG_LEN + 20, stdin);
+    if (fgets(message, MSG_LEN + 20, stdin) == NULL)
+      perror("fgets");
     if (strlen(message) > 0) message[strlen(message)-1] = '\0';
     message[79]='\0';
     printf("Who are you sending the message to? ");
-    fgets(buf, MSG_LEN + 20, stdin);
+    if (fgets(buf, MSG_LEN + 20, stdin) == NULL)
+      perror("fgets");
     if (strlen(buf) > 0) buf[strlen(buf)-1] = '\0';
     to=buf;
     while (*to!='\0') {

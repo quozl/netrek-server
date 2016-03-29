@@ -17,7 +17,7 @@ int main(int argc, char **argv)
  if(setupmem() != 1)
  {
   printf("setupmem return an error... Should I try to remove the segment (y/N): ");
-  scanf("%c", &c);
+  if (scanf("%c", &c) == EOF) return 0;
  }
 
  if(( c == 'y') || ( c == 'Y'))

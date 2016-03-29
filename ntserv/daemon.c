@@ -3764,12 +3764,14 @@ static void save_planets(void)
     if (plfd >= 0) {
         int psize = sizeof(struct planet) * MAXPLANETS;
         lseek(plfd, (off_t) 0, 0);
-        write(plfd, (char *) planets, psize);
+        if (write(plfd, (char *) planets, psize) == -1)
+            perror("save_planets: player write");
         close(plfd);
     }
     if (glfd >= 0) {
         lseek(glfd, (off_t) 0, 0);
-        write(glfd, (char *) status, sizeof(struct status));
+        if (write(glfd, (char *) status, sizeof(struct status)) == -1)
+            perror("save_planets: global write");
         close(glfd);
     }
 }
@@ -4018,7 +4020,8 @@ static void saveplayer(struct player *victim)
     if (fd >= 0) {
         lseek(fd, victim->p_pos * sizeof(struct statentry) +
               offsetof(struct statentry, stats), SEEK_SET);
-        write(fd, (char *) &victim->p_stats, sizeof(struct stats));
+        if (write(fd, (char *) &victim->p_stats, sizeof(struct stats)) == -1)
+            perror("saveplayer: write");
         close(fd);
     }
 }

@@ -40,7 +40,8 @@ int sigpipe_create()
 /* generic handler for signals, writes signal number to pipe */
 void sigpipe_handler(int signum)
 {
-  write(sigpipe[1], &signum, sizeof(signum));
+  int unused __attribute__((unused));
+  unused = write(sigpipe[1], &signum, sizeof(signum));
   sigpipe_assign(signum);
 }
 
@@ -81,8 +82,9 @@ int sigpipe_fd()
 /* read and return the pending signal from the pipe */
 int sigpipe_read()
 {
-  int signum;
-  read(sigpipe[0], &signum, sizeof(signum));
+  int signum = 0;
+  int unused __attribute__((unused));
+  unused = read(sigpipe[0], &signum, sizeof(signum));
   return signum;
 }
 

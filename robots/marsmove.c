@@ -1864,7 +1864,8 @@ void savedogplayer(struct player *victim, Track *tr)
     fd = open(DogStats, O_WRONLY, 0644);
     if (fd >= 0) {
 	lseek(fd, 16 + tr->t_pos * sizeof(DogStat) ,0);
-	write(fd, (char *) &tr->t_stats, sizeof(DogStat));
+	if (write(fd, (char *) &tr->t_stats, sizeof(DogStat)) == -1)
+	    perror("savedogplayer: write");
 	close(fd);
     }
 }
@@ -1933,7 +1934,8 @@ void get_dog_stats(struct player *j, Track *track)
 	   entries = buf.st_size / sizeof(DogStatEntry);
 	   lseek(plfd, entries * sizeof(DogStatEntry), 0); 
 	   
-	   write(plfd, (char *) &player, sizeof(DogStatEntry));
+	   if (write(plfd, (char *) &player, sizeof(DogStatEntry)) == -1)
+	     perror("get_dog_stats: write");
 	   close(plfd);
 	   track->t_pos = entries;
 	   memcpy(&(track->t_stats), &player.dstats, sizeof(DogStat));

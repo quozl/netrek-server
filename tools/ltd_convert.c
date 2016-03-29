@@ -79,7 +79,7 @@ void confirm(void) {
 
   printf("Continue? ");
 
-  fgets(buf, 10, stdin);
+  if (fgets(buf, 10, stdin) == NULL) perror("fgets");
   buf[10] = '\0';
 
   if (strcmp(buf, "yes\n")) {

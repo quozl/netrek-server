@@ -52,7 +52,8 @@ char *argv[];
 
     openmem(0);
     printf("Who are you sending the message to? ");
-    fgets(buf, MSG_LEN + 20, stdin);
+    if (fgets(buf, MSG_LEN + 20, stdin) == NULL)
+      perror("fgets");
     if (strlen(buf) > 0) buf[strlen(buf)-1] = '\0';
     to=buf;
     while ((*to!='\0') && j<MAXRECIP) {

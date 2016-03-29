@@ -205,17 +205,20 @@ void config()
     if (f == NULL) {
 	fprintf(stderr,"%s: Tournament map file missing\n",TOURNMAP);
     } else {
-        char dummy[3];
-        int newx, newy;
+        for (i = 0; i < 40; i++) {
+            char dummy[3];
+            int newx, newy;
 
-	for (i = 0; i < 40; i++) {
-		fscanf(f,"%s %d %d\n",dummy,&newx,&newy);
-		planets[i].pl_x = newx;
-		planets[i].pl_y = newy;
-		planets[i].pl_owner = IND;
-		planets[i].pl_info |= ALLTEAM;
-		planets[i].pl_flags &= ~(PLFUEL | PLREPAIR | PLAGRI);
-	}
+            if (fscanf(f, "%s %d %d\n", dummy, &newx, &newy) == EOF) {
+                if (ferror(f)) perror("mars: config: tournament map: fscanf");
+            } else {
+                planets[i].pl_x = newx;
+                planets[i].pl_y = newy;
+                planets[i].pl_owner = IND;
+                planets[i].pl_info |= ALLTEAM;
+                planets[i].pl_flags &= ~(PLFUEL | PLREPAIR | PLAGRI);
+            }
+        }
     }
     fclose(f);
 

@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <signal.h>
+#include <stdarg.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -844,7 +845,9 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
                 free(dname);
                 continue;
             }
-            fscanf(ignorefile, "%d\n", &ignmask);
+            if (fscanf(ignorefile, "%d\n", &ignmask) == EOF)
+                if (ferror(ignorefile))
+                    perror("do_display_ignores: fscanf");
             fclose(ignorefile);
             if (ignmask == 0) {
                 free(dname);
@@ -1415,13 +1418,24 @@ void do_transwarp(char *comm, struct message *mess)
   }
 }
 
+static void toolf(char *cmd, const char *fmt, ...) {
+  char buf[256];
+  va_list args;
+
+  va_start(args, fmt);
+  sprintf(buf, "%s/tools/admin/quit ", LIBDIR);
+  vsprintf(buf+strlen(buf), fmt, args);
+  va_end(args);
+  if (system(buf) == -1)
+    perror("toolf: system");
+}
+
 void do_admin(char *comm, struct message *mess)
 {
   int who = mess->m_from;
   struct player *p = &players[who];
   char *addr = addr_mess(who,MINDIV);
   char *one, *two = NULL;
-  char command[256];
   int slot;
   struct player *them = NULL;
 
@@ -1518,39 +1532,37 @@ void do_admin(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "admin: erm, send 'em a \"mute on\"");
   } else if (!strcmp(one, "quit")) {
     if (them == NULL) return;
-    sprintf(command, "%s/tools/admin/quit %s %c", LIBDIR, p->p_full_hostname, them->p_mapchars[1]);
-    system(command);
+    toolf("quit", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
     pmessage(who, MINDIV, addr, "admin: player %s forced to quit.", two);
   } else if (!strcmp(one, "kill")) {
     if (them == NULL) return;
-    sprintf(command, "%s/tools/admin/kill %s %c", LIBDIR, p->p_full_hostname, them->p_mapchars[1]);
-    system(command);
+    toolf("kill", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
     pmessage(who, MINDIV, addr, "admin: player %s killed.", two);
   } else if (!strcmp(one, "free")) {
     if (them == NULL) return;
-    sprintf(command, "%s/tools/admin/free %s %c", LIBDIR, p->p_full_hostname, them->p_mapchars[1]);
-    system(command);
+    toolf("free", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
     pmessage(who, MINDIV, addr, "admin: player %s free-ed.", two);
   } else if (!strcmp(one, "ban")) {
     if (them == NULL) return;
-    sprintf(command, "%s/tools/admin/ban %s %s %s", LIBDIR, p->p_full_hostname, them->p_ip, them->p_full_hostname);
-    system(command);
+    toolf("ban", "%s %s %s", p->p_full_hostname, them->p_ip,
+          them->p_full_hostname);
     pmessage(who, MINDIV, addr, "admin: player %s banned.", two);
   } else if (!strcmp(one, "reset")) {
-    sprintf(command, "%s/tools/admin/reset %s t", LIBDIR, p->p_full_hostname);
-    system(command);
+    toolf("reset", "%s t", p->p_full_hostname);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
   } else if (!strcmp(one, "dfreset")) {
-    sprintf(command, "%s/tools/admin/reset %s d", LIBDIR, p->p_full_hostname);
-    system(command);
+    toolf("reset", "%s d", p->p_full_hostname);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset for df'ing.");
   } else if (!strcmp(one, "exec")) {
     if (!adminexec)
       pmessage(who, MINDIV, addr, "admin: exec is not enabled.");
     else
     {
-      system(one + 5);
-      pmessage(who, MINDIV, addr, "admin: executed \"%s\"", one + 5);
+      if (system(one + 5) == 0) {
+        pmessage(who, MINDIV, addr, "admin: executed \"%s\"", one + 5);
+      } else {
+        pmessage(who, MINDIV, addr, "admin: failed \"%s\"", one + 5);
+      }
     }
   } else {
     pmessage(who, MINDIV, addr, "admin: what? kill/quit/ban/free/reset, lowercase");

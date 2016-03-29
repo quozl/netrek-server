@@ -293,9 +293,12 @@ void start_topgun(void)
 
     if ((fp = fopen(SYSDEF_SAVE_FILENAME, "r")) == NULL) { /* if we haven't save
 d */
-        system(SAVE_SYSDEF_CMD); /* save existing .sysdef for shutdown */
-        system(TOPGUN_SYSDEF_CMD1); /* make a copy of .sysdef.topgun */
-        system(TOPGUN_SYSDEF_CMD2); /* mv it as .sysdef (to be atomic) */
+        /* save existing .sysdef for shutdown */
+        if (system(SAVE_SYSDEF_CMD) == -1) perror("system");
+        /* make a copy of .sysdef.topgun */
+        if (system(TOPGUN_SYSDEF_CMD1) == -1) perror("system");
+        /* mv it as .sysdef (to be atomic) */
+        if (system(TOPGUN_SYSDEF_CMD2) == -1) perror("system");
     }
     else /* don't overwrite saved sysdef (how'd it get there?) */
         fclose(fp);
@@ -355,7 +358,7 @@ void stop_topgun(void)
     sprintf(buf,"GOD->ALL  Top Gun Rules are no longer in effect.");
     amessage(buf, 0, MALL);
     amessage("GOD->ALL", 0, MALL);
-    system(RESTORE_SYSDEF_CMD);
+    if (system(RESTORE_SYSDEF_CMD) == -1) perror("system");
 
 #ifndef nodef
     sleep(1);	/* Top Gun ships are too powerfull, blow them up */
