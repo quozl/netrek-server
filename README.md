@@ -2,6 +2,12 @@
 
 This is the Vanilla Netrek Server.
 
+## Install Dependencies
+
+```
+apt install libtool libgdbm-dev
+```
+
 ## Clone and Build
 
 ```

@@ -1,20 +1,20 @@
 #!/bin/sh
 set -ev
 
-# test that current working directory matches darcs get expectation
+# test that current working directory matches expectation
 if [ ! -f autogen.sh ]; then echo "build: run in wrong directory"; exit 1; fi
 
 # where to build
 BUILDROOT=/tmp/netrek-server.$$
 
 # copy the repository there
-darcs get .. $BUILDROOT
+git clone . $BUILDROOT
 
 # go there
-cd $BUILDROOT/Vanilla
+cd $BUILDROOT
 
 # build configure
-sh autogen.sh
+./autogen.sh
 
 # configure
 ./configure --prefix=$BUILDROOT/out

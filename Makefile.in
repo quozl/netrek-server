@@ -4,7 +4,7 @@
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.18.0
+VERSION=2.19.0
 
 RANLIB=@RANLIB@
 VPATH=@srcdir@
@@ -171,14 +171,13 @@ rmdependencies:
 
 NAME=$(PACKAGE)-$(VERSION)
 dist:
-	chmod +x debian/rules configure
 	mkdir $(NAME)
         # what has changed
 	cp -p ChangeLog NEWS $(NAME)/
         # what needs to change
 	cp -p BUGS PROJECTS $(NAME)/
         # top level documentation
-	cp -p INSTALL INSTALL.INL INSTALL.Newbie README \
+	cp -p INSTALL INSTALL.INL INSTALL.Newbie README.md \
 	README.developers README.releasing CHANGES $(NAME)/
         # configuration
 	cp -p configure.in Makefile.in system.mk.in configure config.sub \
@@ -186,14 +185,6 @@ dist:
         # subdirectories
 	cp -rp docs include keycomp motd newstartd ntserv php \
 	pledit robotd robots sequencer tools xsg $(NAME)/
-        # packaging subdirectories (debian)
-	mkdir $(NAME)/debian $(NAME)/rpm
-	cp -p debian/README.Debian debian/changelog debian/control \
-	debian/copyright debian/*.init debian/postinst debian/rules \
-	$(NAME)/debian
-	cp -pr debian/po $(NAME)/debian
-        # packaging subdirectories (rpm)
-	cp -rp rpm $(NAME)/
         # strip out surplus
 	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS
 	rm -rf $(NAME)/.cvsignore $(NAME)/*/.cvsignore
@@ -215,13 +206,6 @@ dist-minimal:
         # subdirectories
 	cp -rp docs include keycomp newstartd ntserv res-rsa robots robotd \
 	$(NAME)-minimal/
-        # packaging subdirectories (debian)
-	mkdir $(NAME)-minimal/debian $(NAME)-minimal/rpm
-	cp -p debian/README.Debian debian/changelog debian/control \
-	debian/copyright debian/init debian/postinst debian/rules \
-	$(NAME)-minimal/debian
-        # packaging subdirectories (rpm)
-	cp -rp rpm $(NAME)-minimal/
         # strip out surplus
 	rm -rf $(NAME)-minimal/*/CVS $(NAME)-minimal/*/*/CVS
 	rm -rf $(NAME)-minimal/.cvsignore $(NAME)-minimal/*/.cvsignore
