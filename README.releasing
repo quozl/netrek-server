@@ -97,6 +97,9 @@ mailto:netrek-dev@us.netrek.org
 http://vanilla.netrek.org/
 ~/public_html/external/vanilla.netrek.org/html
 
+# release netrek.org
+orion:/data/orion/var/www/files.netrek.org/Vanilla
+
 # sourceforge.net upload procedure (brief, yet to be retested)
 # - upload to ftp://upload.sourceforge.net/incoming/
 # - project files
