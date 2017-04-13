@@ -40,10 +40,10 @@ int angdist(u_char x, u_char y)
 
 unsigned char to_dir(int x, int y, int mx, int my)
 {
-    double course = rint(atan2((double) (x - mx), (double) (my - y))
-                         / 3.14159 * 128.);
-    if (course < 0) course += 256.;
-    return (unsigned char) course;
+    int dir = roundf(128.f *
+                     atan2f((float) (x - mx), (float) (my - y)) / 3.141593f);
+    if (dir < 0) dir += 256;
+    return (unsigned char) dir;
 }
 
 #ifdef DEFINE_NINT

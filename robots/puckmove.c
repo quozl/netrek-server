@@ -1220,8 +1220,13 @@ void do_faceoff(void)
 	
 unsigned char getcourse(int x, int y)
 {
-	return((unsigned char) rint((atan2((double) (x - me->p_x),
-	    (double) (me->p_y - y)) / 3.14159 * 128.)));
+   int dir;
+
+   dir = roundf(128.f *
+                atan2f((float) (x - me->p_x),
+                       (float) (me->p_y - y)) / 3.141593f);
+   if (dir < 0) dir += 256;
+   return (unsigned char) dir;
 }
 
 int isInPossession(struct Enemy *enemy_buf)

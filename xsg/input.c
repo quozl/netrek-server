@@ -356,18 +356,23 @@ getcourse(ww, x, y)
 W_Window ww;
 int x, y;
 {
+    int dir;
     if (ww == mapw) {
-	int	me_x, me_y;
+        int me_x, me_y;
 
 	me_x = me->p_x * WINSIDE / GWIDTH;
 	me_y = me->p_y * WINSIDE / GWIDTH;
-	return((unsigned char) (atan2((double) (x - me_x),
-	    (double) (me_y - y)) / 3.14159 * 128.));
+	dir = roundf(128.f *
+		     atan2f((float) (x - me_x),
+			    (float) (me_y - y)) / 3.141593f);
     }
     else
-	return((unsigned char) (atan2((double) (x - WINSIDE/2),
-	    (double) (WINSIDE/2 - y))
-		/ 3.14159 * 128.));
+	dir = roundf(128.f *
+		     atan2f((float) (x - WINSIDE/2),
+			    (float) (WINSIDE/2 - y)) / 3.141593f);
+
+    if (dir < 0) dir += 256;
+    return dir;
 }
 
 lock(ww, x, y)

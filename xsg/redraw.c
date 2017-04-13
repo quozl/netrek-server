@@ -356,8 +356,8 @@ local()
 	/* ATM - show tractor/pressor beams */
 	/* (works for xsg since we have p_tractor) */
 	if (j->p_flags & PFTRACT || j->p_flags & PFPRESS) {
-	    double theta;
-	    unsigned char dir;
+	    float theta;
+	    int dir;
 	    int lx[2], ly[2];
 
 	    tx = (players[j->p_tractor].p_x - me->p_x) / SCALE + WINSIDE / 2;
@@ -366,9 +366,10 @@ local()
 	    if (tx == dx && ty == dy)
 		continue;		/* this had better be last in for(..) */
 
-#define XPI	3.1415926
-	    theta = atan2((double) (tx - dx), (double) (dy - ty)) + XPI / 2.0;
-	    dir = (unsigned char) (theta / XPI * 128.0);
+#define XPI	3.141593f
+	    theta = atan2f((float) (tx - dx), (float) (dy - ty)) + XPI / 2.f;
+	    dir = (int) roundf(theta * 128.f / XPI);
+	    if (dir < 0) dir += 256;
 
 	    lx[0] = tx + (Cos[dir] * (shield_width/2));
 	    ly[0] = ty + (Sin[dir] * (shield_width/2));
@@ -807,8 +808,13 @@ map()
 newcourse(x, y)
 int x, y;
 {
-    return((unsigned char) (atan2((double) (x - me->p_x),
-	(double) (me->p_y - y)) / 3.14159 * 128.));
+   int dir;
+
+   dir = roundf(128.f *
+                atan2f((float) (x - me->p_x),
+                       (float) (me->p_y - y)) / 3.141593f);
+   if (dir < 0) dir += 256;
+   return (unsigned char) dir;
 }
 
 /* 

@@ -251,9 +251,8 @@ void pmove(void)
     if (rotcore) 
       for (j =0; j < 4; j++)
 	for (i =0; i < 4; i++) {
-	  dir =(atan2((double) (planets[pl_core[j][i]].pl_y - planets[pl_home[j]].pl_y),
-                       (double) (planets[pl_core[j][i]].pl_x - planets[pl_home[j]].pl_x))
-                 );
+	  dir = atan2f((float) (planets[pl_core[j][i]].pl_y - planets[pl_home[j]].pl_y),
+                       (float) (planets[pl_core[j][i]].pl_x - planets[pl_home[j]].pl_x));
 	  if (dir > pi) dir = dir - 2.0*pi;
 	  if (dir >= 0.0)
 	     dir = (dir*incrementrecip+1.5);
@@ -269,8 +268,8 @@ void pmove(void)
 
     if (rotall) 
       for (i = 0; i < MAXPLANETS; i++) {
-	dir = atan2((double) (planets[i].pl_y - GWIDTH/2),
-		    (double) (planets[i].pl_x - GWIDTH/2));
+	dir = atan2f((float) (planets[i].pl_y - GWIDTH/2),
+		     (float) (planets[i].pl_x - GWIDTH/2));
 /*	printf("Atan2 Dir is %f (%d,%d).\n", dir, planets[i].pl_x,
 	       planets[i].pl_y);*/
 	if (dir > pi) dir = dir - 2.0*pi;

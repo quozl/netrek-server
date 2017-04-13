@@ -183,24 +183,32 @@ int wrap_dist(x1, y1, x, y)
 unsigned char get_course(x, y)
    int     x, y;
 {
-   unsigned char	ret_crs;
+   int dir;
 
-   if(x == me->p_x && y == me->p_y)
+   if (x == me->p_x && y == me->p_y)
       return 0;
 
-   return (unsigned char) (atan2((double) (x- me->p_x),
-      (double) (me->p_y - y)) / 3.141592 * 128.);
+   dir = roundf(128.f *
+                atan2f((float) (x - me->p_x),
+                       (float) (me->p_y - y)) / 3.141593f);
+   if (dir < 0) dir += 256;
+   return (unsigned char) dir;
 }
 
 /* get course from (mx,my) to (x,y) */
 unsigned char get_acourse(x, y, mx, my)
    int x, y, mx, my;
 {
+   int dir;
+
    if(x == mx && y == my)
       return 0;
 
-   return (unsigned char) (atan2((double) (x - mx),
-      (double) (my - y)) / 3.14159 * 128.);
+   dir = roundf(128.f *
+                atan2f((float) (x - mx),
+                       (float) (my - y)) / 3.141593f);
+   if (dir < 0) dir += 256;
+   return (unsigned char) dir;
 }
 
 unsigned char get_awrapcourse(x, y, mx, my)

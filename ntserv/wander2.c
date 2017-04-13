@@ -10,8 +10,8 @@
 static int pl_home[4];
 static int pl_core[4][10];
 static int pl_dist[4][10];
-static const double increment = 0.016;
-static const double incrementrecip = 62.5;
+static const float increment = 0.016;
+static const float incrementrecip = 62.5;
 static float *Cosine, *Sine;
 
 static void pfree(void)
@@ -28,17 +28,17 @@ void pinit(void)
 
     void pmove();
 
-    pre = 3.5/increment;
+    pre = 3.5 / increment;
 
-    Cosine = (float*) calloc(sizeof(float), pre);
+    Cosine = (float *) calloc(sizeof(float), pre);
     if (Cosine == NULL) abort();
-    Sine = (float*) calloc(sizeof(float), pre);
+    Sine = (float *) calloc(sizeof(float), pre);
     if (Sine == NULL) abort();
     atexit(pfree);
 
     for (i = 0; i < pre; i++) {
-	Cosine[i] = cos((double)i*increment);
-	Sine[i] = sin((double)i*increment);
+	Cosine[i] = cosf((float)i * increment);
+	Sine[i] = sinf((float)i * increment);
     }
 
     pl_home[0] = 0;
@@ -74,7 +74,7 @@ void pinit(void)
 void pmove(void)
 {
     int i, j;
-    double dir;
+    float dir;
     static int planeti=0, planetj=0;
 
     /* todo: fps support */
@@ -86,13 +86,15 @@ void pmove(void)
     if (planetj == 0)
 	planeti = (planeti + 1) % 4;
 
-	    dir = atan2((double) (planets[pl_core[i][j]].pl_y - planets[pl_home[i]].pl_y),
-			(double) (planets[pl_core[i][j]].pl_x - planets[pl_home[i]].pl_x));
-	    if (dir > M_PI) dir = dir - 2.0*M_PI;
-	    if (dir >= 0.0)
-		dir = (dir*incrementrecip+1.5);
+	    dir = atan2f((float) (planets[pl_core[i][j]].pl_y -
+				  planets[pl_home[i]].pl_y),
+			 (float) (planets[pl_core[i][j]].pl_x -
+				  planets[pl_home[i]].pl_x));
+	    if (dir > (float) M_PI) dir = dir - 2.0f * (float) M_PI;
+	    if (dir >= 0.0f)
+		dir = (dir * incrementrecip + 1.5f);
 	    else
-		dir = (dir*incrementrecip+0.5);
+		dir = (dir * incrementrecip + 0.5f);
 	    
 	    
 	    planets[pl_core[i][j]].pl_x =
@@ -102,11 +104,6 @@ void pmove(void)
 		planets[pl_home[i]].pl_y +
 		    (int) (pl_dist[i][j] * SIN(dir));
 
-	    dir = atan2((double) (planets[pl_core[i][j]].pl_y
-				  - planets[pl_home[i]].pl_y),
-			(double) (planets[pl_core[i][j]].pl_x
-				  - planets[pl_home[i]].pl_x));
-	    
 	    planets[pl_core[i][j]].pl_flags |= PLREDRAW;
 	}
 

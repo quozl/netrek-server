@@ -1811,13 +1811,13 @@ get_bearing(xme, yme, x, y, dir)
   int xme, yme, x, y;
   int dir;
 {
-  int phi=0;
+  int phi;
 
-  phi = ((int) (atan2((double) (x-xme), (double) (yme-y)) / 3.14159 * 128.));
+  phi = roundf(128.f * atan2f((float) (x-xme), (float) (yme-y)) / 3.141593f);
   if (phi < 0)
     phi = 256 + phi;
   if (phi >= dir)
-    return((unsigned char) (phi - dir));
+    return (unsigned char) (phi - dir);
   else
-    return((unsigned char) (256 + phi - dir));
+    return (unsigned char) (256 + phi - dir);
 }

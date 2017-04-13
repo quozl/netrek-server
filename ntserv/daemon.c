@@ -1985,7 +1985,7 @@ static void t_track(struct torp *t)
 
     /*
      * Get the direction that the potential target is from the torp:  */
-    heading = -64 + rint(atan2((double) dy, (double) dx) / 3.14159 * 128.0);
+    heading = -64 + roundf(128.f * atan2f((float) dy, (float) dx) / 3.14159f);
     if (heading < 0)
       heading += 256;
     /*
