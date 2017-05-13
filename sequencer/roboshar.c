@@ -144,15 +144,6 @@ int game_resume(char *comm, struct message *mess)
 }
 
 /*
- * This returns the direction needed to travel to get from
- * (x1,y1) to (x2,y2). (x1,y1) are commonly me->p_x and me->p_y.
- */
-u_char getcourse2(int x1, int y1, int x2, int y2)
-{
-    return to_dir(x2, y2, x1, y1);
-}
-
-/*
  * Null client packet sending function for ntserv specific code in
  * enter.c and interface.c so that we can avoid compiling it in the
  * robots directory, and use libnetrek instead.

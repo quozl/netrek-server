@@ -1694,13 +1694,12 @@ void handlePlasma(packet)
     thetorp= &plasmatorps[ntohs(packet->pnum)];
 
     /* plasmas seek */
-    thetorp->pt_dir = get_acourse(ntohl(packet->x), ntohl(packet->y),
-       thetorp->pt_x, thetorp->pt_y);
+    thetorp->pt_dir = to_dir(thetorp->pt_x, thetorp->pt_y,
+				       ntohl(packet->x), ntohl(packet->y));
 
     thetorp->pt_x=ntohl(packet->x);
     thetorp->pt_y=ntohl(packet->y);
-    thetorp->pt_fuse ++;
-
+    thetorp->pt_fuse++;
 }
 
 void handleFlags(packet)

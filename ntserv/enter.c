@@ -33,7 +33,6 @@ static u_char face_enemy(void)
 {
     int team_other, x, y;
     struct planet *planet_other;
-    u_char dir;
 
     /* in INL games keep classic behaviour */
     if (inl_mode) return 0;
@@ -51,9 +50,8 @@ static u_char face_enemy(void)
         y = planet_other->pl_y;
     }
 
-    /* calculate course, modulus 32 (45 degrees) */
-    dir = to_dir(x, y, me->p_x, me->p_y) / 32 * 32;
-    return dir;
+    /* calculate course rounded to nearest 45 degrees */
+    return (u_char) ((to_dir(me->p_x, me->p_y, x, y) + 16) & 0xe0);
 }
 
 /* change 5/10/91 TC -- if tno == 4, independent */

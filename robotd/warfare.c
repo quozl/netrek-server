@@ -251,7 +251,7 @@ int get_torp_course(j, crs, cx,cy)
       l = sqrt(l);
       vxt = l * vxa + dx;
       vyt = l * vya + dy;
-      *crs = get_acourse((int)vxt+mx, (int)vyt+my, cx, cy);
+      *crs = to_dir(cx, cy, (int) vxt + mx, (int) vyt + my);
       return 1;
    }
    /* out of range? */
@@ -283,7 +283,7 @@ void get_orbit_torp_course(j, crs, cx, cy)
    x = px+ORBDIST * Cos[(unsigned char)(dir+2*cycles - (unsigned char) 64)];
    y = py+ORBDIST * Sin[(unsigned char)(dir+2*cycles - (unsigned char) 64)];
 
-   *crs = get_acourse(x,y, cx,cy);
+   *crs = to_dir(cx, cy, x, y);
 }
 
 /* called from update_players */

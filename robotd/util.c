@@ -3,11 +3,12 @@
  */
 #include "copyright.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-
 #include <math.h>
 #include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <sys/types.h>
+
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -45,6 +46,20 @@ int angdist(x, y)
     if (res > 128)
 	return(256 - (int) res);
     return((int) res);
+}
+
+/*
+** Compute the 8-bit angle of the vector from origin to destination, measured
+** anticlockwise from the negative y-axis (0)
+** This is the required direction of travel from e.g. me->px, me->py
+** A value of 128 is pi radians
+** atan2( y, x ) + pi/2 == atan2( x, -y )
+** Copied from ntserv/util.c
+*/
+
+u_char to_dir(int origin_x, int origin_y, int destination_x, int destination_y)
+{
+    return (u_char) ((int) nearbyintf(40.743665f * atan2f(destination_x - origin_x, origin_y - destination_y)));  /* (128/pi)*theta */
 }
 
 #ifdef hpux
@@ -179,35 +194,16 @@ int wrap_dist(x1, y1, x, y)
    return (int)ihypot(dx,dy);
 }
 
-/* get course from me to x,y */
-unsigned char get_course(x, y)
-   int     x, y;
+/* get course from me to (x, y) */
+u_char get_course(int x, int y)
 {
-   unsigned char	ret_crs;
-
-   if(x == me->p_x && y == me->p_y)
-      return 0;
-
-   return (unsigned char) (atan2((double) (x- me->p_x),
-      (double) (me->p_y - y)) / 3.141592 * 128.);
+   return to_dir(me->p_x, me->p_y, x, y);
 }
 
-/* get course from (mx,my) to (x,y) */
-unsigned char get_acourse(x, y, mx, my)
-   int x, y, mx, my;
-{
-   if(x == mx && y == my)
-      return 0;
-
-   return (unsigned char) (atan2((double) (x - mx),
-      (double) (my - y)) / 3.14159 * 128.);
-}
-
-unsigned char get_awrapcourse(x, y, mx, my)
-   int x, y, mx, my;
+u_char get_awrapcourse(int x, int y, int mx, int my)
 {
    if(!_state.wrap_around)
-      return get_acourse(x,y,mx,my);
+      return to_dir(mx, my, x, y);
    else
       return get_course(wrap_x(x, mx), wrap_y(y,my));
 }
@@ -425,11 +421,9 @@ int ihypot(xd1, yd1)
 }
 
 #if ! HAVE_NINT
-int nint(x)
-   double x;
+int nint(double x)
 {
-   double	rint();
-   return (int)rint(x);
+   return (int) nearbyint(x);
 }
 #endif
 

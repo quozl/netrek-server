@@ -22,20 +22,27 @@
 #include "localdata.h"
 #include "util.h"
 
+#define set_speed(speed) {me->p_speed=speed; me->p_flags&=~(PFPLOCK|PFPLLOCK);}
+#define set_course(course) {me->p_dir=course; me->p_flags&=~(PFPLOCK|PFPLLOCK);}
+
 struct obtype *gettarget();
 static char buf[BUFSIZ];
 int mapStats = 0;
 
-#define set_speed(speed) {me->p_speed=speed; me->p_flags&=~(PFPLOCK|PFPLLOCK);}
-#define set_course(course) {me->p_dir=course; me->p_flags&=~(PFPLOCK|PFPLLOCK);}
-
 static int intrupt_flag = 1;
 
-void
-intrupt_setflag()
+void intrupt_setflag()
 {
    signal(SIGALRM,intrupt_setflag);
    intrupt_flag = 1;
+}
+
+u_char getcourse(W_Window ww, int x, int y)
+{
+    if (ww == mapw)
+	return to_dir(WINSIDE * me->p_x / GWIDTH, WINSIDE * me->p_y / GWIDTH, x, y);
+    else
+	return to_dir(WINSIDE / 2, WINSIDE / 2, x, y);
 }
 
 input()
@@ -115,7 +122,7 @@ again:
 keyaction(data)
 W_Event *data;
 {
-    unsigned char course;
+    u_char course;
     char key=data->key;
 
     if (data->Window!=mapw && data->Window!=w && data->Window!=infow && data->Window!=plstatw) return;
@@ -350,24 +357,6 @@ W_Event *data;
 	    modifywindow(target);
 	return;
     }
-}
-
-getcourse(ww, x, y)
-W_Window ww;
-int x, y;
-{
-    if (ww == mapw) {
-	int	me_x, me_y;
-
-	me_x = me->p_x * WINSIDE / GWIDTH;
-	me_y = me->p_y * WINSIDE / GWIDTH;
-	return((unsigned char) (atan2((double) (x - me_x),
-	    (double) (me_y - y)) / 3.14159 * 128.));
-    }
-    else
-	return((unsigned char) (atan2((double) (x - WINSIDE/2),
-	    (double) (WINSIDE/2 - y))
-		/ 3.14159 * 128.));
 }
 
 lock(ww, x, y)

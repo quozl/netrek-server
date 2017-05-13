@@ -3,8 +3,7 @@
 #define PASS2		"tover"
 #define bool		int
 
-extern unsigned char   get_course(),
-		       get_acourse(),
+extern u_char	       get_course(),
 		       get_awrapcourse();
 extern struct planet	*find_safe_planet(), *nearest_safe_planet();
 extern char            *state_name();

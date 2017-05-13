@@ -1951,7 +1951,7 @@ static void udtwarp(void)
  */
 static void t_track(struct torp *t)
 {
-  int heading, bearing;
+  int bearing;
   int dx, dy, range;
   U_LONG range_sq, min_range_sq;
   struct player *j, *owner;
@@ -1984,17 +1984,12 @@ static void t_track(struct torp *t)
       continue;
 
     /*
-     * Get the direction that the potential target is from the torp:  */
-    heading = -64 + rint(atan2((double) dy, (double) dx) / 3.14159 * 128.0);
-    if (heading < 0)
-      heading += 256;
-    /*
+     * Get the direction that the potential target is from the torp;
      * Now use the torp's direction and the heading to determine the
-     * bearing of the potential target from the current direction.  */
-    if (heading >= t->t_dir)
-      bearing = heading - t->t_dir;
-    else
-      bearing = heading - t->t_dir + 256;
+     * bearing of the potential target from the current direction.
+     * atan2( y, x ) - pi/2 == atan2( -x, y )
+     */
+    bearing = (u_char) (to_dir(dx, dy, 0, 0) - t->t_dir);
 
     /*
      * To prevent the torpedo from tracking unreachable targets:
@@ -2014,13 +2009,10 @@ static void t_track(struct torp *t)
 
   /*
    * Found a target, or not.  Adjust torpedo direction.  */
-  if (turn < 0) {
-    heading = ((int) t->t_dir) - t->t_turns;
-    t->t_dir = (heading < 0) ? (256+heading) : heading;
-  } else if (turn > 0) {
-    heading = ((int) t->t_dir) + t->t_turns;
-    t->t_dir = (heading > 255) ? (heading-256) : heading;
-  }
+  if (turn < 0)
+    t->t_dir = (u_char) (t->t_dir - t->t_turns);
+  else if (turn > 0)
+    t->t_dir = (u_char) (t->t_dir + t->t_turns);
 }
 
 static void t_move(struct torp *t)

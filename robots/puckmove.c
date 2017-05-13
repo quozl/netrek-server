@@ -159,7 +159,6 @@ void player_maint(void);
 void player_bounce(void);
 void exitRobot(void);
 void light_planets(void);
-unsigned char	getcourse();
 char *robo_message();
 char *puckie_message();		/* added 8/2/91 TC */
 int isInPossession(struct Enemy *enemy_buf);
@@ -607,8 +606,8 @@ void rmove(void)
 	    if ((enemy_buf->pstruct->p_team == KLI) &&
 		(enemy_buf->pstruct->p_y >= ORI_B) &&
 		(enemy_buf->pstruct->p_y <= ORI_G) &&
-		(me->p_dir<=getcourse2(me->p_x,me->p_y,G_LFT,ORI_G)) &&
-		(me->p_dir>=getcourse2(me->p_x,me->p_y,G_RGT,ORI_G)))
+		(me->p_dir <= to_dir(me->p_x, me->p_y, G_LFT, ORI_G)) &&
+		(me->p_dir >= to_dir(me->p_x, me->p_y, G_RGT, ORI_G)))
 	      shot_ongoal = 1;
 
 	    if ((enemy_buf->pstruct->p_team == ORI) &&
@@ -616,8 +615,8 @@ void rmove(void)
 		(enemy_buf->pstruct->p_y <= KLI_B)){
 		u_char to_left, to_right;
 
-		to_left  = getcourse2(me->p_x,me->p_y,G_LFT,KLI_G);
-		to_right = getcourse2(me->p_x,me->p_y,G_RGT,KLI_G);
+		to_left  = to_dir(me->p_x, me->p_y, G_LFT, KLI_G);
+		to_right = to_dir(me->p_x, me->p_y, G_RGT, KLI_G);
 
 		if (((me->p_dir>=to_left) && (me->p_dir<=to_right)) ||
 		    ((to_right < to_left) && 
@@ -1217,11 +1216,10 @@ void do_faceoff(void)
     else
 	faceoff = FACEOFF;
 }
-	
-unsigned char getcourse(int x, int y)
+
+u_char getcourse(int x, int y)
 {
-	return((unsigned char) rint((atan2((double) (x - me->p_x),
-	    (double) (me->p_y - y)) / 3.14159 * 128.)));
+    return to_dir(me->p_x, me->p_y, x, y);
 }
 
 int isInPossession(struct Enemy *enemy_buf)

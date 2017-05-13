@@ -121,7 +121,6 @@ extern int runfast;
 extern int closeslow;
 extern int closefast;
 
-u_char	getcourse();
 char *robo_message();
 char *termie_message();		/* added 8/2/91 TC */
 void exitRobot();
@@ -558,10 +557,9 @@ void rmove()
     }
 }
 
-u_char getcourse(x, y)
-int x, y;
+u_char getcourse(int x, int y)
 {
-    return to_dir(x, y, me->p_x, me->p_y);
+    return to_dir(me->p_x, me->p_y, x, y);
 }
 
 struct {

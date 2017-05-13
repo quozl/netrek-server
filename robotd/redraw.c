@@ -3,9 +3,11 @@
  */
 #include "copyright.h"
 
-#include <stdio.h>
-#include <signal.h>
 #include <math.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/types.h>
+
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

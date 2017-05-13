@@ -62,11 +62,10 @@ float *Cosine, *Sine;
 
 double dpre;
 double fpre;
-double pi = 3.1415926;
 
 int main(int argc, char **argv)
 {
-    double dx, dy;
+    float dx, dy;
     int i,j;
 
     int pre;
@@ -130,15 +129,15 @@ int main(int argc, char **argv)
     pl_home[3] = 30; pl_core[3][0] = 34; pl_core[3][1] = 37; pl_core[3][2] = 38; pl_core[3][3] = 39; 
 
     for (i = 0; i < 40; i++) {
-	dx = (double) (planets[i].pl_x - GWIDTH/2);
-	dy = (double) (GWIDTH/2 - planets[i].pl_y);
-	pl_dist[i] = sqrt(dx * dx + dy * dy);
+	dx = planets[i].pl_x - GWIDTH/2;
+	dy = GWIDTH/2 - planets[i].pl_y;
+	pl_dist[i] = (int) nearbyintf(sqrtf(dx * dx + dy * dy));
     }
     for (j = 0; j < 4; j++) 
       for (i = 0; i < 4; i++) {
-        dx = (double) (planets[pl_core[j][i]].pl_x - planets[pl_home[j]].pl_x);
-        dy = (double) (planets[pl_home[j]].pl_y - planets[pl_core[j][i]].pl_y);
-        pl_dist1[j][i] = sqrt(dx * dx + dy * dy);
+        dx = planets[pl_core[j][i]].pl_x - planets[pl_home[j]].pl_x;
+        dy = planets[pl_home[j]].pl_y - planets[pl_core[j][i]].pl_y;
+        pl_dist1[j][i] = (int) nearbyintf(sqrtf(dx * dx + dy * dy));
 	}
 
     if (topgun) { topgun=0; ttimer=5; } 	/* start topgun in 5 sec */
@@ -246,42 +245,37 @@ void funnymessage(void)
 void pmove(void) 
 {
   int i,j;
-  double dir, dx,dy ;
+  float dir, dx, dy;
 
     if (rotcore) 
       for (j =0; j < 4; j++)
 	for (i =0; i < 4; i++) {
-	  dir =(atan2((double) (planets[pl_core[j][i]].pl_y - planets[pl_home[j]].pl_y),
-                       (double) (planets[pl_core[j][i]].pl_x - planets[pl_home[j]].pl_x))
-                 );
-	  if (dir > pi) dir = dir - 2.0*pi;
-	  if (dir >= 0.0)
-	     dir = (dir*incrementrecip+1.5);
+	  dir = atan2f(planets[pl_core[j][i]].pl_y - planets[pl_home[j]].pl_y,
+                       planets[pl_core[j][i]].pl_x - planets[pl_home[j]].pl_x);
+	  if (dir >= 0.f)
+	     dir = dir * incrementrecip + 1.5f;
 	  else
-	     dir = (dir*incrementrecip+0.5);
+	     dir = dir * incrementrecip + 0.5f;
           planets[pl_core[j][i]].pl_x = planets[pl_home[j]].pl_x + pl_dist1[j][i] * COS(dir);
           planets[pl_core[j][i]].pl_y = planets[pl_home[j]].pl_y + pl_dist1[j][i] * SIN(dir);
-	  dx = (double) (planets[pl_core[j][i]].pl_x - GWIDTH/2);
-	  dy = (double) (GWIDTH/2 - planets[pl_core[j][i]].pl_y);
-	  pl_dist[i] = sqrt(dx * dx + dy * dy);
+	  dx = planets[pl_core[j][i]].pl_x - GWIDTH / 2;
+	  dy = GWIDTH / 2 - planets[pl_core[j][i]].pl_y;
+	  pl_dist[i] = (int) nearbyintf(sqrtf(dx * dx + dy * dy));
           planets[pl_core[j][i]].pl_flags |= PLREDRAW;
         }
 
     if (rotall) 
       for (i = 0; i < MAXPLANETS; i++) {
-	dir = atan2((double) (planets[i].pl_y - GWIDTH/2),
-		    (double) (planets[i].pl_x - GWIDTH/2));
-/*	printf("Atan2 Dir is %f (%d,%d).\n", dir, planets[i].pl_x,
-	       planets[i].pl_y);*/
-	if (dir > pi) dir = dir - 2.0*pi;
-/*	printf("dir = %f, dir*100 = %f, rint() = %f. %f = %d.\n", dir, dir*100.0, rint(dir*100.0), rint(dir*100.0+1.5), (int) (rint(dir*100.0) + 1.0));*/
-	if (dir >= 0.0)
-	    dir = (dir*incrementrecip+1.5);
+	dir = atan2f(planets[i].pl_y - GWIDTH / 2, planets[i].pl_x - GWIDTH / 2);
+/*	printf("Atan2 Dir is %f (%d,%d).\n", dir, planets[i].pl_x, planets[i].pl_y);*/
+/*	printf("dir = %f, dir*100 = %f, nearbyint() = %f. %f = %d.\n", dir, dir*100.0, nearbyint(dir*100.0), nearbyint(dir*100.0+1.5), (int) (nearbyint(dir*100.0) + 1.0));*/
+	if (dir >= 0.f)
+	    dir = dir * incrementrecip + 1.5f;
 	else
-	    dir = (dir*incrementrecip+0.5);
+	    dir = dir * incrementrecip + 0.5f;
 
-	planets[i].pl_x = GWIDTH/2 + (int) (pl_dist[i] * COS(dir));
-	planets[i].pl_y = GWIDTH/2 + (int) (pl_dist[i] * SIN(dir));
+	planets[i].pl_x = GWIDTH / 2 + (int) nearbyintf(pl_dist[i] * COS(dir));
+	planets[i].pl_y = GWIDTH / 2 + (int) nearbyintf(pl_dist[i] * SIN(dir));
 
 	planets[i].pl_flags |= PLREDRAW;
       }

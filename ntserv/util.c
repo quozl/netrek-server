@@ -35,15 +35,16 @@ int angdist(u_char x, u_char y)
 }
 
 /*
-** Calculate a course from (mx, my) to (x, y)
+** Compute the 8-bit angle of the vector from origin to destination, measured
+** anticlockwise from the negative y-axis (0)
+** This is the required direction of travel from e.g. me->px, me->py
+** A value of 128 is pi radians
+** atan2( y, x ) + pi/2 == atan2( x, -y )
 */
 
-unsigned char to_dir(int x, int y, int mx, int my)
+u_char to_dir(int origin_x, int origin_y, int destination_x, int destination_y)
 {
-    double course = rint(atan2((double) (x - mx), (double) (my - y))
-                         / 3.14159 * 128.);
-    if (course < 0) course += 256.;
-    return (unsigned char) course;
+    return (u_char) ((int) nearbyintf(40.743665f * atan2f(destination_x - origin_x, origin_y - destination_y)));  /* (128/pi)*theta */
 }
 
 #ifdef DEFINE_NINT
@@ -51,9 +52,7 @@ int nint(double x)
 {
    return (int) x;              /* xx */
 }
-
 #endif /* DEFINE_NINT */
-
 
 #ifndef HAVE_USLEEP
 int microsleep(LONG microSeconds)

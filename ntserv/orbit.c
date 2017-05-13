@@ -236,7 +236,7 @@ void orbit(void)
      * A successful orbit!
      * Adjust me and the planet orbited to reflect the new orbit situation.
      * In particular, my direction and x,y position probably change.  */
-    dir = to_dir(me->p_x, me->p_y, l->pl_x, l->pl_y);
+    dir = to_dir(l->pl_x, l->pl_y, me->p_x, me->p_y);
 
     /*
      * See if this is the first touch of this planet: */

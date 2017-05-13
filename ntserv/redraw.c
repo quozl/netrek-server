@@ -571,7 +571,7 @@ static void auto_features(void)
 	    }
 	}
 	if (me->p_flags & PFPLOCK) {
-	    course = to_dir(pl->p_x, pl->p_y, me->p_x, me->p_y);
+	    course = to_dir(me->p_x, me->p_y, pl->p_x, pl->p_y);
 	    if (me->p_flags & PFTWARP)
 		me->p_dir = course;
 	    else
@@ -605,7 +605,7 @@ static void auto_features(void)
 	    extern int nowobble;
 
 	    /* calculate course to planet from current coordinates */
-	    course = to_dir(pln->pl_x, pln->pl_y, me->p_x, me->p_y);
+	    course = to_dir(me->p_x, me->p_y, pln->pl_x, pln->pl_y);
 
             /* avoid superfluous midflight wobble */
 	    if (nowobble) {

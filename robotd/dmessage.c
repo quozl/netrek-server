@@ -5,11 +5,13 @@
  */
 #include "copyright.h"
 
-#include <stdio.h>
 #include <ctype.h>
+#include <math.h>
+#include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include <math.h>
+#include <sys/types.h>
+
 #include "defs.h"
 #include "struct.h"
 #include "data.h"

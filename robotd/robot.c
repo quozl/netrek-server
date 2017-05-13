@@ -1167,9 +1167,8 @@ void phaser_plasmas()
 	 
       /* ignore the torp if it's already past */
       {
-	 unsigned char	tdir = get_acourse(me->p_x, me->p_y,
-	    pt->pt_x, pt->pt_y);
-	 int			ad = angdist(tdir, pt->pt_dir);
+	 unsigned char tdir = to_dir(pt->pt_x, pt->pt_y, me->p_x, me->p_y);
+	 int ad = angdist(tdir, pt->pt_dir);
 
 	   /*
 	   printf("pl ang dist %d\n", ad);
