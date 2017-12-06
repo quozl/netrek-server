@@ -4,6 +4,8 @@ Summary
 -------
 
 	0)  decide where to install the server on your file system,
+            Note for Debian based distros. autogen.sh needs package libtool
+            ./configure will fail without it.
 	1)  type "./configure --prefix=path" replacing path with your choice,
             (default path is /usr/local/games/netrek)
 	2)  type "make install",
