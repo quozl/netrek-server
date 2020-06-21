@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -41,9 +42,11 @@ int time_access(void)
         tfd = fopen(Time_File,"r");
 
         for (day=0; day<=6; day++) {
-          if (fscanf(tfd, "%s", hours[day]) == EOF)
+          char buf[25];
+          if (fgets(buf, 25, tfd) != NULL)
             if (ferror(tfd))
-              perror("time_access: fscanf");
+              perror("time_access: fgets");
+              memcpy(hours[day], buf, 24);
         }
 
         fclose(tfd);
