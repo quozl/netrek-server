@@ -714,10 +714,11 @@ void do_teleport_home(void)
 	j->p_speed = 0;
 	j->p_desspeed = 0;
 	j->p_subspeed = 0;
-	j->p_flags = PFSHIELD;
+	j->p_flags = PFSHIELD | PFSEEN;
 	j->p_fuel   = j->p_ship.s_maxfuel;
 	j->p_shield = j->p_ship.s_maxshield;
 	j->p_damage = 0;
+    
 
         tracks[i].t_x = j->p_x;
         tracks[i].t_y = j->p_y;
