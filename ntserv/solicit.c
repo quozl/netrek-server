@@ -144,6 +144,7 @@ static void initialise()
   file = fopen(SYSCONFDIR"/metaservers", "r");
   if (file == NULL) file = fopen(SYSCONFDIR"/.metaservers", "r");
   if (file == NULL) {
+    ERROR(1,("solicit: No metaservers file found.\n"));
     initialised++;
     return;
   }
@@ -164,13 +165,17 @@ static void initialise()
     if (feof(file)) break;
 
     /* ignore comments */
-    if (line[0] == '#') continue;
+    if (line[0] == '#') {
+      i--;
+      continue;
+    }
 
     /* parse each field, ignore the line if insufficient fields found */
 
     token = strtok(line, " ");        /* meta host name */
     if (token == NULL) continue;
     strncpy(m->host, token, 32);
+    ERROR(1,("solicit: Using metaserver: %s\n", m->host));
 
     token = strtok(NULL, " ");        /* meta port */
     if (token == NULL) continue;
