@@ -1,6 +1,14 @@
-To build on Mac OS X, download latest xcode from
-http://developer.apple.com/ and install (cannot be done on command line
-it is said), then configure and make in the usual way, see README.
+To build netrek-server on Mac OS X, download the latest xcode from
+http://developer.apple.com/ and install
+
+Make sure to install the Xcode command-line-tools: either via Xcode->Preferences->Components or (if not shown there) from https://developer.apple.com/download/more/
+
+MacOS does not have system include files in /usr/include.  It may be necessary to use a command like:
+./configure LIBS=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+
+To see a list of potential include file locations, use the following command: "echo "" | gcc -xc - -v -E"
+
+then configure and make in the usual way, see README.
 
 --
 
