@@ -29,7 +29,6 @@ FILE *packetsFile;
 
 struct you_short_spacket clientSelfs[MAXPLAYER];
 struct youss_spacket clientSelfShips[MAXPLAYER];
-struct flags_spacket clientFlags[MAXPLAYER];
 struct player cambot_me;
 struct itimerval udt;
 char	*cb_from = {"GOD->ALL"};
@@ -41,7 +40,7 @@ static LONG sequence;
 struct feature_spacket Many_Self_F = {SP_FEATURE, 'S', 0, 0, 1, "MANY_SELF"};
 
 /* Make linker happy... */
-int ignored[MAXPLAYER];
+extern int ignored[MAXPLAYER];
 int debug;
 
 void message_flag(struct message *cur, char *address) {}
@@ -71,6 +70,7 @@ extern struct player_spacket clientPlayers[MAXPLAYER];
 extern struct kills_spacket clientKills[MAXPLAYER];
 extern struct pstatus_spacket clientPStatus[MAXPLAYER];
 extern struct stats_spacket clientStats[MAXPLAYER];
+extern struct flags_spacket clientFlags[MAXPLAYER];
 extern int	clientVPlanetCount;
 extern struct planet_spacket clientPlanets[MAXPLANETS];
 extern struct planet_loc_spacket clientPlanetLocs[MAXPLANETS];
