@@ -108,7 +108,7 @@ static int dock(struct player *base)
     if (send_short)
       swarning(SBDOCKDENIED_TEXT, base->p_no, 0);
     else
-      new_warning(UNDEF, "Starbase %s: Permission to dock denied, all bays currently occupied.", base->p_name);
+      new_warning(UNDEF, "Starbase %s: Permission to dock denied, all bays occupied.", base->p_name);
     de_lock(me);
     return DOCK_FAILURE;
   }
