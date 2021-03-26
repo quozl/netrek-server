@@ -48,18 +48,22 @@ char *pappend;
  * The two in-line defs that follow enable us to avoid calling strcat over
  * and over again.
  */
-#define APPEND(ptr,str)     \
-   pappend = str;           \
-   while(*pappend)          \
-       *ptr++ = *pappend++;
+#define APPEND(ptr, str)    \
+  {                         \
+    pappend = str;          \
+    while (*pappend)        \
+      *ptr++ = *pappend++;  \
+  }
 
-#define APPEND_CAP(ptr,cap,str) \
-   pappend = str;               \
-   while(*pappend)              \
-   {                            \
-       *ptr++ = (cap ? toupper(*pappend) : *pappend); \
-       pappend++;               \
-   }
+#define APPEND_CAP(ptr, cap, str)               \
+  {                                             \
+    pappend = str;                                    \
+    while (*pappend)                                  \
+      {                                                 \
+        *ptr++ = (cap ? toupper(*pappend) : *pappend);  \
+        pappend++;                                      \
+      }                                                 \
+  }
 
 
 /*
