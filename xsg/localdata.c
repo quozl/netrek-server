@@ -106,7 +106,6 @@ int	mdisplayed;
 int	redrawall;
 int	selfdest;
 int	udcounter;
-int	lastm;
 int	delay;			/* delay for decaring war */
 int	rdelay;			/* delay for refitting */
 int	showStats;

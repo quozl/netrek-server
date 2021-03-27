@@ -39,7 +39,6 @@ int	lastcount;
 int	mdisplayed;
 int	redrawall;
 int	udcounter;
-int	lastm;
 int	delay;			/* delay for decaring war */
 int	rdelay;			/* delay for refitting */
 int	doosher = 0;		/* NBT 11-4-92 print doosh messages */

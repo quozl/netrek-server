@@ -203,7 +203,6 @@ int main(int argc, char **argv)
 
     myship = &me->p_ship;
     mystats = &me->p_stats;
-    lastm = mctl->mc_current;
     signal(SIGINT, SIG_IGN);
     (void) signal(SIGCHLD, reaper);
 

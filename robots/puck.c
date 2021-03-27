@@ -37,7 +37,6 @@ int sem_puck;
 void config(int);
 
 extern int redrawall;
-extern int lastm;
 
 char *roboname="Puck";
 
@@ -117,7 +116,6 @@ char **argv;
 
     myship = &me->p_ship;
     mystats = &me->p_stats;
-    lastm = mctl->mc_current;
  
 #ifdef PUCK_FIRST
     if((sem_puck = semget(PUCK_FIRST, 1, 0600)) == -1)

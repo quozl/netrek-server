@@ -34,7 +34,6 @@
 char DogStats[256];
 
 extern int redrawall;
-extern int lastm;
 
 char *roboname="Mars";
 
@@ -118,7 +117,6 @@ char **argv;
     me = &players[pno];
     myship = &me->p_ship;
     mystats = &me->p_stats;
-    lastm = mctl->mc_current;
     /* At this point we have memory set up.  If we aren't a fleet, we don't
        want to replace any other robots on this team, so we'll check the
        other players and get out if there are any on our team.

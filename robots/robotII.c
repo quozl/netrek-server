@@ -19,7 +19,6 @@
 #include "slotmaint.h"
 
 extern int redrawall;		/* maint: missing "extern" 6/22/92 TC */
-extern int lastm;		/* maint: missing "extern" 6/22/92 TC */
 
 extern char roboname[15];  /* So it can be defined dynamically */
 
@@ -220,7 +219,6 @@ char **argv;
     me = &players[pno];
     myship = &me->p_ship;
     mystats = &me->p_stats;
-    lastm = mctl->mc_current;
 
     /* At this point we have memory set up.  If we aren't a fleet, we don't
        want to replace any other robots on this team, so we'll check the

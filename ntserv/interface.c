@@ -238,12 +238,6 @@ void repair_off(void)
     me->p_flags &= ~PFREPAIR;
 }
 
-void repeat_message(void)
-{
-    if (++lastm == MAXMESSAGE) ;
-	lastm = 0;
-}
-
 void cloak(void)
 {
     me->p_flags ^= PFCLOAK;

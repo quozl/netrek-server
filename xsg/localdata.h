@@ -128,7 +128,6 @@ extern int mdisplayed;
 extern int redrawall;
 extern int watch;
 extern int selfdest;
-extern int lastm;
 extern int delay;
 extern int rdelay;
 extern int showStats;

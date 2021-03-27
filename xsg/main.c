@@ -117,8 +117,6 @@ char **argv;
 
     openmem();
 
-    lastm = mctl->mc_current;
-
     mapAll();
 
     /* get interesting defaults */
