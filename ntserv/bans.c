@@ -145,7 +145,7 @@ int bans_check_permanent(char *login, char *host)
     num1 = position - line_buf;
     strncpy(log_buf, line_buf, num1); /* copy login name into log_buf */
     log_buf[num1] = '\0';
-    strncpy(host_buf, position + 1, 64); /* copy host name into host_buf */
+    strncpy(host_buf, position + 1, sizeof(host_buf) - 1); /* copy host name into host_buf */
     /* Cut off any extra spaces on the host buffer */
     position = host_buf;
     while (!isspace(*position))

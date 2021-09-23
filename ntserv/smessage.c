@@ -176,30 +176,26 @@ void do_message(int recip, int group, char *address, u_char from,
                 const char *fmt, va_list args) {
 
   struct message *cur;
-  char temp[150];
-  char temp2[150];
 
   if (strlen(fmt) == 0) {
     ERROR(1,("ntserv: bogus pmessage call!!\n"));
     return;
   }
 
-  vsnprintf(temp, 150, fmt, args);
-
-  if (address[0] == '\0') {
-    strncpy(temp2, temp, 150);
-  } else {
-    snprintf(temp2, 150, "%-9s %s", address, temp);
-  }
-  temp2[MSG_LEN - 1] = '\0';      /* added 3/8/93  NBT */
-
   cur = (*do_message_next)();
-  memset(cur, 0, sizeof(struct message));
+  bzero(cur, sizeof(struct message));
+
   cur->m_flags = group;
   cur->m_recpt = recip;
   cur->m_from = from;
 
-  strncpy(cur->m_data, temp2, MSG_LEN);
+  if (address[0] == '\0') {
+    vsnprintf(cur->m_data, sizeof(cur->m_data), fmt, args);
+  } else {
+    snprintf(cur->m_data, sizeof(cur->m_data), "%-9s ", address);
+    vsnprintf(cur->m_data + 10, sizeof(cur->m_data) - 10, fmt, args);
+  }
+
   cur->args[0] = DINVALID;
 
   /* callback for preparing struct message entry further, used by daemon */

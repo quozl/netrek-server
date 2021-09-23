@@ -908,7 +908,7 @@ void ltd_update_armies_carried(struct player *carrier, struct player *sb) {
   else if (carrier->p_hist.kill_potential == 3) {
 
     if ((num_kills > 1) &&
-        (carrier->p_armies > (carrier->p_ship.s_type == ASSAULT)? 3: 2)) {
+        (carrier->p_armies > (carrier->p_ship.s_type == ASSAULT ? 3 : 2))) {
 
       carrier_ltd->kills.second_converted++;
 

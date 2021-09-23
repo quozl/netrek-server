@@ -3128,12 +3128,13 @@ static void handleShortReq(struct shortreq_cpacket *packet)
 	    packet->req = SPK_VOFF;
 	    break;
 	}
-	if (!send_short) 
-	    new_warning(UNDEF,"Sending variable and short packets. "); /* sned only firsttime */
-	    if (packet->version == (char) SP2SHORTVERSION)
-		send_short = 2;  /* New packets are sent S_P2 */
-	    else
-		send_short = 1; /* S_P version 1.0 used */
+	if (!send_short) { /* send only firsttime */
+	    new_warning(UNDEF,"Sending variable and short packets. ");
+	}
+	if (packet->version == (char) SP2SHORTVERSION)
+	    send_short = 2; /* New packets are sent S_P2 */
+	else
+	    send_short = 1; /* S_P version 1.0 used */
 	resp.winside = htons(WINSIDE);
 	resp.gwidth  = htonl(GWIDTH);
 	break;
