@@ -272,7 +272,7 @@ AC_EGREP_HEADER(rint, math.h, , AC_DEFINE(NEED_RINT_DEC))
 AC_REPLACE_FUNCS(random strdup rint)
 
 #--------------------------------------------------------------------
-#       Check for system dependend programs
+#       Check for system dependent programs
 #--------------------------------------------------------------------
 
 AC_PROG_LIBTOOL
