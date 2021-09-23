@@ -95,10 +95,11 @@ int main(int argc, char **argv)
 		   rotdelay = atoi(argv[++i]);
 		break;
 	      case 'i':
-		if (argv[i+1] && (argv[i+1][0] != '-')) 
+		if (argv[i+1] && (argv[i+1][0] != '-')) {
 		   sscanf(argv[++i], "%lf", &increment);
 		   incrementrecip=1/increment;
-		/* printf("Increment: %f.\n", increment); */
+		   /* printf("Increment: %f.\n", increment); */
+		}
 		break;
 	      case 'm':
 		if (argv[i+1] && (argv[i+1][0] != '-')) 
