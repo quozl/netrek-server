@@ -916,7 +916,7 @@ int bounceSBStats(int from)
 #endif
          overallRatio);
 
-    if (deltaTicks)
+    if (deltaTicks) {
         godf(from,
              "%2s session SB stats: %d wins/%d losses. %5.2f hours. Ratio: %5.2f",
              me->p_mapchars,
@@ -930,6 +930,7 @@ int bounceSBStats(int from)
              overallKPH,
              sessionDPH,
              overallDPH);
+    }
     return 1;
 }
 
