@@ -568,7 +568,7 @@ void makemotd(char *motd_name, char *logo)
 
     FILE *motd;
     struct tm *today;
-    char date[11]; 
+    char date[37];
     time_t gmtsecs;
     char motd_file[255];
 
