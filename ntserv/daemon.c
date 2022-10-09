@@ -4313,7 +4313,7 @@ static void addTroops(int loser, int winner)
     }
 }
 
-static char conqfile_name[MSG_LEN];
+static char conqfile_name[FNAMESIZE * 2];
 
 static FILE *conqfile_open()
 {
@@ -4321,7 +4321,7 @@ static FILE *conqfile_open()
     FILE *conqfile;
 
     gettimeofday(&tv, (struct timezone *) 0);
-    sprintf(conqfile_name, "%s.%d.txt", ConqFile, (int) tv.tv_sec);
+    snprintf(conqfile_name, FNAMESIZE * 2, "%s.%ld.txt", ConqFile, tv.tv_sec);
     conqfile = fopen(conqfile_name, "w");
     if (conqfile == NULL) conqfile = stderr;
     return conqfile;
@@ -4450,8 +4450,9 @@ static void displayBest(FILE *conqfile, int team, int type)
     }
     for (k=0; k < number; k++) {
         if (winners[k].planets != 0 || winners[k].armies != 0) {
-            sprintf(buf, "  %16s (%2.2s) with %d planets and %d armies.",
-                winners[k].name, winners[k].mapchars, winners[k].planets, winners[k].armies);
+            snprintf(buf, MSG_LEN, "  %16.16s (%2.2s) with %d planets and %d armies.",
+                     winners[k].name, winners[k].mapchars,
+                     winners[k].planets, winners[k].armies);
             pmessage(0, MALL | MCONQ, " ",buf);
             fprintf(conqfile, "  %s\n", buf);
         }

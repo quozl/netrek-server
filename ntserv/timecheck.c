@@ -43,10 +43,11 @@ int time_access(void)
 
         for (day=0; day<=6; day++) {
           char buf[25];
-          if (fgets(buf, 25, tfd) != NULL)
+          if (fgets(buf, 25, tfd) != NULL) {
             if (ferror(tfd))
               perror("time_access: fgets");
-              memcpy(hours[day], buf, 24);
+            memcpy(hours[day], buf, 24);
+          }
         }
 
         fclose(tfd);

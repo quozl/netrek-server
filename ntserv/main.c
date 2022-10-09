@@ -194,7 +194,7 @@ int main(int argc, char **argv)
     me->p_process = getpid();
     me->p_disconnect = 0;
     p_ups_set(me, defups);
-    strncpy(me->p_ip, host, sizeof(me->p_ip));
+    strncpy(me->p_ip, host, sizeof(me->p_ip) - 1);
 
     me->p_mapchars[0] = 'X';
     me->p_mapchars[1] = shipnos[pno];
@@ -738,7 +738,7 @@ int CheckBypass(char *login, char *host, char *file)
     num1 = position - line_buf;
     strncpy(log_buf, line_buf, num1); /* copy login name into log_buf */
     log_buf[num1] = '\0';
-    strncpy(host_buf, position + 1, 64); /* copy host name into host_buf */
+    strncpy(host_buf, position + 1, 64 - 1); /* copy host name into host_buf */
     /* Cut off any extra spaces on the host buffer */
     position = host_buf;
     while (!isspace((int) (*position)))

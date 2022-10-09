@@ -338,7 +338,7 @@ static int checkpos(void)
       /* move us back to overlooking position */
       if (me->p_x != POSITIONX || me->p_y != POSITIONY)
         p_x_y_set(me, POSITIONX, POSITIONY);
-        stopped=0; /*do we need to reset this? */
+      stopped=0; /*do we need to reset this? */
     }
 
     return 1;
@@ -501,7 +501,7 @@ rprog(char *login, char *monitor)
     return 0;
 }
 
-int killrobot(pp_team)
+int killrobot(int pp_team)
 {
     struct player *j;
     int i, keep, kill;

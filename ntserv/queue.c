@@ -241,8 +241,8 @@ int queue_add(int w_queue)
         strcpy(lwait->ip, "127.0.0.1");
         strcpy(lwait->host, "hidden");
     } else {
-        strncpy(lwait->ip, ip, sizeof(lwait->ip));
-        strncpy(lwait->host, host, sizeof(lwait->host));
+        strncpy(lwait->ip, ip, sizeof(lwait->ip) - 1);
+        strncpy(lwait->host, host, sizeof(lwait->host) - 1);
     }
     ip_lookup(ip, lwait->host, lwait->host,
               NULL, NULL, NULL, sizeof(lwait->host));

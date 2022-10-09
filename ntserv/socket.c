@@ -1787,7 +1787,6 @@ static int gwrite(int fd, char *wbuf, size_t size)
 {
     size_t orig = size;
     register int n;
-    char tempbuf[MSG_LEN];
     register size_t bytes = size;
     register int count = 0;
 
@@ -1837,9 +1836,12 @@ static int gwrite(int fd, char *wbuf, size_t size)
 		printUdpInfo();
 		logmessage("UDP gwrite failed:");
 	    }
-	    sprintf(tempbuf, "Died in gwrite, n=%d, errno=%d <%s@%s>",
-		    n, errno, me->p_login, me->p_full_hostname);
-	    logmessage(tempbuf);
+	    char message[MSG_LEN * 2];
+
+	    snprintf(message, MSG_LEN * 2,
+		     "Died in gwrite, n=%d, errno=%d, <%s@%s>",
+		     n, errno, me->p_login, me->p_full_hostname);
+	    logmessage(message);
 	    return -1;
 	}
 	bytes -= n;
@@ -1955,7 +1957,7 @@ static void clientVersion(struct mesg_spacket *packet)
     char *mesg = packet->mesg;
     if (*mesg == '@') {
         mesg++;
-        strncpy(me->p_ident, mesg, 80);
+        strncpy(me->p_ident, mesg, 80 - 1);
         ERROR(1,("%s: ident %s\n", whoami(), mesg));
     }
 }

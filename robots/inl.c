@@ -325,7 +325,7 @@ static void displayBest(FILE *conqfile, int team, int type)
     }
     for (k=0; k < number; k++) {
       if (winners[k].planets != 0 || winners[k].armies != 0) {
-            sprintf(buf, "  %16s (%2.2s) with %d planets and %d armies.", 
+            sprintf(buf, "  %16.16s (%2.2s) with %d planets and %d armies.",
                 winners[k].name, winners[k].mapchars, winners[k].planets, winners[k].armies);
             pmessage(0, MALL | MCONQ, " ",buf);
             fprintf(conqfile, "  %s\n", buf);
@@ -987,7 +987,7 @@ int end_tourney()
   if (game_over) {
     FILE *fp;
     char pipe[256];
-    char name[64];
+    char name[FNAMESIZE * 2];
     struct timeval tv;
     int c, official = 0;
 

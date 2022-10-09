@@ -679,12 +679,12 @@ int bounceSBStats(int from)
              deltaLosses,
              (float) deltaTicks/36000.0,
              sessionRatio);
-        godf(from,
-             "Kills/Hour: %5.2f (%5.2f total), Deaths/Hour: %4.2f (%4.2f total)",
-             sessionKPH,
-             overallKPH,
-             sessionDPH,
-             overallDPH);
+    godf(from,
+         "Kills/Hour: %5.2f (%5.2f total), Deaths/Hour: %4.2f (%4.2f total)",
+         sessionKPH,
+         overallKPH,
+         sessionDPH,
+         overallDPH);
     return 1;
 }
 
@@ -793,7 +793,7 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
     int hits = 0;
     char dirname[FNAMESIZE];
     char msg[MSG_LEN];
-    char filename[FNAMESIZE];
+    char filename[FNAMESIZE * 2];
     char *addr = addr_mess(whofrom,MINDIV);
     char *dname, *srcip, *destip;
 
@@ -833,9 +833,9 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
                 sprintf(msg, "%s", other->p_mapchars);
             }
 
-            sprintf(msg, "%s %-15s ", msg,
-                    (igntype == IGNORING) ? destip : srcip);
-            sprintf(filename, "%s/%s", dirname, dirent->d_name);
+            strncat(msg, " ", MSG_LEN - 1);
+            strncat(msg, (igntype == IGNORING) ? destip : srcip, MSG_LEN - 1);
+            snprintf(filename, FNAMESIZE * 2, "%s/%s", dirname, dirent->d_name);
             ignorefile = fopen(filename, "r");
             if (ignorefile == NULL) {
                 pmessage(whofrom, MINDIV, addr,
@@ -854,13 +854,13 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
                 continue;
             }
             if (ignmask & MINDIV) {
-                strcat(msg, "Indiv ");
+                strncat(msg, " Indiv", MSG_LEN - 1);
             }
             if (ignmask & MTEAM) {
-                strcat(msg, "Team ");
+                strncat(msg, " Team", MSG_LEN - 1);
             }
             if (ignmask & MALL) {
-                strcat(msg, "All ");
+                strncat(msg, " All", MSG_LEN - 1);
             }
             pmessage(whofrom, MINDIV, addr, "%s", msg);
             hits++;
