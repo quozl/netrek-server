@@ -992,9 +992,9 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
 	shortmsg->m_recpt=cur->m_recpt;
 	shortmsg->m_from=cur->m_from;
 	cur->m_data[MSG_LEN-1]='\0'; /* Is this all right ? */
-	strcpy(&shortmsg->mesg,&cur->m_data[9]); /* 9 because of GOD messages */
+	strcpy(shortmsg->mesg,&cur->m_data[9]); /* 9 because of GOD messages */
 	/* Now the size */
-	size = strlen(&shortmsg->mesg);
+	size = strlen(shortmsg->mesg);
 	size += 6; /* 1 for '\0', 5 packetheader */
 	if((size % 4) != 0)
 	    size += (4 - (size % 4));

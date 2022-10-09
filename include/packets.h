@@ -1008,10 +1008,7 @@ struct mesg_s_spacket {
     u_char m_recpt;
     u_char m_from;
     u_char length;       /* Length of whole packet */
-    char mesg;
-    char pad2;
-    char pad3;
-    char pad[76];
+    char mesg[MSG_LEN];
 };
 
 struct mesg_s_cpacket {
