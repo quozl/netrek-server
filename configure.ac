@@ -1,7 +1,8 @@
 dnl	This file is an input file used by the GNU "autoconf" program to
 dnl	generate the file "configure", which is run during Netrek installation
 dnl	to configure the system for the local environment.
-AC_INIT(ntserv/daemon.c)
+AC_INIT
+AC_CONFIG_SRCDIR([ntserv/daemon.c])
 AC_CONFIG_HEADER(include/config.h)
 AC_PREFIX_DEFAULT("/usr/local/games/netrek-server-vanilla")
 
@@ -47,7 +48,7 @@ AC_PROG_CPP
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-AC_AIX
+AC_USE_SYSTEM_EXTENSIONS
 
 AC_C_INLINE
 
@@ -62,11 +63,9 @@ AC_C_INLINE
 #--------------------------------------------------------------------
 
 AC_MSG_CHECKING(if fd_set requires sys/select.h)
-AC_TRY_COMPILE( [#include <sys/types.h>], [fd_set readMask, writeMask;],
-  AC_MSG_RESULT(no) ,
-  AC_EGREP_HEADER(fd_set, sys/select.h, 
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]], [[fd_set readMask, writeMask;]])],[AC_MSG_RESULT(no) ],[AC_EGREP_HEADER(fd_set, sys/select.h, 
       AC_DEFINE(NEED_SYS_SELECT_H) AC_MSG_RESULT(yes),
-      AC_DEFINE(NO_FD_SET) AC_MSG_RESULT(fd_set missing)))
+      AC_DEFINE(NO_FD_SET) AC_MSG_RESULT(fd_set missing))])
 
 #--------------------------------------------------------------------
 #	Check for various typedefs and provide substitutes if
@@ -85,7 +84,7 @@ AC_CHECK_LIB(gdbm, gdbm_open, [LIBS="$LIBS -lgdbm"])
 AC_TYPE_PID_T
 AC_TYPE_UID_T
 AC_TYPE_SIZE_T
-AC_FUNC_VFORK
+AC_FUNC_FORK
 AC_STRUCT_TM
 
 AC_MSG_CHECKING(for itimer in time.h)
@@ -130,7 +129,7 @@ fi
 
 AC_MSG_CHECKING(for gmp.h)
 #   if test "$MPINC" = nope; then
-#      AC_TRY_CPP([#include <gmp.h>], [MPINC="-I/usr/include" search=false], MPINC=nope)
+#      AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <gmp.h>]])],[MPINC="-I/usr/include" search=false],[MPINC=nope])
 #   fi
 
 if test "$MPINC" = nope; then
@@ -145,7 +144,7 @@ if test "$MPINC" = nope; then
 fi
 
 if test "$MPINC" = nope; then
-  AC_TRY_CPP([#include <mp.h>], MPINC="" , MPINC=nope)
+  AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <mp.h>]])],[MPINC="" ],[MPINC=nope])
   if test "$MPINC" = nope; then
     MPINC="# -I."
     NORSA="#"
@@ -275,7 +274,7 @@ AC_REPLACE_FUNCS(random strdup rint)
 #       Check for system dependent programs
 #--------------------------------------------------------------------
 
-AC_PROG_LIBTOOL
+LT_INIT
 
 AC_MSG_CHECKING(for Mac OS X/Darwin ranlib)
 if test "$OSTYPE" != "darwin"; then
@@ -288,12 +287,13 @@ fi
 
 AC_SUBST(RANLIB_FLAGS)
 
-AC_OUTPUT(system.mk Makefile ntserv/Makefile tools/Makefile
+AC_CONFIG_FILES([system.mk Makefile ntserv/Makefile tools/Makefile
 	sequencer/Makefile newstartd/Makefile robots/Makefile
 	keycomp/Makefile robotd/Makefile
 	docs/Makefile tools/no_geno_timer tools/geno_timer
 	docs/sample_geno_timer_crontab docs/sample_sysdef
-	tools/setpath tools/setpath.csh tools/admin/Makefile)
+	tools/setpath tools/setpath.csh tools/admin/Makefile])
+AC_OUTPUT
 
 echo ""
 echo "Directories"
