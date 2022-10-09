@@ -95,16 +95,16 @@ static void dnsbl_lookup(char *ip, int *xblproxy, int *sorbsproxy,
         if ((*xblproxy = xbltest(ip)))
             ERROR(2,("DNSBL Hit (XBL): %s\n", ip));
     }
-    
+
     if (sorbsproxy) {
         if ((*sorbsproxy = sorbstest(ip)))
             ERROR(2,("DNSBL Hit (SORBS): %s [%d]\n", ip, *sorbsproxy));
     }
-    
+
     if (njablproxy) {
         if ((*njablproxy = njabltest(ip)))
             ERROR(2,("DNSBL Hit (NJABL): %s\n", ip));
-    }    
+    }
 }
 #endif
 
@@ -201,10 +201,10 @@ int flag_test_cidr(char *name, char *ip)
     char *str;
     in_addr_t host, entry;
     int mask;
-    
+
     if (!(dp = opendir(name)))
         return 0;
-    
+
     host = inet_addr(ip);
     while ((ep = readdir(dp)))
     {
@@ -306,11 +306,11 @@ int ip_ignore_doosh(char *ip) {
 }
 
 void ip_ignore_doosh_set(char *ip) {
-  return flag_set(name_var("ignore/doosh", ip));
+  flag_set(name_var("ignore/doosh", ip));
 }
 
 void ip_ignore_doosh_clear(char *ip) {
-  return flag_clear(name_var("ignore/doosh", ip));
+  flag_clear(name_var("ignore/doosh", ip));
 }
 
 /* saved multiline macro ignore state */
@@ -320,11 +320,11 @@ int ip_ignore_multi(char *ip) {
 }
 
 void ip_ignore_multi_set(char *ip) {
-  return flag_set(name_var("ignore/multi", ip));
+  flag_set(name_var("ignore/multi", ip));
 }
 
 void ip_ignore_multi_clear(char *ip) {
-  return flag_clear(name_var("ignore/multi", ip));
+  flag_clear(name_var("ignore/multi", ip));
 }
 
 /* saved ignore state by ip address of both parties */
