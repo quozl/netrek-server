@@ -193,7 +193,7 @@ void reset_game(void);
 void reportFinal(void);
 void reportStanding(void);
 int get_num_matches(int a, int b);
-void cleanup(void);
+void cleanup(int);
 int nextFreeArena(void);
 void smileon(struct player* j);
 void do_msg_check(void);
@@ -237,7 +237,7 @@ void marsmove(void)
 
     if (me->p_status != PALIVE){  /*So I'm not alive now...*/
       ERROR(2,("ERROR: Mars died??\n"));
-      cleanup();    /*Mars is dead for some unpredicted reason like xsg */
+      cleanup(0);    /*Mars is dead for some unpredicted reason like xsg */
     }
 
     roboclock++;
@@ -611,7 +611,7 @@ void reportStanding(void)
     for (k=0; k < number; k+=2) {
 	for (l=k;l<k+2;l++) {
 	    if (l >= number) continue;
-	    sprintf(buf2, "#%d:  %16s (%2.2s),%0.2f      ", l+1,
+	    snprintf(buf2, sizeof(buf2), "#%d:  %16.16s (%2.2s),%0.2f      ", l+1,
 		winners[l].name, winners[l].mapchars,winners[l].kills);
 	    strcat(buf,buf2);
 	}
@@ -639,7 +639,7 @@ int get_num_matches(int a, int b)
  *  Additional routine start here
  */
 
-void cleanup(void)
+void cleanup(int unused)
 {
     register struct player *j;
     register int i;
@@ -1326,7 +1326,7 @@ void enterFight(int a, int b, int ano, int schedule)
 
     if (p1 == me || p2 == me) {
 	ERROR(2,("Just tried to enter myself in a fight.  Exitting.\n"));
-	cleanup();
+	cleanup(0);
     }
 	
     /* announces match */

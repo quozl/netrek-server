@@ -121,8 +121,8 @@ extern int runfast;
 extern int closeslow;
 extern int closefast;
 
-char *robo_message();
-char *termie_message();		/* added 8/2/91 TC */
+char *robo_message(struct player *);
+char *termie_message(struct player *);		/* added 8/2/91 TC */
 void exitRobot();
 int phaser_plasmas();
 void go_home(struct Enemy *ebuf);
@@ -1007,8 +1007,7 @@ int do_repair()
     }
 }
 
-char *robo_message(enemy)
-struct player *enemy;
+char *robo_message(struct player *enemy)
 {
     int i;
     char *s,*t;
@@ -1081,8 +1080,7 @@ struct player *enemy;
     return rmessage;
 }
 
-char* termie_message(enemy)
-struct player* enemy;
+char* termie_message(struct player *enemy)
 {
     int i;
     char *s,*t;

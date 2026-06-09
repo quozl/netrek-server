@@ -57,7 +57,7 @@ int runfast;			/* run speed (gain etemp) */
 int closeslow;			/* approach speed (hard turn) */
 int closefast;			/* approach speed (soft turn) */
 
-void cleanup();
+void cleanup(int);
 void config();
 
 void greeting()
@@ -72,9 +72,7 @@ void greeting()
 	printf("****************************************\n");
 }
 
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
     void marsmove();
     int team = 4;
@@ -150,7 +148,7 @@ char **argv;
         alarm_wait_for();
         marsmove();
     }
-    cleanup();
+    cleanup(0);
     return 0;
 }
 

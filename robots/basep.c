@@ -100,9 +100,7 @@ static void reaper(int sig)
 }
 
 int
-main(argc, argv)
-   int             argc;
-   char           *argv[];
+main(int argc, char *argv[])
 {
    int team = 4;
    int pno;
@@ -577,9 +575,7 @@ void obliterate(int wflag, char kreason)
 
 #ifndef BASEPRACTICE
 int
-main(argc, argv)
-   int             argc;
-   char           *argv[];
+main(int argc, char *argv[])
 {
     printf("You don't have BASEPRACTICE option on.\n");
     return 1;

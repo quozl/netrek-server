@@ -146,7 +146,7 @@ extern int trrange;		/* robotII.c 8/2/91 TC */
 extern int length;
 extern struct planet *oldplanets;
 
-void cleanup(void);
+void cleanup(int);
 void do_teleport_home(void);
 void do_peace(void);
 void do_msg_check(void);
@@ -160,7 +160,7 @@ void player_bounce(void);
 void exitRobot(void);
 void light_planets(void);
 char *robo_message();
-char *puckie_message();		/* added 8/2/91 TC */
+char *puckie_message(struct player *);		/* added 8/2/91 TC */
 int isInPossession(struct Enemy *enemy_buf);
 int isPressoringMe(struct Enemy *enemy_buf);
 
@@ -261,7 +261,7 @@ void rmove(void)
 	    period = 0;
 	    length--;
 	    if (length == 0)
-		cleanup();
+		cleanup(0);
 	    do_score();
 	}
 	period++;
@@ -290,7 +290,7 @@ void rmove(void)
            player_maint();
 	   return;
        }
-       cleanup();    /*Puck is dead for some unpredicted reason like xsg */
+       cleanup(0);    /*Puck is dead for some unpredicted reason like xsg */
     }
 
 
@@ -660,7 +660,7 @@ void rmove(void)
  *  Additional routine start here
  */
 
-void cleanup(void)
+void cleanup(int unused)
 {
     register struct player *j;
     register int i;

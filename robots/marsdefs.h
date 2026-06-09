@@ -41,11 +41,11 @@ void init_mars(void);
 
 #define checkBadPlayerNo(a,x)    { if (badPlayerNo(a)) { \
 	ERROR(2,("Bad player number %d;  %s  Exitting.\n",a,x)); \
-	cleanup(); \
+	cleanup(0); \
       } }
 #define checkBadArenaNo(a,x)    { if (badArenaNo(a)) { \
 	ERROR(2,("Bad arena number %d;  %s  Exitting.\n",a,x)); \
-	cleanup(); \
+	cleanup(0); \
       } }
 
 

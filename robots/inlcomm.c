@@ -29,13 +29,12 @@ extern char	*inl_from;
 extern Inl_countdown inl_countdown;
 
 extern char	*addr_mess(int who, int type);
-extern void	pl_reset_inl();
+extern void	pl_reset_inl(int startup);
 extern void	inl_freeze();
 extern int	check_winner();
 
 int
-check_player(who, captain)
-     int who, captain;
+check_player(int who, int captain)
 {
   int c,  num = NONE;
 
@@ -82,9 +81,7 @@ check_player(who, captain)
 
 
 
-int do_switchside(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_switchside(char *comm, struct message *mess)
 {
 #ifndef nodef
   return 0;	/* disabled until fixed */
@@ -172,9 +169,7 @@ int do_switchside(comm,mess)
 
 /* Allows the captain to agree on starting a draft */
 
-int do_draft(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_draft(char *comm, struct message *mess)
 {
   int who;
   int c, num = -1;
@@ -223,9 +218,7 @@ int do_draft(comm,mess)
 
 /* Allows the captain to agree on starting the game */
 
-int do_start(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_start(char *comm, struct message *mess)
 {
   int who;
   int c, num = -1;
@@ -334,9 +327,7 @@ int do_start(comm,mess)
   return 0;
 }
 
-int do_register(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_register(char *comm, struct message *mess)
 {
   int who;
   int c, num = -1;
@@ -364,9 +355,7 @@ int do_register(comm,mess)
   return 0;
 }
 
-int do_gametime(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_gametime(char *comm, struct message *mess)
 {
   int who;
   int time, overtime;
@@ -457,9 +446,7 @@ static void trade_reset(void)
     inl_stat.swapteam = -1;
 }
 
-int do_trade(comm,mess)
-char *comm;
-struct message *mess;
+int do_trade(char *comm, struct message *mess)
 {
     int who;
     int swap[2];
@@ -639,9 +626,7 @@ struct message *mess;
     return 1;
 }
 
-int do_army(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_army(char *comm, struct message *mess)
 {
   int who;
   int army;
@@ -706,9 +691,7 @@ int do_army(comm,mess)
 
 /* Allows the captains of both teams to agree on resetting the galaxy */
 
-int do_resetgalaxy(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_resetgalaxy(char *comm, struct message *mess)
 {
   int who;
   int c, num = -1;
@@ -758,9 +741,7 @@ int do_resetgalaxy(comm,mess)
 /* Makes the player who sent the message captain if it hasn't been taken
    yet. */
 
-int do_captain(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_captain(char *comm, struct message *mess)
 {
   int who;
   int num = -1;
@@ -804,9 +785,7 @@ int do_captain(comm,mess)
 
 /* Allows the captain to release captaining duties */
 
-int do_uncaptain(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_uncaptain(char *comm, struct message *mess)
 {
   int who;
   int num = -1;
@@ -840,9 +819,7 @@ static int get_other_side(int num)
 
 /* This allows the captain to pick the different races */
 
-int do_pickside(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_pickside(char *comm, struct message *mess)
 {
   int who;
 
@@ -981,9 +958,7 @@ end_pause()
   return 0;
 }
 
-int do_pause(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_pause(char *comm, struct message *mess)
 {
   int who;
   int c, begin=0, num=-1;
@@ -1058,9 +1033,7 @@ int do_pause(comm,mess)
   return 0;
 }
 
-int do_restart(comm,mess)
-     char *comm;
-     struct message *mess;
+int do_restart(char *comm, struct message *mess)
 {
   int who;
   int c, restart=0, num=-1;

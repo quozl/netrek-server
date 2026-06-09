@@ -165,7 +165,7 @@ static int front_planets[4][5] =
   {31, 32, 33, 35, 36,},
 };
 
-void cleanup();
+void cleanup(int);
 void checkmess();
 void inlmove();
 int start_tourney();
@@ -185,9 +185,7 @@ extern char *strcasestr(const char *, const char *);
 
 
 int
-main(argc, argv)
-     int	     argc;
-     char	    *argv[];
+main(int argc, char *argv[])
 {
   srandom(time(NULL));
 
@@ -227,7 +225,7 @@ main(argc, argv)
     alarm_wait_for();
     inlmove();
   }
-  cleanup();
+  cleanup(0);
   return 0;
 }
 
@@ -1292,7 +1290,7 @@ void init_server()
 
 
 void
-cleanup()
+cleanup(int unused)
 {
   register struct player *j;
   register int i;

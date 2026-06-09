@@ -62,7 +62,7 @@ int runfast;			/* run speed (gain etemp) */
 int closeslow;			/* approach speed (hard turn) */
 int closefast;			/* approach speed (soft turn) */
 
-void cleanup();
+void cleanup(int);
 
 int main(int argc, char **argv)
 {
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
         alarm_wait_for();
         rmove();
     }
-    cleanup();
+    cleanup(0);
     return 0;
 }
 

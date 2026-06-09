@@ -49,7 +49,7 @@
 
 /***** Local Functions *****/
 
-int do_help();
+int do_help(char *, struct message *);
 char *check_possible(char *line, char *command);
 int getplayer(int from, char *line);
 int do_generic_vote(char *comm, int who);
@@ -116,12 +116,12 @@ extern int do_start_robot();
 
 char myname[] = {"GOD"};
 
-int do_sbstats_query();
-int do_time_msg();
-int do_queue_msg();
+int do_sbstats_query(char *, struct message *, int);
+int do_time_msg(char *, struct message *);
+int do_queue_msg(char *, struct message *);
 
 #ifdef GENO_COUNT
-int do_genos_query();
+int do_genos_query(char *, struct message *, int);
 #endif
 
 
@@ -129,14 +129,14 @@ int do_genos_query();
 #endif
 
 #ifndef INL
-int do_client_query();
-int do_ping_query();
-int do_stats_query();
-int do_whois_query();
+int do_client_query(char *, struct message *, int);
+int do_ping_query(char *, struct message *, int);
+int do_stats_query(char *, struct message *, int);
+int do_whois_query(char *, struct message *, int);
 #endif
 
 #if (defined(AUTO_INL) && defined(INL)) || (defined(BASEP) && defined(AUTO_PRACTICE)) || (defined(AUTO_HOCKEY) && defined(PUCK)) || (defined(AUTO_DOGFIGHT) && defined (DOG))
-extern int cleanup();
+extern void cleanup(int);
 #endif
 
 /********* COMMANDS LIST ********
@@ -152,35 +152,35 @@ struct command_handler commands[] = {
     { "HELP",
 		0,
 		"Show this help information",
-		do_help },     			/* HELP */
+		(int (*)()) do_help },     			/* HELP */
 #ifndef INL
     { "CLIENT",
 		C_PLAYER,
 		"Show a user's client. Ex: 'CLIENT 0'",
-		do_client_query },		/* CLIENT */
+		(int (*)()) do_client_query },		/* CLIENT */
     { "PING",
 		C_PLAYER,
 		"Show client's ping (lag). Ex: 'PING 0'",
-		do_ping_query },		/* PING */
+		(int (*)()) do_ping_query },		/* PING */
     { "STATS",
 		C_PLAYER,
 		"Show player's stats during t-mode. Ex: 'STATS 0'",
-		do_stats_query },		/* STATS */
+		(int (*)()) do_stats_query },		/* STATS */
     { "WHOIS",
 		C_PLAYER,
 		"Show a player's login info. Ex: 'WHOIS 0'",
-		do_whois_query },		/* WHOIS */
+		(int (*)()) do_whois_query },		/* WHOIS */
 #endif
 
 #if defined (DOG) || defined(PUCK)		/***** DOG & PUCK commands */
     { "SCORE",
 		0,
 		"Show the current standings",
-		do_score_msg },			/* SCORE */	
+		(int (*)()) do_score_msg },			/* SCORE */	
     { "PSTATS",
 		0,
 		"Show your current stats",
-		do_stats_msg },			/* local STATS */
+		(int (*)()) do_stats_msg },			/* local STATS */
     { "VERSION",
 		0,
 #ifdef DOG
@@ -188,7 +188,7 @@ struct command_handler commands[] = {
 #else
                 "Show Puck's version",
 #endif
-		do_version },			/* VERSION */
+		(int (*)()) do_version },			/* VERSION */
     { "SITOUT",
 		0,
 #ifdef DOG
@@ -196,35 +196,35 @@ struct command_handler commands[] = {
 #else
 		"You will be moved off the rink.",
 #endif
-		do_sitout },			/* SITOUT */
+		(int (*)()) do_sitout },			/* SITOUT */
 #endif	/* DOG or PUCK */
 #ifdef DOG					/***** DOG only commands */
     { "STATUS",
 		0,
 		"Show the mode Mars is in",
-		do_status_msg },		/* STATUS */
+		(int (*)()) do_status_msg },		/* STATUS */
     { "JOIN",
 		0,
 		"Join the competition",
-		do_join },			/* JOIN */
+		(int (*)()) do_join },			/* JOIN */
     { "WATCH",
 		0,
 		"Sitout from the competition",
-		do_sitout },			/* WATCH */
+		(int (*)()) do_sitout },			/* WATCH */
     { "SHIP",
 		0,
 		"Select your preferred ship. Ex: 'SHIP CA'",
-		do_preferred_ship },		/* SHIP */
+		(int (*)()) do_preferred_ship },		/* SHIP */
 #elif defined (PUCK)				/***** PUCK only commands */
 #ifdef ALLOW_PAUSE
     { "PAUSE",
                 0,
                 "Pause the game",
-                game_pause },
+                (int (*)()) game_pause },
     { "UNPAUSE",
                 0,
                 "Resume the game",
-                game_resume },
+                (int (*)()) game_resume },
 #endif
     /* None yet... */
 
@@ -233,115 +233,115 @@ struct command_handler commands[] = {
     { "HOME",
 		0,
 		"Switch to home team.",
-		do_home },			/* HOME */
+		(int (*)()) do_home },			/* HOME */
     { "AWAY",
 		0,
 		"Switch to away team.",
-		do_away },			/* AWAY */
+		(int (*)()) do_away },			/* AWAY */
 #endif
     { "HOME",
 		0,
 		"Switch to home team.",
-		do_switchside },		/* HOME */
+		(int (*)()) do_switchside },		/* HOME */
     { "AWAY",
 		0,
 		"Switch to away team.",
-		do_switchside },		/* AWAY */
+		(int (*)()) do_switchside },		/* AWAY */
     { "START",
 		C_CAPTAIN,
 		"Start tournament.",
-		do_start },			/* START */
+		(int (*)()) do_start },			/* START */
     { "CAPTAIN",
 		0,
 		"Make yourself captain of team.",
-		do_captain },			/* CAPTAIN */
+		(int (*)()) do_captain },			/* CAPTAIN */
     { "UNCAPTAIN",
 		C_CAPTAIN,
 		"Release captain duties.",
-		do_uncaptain },			/* UNCAPTAIN */
+		(int (*)()) do_uncaptain },			/* UNCAPTAIN */
     { "TNAME",
 		C_CAPTAIN | C_NAME,
 		"Change the name of your team.",
-		do_tname },			/* TNAME */
+		(int (*)()) do_tname },			/* TNAME */
     { "RESETGALAXY",
 		C_CAPTAIN,
 		"Reset the galaxy.",
-		do_resetgalaxy },		/* RESETGALAXY */
+		(int (*)()) do_resetgalaxy },		/* RESETGALAXY */
     { "FED",
 		C_CAPTAIN,
 		"Change your side to Federation.",
-		do_pickside },			/* FED */
+		(int (*)()) do_pickside },			/* FED */
     { "ROM",
 		C_CAPTAIN,
 		"Change your side to Romulan.",
-		do_pickside },			/* ROM */
+		(int (*)()) do_pickside },			/* ROM */
     { "KLI",
 		C_CAPTAIN,
 		"Change your side to Klingon.",
-		do_pickside },			/* KLI */
+		(int (*)()) do_pickside },			/* KLI */
     { "ORI",
 		C_CAPTAIN,
 		"Change your side to Orion.",
-		do_pickside },			/* ORI */
+		(int (*)()) do_pickside },			/* ORI */
     { "PASS",
 		C_CAPTAIN,
 		"Pass the first choice of sides to the home team.",
-		do_pickside },			/* PASS */
+		(int (*)()) do_pickside },			/* PASS */
     { "PAUSE",
 		C_CAPTAIN,
 		"Requests a pause.",
-		do_pause },			/* PAUSE */
+		(int (*)()) do_pause },			/* PAUSE */
     { "PAUSENOW",
 		C_CAPTAIN,
 		"Imediately pauses the game.",
-		do_pause },			/* PAUSENOW */
+		(int (*)()) do_pause },			/* PAUSENOW */
     { "CONTINUE",
 		C_CAPTAIN,
 		"Requests that the game continues.",
-		do_pause },			/* CONTINUE */
+		(int (*)()) do_pause },			/* CONTINUE */
     { "TOUT",
 		C_CAPTAIN,
 		"Call a timeout.",
-		do_timeout },			/* TIMEOUT */
+		(int (*)()) do_timeout },			/* TIMEOUT */
     { "FREE",
 		C_CAPTAIN | C_PLAYER,
 		"Frees a slot. Ex: 'FREE 0'",
-		do_free },			/* FREE */
+		(int (*)()) do_free },			/* FREE */
     { "GAMETIME",
 		C_CAPTAIN,
 		"Shows the game time or sets it. Ex: 'GAMETIME 30 10'",
-		do_gametime },			/* GAMETIME */
+		(int (*)()) do_gametime },			/* GAMETIME */
     { "CONFINE",
 		C_CAPTAIN,
 		"Confine teams from other races cores.",
-		do_confine },			/* CONFINE */
+		(int (*)()) do_confine },			/* CONFINE */
 #else
     { "SBSTATS",
                 C_PLAYER,
                 "Show player's starbase stats. Ex: 'SBSTATS 0'",
-                do_sbstats_query },             /* SBSTATS */
+                (int (*)()) do_sbstats_query },             /* SBSTATS */
 
 #if defined (BASEP) && defined (BASEPRACTICE)   /***** Basepract. commands */
     { "START",
 		0,
 		"Start practice robots. Ex: 'START 4 ROM'",
-		do_start_robot },
+		(int (*)()) do_start_robot },
 
 #else
 						/***** Vanilla commands */
     { "TIME",
 		0,
 		"Show time left on Genocide timer.",
-		do_time_msg },			/* TIME */
+		(int (*)()) do_time_msg },			/* TIME */
     { "QUEUE",
 		0,
 		"Show how many people are on the queue.",
-		do_queue_msg },			/* QUEUE */
+		(int (*)()) do_queue_msg },			/* QUEUE */
 #ifdef GENO_COUNT
     { "GENOS",
 		C_PLAYER,
 		"Show player's winning genocides.  Ex: 'GENOS 0'",
-		do_genos_query },                       /* GENOS */
+		(int (*)()) do_genos_query },                       /* GENOS */
 #endif
 #endif
 #endif
@@ -396,7 +396,7 @@ struct vote_handler votes[] = {
 	20,
 	"Terminate robot by majority vote.",
 	0,
-	cleanup},
+	(int (*)()) cleanup},
 #endif
     };
 
@@ -441,8 +441,7 @@ char *check_possible(char *line, char *command)
 
 /* Check the command list to see if a message is a command */
 
-int check_command(mess)
-    struct message *mess;
+int check_command(struct message *mess)
 {
     int p,i,j;
     char *upper;
@@ -464,9 +463,9 @@ int check_command(mess)
 		}
 		if (commands[i].tag & C_PLAYER) {
 		    if ((who = getplayer(mess->m_from,comm)) < 0) return 0;
-			(*commands[i].handler)(comm,mess,who);
+			((int (*)(char *, struct message *, int))commands[i].handler)(comm,mess,who);
 		} else
-			(*commands[i].handler)(comm,mess);
+			((int (*)(char *, struct message *))commands[i].handler)(comm,mess);
 		free (upper);
 		return 1;
 	    }
@@ -629,10 +628,10 @@ int do_generic_vote(char *comm, int who)
       for (i = 0, j = &players[i]; i < MAXPLAYER; i++, j++) 
         j->voting[what] = -1;
       
-      if (votes[num].tag & VC_PLAYER) 
-        (*votes[num].handler)(who, player, mflag, sendto);
+      if (votes[num].tag & VC_PLAYER)
+        ((int (*)(int, int, int, int))votes[num].handler)(who, player, mflag, sendto);
       else
-        (*votes[num].handler)(who, mflag, sendto);
+        ((int (*)(int, int, int))votes[num].handler)(who, mflag, sendto);
       
     } else {
         if (votes[num].tag & VC_TEAM) 
@@ -649,8 +648,7 @@ int do_generic_vote(char *comm, int who)
     return 1;
 }
 
-char *addr_mess(who,type)
-int who,type;
+char *addr_mess(int who, int type)
 {
     static char addrbuf[10];
 

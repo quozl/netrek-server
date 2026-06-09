@@ -199,8 +199,7 @@ extern Inl_stats inl_stat;
 extern Team	 inl_teams[];
 
 int
-check_command(mess)
-     struct message *mess;
+check_command(struct message *mess)
 {
   int flags = 0;
   int c;

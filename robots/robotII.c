@@ -55,9 +55,7 @@ int closefast;			/* approach speed (soft turn) */
 char *rnames[6] = { "M5", "Colossus", "Guardian", "HAL", "HunterKiller",
 		    "TERMINATOR"};
 
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
     register int i;
     void rmove();

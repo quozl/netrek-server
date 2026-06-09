@@ -123,9 +123,7 @@ reaper(int sig)
 }
 
 int
-main(argc, argv)
-     int             argc;
-     char           *argv[];
+main(int argc, char *argv[])
 {
     int pno;
 
@@ -841,9 +839,7 @@ static void restoregalaxy(void)
 
 #ifndef PRETSERVER
 int
-main(argc, argv)
-     int             argc;
-     char           *argv[];
+main(int argc, char *argv[])
 {
     printf("You don't have PRETSERVER option on.\n");
     return 0;

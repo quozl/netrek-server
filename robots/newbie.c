@@ -94,9 +94,7 @@ reaper(int sig)
 }
 
 int
-main(argc, argv)
-     int             argc;
-     char           *argv[];
+main(int argc, char *argv[])
 {
     int team = 4;
     int pno;
@@ -929,9 +927,7 @@ static void obliterate(int wflag, char kreason)
 
 #ifndef NEWBIESERVER
 int
-main(argc, argv)
-     int             argc;
-     char           *argv[];
+main(int argc, char *argv[])
 {
     printf("You don't have NEWBIESERVER option on.\n");
     return 1;
