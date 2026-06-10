@@ -14,6 +14,8 @@
 #include "robot.h"
 #include "../include/util.h"
 
+void exitRobot(int sig);
+
 extern jmp_buf env;
 
 static struct itimerval udt;

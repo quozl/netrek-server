@@ -18,8 +18,18 @@
 #include "struct.h"
 #include "data.h"
 
-void renter(pseudo, pss, log)
-   char           *pseudo, *pss, *log;
+void sendLoginReq(char *name, char *pass, char *login, char query);
+void socketPause(void);
+int isServerDead(void);
+void mprintf(char *format, ...);
+void exitRobot(int sig);
+#ifdef ATM
+int readFromServer(int pollmode);
+#else
+int readFromServer(void);
+#endif
+
+void renter(char *pseudo, char *pss, char *log)
 {
    int		   guest = (strcmp(pseudo, "guest") == 0);
 

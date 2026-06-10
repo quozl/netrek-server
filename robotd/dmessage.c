@@ -11,6 +11,7 @@
 #include <string.h>
 #include <strings.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 
 #include "defs.h"
 #include "struct.h"
@@ -20,13 +21,13 @@
 
 void response(char *buf);
 void setlog(char *dir);
-void R_ProcMessage(char *message, int flags, int from, int to, int std, int config);
+void R_ProcMessage(char *message, unsigned char flags, unsigned char from, unsigned char to, int std, int config);
 
 static char *randbye();
 static char *ogg_targ();
 static void set_ignore(int pno);
 static void set_unignore(int pno);
-static void pmessage(int c, char *buf);
+static void pmessage(char c, char *buf);
 static void show_serverst(void);
 static void handle_generic_req(char *m);
 static void list_reqs(void);
@@ -163,9 +164,59 @@ static char *_commands[] = {
 
 #define VERSION		"robot, [AI %s]" 
 
-Player 	*id_to_player();
-eoggtype oggtype();
-char 	*oggtype_to_string();
+Player *id_to_player(char *s, int t);
+eoggtype oggtype(char *s);
+char *oggtype_to_string(eoggtype ot);
+
+/* forward declarations for functions defined later in this file */
+void set_ignore(int pno);
+void set_unignore(int pno);
+int instr(char *string1, char *string2);
+int team_int(char *m);
+char team_bit(char *m);
+char team_inttobit(int t);
+int ship_int(char *s, char **name);
+int player_no(char c);
+struct planet *name_to_planet(char *s, int h);
+char *randbye(void);
+char *ogg_targ(void);
+int int_var(int *x, char *name, char *desc, char *in, int rnd);
+void show_serverst(void);
+void handle_generic_req(char *m);
+void list_reqs(void);
+void show_state(void);
+void list_all(char *m);
+void udpaction(int com);
+void setlog(char *dir);
+
+/* forward declarations for external functions */
+void warning(char *s, int o);
+void process_general_message(char *message, unsigned char flags, unsigned char from, unsigned char to);
+void sendMessage(char *mes, int group, int indiv);
+int connect_master(char *m);
+void exitRobot(int sig);
+void unassault_c(char *s);
+void unprotectp_c(char *s);
+void output_astats(void);
+void output_stats(void);
+void output_pstats(Player *p, char *s);
+void set_ogg_vars(void);
+void ogg_c(Player *p, char *s);
+void shmem_updmysync(int t);
+void sendOggVPacket(void);
+int rrnd(int range);
+void sendUpdatePacket(long speed);
+void mprintf(char *format, ...);
+int mtime(int x);
+int troop_capacity(struct player *j);
+int connectToRWatch(char *machine, int port);
+void connectToServer(int port);
+int set_rsock_nowait(void);
+int closeUdpConn(void);
+void sendUdpReq(int req);
+int unknownpl(struct planet *pl);
+void init_ships(void);
+#include <unistd.h>
 
 char *version()
 {
@@ -176,9 +227,7 @@ char *version()
    return buf;
 }
 
-void dmessage(message,flags,from,to)
-    char *message;
-    unsigned char flags, from, to;
+void dmessage(char *message, unsigned char flags, unsigned char from, unsigned char to)
 {
     /* Message from someone.
       Pass it on to robot for processing */
@@ -204,8 +253,7 @@ void init_comm()
    fclose(fi);
 }
 
-int instr(string1, string2)
-    char *string1, *string2;
+int instr(char *string1, char *string2)
 {
     char *s;
     int length;
@@ -217,11 +265,7 @@ int instr(string1, string2)
     return(0);
 }
 
-void R_ProcMessage(message, flags, from, to, std, config)
-   char			*message;
-   unsigned char	flags, from, to;
-   int			std;
-   int                  config;	/* if 1 commands are coming from config file */
+void R_ProcMessage(char *message, unsigned char flags, unsigned char from, unsigned char to, int std, int config)
 {
    char			*m, buf[256];
 
@@ -1219,20 +1263,17 @@ void R_ProcMessage(message, flags, from, to, std, config)
    }
 }
 
-void set_ignore(pno)
-   int	pno;
+void set_ignore(int pno)
 {
    _state.ignore_e[pno] = '1';
 }
 
-void set_unignore(pno)
-   int	pno;
+void set_unignore(int pno)
 {
    _state.ignore_e[pno] = '0';
 }
 
-int team_int(m)
-   char	*m;
+int team_int(char *m)
 {
    if(strncmp(m, "fed", 1)==0){
       return 0;
@@ -1250,8 +1291,7 @@ int team_int(m)
       return -1;
 }
 
-char team_bit(m)
-   char	*m;
+char team_bit(char *m)
 {
    if(strncmp(m, "fed", 1)==0){
       return FED;
@@ -1269,8 +1309,7 @@ char team_bit(m)
       return 0;
 }
 
-char team_inttobit(t)
-   int	t;
+char team_inttobit(int t)
 {
    switch(t){
       case 0 : return FED;
@@ -1281,8 +1320,7 @@ char team_inttobit(t)
    }
 }
 
-int ship_int(s, name)
-   char *s, **name;
+int ship_int(char *s, char **name)
 {
    if(strncasecmp(s, "scout", 2)==0){
       *name = "SCOUT";
@@ -1316,8 +1354,7 @@ int ship_int(s, name)
    return -1;
 }
 
-void response(buf)
-   char	*buf;
+void response(char *buf)
 {
    if(_state.controller){
       sendMessage(buf, MINDIV, _state.controller-1);
@@ -1325,8 +1362,7 @@ void response(buf)
    warning(buf, 1);
 }
 
-void pmessage(c, buf)
-   char	c, *buf;
+void pmessage(char c, char *buf)
 {
    int	pno;
 
@@ -1362,8 +1398,7 @@ void pmessage(c, buf)
    }
 }
 
-int player_no(c)
-   char	c;
+int player_no(char c)
 {
    if(isdigit(c))
       return c - '0';
@@ -1371,9 +1406,7 @@ int player_no(c)
       return c - 'a' + 10;
 }
       
-struct planet *name_to_planet(s, h)
-   char	*s;
-   int	h;
+struct planet *name_to_planet(char *s, int h)
 {
    register	int		i;
    register	struct planet	*pl;
@@ -1413,9 +1446,7 @@ struct planet *name_to_planet(s, h)
    return NULL;
 }
 
-Player *id_to_player(s, t)
-   char	*s;
-   int	t;
+Player *id_to_player(char *s, int t)
 {
    int pn = player_no(s[0]);
    Player	*p;
@@ -1437,8 +1468,7 @@ Player *id_to_player(s, t)
    }
 }
 
-eoggtype oggtype(s)
-   char	*s;
+eoggtype oggtype(char *s)
 {
    switch(*s){
       case 'r': return EOGGRIGHT;
@@ -1454,8 +1484,7 @@ eoggtype oggtype(s)
    }
 }
 
-char *oggtype_to_string(ot)
-   eoggtype	ot;
+char *oggtype_to_string(eoggtype ot)
 {
    switch(ot){
       case EOGGRIGHT : return "right";
@@ -1465,8 +1494,7 @@ char *oggtype_to_string(ot)
    }
 }
 
-char *team_to_string(t)
-   int	t;
+char *team_to_string(int t)
 {
    switch(t){
       case FED : return "FED";
@@ -1478,8 +1506,7 @@ char *team_to_string(t)
    }
 }
 
-char *diswhy_string(e)
-   ediswhy	e;
+char *diswhy_string(ediswhy e)
 {
    switch(e){
       case ENONE: return "ENONE";
@@ -1516,8 +1543,7 @@ void show_serverst()
    mprintf("plasma bounce: %s\n", _state.torp_bounce?"true":"false");
 }
 
-void handle_generic_req(m)
-   char	*m;
+void handle_generic_req(char *m)
 {
    char	*arg;
    int	req_no, arg_no = 0;
@@ -1676,8 +1702,7 @@ void show_state()
    mprintf("%-30s%g\n", "_avsdelay:", _avsdelay);
 }
 
-void list_all(m)
-   char	*m;
+void list_all(char *m)
 {
    char	**s = _commands;
 
@@ -1706,8 +1731,7 @@ void list_all(m)
 
 #ifdef ATM
 
-void udpaction(com)
-   int	com;
+void udpaction(int com)
 {
    char		buf[80];
    switch (com) {
@@ -1762,7 +1786,7 @@ void udpaction(com)
         udpClientSend = udpClientRecv = udpSequenceChk = udpTotal = 1;
         udpDebug = udpDropped = udpRecentDropped = 0;
         if (udpSock >= 0)
-            closeUdpConn(udpSock);
+            closeUdpConn();
         break;
       
     case UDP_UPDATE_ALL:
@@ -1775,8 +1799,7 @@ void udpaction(com)
 }
 #endif
 
-void setlog(dir)
-   char	*dir;
+void setlog(char *dir)
 {
    char	buf[128];
    FILE		*test;
@@ -1792,9 +1815,7 @@ void setlog(dir)
    sprintf(buf, "logging (%d)", getpid());
 }
 
-int int_var(x, name, desc, in, rnd)
-   int	*x, rnd;
-   char	*name, *desc, *in;
+int int_var(int *x, char *name, char *desc, char *in, int rnd)
 {
    char	buf[80];
    int	f = 1;

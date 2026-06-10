@@ -15,10 +15,19 @@ void phaser_attack_robot(Player *e, struct player *j, int edist);
 
 static void attack_robot(Player *e, struct player *j, int edist);
 
-void torp_attack_robot(e, j, edist)
-   Player		*e;
-   struct player	*j;
-   int			edist;
+/* forward declarations */
+int phaser_condition(Player *e, int edist);
+int req_phaser(unsigned char crs, int flag);
+int mtime(int x);
+int angdist(unsigned char x, unsigned char y);
+int ship_factor(int s);
+int get_torp_course(struct player *j, unsigned char *crs, int cx, int cy);
+int req_torp(unsigned char dir);
+int attacking(Player *e, unsigned char crs, int r);
+void mprintf(char *format, ...);
+unsigned char get_course(int x, int y);
+
+void torp_attack_robot(Player *e, struct player *j, int edist)
 {
    int			dist, urnd;
    int			size=0;
@@ -28,10 +37,7 @@ void torp_attack_robot(e, j, edist)
    attack_robot(e, j, edist);
 }
 
-void phaser_attack_robot(e, j, edist)
-   Player		*e;
-   struct player	*j;
-   int			edist;
+void phaser_attack_robot(Player *e, struct player *j, int edist)
 {
    int	dist;
    unsigned char	pcrs;
@@ -61,9 +67,7 @@ void phaser_attack_robot(e, j, edist)
    }
 }
 
-unsigned char predict_dir(odir, ndir, dist)
-   unsigned char	odir, ndir;
-   int			dist;
+static unsigned char predict_dir(unsigned char odir, unsigned char ndir, int dist)
 {
    int	a = angdist(ndir, odir);
    int	d = odir + a;
@@ -88,10 +92,7 @@ unsigned char predict_dir(odir, ndir, dist)
       return ndir - NORMALIZE(x);
 }
 
-void attack_robot(e, j, edist)
-   Player		*e;
-   struct player	*j;
-   int			edist;
+static void attack_robot(Player *e, struct player *j, int edist)
 {
    int	iv;
    static unsigned char	olddir;
@@ -228,8 +229,7 @@ void attack_robot(e, j, edist)
    mprintf("unknown phase. %d\n", _timers.robot_attack);
 }
 
-int ship_factor(s)
-   int	s;
+int ship_factor(int s)
 {
    switch(s){
       

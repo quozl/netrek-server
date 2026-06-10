@@ -9,6 +9,27 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <string.h>
+#include <stdlib.h>
+
+/* forward declarations for external functions */
+void mprintf(char *format, ...);
+void rescort_c(char *s);
+int hostilepl(struct planet *pl);
+int unknownpl(struct planet *pl);
+int dist_to_planet(Player *e, struct planet *pl);
+int req_cloak_off(char *s);
+int req_cloak_on(void);
+int avoiddir(unsigned char dir, unsigned char *mcrs, unsigned char r);
+int myemg_speed(void);
+int angdist(unsigned char x, unsigned char y);
+int myfight_speed(void);
+unsigned char to_team_planet(int team);
+int running_away(Player *e, unsigned char crs, int r);
+int attacking(Player *e, unsigned char crs, int r);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+int req_set_course(unsigned char c);
+int req_set_speed(int s, int l, char *f);
 
 #define ESCORT1_DIST		20000
 
@@ -16,13 +37,14 @@ static void goto_escort_planet(Player *p, struct planet *pl);
 static void wait_for_escort(Player *p, struct planet *pl);
 static void goto_defender(Player *p, struct planet *pl);
 static void ogg_defender(Player *p, struct planet *pl);
-static void do_course_speed(int crs, int speed);
+static void do_course_speed(unsigned char crs, int speed);
+static int on_my_course(Player *p);
 
 /* escort dist to planet */
 static int	_esc_dist;
 
 /* escort player to planet */
-void escort()
+void escort(void)
 {
    Player		*escp  = _state.escort_player;
    struct planet 	*escpl = _state.escort_planet;
@@ -110,9 +132,7 @@ void escort()
  */
 
 /* 0 */
-void goto_escort_planet(p, pl)
-   Player		*p;
-   struct planet	*pl;
+void goto_escort_planet(Player *p, struct planet *pl)
 {
    unsigned char	crs = get_wrapcourse(pl->pl_x, pl->pl_y);
    Player		*e = _state.closest_e;
@@ -144,9 +164,7 @@ void goto_escort_planet(p, pl)
 }
 
 /* 1 */
-void wait_for_escort(p, pl)
-   Player		*p;
-   struct planet	*pl;
+void wait_for_escort(Player *p, struct planet *pl)
 {
    unsigned char	crs = get_wrapcourse(pl->pl_x, pl->pl_y);
    Player		*e = _state.closest_e;
@@ -190,9 +208,7 @@ void wait_for_escort(p, pl)
 }
 
 /* 2 */
-void goto_defender(p, pl)
-   Player		*p;
-   struct planet	*pl;
+void goto_defender(Player *p, struct planet *pl)
 {
    unsigned char 	crs;
    Player		*e = get_nearest_to_pl(pl);
@@ -217,9 +233,7 @@ void goto_defender(p, pl)
 }
 
 /* 3 */
-void ogg_defender(p, pl)
-   Player		*p;
-   struct planet	*pl;
+void ogg_defender(Player *p, struct planet *pl)
 {
    unsigned char	crs;
    Player		*e = get_nearest_to_pl(pl);
@@ -246,9 +260,7 @@ void ogg_defender(p, pl)
 /* UNUSED */
 /* the further away the player is the more likely to be an interference. */
 
-int find_interference(ie, d)
-   Player	*ie[MAXPLAYER];	/* used */
-   int		d;
+int find_interference(Player *ie[MAXPLAYER], int d)
 {
    register int		i, j=0;
    register Player	*p;
@@ -263,8 +275,7 @@ int find_interference(ie, d)
    return j;
 }
 
-int on_my_course(p)
-   Player	*p;
+static int on_my_course(Player *p)
 {
    unsigned char	mycrs = _state.p_desdir;
    unsigned char	ecrs  = p->crs;
@@ -272,9 +283,7 @@ int on_my_course(p)
    return angdist(mycrs, ecrs) < 16;
 }
 
-void do_course_speed(crs, speed)
-   unsigned char	crs;
-   int			speed;
+void do_course_speed(unsigned char crs, int speed)
 {
    unsigned char crs_r;
    int		 speed_r, hittime, lvorbit;

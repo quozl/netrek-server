@@ -9,20 +9,62 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <string.h>
+#include <stdlib.h>
 
 void goto_protect(struct planet *pl, Player *p, int dock);
 
-static unsigned char choose_ecourse();
+static unsigned char choose_ecourse(Player *p, struct player *j, int edist);
 static void plengage(void);
 static void dengage(Player *e);
 static void pengage(Player *e);
 static void alter_course_distance(Player *e, int e_dist, unsigned char *crs);
 static void edge_course(struct player *j, int edist, unsigned char *crs);
 
+/* forward declarations for functions defined later in this file */
+Player *get_nearest_to_pl(struct planet *pl);
+Player *get_nearest_to_pl_dist(struct planet *pl, int *rdist);
+Player *get_nearest_to_p(Player *p, int *d);
+int hostilepl(struct planet *pl);
+int unknownpl(struct planet *pl);
+int team_areapl(struct planet *pl);
+int guess_team(struct planet *pl);
+int war_team(void);
+int mod_fight_dist(Player *e);
+int get_intercept_course(Player *p, struct player *j, int edist, unsigned char *crs);
+int running_away(Player *e, unsigned char crs, int r);
+
+/* forward declarations for external functions */
+int req_cloak_off(char *s);
+void disengage_c(ediswhy w, struct planet *p, char *s);
+int mtime(int x);
+int angdist(unsigned char x, unsigned char y);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+int req_set_course(unsigned char c);
+int req_set_speed(int s, int l, char *f);
+int edist_to_me(struct player *j);
+int mydist_to_planet(struct planet *pl);
+int ignoring_e(Player *e);
+void rdefend_c(char *s);
+int defend_dist(Player *p);
+int mymax_safe_speed(void);
+int myfight_speed(void);
+int myemg_speed(void);
+int pdist_to_p(struct player *j1, struct player *j2);
+int avoiddir(unsigned char dir, unsigned char *mcrs, unsigned char r);
+int req_playerlock(int n);
+void mprintf(char *format, ...);
+int dist_to_planet(Player *e, struct planet *pl);
+int attacking(Player *e, unsigned char crs, int r);
+int dng_speed(Player *e);
+int edang(Player *e, int r);
+int rrnd(int range);
+int wrap_x(int x, int mx);
+int wrap_y(int y, int my);
+
 /* called from s_target in robot.c */
 
-void engage(e)
-   Player		*e;
+void engage(Player *e)
 {
    /* right place? */
    req_cloak_off("engaging");
@@ -117,8 +159,7 @@ void plengage()
       pengage(e);
 }
 
-void dengage(e)
-   Player	*e;
+void dengage(Player *e)
 {
    unsigned char	crs = _state.p_desdir, crs_r;
    int			speed = _state.p_desspeed, speed_r, hittime, lvorbit;
@@ -223,8 +264,7 @@ void dengage(e)
       pengage(e);
 }
 
-void pengage(e)
-   Player	*e;
+void pengage(Player *e)
 {
    int			edist, e_dist;
    unsigned char	crs = _state.p_desdir, crs_r;
@@ -280,10 +320,7 @@ void pengage(e)
    req_set_speed(speed_r, __LINE__, __FILE__);
 }
 
-void goto_protect(pl, p, dock)
-   struct planet	*pl;
-   Player		*p;
-   int			dock;
+void goto_protect(struct planet *pl, Player *p, int dock)
 {
    struct player	*j = _state.closest_e?_state.closest_e->p : NULL;
    unsigned char	pcrs, crs_r, ecrs;
@@ -414,16 +451,12 @@ void goto_protect(pl, p, dock)
 }
 
 /* enemy */
-Player	*get_nearest_to_pl(pl)
-   struct planet	*pl;
+Player *get_nearest_to_pl(struct planet *pl)
 {
-   Player *get_nearest_to_pl_dist();
    return get_nearest_to_pl_dist(pl, NULL);
 }
 
-Player *get_nearest_to_pl_dist(pl, rdist)
-   struct planet	*pl;
-   int			*rdist;
+Player *get_nearest_to_pl_dist(struct planet *pl, int *rdist)
 {
    register int			i, dist;
    int				mdist = INT_MAX;
@@ -446,9 +479,7 @@ Player *get_nearest_to_pl_dist(pl, rdist)
    return ce;
 }
 
-Player *get_nearest_to_p(p, d)
-   Player	*p;
-   int		*d;
+Player *get_nearest_to_p(Player *p, int *d)
 {
    register int			i,dist;
    int				mdist = INT_MAX;
@@ -473,15 +504,13 @@ Player *get_nearest_to_p(p, d)
 }
 
 /* make sure  */
-int hostilepl(pl)
-   struct planet	*pl;
+int hostilepl(struct planet *pl)
 {
    return (me->p_team != pl->pl_owner) &&
       ((me->p_swar | me->p_hostile) & pl->pl_owner);
 }
 
-int unknownpl(pl)
-   struct planet	*pl;
+int unknownpl(struct planet *pl)
 {
    if(!pl) return 0;
    return !(pl->pl_info & me->p_team);
@@ -489,8 +518,7 @@ int unknownpl(pl)
 
 /* likely team for unknown planet */
 
-int team_areapl(pl)
-   struct planet	*pl;
+int team_areapl(struct planet *pl)
 {
    register int	x = pl->pl_x, y = pl->pl_y;
 
@@ -506,8 +534,7 @@ int team_areapl(pl)
 }
 
 /* unknown planet -- guess what team it is */
-int guess_team(pl)
-   struct planet	*pl;
+int guess_team(struct planet *pl)
 {
    int	plteam = team_areapl(pl);
    int	team;
@@ -548,10 +575,7 @@ int war_team()
    return FED;
 }
 
-void alter_course_distance(e, e_dist, crs)
-   Player		*e;
-   int			e_dist;
-   unsigned char	*crs;
+void alter_course_distance(Player *e, int e_dist, unsigned char *crs)
 {
    register int	edist, myship = me->p_ship.s_type, eship = 
       e->p->p_ship.s_type;
@@ -644,8 +668,7 @@ void alter_course_distance(e, e_dist, crs)
    }
 }
 
-int mod_fight_dist(e)
-   Player	*e;
+int mod_fight_dist(Player *e)
 {
    int	sh	= me->p_ship.s_type;
    int	a 	= (attacking(e, me->p_dir, 32));
@@ -714,10 +737,7 @@ int mod_fight_dist(e)
    return d;
 }
 
-unsigned char choose_ecourse(p, j, edist)
-   Player		*p;
-   struct player	*j;
-   int			edist;
+unsigned char choose_ecourse(Player *p, struct player *j, int edist)
 {
    unsigned char	crs;
    static int		tm, lch;
@@ -753,10 +773,7 @@ unsigned char choose_ecourse(p, j, edist)
 #define EDGE_DIST	20000
 
 /* Try to force player into the edge */
-void edge_course(j, edist, crs)
-   struct player	*j;
-   int			edist;
-   unsigned char	*crs;
+void edge_course(struct player *j, int edist, unsigned char *crs)
 {
 #ifdef nodef
    if(j->p_x > GWIDTH - EDGE_DIST)
@@ -767,11 +784,7 @@ void edge_course(j, edist, crs)
 }
 
 /* based on get_torp_course */
-int get_intercept_course(p, j, edist, crs)
-   Player		*p;
-   struct player	*j;
-   int			edist;
-   unsigned char	*crs;
+int get_intercept_course(Player *p, struct player *j, int edist, unsigned char *crs)
 {
    double		vxa, vya, vxs, vys, vxt, vyt;
    double		dp,l,dx,dy;

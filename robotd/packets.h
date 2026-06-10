@@ -141,7 +141,7 @@
 
 struct packet_handler {
     int size;
-    void (*handler)();
+    void (*handler)(char *);
 };
 
 struct mesg_spacket {

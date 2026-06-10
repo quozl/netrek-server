@@ -15,7 +15,7 @@
 #define SERVER_NEEDMORE		5
 #define SERVER_GRIT		6
 
-extern int	ihypot();
+extern int	ihypot(double xd1, double yd1);
 
 extern struct player *players;
 extern struct player *me;

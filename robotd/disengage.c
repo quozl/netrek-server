@@ -10,7 +10,10 @@
 #include "packets.h"
 #include "robot.h"
 
-extern unsigned char get_pl_course();
+#include <string.h>
+#include <stdlib.h>
+
+extern unsigned char get_pl_course(struct planet *pl, int *speed, int *cloak);
 
 void recharge_off(char *s);
 void reset_planet(void);
@@ -19,6 +22,40 @@ void goto_planet(struct planet *pl);
 static void disengage_defend(void);
 static void disengage_normal(void);
 static void runaway(Player *e);
+
+/* forward declarations for functions defined later in this file */
+Player *sb_check(int *dist);
+int edistfunc(Player *e, struct player *j);
+void handle_disvars(Player *e, int *speed);
+int edang(Player *e, int r);
+int dng_speed(Player *e);
+int dng_speed_dist(Player *e);
+int in_team_area(int team);
+int dangerous_dir(unsigned char pcrs, int r);
+struct planet *team_planet(int team);
+unsigned char to_team_planet(int team);
+int disengage_speed(Player *e, struct player *j, int dplanet, int pdist);
+
+/* forward declarations for functions in other files */
+int hostilepl(struct planet *pl);
+void rdisengage_c(char *s);
+void disengage_c(ediswhy w, struct planet *p, char *s);
+int req_cloak_off(char *s);
+void goto_protect(struct planet *pl, Player *p, int dock);
+int mylowfuel_speed(void);
+int myfight_speed(void);
+int defend_dist(Player *p);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+int req_set_course(unsigned char c);
+int req_set_speed(int s, int l, char *f);
+int req_repair_off(void);
+int req_planetlock(int n);
+int angdist(unsigned char x, unsigned char y);
+int edist_to_me(struct player *j);
+int attacking(Player *e, unsigned char crs, int r);
+int starbase(Player *e);
+void mprintf(char *format, ...);
+int myemg_speed(void);
 
 void disengage()
 {
@@ -141,7 +178,7 @@ void disengage_defend()
 
 void disengage_normal()
 {
-   Player		*e = _state.closest_e, *sb, *sb_check();
+   Player		*e = _state.closest_e, *sb;
    struct planet	*pl;
    int			pdist, sbdist;
    int			max_distance = (me->p_ship.s_maxspeed*30000)/9;
@@ -208,8 +245,7 @@ void disengage_normal()
    }
 }
 
-Player *sb_check(dist)
-   int	*dist;
+Player *sb_check(int *dist)
 {
    register int			i,j, c = 0;
    register Player		*p, *sb = NULL;
@@ -250,8 +286,7 @@ Player *sb_check(dist)
    return sb;
 }
 
-void runaway(e)
-   Player	*e;
+void runaway(Player *e)
 {
    unsigned char	crs, crse, crs_r;
    int			speed, speed_r, hittime, cloak;
@@ -314,15 +349,12 @@ void runaway(e)
    req_set_speed(speed_r, __LINE__, __FILE__);
 }
 
-int edistfunc(e, j)
-   Player		*e;
-   struct player	*j;
+int edistfunc(Player *e, struct player *j)
 {
    return 10000;
 }
 
-void goto_planet(pl)
-   struct planet	*pl;
+void goto_planet(struct planet *pl)
 {
    Player		*e = _state.closest_e;
    double		dx,dy;
@@ -401,9 +433,7 @@ void goto_planet(pl)
  * _state.recharge/_state.disengage, etc. 
  */
 
-void handle_disvars(e, speed)
-   Player	*e;
-   int		*speed;
+void handle_disvars(Player *e, int *speed)
 {
    int			edist;
    struct player	*j;
@@ -476,9 +506,7 @@ void handle_disvars(e, speed)
    }
 }
 
-int edang(e, r)
-   Player	*e;
-   int		r;
+int edang(Player *e, int r)
 {
    struct player	*j = e->p;
    unsigned char	cse = e->crs;
@@ -492,8 +520,7 @@ int edang(e, r)
    return 1;
 }
 
-int dng_speed(e)
-   Player	*e;
+int dng_speed(Player *e)
 {
    int	s = e->p->p_speed;
 
@@ -519,8 +546,7 @@ int dng_speed(e)
 
 /* When to attack player at dangerous speed */
 
-int dng_speed_dist(e)
-   Player	*e;
+int dng_speed_dist(Player *e)
 {
    int	s = e->p->p_speed;
 
@@ -543,8 +569,7 @@ int dng_speed_dist(e)
    return 6000;	/* XX starbase */
 }
 
-void recharge_off(s)
-   char	*s;
+void recharge_off(char *s)
 {
    if(_state.recharge){
       _state.recharge = 0;
@@ -599,8 +624,7 @@ int in_home_area()
    return in_team_area(me->p_team);
 }
 
-int in_team_area(team)
-   int	team;
+int in_team_area(int team)
 {
    switch(team){
       
@@ -620,9 +644,7 @@ int in_team_area(team)
 }
 
 /* true if we have to go towards enemy home area */
-int dangerous_dir(pcrs, r)
-   unsigned char	pcrs;
-   int			r;
+int dangerous_dir(unsigned char pcrs, int r)
 {
    int			t = _state.warteam;
    unsigned char hcrs = 
@@ -631,14 +653,12 @@ int dangerous_dir(pcrs, r)
    return angdist(pcrs, hcrs) < r;
 }
 
-struct planet *home_planet()
+struct planet *home_planet(void)
 {
-   struct planet *team_planet();
    return team_planet(me->p_team);
 }
 
-struct planet *team_planet(team)
-   int	team;
+struct planet *team_planet(int team)
 {
    switch(team){
       case FED:
@@ -653,8 +673,7 @@ struct planet *team_planet(team)
    return NULL;
 }
 
-unsigned char to_team_planet(team)
-   int	team;
+unsigned char to_team_planet(int team)
 {
    struct planet *hp = team_planet(team);
    if(!hp) return get_wrapcourse(GWIDTH/2,GWIDTH/2);
@@ -673,11 +692,7 @@ int orbiting_home()
 
 /* runaway disengage speed */
 
-int disengage_speed(e, j, dplanet, pdist)
-   Player		*e;
-   struct player	*j;
-   int			dplanet;	/* bool */
-   int			pdist;
+int disengage_speed(Player *e, struct player *j, int dplanet, int pdist)
 {
    int	fuel = MYFUEL();
    int	speed;

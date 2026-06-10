@@ -11,8 +11,14 @@
 #include "robot.h"
 
 static void sort_planets_by_distance(void);
+static int _plcmp(const void *el1, const void *el2);
 
-void update_planets()
+/* forward declarations */
+int mydist_to_planet(struct planet *pl);
+int unknownpl(struct planet *pl);
+int guess_team(struct planet *pl);
+
+void update_planets(void)
 {
    register int			k;
    register struct planet	*pl;
@@ -102,14 +108,12 @@ void update_planets()
 #endif
 }
 
-int _plcmp(el1, el2)
-
-   struct planet **el1, **el2;
+static int _plcmp(const void *el1, const void *el2)
 {
-   return (*el1)->pl_mydist - (*el2)->pl_mydist;
+   return (*(struct planet **)el1)->pl_mydist - (*(struct planet **)el2)->pl_mydist;
 }
 
-void sort_planets_by_distance()
+static void sort_planets_by_distance(void)
 {
    PlanetRec			*pls = _state.planets;
 

@@ -20,7 +20,16 @@
 #include "data.h"
 #include "packets.h"
 
-void process_stdin();
+void process_stdin(void);
+
+/* forward declarations */
+int mtime(int x);
+void intrupt(void);
+int isServerDead(void);
+void closeUdpConn(void);
+int connectToServer(int port);
+void R_NextCommand(void);
+void R_ProcMessage(char *buf, int flags, int from, unsigned char group, unsigned char indiv, int fromtype);
 
 int	recflag = 0;
 
@@ -40,7 +49,7 @@ int	recflag = 0;
  * Function may still break if unix super-user executes 
  * set-time-of-day function, via unix command. 
  */ 
-void setflag()
+static void setflag(void)
 {
    static int start=0; /* start of the robot program */
    static int cycle=0; /* how many times udtime cycles */
@@ -71,7 +80,7 @@ void setflag()
 
 }
 
-void input()
+void input(void)
 {
 #ifdef nodef
    struct itimerval	udt;
@@ -110,7 +119,7 @@ void input()
 
 static char	_buf[80];
 
-void process_stdin()
+void process_stdin(void)
 {
    struct timeval	timeout;
    fd_set		readfd;

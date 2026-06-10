@@ -24,6 +24,50 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <time.h>
+#include <sys/socket.h>
+
+/* forward declarations */
+static void printUsage(char *prog);
+void mprintf(char *format, ...);
+void mfprintf(FILE *fo, char *format, ...);
+void initDefaults(char *deffile);
+int booleanDefault(char *def, int preferred);
+int reset_r_info(int *team_r, int *ship_r, int first, char *login);
+void openmem(void);
+int connectToRWatch(char *machine, int port);
+void callServer(int port, char *server);
+void connectToServer(int port);
+void findslot(void);
+void exitRobot(int sig);
+void reaper(int sig);
+void kill_rwatch(int sig);
+int teamRequest(int team, int ship);
+void showteams(void);
+void process_stdin(void);
+#ifdef ATM
+int readFromServer(int pollmode);
+#else
+int readFromServer(void);
+#endif
+int getteam(void);
+void set_team(int t);
+char team_inttobit(int t);
+void getship(struct ship *shipp, int s_type);
+int req_dock_on(void);
+int req_dock_off(void);
+void send_initial(void);
+void sendUdpReq(int req);
+int declare_intents(int peaceonly);
+void input(void);
+void shmem_open(void);
+void shmem_check(void);
+void startPing(void);
+void sendOptionsPacket(void);
+int realNumShips(int owner);
+void renter(char *pseudo, char *pss, char *log);
+void setlog(char *dir);
+int intrupt(void);
 
 #define TIMEOUT1		50
 #define TIMEOUT2		50
@@ -36,17 +80,13 @@ static   int    first = 1;
 jmp_buf         env;
 char	*commfile = NULL;
 
-int main(argc, argv)
-   int             argc;
-   char          **argv;
+int main(int argc, char **argv)
 {
-   int             intrupt(), noargs = 0;
+   int             noargs = 0;
    int             team = 1, s_type = CRUISER;
    int             usage = 0;
    int             err = 0;
-   char           *name, *ptr, *cp, *rindex();
-   void            dcore(), resetRobot();
-   void            reaper(int), kill_rwatch(int), exitRobot(int);
+   char           *name, *ptr, *cp;
    int             passive = 0;
    char           *defaultsFile = NULL;
    register int    i;
@@ -486,8 +526,7 @@ int main(argc, argv)
    return 0;
 }
 
-void printUsage(prog)
-   char           *prog;
+static void printUsage(char *prog)
 {
    static char *list[] = {
    "network connection options",

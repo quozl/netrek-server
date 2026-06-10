@@ -13,10 +13,21 @@
 #include "struct.h"
 #include "data.h"
 #include "robot.h"
+#include <string.h>
+#include <stdlib.h>
 
 #define ADDRLEN		10
 
-static void emergency();
+static void emergency(void);
+
+/* forward declarations */
+int wrap_dist(int x1, int y1, int x, int y);
+int wrap_x(int x, int mx);
+int wrap_y(int y, int my);
+int dist_to_planet(Player *e, struct planet *pl);
+struct planet *team_planet(int team);
+int starbase(Player *p);
+void send_RCD(struct distress *dist);
 
 struct distress *loaddistress(enum dist_type i);
 
@@ -36,8 +47,7 @@ void mprintf(char *format, ...)
 /*
 ** Provide the angular distance between two angles.
 */
-int angdist(x, y)
-    unsigned char x, y;
+int angdist(unsigned char x, unsigned char y)
 {
     register unsigned char res;
 
@@ -64,13 +74,12 @@ u_char to_dir(int origin_x, int origin_y, int destination_x, int destination_y)
 
 #ifdef hpux
 
-void srandom(foo)
-    int foo;
+void srandom(int foo)
 {
     rand(foo);
 }
 
-int random()
+int random(void)
 {
     return(rand());
 }
@@ -78,9 +87,7 @@ int random()
 #include <time.h>
 #include <sys/resource.h>
 
-void getrusage(foo, buf)
-    int foo;
-    struct rusage *buf;
+void getrusage(int foo, struct rusage *buf)
 {
     buf->ru_utime.tv_sec = 0;
     buf->ru_stime.tv_sec = 0;
@@ -88,9 +95,7 @@ void getrusage(foo, buf)
 
 #include <sys/signal.h>
 
-int (*signal(sig, funct))()
-    int sig;
-    int (*funct)();
+int (*signal(int sig, int (*funct)()))()
 {
     struct sigvec vec, oldvec;
 
@@ -100,9 +105,7 @@ int (*signal(sig, funct))()
 }
 #endif
 
-void warning(s, o)
-   char	*s;
-   int	o;
+void warning(char *s, int o)
 {
    if(rsock != -1 && !o) 
       return;
@@ -113,14 +116,12 @@ void warning(s, o)
 
 
 /* return rnd between -range & range */
-int rrnd(range)
-   int  range;
+int rrnd(int range)
 {
    return RANDOM() % (2*range) - range;
 }
 
-int edist_to_me(j)
-   struct player        *j;
+int edist_to_me(struct player *j)
 {
    if(_state.wrap_around)
       return wrap_dist(me->p_x, me->p_y, j->p_x, j->p_y);
@@ -131,8 +132,7 @@ int edist_to_me(j)
    }
 }
 
-int pdist_to_p(j1, j2)
-   struct player	*j1,*j2;
+int pdist_to_p(struct player *j1, struct player *j2)
 {
    if(_state.wrap_around)
       return wrap_dist(j2->p_x, j2->p_y, j1->p_x, j1->p_y);
@@ -143,8 +143,7 @@ int pdist_to_p(j1, j2)
    }
 }
 
-unsigned char get_wrapcourse(x, y)
-   int x, y;
+unsigned char get_wrapcourse(int x, int y)
 {
    if(!_state.wrap_around)
       return get_course(x,y);
@@ -152,8 +151,7 @@ unsigned char get_wrapcourse(x, y)
       return get_course(wrap_x(x, me->p_x), wrap_y(y, me->p_y));
 }
 
-int wrap_x(x, mx)
-   int x, mx;
+int wrap_x(int x, int mx)
 {
    register int xd = x - mx;
 
@@ -168,8 +166,7 @@ int wrap_x(x, mx)
    return x;
 }
 
-int wrap_y(y, my)
-   int y, my;
+int wrap_y(int y, int my)
 {
    register int yd = y - my;
    if(yd < 0){
@@ -183,8 +180,7 @@ int wrap_y(y, my)
    return y;
 }
 
-int wrap_dist(x1, y1, x, y)
-   int x1, y1, x, y;
+int wrap_dist(int x1, int y1, int x, int y)
 {
    int	xr = wrap_x(x, x1),
 	yr = wrap_y(y, y1);
@@ -209,15 +205,12 @@ u_char get_awrapcourse(int x, int y, int mx, int my)
 }
 
 /* return distance of closest enemy to planet in question */
-int edist_to_planet(pl)
-   struct planet        *pl;
+int edist_to_planet(struct planet *pl)
 {
    return dist_to_planet(_state.closest_e, pl);
 }
 
-int dist_to_planet(e, pl)
-   Player		*e;
-   struct planet	*pl;
+int dist_to_planet(Player *e, struct planet *pl)
 {
    double               dx,dy;
    int			d;
@@ -236,18 +229,14 @@ int dist_to_planet(e, pl)
    return d;
 }
 
-int mydist_to_planet(pl)
-   struct planet        *pl;
+int mydist_to_planet(struct planet *pl)
 {
    return dist_to_planet(me_p, pl);
 }
 
 /* returns angdst of enemy course & given course <= range given,
    i.e. is difference of enemy course to given course within range? */
-int running_away(e, crs, r)
-   Player                *e;
-   unsigned char        crs;
-   int	                  r;
+int running_away(Player *e, unsigned char crs, int r)
 {
    return angdist(e->p->p_dir, crs) <= r;
 }
@@ -255,10 +244,7 @@ int running_away(e, crs, r)
 /* returns true if enemy 'e' is "attacking" the specified
    approaching course */
 
-int attacking(e, crs, r)
-   Player                *e;
-   unsigned char        crs;
-   int	                  r;
+int attacking(Player *e, unsigned char crs, int r)
 {
    unsigned char        ecrs = e->p->p_dir;
    unsigned int		rd = crs - 128;
@@ -267,10 +253,7 @@ int attacking(e, crs, r)
    return angdist((unsigned char)rd, ecrs) <= r;
 }
 
-int avoiddir(dir, mcrs, r)
-   unsigned char	dir, 	/* course to be avoided */
-			r;	/* range of direction change */
-   unsigned char        *mcrs;	/* my course -- used and returned */
+int avoiddir(unsigned char dir, unsigned char *mcrs, unsigned char r)
 {
    register unsigned char	mydir = *mcrs;
    register int			nd = 0;
@@ -298,10 +281,9 @@ int avoiddir(dir, mcrs, r)
 /* defend */
 
 /* how close do we get? */
-int defend_dist(p)
-   Player	*p;
+int defend_dist(Player *p)
 {
-   struct planet	*pl, *team_planet();
+   struct planet	*pl;
 
    if(p && p->p && p->p->p_ship.s_type == STARBASE)
       return 4000;
@@ -318,7 +300,7 @@ int defend_dist(p)
 }
 
 /* what's too close */
-int tdefend_dist()
+int tdefend_dist(void)
 {
    if(starbase(_state.protect_player))
       return 4000;
@@ -327,14 +309,12 @@ int tdefend_dist()
 }
 
 /* how close to enemy before attack */
-int edefend_dist()
+int edefend_dist(void)
 {
    return 9000;
 }
 
-unsigned char choose_course(scrs, ecrs)
-   unsigned char scrs;
-   unsigned char ecrs;
+unsigned char choose_course(unsigned char scrs, unsigned char ecrs)
 {
    unsigned char td;
    int           nd = angdist(ecrs, scrs);
@@ -347,8 +327,7 @@ unsigned char choose_course(scrs, ecrs)
       return (unsigned char) (ecrs + 80);
 }
 
-int on_screen(p)
-   Player	*p;
+int on_screen(Player *p)
 {
    register int x, y;
    if(!p || !p->p || !isAlive(p->p))
@@ -364,7 +343,7 @@ int on_screen(p)
 
 #define TIME(x)		((_udcounter - (x))/10)
 
-void do_alert()
+void do_alert(void)
 {
    static int	lastalert;
    int		critical = 0;
@@ -393,7 +372,7 @@ void do_alert()
    }
 }
 
-void emergency()
+static void emergency(void)
 {
     struct distress *dist;
 
@@ -407,8 +386,7 @@ void emergency()
  * than (9/8) + one bit uncertainty.
  */
 
-int ihypot(xd1, yd1)
-   double xd1, yd1;
+int ihypot(double xd1, double yd1)
 {
    register int	x1 = (int)xd1,
 		y1 = (int)yd1,

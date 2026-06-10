@@ -19,6 +19,10 @@
 #include "struct.h"
 #include "data.h"
 #include "robot.h"
+#include <string.h>
+
+int mtime(int x);
+void mfprintf(FILE *fo, char *format, ...);
 
 struct r_shmemt {
 
@@ -39,9 +43,7 @@ struct r_shmemt {
 static struct r_shmemt 	*r_shmem;
 static int		shmid;
 
-void shmem_rloc(i, x, y)
-   int	i;
-   int	*x,*y;
+void shmem_rloc(int i, int *x, int *y)
 {
    if(!shmem) return;
 
@@ -56,16 +58,14 @@ void shmem_rloc(i, x, y)
    *y = r_shmem->ty[i];
 }
 
-void shmem_updmyloc(x, y)
-   int	x,y;
+void shmem_updmyloc(int x, int y)
 {
    if(!shmem) return;
    r_shmem->tx[me->p_no] = x;
    r_shmem->ty[me->p_no] = y;
 }
 
-int shmem_rtarg(i)
-   int	i;
+int shmem_rtarg(int i)
 {
    if(!shmem) return -1;
 
@@ -73,16 +73,14 @@ int shmem_rtarg(i)
    return r_shmem->target[i]-1;
 }
 
-void shmem_updmytarg(t)
-   int	t;
+void shmem_updmytarg(int t)
 {
    if(!shmem) return;
 
    r_shmem->target[me->p_no] = t+1;
 }
 
-int shmem_rsync(i)
-   int	i;
+int shmem_rsync(int i)
 {
    if(!shmem) return -1;
 
@@ -90,8 +88,7 @@ int shmem_rsync(i)
    return r_shmem->sync[i] -1;
 }
 
-void shmem_updmysync(t)
-   int	t;
+void shmem_updmysync(int t)
 {
    if(!shmem) return;
 
@@ -160,8 +157,7 @@ void shmem_check()
 }
 
 /* functions */
-int shmem_cloakd(j)
-   struct player	*j;
+int shmem_cloakd(struct player *j)
 {
    register int		i, k=0;
    register int		sumx=0, sumy=0;

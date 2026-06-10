@@ -9,21 +9,42 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <string.h>
+#include <stdlib.h>
 
 #define OCOURSE_DIST		20000
 
 void set_ogg_vars(void);
 
 static void goto_ogg(Player *e);
-static unsigned char ocourse();
+static unsigned char ocourse(Player *o);
 
 static int 	odist;
+
+/* forward declarations for external functions */
+int req_cloak_off(char *s);
+int req_cloak_on(void);
+int wait_on_sync(void);
+int friend_uncloak(int e_num);
+int mymax_safe_speed(void);
+unsigned char ogg_course(Player *o, int *c);
+int angdist(unsigned char x, unsigned char y);
+int modspeed(int sp, Player *p, Player *e);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+int req_set_course(unsigned char c);
+int req_set_speed(int s, int l, char *f);
+int starbase(Player *p);
+int accavdir(int avdir, int damage, unsigned char tdir, int tdamage);
+int avoiddir(unsigned char dir, unsigned char *mcrs, unsigned char r);
+int myemg_speed(void);
+int sync_check(Player **t);
+int rrnd(int range);
 
 /* ogg player */
 
 /* actual firing doesn't occur until _state.ogg = 1 */
 
-void ogg()
+void ogg(void)
 {
    Player	*e = _state.current_target;
    int		p;
@@ -90,8 +111,7 @@ void ogg()
    }
 }
 
-int friend_uncloak(e_num)
-   int	e_num;
+int friend_uncloak(int e_num)
 {
    Player		*p = _state.closest_f;
    struct player	*j;
@@ -105,10 +125,9 @@ int friend_uncloak(e_num)
    return 0;
 }
 
-void goto_ogg(e)
-   Player	*e;
+static void goto_ogg(Player *e)
 {
-   unsigned char	crs, crs_r, ogg_course();
+   unsigned char	crs, crs_r;
    int			speed, speed_r, hittime, edist, lvorbit;
    int			i, sb = (me->p_ship.s_type == STARBASE);
 
@@ -191,9 +210,7 @@ void goto_ogg(e)
    }
 }
 
-unsigned char ogg_course(o, c)
-   Player	*o;
-   int		*c;
+unsigned char ogg_course(Player *o, int *c)
 {
    unsigned char	crs, hcrs, bcrs;
    int			avcrs;
@@ -264,8 +281,7 @@ unsigned char ogg_course(o, c)
    return crs;
 }
 
-unsigned char ocourse(o)
-   Player	*o;
+static unsigned char ocourse(Player *o)
 {
    int	r, dist;
    struct player	*j = o->p;
@@ -314,9 +330,7 @@ unsigned char ocourse(o)
    return (unsigned char) r;
 }
 
-int modspeed(sp, p, e)
-   int		sp;
-   Player	*p, *e;
+int modspeed(int sp, Player *p, Player *e)
 {
    int		v;
    int		speed;
@@ -364,7 +378,7 @@ int modspeed(sp, p, e)
    1: uncloak
  */
 
-int wait_on_sync()
+int wait_on_sync(void)
 {
    Player	*p;
    static int	timer;
@@ -394,7 +408,7 @@ int wait_on_sync()
 
 unsigned char	ogg_incoming_dir = 0;
 
-void set_ogg_vars()
+void set_ogg_vars(void)
 {
    int			r;
    Player		*e = _state.current_target;

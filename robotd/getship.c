@@ -13,9 +13,7 @@
 
 /* fill in ship characteristics */
 
-void getship(shipp, s_type)
-    struct ship *shipp;
-    int s_type;
+void getship(struct ship *shipp, int s_type)
 {
     register int i = 0;
     

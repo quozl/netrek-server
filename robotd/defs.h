@@ -2,6 +2,7 @@
  * defs.h
  */
 #include "copyright.h"
+#include <stdlib.h>
 
 /* fast hypot test */
 #define	hypot	ihypot
@@ -177,7 +178,8 @@ typedef enum {FALSE=0, TRUE} boolean;
  */
 #define ticks(x) ((x)*200000/timerDelay)
 
-char *getdefault();
+char *getdefault(char *str);
+void sendShortPacket(char type, char state);
 
 #ifdef ATM
 /*

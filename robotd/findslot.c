@@ -16,7 +16,16 @@
 #include "struct.h"
 #include "data.h"
 
-void findslot()
+void socketPause(void);
+int isServerDead(void);
+void mprintf(char *format, ...);
+#ifdef ATM
+int readFromServer(int pollmode);
+#else
+int readFromServer(void);
+#endif
+
+void findslot(void)
 {
     int oldcount= -1;
 

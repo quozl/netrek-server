@@ -13,9 +13,15 @@
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
+#include <netinet/in.h>
 
 static void sendServerPingResponse(int number);
+
+/* forward declarations */
+int gwrite(int fd, char *buf, int bytes);
+void mprintf(char *format, ...);
 static void calc_lag(void);
+
 
 static int	ping_iloss_sc=0; /* inc % loss 0--100, server to client */
 static int	ping_iloss_cs=0; /* inc % loss 0--100, client to server */
@@ -28,9 +34,9 @@ static int	ping_sd=0;	/* std deviation */
 static int	sum, n, s2;
 static int	M, var;
 
-void handlePing(packet)                         /* SP_PING */
-   struct ping_spacket *packet;
-{ 
+void handlePing(char *buf)
+{
+   struct ping_spacket *packet = (struct ping_spacket *)buf; 
    ping = 1;		/* we got a ping */
 
 /*
@@ -46,7 +52,7 @@ printf("ping received at %d (lag: %d)\n", msetime(), (int)packet->lag);
    calc_lag();
 }
 
-void startPing()
+void startPing(void)
 {
    static
    struct ping_cpacket 	packet;
@@ -62,7 +68,7 @@ void startPing()
    }
 }
 
-void stopPing()
+void stopPing(void)
 {
    static
    struct ping_cpacket 	packet;
@@ -78,8 +84,7 @@ void stopPing()
    }
 }
    
-void sendServerPingResponse(number)     	/* CP_PING_RESPONSE */
-   int number;
+static void sendServerPingResponse(int number)
 {
    struct ping_cpacket 	packet;
    int			s;
@@ -110,7 +115,7 @@ printf("ping response sent at %d\n", msetime());
    }
 }
 
-void calc_lag()
+static void calc_lag(void)
 {
 #ifdef nodef
    /* probably ghostbusted */

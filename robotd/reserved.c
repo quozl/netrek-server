@@ -11,9 +11,9 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "packets.h"
+#include <arpa/inet.h>
 
-void makeReservedPacket(packet)
-    struct reserved_spacket *packet;
+void makeReservedPacket(struct reserved_spacket *packet)
 {
     int i;
 
@@ -23,11 +23,7 @@ void makeReservedPacket(packet)
     packet->type = SP_RESERVED;
 }
 
-void encryptReservedPacket(spacket, cpacket, server, pno)
-    struct reserved_spacket *spacket;
-    struct reserved_cpacket *cpacket;
-    char *server;
-    int pno;
+void encryptReservedPacket(struct reserved_spacket *spacket, struct reserved_cpacket *cpacket, char *server, int pno)
 {
     struct hostent *hp;
     struct in_addr address;

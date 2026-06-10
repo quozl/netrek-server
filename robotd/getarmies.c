@@ -10,6 +10,8 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <string.h>
+#include <stdlib.h>
 
 extern struct distress *loaddistress(enum dist_type i);
 extern void send_RCD(struct distress *dist);
@@ -17,11 +19,36 @@ extern void send_RCD(struct distress *dist);
 void notify_take(struct planet *aspl, int phase);
 
 static void beam_up_armies(struct planet *pl);
-static struct planet *find_army_planet();
+static struct planet *find_army_planet(struct planet *pl);
+
+/* forward declarations for external functions */
+void mprintf(char *format, ...);
+void unassault_c(char *s);
+int troop_capacity(struct player *j);
+int req_shields_up(void);
+int orbiting(struct planet *pl);
+void goto_planet(struct planet *pl);
+int myemg_speed(void);
+int mymax_safe_speed(void);
+int angdist(unsigned char x, unsigned char y);
+int avoiddir(unsigned char dir, unsigned char *mcrs, unsigned char r);
+int mylowfuel_speed(void);
+int myfight_speed(void);
+int req_planetlock(int n);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+int req_set_course(unsigned char c);
+int req_set_speed(int s, int l, char *f);
+int req_cloak_on(void);
+int req_beamup(void);
+int req_cloak_off(char *s);
+int not_safe(struct planet *pl, unsigned char pcrs, int pdist);
+int unknownpl(struct planet *pl);
+int need_armies(void);
+char *short_name_print(struct planet *pl);
 
 /* get armies */
 
-void getarmies()
+void getarmies(void)
 {
    register int			i;
    register struct planet	*pl;
@@ -83,8 +110,7 @@ void getarmies()
 }
 
 /* UNUSED */
-void goto_armypl(pl)
-   struct	planet	*pl;
+void goto_armypl(struct planet *pl)
 {
    Player		*e = _state.closest_e;
    struct player	*j = e?e->p:NULL;
@@ -159,8 +185,7 @@ void goto_armypl(pl)
    }
 }
 
-void beam_up_armies(pl)
-   struct planet	*pl;
+static void beam_up_armies(struct planet *pl)
 {
    int		armies = pl->pl_armies;
 
@@ -181,8 +206,7 @@ void beam_up_armies(pl)
    }
 }
 
-int troop_capacity(j)
-   struct player	*j;
+int troop_capacity(struct player *j)
 {
    if (j->p_ship.s_type == ASSAULT)
       return (((j->p_kills * 3) > j->p_ship.s_maxarmies) ?
@@ -194,8 +218,7 @@ int troop_capacity(j)
       return j->p_ship.s_maxarmies;
 }
 
-int others_taking_armies(pl)
-   struct planet	*pl;
+int others_taking_armies(struct planet *pl)
 {
    register int			i;
    register Player		*p;
@@ -218,13 +241,12 @@ int others_taking_armies(pl)
    return 0;
 }
 
-struct planet *find_army_planet(pl)
-   struct planet	*pl;
+static struct planet *find_army_planet(struct planet *pl)
 {
    register int			i;
    register struct planet	*k, *mp = NULL;
    int				mdist = INT_MAX, pdist, hdist;
-   Player			*p, *get_nearest_to_pl_dist();
+   Player			*p;
    double			dx,dy;
    unsigned char		pcrs;
 
@@ -265,8 +287,7 @@ struct planet *find_army_planet(pl)
    return mp;
 }
 
-int orbiting(pl)
-   struct planet	*pl;
+int orbiting(struct planet *pl)
 {
    if(!pl){
       mprintf("bad value in orbiting.\n");
@@ -290,12 +311,9 @@ int need_armies()
    return me->p_armies < tarmy;
 }
 
-void notify_take(aspl, phase)
-   struct planet	*aspl;
-   int			phase;
+void notify_take(struct planet *aspl, int phase)
 {
    static int 	tms;
-   char 	*short_name_print();
    struct distress *dist;
    
    if(!inl && !_state.take_notify) return;

@@ -12,11 +12,22 @@
 #include "packets.h"
 #include "robot.h"
 
+#include <string.h>
+
 void emptytorpq(void);
 
-static void qtorps(int size, int urnd, int tcrs);
-static void qtorp(int crs);
+static void qtorps(int size, int urnd, unsigned char tcrs);
+static void qtorp(unsigned char crs);
 static void get_orbit_torp_course(struct player *j, unsigned char *crs, int cx, int cy);
+
+/* forward declarations */
+int edist_to_me(struct player *j);
+int rship_ok(char *n, int s);
+void phaser_attack_robot(Player *e, struct player *j, int edist);
+void torp_attack_robot(Player *e, struct player *j, int edist);
+void pwarfare(int type, Player *e, struct player *j, int edist);
+int req_torp(unsigned char dir);
+u_char to_dir(int origin_x, int origin_y, int destination_x, int destination_y);
 
 /* debug */
 int		dntorps;
@@ -25,8 +36,7 @@ int		dtint;
 int		dgo;
 
 
-void warfare(type)
-   int	type;
+void warfare(int type)
 {
    Player		*e = _state.current_target;
    struct player	*j = e?e->p:NULL;
@@ -86,9 +96,7 @@ void warfare(type)
    }
 }
 
-int rship_ok(n, s)
-   char		*n;
-   int		s;
+int rship_ok(char *n, int s)
 {
    if(_server == SERVER_GRIT) return 0;
    if(strcmp(n, "Hoser") == 0)
@@ -107,9 +115,7 @@ int rship_ok(n, s)
    }
 }
 
-void qtorps(size, urnd, tcrs)
-   int	size, urnd;
-   unsigned char	tcrs;
+static void qtorps(int size, int urnd, unsigned char tcrs)
 {
    register int i;
    int	v;
@@ -126,8 +132,7 @@ void qtorps(size, urnd, tcrs)
    }
 }
 
-void qtorp(crs)
-   unsigned char        crs;
+static void qtorp(unsigned char crs)
 {
    TorpQ	*tq = _state.torpq;
 
@@ -176,10 +181,7 @@ void emptytorpq()
    tq->ipos = tq->opos = 0;
 }
 
-int get_torp_course(j, crs, cx,cy)
-   struct player        *j;
-   unsigned char        *crs;
-   int			cx,cy;
+int get_torp_course(struct player *j, unsigned char *crs, int cx, int cy)
 {
    double       vxa, vya, vxs, vys, vxt, vyt;
    double       dp, l, dx,dy;
@@ -258,10 +260,7 @@ int get_torp_course(j, crs, cx,cy)
    return 0;
 }
 
-void get_orbit_torp_course(j, crs, cx, cy)
-   struct player	*j;
-   unsigned char	*crs;
-   int			cx,cy;
+static void get_orbit_torp_course(struct player *j, unsigned char *crs, int cx, int cy)
 {
    register int		x, y, px, py;
    int			edist,cycles;
@@ -287,8 +286,7 @@ void get_orbit_torp_course(j, crs, cx, cy)
 }
 
 /* called from update_players */
-int planet_from_ppos(j)
-   struct player	*j;
+int planet_from_ppos(struct player *j)
 {
    int				x,y;
    register struct planet	*pl;
@@ -323,9 +321,7 @@ int planet_from_ppos(j)
    return -1;
 }
       
-int phaser_condition(e, edist)
-   Player	*e;
-   int		edist;
+int phaser_condition(Player *e, int edist)
 {
    struct player	*j = e->p;
    unsigned char	crs;

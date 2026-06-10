@@ -4,19 +4,22 @@
 #define PASS2		"tover"
 #define bool		int
 
-extern u_char	       get_course(),
-		       get_awrapcourse();
-extern struct planet	*find_safe_planet(), *nearest_safe_planet();
-extern char            *state_name();
-extern char		team_bit();
-extern struct planet   *name_to_planet(), *home_planet();
-extern unsigned char 	choose_course();
+extern u_char	       get_course(int x, int y);
+extern u_char	       get_awrapcourse(int x, int y, int mx, int my);
+extern u_char	       get_wrapcourse(int x, int y);
+struct _player;
+extern struct planet	*find_safe_planet(struct _player *e, int *dist, int team);
+extern struct planet	*nearest_safe_planet(void);
+extern char		team_bit(char *m);
+extern struct planet   *name_to_planet(char *s, int h);
+extern struct planet   *home_planet(void);
+extern unsigned char 	choose_course(unsigned char scrs, unsigned char ecrs);
 
 extern int		_cycletime;
 extern int		_udcounter;
 
-extern struct planet	*find_planet_by_shortname(),
-			*find_planet_by_longname();
+extern struct planet	*find_planet_by_shortname(char *n, int f);
+extern struct planet	*find_planet_by_longname(char *n);
 
 extern struct _player	*me_p;
 
@@ -108,8 +111,8 @@ typedef struct _planetrec {
 extern Player		_players[MAXPLAYER];
 extern PlanetRec	_planets;
 
-extern Player	       *get_nearest_to_pl();
-extern Player	       *get_nearest_to_p();
+extern Player	       *get_nearest_to_pl(struct planet *pl);
+extern Player	       *get_nearest_to_p(Player *p, int *d);
 
 typedef struct {
    
@@ -376,6 +379,8 @@ typedef struct {
 } State;
 
 extern State _state;
+
+extern char *state_name(estate s);
 
 /* player_type */
 #define PT_NORMAL		0

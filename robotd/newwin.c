@@ -16,10 +16,22 @@
 #include "struct.h"
 #include "data.h"
 #include "packets.h"
+#include <time.h>
 
-/* Attempt to pick specified team & ship */
-int teamRequest(team, ship) 
-    int team,ship;
+void mprintf(char *format, ...);
+void sendTeamReq(int team, int ship);
+void socketPause(void);
+int isServerDead(void);
+int closeUdpConn(void);
+void connectToServer(int port);
+int numShips(int owner);
+#ifdef ATM
+int readFromServer(int pollmode);
+#else
+int readFromServer(void);
+#endif
+
+int teamRequest(int team, int ship)
 {
     int lastTime;
 
@@ -62,14 +74,13 @@ int teamRequest(team, ship)
     return(pickOk);
 }
 
-void showteams()
+void showteams(void)
 {
    mprintf("FED: %d, ROM: %d, KLI: %d, ORI: %d\n",
       numShips(FED), numShips(ROM), numShips(KLI), numShips(ORI));
 }
 
-int numShips(owner)
-	int		owner;
+int numShips(int owner)
 {
 	int		i, num = 0;
 	struct player	*p;
@@ -80,8 +91,7 @@ int numShips(owner)
 	return (num);
 }
 
-int realNumShips(owner)
-	int		owner;
+int realNumShips(int owner)
 {
 	int		i, num = 0;
 	struct player	*p;
@@ -93,8 +103,7 @@ int realNumShips(owner)
 	return (num);
 }
 
-int deadTeam(owner)
-    int owner;
+int deadTeam(int owner)
 /* The team is dead if it has no planets and cannot coup it's home planet */
 {
     int i,num=0;
@@ -110,8 +119,7 @@ int deadTeam(owner)
     return(1);
 }
 
-void do_refit(type)
-    int type;
+void do_refit(int type)
 {	
     sendRefitReq(type);
     localflags &= ~PFREFIT;

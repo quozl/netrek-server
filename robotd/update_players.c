@@ -19,8 +19,50 @@
 
 void dodamage(Player *e, struct player *j, int dam);
 
-static Player 		*get_target();
-static struct planet	*closest_planet();
+static Player 		*get_target(Player *closest_target);
+static struct planet	*closest_planet(struct player *j, int *dist, struct planet *opl);
+
+/* forward declarations for external functions */
+void shmem_updmyloc(int x, int y);
+void shmem_rloc(int i, int *x, int *y);
+int edist_to_me(struct player *j);
+int get_intercept_course(Player *p, struct player *j, int edist, unsigned char *crs);
+int ignoring_e(Player *e);
+int sync_check(Player **t);
+void shmem_updmytarg(int t);
+void sendOggVPacket(void);
+void mfprintf(FILE *fo, char *format, ...);
+void mprintf(char *format, ...);
+void exitRobot(int sig);
+void sendUpdatePacket(long speed);
+int planet_from_ppos(struct player *j);
+int NotRobot(Player *p, struct player *j);
+int troop_capacity(struct player *j);
+int on_screen(Player *p);
+int nint(double x);
+int mtime(int x);
+int shmem_cloakd(struct player *j);
+int rrnd(int range);
+int wrap_dist(int x1, int y1, int x, int y);
+int subfuel(struct player *k, int cycletime);
+int addfuel(struct player *k, int cycletime);
+int fuel_planet(int n);
+int unknownpl(struct planet *pl);
+int edge_expl(struct torp *t);
+char *team_to_string(int t);
+struct planet *team_planet(int team);
+int pdist_to_p(struct player *j1, struct player *j2);
+int attacking(Player *e, unsigned char crs, int r);
+int hostilepl(struct planet *pl);
+void unprotectp_c(char *reason);
+void check_server_response(int *px, int *py, int delt, Player *e, struct player *j);
+int shmem_rtarg(int i);
+int shmem_rsync(int i);
+void response(char *buf);
+void shmem_updmysync(int t);
+Player *getany(void);
+Player *getabase(void);
+void parse_message(char *m, Player *p, int flags);
 static void check_active_enemies(void);
 static void orbit_check(Player *p, struct player *j);
 static void army_check1(Player *p, struct player *j);
@@ -323,9 +365,7 @@ void check_active_enemies()
    }
 }
 
-void orbit_check(p, j)
-   Player		*p;
-   struct player	*j;
+void orbit_check(Player		*p, struct player	*j)
 {
 /* begin -- only if PFORBIT not given by server */
 #ifdef NO_PFORBIT
@@ -419,9 +459,7 @@ void orbit_check(p, j)
       p->pl_armies = 0;
 }
 
-void army_check1(p, j)
-   Player		*p;
-   struct player	*j;
+void army_check1(Player		*p, struct player	*j)
 {
    struct planet	*pl;
 
@@ -464,9 +502,7 @@ void army_check1(p, j)
       p->armies = troop_capacity(j);
 }
 
-void army_check2(p, j)
-   Player		*p;
-   struct player	*j;
+void army_check2(Player		*p, struct player	*j)
 {
    struct planet	*pl;
    bool			ohostile = 0, opl = 0;
@@ -554,9 +590,7 @@ void army_check2(p, j)
 
 /* A more intuitive way of figuring out who carries in 
    a pickup game. Only works with humans */
-void army_check3(p, j)
-   Player		*p;
-   struct player	*j;
+void army_check3(Player		*p, struct player	*j)
 {
    float                ptrate; /* planet taking rate */
 
@@ -588,9 +622,7 @@ void army_check3(p, j)
 
 }
 
-int NotRobot(p, j)
-   Player		*p;
-   struct player	*j;
+int NotRobot(Player		*p, struct player	*j)
 {
     if ( (strcmp(j->p_login,"robot!") != 0) || !(j->p_flags&PFBPROBOT) ) { 
        return 1;
@@ -599,9 +631,7 @@ int NotRobot(p, j)
     }
 }
 
-int calc_speed(p, j)
-   Player		*p;
-   struct player	*j;
+int calc_speed(Player		*p, struct player	*j)
 {
    double	x_speed, y_speed;
    int		s;
@@ -634,9 +664,7 @@ int calc_speed(p, j)
    return s;
 }
 
-void cloak_check(p, j)
-   Player		*p;
-   struct player	*j;
+void cloak_check(Player		*p, struct player	*j)
 {
    int		dist, ns;
    /* speed & direction is same as when started cloaking unless phaser
@@ -718,8 +746,7 @@ void cloak_check(p, j)
    */
 }
 
-void init_sstats(p)
-   Player	*p;
+void init_sstats(Player	*p)
 {
    register struct player	*j = p->p;
 
@@ -742,9 +769,7 @@ void init_sstats(p)
    p->pl_armies	= 0;
 }
 
-void update_sstats(e, ct)
-   Player	*e;
-   int		ct;
+void update_sstats(Player	*e, int		ct)
 {
    register struct player	*j = e->p;
 
@@ -768,9 +793,7 @@ void update_sstats(e, ct)
    if(e->wpntemp < 0) e->wpntemp = 0;
 }
 
-int addfuel(k, cycletime)
-   struct player	*k;
-   int			cycletime;
+int addfuel(struct player	*k, int			cycletime)
 {
    if((k->p_flags & PFORBIT) && fuel_planet(k->p_planet)){
       return (cycletime * 8 * SH_RECHARGE(k))/100;
@@ -783,8 +806,7 @@ int addfuel(k, cycletime)
 }
 
 /* xx -- put in util.c */
-int fuel_planet(n)
-   int	n;
+int fuel_planet(int	n)
 {
    struct planet	*pl = &planets[n];
    if(unknownpl(pl)) return 1;	/* benefit of the doubt */
@@ -792,8 +814,7 @@ int fuel_planet(n)
    return (pl->pl_flags & PLFUEL);
 }
 
-int repair_planet(n)
-   int	n;
+int repair_planet(int	n)
 {
    struct planet	*pl = &planets[n];
    if(unknownpl(pl)) return 1;	/* benefit of the doubt */
@@ -801,9 +822,7 @@ int repair_planet(n)
    return (pl->pl_flags & PLREPAIR);
 }
 
-int subfuel(k, cycletime)
-   struct player	*k;
-   int			cycletime;
+int subfuel(struct player	*k, int			cycletime)
 {
    int	dfuel;
 
@@ -829,10 +848,7 @@ int subfuel(k, cycletime)
    return dfuel;
 }
 
-void repair_shield(k,e, cycletime)
-   struct player	*k;
-   Player		*e;
-   int			cycletime;
+void repair_shield(struct player	*k, Player		*e, int			cycletime)
 {
    if(k->p_speed == 0 && !(k->p_flags & PFSHIELD)){
       /* assume he's repairing */
@@ -855,10 +871,7 @@ void repair_shield(k,e, cycletime)
    }
 }
 
-void repair_damage(k, e, cycletime)
-   struct player	*k;
-   Player		*e;
-   int			cycletime;
+void repair_damage(struct player	*k, Player		*e, int			cycletime)
 {
    if(!(k->p_flags & PFSHIELD)){
       if(k->p_speed == 0){	/* assume repairing */
@@ -882,10 +895,7 @@ void repair_damage(k, e, cycletime)
 }
 
 /* called from init_dodge */
-void add_damage(t, td, e)
-   struct torp	*t;
-   int		td;
-   Player	*e;
+void add_damage(struct torp	*t, int		td, Player	*e)
 {
    int			ddist;
    int			dx,dy;
@@ -931,10 +941,7 @@ void add_damage(t, td, e)
    dodamage(e, j, dam);
 }
 
-void dodamage(e, j, dam)
-   Player		*e;
-   struct player	*j;
-   int			dam;
+void dodamage(Player		*e, struct player	*j, int			dam)
 {
    /*
    if(e->p->p_ship.s_type == STARBASE){
@@ -960,8 +967,7 @@ void dodamage(e, j, dam)
 
 /* sh just exploded */
 
-void do_expdamage(sh)
-   struct player	*sh;
+void do_expdamage(struct player	*sh)
 {
    register int			i;
    int				dx,dy,dist;
@@ -1031,7 +1037,6 @@ int declare_intents(int peaceonly)
    int				teams[16], maxt=0, maxcount=0;
    int				maxt2=0, maxcount2=0;
    int				newhostile, pl=0;
-   extern char			*team_to_string();
 
    if(me_p->alive < 100 || !isAlive(me))	/* 10 seconds into game */
       return 0;
@@ -1113,8 +1118,7 @@ int declare_intents(int peaceonly)
 
 /* DEBUG*/
 
-void print_player(e)
-   Player	*e;
+void print_player(Player	*e)
 {
    printf("name: \"%s\"(%d)\n", e->p->p_name, e->p->p_no);
    printf("%s\n", e->enemy?"enemy":"friend");
@@ -1126,11 +1130,9 @@ void print_player(e)
    printf("damage: %d%%\n", PL_DAMAGE(e));
 }
 
-Player *get_target(closest_target)
-   Player	*closest_target;
+static Player *get_target(Player *closest_target)
 {
    Player	*l;
-   Player	*getany(), *getabase();
    int	dummy;
 
    if(locked && _state.controller > 0){
@@ -1195,9 +1197,7 @@ Player *get_target(closest_target)
       return closest_target;
 }
 
-void process_general_message(message, flags, from, to)
-   char			*message;
-   unsigned char	flags,from,to;
+void process_general_message(char *message, unsigned char flags, unsigned from, unsigned to)
 {
    Player		*p;
    if(from == 255) {
@@ -1229,9 +1229,7 @@ void process_general_message(message, flags, from, to)
    }
 }
 
-void tractor_check(e, j)
-   Player		*e;
-   struct player	*j;
+void tractor_check(Player		*e, struct player	*j)
 {
 
    int			predictx, predicty, 
@@ -1304,7 +1302,7 @@ void tractor_check(e, j)
 #endif /* NO_PFTRACT */
 }
 
-void update_player_density()
+static void update_player_density(void)
 {
    register int			i, j;
    register Player		*p, *e;
@@ -1408,7 +1406,7 @@ void update_player_density()
 #endif
 }
 
-void calc_attackdiff()
+static void calc_attackdiff(void)
 {
    register int		i, j;
    register Player	*p;
@@ -1461,10 +1459,7 @@ void calc_attackdiff()
 }
 
 /* SSS: speed critical */
-struct planet	*closest_planet(j, dist, opl)
-   struct player	*j;
-   int			*dist;
-   struct planet	*opl;
+static struct planet *closest_planet(struct player *j, int *dist, struct planet *opl)
 {
    register int			k;
    register struct planet	*pl, *rp = opl;
@@ -1493,11 +1488,11 @@ struct planet	*closest_planet(j, dist, opl)
    return rp;
 }
 
-Player *getany()
+Player *getany(void)
 {
    register int		i;
    register Player	*p;
-   struct planet	*hp, *team_planet();
+   struct planet	*hp;
 
    for(i=0, p = _state.players; i < MAXPLAYER; i++, p++){
       if(!p->p || !isAlive(p->p) || !p->enemy) continue;
@@ -1519,11 +1514,11 @@ Player *getany()
    return NULL;
 }
 
-Player *getabase()
+Player *getabase(void)
 {
    register int		i;
    register Player	*p;
-   struct planet	*hp, *team_planet();
+   struct planet	*hp;
    int			sbs[MAXPLAYER], sbf = 0;
 
    for(i=0, p = _state.players; i < MAXPLAYER; i++, p++){
@@ -1553,8 +1548,7 @@ Player *getabase()
 
 /* make sure edge didn't set off explosion */
 
-int edge_expl(t)
-   struct torp	*t;
+int edge_expl(struct torp	*t)
 {
    register int	i = t->t_x,
 		j = t->t_y;
@@ -1562,8 +1556,7 @@ int edge_expl(t)
    return (!i || i == GWIDTH || !j || j == GWIDTH);
 }
 
-int sync_check(t)
-   Player	**t;
+int sync_check(Player	**t)
 {
    Player	*targ = *t;
    Player	*him, *his_targ;
@@ -1589,7 +1582,7 @@ int sync_check(t)
    return 1;
 }
 
-void check_sync_loop()
+static void check_sync_loop(void)
 {
    struct player	*j;
    char			buf[30];

@@ -15,12 +15,7 @@ struct stringlist {
 
 struct stringlist *defaults=NULL;
 
-#ifndef __FreeBSD__
-char *getenv();
-#endif
-
-void initDefaults(deffile)
-    char *deffile;		/* As opposed to defile? */
+void initDefaults(char *deffile)
 {
     FILE *fp;
     char file[100];
@@ -64,8 +59,9 @@ void initDefaults(deffile)
     fclose(fp);
 }
 
-char *getdefault(str)
-    char *str;
+int strcmpi(const char *str1, const char *str2);
+
+char *getdefault(char *str)
 {
     struct stringlist *sl;
 
@@ -99,9 +95,7 @@ int strcmpi(const char * str1, const char * str2)
 */
 }
 
-int booleanDefault(def, preferred)
-    char *def;
-    int preferred;
+int booleanDefault(char *def, int preferred)
 {
     char *str;
 

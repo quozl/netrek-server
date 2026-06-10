@@ -14,11 +14,25 @@
 #include "packets.h"
 #include "robot.h"
 
-static void borg_detect();
+static void borg_detect(void);
+
+/* forward declarations */
+void do_torps(void);
+#ifdef ATM
+int readFromServer(int pollmode);
+#else
+int readFromServer(void);
+#endif
+int mtime(int x);
+int isServerDead(void);
+void exitRobot(int sig);
+void mprintf(char *format, ...);
+void death(void);
+int angdist(unsigned char x, unsigned char y);
 
 int	_tcheck;
 
-void intrupt()
+void intrupt(void)
 {
    static long     lastread;
    static int      prevread;
@@ -73,7 +87,7 @@ keep_reading:
 
 /* borg detect */
 
-void borg_detect()
+static void borg_detect(void)
 {
    register Player		*p;
    register struct player	*j;

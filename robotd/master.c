@@ -19,15 +19,16 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <arpa/inet.h>
+#include <unistd.h>
 
-void master()
+void master(void)
 {
 }
 
 /* slave robot */
 
-int connect_master(m)
-   char	*m;
+int connect_master(char *m)
 {
    int			v, ms = -1;
    int			port;
@@ -74,9 +75,7 @@ int connect_master(m)
 
 /* slave sends master packets */
 
-void send_to_master(p, s)
-   struct player_spacket	*p;
-   int				s;
+void send_to_master(struct player_spacket *p, int s)
 {
    int	c;
    if(_master_sock == -1) return;
@@ -87,7 +86,6 @@ void send_to_master(p, s)
    }
 }
 
-void recv_from_master(p)
-   struct mastercomm_spacket	*p;
+void recv_from_master(struct mastercomm_spacket *p)
 {
 }

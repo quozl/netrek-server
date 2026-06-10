@@ -9,16 +9,46 @@
 #include "data.h"
 #include "packets.h"
 #include "robot.h"
+#include <string.h>
+#include <stdlib.h>
 
-unsigned char get_pl_course();
+unsigned char get_pl_course(struct planet *pl, int *speed, int *cloak);
 
-static unsigned char assault_course();
+static unsigned char assault_course(struct planet *pl, int pdist, unsigned char crs, int *c);
 static void goto_assault_planet(void);
 static void assault_planet(void);
 
+/* forward declarations for external functions */
+void unassault_c(char *s);
+int orbiting(struct planet *pl);
+void notify_take(struct planet *aspl, int phase);
+int his_ship_faster(Player *p);
+int req_cloak_on(void);
+int req_cloak_off(char *s);
+int req_planetlock(int n);
+int myfight_speed(void);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+int req_set_course(unsigned char c);
+int req_set_speed(int s, int l, char *f);
+int unknownpl(struct planet *pl);
+int req_shields_up(void);
+int req_bomb(void);
+int req_beamdown(void);
+int update_torps(int *avdir, unsigned char dir, int speed, int *hittime, int *damage, int f);
+void check_dethis(int num_hits, int hittime);
+int starbase(Player *p);
+int accavdir(int avdir, int damage, unsigned char tdir, int tdamage);
+int avoiddir(unsigned char dir, unsigned char *mcrs, unsigned char r);
+void mprintf(char *format, ...);
+int angdist(unsigned char x, unsigned char y);
+int myemg_speed(void);
+int check_ship_speed(Player *p, int v);
+void check_gboundary(unsigned char *crs, int f);
+void mfprintf(FILE *fo, char *format, ...);
+
 /* assault planet */
 
-void assault()
+void assault(void)
 {
    if(!_state.assault || !_state.assault_planet){
       return;
@@ -83,7 +113,7 @@ static int risk_res_death(struct planet *pl)
    return 0;
 }
 
-void goto_assault_planet()
+static void goto_assault_planet(void)
 {
    Player		*e = _state.closest_e;
    struct player	*j = e?e->p:NULL;
@@ -164,8 +194,7 @@ void goto_assault_planet()
 }
 
 /* UNUSED */
-int do_cloak(pdist)
-   int	pdist;	/* unused */
+int do_cloak(int pdist)
 {
    Player	*e = _state.closest_e;
 
@@ -181,7 +210,7 @@ int do_cloak(pdist)
    return 1;
 }
 
-void assault_planet()
+static void assault_planet(void)
 {
   Player         *e = _state.closest_e;
   struct player	 *j = e?e->p:NULL;
@@ -262,7 +291,7 @@ void assault_planet()
  * Called from s_defense when orbiting a planet we want to assault.
  */
 
-void defend_enemy_planet()
+void defend_enemy_planet(void)
 {
    Player		*e = _state.closest_e;
    int			num_hits;
@@ -325,12 +354,7 @@ void defend_enemy_planet()
 }
 
 /* NOT USED */
-unsigned char assault_course(pl, pdist, crs, c)
-
-   struct planet	*pl;
-   int			pdist;
-   unsigned char	crs;
-   int			*c;
+static unsigned char assault_course(struct planet *pl, int pdist, unsigned char crs, int *c)
 {
    unsigned char	hcrs, bcrs;
    int			avcrs;
@@ -425,9 +449,7 @@ unsigned char assault_course(pl, pdist, crs, c)
 }
 
 /* NOTUSED */
-int accavdir_nd(avdir, dir)
-   int			avdir;
-   unsigned char	dir;
+int accavdir_nd(int avdir, unsigned char dir)
 {
    register int	dif = angdist((unsigned char)avdir, dir);
    register int n;
@@ -441,10 +463,7 @@ int accavdir_nd(avdir, dir)
    return NORMALIZE(avdir);
 }
 
-unsigned char get_pl_course(pl, speed, cloak)
-   struct planet	*pl;
-   int			*speed;
-   int			*cloak;
+unsigned char get_pl_course(struct planet *pl, int *speed, int *cloak)
 {
    int			pldist, edist;
    register int		i, de=0;
@@ -571,9 +590,7 @@ unsigned char get_pl_course(pl, speed, cloak)
    return pdcrs;
 }
 
-int check_ship_speed(p, v)
-   Player	*p;
-   int		v;
+int check_ship_speed(Player *p, int v)
 {
    int	val = his_ship_faster(p), r;
    if(val > 0){

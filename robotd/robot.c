@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <limits.h>
@@ -12,29 +13,147 @@
 #include "robot.h"
 
 /* XXX */
-void goto_state();
-void s_no_hostile();
-void s_update();
-void s_refit();
-void s_engage();
-void s_assault();
-void s_getarmies();
-void s_ogg();
-void s_escort();
-void s_comehere();
-void do_defense();
-void s_defense();
-void s_disengage();
-void s_recharge();
-void phaser_plasmas();
-void req_pressor_on();
+void goto_state(void);
+void s_no_hostile(void);
+void s_update(void);
+void s_refit(void);
+void s_engage(void);
+void s_assault(void);
+void s_getarmies(void);
+void s_ogg(void);
+void s_escort(void);
+void s_comehere(void);
+void do_defense(void);
+void s_defense(void);
+void s_disengage(void);
+void s_recharge(void);
+void phaser_plasmas(void);
+void req_pressor_on(int n);
 void _reset_initial(int *team_r, int *ship_r, char *login);
 void ignore_edefault(char *s);
-void handle_unknown_problems();
-void init_servername();
+void handle_unknown_problems(void);
+void init_servername(void);
 void init_playertype(char *login);
 
-void init_timers();
+/* forward declarations for functions defined later in this file */
+int mtime(int x);
+int reset_r_info(int *team_r, int *ship_r, int first, char *login);
+int repair_check(void);
+int fuel_check(void);
+int req_set_speed(int s, int l, char *f);
+int req_set_course(unsigned char c);
+int ignore_enemy(int p);
+int ignoring_e(Player *e);
+void set_team(int t);
+int enemy_near_dead(Player *e);
+int req_detonate(char *s);
+int req_cloak_off(char *s);
+int req_torp(unsigned char crs);
+int req_phaser(unsigned char crs, int f);
+int req_planetlock(int n);
+int req_playerlock(int n);
+int req_shields_up(void);
+int req_shields_down(void);
+int req_repair_on(void);
+int req_repair_off(void);
+int req_orbit(void);
+int req_cloak_on(void);
+int req_dock_on(void);
+int req_dock_off(void);
+int req_bomb(void);
+int req_beamdown(void);
+int req_beamup(void);
+void req_det_mytorps(void);
+void req_det_mytorp(int i);
+void req_tractor_on(int n);
+void req_tractor_off(char *s);
+void req_pressor_off(void);
+int mymax_safe_speed(void);
+int myemg_speed(void);
+int mylowfuel_speed(void);
+int myfight_speed(void);
+void output_stats(void);
+void output_pstats(Player *p, char *s);
+void output_astats(void);
+int pltype_needed(void);
+int plmatch(struct planet *pl, int r);
+int rship_dist(void);
+int not_safe(struct planet *pl, unsigned char pcrs, int pdist);
+void check_me_explode(void);
+void check_dethis(int num_hits, int hittime);
+void send_initial(void);
+void ignore_edefault(char *s);
+void handle_unknown_problems(void);
+void init_playertype(char *login);
+void init_timers_impl(void);
+
+/* forward declarations for functions in other files */
+void do_alert(void);
+void warfare(int type);
+void init_dodge(void);
+void update_players(void);
+void update_planets(void);
+void decide(void);
+void disengage_c(ediswhy w, struct planet *p, char *s);
+int in_home_area(void);
+unsigned char home_crs(void);
+int compute_course(unsigned char d_crs, unsigned char *crs_r, int d_speed, int *speed_r, int *hittime_r, int *lvorbit);
+void mprintf(char *format, ...);
+void rall_c(char *s);
+int hostilepl(struct planet *pl);
+int unknownpl(struct planet *pl);
+void unassault_c(char *s);
+int should_ignore(Player *e, struct player *j, int edist);
+int declare_intents(int peaceonly);
+void init_ships(void);
+void sendUpdatePacket(long speed);
+void init_comm(void);
+void sendShortPacket(char type, char state);
+void sendDetMineReq(short torp);
+void sendTractorReq(char state, char pnum);
+void sendRepressReq(char state, char pnum);
+/* engage.c */
+void engage(Player *e);
+int guess_team(struct planet *pl);
+/* assault.c */
+void assault(void);
+void defend_enemy_planet(void);
+/* getarmies.c */
+void getarmies(void);
+int orbiting(struct planet *pl);
+/* ogg.c */
+void ogg(void);
+/* escort.c */
+void escort(void);
+/* disengage.c */
+void disengage(void);
+void handle_disvars(Player *e, int *speed);
+int edang(Player *e, int r);
+void recharge_off(char *s);
+int home_dist(void);
+int in_team_area(int team);
+int dangerous_dir(unsigned char pcrs, int r);
+struct planet *team_planet(int team);
+int orbiting_home(void);
+/* decide.c */
+void refit_c(char *s);
+void rdisengage_c(char *s);
+/* util.c */
+int angdist(unsigned char x, unsigned char y);
+int rrnd(int range);
+int edist_to_me(struct player *j);
+int dist_to_planet(Player *e, struct planet *pl);
+int defend_dist(Player *p);
+int ihypot(double xd1, double yd1);
+u_char to_dir(int origin_x, int origin_y, int destination_x, int destination_y);
+/* socket.c */
+void updateR(struct player *j);
+void emptytorpq(void);
+/* parse.c */
+/* dmessage.c */
+void response(char *buf);
+
+void init_timers(void);
 static int	in_game;
 
 /*
@@ -78,7 +197,7 @@ void R_NextCommand()
       
       case C_RESET:
 	 {  int team_r, ship_r;
-	    reset_r_info(&team_r, &ship_r, 0);
+	    reset_r_info(&team_r, &ship_r, 0, NULL);
 	 }
 	 _state.command = 0;
       
@@ -624,8 +743,7 @@ void check_me_explode()
 }
 
 
-void check_dethis(num_hits, hittime)
-   int	num_hits, hittime;
+void check_dethis(int num_hits, int hittime)
 {
    int	detconst;
 #ifdef nodef
@@ -900,11 +1018,7 @@ void s_recharge()
  */
 
 /* find closest planet away from enemy's course */
-struct planet *find_safe_planet(e, dist, team)
-
-   Player		*e;
-   int			*dist;	/* returned */
-   int			team;
+struct planet *find_safe_planet(Player *e, int *dist, int team)
 {
    register int		k;
    struct planet	*pl, *cpl=NULL;
@@ -1012,9 +1126,7 @@ int pltype_needed()
    return r;
 }
 
-int plmatch(pl, r)
-   struct planet	*pl;
-   int			r;
+int plmatch(struct planet *pl, int r)
 {
    if( (r & PLFUEL)  && !(pl->pl_flags & PLFUEL)) return 0;
    if( (r & PLREPAIR)  && !(pl->pl_flags & PLREPAIR)) return 0;
@@ -1067,15 +1179,10 @@ int rship_dist()
    return 5000;
 }
 
-int not_safe(pl, pcrs, pdist)
-   struct planet	*pl;
-   unsigned char	pcrs;
-   int			pdist;
+int not_safe(struct planet *pl, unsigned char pcrs, int pdist)
 {
    register int		i;
    register Player	*p;
-   struct planet	*team_planet();
-   int			in_team_area();
 
    if(DEBUG & DEBUG_DISENGAGE)
       printf("Is planet %s safe: ", pl->pl_name);
@@ -1320,12 +1427,10 @@ void output_stats()
    response(buf);
 }
 
-void output_pstats(p, s)
-   Player	*p;
-   char		*s;
+void output_pstats(Player *p, char *s)
 {
    char	buf[80];
-   extern char	*bp();
+   extern char	*bp(Player *p);
 
    if(p && p->p){
       sprintf(buf, "%s:%s(%d): S: %d%%, D: %d%%, F: %d%% W: %d%% (a: %d) (bp: %s)", 
@@ -1341,9 +1446,7 @@ void output_pstats(p, s)
    }
 }
 
-char *bp(p)
-
-   Player	*p;
+char *bp(Player *p)
 {
    static char	s[80];
    sprintf(s, "(%d,%d,%d,c%d) = %g", 
@@ -1400,10 +1503,7 @@ void output_astats()
    mprintf("\n");
 }
 
-int req_set_speed(s, l, f)
-   int	s;
-   int	l;
-   char	*f;
+int req_set_speed(int s, int l, char *f)
 {
    /*
    printf("%s:%d %d\n", f, l, s);
@@ -1430,8 +1530,7 @@ static int		tfired, pfired, turned;
 static unsigned char	turned_dir, tfire_dir, pfired_dir;
 
 
-int req_set_course(c)
-   unsigned char	c;
+int req_set_course(unsigned char c)
 {
    if(me->p_speed == 0) return 0;
 
@@ -1470,8 +1569,7 @@ int req_set_course(c)
    return 0;
 }
 
-int req_torp(crs)
-   unsigned char	crs;
+int req_torp(unsigned char crs)
 {
    extern	int	_tsent;
    int			now = mtime(0), t=0;
@@ -1534,8 +1632,7 @@ int req_torp(crs)
       return -1; /* low on fuel or too many torps */
 }
 
-void req_pltorp(dir)
-   unsigned char	dir;
+void req_pltorp(unsigned char dir)
 {
    if(_state.no_weapon) return;
    if(me->p_flags & PFCLOAK) return;
@@ -1553,9 +1650,7 @@ void req_pltorp(dir)
    sendPlasmaReq(dir);
 }
 
-int req_phaser(crs, f)
-   unsigned char	crs;
-   int			f;
+int req_phaser(unsigned char crs, int f)
 {
    if(expltest){
       if(MYDAMAGE() < 90) return 0;
@@ -1626,9 +1721,7 @@ int req_phaser(crs, f)
    return 0;
 }
 
-int req_planetlock(n)
-
-     int			n;
+int req_planetlock(int n)
 {
    sendPlanlockReq(n);
    if((DEBUG & DEBUG_DISENGAGE) && (me->p_flags & (PFORBIT|PFDOCK))){
@@ -1642,8 +1735,7 @@ int req_planetlock(n)
    return 1;
 }
 
-int req_playerlock(n)
-   int			n;
+int req_playerlock(int n)
 {
    sendPlaylockReq(n);
    if((DEBUG & DEBUG_DISENGAGE) && (me->p_flags & (PFORBIT|PFDOCK))){
@@ -1689,8 +1781,7 @@ int req_repair_on()
    return 0;
 }
 
-int req_detonate(s)
-   char	*s;
+int req_detonate(char *s)
 {
    if(s)
       mprintf("%s\n", s);
@@ -1733,14 +1824,12 @@ void req_det_mytorps()
    }
 }
 
-void req_det_mytorp(i)
-   int	i;
+void req_det_mytorp(int i)
 {
    sendDetMineReq(i + (me->p_no * MAXTORP));
 }
 
-void req_tractor_on(n)
-   int	n;
+void req_tractor_on(int n)
 {
    if(_state.no_weapon) return;
 
@@ -1758,8 +1847,7 @@ void req_tractor_on(n)
    sendTractorReq(1, n);
 }
 
-void req_tractor_off(s)
-   char	*s;
+void req_tractor_off(char *s)
 {
    if(me->p_flags & (PFTRACT | PFPRESS)){
       sendTractorReq(0, me->p_no);
@@ -1770,8 +1858,7 @@ void req_tractor_off(s)
    _timers.tractor_limit = TRACTOR_TIME + rrnd(10);
 }
 
-void req_pressor_on(n)
-   int	n;
+void req_pressor_on(int n)
 {
    if(_state.no_weapon) return;
    if(me->p_flags & (PFTRACT | PFPRESS)){
@@ -1809,8 +1896,7 @@ int req_cloak_on()
    return 0;
 }
 
-int req_cloak_off(s)
-   char	*s;
+int req_cloak_off(char *s)
 {
    if(me->p_flags & PFCLOAK){
       if(s) mprintf("req_cloak_off: %s\n", s);
@@ -1865,8 +1951,7 @@ int req_beamup()
    return 0;
 }
 
-int mtime(x)
-   int	x;
+int mtime(int x)
 {
    struct timeval tm;
    static int mtime_cache;
@@ -1880,9 +1965,7 @@ int mtime(x)
    return mtime_cache;
 }
 
-int reset_r_info(team_r, ship_r, first, login)
-   int	*team_r, *ship_r, first;
-   char	*login;
+int reset_r_info(int *team_r, int *ship_r, int first, char *login)
 {
 
    if(first){
@@ -2019,9 +2102,7 @@ int reset_r_info(team_r, ship_r, first, login)
    }
 }
 
-void _reset_initial(team_r, ship_r, login)
-     int	*team_r, *ship_r;
-     char	*login;
+void _reset_initial(int *team_r, int *ship_r, char *login)
 {
    /* debug */
    extern int dgo;
@@ -2078,8 +2159,7 @@ void send_initial()
    init_comm();
 }
 
-void ignore_edefault(s)
-   char	*s;	/* length MAXPLAYER+1 */
+void ignore_edefault(char *s)	/* length MAXPLAYER+1 */
 {
    register int	i;
    for(i=0; i< MAXPLAYER; i++)
@@ -2087,14 +2167,12 @@ void ignore_edefault(s)
    s[i] = '\0';
 }
 
-int ignore_enemy(p)
-   int	p;
+int ignore_enemy(int p)
 {
    return (_state.ignore_e[p] == '1');
 }
 
-int ignoring_e(e)
-   Player	*e;
+int ignoring_e(Player *e)
 {
    if(!e || !e->p || !isAlive(e->p))
       return 0;
@@ -2106,8 +2184,7 @@ int ignoring_e(e)
    return _state.ignore_e[e->p->p_no] == '1';
 }
 
-void set_team(t)
-   int	t;
+void set_team(int t)
 {
    _state.team = t;
 }
@@ -2233,8 +2310,7 @@ void init_timers()
    _state.torp_i = MIN_TORP_I;
 }
 
-char *state_name(s)
-   estate	s;
+char *state_name(estate s)
 {
    switch(s){
       
@@ -2275,8 +2351,7 @@ void handle_unknown_problems()
       _state.lock = 0;
 }
 
-int enemy_near_dead(e)
-   Player	*e;
+int enemy_near_dead(Player *e)
 {
    if(!e || !e->p || !isAlive(e->p))
       return 0;
@@ -2326,8 +2401,7 @@ void init_servername()
 }
 
 /* player type based on name */
-void init_playertype(login)
-   char	*login;
+void init_playertype(char *login)
 {
    int	v = -1;
    if(!login) return;

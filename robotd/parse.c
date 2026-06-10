@@ -19,12 +19,29 @@ static void proc_other(Player *p, char *m);
 static void proc_hostile_planet_mesg(Player *p, char *m);
 static void get_distress(char *m, int *dam, int *shield, int *arm, int *wpn, int *woe, int *eoe);
 
-static struct planet *_find_planet_by_name();
+static struct planet *_find_planet_by_name(char *n, int l, int d);
+static int plcmp_short(const void *p1, const void *p2);
+static int plcmp_long(const void *p1, const void *p2);
+static char *short_name(struct planet *pl);
 
-void parse_message(m, p, fl)
-   char		*m;
-   Player	*p;
-   int		fl;
+/* forward declarations for external functions */
+void mprintf(char *format, ...);
+int starbase(Player *p);
+int check_distress(Player *p);
+int check_hostile_planet_word(Player *p, char *w);
+int esc_too_far(Player *p, struct planet *pl);
+int inl_prot(void);
+int rndesc(Player *p);
+int ship_match(Player *p);
+void rall_c(char *s);
+void defend_c(Player *p, char *s);
+void escort_c(Player *p, struct planet *pl, char *s);
+int unknownpl(struct planet *pl);
+int hostilepl(struct planet *pl);
+int his_ship_faster(Player *p);
+int dist_to_planet(Player *e, struct planet *pl);
+
+void parse_message(char *m, Player *p, int fl)
 {
    if(me->p_ship.s_type == STARBASE) return;		/* not implemented */
 
@@ -39,9 +56,7 @@ void parse_message(m, p, fl)
    proc_other(p, m);
 }
 
-void proc_distress_call(p, m)
-   Player	*p;
-   char		*m;
+static void proc_distress_call(Player *p, char *m)
 {
    int	i, dam, shield, arm, 
 	wpn, woe, eoe;		/* TODO */
@@ -89,9 +104,7 @@ void proc_distress_call(p, m)
       check_distress(p);
 }
 
-void proc_other(p, m)
-   Player	*p;
-   char		*m;
+static void proc_other(Player *p, char *m)
 {
    if(SECONDS(p->sent_distress, 30) && p->armies > 0){
       /* hopefully to take */
@@ -100,9 +113,7 @@ void proc_other(p, m)
    /* ... */
 }
 
-void proc_hostile_planet_mesg(p, m)
-   Player	*p;
-   char		*m;
+static void proc_hostile_planet_mesg(Player *p, char *m)
 {
    int	w=0;
    char	word[80];
@@ -134,9 +145,7 @@ void proc_hostile_planet_mesg(p, m)
    }
 }
 
-int check_hostile_planet_word(p, w)
-   Player	*p;
-   char		*w;
+int check_hostile_planet_word(Player *p, char *w)
 {
    struct planet	*pl;
 
@@ -149,12 +158,12 @@ int check_hostile_planet_word(p, w)
       pl = find_planet_by_shortname(w, /* hostile */0);
    
    if(me->p_armies > 0 || (inl && me->p_kills >= 2.0))
-      return;
-   
+      return 0;
+
    if(pl){
 
       if(esc_too_far(p, pl))
-	 return;
+	 return 0;
 
       if(!_state.escort_req || (_state.escort_player == p && 
 	 _state.escort_planet != pl)){
@@ -178,15 +187,14 @@ int check_hostile_planet_word(p, w)
       return 0;
 }
 
-int inl_prot()
+int inl_prot(void)
 {
    if(inl && _state.planets->num_teamsp > 3 && _state.protect)
       return 1;
    return 0;
 }
 
-int rndesc(p)
-   Player	*p;
+int rndesc(Player *p)
 {
    int		armies;
 
@@ -211,8 +219,7 @@ int rndesc(p)
    return 0;
 }
 
-int ship_match(p)
-   Player	*p;
+int ship_match(Player *p)
 {
    if(!p || !p->p || !isAlive(p->p))
       return 0;
@@ -242,11 +249,9 @@ int ship_match(p)
    return 0;
 }
 
-void init_plarray()
+void init_plarray(void)
 {
    register int	i;
-   char 	*short_name();
-   int		plcmp_long();
 
    mprintf("initializing planets\n");
 
@@ -267,9 +272,7 @@ void init_plarray()
  * f indicates whether we're looking for a friendly planet or not.
  */
 
-struct planet *find_planet_by_shortname(n, f)
-   char	*n;
-   int	f;	/* for short names -- look for friendly or hostile */
+struct planet *find_planet_by_shortname(char *n, int f)
 {
    struct planet		*amb;
    int				hostile, l;
@@ -300,8 +303,7 @@ struct planet *find_planet_by_shortname(n, f)
  * find planet by full name either capitalized or not.
  */
 
-struct planet *find_planet_by_longname(n)
-   char	*n;
+struct planet *find_planet_by_longname(char *n)
 {
    struct planet	*p;
    char			buf[80];
@@ -316,15 +318,12 @@ struct planet *find_planet_by_longname(n)
    return p;
 }
 
-static struct planet *_find_planet_by_name(n, l, d)
-   char	*n;
-   int	l;
-   int	d;
+static struct planet *_find_planet_by_name(char *n, int l, int d)
 {
    char				buf[80];
    static   struct planetmatch	key;
    struct planetmatch		*r;
-   int				plcmp_short(), plcmp_long(), (*proc)();
+   int				(*proc)(const void *, const void *);
 
    strncpy(buf, n, l);
    buf[l] = '\0';
@@ -345,20 +344,21 @@ static struct planet *_find_planet_by_name(n, l, d)
    return r->pm_planet;
 }
 
-int plcmp_short(p1, p2)
-   struct planetmatch	*p1, *p2;
+static int plcmp_short(const void *p1, const void *p2)
 {
-   return strcmp(p1->pm_short, p2->pm_short);
+   const struct planetmatch *pm1 = (const struct planetmatch *)p1;
+   const struct planetmatch *pm2 = (const struct planetmatch *)p2;
+   return strcmp(pm1->pm_short, pm2->pm_short);
 }
 
-int plcmp_long(p1, p2)
-   struct planetmatch	*p1, *p2;
+static int plcmp_long(const void *p1, const void *p2)
 {
-   return strcmp(p1->pm_name, p2->pm_name);
+   const struct planetmatch *pm1 = (const struct planetmatch *)p1;
+   const struct planetmatch *pm2 = (const struct planetmatch *)p2;
+   return strcmp(pm1->pm_name, pm2->pm_name);
 }
 
-char *short_name(pl)
-   struct planet        *pl;
+static char *short_name(struct planet *pl)
 {
    char         *n = pl->pl_name;
    static char  sname[5];
@@ -382,8 +382,7 @@ char *short_name(pl)
    return sname;
 }
 
-char *short_name_print(pl)
-   struct planet        *pl;
+char *short_name_print(struct planet *pl)
 {
    char         *n = pl->pl_name;
    static char  sname[5];
@@ -400,9 +399,7 @@ char *short_name_print(pl)
    return sname;
 }
 
-int esc_too_far(p, pl)
-   Player		*p;
-   struct planet	*pl;
+int esc_too_far(Player *p, struct planet *pl)
 {
    int	sp;
    sp = his_ship_faster(p);
@@ -414,8 +411,7 @@ int esc_too_far(p, pl)
       return pl->pl_mydist > dist_to_planet(p, pl) - 3000;
 }
 
-int his_ship_faster(p)
-   Player	*p;
+int his_ship_faster(Player *p)
 {
    int	sh, sm;
 
@@ -523,9 +519,7 @@ int his_ship_faster(p)
    return 0; /* xx */
 }
 
-void get_distress(m, dam, shield, arm, wpn, woe, eoe)
-   char	*m;
-   int	*dam,*shield,*arm,*wpn, *woe, *eoe;
+static void get_distress(char *m, int *dam, int *shield, int *arm, int *wpn, int *woe, int *eoe)
 {
    char	*s;
 
