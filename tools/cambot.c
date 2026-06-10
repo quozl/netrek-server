@@ -54,7 +54,7 @@ int bounceUDPStats(int from) {return 0;}
 int bounceRSAClientType (int from) { if (from) ; return 0; }
 #endif
 
-extern void sndTorp();
+extern int sndTorp(struct torp_info_spacket *, struct torp_spacket *, struct torp *, int, int);
 
 extern struct torp_info_spacket clientTorpsInfo[MAXPLAYER*MAXTORP];
 extern struct torp_spacket clientTorps[MAXPLAYER*MAXTORP];

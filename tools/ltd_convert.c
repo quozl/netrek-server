@@ -172,8 +172,6 @@ int main(const int argc, const char *argv[]) {
 
     ltd_reset_struct(new_entry.stats.ltd);
 
-    assert(old_entry.name);
-    assert(old_entry.password);
     assert(strlen(old_entry.name) < NAME_LEN);
     assert(strlen(old_entry.password) < NAME_LEN);
 
