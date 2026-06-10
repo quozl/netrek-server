@@ -6,6 +6,8 @@
 PACKAGE=netrek-server-vanilla
 VERSION=2.19.0
 
+MAKEFLAGS += --no-print-directory
+
 RANLIB=@RANLIB@
 VPATH=@srcdir@
 srcdir=@srcdir@
