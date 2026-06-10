@@ -25,9 +25,7 @@ static char *read_line(FILE *fp);
 
 typedef int Boolean;
 
-int main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char *argv[])
 {
     char buf[MSG_LEN + 20], *messages[MAXLINES];
     char *to;
@@ -155,9 +153,7 @@ char *argv[];
  *                 automatically added in both cases.                           *
  *                                                                              *
  ********************************************************************************/
-char *make_str(string, size)
-     char *string;
-     int size;
+char *make_str(char *string, int size)
 {
     char *new_str = NULL;
 
