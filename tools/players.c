@@ -221,13 +221,13 @@ static void udp()
     fprintf(stderr, "players: must be called by netrekd with UDP file descriptor setup\n");
   if (stat < 0) { perror("players: recvfrom"); return; }
   if (stat == 0) return;
-  
+
   /* if it isn't a standard query, ignore */
   if (buf[0] != '?') return;
-  
+
   /* compose a reply packet */
   char packet[128];
-  
+
   /* default the comment */
   char *comment = comment_get();
   if (comment == NULL) {
@@ -239,27 +239,38 @@ static void udp()
     }
   }
 
+  /* Ensure comment doesn't exceed safe length for formatting.
+     The response format is: s,type,comment,ports,port,players,queue
+     With 128-byte packet buffer and fixed overhead (~30 bytes), we limit
+     comment to 70 bytes to ensure safe formatting with snprintf(). */
+  if (comment != NULL && strlen(comment) > 70) {
+    static char truncated[71];
+    strncpy(truncated, comment, 70);
+    truncated[70] = '\0';
+    comment = truncated;
+  }
+
   /* s,type,comment,ports,port,players,queue[,port,players,queue] */
   /* if server isn't running, send simple reply */
   if (!openmem(-1)) {
     /* we don't have sysdefaults, so give an invalid type of unknown */
-    sprintf(packet, "s,unknown,%s,1,2592,%d,%d\n", comment, 0, 0);
+    snprintf(packet, sizeof(packet), "s,unknown,%s,1,2592,%d,%d\n", comment, 0, 0);
   } else {
     char *type = my_metaserver_type();
     if (inl_mode) {
       int q1 = QU_HOME;
       int q2 = QU_AWAY;
       /* assume standard INL port numbers, we do not read etc/ports */
-      sprintf(packet, "s,%s,%s,2,4566,%d,%d,4577,%d,%d\n",
+      snprintf(packet, sizeof(packet), "s,%s,%s,2,4566,%d,%d,4577,%d,%d\n",
               type, comment, pc(q1), ql(q1), pc(q2), ql(q2));
     } else {
       int q = QU_PICKUP;
       /* assume standard bronco port numbers, we do not read etc/ports */
-      sprintf(packet, "s,%s,%s,1,2592,%d,%d\n",
+      snprintf(packet, sizeof(packet), "s,%s,%s,1,2592,%d,%d\n",
               type, comment, pc(q), ql(q));
     }
   }
-  
+
   /* send the reply */
   stat = sendto(sock, packet, strlen(packet), 0, (struct sockaddr *) &addr, addrlen);
   if (stat < 0) { perror("players: sendto"); return; }
