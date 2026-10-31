@@ -74,6 +74,8 @@
 
 #define SP_MASTER_COMM	47
 
+#define SP_FEATURE	60		/* server may send without being asked */
+
 
 /* packets sent from remote client to xtrek server */
 #define CP_MESSAGE      1		/* send a message */
@@ -724,6 +726,15 @@ struct planet_loc_spacket {
 
 struct mastercomm_spacket {     /* master command */
     char type;
+};
+
+struct feature_spacket {
+   char                 type;           /* SP_FEATURE */
+   char                 feature_type;   /* either 'C' or 'S' */
+   char                 arg1,
+                        arg2;
+   int                  value;
+   char                 name[80];
 };
 
 struct oggv_cpacket {

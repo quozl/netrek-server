@@ -1935,9 +1935,10 @@ static void handleUpdatesReq(struct updates_cpacket *packet)
     per second */
     int ups = 1000000 / ntohl(packet->usecs);
     if (p_ups_set(me, ups)) {
-        /* FIXME: only send this if the client has shown it
-        understands feature packets, by sending us CP_FEATURE */
-        sendFeatureUps();
+        /* only send this if the client has shown it understands
+        feature packets, by sending us CP_FEATURE, which also sends
+        the rate in force at that time */
+        if (F_client_feature_packets) sendFeatureUps();
     }
 }
 

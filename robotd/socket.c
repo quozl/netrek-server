@@ -143,7 +143,20 @@ struct packet_handler handlers[] = {
     { 0, NULL },                                            /* 45 */
     { sizeof(struct ping_spacket),       handlePing },      /* SP_PING */
     { sizeof(struct mastercomm_spacket), handleMasterComm },/* SP_MASTER_COMM */
-
+    { 0, NULL },                                            /* 48 */
+    { 0, NULL },                                            /* 49 */
+    { 0, NULL },                                            /* 50 */
+    { 0, NULL },                                            /* 51 */
+    { 0, NULL },                                            /* 52 */
+    { 0, NULL },                                            /* 53 */
+    { 0, NULL },                                            /* 54 */
+    { 0, NULL },                                            /* 55 */
+    { 0, NULL },                                            /* 56 */
+    { 0, NULL },                                            /* 57 */
+    { 0, NULL },                                            /* 58 */
+    { 0, NULL },                                            /* 59 */
+    /* no handler, but an unknown type would discard the rest of the read */
+    { sizeof(struct feature_spacket),    NULL },            /* SP_FEATURE */
 };
 
 int sizes[] = {
