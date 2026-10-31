@@ -134,3 +134,14 @@ Running two servers on one host, different binaries
 
 	cd /usr/local/games/netrek-inl
 	bin/netrekd
+
+Installing a base practice server
+---------------------------------
+
+See docs/README.basep.
+
+Robots read commands from etc/og/og, which "make install" creates if it is
+absent.  The dogfighter, starbase and defender robots also read etc/og/dog,
+etc/og/base and etc/og/df.  These are not installed, as the original files
+have been lost.  Without them these robots still run, and each logs a harmless
+error to var/ERRORS.

@@ -25,7 +25,7 @@
 
 #define RCMD            ""
 #define OROBOT          ROBODIR("/robot")
-#define NICE            "nice -1"
+#define NICE            1
 #define REMOTEHOST      ""
 #define LOGFILE		ROBODIR("")
 #define COMFILE 	ROBOCONFDIR("/og")
@@ -35,7 +35,7 @@
 
 /* Basepractice specific additions */
 
-#define PORT 2592
+#define PORT "2592"
 
 #define HOWOFTEN 1                       /*Robot moves every HOWOFTEN cycles*/
 #define PERSEC (1000000/UPDATE/HOWOFTEN) /* # of robo calls per second*/

@@ -86,7 +86,7 @@ void start_internal(char *type);
 void exitRobot();
 void obliterate(int wflag, char kreason);
 void check_robots_only();
-void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def);
+void startrobot(int num, char *s, int dg, int base, int def);
 void fix_planets();
 
 static void reaper(int sig)
@@ -276,7 +276,7 @@ int do_start_robot(char *comm, struct message *mess)
 {
    int i;
    int             sv;
-   char            buf[80], team[10], query[20],  host[60], log[4], extra[80], desc[32];
+   char            buf[80], team[10], query[20], desc[32];
    int             num;
    int             teamv = 0, teami = -1;
    int             dg = 0, base = 0, def = 0;
@@ -291,9 +291,9 @@ int do_start_robot(char *comm, struct message *mess)
       if (isupper(buf[i]))
 	 buf[i] = tolower(buf[i]);
 
-   sv = sscanf(buf, "%s %d %s %s %s", query, &num, team, host, log);
+   sv = sscanf(buf, "%19s %d %9s", query, &num, team);
    if (sv < 3) {
-	    sv = sscanf(buf, "%s %s %s %s %s", query, team, desc, host, log);
+	    sv = sscanf(buf, "%19s %9s %31s", query, team, desc);
 	    if (sv > 2) {
 	       if (strcmp(desc, "df") == 0) {
 		  num = 1;
@@ -343,40 +343,26 @@ int do_start_robot(char *comm, struct message *mess)
    }
 #endif
 
-   extra[0] = '\0';
-
-   if (sv >= 4) {
-      strcpy(extra, " (");
-      if (sv > 4) {
-	 strcat(extra, host);
-	 strcat(extra, " log");
-      } else{
-	 strcat(extra, "on remote host\"");
-	 strcat(extra, host);
-	 strcat(extra, "\"");
-      }
-      strcat(extra, ")");
-   }
    if (dg)
-      sprintf(buf, "%d %s %s dogfighter%s started.%s", num,
+      sprintf(buf, "%d %s %s dogfighter%s started.", num,
 	      adj_s[random() % NUMADJ],
-	      team_s[teamv], num == 1 ? "" : "s", extra);
+	      team_s[teamv], num == 1 ? "" : "s");
    else if (base)
-      sprintf(buf, "one moderately angry %s base started.%s",
-	      team_s[teamv], extra);
+      sprintf(buf, "one moderately angry %s base started.",
+	      team_s[teamv]);
    else if (def)
-      sprintf(buf, "one barely competent %s defender started.%s",
-	      team_s[teamv], extra);
+      sprintf(buf, "one barely competent %s defender started.",
+	      team_s[teamv]);
    else
-      sprintf(buf, "%d %s %s ogger%s started.%s", num,
+      sprintf(buf, "%d %s %s ogger%s started.", num,
 	      adj_s[random() % NUMADJ],
-	      team_s[teamv], num == 1 ? "" : "s", extra);
+	      team_s[teamv], num == 1 ? "" : "s");
 
 
    messAll(255,roboname,buf);
 
    if (nb_robots < NB_ROBOTS)
-       startrobot(num, team, sv >= 4 ? host : NULL, sv > 4 ? log : NULL, dg, base, def);
+       startrobot(num, team, dg, base, def);
    return 0;
 }
 
@@ -409,53 +395,75 @@ namearg()
    }
 }
 
-void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
+void startrobot(int num, char *s, int dg, int base, int def)
 {
-   char           *remotehost = "";
    char           *serverhost = hostname;
-   char            command[256];
-   char            logc[256];
-   int i, pid;
+   char           *name, *login, *file, *path;
+   char           *argv[20];
+   int i, pid, argc;
 
-   if (strlen(RCMD))
-      /* run the robots on another host */
-      remotehost = h ? h : robot_host;
-   else if (strlen(robot_host))
-      /* run the robots here, connecting as ROBOTHOST */
+   /* robots run here connect as ROBOTHOST, others connect to this host */
+   if (!strlen(RCMD) && strlen(robot_host))
       serverhost = robot_host;
-   if (log)
-      sprintf(logc, "-l %s", LOGFILE);
-   else
-      sprintf(logc, " ");
 
    for (i = 0; i < num; i++) {
-      if (dg)
-	 sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X r1h1f -b -O %s -C %s",
-	       RCMD, remotehost, OROBOT, s, serverhost, PORT, namearg(), logc,
-		 DOGFILE);
-      else if (base)
-	 sprintf(command, "%s %s %s %s -h %s -p %d -n 'RoboBase' -X r1h1 -co -b -O %s -C %s",
-		 RCMD, remotehost, OROBOT, s, serverhost, PORT, logc,
-		 BASEFILE);
-      else if (def)
-	 sprintf(command, "%s %s %s %s -h %s -p %d -n 'Defender' -X r1h1d -b -O %s -C %s",
-		 RCMD, remotehost, OROBOT, s, serverhost, PORT, logc,
-		 DEFFILE);
-      else
-	 sprintf(command, "%s %s %s %s %s -h %s -p %d -n '%s' -X r1h0o -S -g -b -O %s -C %s",
-		 RCMD, remotehost, NICE, OROBOT, s, serverhost, PORT,
-		 namearg(), logc, COMFILE);
+      if (dg) {
+	 name = namearg();
+	 login = "r1h1f";
+	 file = DOGFILE;
+      } else if (base) {
+	 name = "RoboBase";
+	 login = "r1h1";
+	 file = BASEFILE;
+      } else if (def) {
+	 name = "Defender";
+	 login = "r1h1d";
+	 file = DEFFILE;
+      } else {
+	 name = namearg();
+	 login = "r1h0o";
+	 file = COMFILE;
+      }
 
-      /*
-       * printf("%s\n", command);
-       */
       pid = fork();
       if (pid == -1)
 	 return;
       if (pid == 0) {
 	 alarm_prevent_inheritance();
-	 execl("/bin/sh", "sh", "-c", command, (char *) NULL);
-	 perror("basep'execl");
+	 argc = 0;
+	 argv[argc++] = "robot";
+	 if (strlen(RCMD)) {
+	    path = RCMD;
+	    argv[argc++] = robot_host;
+	    argv[argc++] = OROBOT;
+	 } else {
+	    path = OROBOT;
+	 }
+	 argv[argc++] = s;
+	 argv[argc++] = "-h";
+	 argv[argc++] = serverhost;
+	 argv[argc++] = "-p";
+	 argv[argc++] = PORT;
+	 argv[argc++] = "-n";
+	 argv[argc++] = name;
+	 argv[argc++] = "-X";
+	 argv[argc++] = login;
+	 if (base) {
+	    argv[argc++] = "-co";
+	 } else if (!dg && !def) {
+	    argv[argc++] = "-S";
+	    argv[argc++] = "-g";
+	    errno = 0;
+	    if (nice(NICE) == -1 && errno != 0)
+	       perror("basep'nice");
+	 }
+	 argv[argc++] = "-b";
+	 argv[argc++] = "-O";
+	 argv[argc++] = "-C";
+	 argv[argc++] = file;
+	 argv[argc] = NULL;
+	 execv(path, argv);
+	 perror("basep'execv");
 	 _exit(1);
       }
       nb_robots++;
