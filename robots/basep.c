@@ -82,7 +82,7 @@ int oldmctl;
 void cleanup(int);
 void checkmess();
 int rprog(char *login, char *monitor);
-void start_internal();
+void start_internal(char *type);
 void exitRobot();
 void obliterate(int wflag, char kreason);
 void check_robots_only();
@@ -272,10 +272,7 @@ num_players()
    return c;
 }
 
-int 
-do_start_robot(comm, mess)
-   char           *comm;
-   struct message *mess;
+int do_start_robot(char *comm, struct message *mess)
 {
    int i;
    int             sv;
@@ -414,15 +411,18 @@ namearg()
 
 void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
 {
-   char           *remotehost;
+   char           *remotehost = "";
+   char           *serverhost = hostname;
    char            command[256];
    char            logc[256];
    int i, pid;
 
-   if (h)
-      remotehost = h;
-   else
-      remotehost = robot_host;
+   if (strlen(RCMD))
+      /* run the robots on another host */
+      remotehost = h ? h : robot_host;
+   else if (strlen(robot_host))
+      /* run the robots here, connecting as ROBOTHOST */
+      serverhost = robot_host;
    if (log)
       sprintf(logc, "-l %s", LOGFILE);
    else
@@ -431,19 +431,19 @@ void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
    for (i = 0; i < num; i++) {
       if (dg)
 	 sprintf(command, "%s %s %s %s -h %s -p %d -n '%s' -X r1h1f -b -O %s -C %s",
-	       RCMD, remotehost, OROBOT, s, hostname, PORT, namearg(), logc,
+	       RCMD, remotehost, OROBOT, s, serverhost, PORT, namearg(), logc,
 		 DOGFILE);
       else if (base)
 	 sprintf(command, "%s %s %s %s -h %s -p %d -n 'RoboBase' -X r1h1 -co -b -O %s -C %s",
-		 RCMD, remotehost, OROBOT, s, hostname, PORT, logc,
+		 RCMD, remotehost, OROBOT, s, serverhost, PORT, logc,
 		 BASEFILE);
       else if (def)
 	 sprintf(command, "%s %s %s %s -h %s -p %d -n 'Defender' -X r1h1d -b -O %s -C %s",
-		 RCMD, remotehost, OROBOT, s, hostname, PORT, logc,
+		 RCMD, remotehost, OROBOT, s, serverhost, PORT, logc,
 		 DEFFILE);
       else
 	 sprintf(command, "%s %s %s %s %s -h %s -p %d -n '%s' -X r1h0o -S -g -b -O %s -C %s",
-		 RCMD, remotehost, NICE, OROBOT, s, hostname, PORT,
+		 RCMD, remotehost, NICE, OROBOT, s, serverhost, PORT,
 		 namearg(), logc, COMFILE);
 
       /*
@@ -463,8 +463,7 @@ void startrobot(int num, char *s, char *h, char *log, int dg, int base, int def)
    return;
 }
 
-void start_internal(type)
-    char *type;
+void start_internal(char *type)
 {
     char *argv[6];
     u_int argc = 0;

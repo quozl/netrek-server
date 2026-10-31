@@ -109,7 +109,7 @@ extern int do_confine();
 
 char myname[] = {"Smack"};
 
-int do_sbstats_query();
+int do_sbstats_query(char *comm, struct message *mess, int who);
 extern int do_start_robot();
 
 #else		 			/* Other section's functions */
