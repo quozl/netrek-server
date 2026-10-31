@@ -163,16 +163,27 @@ static void handleLogin(void)
 	for (i=0; i<95; i++) {
 	    player.stats.st_keymap[i]=i+32;
 	}
-	if ((entries = newplayer(&player)) < 0) {
-	  sendClientLogin(NULL);
-	} else {
-	  me->p_pos = entries;
-	  memcpy(&(me->p_stats), &player.stats, sizeof(struct stats));
-	  strcpy(me->p_name, namePick);
-	  sendClientLogin(&player.stats);
+	entries = newplayer(&player);
+	if (entries != NEWPLAYER_EXISTS) {
+	  if (entries < 0) {
+	    sendClientLogin(NULL);
+	  } else {
+	    me->p_pos = entries;
+	    memcpy(&(me->p_stats), &player.stats, sizeof(struct stats));
+	    strcpy(me->p_name, namePick);
+	    sendClientLogin(&player.stats);
+	  }
+	  flushSockBuf();
+	  return;
 	}
-	flushSockBuf();
-	return;
+	/* someone else took the name since we looked, so this is now an
+	   attempt to log in as them, and must pass the password check */
+	position = findplayer(namePick, &player, 1);
+	if (position == -1) {
+	  sendClientLogin(NULL);
+	  flushSockBuf();
+	  return;
+	}
     }
 
     /* An actual login attempt */

@@ -37,6 +37,7 @@ void coup(void);
 /* db.c */
 int findplayer(char *namePick, struct statentry *player, int exhaustive);
 void savestats(void);
+#define NEWPLAYER_EXISTS (-2)
 int newplayer(struct statentry *player);
 char *crypt_player_raw(const char *password, const char *name);
 char *crypt_player(const char *password, const char *name);

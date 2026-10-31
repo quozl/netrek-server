@@ -35,11 +35,13 @@ static off_t db_index_fetch(char *namePick, struct statentry *player) {
   datum key, content;
   off_t position;
 
-  /* open the player index database */
-  dbf = gdbm_open(PlayerIndexFile, 0, GDBM_WRCREAT, 0644, NULL);
+  /* open the player index database, as a reader so that logins do not
+     lock each other out; db_index_store creates it if it is absent */
+  dbf = gdbm_open(PlayerIndexFile, 0, GDBM_READER, 0644, NULL);
   if (dbf == NULL) {
-    ERROR(1,("db.c: db_index_fetch: gdbm_open('%s'): '%s', '%s'\n",
-	     PlayerIndexFile, gdbm_strerror(gdbm_errno), strerror(errno)));
+    if (errno != ENOENT)
+      ERROR(1,("db.c: db_index_fetch: gdbm_open('%s'): '%s', '%s'\n",
+	       PlayerIndexFile, gdbm_strerror(gdbm_errno), strerror(errno)));
     return -1;
   }
   ERROR(8,("db.c: db_index_fetch: gdbm_open('%s'): ok\n", 
@@ -222,13 +224,21 @@ void savestats(void)
     }
 }
 
+/* add a player, returns position, or NEWPLAYER_EXISTS if the name has been
+   added since the caller looked for it, or -1 on failure */
 int newplayer(struct statentry *player)
 {
   int fd, offset, position;
+  struct statentry existing;
 
   ERROR(8,("db.c: newplayer: adding '%s'\n", player->name));
 
   lock_on(LOCK_PLAYER_ADD); /* race: two players might be added at once */
+  if (findplayer(player->name, &existing, 1) != -1) {
+    lock_off(LOCK_PLAYER_ADD);
+    ERROR(8,("db.c: newplayer: '%s' already exists\n", player->name));
+    return NEWPLAYER_EXISTS;
+  }
   fd = open(PlayerFile, O_RDWR|O_CREAT, 0644);
   if (fd < 0) goto failed_unlock;
   if ((offset = lseek(fd, 0, SEEK_END)) < 0) goto failed_close;
