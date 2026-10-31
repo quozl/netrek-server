@@ -32,6 +32,7 @@ SET (all_DOCS
 	sample_motdbasep 
 	sample_reserved 
 	sample_tourn.map
+	sample_og
 )
 
 set (empty_ETC_DIRS

@@ -58,14 +58,7 @@ IS_ROBOT_BY_HOST=0
 
 Robots start after a human joins, and within half a minute there are seven of them.  They leave to make room as more humans join.  Once started they keep playing after the humans have gone, until you stop the game.
 
-Each robot reads commands from `here/etc/og/og`, which is not installed.  Without it each robot logs a harmless error to `here/var/ERRORS`, so create it, even if empty:
-
-```
-mkdir -p here/etc/og
-touch here/etc/og/og
-```
-
-Commands go one per line.  For example `hm 9` makes the robots easier, and `hm 0` is the hardest and the default.  The full list is in `robotd/dmessage.c`.
+Each robot reads commands from `here/etc/og/og`, one per line.  If the file is absent, `make install` creates it containing `hm 9`, which makes the robots easier.  Use `hm 0` for the hardest robots.  The full list of commands is in `robotd/dmessage.c`.
 
 ## What is Netrek?
 
