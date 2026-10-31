@@ -9,8 +9,6 @@ work on this that added TRUE/FALSE to other files.  TRUE/FALSE
 
 List of things that are defects
 
-        - etc/og/og should be populated on make install, see INSTALL.Newbie
-
 	- on first entry to an INL=1 server,
 	  INL->X0   You have been ejected due to player DB inconsistency.
 	  but does not hinder player or game.

@@ -34,14 +34,14 @@ config.h:
    NICE		-- the robots will be executed with this "nice" value
    REMOTEHOST	-- remote host
    LOGFILE	-- a directory name (not used normally)
-   COMFILE	-- commands file for robot oggers.  The default file is
-		   included in ./doc/robot/og
-   DOGFILE	-- commands file for robot dogfighter.  The default file is
-		   included in ./doc/robot/dog
-   BASEFILE	-- commands file for robot starbase.  The default file is
-		   included in ./doc/robot/base
-   DEFFILE	-- commands file for robot starbase defender.  The default 
-		   file does not exist (I guess it isn't needed).
+   COMFILE	-- commands file for robot oggers, etc/og/og.  Created by
+		   make install if it is absent.
+   DOGFILE	-- commands file for robot dogfighter, etc/og/dog.  Not
+		   installed.
+   BASEFILE	-- commands file for robot starbase, etc/og/base.  Not
+		   installed.
+   DEFFILE	-- commands file for robot starbase defender, etc/og/df.
+		   Not installed.
    RDOMAIN	-- a common string that will show up in the robot players'
 		   machine name.  This is used to determine if only robots
 		   remain in the game, in which case they'll be told to

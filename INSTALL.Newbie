@@ -50,22 +50,22 @@ etc/sysdef
 8.  run a client to connect to the server.
 
 ---- BELOW IS OPTIONAL ----
-- create a file named "og" in lib/og 
+- make install creates a file named "og" in etc/og, if it is absent
 - this is the initial commands the newbie robots will read
-- add the line "hm 9" into the og file. This will make the bots easy on you.
+- it contains the line "hm 9". This will make the bots easy on you.
 
 - test that your "og" file works by adding the line "coff" and "woff"
 - This will make the bots not cloak and not shoot weapons. 
 
 - Remove coff and woff, as that makes the game too easy. 
-- hm 0 is tough and robots will default to this. 
+- hm 0 is tough.
 
 Below is a sample robot command file named "og". Please remove anything in 
 comment lines /* */
 
 The full list of robot commands can be found in robotd/dmessage.c
 
----BEGIN SAMPLE lib/og/og file
+---BEGIN SAMPLE etc/og/og file
 hm 9
 randtorp
 upd 2  /* 5 updates a second, you can put upd 1 for 10 ups */

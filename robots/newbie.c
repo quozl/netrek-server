@@ -800,7 +800,7 @@ start_a_robot(char *team)
      * -b blind mode, do not listen to anybody
      * -O no passwd during login sequence
      * -i INL mode, sets robot updates to 5 updates per second
-     * -C read commands file, usually ROBOTDIR/og 
+     * -C read commands file, usually etc/og/og
      */
 
     pid = fork();

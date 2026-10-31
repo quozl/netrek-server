@@ -17,16 +17,21 @@
 #else
 #define ROBODIR(RFILE) (LIBDIR "/" N_ROBODIR RFILE)
 #endif
+#ifdef CHECK_ENV
+#define ROBOCONFDIR(RFILE) (strdup(strcat(strcpy(robofile, Robodir), RFILE)))
+#else
+#define ROBOCONFDIR(RFILE) (SYSCONFDIR "/" N_ROBODIR RFILE)
+#endif
 
 #define RCMD            ""
 #define OROBOT          ROBODIR("/robot")
 #define NICE            "nice -1"
 #define REMOTEHOST      ""
 #define LOGFILE		ROBODIR("")
-#define COMFILE 	ROBODIR("/og")
-#define DOGFILE 	ROBODIR("/dog")
-#define BASEFILE        ROBODIR("/base")
-#define DEFFILE		ROBODIR("/df")
+#define COMFILE 	ROBOCONFDIR("/og")
+#define DOGFILE 	ROBOCONFDIR("/dog")
+#define BASEFILE        ROBOCONFDIR("/base")
+#define DEFFILE		ROBOCONFDIR("/df")
 
 /* Basepractice specific additions */
 
