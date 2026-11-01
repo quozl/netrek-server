@@ -916,6 +916,47 @@ int readFromClient(void)
 
 static int      rsock;
 
+/* Wait until the read buffer holds at least size bytes from bufptr, as a read
+   may have ended part way through a packet.  The SIGALRM of the update timer
+   interrupts select() and read(), so try them again, up to twenty seconds in
+   all.  Returns zero if the client has died. */
+static int doReadRest(int asock, char *buf, char *bufptr, int *count, int size)
+{
+    struct timeval timeout;
+    fd_set readfds;
+    time_t deadline = time(NULL) + 20;
+    int temp;
+
+    while (size>*count+(buf-bufptr)) {
+	timeout.tv_sec=MAX(deadline-time(NULL), 0);
+	timeout.tv_usec=0;
+	FD_ZERO(&readfds);
+	FD_SET(asock, &readfds);
+	temp=select(asock+1, &readfds, NULL, NULL, &timeout);
+	if (temp < 0 && errno == EINTR) continue;
+	if (temp <= 0) {
+	    logmessage("Died while waiting for packet...");
+	    ERROR(1,( "1a) read() failed (%d, error %d)\n",
+		      *count, errno));
+	    clientDead=1;
+	    return 0;
+	}
+
+	temp=read(asock,buf+*count,size-(*count+(buf-bufptr)));
+	if (temp < 0 && errno == EINTR) continue;
+	if (temp<=0) {
+	    sprintf(buf, "Died in second read(), return=%d", temp);
+	    logmessage(buf);
+	    ERROR(1,( "2) read() failed (%d, error %d)\n",
+		      *count, errno));
+	    clientDead=1;
+	    return 0;
+	}
+	*count+=temp;
+    }
+    return 1;
+}
+
 /* ripped out of above routine */
 static int doRead(int asock)
 {
@@ -1013,6 +1054,8 @@ static int doRead(int asock)
 	if(size == -1){     /* variable packet */
 	    switch(*bufptr){
 	    case CP_S_MESSAGE:
+		/* a read may have ended before the length */
+		if (!doReadRest(asock, buf, bufptr, &count, 4)) return 0;
 		size = (unsigned char) bufptr[3];
 		break;
 	    default:
@@ -1030,34 +1073,7 @@ static int doRead(int asock)
 		return 0;
 	    }
 	}
-	while (size>count+(buf-bufptr)) {
-	    /* We wait for up to twenty seconds for rest of packet.
-	     * If we don't get it, we assume the client died. 
-	     */
-	    timeout.tv_sec=20;
-	    timeout.tv_usec=0;
-	    /*readfds=1<<asock;*/
-	    FD_ZERO(&readfds);
-	    FD_SET(asock, &readfds);
-	    if (select(asock+1, &readfds, NULL, NULL, &timeout) == 0) {
-		logmessage("Died while waiting for packet...");
-		ERROR(1,( "1a) read() failed (%d, error %d)\n",
-			  count, errno));
-		clientDead=1;
-		return 0;
-	    }
-
-	    temp=read(asock,buf+count,size-(count+(buf-bufptr)));
-	    count+=temp;
-	    if (temp<=0) {
-		sprintf(buf, "Died in second read(), return=%d", temp);
-		logmessage(buf);
-		ERROR(1,( "2) read() failed (%d, error %d)\n",
-			  count, errno));
-		clientDead=1;
-		return 0;
-	    }
-	}
+	if (!doReadRest(asock, buf, bufptr, &count, size)) return 0;
 	/* Check to see if the handler is there and the request is legal.
 	 * The code is a little ugly, but it isn't too bad to worry about
 	 * yet.
@@ -1105,7 +1121,7 @@ static int doRead(int asock)
 		/*readfds = 1<<asock;*/
 		FD_ZERO(&readfds);
 		FD_SET(asock, &readfds);
-		if (select(asock+1, &readfds, NULL, NULL, &timeout)) {
+		if (select(asock+1, &readfds, NULL, NULL, &timeout) > 0) {
 		    temp=read(asock,buf+BUFSIZ,BUFSIZ);
 		    count=BUFSIZ+temp;
 		    if (temp<=0) {
