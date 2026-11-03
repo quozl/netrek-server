@@ -27,7 +27,7 @@ void initDefaults(char *deffile)
 	deffile=file;
 	home=getenv("HOME");
 	if (home) {
-	    sprintf(file, "%s/.xtrekrc", home);
+	    snprintf(file, sizeof(file), "%s/.xtrekrc", home);
 	} else {
 	    strcpy(file, ".xtrekrc");
 	}
