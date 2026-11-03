@@ -569,6 +569,50 @@ void socketPause(void)
 }
 
 static    char _buf[BUFSIZ*2];
+
+/* Check the slot number supplied in a server packet before a handler uses
+   it as an array index.  A robot normally talks to a trusted server, but a
+   hostile server could otherwise drive the robot to read and write outside
+   players[], torps[] or plasmatorps[]. */
+static int valid_index(int type, char *buf)
+{
+    switch (type) {
+    case SP_PLANET:
+	return (unsigned char) ((struct planet_spacket *) buf)->pnum < MAXPLANETS;
+    case SP_PLANET_LOC:
+	return (unsigned char) ((struct planet_loc_spacket *) buf)->pnum < MAXPLANETS;
+    case SP_TORP:
+	return (unsigned) ntohs(((struct torp_spacket *) buf)->tnum) <
+	    (unsigned) (MAXPLAYER * MAXTORP);
+    case SP_TORP_INFO:
+	return (unsigned) ntohs(((struct torp_info_spacket *) buf)->tnum) <
+	    (unsigned) (MAXPLAYER * MAXTORP);
+    case SP_PLASMA:
+	return (unsigned) ntohs(((struct plasma_spacket *) buf)->pnum) <
+	    (unsigned) (MAXPLAYER * MAXPLASMA);
+    case SP_PLASMA_INFO:
+	return (unsigned) ntohs(((struct plasma_info_spacket *) buf)->pnum) <
+	    (unsigned) (MAXPLAYER * MAXPLASMA);
+    case SP_YOU:
+    case SP_PLAYER_INFO:
+    case SP_PLAYER:
+    case SP_PHASER:
+    case SP_FLAGS:
+    case SP_KILLS:
+    case SP_HOSTILE:
+    case SP_PL_LOGIN:
+    case SP_PSTATUS:
+    case SP_STATS:
+	return (unsigned char) ((struct player_spacket *) buf)->pnum < MAXPLAYER;
+#ifdef SP_SCAN
+    case SP_SCAN:
+	return (unsigned char) buf[1] < MAXPLAYER;
+#endif
+    default:
+	return 1;
+    }
+}
+
 #ifdef ATM
 int readFromServer(int pollmode)
 {
@@ -728,6 +772,10 @@ int doRead(int asock)
                     return(0);
                 }
             }
+            if (!valid_index(*bufptr, bufptr)) {
+                mprintf("Packet %d names an out of range slot, aborting...\n", *bufptr);
+                return(0);
+            }
             if (handlers[*bufptr].handler != NULL) {
                 if ((asock != udpSock) || !drop_flag || *bufptr == SP_SEQUENCE){
 	             if(asock == udpSock)
@@ -846,6 +894,10 @@ int readFromServer(void)
 		    serverDead=1;
 		    return(0);
 		}
+	    }
+	    if (!valid_index(*bufptr, bufptr)) {
+		mprintf("Packet %d names an out of range slot, aborting...\n", *bufptr);
+		return(0);
 	    }
 	    if (handlers[*bufptr].handler != NULL) {
 		(*(handlers[*bufptr].handler))(bufptr);
