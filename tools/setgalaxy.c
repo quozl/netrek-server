@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
 	int num;
 	char name[NAME_LEN];
-	if (sscanf(argv[2], "%d:%[^\n]", &num, name)==2) {
+	if (sscanf(argv[2], "%d:%15[^\n]", &num, name)==2) {
 	    if ((num >= 0) && (num <= (MAXPLANETS-1))) {
 		printf("Renaming planet #%d to %s.\n", num, name);
 		strcpy(planets[num].pl_name, name);
