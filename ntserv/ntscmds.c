@@ -1440,9 +1440,14 @@ void do_admin(char *comm, struct message *mess)
   struct player *them = NULL;
 
   if (!p->p_authorised) {
-    if (strstr(comm, "ADMIN password")) {
-      char *cchar = &comm[15];
-      if (!strcmp(cchar, admin_password)) {
+    char *found = strstr(comm, "ADMIN password");
+    if (found != NULL) {
+      /* the password follows the keyword and any spaces */
+      char *cchar = found + strlen("ADMIN password");
+      while (*cchar == ' ')
+        cchar++;
+      /* an unset password must never authorise a player */
+      if (admin_password[0] != '\0' && !strcmp(cchar, admin_password)) {
         if (!strcmp(cchar, "password")) {
           pmessage(who, MINDIV, addr, "admin: denied, password is not yet set");
           ERROR(2,("%s admin: authorisation ignored, ip=%s\n",
