@@ -650,7 +650,7 @@ int do_generic_vote(char *comm, int who)
 
 char *addr_mess(int who, int type)
 {
-    static char addrbuf[10];
+    static char addrbuf[16];
 
     if (type == MALL) 
       sprintf(addrbuf,"%s->ALL", myname);
