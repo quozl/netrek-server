@@ -29,7 +29,7 @@ int getplayer(int from, char *line);
 
 char *addr_mess(int who, int type)
 {
-    static char addrbuf[10];
+    static char addrbuf[16];
     char* team_names[MAXTEAM+1] = { "", "FED", "ROM", "", "KLI",
                                  "", "", "", "ORI" };
 
