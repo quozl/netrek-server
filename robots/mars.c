@@ -202,10 +202,10 @@ void config()
 	fprintf(stderr,"%s: Tournament map file missing\n",TOURNMAP);
     } else {
         for (i = 0; i < 40; i++) {
-            char dummy[3];
+            char dummy[16];
             int newx, newy;
 
-            if (fscanf(f, "%s %d %d\n", dummy, &newx, &newy) == EOF) {
+            if (fscanf(f, "%15s %d %d\n", dummy, &newx, &newy) == EOF) {
                 if (ferror(f)) perror("mars: config: tournament map: fscanf");
             } else {
                 planets[i].pl_x = newx;
