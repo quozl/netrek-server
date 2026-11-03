@@ -178,8 +178,15 @@ getFeature(struct feature_cpacket *cpack, /* client request */
 {
    register int                       i;
    register struct feature_spacket    *f;
+   char                               name[sizeof(cpack->name)];
 
-   strcpy(spack->name, cpack->name);
+   /* the client supplied name is not guaranteed to be NUL terminated,
+      so make a safe copy before using it as a string */
+   memcpy(name, cpack->name, sizeof(name) - 1);
+   name[sizeof(name) - 1] = '\0';
+
+   strncpy(spack->name, name, sizeof(spack->name) - 1);
+   spack->name[sizeof(spack->name) - 1] = '\0';
 
    /* default is unknown feature */
    spack->feature_type		= 0;
@@ -189,7 +196,7 @@ getFeature(struct feature_cpacket *cpack, /* client request */
 
     /* find the server's record of the feature */
     for(i=0,f=features; i<num_features; i++,f++) {
-	if(feature_cmp(cpack->name, f->name)) {
+	if(feature_cmp(name, f->name)) {
 	    /* This is an evil hack, turn SAT on in obs mode */
 	    if(Observer && !strcmp(f->name,"SHOW_ALL_TRACTORS")) f->value = 1;
 	    spack->feature_type	= f->feature_type;
@@ -210,7 +217,7 @@ getFeature(struct feature_cpacket *cpack, /* client request */
 
    /* server/client options that might need special variables */
    for(i=0; feature_vars[i].name ; i++){
-      if(feature_cmp(cpack->name, feature_vars[i].name)) {
+      if(feature_cmp(name, feature_vars[i].name)) {
        if(feature_vars[i].var){
           if(cpack->value == 1)
              *feature_vars[i].var = (spack->value == 1);
