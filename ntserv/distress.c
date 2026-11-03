@@ -151,7 +151,10 @@ void HandleGenDistr (char *message, u_char from, u_char to,
   dist->tclose_fr = mtext[14] & 0x7f;
   dist->close_fr = mtext[15] & 0x7f;
   i=0;
-  while ((mtext[16+i] & 0xc0) == 0xc0 && (i < 6))
+  /* leave room for the terminator that is stored after the loop, otherwise
+     a full list of carbon copies writes one byte past cclist[] */
+  while ((mtext[16+i] & 0xc0) == 0xc0 &&
+         (i < (int) sizeof(dist->cclist) - 1))
 	{
 	  dist->cclist[i]=mtext[16+i] & 0x1f;
 	  i++;
