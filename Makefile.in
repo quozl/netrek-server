@@ -4,7 +4,7 @@
 #
 
 PACKAGE=netrek-server-vanilla
-VERSION=2.19.0
+VERSION=2.20.0
 
 MAKEFLAGS += --no-print-directory
 

@@ -1,7 +1,7 @@
 Release Procedure
 
 # set variables
-VS=2.19.0
+VS=2.20.0
 PN=netrek-server-vanilla
 
 # check version numbers in files
@@ -19,7 +19,8 @@ head -3 ChangeLog
 head -1 NEWS
 
 # commit changes
-git commit -a -m "prerelease $VS"
+git add include/version.h include/patchlevel.h Makefile.in README.releasing ChangeLog NEWS
+git commit -m "prerelease $VS"
 
 # test the build is clean
 tests/build
