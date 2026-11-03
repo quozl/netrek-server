@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <dirent.h>
+#include <ctype.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -108,6 +109,27 @@ static void dnsbl_lookup(char *ip, int *xblproxy, int *sorbsproxy,
 }
 #endif
 
+/* Copy a host name into dst, truncating to the buffer and replacing any
+   character that is not valid in a host name.  Reverse DNS names are
+   controlled by the client, so this keeps them safe to display and to pass
+   to helper programs, and guarantees NUL termination even when the source
+   is longer than the buffer. */
+static void copy_hostname(char *dst, const char *src, size_t size)
+{
+    size_t i;
+
+    if (size == 0)
+        return;
+    for (i = 0; i + 1 < size && src[i] != '\0'; i++) {
+        unsigned char c = (unsigned char) src[i];
+        if (isalnum(c) || c == '.' || c == '-' || c == '_' || c == ':')
+            dst[i] = c;
+        else
+            dst[i] = '_';
+    }
+    dst[i] = '\0';
+}
+
 void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
                int *xblproxy, int *sorbsproxy, int *njablproxy, int len)
 {
@@ -131,8 +153,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
     if (inet_aton(ip, &addr) == 0) {
         /* Display the IP in both full_hostname and dns_hostname on failure */
         ERROR(2,("ip_to_full_hostname: numeric ip address not valid format %s\n", ip));
-        strncpy(p_full_hostname, ip, len - 1);
-        strncpy(p_dns_hostname, ip, len - 1);
+        copy_hostname(p_full_hostname, ip, len);
+        copy_hostname(p_dns_hostname, ip, len);
         _exit(1);
     }
 
@@ -141,8 +163,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
     if (reverse == NULL) {
         /* Display the IP in both full_hostname and dns_hostname on failure */
         ERROR(2,("ip_to_full_hostname: reverse lookup failed for %s\n", ip));
-        strncpy(p_full_hostname, ip, len - 1);
-        strncpy(p_dns_hostname, ip, len - 1);
+        copy_hostname(p_full_hostname, ip, len);
+        copy_hostname(p_dns_hostname, ip, len);
         _exit(1);
     }
 
@@ -157,8 +179,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
             original IP */
         ERROR(3,("ip_to_full_hostname: forward lookup failed for %s (%s)\n",
                  reverse->h_name, ip));
-        strncpy(p_full_hostname, ip, len - 1);
-        strncpy(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
+        copy_hostname(p_full_hostname, ip, len);
+        copy_hostname(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE);
         _exit(0);
     }
     /* if this test works, then DNS is set up correctly */
@@ -166,8 +188,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
     /* Display the resolved reverse in both full_hostname and
        dns_hostname if the resolved forward matches or if IP_CHECK_DNS
        is disabled */
-    strncpy(p_full_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
-    strncpy(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE - 1);
+    copy_hostname(p_full_hostname, reverse->h_name, MAXHOSTNAMESIZE);
+    copy_hostname(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE);
     ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
     _exit(0);
 }
