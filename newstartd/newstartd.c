@@ -704,7 +704,7 @@ static void putpid(void)
 static int read_portfile (char *portfile)
 {
   FILE *fi;
-  char buf[BUFSIZ], addrbuf[BUFSIZ], *port;
+  char buf[BUFSIZ], addrbuf[128], *port;
   int i = 0, n;
   struct stat sbuf;
 
@@ -713,7 +713,14 @@ static int read_portfile (char *portfile)
     while (fgets (buf, BUFSIZ, fi)) {
       if (buf[0] == '#')
 	continue;
-      if ((n = sscanf (buf, "%s %s \"%[^\"]\" %s %s %s %s",
+      if (i >= MAXPROG) {
+	fprintf (stderr, "%s: too many entries, maximum is %d\n",
+		 portfile, MAXPROG);
+	break;
+      }
+      /* the fields are read with explicit widths so that a long or
+	 malformed line cannot overflow the record */
+      if ((n = sscanf (buf, "%127s %511s \"%511[^\"]\" %63s %63s %63s %63s",
 		       addrbuf,
 		       prog[i].prog,
 		       prog[i].progname,
