@@ -488,7 +488,7 @@ int getplayer(int from, char *line)
 
     numargs = sscanf(line,"%s %c", temp, &id);
 
-    last = 'A' + (MAXPLAYER - 10);
+    last = 'A' + (MAXPLAYER - 10) - 1;
 
     if (numargs==1)
 	what = from;
