@@ -1013,7 +1013,7 @@ static int doRead(int asock)
 	if(size == -1){     /* variable packet */
 	    switch(*bufptr){
 	    case CP_S_MESSAGE:
-		size =  ((char)bufptr[3]);
+		size = (unsigned char) bufptr[3];
 		break;
 	    default:
 		ERROR(1,("Unknown variable packet\n"));
@@ -1022,7 +1022,13 @@ static int doRead(int asock)
 	    }
 	    if((size % 4) != 0)
 		size += (4 - (size % 4));
-
+	    /* the length is supplied by the client; reject values that would
+	       stall the loop (zero) or step outside the packet */
+	    if (size < 4 || size > (int) sizeof(struct mesg_s_cpacket)) {
+		ERROR(1,("%s: bad variable packet length: %d, aborting...\n",
+			 whoami(), size));
+		return 0;
+	    }
 	}
 	while (size>count+(buf-bufptr)) {
 	    /* We wait for up to twenty seconds for rest of packet.
