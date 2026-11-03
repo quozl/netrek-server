@@ -154,7 +154,7 @@ int getplayer(int from, char *line)
     what = from;
   else if ((id >= '0') && (id <='9'))
     what = id - '0';
-  else if ((id >= 'A') && (id <= ('A' + MAXPLAYER - 10)))
+  else if ((id >= 'A') && (id <= ('A' + MAXPLAYER - 11)))
     what = id - 'A' + 10;
   else
   {

@@ -1298,7 +1298,7 @@ void do_nodock(char *comm, struct message *mess)
   *who = toupper(*who);
   if( (*who >= '0') && (*who <= '9') )
     slot = *who - '0';
-  else if ( (*who >= 'A') && (*who <= ('A' + MAXPLAYER - 10) ) )
+  else if ( (*who >= 'A') && (*who <= ('A' + MAXPLAYER - 11) ) )
     slot = 10 + *who - 'A';
   else 
     {
@@ -1376,7 +1376,7 @@ void do_transwarp(char *comm, struct message *mess)
       *who = toupper(*who);
       if( (*who >= '0') && (*who <= '9') )
         slot = *who - '0';
-      else if ( (*who >= 'A') && (*who <= ('A' + MAXPLAYER - 10) ) )
+      else if ( (*who >= 'A') && (*who <= ('A' + MAXPLAYER - 11) ) )
         slot = 10 + *who - 'A';
       else {
         pmessage(whofrom, MINDIV, addr, "transwarp: unrecognized slot");
@@ -1495,7 +1495,7 @@ void do_admin(char *comm, struct message *mess)
       *two = toupper(*two);
       if ((*two >= '0') && (*two <='9'))
         slot = *two - '0';
-      else if ((*two >= 'A') && (*two <= ('A' + MAXPLAYER - 10)))
+      else if ((*two >= 'A') && (*two <= ('A' + MAXPLAYER - 11)))
         slot = *two - 'A' + 10;
       else {
         pmessage(who, MINDIV, addr, "admin: ignored, slot not recognised");
