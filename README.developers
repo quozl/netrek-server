@@ -20,8 +20,12 @@ Setting up a Build Environment
 
     you need certain software dependencies.
 
-        apt-get install libgdbm-dev libncurses5-dev libx11-dev \
-        libxt-dev libglib1.2-dev libgmp3-dev
+        apt-get install libgdbm-dev
+
+    for RSA client verification, which also needs the res-rsa source
+    in res-rsa/, you need GMP.
+
+        apt-get install libgmp-dev
 
     test that a build completes using tests/build
 
