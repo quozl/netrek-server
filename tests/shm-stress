@@ -1,0 +1,611 @@
+#!/usr/bin/env python3
+"""
+shm-stress -- stress the shared memory used by the daemon and ntserv,
+and count the races that show.
+
+The daemon and each ntserv share one memory segment.  The daemon
+signals each ntserv part way through its update, and does not wait, and
+each ntserv also changes the segment whenever its client sends a
+packet.  Nothing serialises their accesses, so on more than one CPU they
+run at the same time.  This test drives clients hard enough to make
+those accesses overlap, and watches for the results.
+
+It builds the tracked files of this source tree into a scratch prefix,
+runs the server there in private network, IPC and PID namespaces (so it
+needs root, and does not disturb any other server on the host), and
+runs sixteen clients, on two teams:
+
+  torpers   fire torpedoes and detonate them, either one of each per
+            step, so that the daemon frees torpedoes while ntserv fires
+            more, or eight then all eight later, some as they expire
+  attackers phaser victims in an arena away from planets, alternating
+            targets
+  victims   are phasered
+  all       send messages to themselves, and toggle shields (but not
+            victims)
+
+Clients act at random moments, as players do, rather than just after
+each update arrives, which would keep clear of some race windows.
+
+tests/shm-stress-monitor.c polls the segment, and keeps the ships
+fuelled, cool, healed and in place.  The races counted are:
+
+  ntorp-drift            p_ntorp stayed different from the live torps
+  nplasma-drift          the same for plasma
+  torp-slot              a torpedo stayed in another player's slot
+  torp-uninit            a torpedo was seen moving before ntorp() set
+                         its position; this shows the window, the daemon
+                         moving the torpedo then is rarer
+  phaser-stale           a phaser hit was applied before its target and
+                         damage were set (the daemon applies hits every
+                         fifth update, so this is rare)
+  message-lost-uplink    a message never reached the daemon's queue
+  message-lost-downlink  a message in the queue never reached its client
+  message-duplicated     a message reached its client twice
+  shield-lost            a shield command never took effect
+  shield-undone          a shield command took effect, then reverted
+
+With --widen N, the scratch build has a delay of N microseconds inserted
+in each suspected race window.  This makes those races common, which
+shows the checks work.  When a fix changes the code at a window, its
+delay may no longer apply, and the build says so.
+
+Usage, as root, from anywhere; the build takes a minute or so, joining
+thirty seconds, then the stress runs for the duration:
+
+  tests/shm-stress                      # 120 s against the source tree
+  tests/shm-stress --widen 1000         # positive control
+  tests/shm-stress --work DIR --reuse   # skip the build next time
+
+Exits 1 if any race was seen, 0 if none, 2 on a test failure.
+"""
+
+import argparse
+import multiprocessing
+import os
+import random
+import re
+import select
+import shutil
+import socket
+import struct
+import subprocess
+import sys
+import tempfile
+import time
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SOURCE = os.path.dirname(HERE)
+sys.dont_write_bytecode = True
+sys.path.insert(0, os.path.join(SOURCE, 'tools'))
+from test_client_protocol import SP_SIZES, bearing  # noqa: E402
+
+PORT = 2592
+CLIENT_ADDR = '127.0.0.2'       # not 127.0.0.1, which counts as a robot
+
+# packet types and constants, see include/packets.h and include/struct.h
+CP_MESSAGE, CP_SPEED, CP_PHASER, CP_TORP = 1, 2, 4, 6
+CP_LOGIN, CP_OUTFIT, CP_SHIELD, CP_DET_MYTORP = 8, 9, 12, 21
+CP_SOCKET, CP_UPDATES = 27, 31
+SP_MESSAGE, SP_PLAYER_INFO, SP_PLAYER, SP_PHASER, SP_YOU = 1, 2, 4, 7, 12
+SP_PICKOK, SP_LOGIN, SP_MASK, SP_PSTATUS = 16, 17, 19, 20
+MINDIV, PFSHIELD, PALIVE, MAXTORP, CRUISER = 0x02, 0x0001, 2, 8, 2
+FED, ROM = 0, 1                 # CP_OUTFIT team index
+
+# delays for --widen: (file, anchor, replacement, window)
+WIDEN = [
+    ('ntserv/phaser.c',
+     '  mine->ph_fuse = me->p_ship.s_phaserfuse;\n',
+     '  mine->ph_fuse = me->p_ship.s_phaserfuse;\n  race_widen();\n',
+     'phaser: status and fuse set before target and damage'),
+    ('ntserv/torp.c',
+     '  me->p_ntorp++;\n',
+     '  { int race_n = me->p_ntorp; race_widen();'
+     ' me->p_ntorp = race_n + 1; }\n',
+     'ntorp: p_ntorp read-modify-write'),
+    ('ntserv/torp.c',
+     '  k->t_status = TMOVE;\n',
+     '  k->t_status = TMOVE;\n  race_widen();\n',
+     'ntorp: status set before position'),
+    ('ntserv/socket.c',
+     '\tif (t->t_status == TMOVE) {\n\t    t->t_status = TOFF;\n',
+     '\tif (t->t_status == TMOVE) {\n\t    race_widen();\n'
+     '\t    t->t_status = TOFF;\n',
+     'handleDetMReq: status tested then set'),
+    ('ntserv/smessage.c',
+     '  cur = (*do_message_next)();\n',
+     '  cur = (*do_message_next)();\n'
+     '  if (do_message_next == do_message_next_player) race_widen();\n',
+     'do_message: uplink index advanced before message written'),
+]
+
+WIDEN_FUNCTION = '''
+#include <time.h>
+static void race_widen(void)
+{
+  struct timespec a, b;
+  clock_gettime(CLOCK_MONOTONIC, &a);
+  do clock_gettime(CLOCK_MONOTONIC, &b);
+  while ((b.tv_sec - a.tv_sec) * 1000000L + (b.tv_nsec - a.tv_nsec) / 1000
+         < RACE_WIDEN_US);
+}
+'''
+
+
+def log(msg):
+    print('shm-stress: ' + msg, flush=True)
+
+
+def run(cmd, cwd, logfile, env=None):
+    with open(logfile, 'a') as f:
+        r = subprocess.run(cmd, cwd=cwd, stdout=f, stderr=subprocess.STDOUT,
+                           env=env)
+    if r.returncode != 0:
+        with open(logfile) as f:
+            tail = f.read()[-3000:]
+        raise SystemExit('shm-stress: %s failed, see %s\n%s'
+                         % (' '.join(cmd), logfile, tail))
+
+
+def widen(src, us):
+    for path, anchor, replacement, window in WIDEN:
+        name = os.path.join(src, path)
+        with open(name) as f:
+            text = f.read()
+        if text.count(anchor) != 1:
+            log('cannot widen %s, anchor not found in %s' % (window, path))
+            continue
+        text = text.replace(anchor, replacement)
+        if 'static void race_widen' not in text:
+            last = text.rfind('\n#include')
+            end = text.index('\n', last + 1)
+            text = text[:end + 1] + WIDEN_FUNCTION + text[end + 1:]
+        with open(name, 'w') as f:
+            f.write(text)
+        log('widened %s by %d us' % (window, us))
+
+
+def build(args):
+    src = os.path.join(args.work, 'src')
+    inst = os.path.join(args.work, 'inst')
+    blog = os.path.join(args.work, 'build.log')
+    for d in (src, inst):
+        shutil.rmtree(d, ignore_errors=True)
+    if os.path.exists(blog):
+        os.remove(blog)
+    files = subprocess.run(['git', '-C', args.source, 'ls-files', '-z'],
+                           capture_output=True, check=True).stdout
+    for name in files.decode().split('\0'):
+        if not name or not os.path.isfile(os.path.join(args.source, name)):
+            continue
+        os.makedirs(os.path.join(src, os.path.dirname(name)), exist_ok=True)
+        shutil.copy2(os.path.join(args.source, name), os.path.join(src, name))
+    env = dict(os.environ)
+    if args.widen:
+        widen(src, args.widen)
+        env['CFLAGS'] = '-g -O2 -Wall -DRACE_WIDEN_US=%d' % args.widen
+    log('building %s in %s' % (args.source, args.work))
+    run(['sh', 'autogen.sh'], src, blog)
+    run(['./configure', '--prefix=' + inst], src, blog, env)
+    run(['make', '-j%d' % (os.cpu_count() or 2)], src, blog)
+    run(['make', 'install'], src, blog)
+    # whitelisted clients are not limited to one message per 3 seconds,
+    # and clients from one address are not limited by DUPLICATES
+    for flag in ('whitelist', 'duplicates'):
+        os.makedirs(os.path.join(inst, 'etc', 'ip', flag), exist_ok=True)
+        open(os.path.join(inst, 'etc', 'ip', flag, CLIENT_ADDR),
+             'w').close()
+    # CLASSICTOURN lets new players join a team of four or more before
+    # tournament mode, so that clients alternating teams can all join
+    with open(os.path.join(inst, 'etc', 'sysdef'), 'a') as f:
+        f.write('CLASSICTOURN=1\n')
+    run(['cc', '-O2', '-Wall', '-I', os.path.join(src, 'include'), '-o',
+         os.path.join(args.work, 'monitor'),
+         os.path.join(HERE, 'shm-stress-monitor.c')], src, blog)
+
+
+class Client:
+    """A minimal client, using the packet sizes verified in
+    tools/test_client_protocol.py."""
+
+    def __init__(self, role, team, seed):
+        self.role, self.team = role, team
+        self.rnd = random.Random(seed)
+        self.s = socket.socket()
+        self.s.bind((CLIENT_ADDR, 0))
+        self.s.connect(('127.0.0.1', PORT))
+        self.s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.buf = b''
+        self.me = self.mask = self.login = self.pick = None
+        self.status = None
+        self.flags = 0
+        self.phaser_free = True
+        self.pos = {}
+        self.team_of = {}
+        self.alive_of = {}
+        self.received = set()
+        self.dups = 0
+        self.t0 = time.time()
+        self.last_you = 0
+        self.r = dict(role=role, team=team, error=None, msgs_sent=0,
+                      shield_cmds=0, shield_lost=0, shield_undone=0,
+                      torps_sent=0, dets_sent=0, phasers_sent=0, deaths=0,
+                      shield_log=[])
+
+    def send(self, fmt, *args):
+        self.s.sendall(struct.pack(fmt, *args))
+
+    def pump(self, timeout):
+        r, _, _ = select.select([self.s], [], [], timeout)
+        if not r:
+            return
+        data = self.s.recv(65536)
+        if not data:
+            raise ConnectionError('server closed the connection')
+        buf = self.buf + data
+        i = 0
+        while i < len(buf):
+            n = SP_SIZES.get(buf[i])
+            if n is None:
+                raise ConnectionError('unknown packet type %d' % buf[i])
+            if i + n > len(buf):
+                break
+            self.handle(buf[i:i + n])
+            i += n
+        self.buf = buf[i:]
+
+    def handle(self, p):
+        t = p[0]
+        if t == SP_YOU:
+            self.me = p[1]
+            self.flags = struct.unpack_from('!I', p, 8)[0]
+            self.last_you = time.time()
+        elif t == SP_PLAYER:
+            _, pnum, _, _, x, y = struct.unpack('!bbBbll', p)
+            self.pos[pnum] = (x, y)
+        elif t == SP_PHASER:
+            if p[1] == self.me:
+                self.phaser_free = p[2] == 0
+        elif t == SP_PLAYER_INFO:
+            self.team_of[p[1]] = p[3]
+        elif t == SP_PSTATUS:
+            self.alive_of[p[1]] = p[2] == PALIVE
+            if p[1] == self.me:
+                if self.status == PALIVE and p[2] != PALIVE:
+                    self.r['deaths'] += 1
+                self.status = p[2]
+        elif t == SP_MESSAGE:
+            if p[2] == self.me and p[3] == self.me:
+                m = re.search(rb'stress (\d+)', p[4:])
+                if m:
+                    seq = int(m.group(1))
+                    if seq in self.received:
+                        self.dups += 1
+                    self.received.add(seq)
+        elif t == SP_PICKOK:
+            self.pick = p[1]
+        elif t == SP_MASK:
+            self.mask = p[1]
+        elif t == SP_LOGIN:
+            self.login = p[1]
+
+    def wait(self, cond, timeout):
+        end = time.time() + timeout
+        while not cond():
+            if time.time() > end:
+                raise TimeoutError('waiting in ' + self.role)
+            self.pump(0.05)
+
+    def shield_note(self, what, want, sent_at, now):
+        if len(self.r['shield_log']) < 5:
+            self.r['shield_log'].append(
+                '%s at %.3f s: wanted %d, sent %.3f s ago, flags %#x,'
+                ' last SP_YOU %.3f s ago' % (what, now - self.t0, want,
+                                             now - sent_at, self.flags,
+                                             now - self.last_you))
+
+    def settle(self, seconds):
+        end = time.time() + seconds
+        while time.time() < end:
+            self.pump(0.05)
+
+    def outfit(self):
+        # after a death, the server ignores an outfit until the
+        # explosion is over, so keep asking
+        for _ in range(60):
+            self.pick = None
+            self.send('!bbbx', CP_OUTFIT, self.team, CRUISER)
+            end = time.time() + 1
+            while self.pick is None and time.time() < end:
+                self.pump(0.05)
+            if self.pick == 1:
+                return
+        raise TimeoutError('outfit refused for ' + self.role)
+
+    def join(self):
+        self.send('!bbbxI', CP_SOCKET, 4, 10, 0)
+        self.wait(lambda: self.me is not None, 20)
+        self.send('!bbxx16s16s16s', CP_LOGIN, 0, b'guest', b'',
+                  self.role.encode())
+        self.wait(lambda: self.login is not None, 20)
+        self.wait(lambda: self.mask is not None, 20)
+        self.outfit()
+        self.send('!bxxxI', CP_UPDATES, 20000)
+        self.send('!bbxx', CP_SPEED, 0)
+        self.settle(0.5)        # until SP_YOU shows the new ship
+
+    def play(self, end):
+        """Act at random moments, as a player would, rather than just
+        after each update arrives; the daemon's update has a fixed phase,
+        and acting in step with it would avoid some race windows."""
+        rnd = self.rnd
+        now = time.time()
+        quiet = end - 3         # stop messages, so the last ones arrive
+        next_msg = now + rnd.uniform(0, 0.1)
+        next_shield = now + rnd.uniform(0, 0.5)
+        next_weapon = now + rnd.uniform(0, 0.03)
+        seq = 0
+        want = self.flags & PFSHIELD    # ships start with shields up
+        confirmed = True
+        sent_at = now
+        phaser_at = 0
+        # torpers alternate between recycling, which detonates one torp
+        # and fires another each step, so that the daemon frees torps
+        # while ntserv fires them, and salvoes, which fire eight and
+        # detonate them later, some as they expire
+        recycle_until = now + rnd.uniform(2, 5)
+        salvo = 0
+        det_at = None
+        slot = 0
+        target = 0
+        while True:
+            now = time.time()
+            if now >= end:
+                break
+            due = min(next_msg if now < quiet else end, next_weapon, end,
+                      next_shield if self.role != 'victim' else end)
+            self.pump(max(0, due - now))
+            now = time.time()
+            if self.status is not None and self.status != PALIVE:
+                # dead, or waiting to outfit again
+                self.pump(1)
+                if self.status != PALIVE:
+                    self.outfit()
+                    self.send('!bbxx', CP_SPEED, 0)
+                    self.settle(0.5)
+                    want = self.flags & PFSHIELD
+                    confirmed = True
+                continue
+            if now >= next_msg and now < quiet:
+                seq += 1
+                self.send('!bBBx80s', CP_MESSAGE, MINDIV, self.me,
+                          b'stress %d' % seq)
+                self.r['msgs_sent'] += 1
+                next_msg = now + rnd.uniform(0.05, 0.15)
+            shielded = self.flags & PFSHIELD
+            if confirmed and shielded != want:
+                self.r['shield_undone'] += 1
+                self.shield_note('undone', want, sent_at, now)
+                confirmed = False
+            if not confirmed and shielded == want and now < next_shield:
+                confirmed = True
+            if now >= next_shield and self.role != 'victim':
+                if not confirmed and shielded != want:
+                    self.r['shield_lost'] += 1
+                    self.shield_note('lost', want, sent_at, now)
+                want = PFSHIELD - want
+                sent_at = now
+                self.send('!bbxx', CP_SHIELD, 1 if want else 0)
+                self.r['shield_cmds'] += 1
+                confirmed = False
+                next_shield = now + rnd.uniform(0.4, 0.6)
+            if now < next_weapon:
+                continue
+            next_weapon = now + rnd.uniform(0.015, 0.035)
+            if self.role == 'torper':
+                if now < recycle_until:
+                    self.send('!bxh', CP_DET_MYTORP, self.me * MAXTORP + slot)
+                    slot = (slot + 1) % MAXTORP
+                    self.r['dets_sent'] += 1
+                    self.send('!bBxx', CP_TORP, rnd.randrange(256))
+                    self.r['torps_sent'] += 1
+                elif det_at is None:
+                    self.send('!bBxx', CP_TORP, rnd.randrange(256))
+                    self.r['torps_sent'] += 1
+                    salvo += 1
+                    if salvo == MAXTORP:
+                        salvo = 0
+                        det_at = now + rnd.uniform(1, 3)
+                elif now >= det_at:
+                    for i in range(MAXTORP):
+                        self.send('!bxh', CP_DET_MYTORP,
+                                  self.me * MAXTORP + i)
+                    self.r['dets_sent'] += MAXTORP
+                    det_at = None
+                    recycle_until = now + rnd.uniform(2, 5)
+            elif self.role == 'attacker' and self.me in self.pos:
+                if not self.phaser_free and now - phaser_at < 2:
+                    continue
+                if phaser_at >= 0:
+                    # the phaser is free; fire after a random delay, as
+                    # the daemon applies hits only every fifth update
+                    phaser_at = -1
+                    next_weapon = now + rnd.uniform(0, 0.1)
+                    continue
+                mx, my = self.pos[self.me]
+                enemies = sorted(
+                    j for j, (x, y) in self.pos.items()
+                    if j != self.me and self.alive_of.get(j)
+                    and self.team_of.get(j) not in (None, 1 << self.team)
+                    and (x - mx) ** 2 + (y - my) ** 2 < 5800 ** 2)
+                phaser_at = now
+                if enemies:
+                    target = (target + 1) % len(enemies)
+                    x, y = self.pos[enemies[target]]
+                    self.send('!bBxx', CP_PHASER, bearing(mx, my, x, y))
+                    self.r['phasers_sent'] += 1
+                    self.phaser_free = False
+        self.r['msgs_received'] = len(self.received)
+        self.r['msgs_lost'] = seq - len(self.received)
+        self.r['msgs_duplicated'] = self.dups
+        self.r['pnum'] = self.me
+
+
+def client_main(role, team, end, seed, queue):
+    r = dict(role=role, team=team, error=None)
+    try:
+        c = Client(role, team, seed)
+        r = c.r
+        c.join()
+        c.play(end)
+    except Exception as e:      # report, rather than lose the client
+        r['error'] = '%s: %s' % (type(e).__name__, e)
+    queue.put(r)
+
+
+def inner(args):
+    """Run the server, monitor and clients, inside the namespaces."""
+    inst = os.path.join(args.work, 'inst')
+    subprocess.run(['ip', 'link', 'set', 'lo', 'up'], check=True)
+    pidfile = os.path.join(inst, 'var', 'netrekd.pid')
+    if os.path.exists(pidfile):
+        os.remove(pidfile)
+    subprocess.Popen([os.path.join(inst, 'bin', 'netrekd')],
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(100):
+        try:
+            socket.create_connection(('127.0.0.1', PORT), 1).close()
+            break
+        except OSError:
+            time.sleep(0.1)
+    else:
+        raise SystemExit('shm-stress: server did not listen')
+
+    join_time = 30
+    monitor = subprocess.Popen(
+        [os.path.join(args.work, 'monitor'),
+         str(join_time + args.duration)],
+        stdout=subprocess.PIPE, text=True)
+    end = time.time() + join_time + args.duration
+    queue = multiprocessing.Queue()
+    procs = []
+    # alternate teams, as a team may not get more than one ahead
+    plan = []
+    for fed, rom in zip(['torper'] * 4 + ['attacker'] * 4,
+                        ['torper'] * 4 + ['victim'] * 4):
+        plan += [(fed, FED), (rom, ROM)]
+    for k, (role, team) in enumerate(plan):
+        p = multiprocessing.Process(target=client_main,
+                                    args=(role, team, end, k, queue))
+        p.start()
+        procs.append(p)
+        time.sleep(0.5)
+    results = [queue.get(timeout=join_time + args.duration + 60)
+               for _ in procs]
+    for p in procs:
+        p.join()
+    out = monitor.communicate()[0]
+    return results, out
+
+
+def report(results, out, args):
+    print(out, end='')
+    events = {}
+    summary = {}
+    m = re.search(r'^SUMMARY .*$', out, re.M)
+    if m:
+        fields = m.group(0).split(': ', 1)[1].split()
+        summary = dict(zip(fields[::2], map(int, fields[1::2])))
+        for k in ('ntorp-drift', 'nplasma-drift', 'torp-slot',
+                  'torp-uninit', 'phaser-stale'):
+            events[k] = summary.get(k, 0)
+    errors = [r for r in results if r.get('error')]
+    total = {}
+    for r in results:
+        for k, v in r.items():
+            if isinstance(v, int) and k not in ('team', 'pnum') \
+                    and not isinstance(v, bool):
+                total[k] = total.get(k, 0) + v
+    # messages, by sender, for the clients that ran to the end
+    queued_by = dict((int(a), int(b)) for a, b in
+                     re.findall(r'^QUEUED (\d+) (\d+)$', out, re.M))
+    sent = queued = received = 0
+    for r in results:
+        if r.get('error') or r.get('pnum') is None:
+            continue
+        sent += r['msgs_sent']
+        queued += queued_by.get(r['pnum'], 0)
+        received += r['msgs_received']
+    events['message-lost-uplink'] = max(sent - queued, 0)
+    events['message-lost-downlink'] = max(queued - received, 0)
+    events['message-duplicated'] = total.get('msgs_duplicated', 0)
+    events['shield-lost'] = total.get('shield_lost', 0)
+    events['shield-undone'] = total.get('shield_undone', 0)
+
+    print()
+    print('clients %d, errors %d, widen %s us, duration %d s'
+          % (len(results), len(errors), args.widen or 0, args.duration))
+    for r in errors:
+        print('  client %s error: %s' % (r['role'], r['error']))
+    lost = ['%s:%d' % (r.get('pnum'), r['msgs_lost'])
+            for r in results if r.get('msgs_lost')]
+    if lost:
+        print('messages lost by slot: ' + ' '.join(lost))
+    for r in results:
+        for note in r.get('shield_log', []):
+            print('  client %s slot %s shield %s' % (r['role'], r.get('pnum'),
+                                                     note))
+    print('activity: torps sent %d seen %d, detonations sent %d seen %d,'
+          ' phaser shots sent %d hits %d, messages sent %d queued %d'
+          ' received %d, shield commands %d, deaths %d'
+          % (total.get('torps_sent', 0), summary.get('torps', 0),
+             total.get('dets_sent', 0), summary.get('dets', 0),
+             total.get('phasers_sent', 0), summary.get('phaser-hits', 0),
+             sent, queued, received, total.get('shield_cmds', 0),
+             total.get('deaths', 0)))
+    print('races:')
+    for k, v in events.items():
+        print('  %-24s %d' % (k, v))
+    if errors or not summary:
+        return 2
+    return 1 if any(events.values()) else 0
+
+
+def main():
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    ap.add_argument('--duration', type=int, default=120,
+                    help='seconds of stress after joining (default 120)')
+    ap.add_argument('--widen', type=int, default=0, metavar='US',
+                    help='insert delays of US microseconds in the race'
+                    ' windows')
+    ap.add_argument('--source', default=SOURCE,
+                    help='source tree to build (default this one)')
+    ap.add_argument('--work', help='scratch directory (default a new one)')
+    ap.add_argument('--reuse', action='store_true',
+                    help='reuse the build in --work')
+    ap.add_argument('--inner', action='store_true', help=argparse.SUPPRESS)
+    args = ap.parse_args()
+
+    if args.inner:
+        results, out = inner(args)
+        sys.exit(report(results, out, args))
+
+    if os.geteuid() != 0:
+        raise SystemExit('shm-stress: needs root, for unshare')
+    if not args.work:
+        args.work = tempfile.mkdtemp(prefix='shm-stress.')
+    os.makedirs(args.work, exist_ok=True)
+    if not (args.reuse and os.path.exists(os.path.join(args.work, 'monitor'))):
+        build(args)
+    cmd = ['unshare', '-n', '-i', '-p', '-f', '--mount-proc', sys.executable,
+           '-B', os.path.abspath(__file__), '--inner', '--work', args.work,
+           '--duration', str(args.duration)]
+    if args.widen:
+        cmd += ['--widen', str(args.widen)]
+    log('running for %d s, work in %s' % (args.duration, args.work))
+    sys.exit(subprocess.run(cmd).returncode)
+
+
+if __name__ == '__main__':
+    main()

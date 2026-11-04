@@ -29,6 +29,9 @@ Setting up a Build Environment
 
     test that a build completes using tests/build
 
+    tests/shm-stress stresses the shared memory used by the daemon and
+    ntserv, and counts races; see TEST_RESULTS_SHM_STRESS.md
+
 Source Structure
 
     ntserv/ contains the daemon process,

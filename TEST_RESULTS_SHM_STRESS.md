@@ -1,0 +1,208 @@
+# Netrek Shared Memory Stress — Test Results
+
+## Summary
+
+`tests/shm-stress` stresses the shared memory segment used by the daemon
+and the ntserv processes, and counts the races that show, so that the
+effect of fixes can be measured.
+
+The server was written for one CPU.  On more than one CPU the daemon and
+the ntserv processes run at the same time, and nothing serialises their
+accesses to the segment.
+
+Result on an unmodified server: in five minutes, 8 of 51,594 player
+messages were lost before reaching the daemon, and torpedoes were seen
+moving before they were initialised.  No other race showed at natural
+rates.  With delays inserted in the race windows, the torpedo count,
+torpedo initialisation, phaser and message uplink checks counted races,
+which shows that those checks work.
+
+## Background
+
+The daemon (`ntserv/daemon.c`) runs the game at 50 updates per second.
+In each update, `move()` moves ships, torpedoes and phasers, then signals
+each ntserv with `SIGALRM` (`signal_servers()`), and does not wait.  It
+then goes on to sight, planet fire, beaming and planets.
+
+Each ntserv (`ntserv/input.c`) builds and sends an update to its client
+when signalled, and also handles client packets the moment they arrive,
+writing its own player, torpedoes and phaser, and sometimes other
+players' torpedoes.
+
+No lock covers the game state.  The semaphores in `ntserv/openmem.c`
+cover only choosing a slot, `setgame`, adding a player record and the
+connection queue.  Nothing uses atomic operations or memory barriers.
+On one CPU, processes interleave only when one is preempted, and a
+single instruction read-modify-write such as `andl $~PFWAR, 12(%rax)` is
+indivisible; on more than one CPU neither holds.
+
+The windows the test looks for:
+
+| Window | Where | Possible effect |
+|---|---|---|
+| `t_status = TMOVE` set before the torpedo's fields | `ntserv/torp.c` `ntorp()`, `ntserv/plasma.c` | daemon moves or frees a torpedo using the last one's values |
+| `p_ntorp` held in a register from the limit check to the increment | `ntorp()`, as compiled by gcc -O2 | daemon's decrement lost; the `p_ntorp == MAXTORP` limit check fails once the count passes 8, and torpedoes run into the next player's slots |
+| `t_status == TMOVE` tested, then `TOFF` set | `ntserv/socket.c` `handleDetMReq()` | a torpedo expiring in between is freed twice, and the count drops by two |
+| `ph_status` and `ph_fuse` set before `ph_target` and `ph_damage` | `ntserv/phaser.c` `phaser()` | daemon applies the previous shot's damage to the previous target |
+| uplink index advanced before the message is written | `ntserv/smessage.c` `do_message()` | daemon skips the entry and the message is lost |
+| `mc_current` advanced before the message is copied | `do_message_next_daemon()` | an ntserv reads a stale entry |
+| `p_flags` stored from a copy loaded earlier | `ntserv/daemon.c` `udplayersight()` | a player's flag change, such as shields, is undone |
+
+## The test
+
+`tests/shm-stress` builds the tracked files of the source tree into a
+scratch prefix, and runs the server, a monitor and sixteen clients in
+private network, IPC and PID namespaces, so it needs root, and does not
+disturb any other server on the host.
+
+Clients, eight on each of two teams:
+
+- **torpers** fire torpedoes and detonate them, either one of each per
+  step, so that the daemon frees torpedoes while ntserv fires more, or
+  eight, then all eight a random 1 to 3 seconds later, so that some are
+  detonated as they expire;
+- **attackers** phaser victims in an arena away from planets,
+  alternating targets;
+- **victims** are phasered;
+- all send numbered messages to themselves, and all but victims toggle
+  shields.
+
+Clients act at random moments, as players do.  Acting just after each
+update arrives would keep clear of the daemon's critical sections, as
+the update has a fixed phase within the daemon's cycle.
+
+`tests/shm-stress-monitor.c` attaches to the segment and polls it
+continuously, using one CPU.  It checks the invariants below, counts the
+activity, and keeps the ships fuelled, cool, healed and in place.
+
+The scratch install has `CLASSICTOURN=1`, and `127.0.0.2`, the clients'
+address, in `etc/ip/whitelist` and `etc/ip/duplicates`, so that all
+sixteen clients may join and send messages without limit.
+
+## Running
+
+```
+tests/shm-stress                       # 120 s against this source tree
+tests/shm-stress --duration 300        # longer
+tests/shm-stress --widen 1000          # positive control, see below
+tests/shm-stress --work DIR --reuse    # build into DIR once, then reuse
+```
+
+The build takes a minute or so, joining thirty seconds, then the stress
+runs for the duration.  The test needs root, `unshare`, `ip`, git,
+Python 3, a C compiler and the autotools, and exits 1 if any race was seen, 0 if none,
+and 2 if the test itself failed, such as a client failing to join.
+
+Output is the monitor's events and progress, then a summary:
+
+```
+activity: torps sent 68285 seen 17532, detonations sent 68258 seen 17518,
+phaser shots sent 1278 hits 1278, messages sent 51594 queued 51586
+received 51586, shield commands 7848, deaths 0
+races:
+  ntorp-drift              0
+  ...
+```
+
+## Reading the results
+
+| Count | Meaning |
+|---|---|
+| `ntorp-drift` | a ship's `p_ntorp` differed from the number of live torpedoes it owns for more than 100 ms |
+| `nplasma-drift` | the same for plasma torpedoes |
+| `torp-slot` | a live torpedo stayed for more than 20 ms in a slot of another player |
+| `torp-uninit` | a torpedo was seen moving before `ntorp()` set its position; this shows the window is open, the daemon moving the torpedo in it is much rarer |
+| `phaser-stale` | a phaser hit's target or damage changed after the daemon had applied it |
+| `message-lost-uplink` | a message sent by a client never reached the daemon's queue |
+| `message-lost-downlink` | a message in the queue never reached its client |
+| `message-duplicated` | a message reached its client twice |
+| `shield-lost` | a shield command never took effect |
+| `shield-undone` | a shield command took effect, then reverted |
+
+Ships that die are excluded from the drift checks, as `enter()` zeroes
+`p_ntorp` while the last ship's torpedoes may still be flying.
+
+The monitor polls, so it can miss a short window; counts are lower
+bounds.  The phaser window is reached only rarely, as the daemon applies
+phaser hits on every fifth update, ten times a second.
+
+## Positive control
+
+`--widen US` inserts a busy delay of US microseconds into each window in
+the scratch build only, at these points:
+
+- `phaser()`, after `ph_fuse` is set;
+- `ntorp()`, between reading and writing `p_ntorp`;
+- `ntorp()`, after `t_status` is set;
+- `handleDetMReq()`, between testing and setting `t_status`;
+- `do_message()`, after the uplink index is advanced, for players only.
+
+The build reports each delay inserted.  When a fix changes the code at a
+window, its delay may no longer apply, and the build says so.
+
+## Results
+
+Run on 5 November 2026, source at commit `4bb3652`, Ubuntu 26.04.1,
+kernel 6.8, gcc 15.2, Python 3.14, Intel i7-1255U with 12 CPUs.
+
+| | Unmodified, 300 s | `--widen 1000`, 60 s |
+|---|---|---|
+| torpedoes seen | 17,532 | 4,220 |
+| phaser hits | 1,278 | 333 |
+| messages sent | 51,594 | 13,187 |
+| shield commands | 7,848 | 2,070 |
+| `ntorp-drift` | 0 | 50 |
+| `nplasma-drift` | 0 | 0 |
+| `torp-slot` | 0 | 0 |
+| `torp-uninit` | 32 | 310 |
+| `phaser-stale` | 0 | 1 |
+| `message-lost-uplink` | **8** | 638 |
+| `message-lost-downlink` | 0 | 0 |
+| `message-duplicated` | 0 | 0 |
+| `shield-lost`, `shield-undone` | 0 | 0 |
+
+With 1 ms delays, about 5% of messages were lost, as expected for a 1 ms
+window in a 20 ms update, and phaser hits, applied every 100 ms, about
+1% were expected to race.
+
+Not yet shown by any run: torpedoes in another player's slot, which
+needs `p_ntorp` to drift past 8; loss or duplication of messages on
+their way from the daemon's queue to the clients; and lost shield
+commands.  No delay is inserted in the daemon, so the last two are not
+covered by the positive control.
+
+Plasma is not fired by any client.
+
+## Lessons for testing
+
+- Clients that act just after each update never overlap the daemon's
+  critical sections.  The first version of this test saw no races at
+  all, even with 1 ms delays, for that reason.
+- New ships start with shields up.
+- Before tournament mode, a new player may not join a team of four.
+  With `CLASSICTOURN=1`, or in tournament mode, a new player may not
+  join a team more than one player ahead.  The test sets
+  `CLASSICTOURN=1` and alternates the clients' teams.
+- `DUPLICATES=3` limits connections from one address, unless the address
+  is in `etc/ip/duplicates`.
+- Unwhitelisted players may send one message every three seconds.
+- Clients from `127.0.0.1` count as robots under `IS_ROBOT_BY_HOST`.
+- Early versions of this test lost several percent of messages between
+  the daemon's queue and the clients.  The loss stopped as the clients
+  were changed to parse their stream faster, to wait for their ship
+  before acting, and to join without errors; which change stopped it
+  was not established.  A rise in `message-lost-downlink` may be the
+  clients' doing.
+
+## References
+
+- `tests/shm-stress` — driver, clients and fault injection
+- `tests/shm-stress-monitor.c` — monitor
+- `ntserv/daemon.c` — `move()`, `signal_servers()`, `udtorps()`,
+  `udphaser()`, `udplayersight()`
+- `ntserv/input.c` — ntserv input loop
+- `ntserv/torp.c`, `ntserv/plasma.c`, `ntserv/phaser.c` — weapons
+- `ntserv/socket.c` — `handleDetMReq()`
+- `ntserv/smessage.c` — message uplink and queue
+- `ntserv/openmem.c` — shared memory and semaphores
+- `tools/test_client_protocol.py` — packet sizes used by the clients
