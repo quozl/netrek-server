@@ -180,9 +180,9 @@ dist:
 	cp -p BUGS PROJECTS $(NAME)/
         # top level documentation
 	cp -p INSTALL INSTALL.INL INSTALL.Newbie README.md \
-	README.developers README.releasing CHANGES $(NAME)/
+	README.developers README.releasing CHANGES PROTOCOL.md $(NAME)/
         # configuration
-	cp -p configure.in Makefile.in system.mk.in configure config.sub \
+	cp -p configure.ac Makefile.in system.mk.in configure config.sub \
 	config.guess install-sh ltmain.sh aclocal.m4 $(NAME)/
         # subdirectories
 	cp -rp docs include keycomp motd newstartd ntserv php \
@@ -194,27 +194,6 @@ dist:
         # build
 	GZIP=--best tar cfz $(NAME).tar.gz $(NAME)
 	rm -rf $(NAME)
-
-dist-minimal:
-	mkdir $(NAME)-minimal
-        # what has changed
-	cp -p ChangeLog NEWS $(NAME)-minimal/
-        # top level documentation
-	cp -p INSTALL INSTALL.INL INSTALL.Newbie INSTALL.RSA README \
-	README.developers $(NAME)-minimal/
-        # configuration
-	cp -p configure.in Makefile.in system.mk.in configure install-sh \
-	$(NAME)-minimal/
-        # subdirectories
-	cp -rp docs include keycomp newstartd ntserv res-rsa robots robotd \
-	$(NAME)-minimal/
-        # strip out surplus
-	rm -rf $(NAME)-minimal/*/CVS $(NAME)-minimal/*/*/CVS
-	rm -rf $(NAME)-minimal/.cvsignore $(NAME)-minimal/*/.cvsignore
-	rm -rf $(NAME)-minimal/*/.deps $(NAME)-minimal/*~ $(NAME)-minimal/*/*~
-        # build
-	GZIP=--best tar cfz $(NAME)-minimal.tar.gz $(NAME)-minimal
-	rm -rf $(NAME)-minimal
 
 #
 # Maintainer's Debian packaging section
