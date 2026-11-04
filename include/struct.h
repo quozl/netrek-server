@@ -779,8 +779,9 @@ struct distress { /* py-struct "B7B6B7B4B" */
     u_char wtmpflag, etempflag, cloakflag, distype, macroflag, ttype;
     u_char close_pl, close_en, target, tclose_pl, tclose_en, pre_app, i;
     u_char close_j, close_fr, tclose_j, tclose_fr;
-    u_char cclist[6]; /* allow us some day to cc a message 
-			        up to 5 people */
+    u_char cclist[7]; /* allow us some day to cc a message
+			        up to 6 people, as clients parse, and a
+			        terminator */
         /* sending this to the server allows the server to do the cc action */
         /* otherwise it would have to be the client ... less BW this way */
     char preappend[80]; /* text which we pre or append */
