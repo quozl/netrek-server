@@ -1423,7 +1423,7 @@ static void toolf(char *cmd, const char *fmt, ...) {
   va_list args;
 
   va_start(args, fmt);
-  sprintf(buf, "%s/tools/admin/quit ", LIBDIR);
+  sprintf(buf, "%s/tools/admin/%s ", LIBDIR, cmd);
   vsprintf(buf+strlen(buf), fmt, args);
   va_end(args);
   if (system(buf) == -1)
