@@ -83,7 +83,7 @@ struct progrecord {			/* array of data read from file	*/
   int denials;				/* count of deny() calls	*/
   int forks;				/* count of fork() calls	*/
   unsigned long addr;			/* address to bind() to		*/
-} prog[MAXPROG];
+} prog[MAXPROG + 1];			/* the spare reads an entry too many */
 
 static int num_progs = 0;
 
@@ -713,11 +713,6 @@ static int read_portfile (char *portfile)
     while (fgets (buf, BUFSIZ, fi)) {
       if (buf[0] == '#')
 	continue;
-      if (i >= MAXPROG) {
-	fprintf (stderr, "%s: too many entries, maximum is %d\n",
-		 portfile, MAXPROG);
-	break;
-      }
       /* the fields are read with explicit widths so that a long or
 	 malformed line cannot overflow the record */
       if ((n = sscanf (buf, "%127s %511s \"%511[^\"]\" %63s %63s %63s %63s",
@@ -751,6 +746,10 @@ static int read_portfile (char *portfile)
 	  fprintf (stderr, "\"%s\" not accessible or not executable.\n",
 		   prog[i].prog);
 	  fflush (stderr);
+	} else if (i == MAXPROG) {
+	  fprintf (stderr, "%s: too many entries, maximum is %d\n",
+		   portfile, MAXPROG);
+	  break;
 	} else {
 	  i++;
 	}
