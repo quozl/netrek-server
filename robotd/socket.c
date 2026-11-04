@@ -593,10 +593,16 @@ static int valid_index(int type, char *buf)
     case SP_PLASMA_INFO:
 	return (unsigned) ntohs(((struct plasma_info_spacket *) buf)->pnum) <
 	    (unsigned) (MAXPLAYER * MAXPLASMA);
+    case SP_PHASER:
+	/* a hit also names the player hit */
+	if (((struct phaser_spacket *) buf)->status == PHHIT &&
+	    (uint32_t) ntohl(((struct phaser_spacket *) buf)->target) >=
+	    (uint32_t) MAXPLAYER)
+	    return 0;
+	return (unsigned char) ((struct phaser_spacket *) buf)->pnum < MAXPLAYER;
     case SP_YOU:
     case SP_PLAYER_INFO:
     case SP_PLAYER:
-    case SP_PHASER:
     case SP_FLAGS:
     case SP_KILLS:
     case SP_HOSTILE:

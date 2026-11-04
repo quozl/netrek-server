@@ -24,6 +24,23 @@ static char *teamstring[9] = {"", "and the Federation",
 			 "and the Klingon Empire", "", "", "",
 			 "and the Orions"};
 
+/* The server names the killer by player slot, or by planet for planetary
+   fire.  Returns zero if it cannot be used to index players[] or planets[]. */
+static int whodead_valid(void)
+{
+    switch (me->p_whydead) {
+    case KQUIT:
+    case KDAEMON:
+    case KGHOST:
+    case KPROVIDENCE:
+	return 1;			/* not used */
+    case KPLANET:
+	return me->p_whodead >= 0 && me->p_whodead < MAXPLANETS;
+    default:
+	return me->p_whodead >= 0 && me->p_whodead < MAXPLAYER;
+    }
+}
+
 void death()
 {
     char buf[80];
@@ -40,7 +57,8 @@ void death()
     signal(SIGALRM, SIG_DFL);
 #endif
 
-    switch (me->p_whydead) {
+    /* an unusable killer is reported as unknown */
+    switch (whodead_valid() ? me->p_whydead : -1) {
     case KQUIT:
 	mprintf("You have self-destructed.\n");
 	break;
