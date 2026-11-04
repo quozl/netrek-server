@@ -215,8 +215,8 @@ void config()
                 planets[i].pl_flags &= ~(PLFUEL | PLREPAIR | PLAGRI);
             }
         }
+        fclose(f);
     }
-    fclose(f);
 
     planets[10].pl_flags |= (PLFUEL | PLREPAIR);
     planets[25].pl_flags |= (PLFUEL | PLREPAIR);
