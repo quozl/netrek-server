@@ -382,11 +382,16 @@ char slot_char(int slotnum)
 
 int slot_num(char slot)
 {
+    int num = -1;
+
     if ((slot >= '0') && (slot <= '9'))
-        return(slot - '0');
-    if ((tolower(slot) >= 'a') && (tolower(slot) <= 'z'))
-        return(tolower(slot) - 'a' + 10);
-    return -1;
+        num = slot - '0';
+    else if ((tolower(slot) >= 'a') && (tolower(slot) <= 'z'))
+        num = tolower(slot) - 'a' + 10;
+    /* letters run past the last slot, which callers use as an index */
+    if (num >= MAXPLAYER)
+        return -1;
+    return num;
 }
 
 /* set coordinates for a new ship, caller should be synchronised to daemon */
