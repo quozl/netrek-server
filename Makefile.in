@@ -194,25 +194,3 @@ dist:
         # build
 	GZIP=--best tar cfz $(NAME).tar.gz $(NAME)
 	rm -rf $(NAME)
-
-#
-# Maintainer's Debian packaging section
-#
-DEBIAN_VERSION=$(shell head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\))
-DEBIAN_PACKAGE=$(shell head -1 debian/changelog|cut -f1 -d\ )
-DEBIAN_ARCHIVE=~/public_html/external/mine/netrek
-
-source-package:
-	fakeroot dpkg-buildpackage -S -us -uc -I_darcs
-
-package:
-	fakeroot dpkg-buildpackage -us -uc -I_darcs
-
-upload:
-	mv ../$(DEBIAN_PACKAGE)_$(DEBIAN_VERSION)*{.dsc,.changes,.tar.gz,.deb} $(DEBIAN_ARCHIVE)
-
-update:
-	(cd $(DEBIAN_ARCHIVE);make)
-
-release: package upload update
-

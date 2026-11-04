@@ -1,5 +1,0 @@
-Template: netrek-server-vanilla/start_on_boot
-Type: boolean
-Default: true
-_Description: Should the Netrek Server start on boot?
- The Netrek Server can start automatically on boot time.

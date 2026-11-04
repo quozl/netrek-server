@@ -14,13 +14,11 @@ Setting up a Build Environment
     that.  It can be a virtual machine using VMware or Qemu or
     something else.
 
-    you need certain build tools, look at Build-Depends in
-    debian/control for ideas.
+    you need certain build tools.
 
-        apt-get install build-essential libtool autoconf automake po-debconf
+        apt-get install build-essential libtool autoconf automake
 
-    you need certain software dependencies, again look at
-    Build-Depends in debian/control for ideas.
+    you need certain software dependencies.
 
         apt-get install libgdbm-dev libncurses5-dev libx11-dev \
         libxt-dev libglib1.2-dev libgmp3-dev

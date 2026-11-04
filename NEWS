@@ -1,5 +1,7 @@
 2.20.0: released 2026-11-04
 
+  Debian packaging is removed, as it is not an upstream role.
+
   See git log.
 
 2.19.0: released 2016-12-06
