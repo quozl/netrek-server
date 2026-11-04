@@ -1457,12 +1457,17 @@ static void handleSMessageReq(struct mesg_s_cpacket *packet)
 /* But i have no time  HW 04/6/93 */
 
     struct mesg_cpacket mesPacket;
+    int len;
 
+    memset(&mesPacket, 0, sizeof(mesPacket));
     mesPacket.type =  CP_MESSAGE;
     mesPacket.group = packet->group;
     mesPacket.indiv  = packet->indiv;
-    strncpy(mesPacket.mesg, packet->mesg, MSG_LEN);
-    mesPacket.mesg[MSG_LEN - 1] = '\0';
+    /* the text ends with the packet, so do not read on into the packets or
+       stale bytes that follow it in the read buffer */
+    len = (unsigned char) packet->length - 4;
+    if (len > MSG_LEN - 1) len = MSG_LEN - 1;
+    if (len > 0) memcpy(mesPacket.mesg, packet->mesg, len);
     handleMessageReq(& mesPacket);
 /* I hope this was it */
 }
