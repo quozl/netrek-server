@@ -10,7 +10,7 @@ set -e
 # Note: this script assumes you have the netrek server binary
 # directories in your shell path, so you should source setpath before
 # calling this, for example:
-# . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
+# . /usr/local/games/netrek-server/lib/tools/setpath
 
 # determine where to put the file
 # this must be the same as $datadir in etc/blosxom.conf

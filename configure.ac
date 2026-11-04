@@ -5,7 +5,7 @@ AC_INIT
 AC_CONFIG_SRCDIR([ntserv/daemon.c])
 AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_MACRO_DIRS([m4])
-AC_PREFIX_DEFAULT("/usr/local/games/netrek-server-vanilla")
+AC_PREFIX_DEFAULT("/usr/local/games/netrek-server")
 
   # default the prefix
   if test "x$prefix" = "xNONE"; then

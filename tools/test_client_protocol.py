@@ -33,8 +33,8 @@ Server installation (REQUIRED before this test will reach play):
   ever allowed and CP_OUTFIT is refused with SP_PICKOK(state=0).  Notably
   etc/time and var/players must exist.  Install and run with:
 
-    make install                                  # -> /usr/local/games/netrek-server-vanilla
-    cd /usr/local/games/netrek-server-vanilla/lib
+    make install                                  # -> /usr/local/games/netrek-server
+    cd /usr/local/games/netrek-server/lib
     ./newstartd </dev/null >/tmp/ns.out 2>&1 &    # self-daemonizes, listens on 2592
 
   (newstartd forks ntserv per connection; ntserv starts the shared-memory
@@ -550,7 +550,7 @@ if __name__ == "__main__":
 #   LDFLAGS="-fsanitize=address"
 # and installed with `make install` (so etc/time, var/players, etc/ports and
 # the rest of the runtime files exist).  Server launched with:
-#   cd /usr/local/games/netrek-server-vanilla/lib && ./newstartd </dev/null &
+#   cd /usr/local/games/netrek-server/lib && ./newstartd </dev/null &
 # ntserv links libasan.so.8; its stderr (hence any ASAN report) is redirected
 # to <server>/var/ERRORS.
 #

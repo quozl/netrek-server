@@ -1,5 +1,10 @@
 2.20.0: released 2026-11-04
 
+  The package is now named netrek-server, and installs by default in
+  /usr/local/games/netrek-server.  To upgrade a server installed in the
+  old default location, configure with
+  --prefix=/usr/local/games/netrek-server-vanilla.
+
   Debian packaging is removed, as it is not an upstream role.
 
   See git log.

@@ -22,9 +22,9 @@ Server built with AddressSanitizer and installed properly:
 CFLAGS="-g -O0 -fsanitize=address -fno-omit-frame-pointer" \
 LDFLAGS="-fsanitize=address" ./configure
 make -C ntserv
-make install                          # -> /usr/local/games/netrek-server-vanilla
+make install                          # -> /usr/local/games/netrek-server
 
-cd /usr/local/games/netrek-server-vanilla/lib
+cd /usr/local/games/netrek-server/lib
 ./newstartd </dev/null >/tmp/ns.out 2>&1 &   # self-daemonises, listens on 2592
 ```
 
@@ -127,7 +127,7 @@ wire format:
 python3 tools/test_client_protocol.py                    # join + orbit
 python3 tools/test_client_protocol.py --malformed-tests  # + fuzz cases
 python3 tools/test_client_protocol.py --trace            # show packet types
-grep -c AddressSanitizer /usr/local/games/netrek-server-vanilla/var/ERRORS
+grep -c AddressSanitizer /usr/local/games/netrek-server/var/ERRORS
 ```
 
 ## References

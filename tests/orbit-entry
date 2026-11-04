@@ -5,7 +5,7 @@
 
 set -e
 
-LIBDIR=/usr/local/games/netrek-server-vanilla
+LIBDIR=/usr/local/games/netrek-server
 cd ${LIBDIR}
 
 # reset galaxy

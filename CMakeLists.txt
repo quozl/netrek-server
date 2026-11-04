@@ -20,7 +20,7 @@ set(CMAKE_BUILD_TYPE Debug)
 # since cmake 2.4.1
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
-project(netrek-server-vanilla C)
+project(netrek-server C)
 set(VERSION "2.16")
 
 ### Command line options

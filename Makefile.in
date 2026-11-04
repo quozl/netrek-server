@@ -3,7 +3,7 @@
 #	Everything should be setup in the configuration script.
 #
 
-PACKAGE=netrek-server-vanilla
+PACKAGE=netrek-server
 VERSION=2.20.0
 
 MAKEFLAGS += --no-print-directory
@@ -155,7 +155,7 @@ install: installbin
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(BINDIR) $(DESTDIR)$(SYSCONFDIR) $(DESTDIR)$(LOCALSTATEDIR)
 	cd docs;   $(MAKE) install DESTDIR=$(DESTDIR)
 	@echo
-	@echo "netrek-server-vanilla installation complete."
+	@echo "netrek-server installation complete."
 	@echo "start the server with $(BINDIR)/netrekd"
 	@echo "then start a client to try it out."
 

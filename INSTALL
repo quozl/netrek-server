@@ -5,9 +5,9 @@ Summary
 
 	0)  decide where to install the server on your file system,
 	1)  type "./configure --prefix=path" replacing path with your choice,
-            (default path is /usr/local/games/netrek)
+            (default path is /usr/local/games/netrek-server)
 	2)  type "make install",
-	3)  "cd" to the path you gave, or /usr/local/games/netrek,
+	3)  "cd" to the path you gave, or /usr/local/games/netrek-server,
 	4)  "bin/netrekd" to start the server,
 	5)  use a client to connect to the server.
 
@@ -21,7 +21,7 @@ To setup the server to your machine's architecture run the configure program.
 This is a script that will check your system for system dependent differences
 and configure the server to deal with these.  It will accept an alternate path
 to the directory into which the server is to be installed.  This is called
-LIBDIR and defaults to /usr/local/games/netrek
+LIBDIR and defaults to /usr/local/games/netrek-server
 
 In some cases it has been reported that the configure script is unable to
 locate the GNU DBM library and development headers.  This is normally the
@@ -94,7 +94,7 @@ Running two servers on one host, same binaries
 
 2.  duplicate the etc/ and var/ tree, once per virtual server,
 
-	cd /usr/local/games/netrek
+	cd /usr/local/games/netrek-server
 	cp -pr etc etc.inl
 	cp -pr var var.inl
 
@@ -103,8 +103,8 @@ Running two servers on one host, same binaries
 4.  start each server with a unique PKEY and SYSCONFDIR,
 
 	PKEY=128 netrekd
-	SYSCONFDIR=/usr/local/games/netrek/etc.inl \
-	LOCALSTATEDIR=/usr/local/games/netrek/var.inl \
+	SYSCONFDIR=/usr/local/games/netrek-server/etc.inl \
+	LOCALSTATEDIR=/usr/local/games/netrek-server/var.inl \
 	PKEY=129 netrekd
 
 	

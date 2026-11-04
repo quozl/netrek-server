@@ -2,7 +2,7 @@ Release Procedure
 
 # set variables
 VS=2.20.0
-PN=netrek-server-vanilla
+PN=netrek-server
 
 # check version numbers in files
 # include/version.h
@@ -115,7 +115,7 @@ user anonymous quozl@us.netrek.org
 cd incoming
 passive
 hash
-put netrek-server-vanilla-${VS}.tar.gz
+put ${PN}-${VS}.tar.gz
 EOF
 
 

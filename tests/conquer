@@ -3,7 +3,7 @@ set -e
 
 # verify we have the netrek server in our shell path
 # you should source setpath before calling this, for example
-# host:~$ . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
+# host:~$ . /usr/local/games/netrek-server/lib/tools/setpath
 getpath > /dev/null
 
 # reset galaxy

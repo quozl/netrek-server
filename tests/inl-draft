@@ -1,5 +1,5 @@
 #!/bin/sh
-LIBDIR=/usr/local/games/netrek-server-vanilla
+LIBDIR=/usr/local/games/netrek-server
 cd ${LIBDIR}
 
 # start a test player in slot 0 before starting this script

@@ -2,7 +2,7 @@
 
 set -v
 
-LIBDIR=/usr/local/games/netrek-server-vanilla
+LIBDIR=/usr/local/games/netrek-server
 cd ${LIBDIR}
 
 # start two clients, slot 0 and 1
