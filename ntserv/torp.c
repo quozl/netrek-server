@@ -11,6 +11,7 @@
 #include "data.h"
 #include "proto.h"
 #include "util.h"
+#include "shmatomic.h"
 
 #define TORP_ADJ_FUEL 0
 #define TORP_ADJ_ETEMP 1
@@ -153,7 +154,7 @@ void ntorp(u_char course, int attributes)
   /*
    * Find a free torp to use */
   for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)
-    if (k->t_status == TFREE)
+    if (load_acquire(&k->t_status) == TFREE)
       break;
   /* p_ntorp is shared with the daemon, and may not match the torps in
      use; never take a slot past my own */
@@ -171,9 +172,9 @@ void ntorp(u_char course, int attributes)
   me->p_wtemp += c_wtemp;
   me->p_etemp += c_etemp;
 
-  /* 
-   * Initialize torp: */
-  k->t_status = TMOVE;
+  /*
+   * Initialize torp, then set its status, as the daemon may move it at
+   * once */
   k->t_type = TPHOTON;
   k->t_attribute = attributes;
   k->t_owner = me->p_no;
@@ -195,6 +196,7 @@ void ntorp(u_char course, int attributes)
 #ifdef STURGEON
   k->t_spinspeed = 0;
 #endif
+  store_release(&k->t_status, TMOVE);
 
 #ifdef LTD_STATS
 

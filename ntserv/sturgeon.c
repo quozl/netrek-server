@@ -8,6 +8,7 @@
 #include "proto.h"
 #include "sturgeon.h"
 #include "util.h"
+#include "shmatomic.h"
 
 #ifdef STURGEON
 
@@ -891,7 +892,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
   struct planet *l;
   struct ship *myship;
   char buf[80];
-  int destroyed, rnd;
+  int destroyed, rnd, dud;
   long random();
 
   myship = &me->p_ship;
@@ -938,7 +939,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
     }
     for (i = me->p_no * MAXPLASMA, k = firstPlasmaOf(me);
          i < me->p_no * MAXPLASMA + MAXPLASMA; i++, k++) {
-      if (k->t_status == TFREE)
+      if (load_acquire(&k->t_status) == TFREE)
         break;  /* found.  what if not found??? */
     }
     if (k > lastPlasmaOf(me))  {
@@ -968,7 +969,6 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
                   : sw->sw_speed * WARP1;
     k->t_fuse = sw->sw_fuse * T_FUSE_SCALE;
     k->t_pldamage = 0;
-    k->t_status = TMOVE;
     k->t_type = TPLASMA;
     k->t_attribute = attributes;
     k->t_owner = me->p_no;
@@ -981,6 +981,8 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
 #if 0
     k->t_speed = k->t_gspeed / WARP1;
 #endif
+    /* set the status last, as the daemon may move it at once */
+    store_release(&k->t_status, TMOVE);
   } /* End SPECPLAS */
 
   switch (sw->sw_type) {
@@ -1004,7 +1006,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       }
       for (i = me->p_no * MAXPLASMA, k = firstPlasmaOf(me);
            i < me->p_no * MAXPLASMA + MAXPLASMA; i++, k++) {
-        if (k->t_status == TFREE)
+        if (load_acquire(&k->t_status) == TFREE)
           break;
       }
       /* p_nplasmatorp is shared with the daemon, and may not match the
@@ -1021,8 +1023,8 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       me->p_swar |= l->pl_owner;
       me->p_ship.s_maxarmies += me->p_special - 5;
 
+      /* the slot stays free until the status is set at the end */
       k->t_no = i;
-      k->t_status = TMOVE;
       k->t_type = TPLASMA;
       k->t_owner = me->p_no;
       k->t_team = me->p_team;
@@ -1035,6 +1037,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       k->t_pldamage = 0;
 
       destroyed = sw->sw_damage;
+      dud = 0;
       rnd = random() % 100;
       if (rnd < 5) {                                  /* uh oh... */
         new_warning(UNDEF,"Nuke explodes in bomb bay!");
@@ -1045,7 +1048,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       else if (rnd < 10) {
         new_warning(UNDEF,"The nuclear warhead failed to detonate.");
         destroyed = 0;
-        k->t_status = TFREE;
+        dud = 1;
         me->p_nplasmatorp--;
       }
       else if (rnd < 23) {
@@ -1085,8 +1088,8 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
 
       k->t_pldamage = destroyed;
       k->t_whodet = me->p_no;
-      k->t_status = TDET;             /* moved down here for safety...  */
-                                      /* daemon will ignore until ready */
+      if (!dud)                       /* daemon will ignore until ready */
+        store_release(&k->t_status, TDET);
       sndShipCap();                   /* Need to update ship army capacity */
       break;
     case SPECTORP:
@@ -1109,7 +1112,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       }
       for (i = me->p_no * MAXTORP, j = firstTorpOf(me);       /* Find a free torp */
            i < me->p_no * MAXTORP + MAXTORP; i++, j++) {
-        if (j->t_status == TFREE)
+        if (load_acquire(&j->t_status) == TFREE)
           break;
       }
       /* p_ntorp is shared with the daemon, and may not match the torps
@@ -1129,9 +1132,9 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       me->p_fuel -= sw->sw_fuelcost;
       me->p_wtemp += (sw->sw_damage/5);  /* Heat weapons */
 
-      /* Setup data in new torp (fighter) */
+      /* Setup data in new torp (fighter), then set its status, as the
+         daemon may move it at once */
       j->t_no = i;
-      j->t_status = TMOVE;
       j->t_type = TPHOTON;
       /* Plasmas default to 0 attributes, need to set them up for mines
          and drones.  Treat them like a regular torp. */
@@ -1149,6 +1152,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       j->t_war = me->p_war;
       j->t_fuse = (sw->sw_fuse + (random() % 20)) * T_FUSE_SCALE;
       j->t_turns = sw->sw_turns;
+      store_release(&j->t_status, TMOVE);
       break;
     default:
       break;

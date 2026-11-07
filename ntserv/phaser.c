@@ -17,6 +17,7 @@
 #include "proto.h"
 #include "ltd_stats.h"
 #include "util.h"
+#include "shmatomic.h"
 
 void phaser(u_char course)
 {
@@ -31,7 +32,7 @@ void phaser(u_char course)
 
   if (status->gameup & GU_CONQUER) return;
 
-  if (mine->ph_status != PHFREE) {
+  if (load_acquire(&mine->ph_status) != PHFREE) {
     new_warning(32, "Phasers have not recharged.");
     return;
   }
@@ -213,11 +214,36 @@ void phaser(u_char course)
   }
 
   /*
-   * Adjust my phaser and me to reflect new conditions.  */
-  mine->ph_status = pstatus;
+   * Fill in my phaser, then set its status, as the daemon may act on
+   * it at once.  */
   mine->ph_dir = course;
   mine->ph_fuse = me->p_ship.s_phaserfuse;
+  if (pstatus == PHHIT) {
+    mine->ph_target = target_player->p_no;
+    mine->ph_damage = me->p_ship.s_phaserdamage *
+      (1.0 - range / ((double) (myphrange)));
+  }
+  if (pstatus == PHHIT2) {
+    mine->ph_x = target_plasma->t_x;
+    mine->ph_y = target_plasma->t_y;
+    if (pingpong_plasma)
+      mine->ph_damage = me->p_ship.s_phaserdamage *
+                        (1.0-((float) range/(float) myphrange));
+  }
+#ifdef STURGEON
+  /* s_phaserdamage varies, which varies end coordinate
+  of a phaser miss, so we must calculate the coordinate */
+  if (pstatus == PHMISS && sturgeon) {
+    mine->ph_x = me->p_x + (int) (PHASEDIST * me->p_ship.s_phaserdamage /
+                      100 * Cos[course]);
+    mine->ph_y = me->p_y + (int) (PHASEDIST * me->p_ship.s_phaserdamage /
+                      100 * Sin[course]);
+  }
+#endif
+  store_release(&mine->ph_status, pstatus);
 
+  /*
+   * Adjust me to reflect new conditions.  */
   me->p_fuel  -= myship->s_phasercost;
   me->p_wtemp += myship->s_phasercost / 10;
 
@@ -230,16 +256,6 @@ void phaser(u_char course)
 #endif
 
   if (pstatus == PHMISS) {
-#ifdef STURGEON
-    /* s_phaserdamage varies, which varies end coordinate
-    of a phaser miss, so we must calculate the coordinate */
-    if (sturgeon) {
-      mine->ph_x = me->p_x + (int) (PHASEDIST * me->p_ship.s_phaserdamage /
-                        100 * Cos[course]);
-      mine->ph_y = me->p_y + (int) (PHASEDIST * me->p_ship.s_phaserdamage /
-                        100 * Sin[course]);
-    }
-#endif
     new_warning(37, "Phaser missed.");
     return;
   }
@@ -253,10 +269,6 @@ void phaser(u_char course)
 
 
   if (pstatus == PHHIT) {
-    mine->ph_target = target_player->p_no;
-    mine->ph_damage = me->p_ship.s_phaserdamage *
-      (1.0 - range / ((double) (myphrange)));
-
 #ifdef LTD_STATS
 
     /* update phaser damage for shooter and victim */
@@ -285,16 +297,10 @@ void phaser(u_char course)
 #endif
 
    if (pingpong_plasma) {
-	
-	mine->ph_damage = me->p_ship.s_phaserdamage *
-                          (1.0-((float) range/(float) myphrange));
-     if ((target_plasma->t_war & me->p_team) 
+     if ((target_plasma->t_war & me->p_team)
 			|| (me->p_hostile & target_plasma->t_team)) {
 	int rand_plasmadir;
 	int rand_plasmaturns;
-	mine->ph_x = target_plasma->t_x;
-	mine->ph_y = target_plasma->t_y;
-	mine->ph_status = PHHIT2;
 	target_plasma->t_damage+=mine->ph_damage/4;
 	target_plasma->t_gspeed+=mine->ph_damage/100;
 	srandom(getpid() * time((time_t *) 0));
@@ -314,9 +320,6 @@ void phaser(u_char course)
 	new_warning(UNDEF, "Ping-Pong!");
 	}
      else {
-	mine->ph_x = target_plasma->t_x;
-	mine->ph_y = target_plasma->t_y;
-	mine->ph_status = PHHIT2;
 	target_plasma->t_damage+=mine->ph_damage;
 	target_plasma->t_gspeed+=mine->ph_damage/100;
 	target_plasma->t_turns++;
@@ -331,10 +334,8 @@ void phaser(u_char course)
    }
 
    if (!pingpong_plasma) {
-     mine->ph_x = target_plasma->t_x;
-     mine->ph_y = target_plasma->t_y;
-     target_plasma->t_status = TDET;
      target_plasma->t_whodet = me->p_no;
+     store_release(&target_plasma->t_status, TDET);
      new_warning(38, "You destroyed the plasma torpedo!");
    }
   }

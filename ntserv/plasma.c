@@ -10,6 +10,7 @@
 #include "proto.h"
 #include "sturgeon.h"
 #include "util.h"
+#include "shmatomic.h"
 
 /*
  * See torp.c for comments; in essence this code is an exact copy of that
@@ -62,7 +63,7 @@ void nplasmatorp(u_char course, int attributes)
     return;
   }
   for (k = firstPlasmaOf(me); k <= lastPlasmaOf(me); k++)
-    if (k->t_status == TFREE)
+    if (load_acquire(&k->t_status) == TFREE)
       break;
   if (k > lastPlasmaOf(me))  {
     new_warning(UNDEF,"We are out of plasma, for the moment, Captain!");
@@ -93,8 +94,9 @@ void nplasmatorp(u_char course, int attributes)
   me->p_nplasmatorp++;
   me->p_fuel -= myship->s_plasmacost;
   me->p_wtemp += (myship->s_plasmacost / 10) - 8;  /* Heat weapons */
-    
-  k->t_status = TMOVE;
+
+  /* initialise the plasma, then set its status, as the daemon may move
+     it at once */
   k->t_type = TPLASMA;
   k->t_attribute = attributes;
   k->t_owner = me->p_no;
@@ -113,6 +115,7 @@ void nplasmatorp(u_char course, int attributes)
 #if 0
   k->t_speed = k->t_gspeed / WARP1;
 #endif
+  store_release(&k->t_status, TMOVE);
 
 #ifdef LTD_STATS
 

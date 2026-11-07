@@ -44,6 +44,7 @@
 #include "draft.h"
 #include "solicit.h"
 #include "planet.h"
+#include "shmatomic.h"
 
 #ifdef AUTOMOTD
 #include <sys/stat.h>
@@ -1112,11 +1113,13 @@ static void udplayers_pexplode(struct player *j)
            mainly for ATT torps/plasmas, and sturgeon weapons */
         struct torp *t;
         for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) {
-                if (t->t_status == TMOVE && t->t_fuse > seconds_to_frames(5))
+                if (load_acquire(&t->t_status) == TMOVE &&
+                    t->t_fuse > seconds_to_frames(5))
                         t->t_fuse = seconds_to_frames(5);
         }
         for (t = firstPlasmaOf(j); t <= lastPlasmaOf(j); t++) {
-                if (t->t_status == TMOVE && t->t_fuse > seconds_to_frames(5))
+                if (load_acquire(&t->t_status) == TMOVE &&
+                    t->t_fuse > seconds_to_frames(5))
                         t->t_fuse = seconds_to_frames(5);
         }
 }
@@ -2159,7 +2162,8 @@ static void udtorps(void)
 
         /* update all torps and plasmas; they are in the same array */
         for (t = firstTorp; t <= lastPlasma; t++) {
-                switch (t->t_status) {
+                /* ntserv sets the status of a new torp last */
+                switch (load_acquire(&t->t_status)) {
 
                 case TFREE: /* this is an empty torp slot, skip it */
                         continue;
@@ -2208,10 +2212,16 @@ static void udtorps(void)
                         break; /* fall through to torp slot free */
                 }
 
-                t->t_status = TFREE; /* free torp slot */
-                switch (t->t_type) {
-                case TPHOTON: players[t->t_owner].p_ntorp--; break;
-                case TPLASMA: players[t->t_owner].p_nplasmatorp--; break;
+                /* free torp slot; its owner may take it again at once, so
+                   read the slot first */
+                {
+                        int type = t->t_type, owner = t->t_owner;
+
+                        store_release(&t->t_status, TFREE);
+                        switch (type) {
+                        case TPHOTON: players[owner].p_ntorp--; break;
+                        case TPLASMA: players[owner].p_nplasmatorp--; break;
+                        }
                 }
         }
 }
@@ -2871,14 +2881,16 @@ static void udphaser(void)
     register struct player *victim;
 
     for (i = 0, j = &phasers[i]; i < MAXPLAYER; i++, j++) {
-        switch (j->ph_status) {
+        /* ntserv sets the status of a new phaser last, and may fire
+           again once the status is free */
+        switch (load_acquire(&j->ph_status)) {
             case PHFREE:
                 continue;
             case PHMISS:
             case PHHIT2:
                 /* todo: fps support, use of a fuse */
                 if (j->ph_fuse-- == 1)
-                    j->ph_status = PHFREE;
+                    store_release(&j->ph_status, PHFREE);
                 break;
             case PHHIT:
                 if (j->ph_fuse-- == players[i].p_ship.s_phaserfuse) {
@@ -2935,7 +2947,7 @@ static void udphaser(void)
                     }
                 }
                 if (j->ph_fuse == 0)
-                    j->ph_status = PHFREE;
+                    store_release(&j->ph_status, PHFREE);
                 break;
         }
     }

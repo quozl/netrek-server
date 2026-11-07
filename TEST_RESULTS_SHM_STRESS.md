@@ -284,6 +284,55 @@ that queue.
 established.  One shield command was lost in the 3000 s run, the first
 in any run; the client saw no change in its flags after sending it.
 
+### Weapon status
+
+`ntorp()` set a torpedo's status to `TMOVE` before its other fields, so
+that the daemon could move, hit with, or free a torpedo with the
+previous torpedo's position, fuse and owner.  Plasma torpedoes, the
+sturgeon special weapons and phasers did the same; a phaser could hit
+the previous shot's target with the previous shot's damage, and its
+fuse could be left below zero, so that it never freed again.
+
+Each now fills in its fields, then sets the status with a release
+store, and the daemon reads the status with an acquire load.  Where the
+daemon frees a torpedo or a phaser, it reads what it needs first, then
+sets the status free with a release store, as the owner may take the
+slot again at once.  A sturgeon nuke that fails to detonate is no longer
+detonated anyway.
+
+Readers of torpedo and phaser status in ntserv's updates to clients, in
+robots and in tools are not yet changed.
+
+Run on 8 November 2026, same host as above.  "Before" is commit
+`42e2013`.
+
+| | Before, `--widen 1000`, 600 s | After, `--widen 1000`, 600 s | After, 1200 s | Before, 1200 s |
+|---|---|---|---|---|
+| torpedoes seen | 29,585 | 29,463 | 57,089 | 57,804 |
+| phaser hits | 2,454 | 2,455 | 4,828 | 4,827 |
+| messages sent | 99,632 | 99,443 | 195,516 | 195,440 |
+| messages received | 99,632 | 99,443 | 195,516 | 195,440 |
+| deaths | 5 | 1 | 1 | 7 |
+| `ntorp-drift` | 11,923 | 7,254 | 0 | 0 |
+| `torp-slot` | 0 | 0 | 0 | 0 |
+| `torp-uninit` | **5,702** | **0** | **0** | **332** |
+| `phaser-stale` | **15** | **0** | 0 | 0 |
+| `message-lost-uplink` | 0 | 0 | 0 | 0 |
+| `message-lost-downlink`, `message-duplicated` | 0 | 0 | 0 | 0 |
+| `shield-lost` | 1 | 0 | 0 | 0 |
+| `shield-undone` | 0 | 0 | 0 | 0 |
+
+With delays, torpedoes were seen moving before they were initialised
+5,702 times before the fix, and phaser hits changed after the daemon
+applied them 15 times; after the fix, neither.  Without delays, 332
+torpedoes were seen before they were initialised in twenty minutes
+before the fix, and none after, in a run that counted no race at all.
+
+`ntorp-drift` with delays was lower after the fix; this was not
+investigated.  A second shield command was lost, before the fix, with
+delays.  Both lost shield commands were by attackers.  The daemon also
+changes ships' flags, and this fix does not touch that path.
+
 ## Lessons for testing
 
 - Clients that act just after each update never overlap the daemon's
