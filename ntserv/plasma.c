@@ -43,7 +43,7 @@ void nplasmatorp(u_char course, int attributes)
     if (!chaosmode)
       return;
   }
-  if (me->p_nplasmatorp == MAXPLASMA) {
+  if (me->p_nplasmatorp >= MAXPLASMA) {
     if (me->p_ship.s_type != ATT) {
       new_warning(20,"Our fire control system limits us to 1 live torpedo at a time captain!");
       return;

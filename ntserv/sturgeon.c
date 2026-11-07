@@ -920,7 +920,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       if (!chaosmode)
         return;
     }
-    if (me->p_nplasmatorp == MAXPLASMA) {
+    if (me->p_nplasmatorp >= MAXPLASMA) {
       if (me->p_ship.s_type != ATT) {
         new_warning(20,"Our fire control system limits us to 1 live torpedo at a time captain!");
         return;
@@ -985,7 +985,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
 
   switch (sw->sw_type) {
     case SPECBOMB:
-      if (me->p_nplasmatorp == MAXPLASMA) {
+      if (me->p_nplasmatorp >= MAXPLASMA) {
           new_warning(UNDEF,"We cannot drop a nuke yet!");
           break;
       }
@@ -1002,6 +1002,17 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
           new_warning(UNDEF,"We can't nuke a friendly planet!");
           break;
       }
+      for (i = me->p_no * MAXPLASMA, k = firstPlasmaOf(me);
+           i < me->p_no * MAXPLASMA + MAXPLASMA; i++, k++) {
+        if (k->t_status == TFREE)
+          break;
+      }
+      /* p_nplasmatorp is shared with the daemon, and may not match the
+         plasmas in use; never take a slot past my own */
+      if (k > lastPlasmaOf(me)) {
+          new_warning(UNDEF,"We cannot drop a nuke yet!");
+          break;
+      }
 
       if (sw->sw_number > 0)
           sw->sw_number--;
@@ -1010,11 +1021,6 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       me->p_swar |= l->pl_owner;
       me->p_ship.s_maxarmies += me->p_special - 5;
 
-      for (i = me->p_no * MAXPLASMA, k = firstPlasmaOf(me);
-           i < me->p_no * MAXPLASMA + MAXPLASMA; i++, k++) {
-        if (k->t_status == TFREE)
-          break;  /* found.  what if not found??? */
-      }
       k->t_no = i;
       k->t_status = TMOVE;
       k->t_type = TPLASMA;
@@ -1085,7 +1091,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       break;
     case SPECTORP:
     case SPECMINE:
-      if (me->p_ntorp == MAXTORP) {
+      if (me->p_ntorp >= MAXTORP) {
         new_warning(UNDEF,"Our computers limit us to having 8 live torpedos at a time captain!");
         return;
       }
@@ -1101,6 +1107,17 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
         new_warning(UNDEF,"We cannot launch while cloaked, captain!");
         return;
       }
+      for (i = me->p_no * MAXTORP, j = firstTorpOf(me);       /* Find a free torp */
+           i < me->p_no * MAXTORP + MAXTORP; i++, j++) {
+        if (j->t_status == TFREE)
+          break;
+      }
+      /* p_ntorp is shared with the daemon, and may not match the torps
+         in use; never take a slot past my own */
+      if (j > lastTorpOf(me)) {
+        new_warning(UNDEF,"Our computers limit us to having 8 live torpedos at a time captain!");
+        return;
+      }
       if (sw->sw_number > 0)
       {
         sw->sw_number--;
@@ -1111,12 +1128,6 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       me->p_ntorp++;
       me->p_fuel -= sw->sw_fuelcost;
       me->p_wtemp += (sw->sw_damage/5);  /* Heat weapons */
-
-      for (i = me->p_no * MAXTORP, j = firstTorpOf(me);       /* Find a free torp */
-           i < me->p_no * MAXTORP + MAXTORP; i++, j++) {
-        if (j->t_status == TFREE)
-          break;
-      }
 
       /* Setup data in new torp (fighter) */
       j->t_no = i;

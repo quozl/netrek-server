@@ -17,6 +17,8 @@ rates.  With delays inserted in the race windows, the torpedo count,
 torpedo initialisation, phaser and message uplink checks counted races,
 which shows that those checks work.
 
+Results after each fix follow, under "Fixes".
+
 ## Background
 
 The daemon (`ntserv/daemon.c`) runs the game at 50 updates per second.
@@ -184,6 +186,44 @@ delay is inserted on those paths, so they are not covered by the
 positive control.
 
 Plasma is not fired by any client.
+
+## Fixes
+
+### Torpedo limit
+
+`ntorp()` refused a torpedo only when `p_ntorp == MAXTORP`, and when
+none of the ship's own slots was free, it took the slot after its last,
+the first of the next player.  It now refuses when `p_ntorp >= MAXTORP`,
+or when none of its own slots is free.  Plasma torpedoes and the
+sturgeon special weapons are limited the same way.  The count still
+drifts, but a drift no longer reaches another player.
+
+Run on 7 November 2026, test at commit `e89cbe8`, same host as above.
+"Before" is commit `9b1555a`, with the server source of `4bb3652`.
+
+| | Before, `--widen 1000`, 600 s | After, `--widen 1000`, 600 s | Before, 1200 s | After, 1200 s |
+|---|---|---|---|---|
+| torpedoes seen | 18,618 | 29,635 | 57,528 | 57,124 |
+| phaser hits | 2,463 | 2,464 | 4,827 | 4,831 |
+| messages sent | 99,604 | 99,537 | 195,430 | 195,492 |
+| deaths | 0 | 1 | 4 | 4 |
+| `ntorp-drift` | 6,974 | 12,439 | 0 | 0 |
+| `nplasma-drift` | 0 | 0 | 0 | 0 |
+| `torp-slot` | **293** | **0** | 0 | 0 |
+| `torp-uninit` | 3,450 | 5,708 | 147 | 150 |
+| `phaser-stale` | 7 | 12 | 0 | 0 |
+| `message-lost-uplink` | 4,709 | 4,887 | 16 | 11 |
+| `message-lost-downlink`, `message-duplicated` | 0 | 0 | 0 | 0 |
+| `shield-lost`, `shield-undone` | 0 | 0 | 0 | 0 |
+
+With delays, torpedoes ran into another player's slot 293 times before
+the fix, and never after.  Without delays, the count did not drift in
+twenty minutes, before or after, and the other counts were about the
+same.
+
+Fewer torpedoes were seen before the fix with delays; why was not
+established.  Ships die now and then with the present salvoes, which
+keep torpedoes in flight for longer, before and after the fix alike.
 
 ## Lessons for testing
 

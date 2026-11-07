@@ -75,7 +75,7 @@ void ntorp(u_char course, int attributes)
     if (!chaosmode)
       return;
   }
-  if (me->p_ntorp == MAXTORP) {
+  if (me->p_ntorp >= MAXTORP) {
     new_warning(26, "Our computers limit us to having 8 live torpedos at a time captain!");
     return;
   }
@@ -155,11 +155,12 @@ void ntorp(u_char course, int attributes)
   for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)
     if (k->t_status == TFREE)
       break;
-#if 0
-  /* Pseudo code for run-time debugging, if someone wants it. */
-  if (k > lastTorpOf(me))
-    error();
-#endif
+  /* p_ntorp is shared with the daemon, and may not match the torps in
+     use; never take a slot past my own */
+  if (k > lastTorpOf(me)) {
+    new_warning(26, "Our computers limit us to having 8 live torpedos at a time captain!");
+    return;
+  }
 
   last_torp_fired_update = me->p_updates;
 
