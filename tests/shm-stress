@@ -98,7 +98,7 @@ WIDEN = [
     ('ntserv/phaser.c',
      '  mine->ph_fuse = me->p_ship.s_phaserfuse;\n',
      '  mine->ph_fuse = me->p_ship.s_phaserfuse;\n  race_widen();\n',
-     'phaser: status and fuse set before target and damage'),
+     'phaser: fuse set, target and damage not yet'),
     ('ntserv/torp.c',
      '  me->p_ntorp++;\n',
      '  { int race_n = me->p_ntorp; race_widen();'
@@ -110,10 +110,21 @@ WIDEN = [
      ' players[t->t_owner].p_ntorp; race_widen();'
      ' players[t->t_owner].p_ntorp = race_n - 1; } break;\n',
      'udtorps: p_ntorp read-modify-write'),
+    ('ntserv/daemon.c',
+     '                        case TPHOTON: players[owner].p_ntorp--; break;\n',
+     '                        case TPHOTON: { int race_n ='
+     ' players[owner].p_ntorp; race_widen();'
+     ' players[owner].p_ntorp = race_n - 1; } break;\n',
+     'udtorps: p_ntorp read-modify-write'),
+    # before and after the status was set after the other fields
     ('ntserv/torp.c',
      '  k->t_status = TMOVE;\n',
      '  k->t_status = TMOVE;\n  race_widen();\n',
-     'ntorp: status set before position'),
+     'ntorp: torp being initialised'),
+    ('ntserv/torp.c',
+     '  store_release(&k->t_status, TMOVE);\n',
+     '  race_widen();\n  store_release(&k->t_status, TMOVE);\n',
+     'ntorp: torp being initialised'),
     ('ntserv/socket.c',
      '\tif (t->t_status == TMOVE) {\n\t    t->t_status = TOFF;\n',
      '\tif (t->t_status == TMOVE) {\n\t    race_widen();\n'

@@ -139,7 +139,7 @@ the scratch build only, at these points:
 - `phaser()`, after `ph_fuse` is set;
 - `ntorp()`, between reading and writing `p_ntorp`;
 - `udtorps()` in the daemon, between reading and writing `p_ntorp`;
-- `ntorp()`, after `t_status` is set;
+- `ntorp()`, while the torpedo is being initialised;
 - `handleDetMReq()`, between testing and setting `t_status`;
 - `do_message()`, after an uplink entry is chosen, before it is
   written, for players only;
