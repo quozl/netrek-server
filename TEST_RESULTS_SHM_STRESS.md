@@ -141,10 +141,16 @@ the scratch build only, at these points:
 - `udtorps()` in the daemon, between reading and writing `p_ntorp`;
 - `ntorp()`, after `t_status` is set;
 - `handleDetMReq()`, between testing and setting `t_status`;
-- `do_message()`, after the uplink index is advanced, for players only.
+- `do_message()`, after an uplink entry is chosen, before it is
+  written, for players only;
+- `do_message_requeue()` in the daemon, after a queue entry is chosen,
+  before it is written.
 
 The build reports each delay inserted.  When a fix changes the code at a
-window, its delay may no longer apply, and the build says so.
+window, its delay may no longer apply, and the build says so.  Where a
+fix moves the window, the test has a delay for the code before and
+after the fix, at the same point, so that one version of the test
+measures both.
 
 ## Results
 

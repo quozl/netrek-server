@@ -92,7 +92,8 @@ SP_PICKOK, SP_LOGIN, SP_MASK, SP_PSTATUS = 16, 17, 19, 20
 MINDIV, PFSHIELD, PALIVE, MAXTORP, CRUISER = 0x02, 0x0001, 2, 8, 2
 FED, ROM = 0, 1                 # CP_OUTFIT team index
 
-# delays for --widen: (file, anchor, replacement, window)
+# delays for --widen: (file, anchor, replacement, window); entries with
+# the same window are alternatives, for the code before and after a fix
 WIDEN = [
     ('ntserv/phaser.c',
      '  mine->ph_fuse = me->p_ship.s_phaserfuse;\n',
@@ -118,11 +119,27 @@ WIDEN = [
      '\tif (t->t_status == TMOVE) {\n\t    race_widen();\n'
      '\t    t->t_status = TOFF;\n',
      'handleDetMReq: status tested then set'),
+    # before and after the entry was written before its index was moved
     ('ntserv/smessage.c',
      '  cur = (*do_message_next)();\n',
      '  cur = (*do_message_next)();\n'
      '  if (do_message_next == do_message_next_player) race_widen();\n',
-     'do_message: uplink index advanced before message written'),
+     'do_message: uplink entry chosen, not yet written'),
+    ('ntserv/smessage.c',
+     '  cur = (*do_message_next)(&index, &next);\n',
+     '  cur = (*do_message_next)(&index, &next);\n'
+     '  if (do_message_next == do_message_next_player) race_widen();\n',
+     'do_message: uplink entry chosen, not yet written'),
+    ('ntserv/smessage.c',
+     '    struct message *dst = do_message_next_daemon();\n',
+     '    struct message *dst = do_message_next_daemon();\n'
+     '    race_widen();\n',
+     'do_message_requeue: queue entry chosen, not yet written'),
+    ('ntserv/smessage.c',
+     '    struct message *dst = do_message_next_daemon(&index, &next);\n',
+     '    struct message *dst = do_message_next_daemon(&index, &next);\n'
+     '    race_widen();\n',
+     'do_message_requeue: queue entry chosen, not yet written'),
 ]
 
 WIDEN_FUNCTION = '''
@@ -154,13 +171,14 @@ def run(cmd, cwd, logfile, env=None):
 
 
 def widen(src, us):
+    widened = set()
     for path, anchor, replacement, window in WIDEN:
         name = os.path.join(src, path)
         with open(name) as f:
             text = f.read()
         if text.count(anchor) != 1:
-            log('cannot widen %s, anchor not found in %s' % (window, path))
             continue
+        widened.add(window)
         text = text.replace(anchor, replacement)
         if 'static void race_widen' not in text:
             # after struct.h, which every widened file includes outside
@@ -171,6 +189,10 @@ def widen(src, us):
         with open(name, 'w') as f:
             f.write(text)
         log('widened %s by %d us' % (window, us))
+    for path, anchor, replacement, window in WIDEN:
+        if window not in widened:
+            widened.add(window)
+            log('cannot widen %s, anchor not found in %s' % (window, path))
 
 
 def build(args):
