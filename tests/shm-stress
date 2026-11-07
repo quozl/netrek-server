@@ -103,6 +103,12 @@ WIDEN = [
      '  { int race_n = me->p_ntorp; race_widen();'
      ' me->p_ntorp = race_n + 1; }\n',
      'ntorp: p_ntorp read-modify-write'),
+    ('ntserv/daemon.c',
+     '                case TPHOTON: players[t->t_owner].p_ntorp--; break;\n',
+     '                case TPHOTON: { int race_n ='
+     ' players[t->t_owner].p_ntorp; race_widen();'
+     ' players[t->t_owner].p_ntorp = race_n - 1; } break;\n',
+     'udtorps: p_ntorp read-modify-write'),
     ('ntserv/torp.c',
      '  k->t_status = TMOVE;\n',
      '  k->t_status = TMOVE;\n  race_widen();\n',
@@ -157,8 +163,10 @@ def widen(src, us):
             continue
         text = text.replace(anchor, replacement)
         if 'static void race_widen' not in text:
-            last = text.rfind('\n#include')
-            end = text.index('\n', last + 1)
+            # after struct.h, which every widened file includes outside
+            # any conditional, and before any use
+            start = text.index('#include "struct.h"\n')
+            end = text.index('\n', start)
             text = text[:end + 1] + WIDEN_FUNCTION + text[end + 1:]
         with open(name, 'w') as f:
             f.write(text)
@@ -351,11 +359,13 @@ class Client:
         phaser_at = 0
         # torpers alternate between recycling, which detonates one torp
         # and fires another each step, so that the daemon frees torps
-        # while ntserv fires them, and salvoes, which fire eight and
-        # detonate them later, some as they expire
+        # while ntserv fires them, and salvoes, which fire each step for
+        # 2 to 6 seconds, then detonate all; ntserv allows one torp per
+        # update, so a salvo has eight live after a second or so, and
+        # then asks for more while eight are live, and as the first
+        # expire, from 4 seconds
         recycle_until = now + rnd.uniform(2, 5)
-        salvo = 0
-        det_at = None
+        det_at = recycle_until + rnd.uniform(2, 6)
         slot = 0
         target = 0
         while True:
@@ -409,20 +419,16 @@ class Client:
                     self.r['dets_sent'] += 1
                     self.send('!bBxx', CP_TORP, rnd.randrange(256))
                     self.r['torps_sent'] += 1
-                elif det_at is None:
+                elif now < det_at:
                     self.send('!bBxx', CP_TORP, rnd.randrange(256))
                     self.r['torps_sent'] += 1
-                    salvo += 1
-                    if salvo == MAXTORP:
-                        salvo = 0
-                        det_at = now + rnd.uniform(1, 3)
-                elif now >= det_at:
+                else:
                     for i in range(MAXTORP):
                         self.send('!bxh', CP_DET_MYTORP,
                                   self.me * MAXTORP + i)
                     self.r['dets_sent'] += MAXTORP
-                    det_at = None
                     recycle_until = now + rnd.uniform(2, 5)
+                    det_at = recycle_until + rnd.uniform(2, 6)
             elif self.role == 'attacker' and self.me in self.pos:
                 if not self.phaser_free and now - phaser_at < 2:
                     continue

@@ -41,8 +41,9 @@ The windows the test looks for:
 | Window | Where | Possible effect |
 |---|---|---|
 | `t_status = TMOVE` set before the torpedo's fields | `ntserv/torp.c` `ntorp()`, `ntserv/plasma.c` | daemon moves or frees a torpedo using the last one's values |
-| `p_ntorp` held in a register from the limit check to the increment | `ntorp()`, as compiled by gcc -O2 | daemon's decrement lost; the `p_ntorp == MAXTORP` limit check fails once the count passes 8, and torpedoes run into the next player's slots |
-| `t_status == TMOVE` tested, then `TOFF` set | `ntserv/socket.c` `handleDetMReq()` | a torpedo expiring in between is freed twice, and the count drops by two |
+| `p_ntorp` held in a register from the limit check to the increment | `ntorp()`, as compiled by gcc -O2 | daemon's decrement lost; the count stays above the torpedoes in flight, and the ship can fire fewer than eight until it dies |
+| `p_ntorp` decremented by `subw $1` without a `lock` prefix | `ntserv/daemon.c` `udtorps()` | ntserv's increment lost; the count falls below the torpedoes in flight, the `p_ntorp == MAXTORP` limit check lets a ninth torpedo through, and it takes the first slot of the next player |
+| `t_status == TMOVE` tested, then `TOFF` set | `ntserv/socket.c` `handleDetMReq()` | a torpedo expiring in between is freed twice, and the count drops by two, as for a lost increment |
 | `ph_status` and `ph_fuse` set before `ph_target` and `ph_damage` | `ntserv/phaser.c` `phaser()` | daemon applies the previous shot's damage to the previous target |
 | uplink index advanced before the message is written | `ntserv/smessage.c` `do_message()` | daemon skips the entry and the message is lost |
 | `mc_current` advanced before the message is copied | `do_message_next_daemon()` | an ntserv reads a stale entry |
@@ -59,8 +60,10 @@ Clients, eight on each of two teams:
 
 - **torpers** fire torpedoes and detonate them, either one of each per
   step, so that the daemon frees torpedoes while ntserv fires more, or
-  eight, then all eight a random 1 to 3 seconds later, so that some are
-  detonated as they expire;
+  in salvoes, firing every step for a random 2 to 6 seconds, then
+  detonating all; ntserv allows one torpedo per update, so a salvo has
+  eight live after a second or so, then asks ntserv for more while
+  eight are live, and as the first expire, from 4 seconds;
 - **attackers** phaser victims in an arena away from planets,
   alternating targets;
 - **victims** are phasered;
@@ -133,6 +136,7 @@ the scratch build only, at these points:
 
 - `phaser()`, after `ph_fuse` is set;
 - `ntorp()`, between reading and writing `p_ntorp`;
+- `udtorps()` in the daemon, between reading and writing `p_ntorp`;
 - `ntorp()`, after `t_status` is set;
 - `handleDetMReq()`, between testing and setting `t_status`;
 - `do_message()`, after the uplink index is advanced, for players only.
@@ -165,11 +169,19 @@ With 1 ms delays, about 5% of messages were lost, as expected for a 1 ms
 window in a 20 ms update, and phaser hits, applied every 100 ms, about
 1% were expected to race.
 
-Not yet shown by any run: torpedoes in another player's slot, which
-needs `p_ntorp` to drift past 8; loss or duplication of messages on
-their way from the daemon's queue to the clients; and lost shield
-commands.  No delay is inserted in the daemon, so the last two are not
-covered by the positive control.
+Not shown by these runs: torpedoes in another player's slot.  The
+torpers of that version of the test fired salvoes of eight requests,
+but ntserv allows one torpedo per update, so they never had eight live
+and never asked for a ninth; and the only delay was in `ntorp()`, which
+loses the daemon's decrements, leaving the count too high, never too
+low.  With the present salvoes and the delay in `udtorps()`, the same
+server source widened by 1000 us for 60 s put torpedoes in another
+player's slot 39 times.
+
+Not yet shown by any run: loss or duplication of messages on their way
+from the daemon's queue to the clients; and lost shield commands.  No
+delay is inserted on those paths, so they are not covered by the
+positive control.
 
 Plasma is not fired by any client.
 
