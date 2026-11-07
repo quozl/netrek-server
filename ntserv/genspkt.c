@@ -1578,9 +1578,8 @@ static int parseQuery(struct message *msg)
 
 void updateMessages(void)
 {
-    struct message *cur;
+    struct message *cur, copy;
     struct mesg_spacket msg;
-    int reset_flags = 0;
     int send_msg;
     struct player *p_from;
     int is_whitelisted = 0;
@@ -1590,7 +1589,10 @@ void updateMessages(void)
          msgCurrent=(msgCurrent+1) % MAXMESSAGE) {
         if (msgCurrent>=MAXMESSAGE)
             msgCurrent=0;
-        cur = &messages[msgCurrent];
+        /* work on a copy, as other ntserv processes read the entry at
+           the same time */
+        copy = messages[msgCurrent];
+        cur = &copy;
 
         if ((macroignore && cur->m_flags & MMACRO)
             || (dooshignore && cur->m_from == DOOSHMSG)) {
@@ -1607,12 +1609,13 @@ void updateMessages(void)
    Clients only show MALL && MCONQ.  but we don't want to send to all.
    So at this point, MINDIV has already directed it to the right guy.
    Now, cancel MINDIV and set MALL, for the client's benefit.
-   ATH, 11/5/95 */
+   ATH, 11/5/95
+   Only in the copy, as other ntserv processes would see MALL in the
+   entry and send it to all. */
 
             if ((cur->m_flags & MINDIV) && (cur->m_flags & MCONQ)) {
                 cur->m_flags &= ~MINDIV;
                 cur->m_flags |= MALL;
-                reset_flags = 1;
             }
 
             if(send_short && (cur->m_from == 255)) {
@@ -1696,12 +1699,6 @@ void updateMessages(void)
 #endif
             if (send_msg)
                 updtMessage(&msg, cur);
-        }
-/* Put eject message back as MINDIV, so everyone doesn't get it later */
-        if (reset_flags) {
-            cur->m_flags &= ~MALL;
-            cur->m_flags |= MINDIV;
-            reset_flags = 0;
         }
     }
 }
