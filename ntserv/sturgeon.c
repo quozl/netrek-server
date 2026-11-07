@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "copyright.h"
 #include "defs.h"
 #include "struct.h"
