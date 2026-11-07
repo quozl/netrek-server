@@ -503,8 +503,9 @@ because they have initialisation of variables dependent on UPDATE. */
 #define LOCK_SETGAME    1       /* general purpose setgame tool lock      */
 #define LOCK_PLAYER_ADD 2       /* player database growth file lock       */
 #define LOCK_QUEUE_ADD  3       /* adding an incoming connection to queue */
+#define LOCK_OOB_ADD    4       /* adding to the out-of-band message queue */
 
-#define NLOCKS          3       /* number of locks with a defined purpose */
+#define NLOCKS          5       /* number of locks with a defined purpose */
 
 #define IGNORING	1	/* next 2 are for state checks in the     */
 #define IGNOREDBY	2	/* do_display_ignores func. in ntscmds.c  */

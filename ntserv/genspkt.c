@@ -23,6 +23,7 @@
 #include "genspkt.h"
 #include "ip.h"
 #include "util.h"
+#include "shmatomic.h"
 
 /* file scope prototypes */
 static void updateFlagsAll(int offset);
@@ -1584,8 +1585,10 @@ void updateMessages(void)
     struct player *p_from;
     int is_whitelisted = 0;
     int warning_shown = 0;
+    /* the daemon publishes an entry by moving mc_current to it */
+    int end = (load_acquire(&mctl->mc_current) + 1) % MAXMESSAGE;
 
-    for (; msgCurrent!=(mctl->mc_current+1) % MAXMESSAGE;
+    for (; msgCurrent!=end;
          msgCurrent=(msgCurrent+1) % MAXMESSAGE) {
         if (msgCurrent>=MAXMESSAGE)
             msgCurrent=0;

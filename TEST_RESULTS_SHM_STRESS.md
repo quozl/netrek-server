@@ -186,10 +186,10 @@ low.  With the present salvoes and the delay in `udtorps()`, the same
 server source widened by 1000 us for 60 s put torpedoes in another
 player's slot 39 times.
 
-Not yet shown by any run: loss or duplication of messages on their way
-from the daemon's queue to the clients; and lost shield commands.  No
-delay is inserted on those paths, so they are not covered by the
-positive control.
+Not shown by these runs: loss or duplication of messages on their way
+from the daemon's queue to the clients; and lost shield commands.
+Neither path had a delay then; the daemon's queue has one since, see
+"Message queues" under "Fixes".
 
 Plasma is not fired by any client.
 
@@ -230,6 +230,59 @@ same.
 Fewer torpedoes were seen before the fix with delays; why was not
 established.  Ships die now and then with the present salvoes, which
 keep torpedoes in flight for longer, before and after the fix alike.
+
+### Message queues
+
+`do_message()` moved a queue's index to a new entry before writing the
+entry.  The daemon, reading a player's uplink at that moment, found the
+entry not yet valid, skipped it, and the message was lost.  The daemon
+did the same as it copied each message into the main queue, so that an
+ntserv reading the queue at that moment could send its player the
+entry's previous message, and miss the new one.
+
+Each writer now fills in the entry, then moves the index with a release
+store, and each reader loads the index with acquire, and reads entries
+up to it.  Robots and tools share the out-of-band queue, and now hold a
+lock while they add to it.  Readers in robots and tools are not yet
+changed.
+
+Run on 7 November 2026, same host as above.  "Before" is commit
+`45b5487`.  The 1200 s run after the fix also has commit `c380bd8`,
+which stops ntserv changing the flags of shared message entries; the
+others do not.
+
+| | Before, `--widen 1000`, 600 s | After, `--widen 1000`, 600 s | Before, 1200 s | After, 1200 s | After, 3000 s |
+|---|---|---|---|---|---|
+| torpedoes seen | 29,261 | 29,267 | 57,592 | 57,646 | 141,959 |
+| phaser hits | 2,446 | 2,453 | 4,828 | 4,835 | 11,918 |
+| messages sent | 99,600 | 99,617 | 195,439 | 195,603 | 482,826 |
+| messages received | 94,883 | 99,617 | 195,424 | 195,603 | 482,826 |
+| deaths | 7 | 0 | 3 | 0 | 10 |
+| `ntorp-drift` | 12,223 | 12,042 | 0 | 0 | 0 |
+| `torp-slot` | 0 | 0 | 0 | 0 | 0 |
+| `torp-uninit` | 5,742 | 5,757 | 256 | 467 | 846 |
+| `phaser-stale` | 18 | 16 | 0 | 0 | 0 |
+| `message-lost-uplink` | **4,716** | **0** | **15** | **0** | **0** |
+| `message-lost-downlink` | 1 | 0 | 0 | 0 | 0 |
+| `message-duplicated` | 1 | 0 | 0 | 0 | 0 |
+| `shield-lost` | 0 | 0 | 0 | 0 | 1 |
+| `shield-undone` | 0 | 0 | 0 | 0 | 0 |
+
+With delays, the uplink lost 4,716 messages before the fix, and none
+after.  Without delays, 15 were lost in twenty minutes before, and none
+in seventy minutes after.  Earlier runs of the same source before the
+fix lost 11, 16 and 27.
+
+The delay in the daemon's copy into the main queue caused only one lost
+and one duplicated message before the fix.  Each ntserv reads the queue
+when the daemon signals it, which is after the copy, so few reads
+overlap the delay, and the result after the fix is weak evidence for
+that queue.
+
+`torp-uninit` was higher after the fix, in back to back runs and in the
+3000 s run.  The fix does not change `ntorp()`, and why was not
+established.  One shield command was lost in the 3000 s run, the first
+in any run; the client saw no change in its flags after sending it.
 
 ## Lessons for testing
 

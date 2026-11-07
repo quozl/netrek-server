@@ -14,6 +14,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "shmatomic.h"
 
 /* new code, sends bouncemsg to bounceto from GOD 4/17/92 TC */
 /* Moved to smessage and changed to varargs 8/2/93 NBT */
@@ -69,44 +70,46 @@ void amessage(char *str, int recip, int group)
   pmessage(recip, group, "", "%s", str);
 }
 
-/* point to the next entry in the ring buffer message queue, the old tail */
-static int do_message_kick(int *current, int maximum)
+/* The message queues are ring buffers in shared memory, each with an
+   index in mctl of the entry last published.  A writer fills in the
+   entry after the index, then moves the index to it with a release
+   store.  A reader loads the index with acquire, and reads entries up
+   to it, so it never sees an entry before it is written. */
+
+/* the entry after an index, in a ring buffer of a given size */
+static int do_message_after(int current, int maximum)
 {
-  int i;
-
-  if ((i = ++(*current)) >= maximum) {
-    *current = 0;
-    i = 0;
-  }
-
-  return i;
+  return current + 1 < maximum ? current + 1 : 0;
 }
 
-/* point to the next entry in the message queue, for the daemon */
-static struct message *do_message_next_daemon()
+/* the next entry in the message queue, for the daemon */
+static struct message *do_message_next_daemon(int **index, int *next)
 {
-  int mesgnum = do_message_kick(&mctl->mc_current, MAXMESSAGE);
-  struct message *cur = &messages[mesgnum];
-  cur->m_no = mesgnum;
-  return cur;
+  *index = &mctl->mc_current;
+  *next = do_message_after(mctl->mc_current, MAXMESSAGE);
+  return &messages[*next];
 }
 
-/* point to the next entry in the message queue, for a player */
-static struct message *do_message_next_player()
+/* the next entry in the message queue, for a player */
+static struct message *do_message_next_player(int **index, int *next)
 {
-  int i, j;
+  int j = me->p_no;
 
-  j = me->p_no;
-  i = do_message_kick(&mctl->mc_uplink[j], MAXUPLINK);
-  return &uplink[i + j * MAXUPLINK];
+  *index = &mctl->mc_uplink[j];
+  *next = do_message_after(mctl->mc_uplink[j], MAXUPLINK);
+  return &uplink[*next + j * MAXUPLINK];
 }
 
-/* point to the next entry in the message queue, for out-of-band sources */
-static struct message *do_message_next_oob()
+/* the next entry in the message queue, for out-of-band sources, which
+   share it, so hold LOCK_OOB_ADD until the entry is published */
+static struct message *do_message_next_oob(int **index, int *next)
 {
-  return &oob[do_message_kick(&mctl->mc_oob, MAXUPLINK)];
+  *index = &mctl->mc_oob;
+  *next = do_message_after(mctl->mc_oob, MAXUPLINK);
+  return &oob[*next];
 }
 
+/* the daemon's indexes of the next uplink entries to read */
 static int mc_uplink[MAXPLAYER], mc_oob;
 
 /* callback for preparing struct message entry further, used by daemon */
@@ -116,7 +119,8 @@ static void (*do_message_pre)(struct message *message, char *address) = NULL;
 static int (*do_message_post)(struct message *message) = NULL;
 
 /* message uplink allocation handler, default catch-all out-of-band queue */
-static struct message *(*do_message_next)() = do_message_next_oob;
+static struct message *(*do_message_next)(int **index, int *next) =
+  do_message_next_oob;
 
 void do_message_pre_set(void (*proposed)(struct message *message, char *address))
 {
@@ -133,8 +137,9 @@ void do_message_force_daemon()
 {
   int i;
 
-  for (i=0;i<MAXPLAYER;i++) mc_uplink[i] = mctl->mc_uplink[i] + 1;
-  mc_oob = mctl->mc_oob + 1;
+  for (i=0;i<MAXPLAYER;i++)
+    mc_uplink[i] = do_message_after(mctl->mc_uplink[i], MAXUPLINK);
+  mc_oob = do_message_after(mctl->mc_oob, MAXUPLINK);
   do_message_next = do_message_next_daemon;
 }
 
@@ -148,8 +153,10 @@ void do_message_force_player()
 static void do_message_requeue(struct message *src)
 {
   if (src->m_flags & MVALID) {
-    struct message *dst = do_message_next_daemon();
+    int *index, next;
+    struct message *dst = do_message_next_daemon(&index, &next);
     memcpy(dst, src, sizeof(struct message));
+    store_release(index, next);
     src->m_flags = 0;
   }
 }
@@ -157,17 +164,18 @@ static void do_message_requeue(struct message *src)
 /* requeue messages from the uplink queues to the main message queue */
 void do_message_requeue_all()
 {
-  int i;
+  int i, end;
 
   for (i=0; i<MAXPLAYER; i++) {
-    for (; mc_uplink[i] != (mctl->mc_uplink[i]+1) % MAXUPLINK;
-         mc_uplink[i] = (mc_uplink[i]+1) % MAXUPLINK) {
+    end = do_message_after(load_acquire(&mctl->mc_uplink[i]), MAXUPLINK);
+    for (; mc_uplink[i] != end;
+         mc_uplink[i] = do_message_after(mc_uplink[i], MAXUPLINK)) {
       do_message_requeue(&uplink[mc_uplink[i] + i * MAXUPLINK]);
     }
   }
 
-  for (; mc_oob != (mctl->mc_oob+1) % MAXUPLINK;
-       mc_oob = (mc_oob+1) % MAXUPLINK) {
+  end = do_message_after(load_acquire(&mctl->mc_oob), MAXUPLINK);
+  for (; mc_oob != end; mc_oob = do_message_after(mc_oob, MAXUPLINK)) {
     do_message_requeue(&oob[mc_oob]);
   }
 }
@@ -175,42 +183,51 @@ void do_message_requeue_all()
 void do_message(int recip, int group, char *address, u_char from,
                 const char *fmt, va_list args) {
 
-  struct message *cur;
+  struct message msg, *cur;
+  int *index, next;
+  int oob = (do_message_next == do_message_next_oob);
 
   if (strlen(fmt) == 0) {
     ERROR(1,("ntserv: bogus pmessage call!!\n"));
     return;
   }
 
-  cur = (*do_message_next)();
-  bzero(cur, sizeof(struct message));
+  bzero(&msg, sizeof(struct message));
 
-  cur->m_flags = group;
-  cur->m_recpt = recip;
-  cur->m_from = from;
+  msg.m_flags = group;
+  msg.m_recpt = recip;
+  msg.m_from = from;
 
   if (address[0] == '\0') {
-    vsnprintf(cur->m_data, sizeof(cur->m_data), fmt, args);
+    vsnprintf(msg.m_data, sizeof(msg.m_data), fmt, args);
   } else {
-    snprintf(cur->m_data, sizeof(cur->m_data), "%-9s ", address);
-    vsnprintf(cur->m_data + 10, sizeof(cur->m_data) - 10, fmt, args);
+    snprintf(msg.m_data, sizeof(msg.m_data), "%-9s ", address);
+    vsnprintf(msg.m_data + 10, sizeof(msg.m_data) - 10, fmt, args);
   }
 
-  cur->args[0] = DINVALID;
+  msg.args[0] = DINVALID;
 
   /* callback for preparing struct message entry further, used by daemon */
   if (do_message_pre != NULL) {
-    (*do_message_pre)(cur, address);
+    (*do_message_pre)(&msg, address);
   }
 
-  cur->m_flags |= MVALID;
+  msg.m_flags |= MVALID;
 
-  /* message insertion post-processor, for command detection */
+  /* write the entry, then publish it */
+  if (oob) lock_on(LOCK_OOB_ADD);
+  cur = (*do_message_next)(&index, &next);
+  memcpy(cur, &msg, sizeof(struct message));
+  store_release(index, next);
+  if (oob) lock_off(LOCK_OOB_ADD);
+
+  /* message insertion post-processor, for command detection; given the
+     copy, as the daemon may take the entry from the queue at any time */
   if (do_message_post != NULL) {
-    if ((cur->m_flags & MINDIV) &&
-        (cur->m_recpt == me->p_no) &&
-        (cur->m_from == me->p_no)) {
-      (*do_message_post)(cur);
+    if ((msg.m_flags & MINDIV) &&
+        (msg.m_recpt == me->p_no) &&
+        (msg.m_from == me->p_no)) {
+      (*do_message_post)(&msg);
     }
   }
 }
