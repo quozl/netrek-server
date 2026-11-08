@@ -310,6 +310,50 @@ struct ltd_stats {
 };
 #endif
 
+/* Every field of struct ltd_stats, in declaration order, so that
+   tools/scores and tools/newscores write and read the player database
+   as text in the same order.  U(f) is an unsigned int field and D(f)
+   is a double field.  Keep this in step with the structure. */
+
+#define LTD_STATS_FIELDS(U, D) \
+  U(kills.total) D(kills.max) U(kills.first) U(kills.first_potential) \
+  U(kills.first_converted) U(kills.second) U(kills.second_potential) \
+  U(kills.second_converted) U(kills.phasered) U(kills.torped) \
+  U(kills.plasmaed) \
+  U(deaths.total) U(deaths.potential) U(deaths.converted) \
+  U(deaths.dooshed) U(deaths.phasered) U(deaths.torped) \
+  U(deaths.plasmaed) U(deaths.acc) \
+  U(planets.taken) U(planets.destroyed) \
+  U(bomb.planets) U(bomb.planets_8) U(bomb.planets_core) \
+  U(bomb.armies) U(bomb.armies_8) U(bomb.armies_core) \
+  U(ogged.armies) U(ogged.dooshed) U(ogged.converted) U(ogged.potential) \
+  U(ogged.bigger_ship) U(ogged.same_ship) U(ogged.smaller_ship) \
+  U(ogged.sb_armies) U(ogged.friendly) U(ogged.friendly_armies) \
+  U(armies.total) U(armies.attack) U(armies.reinforce) U(armies.ferries) \
+  U(armies.killed) \
+  U(carries.total) U(carries.partial) U(carries.completed) \
+  U(carries.attack) U(carries.reinforce) U(carries.ferries) \
+  U(ticks.total) U(ticks.yellow) U(ticks.red) \
+  U(ticks.zone[0]) U(ticks.zone[1]) U(ticks.zone[2]) U(ticks.zone[3]) \
+  U(ticks.zone[4]) U(ticks.zone[5]) U(ticks.zone[6]) U(ticks.zone[7]) \
+  U(ticks.potential) U(ticks.carrier) U(ticks.repair) \
+  U(damage_repaired) \
+  U(weapons.phaser.fired) U(weapons.phaser.hit) \
+  U(weapons.phaser.damage.inflicted) U(weapons.phaser.damage.taken) \
+  U(weapons.torps.fired) U(weapons.torps.hit) U(weapons.torps.detted) \
+  U(weapons.torps.selfdetted) U(weapons.torps.wall) \
+  U(weapons.torps.damage.inflicted) U(weapons.torps.damage.taken) \
+  U(weapons.plasma.fired) U(weapons.plasma.hit) \
+  U(weapons.plasma.phasered) U(weapons.plasma.wall) \
+  U(weapons.plasma.damage.inflicted) U(weapons.plasma.damage.taken)
+
+/* Fail to compile if a field is missing from LTD_STATS_FIELDS. */
+
+#define LTD_STATS_FIELD_SIZE(f) + sizeof(((struct ltd_stats *) 0)->f)
+typedef char ltd_stats_fields_check
+  [0 LTD_STATS_FIELDS(LTD_STATS_FIELD_SIZE, LTD_STATS_FIELD_SIZE)
+   == sizeof(struct ltd_stats) ? 1 : -1];
+
 /* LTD history structure - this is needed to calculate the LTD stats
    every tick. */
 

@@ -125,6 +125,54 @@ void addNewPlayer(char *name, struct player *pl, char mode)
     }
 }
 
+#ifdef LTD_STATS
+
+/* print a double with as few digits as will read back the same value */
+static void dump_double(double d)
+{
+    char buf[40];
+    int precision;
+
+    for (precision = 15; precision <= 17; precision++) {
+	snprintf(buf, sizeof(buf), "%.*g", precision, d);
+	if (strtod(buf, NULL) == d) break;
+    }
+    printout(" %s", buf);
+}
+
+#define DUMP_U(f) printout(" %u", s->f);
+#define DUMP_D(f) dump_double(s->f);
+
+static void dump_ltd_stats(struct ltd_stats *s)
+{
+    LTD_STATS_FIELDS(DUMP_U, DUMP_D)
+}
+
+/* one line per player, the same fixed width columns as without
+   LTD_STATS up to the keymap, then rank, last login, flags, genos if
+   GENO_COUNT, and every LTD field for each race and ship */
+static void dump_ltd_entry(char *namebuf, struct statentry *e)
+{
+    int race, ship;
+
+    printout("%-16.16s %-16.16s %-96.96s %d %ld %d",
+	namebuf,
+	e->password,
+	e->stats.st_keymap,
+	e->stats.st_rank,
+	(long) e->stats.st_lastlogin,
+	e->stats.st_flags);
+#ifdef GENO_COUNT
+    printout(" %d", e->stats.st_genos);
+#endif
+    for (race = 0; race < LTD_NUM_RACES; race++)
+	for (ship = 0; ship < LTD_NUM_SHIPS; ship++)
+	    dump_ltd_stats(&e->stats.ltd[race][ship]);
+    printout("\n");
+}
+
+#endif /* LTD_STATS */
+
 int ordered(struct rawdesc *num1, struct rawdesc *num2, char mode)
 {
     float temp, temp2;
@@ -250,15 +298,10 @@ int ordered(struct rawdesc *num1, struct rawdesc *num2, char mode)
 	    
 int main(int argc, char **argv)
 {
-#ifdef LTD_STATS
-
-    printf("scores: This program does not work with LTD_STATS\n");
-    exit(1);
-
-#else
-
     int fd;
+#ifndef LTD_STATS
     static struct player j;
+#endif
     struct rawdesc *temp;
     int i;
     double totalTime=0;
@@ -283,10 +326,17 @@ int main(int argc, char **argv)
     }
     else if (argc > 2) out = 0;
 
+#ifdef LTD_STATS
+    if (mode != 'A' && mode != 'X') {
+	printout("scores: only modes A and X work with LTD_STATS\n");
+	exit(1);
+    }
+#endif
+
     fd = open(Global, O_RDONLY, 0777);
     if (fd < 0) {
-	printout("Cannot open the global file!\n");
-	exit(0);
+	perror(Global);
+	exit(1);
     }
     read(fd, (char *) status, sizeof(struct status));
     close(fd);
@@ -349,11 +399,14 @@ int main(int argc, char **argv)
     i= -1;
     while (read(fd, (char *) &play_entry, sizeof(struct statentry)) == sizeof(struct statentry)) {
 	i++;
+#ifndef LTD_STATS
 	j.p_stats = play_entry.stats;
 	if (j.p_stats.st_tticks<1) j.p_stats.st_tticks=1;
 	if (play_entry.stats.st_tticks<1) play_entry.stats.st_tticks=1;
+#endif
 	fixkeymap(play_entry.stats.st_keymap);
 	switch (mode) {
+#ifndef LTD_STATS
 	case 'o':
 	case 'b':
 	case 'p':
@@ -400,6 +453,7 @@ int main(int argc, char **argv)
 	    totalTime += play_entry.stats.st_ticks / 10 +
 			 play_entry.stats.st_sbticks / 10;
 	    break;
+#endif /* LTD_STATS */
 	default:
 	case 'X':
 	    {
@@ -414,6 +468,9 @@ int main(int argc, char **argv)
 	case 'A':
 	    strcpy(namebuf, play_entry.name);
 	    strcat(namebuf, "_");
+#ifdef LTD_STATS
+	    dump_ltd_entry(namebuf, &play_entry);
+#else
 #ifdef GENO_COUNT
 	    printf("%-16.16s %-16.16s %-96.96s %1d %9.2lf %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %7d %9.2lf %9ld %7d %7d\n",
 #else
@@ -445,6 +502,7 @@ int main(int argc, char **argv)
 #else
 		play_entry.stats.st_flags);
 #endif
+#endif /* LTD_STATS */
 	    break;
 	}
     }
@@ -538,14 +596,18 @@ int main(int argc, char **argv)
 		break;
 	    case 'D':
 	    case 'h':
+	    {
+		time_t lastlogin = temp->lastlogin;
+
 		printout("%3d %-16.16s %6.2f %7.2f %8.2f  %s",
 		    i,
 		    temp->name,
 		    temp->ttime / 3600.0,
 		    temp->bombing+temp->offense+temp->planets,
 		    (temp->bombing+temp->offense+temp->planets)*temp->ttime/3600.0,
-		    ctime(&(temp->lastlogin)));
+		    ctime(&lastlogin));
 		break;
+	    }
 	    case 's':
 		printout("%3d %-16.16s %6.2f %7d %8d %7.2f %9.2f %9.2f %6.2f\n", 
 		    i,
@@ -566,8 +628,7 @@ int main(int argc, char **argv)
 	    temp=temp->next;
 	}
     }
-#endif /* LTD_STATS */
-    return 1;		/* satisfy lint */
+    return 0;
 }
 
 void fixkeymap(char *s)
