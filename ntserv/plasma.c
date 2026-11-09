@@ -91,7 +91,7 @@ void nplasmatorp(u_char course, int attributes)
     }
   }
 
-  me->p_nplasmatorp++;
+  atomic_inc(&me->p_nplasmatorp);
   me->p_fuel -= myship->s_plasmacost;
   me->p_wtemp += (myship->s_plasmacost / 10) - 8;  /* Heat weapons */
 

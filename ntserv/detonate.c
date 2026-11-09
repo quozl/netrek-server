@@ -59,13 +59,16 @@ void detothers(void)
 	if ((dy > DETDIST) || (dy < -DETDIST))
 	  continue;
 	if (dx*dx + dy*dy <= DETDIST*DETDIST) {
-	  /* who first, as the daemon may explode it at once */
+	  /* who first, as the daemon may explode it at once; then test
+	     and set the status in one step, as the daemon may free it
+	     in between */
 	  t->t_whodet = me->p_no;
-	  store_release(&t->t_status, TDET);
+	  if (compare_and_swap(&t->t_status, TMOVE, TDET)) {
 #ifdef LTD_STATS
-          /* torp was detted, update stats */
-          ltd_update_torp_detted(j);
+            /* torp was detted, update stats */
+            ltd_update_torp_detted(j);
 #endif
+	  }
 	}
       }
     }

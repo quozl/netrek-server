@@ -2219,8 +2219,8 @@ static void udtorps(void)
 
                         store_release(&t->t_status, TFREE);
                         switch (type) {
-                        case TPHOTON: players[owner].p_ntorp--; break;
-                        case TPLASMA: players[owner].p_nplasmatorp--; break;
+                        case TPHOTON: atomic_dec(&players[owner].p_ntorp); break;
+                        case TPLASMA: atomic_dec(&players[owner].p_nplasmatorp); break;
                         }
                 }
         }

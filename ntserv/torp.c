@@ -167,7 +167,7 @@ void ntorp(u_char course, int attributes)
 
   /*
    * Change my ship state: less fuel, more weapon temp  */
-  me->p_ntorp++;
+  atomic_inc(&me->p_ntorp);
   me->p_fuel -= c_fuel;
   me->p_wtemp += c_wtemp;
   me->p_etemp += c_etemp;

@@ -311,9 +311,9 @@ void phaser(u_char course)
 	else rand_plasmadir = 80;
 	if (rand_plasmaturns < 7) target_plasma->t_turns++;
 	target_plasma->t_dir = (target_plasma->t_dir+rand_plasmadir)%256;
-	players[target_plasma->t_owner].p_nplasmatorp--;
+	atomic_dec(&players[target_plasma->t_owner].p_nplasmatorp);
 	target_plasma->t_owner=me->p_no;
-	me->p_nplasmatorp++;
+	atomic_inc(&me->p_nplasmatorp);
 	target_plasma->t_team=me->p_team;
 	target_plasma->t_war=me->p_hostile;
 	target_plasma->t_fuse+=(mine->ph_damage * .25 + 5) * T_FUSE_SCALE;
@@ -324,9 +324,9 @@ void phaser(u_char course)
 	target_plasma->t_gspeed+=mine->ph_damage/100;
 	target_plasma->t_turns++;
 	target_plasma->t_dir = me->p_dir;
-	players[target_plasma->t_owner].p_nplasmatorp--;
+	atomic_dec(&players[target_plasma->t_owner].p_nplasmatorp);
 	target_plasma->t_owner=me->p_no;
-	me->p_nplasmatorp++;
+	atomic_inc(&me->p_nplasmatorp);
 	target_plasma->t_team=me->p_team;
 	target_plasma->t_war=me->p_hostile;
 	target_plasma->t_fuse+=(mine->ph_damage * .25 + 5) * T_FUSE_SCALE;
@@ -334,9 +334,12 @@ void phaser(u_char course)
    }
 
    if (!pingpong_plasma) {
+     /* who first, as the daemon may explode it at once; then test and
+        set the status in one step, as it may have gone since the
+        search */
      target_plasma->t_whodet = me->p_no;
-     store_release(&target_plasma->t_status, TDET);
-     new_warning(38, "You destroyed the plasma torpedo!");
+     if (compare_and_swap(&target_plasma->t_status, TMOVE, TDET))
+       new_warning(38, "You destroyed the plasma torpedo!");
    }
   }
 }

@@ -954,7 +954,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
 
     if (sw->sw_number > 0)
       sw->sw_number--;
-    me->p_nplasmatorp++;
+    atomic_inc(&me->p_nplasmatorp);
     me->p_wtemp += (sw->sw_damage * 1.5 + 10); /* Heat weapons */
     if (sw->sw_number < 0)
       sprintf(buf, "Firing %s", sw->sw_name);
@@ -1018,7 +1018,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
 
       if (sw->sw_number > 0)
           sw->sw_number--;
-      me->p_nplasmatorp++;
+      atomic_inc(&me->p_nplasmatorp);
       me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBEAMDOWN | PFBEAMUP | PFBOMB);
       me->p_swar |= l->pl_owner;
       me->p_ship.s_maxarmies += me->p_special - 5;
@@ -1049,7 +1049,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
         new_warning(UNDEF,"The nuclear warhead failed to detonate.");
         destroyed = 0;
         dud = 1;
-        me->p_nplasmatorp--;
+        atomic_dec(&me->p_nplasmatorp);
       }
       else if (rnd < 23) {
         sprintf(buf, "Nuke landed in lightly populated area.");
@@ -1128,7 +1128,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
         new_warning(UNDEF,buf);
       }
 
-      me->p_ntorp++;
+      atomic_inc(&me->p_ntorp);
       me->p_fuel -= sw->sw_fuelcost;
       me->p_wtemp += (sw->sw_damage/5);  /* Heat weapons */
 

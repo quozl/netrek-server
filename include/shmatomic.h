@@ -14,4 +14,21 @@
 #define load_acquire(p) __atomic_load_n((p), __ATOMIC_ACQUIRE)
 #define store_release(p, v) __atomic_store_n((p), (v), __ATOMIC_RELEASE)
 
+/* A count changed by more than one process, such as p_ntorp, must be
+   changed in one indivisible step, or one change may undo another. */
+
+#define atomic_inc(p) __atomic_add_fetch((p), 1, __ATOMIC_RELAXED)
+#define atomic_dec(p) __atomic_sub_fetch((p), 1, __ATOMIC_RELAXED)
+
+/* Change *p from old to new in one indivisible step, as a release
+   store, if *p is old, and return true; otherwise leave it and return
+   false.  Use it where a test and a change of state must not be
+   separated, such as detonating a torpedo that is still moving. */
+
+static inline int compare_and_swap(int *p, int old, int new)
+{
+  return __atomic_compare_exchange_n(p, &old, new, 0,
+                                     __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE);
+}
+
 #endif /* SHMATOMIC_H */

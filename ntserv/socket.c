@@ -41,6 +41,7 @@
 #include "genspkt.h"
 #include "slotmaint.h"
 #include "draft.h"
+#include "shmatomic.h"
 
 #ifdef OOPS
 #ifdef MIPSEL
@@ -1336,10 +1337,11 @@ static void handleDetMReq(struct det_mytorp_cpacket *packet)
     if (t->t_owner != me->p_no) 
 	return;
 
+    /* test and set the status in one step, as the daemon may free the
+       torp in between, and freeing it twice would lose a count */
     if (send_short) {
 	for (t = firstTorpOf(me); t <= lastTorpOf(me); t++) {
-	    if (t->t_status == TMOVE) {
-		t->t_status = TOFF;
+	    if (compare_and_swap(&t->t_status, TMOVE, TOFF)) {
 #ifdef LTD_STATS
                 /* self detted torp */
                 ltd_update_torp_selfdetted(me);
@@ -1349,8 +1351,7 @@ static void handleDetMReq(struct det_mytorp_cpacket *packet)
 	return;
     }
     else
-	if (t->t_status == TMOVE) {
-	    t->t_status = TOFF;
+	if (compare_and_swap(&t->t_status, TMOVE, TOFF)) {
 #ifdef LTD_STATS
             /* self detted torp */
             ltd_update_torp_selfdetted(me);

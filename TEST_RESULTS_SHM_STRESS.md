@@ -336,6 +336,40 @@ investigated.  A second shield command was lost, before the fix, with
 delays.  Both lost shield commands were by attackers.  The daemon also
 changes ships' flags, and this fix does not touch that path.
 
+### Torpedo counts
+
+ntserv incremented `p_ntorp` and `p_nplasmatorp`, and the daemon
+decremented them, each by reading, changing and writing the count, so
+that one could undo the other.  `handleDetMReq()` and `detothers()`
+tested that a torpedo was moving, then detonated it, and a phaser that
+destroyed a plasma did the same; when the torpedo expired in between,
+the daemon freed it twice and decremented the count twice.
+
+The counts are now changed in one indivisible step, and the test and
+the detonation are one compare and swap.  `enter()` still sets the
+counts to zero while the last ship's torpedoes may be in flight, and a
+plasma deflected in ping-pong mode may still lose a count if the daemon
+frees it during the deflection.  Robots and tools are not yet changed.
+
+Run on 9 November 2026, same host as above.  "Before" is commit
+`7145d71`.
+
+| | Before, `--widen 1000`, 600 s | After, `--widen 1000`, 600 s | After, 1200 s | Before, 1200 s |
+|---|---|---|---|---|
+| torpedoes seen | 29,724 | 29,695 | 57,787 | 57,860 |
+| phaser hits | 2,454 | 2,445 | 4,830 | 4,830 |
+| messages sent | 99,519 | 99,537 | 195,699 | 195,662 |
+| messages received | 99,519 | 99,537 | 195,699 | 195,662 |
+| deaths | 0 | 7 | 0 | 1 |
+| `ntorp-drift` | **7,273** | **0** | **0** | **1** |
+| all other counts | 0 | 0 | 0 | 0 |
+
+With delays, `p_ntorp` drifted 7,273 times before the fix, and never
+after.  Without delays, it drifted once in twenty minutes before the
+fix, to 0 with one torpedo live, a count too low, which before the
+torpedo limit fix would let a ninth torpedo into the next player's
+slots.  Both runs after the fix counted no race at all.
+
 ## Lessons for testing
 
 - Clients that act just after each update never overlap the daemon's
