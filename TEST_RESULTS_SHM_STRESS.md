@@ -405,6 +405,42 @@ none after.  Without delays, none were lost in twenty minutes before or
 after; two were lost in all the earlier runs, by attackers, one of them
 without delays.  All four runs counted no other race.
 
+### End of the update
+
+The daemon signalled ntserv in the middle of `move()`, after ships,
+torpedoes and phasers, and before team timers, sight, planet fire,
+beaming, planet movement and planets.  ntserv then read those while the
+daemon was still changing them, and sent their changes an update late.
+
+The daemon now signals ntserv at the end of `move()`, so that updates
+go out later by the time the rest of `move()` takes.  A daemon timing
+each part of `move()` was run under the stress test for 600 s:
+
+| Part of `move()` | Runs | Mean | Max |
+|---|---|---|---|
+| up to and including the signal | 31,500 | 77 µs | 1.76 ms |
+| after the signal, as a whole | 31,500 | 1.3 µs | 203 µs |
+| of which `save_planets()` | 2 | 47 µs | 68 µs |
+| of which `udplanets()` | 630 | 0.5 µs | 28 µs |
+| of which the minute fuse | 10 | 1.4 µs | 1.9 µs |
+
+The stress test has no planet fighting or beaming, and no metaserver to
+advertise to, which forks once a minute.
+
+No count in the test detects ntserv reading a frame in progress, so the
+runs below only show that the change did no harm.  Run on 10 November
+2026, same host as above; "before" is in "Ship flags".
+
+| | `--widen 1000`, 600 s | 1200 s |
+|---|---|---|
+| torpedoes seen | 29,417 | 57,539 |
+| phaser hits | 2,448 | 4,826 |
+| messages sent | 99,577 | 195,486 |
+| messages received | 99,577 | 195,486 |
+| shield commands | 15,019 | 29,455 |
+| deaths | 0 | 0 |
+| all race counts | 0 | 0 |
+
 ## Lessons for testing
 
 - Clients that act just after each update never overlap the daemon's

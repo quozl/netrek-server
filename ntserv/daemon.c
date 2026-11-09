@@ -774,9 +774,6 @@ static void move()
         udcloak();
     }
 
-    do_message_requeue_all();
-    signal_servers();
-
     if (fuse(TEAMFUSE)) {
         teamtimers();
     }
@@ -817,6 +814,11 @@ static void move()
             fork_robot(manager_type);
         }
     }
+
+    /* signal player processes last, so that they read the frame once
+       it is complete, rather than while it is still being changed */
+    do_message_requeue_all();
+    signal_servers();
 }
 
 
