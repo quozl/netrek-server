@@ -27,6 +27,11 @@ Setting up a Build Environment
 
         apt-get install libgmp-dev
 
+    for tools/showgalaxy, a text galaxy viewer, which is not built by
+    default, you need curses; build it with make -C tools showgalaxy
+
+        apt-get install libncurses-dev
+
     test that a build completes using tests/build
 
     tests/shm-stress stresses the shared memory used by the daemon and

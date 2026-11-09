@@ -18,6 +18,7 @@
 #include <string.h>
 #include "struct.h"
 #include "data.h"
+#include "proto.h"
 #include "ltd_stats.h"
 #include "shmatomic.h"
 
@@ -42,7 +43,7 @@ void showPlayers(void);
 void usage(char *);
 void wspew_mess(struct message *mess);
 
-void reaper()
+void reaper(int sig)
 {
     clear();
     refresh();
@@ -152,8 +153,10 @@ int main(int argc, char **argv)
 			    break;
 			}
 			if (sendMask==MINDIV) {
-			    strncat(header, players[sendingTo].p_mapchars, 2);
-			    strcat(header, "  ");
+			    /* at most two, as another process writes them */
+			    snprintf(header + strlen(header),
+				     sizeof(header) - strlen(header), "%.2s  ",
+				     players[sendingTo].p_mapchars);
 			}
 			if (sendingTo != -1) {
 			    wmove(command_w, 0,0);
