@@ -104,6 +104,11 @@ WIDEN = [
      '  { int race_n = me->p_ntorp; race_widen();'
      ' me->p_ntorp = race_n + 1; }\n',
      'ntorp: p_ntorp read-modify-write'),
+    # after the count was changed in one step, a delay before the change
+    ('ntserv/torp.c',
+     '  atomic_inc(&me->p_ntorp);\n',
+     '  race_widen();\n  atomic_inc(&me->p_ntorp);\n',
+     'ntorp: p_ntorp read-modify-write'),
     ('ntserv/daemon.c',
      '                case TPHOTON: players[t->t_owner].p_ntorp--; break;\n',
      '                case TPHOTON: { int race_n ='
@@ -115,6 +120,12 @@ WIDEN = [
      '                        case TPHOTON: { int race_n ='
      ' players[owner].p_ntorp; race_widen();'
      ' players[owner].p_ntorp = race_n - 1; } break;\n',
+     'udtorps: p_ntorp read-modify-write'),
+    ('ntserv/daemon.c',
+     '                        case TPHOTON:'
+     ' atomic_dec(&players[owner].p_ntorp); break;\n',
+     '                        case TPHOTON: race_widen();'
+     ' atomic_dec(&players[owner].p_ntorp); break;\n',
      'udtorps: p_ntorp read-modify-write'),
     # before and after the status was set after the other fields
     ('ntserv/torp.c',
@@ -129,6 +140,12 @@ WIDEN = [
      '\tif (t->t_status == TMOVE) {\n\t    t->t_status = TOFF;\n',
      '\tif (t->t_status == TMOVE) {\n\t    race_widen();\n'
      '\t    t->t_status = TOFF;\n',
+     'handleDetMReq: status tested then set'),
+    # after the status was tested and set in one step
+    ('ntserv/socket.c',
+     '\tif (compare_and_swap(&t->t_status, TMOVE, TOFF)) {\n',
+     '\tif ((race_widen(),'
+     ' compare_and_swap(&t->t_status, TMOVE, TOFF))) {\n',
      'handleDetMReq: status tested then set'),
     # before and after the entry was written before its index was moved
     ('ntserv/smessage.c',

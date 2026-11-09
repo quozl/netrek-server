@@ -137,10 +137,13 @@ phaser hits on every fifth update, ten times a second.
 the scratch build only, at these points:
 
 - `phaser()`, after `ph_fuse` is set;
-- `ntorp()`, between reading and writing `p_ntorp`;
-- `udtorps()` in the daemon, between reading and writing `p_ntorp`;
+- `ntorp()`, between reading and writing `p_ntorp`, or before changing
+  it in one step;
+- `udtorps()` in the daemon, between reading and writing `p_ntorp`, or
+  before changing it in one step;
 - `ntorp()`, while the torpedo is being initialised;
-- `handleDetMReq()`, between testing and setting `t_status`;
+- `handleDetMReq()`, between testing and setting `t_status`, or before
+  doing both in one step;
 - `do_message()`, after an uplink entry is chosen, before it is
   written, for players only;
 - `do_message_requeue()` in the daemon, after a queue entry is chosen,
