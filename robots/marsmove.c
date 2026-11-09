@@ -42,6 +42,7 @@
 #include "marsdefs.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 
 #undef DOGDEBUG              /* debugging compiler option, too much */
@@ -756,16 +757,17 @@ void smileon(struct player* j)
   j->p_damage = 0;
   j->p_wtemp = 0;
   j->p_etemp = 0;
-  j->p_ntorp = 0;
+  /* ask the daemon to free the torps, as it may be freeing them too;
+     it decrements p_ntorp as it does */
   for (t = firstTorpOf(j); t <= lastTorpOf(j); t++)
-    t->t_status = TFREE;
+    compare_and_swap(&t->t_status, TMOVE, TOFF);
   j->p_cloakphase = 0;
 }
 
 
 void do_msg_check(void)
 {
-    while (oldmctl!=mctl->mc_current) {
+    while (oldmctl!=load_acquire(&mctl->mc_current)) {
 	oldmctl++;
 	if (oldmctl >= MAXMESSAGE || oldmctl < 0) oldmctl=0;
 	robohelp(me, oldmctl, roboname);
@@ -1707,17 +1709,16 @@ void player_bounce(void)
 	/* kill torps that might distract guys in other arenas */
 
 	for (t = firstTorpOf(j); t <= lastTorpOf(j); t++) 
-	  if (t->t_x < a->a_left ||
-	      t->t_x > a->a_right ||
-	      t->t_y < a->a_top ||
-	      t->t_y > a->a_bottom)
+	  if (load_acquire(&t->t_status) == TMOVE &&
+	      (t->t_x < a->a_left ||
+	       t->t_x > a->a_right ||
+	       t->t_y < a->a_top ||
+	       t->t_y > a->a_bottom))
 	  {
-	    fprintf(stderr, "here!\n");
-	    t->t_status = TFREE;
-	    switch (t->t_type) {
-	      case TPHOTON: j->p_ntorp--; break;
-	      case TPLASMA: j->p_nplasmatorp--; break;
-	    }
+	    /* ask the daemon to free it, as it may be freeing it too;
+	       it decrements the count as it does */
+	    if (compare_and_swap(&t->t_status, TMOVE, TOFF))
+	      fprintf(stderr, "here!\n");
 	  }
 	p_x_y_box(j, a->a_left, a->a_top, a->a_right, a->a_bottom);
     } /*end for loop*/

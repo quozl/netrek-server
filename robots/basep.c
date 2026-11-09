@@ -31,6 +31,7 @@
 #include "basepdefs.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 int debug=0;
 
@@ -139,7 +140,7 @@ main(int argc, char *argv[])
    enter(team, 0, pno, class, "Smack"); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;                  /* So robot stats don't get saved */
-    me->p_flags |= PFROBOT;          /* Mark as a robot */
+    atomic_or(&me->p_flags, PFROBOT);          /* Mark as a robot */
     /* displace to on overlooking position */
     /* maybe we should just make it fight? */
     p_x_y_set(me, 50000, 5000);
@@ -193,7 +194,7 @@ void checkmess()
     messAll(255, roboname, "Read the MOTD for detailed info.");
   }
 
-  while (oldmctl != mctl->mc_current) {
+  while (oldmctl != load_acquire(&mctl->mc_current)) {
     oldmctl++;
     if (oldmctl == MAXMESSAGE) oldmctl=0;
     robohelp(me, oldmctl, roboname);

@@ -31,6 +31,7 @@
 #include "newbiedefs.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 int debug=0;
 
@@ -138,7 +139,7 @@ main(int argc, char *argv[])
     enter(team, 0, pno, class, "Merlin"); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;                  /* So robot stats don't get saved */
-    me->p_flags |= PFROBOT;          /* Mark as a robot */
+    atomic_or(&me->p_flags, PFROBOT);          /* Mark as a robot */
 
 #define POSITIONX 55000
 #define POSITIONY 50000
@@ -170,7 +171,7 @@ main(int argc, char *argv[])
     /* Could make Merlin friendly and allow docking JKH */
     /* since he is in the middle of the galaxy */
     me->p_ship.s_type = STARBASE;    /* kludge to allow docking */
-    me->p_flags |= PFDOCKOK;         /* allow docking */
+    atomic_or(&me->p_flags, PFDOCKOK);         /* allow docking */
     /* Merlin Cloaks when t-mode starts, so this is useless for now */
     /* It's an interesting bug as all the bots like hunterkiller are */
     /* also invisible */
@@ -301,7 +302,7 @@ void checkmess()
                 break;
         }
     }
-    while (oldmctl!=mctl->mc_current) {
+    while (oldmctl!=load_acquire(&mctl->mc_current)) {
         oldmctl++;
         if (oldmctl==MAXMESSAGE) oldmctl=0;
         robohelp(me, oldmctl, roboname);

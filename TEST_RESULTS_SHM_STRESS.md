@@ -441,6 +441,36 @@ runs below only show that the change did no harm.  Run on 10 November
 | deaths | 0 | 0 |
 | all race counts | 0 | 0 |
 
+### Robots and tools
+
+Robots and tools attach to the segment too, and had the same patterns.
+They now have the same changes, rather than a lock, which the daemon
+would have to take every update:
+
+- `p_flags` is changed by atomic or, and or exclusive or;
+- the robots' copy of `detothers()` detonates by compare and swap;
+- the mars robot asks the daemon to free torpedoes, by changing
+  `TMOVE` to `TOFF` by compare and swap, rather than freeing them and
+  changing the count itself; it also decremented the count for free
+  slots outside a player's arena;
+- `setship` sets a test torpedo's status last, counts it as the plasma
+  it is, refuses when no slot is free rather than taking the next
+  player's, and destroys it by compare and swap;
+- readers of the message queue load `mc_current` with acquire, and
+  `showgalaxy` works on a copy of each entry, where it had rewritten a
+  distress in the queue for every player.
+
+The stress test runs neither robots nor tools.  `setship` was run
+against a daemon in private namespaces: three test torpedoes raised
+`p_nplasmatorp` to 3, destroying them returned it to 0, and a ninth
+torpedo with eight live was refused.
+
+Not changed: robots' and tools' reads of torpedoes and phasers; other
+writes by manager robots and tools, such as positions, armies, planets
+and game status; the zeroing of torpedo counts when a robot resets a
+ship; and `xsg`, which writes the message queue directly and is not
+built by default.
+
 ## Lessons for testing
 
 - Clients that act just after each update never overlap the daemon's

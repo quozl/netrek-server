@@ -17,6 +17,7 @@
 #include "roboshar.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 extern int redrawall;		/* maint: missing "extern" 6/22/92 TC */
 
@@ -237,7 +238,7 @@ int main(int argc, char **argv)
 	enter(team, 0, pno, class, pseudo); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;			/* So robot stats don't get saved */
-    me->p_flags |= PFROBOT;			/* Mark as a robot */
+    atomic_or(&me->p_flags, PFROBOT);			/* Mark as a robot */
     if ((berserk) || (team == 4)) /* indeps are hostile */
 	me->p_hostile = (FED|ROM|KLI|ORI);	/* unless they are berserk */
     else if (team == 5)
@@ -252,7 +253,7 @@ int main(int argc, char **argv)
     sprintf(roboname, "%c%c", teamlet[me->p_team], shipnos[me->p_no]);
 
     if (practice)
-	me->p_flags |= PFPRACTR;		/* Mark as a practice robot */
+	atomic_or(&me->p_flags, PFPRACTR);		/* Mark as a practice robot */
     alarm_init();
 
     config();

@@ -19,6 +19,7 @@
 #include "genspkt.h"
 #include "alarm.h"
 #include "util.h"
+#include "shmatomic.h"
 
 #define UPDT_ALL 0
 #define UPDT_MOST 1
@@ -219,7 +220,7 @@ cb_updt(int unused)
 	struct message *cur;
 	struct mesg_spacket msg;
 
-	for (i=msgCurrent; i!=(mctl->mc_current+1) % MAXMESSAGE; i=(i+1) % MAXMESSAGE) {
+	for (i=msgCurrent; i!=(load_acquire(&mctl->mc_current)+1) % MAXMESSAGE; i=(i+1) % MAXMESSAGE) {
 	    if (i>=MAXMESSAGE) i=0;
 	    cur= &messages[i];
 

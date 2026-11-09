@@ -28,6 +28,7 @@
 #include "marsdefs.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 #define DOG_STATS	".dog_players"
 
@@ -124,7 +125,7 @@ int main(int argc, char **argv)
     enter(team, 0, pno, class, "Mars"); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;		     /* So robot stats don't get saved */
-    me->p_flags |= PFROBOT;	     /* Mark as a robot */
+    atomic_or(&me->p_flags, PFROBOT);	     /* Mark as a robot */
     /* displace to on overlooking position */
     /* maybe we should just make it fight? */
     p_x_y_set(me, 50000, 5000);

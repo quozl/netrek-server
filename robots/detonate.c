@@ -11,6 +11,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "shmatomic.h"
 
 #define Teammates(a, b) \
             (((a)->p_team == (b)->p_team) && !((a)->p_flags & PFPRACTR))
@@ -53,7 +54,7 @@ void detothers ()
        * Can't det peaceful torps. */
       if (friendlyTorp(t))
 	continue;
-      if (t->t_status == TMOVE) {
+      if (load_acquire(&t->t_status) == TMOVE) {
 	dx = t->t_x - me->p_x;
 	if ((dx > DETDIST) || (dx < -DETDIST))
 	  continue;
@@ -61,8 +62,11 @@ void detothers ()
 	if ((dy > DETDIST) || (dy < -DETDIST))
 	  continue;
 	if (dx*dx + dy*dy <= DETDIST*DETDIST) {
-	  t->t_status = TDET;
+	  /* who first, as the daemon may explode it at once; then test
+	     and set the status in one step, as the daemon may free it
+	     in between */
 	  t->t_whodet = me->p_no;
+	  compare_and_swap(&t->t_status, TMOVE, TDET);
 	}
       }
     }

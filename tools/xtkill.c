@@ -10,6 +10,7 @@
 #include "proto.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 static void Usage(void)
 {
@@ -48,7 +49,7 @@ static void refit(struct player *me, int type)
   getship(&(me->p_ship), type);
 
   /* enable docking */
-  if (type == STARBASE) me->p_flags |= PFDOCKOK;
+  if (type == STARBASE) atomic_or(&me->p_flags, PFDOCKOK);
 
   /* restrict speed to new class */
   if (me->p_desspeed > me->p_ship.s_maxspeed)
@@ -56,7 +57,7 @@ static void refit(struct player *me, int type)
 
   /* bump all docked ships */
   bay_release_all(me);
-  me->p_flags |= PFDOCKOK;
+  atomic_or(&me->p_flags, PFDOCKOK);
 }
 
 int main(int argc, char **argv)
@@ -188,7 +189,7 @@ int main(int argc, char **argv)
       players[player].p_wtemp = 0;
       players[player].p_etemp = 0;
       players[player].p_fuel = players[player].p_ship.s_maxfuel;
-      if (argv[2][1] == 'o') players[player].p_flags |= PFDOCKOK;
+      if (argv[2][1] == 'o') atomic_or(&players[player].p_flags, PFDOCKOK);
       break;
     case 'p':		/* puck? */
       players[player].p_ship.s_tractstr = 1;
@@ -257,27 +258,27 @@ int main(int argc, char **argv)
       players[player].p_shield = 0;
       players[player].p_damage = players[player].p_ship.s_maxdamage/2;
       /* raise shields */
-      players[player].p_flags |= PFSHIELD;
-      players[player].p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+      atomic_or(&players[player].p_flags, PFSHIELD);
+      atomic_and(&players[player].p_flags, ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN));
       /* break tractors and decloak */
-      me->p_flags &= ~(PFTRACT | PFPRESS);
-      me->p_flags &= ~PFCLOAK;
+      atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
+      atomic_and(&me->p_flags, ~PFCLOAK);
       /* set speed 0 */
       me->p_desspeed = 0;
       bay_release(me);
-      me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+      atomic_and(&me->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
       /* make unable to act */
-      players[player].p_flags |= PFTWARP;
+      atomic_or(&players[player].p_flags, PFTWARP);
       /* show as puck */
       players[player].p_ship.s_type = SCOUT;
       }
       break;
     case 'u':           /* raise shields */
-      players[player].p_flags |= PFSHIELD;
-      players[player].p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+      atomic_or(&players[player].p_flags, PFSHIELD);
+      atomic_and(&players[player].p_flags, ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN));
       break;
     case 'd':           /* lower shields */
-      players[player].p_flags &= ~(PFSHIELD);
+      atomic_and(&players[player].p_flags, ~(PFSHIELD));
       break;
     case 'R':		/* robot kill? */
       if (players[player].p_flags & PFROBOT) {

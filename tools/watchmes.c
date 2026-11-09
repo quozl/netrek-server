@@ -17,6 +17,7 @@
 #include "struct.h"
 #include "data.h"
 #include "proto.h"
+#include "shmatomic.h"
 
 static void spew_mess(struct message *mess);
 static void logmessage(struct message *m);
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
 	}
     for (;;) {
 	sleep(1);
-	while (oldmctl!=mctl->mc_current) {
+	while (oldmctl!=load_acquire(&mctl->mc_current)) {
 	    oldmctl++;
 	    if (oldmctl==MAXMESSAGE) oldmctl=0;
 	    if (filter)

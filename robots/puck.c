@@ -18,6 +18,7 @@
 #include <string.h>
 #include "defs.h"
 #include "struct.h"
+#include "shmatomic.h"
 #include "data.h"
 #include "proto.h"
 #include "alarm.h"
@@ -137,9 +138,9 @@ int main(int argc, char **argv)
     enter(team, 0, anno, class, "Announcer"); /* Create the announcer */
 
     me->p_pos = -1;			/* So robot stats don't get saved */
-    me->p_flags |= PFROBOT;		/* Mark as a robot */
+    atomic_or(&me->p_flags, PFROBOT);		/* Mark as a robot */
     anncer->p_pos = -1;			/* So robot stats don't get saved */
-    anncer->p_flags |= PFROBOT;		/* Mark as a robot */
+    atomic_or(&anncer->p_flags, PFROBOT);		/* Mark as a robot */
 
     alarm_init();
     if (!debug)

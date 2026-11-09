@@ -33,6 +33,7 @@
 #include "planet.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 #ifdef PRETSERVER
 
@@ -166,7 +167,7 @@ main(int argc, char *argv[])
     enter(4, 0, pno, STARBASE, roboname); /* was BATTLESHIP 8/9/91 TC */
 
     me->p_pos = -1;                     /* So robot stats don't get saved */
-    me->p_flags |= (PFROBOT | PFCLOAK); /* Mark as a robot and hide it */
+    atomic_or(&me->p_flags, (PFROBOT | PFCLOAK)); /* Mark as a robot and hide it */
 
     /* don't appear in the galaxy */
     p_x_y_set(me, -100000, -100000);
@@ -363,7 +364,7 @@ void checkmess()
             messAll(255, roboname, "maintain a minimum 4 vs 4 game.");
         }
     }
-    while (oldmctl != mctl->mc_current) {
+    while (oldmctl != load_acquire(&mctl->mc_current)) {
         oldmctl++;
         if (oldmctl == MAXMESSAGE) oldmctl = 0;
         robohelp(me, oldmctl, roboname);

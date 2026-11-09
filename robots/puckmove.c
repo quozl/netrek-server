@@ -23,6 +23,7 @@
 #include <string.h>
 #include "defs.h"
 #include "struct.h"
+#include "shmatomic.h"
 #include "data.h"
 #include "proto.h"
 #include "puckdefs.h"
@@ -586,8 +587,8 @@ void rmove(void)
 	    int shot_faceoff = (shotby == -1);
 	    int shot_ongoal  = 0;
 
-	    enemy_buf->pstruct->p_flags &= ~PFTRACT;
-	    enemy_buf->pstruct->p_flags &= ~PFPRESS;
+	    atomic_and(&enemy_buf->pstruct->p_flags, ~PFTRACT);
+	    atomic_and(&enemy_buf->pstruct->p_flags, ~PFPRESS);
 	    shotage = roboclock;
 	    shotby = enemy_buf->e_info;
 	    me->p_desspeed = SHOTSPEED;
@@ -644,12 +645,12 @@ void rmove(void)
 		      enemy_buf->pstruct->p_mapchars);
 	} else {		/* no shot yet */
 	    if (enemy_buf->e_trrange > enemy_buf->e_dist)
-		me->p_flags |= PFSHIELD; /* shield up */
+		atomic_or(&me->p_flags, PFSHIELD); /* shield up */
 	    else
-		me->p_flags &= ~PFSHIELD;
+		atomic_and(&me->p_flags, ~PFSHIELD);
 	}			/* end shot */
     } else {		/* not shootable */
-	me->p_flags &= ~PFSHIELD; /* shield down */
+	atomic_and(&me->p_flags, ~PFSHIELD); /* shield down */
     }			/* end shootable */
 
     update_sys_defaults();
@@ -741,7 +742,7 @@ void do_peace(void)
 
 void do_msg_check(void)
 {
-    while (oldmctl!=mctl->mc_current) {
+    while (oldmctl!=load_acquire(&mctl->mc_current)) {
 	oldmctl++;
 	if (oldmctl==MAXMESSAGE) oldmctl=0;
 	if (messages[oldmctl].m_flags & MINDIV) {
@@ -1071,7 +1072,7 @@ void do_offsides(void)
 		int startplanet = 10;
 		messAll(me->p_no,roboname,"%s (%2s) is offsides.", j->p_name,
 			j->p_mapchars);
-		j->p_flags &= ~(PFORBIT|PFPLOCK|PFPLLOCK|PFTRACT|PFPRESS);  /* ***BAV*** */
+		atomic_and(&j->p_flags, ~(PFORBIT|PFPLOCK|PFPLLOCK|PFTRACT|PFPRESS));  /* ***BAV*** */
 		if (j->p_team == KLI)
 		    startplanet = 20;
 		else if (j->p_team == ORI)

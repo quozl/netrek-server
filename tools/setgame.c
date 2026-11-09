@@ -16,6 +16,7 @@
 #include "proto.h"
 #include "util.h"
 #include "draft.h"
+#include "shmatomic.h"
 
 static void usage(void)
 {
@@ -343,7 +344,7 @@ int main(int argc, char **argv)
         for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
         if (j->p_status != PFREE) {
           j->p_wtemp = j->p_ship.s_maxwpntemp + 9;
-          j->p_flags |= PFWEP;
+          atomic_or(&j->p_flags, PFWEP);
           j->p_wtime = 100;
         }
       }

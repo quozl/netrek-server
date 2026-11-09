@@ -11,6 +11,7 @@
 #include "proto.h"
 #include "planet.h"
 #include "util.h"
+#include "shmatomic.h"
 
 static void usage(void)
 {
@@ -258,10 +259,10 @@ int main(int argc, char **argv)
 	case BOBS_BEGIN:
 	  /* warp on, from set_speed() in interface.c */
 	  me->p_desspeed = me->p_ship.s_maxspeed;
-	  me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+	  atomic_and(&me->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
 	  /* lock on, from lock_planet() in interface.c */
-	  me->p_flags |= PFPLLOCK;
-	  me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+	  atomic_or(&me->p_flags, PFPLLOCK);
+	  atomic_and(&me->p_flags, ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB));
 	  me->p_planet = pl->pl_no;
 	  bobs = BOBS_APPROACH;
 	case BOBS_APPROACH:
@@ -292,10 +293,10 @@ int main(int argc, char **argv)
 	  if (pl->pl_armies > 1) pl->pl_armies = 1;
 	  /* warp on, from set_speed() in interface.c */
 	  me->p_desspeed = me->p_ship.s_maxspeed;
-	  me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+	  atomic_and(&me->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
 	  /* lock on, from lock_planet() in interface.c */
-	  me->p_flags |= PFPLLOCK;
-	  me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+	  atomic_or(&me->p_flags, PFPLLOCK);
+	  atomic_and(&me->p_flags, ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB));
 	  me->p_planet = pl->pl_no;
 	  btbs = BTBS_APPROACH;
 	case BTBS_APPROACH:
@@ -304,8 +305,8 @@ int main(int argc, char **argv)
 	  btbs = BTBS_ORBIT;
 	case BTBS_ORBIT:
 	  /* begin drop */
-	  me->p_flags |= PFBEAMDOWN;
-	  me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP);
+	  atomic_or(&me->p_flags, PFBEAMDOWN);
+	  atomic_and(&me->p_flags, ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP));
 	  btbs = BTBS_DROP;
 	case BTBS_DROP:
 	  /* wait until planet is ours */

@@ -15,6 +15,7 @@
 #include "roboshar.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 
 #define SIZEOF(s)		(sizeof (s) / sizeof (*(s)))
@@ -984,7 +985,7 @@ int do_repair()
 		}
 
 		if ((dist < ENTORBDIST) && (me->p_speed <= 2))  {
-		    me->p_flags &= ~PFPLLOCK;
+		    atomic_and(&me->p_flags, ~PFPLLOCK);
 		    orbit();
 		}
 		return 1;

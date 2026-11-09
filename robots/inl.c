@@ -32,6 +32,7 @@
 #include "blog.h"
 #include "util.h"
 #include "planet.h"
+#include "shmatomic.h"
 
 /*
 
@@ -243,7 +244,7 @@ inl_freeze(void)
 
   for (j = firstPlayer; j <= lastPlayer; j++)
     {
-      j->p_flags &= ~(PFSEEN);
+      atomic_and(&j->p_flags, ~(PFSEEN));
       j->p_lastseenby = VACANT;	 /* if left non-vacant the daemon might */
     }				 /* not reinitalize PFSEEN automaticly */
 
@@ -555,7 +556,7 @@ void checkmess()
   /* exit if daemon terminates use of shared memory */
   if (forgotten()) exit(1);
 
-  while (oldmctl != mctl->mc_current) {
+  while (oldmctl != load_acquire(&mctl->mc_current)) {
     oldmctl++;
     if (oldmctl == MAXMESSAGE) oldmctl = 0;
     /* no commands during countdown, and no buffering of them */

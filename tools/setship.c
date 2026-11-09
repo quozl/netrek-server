@@ -12,6 +12,7 @@
 #include "planet.h"
 #include "util.h"
 #include "draft.h"
+#include "shmatomic.h"
 
 static void usage(void)
 {
@@ -40,11 +41,11 @@ fuel n                      set fuel remaining to n\n\
 
 struct torp *t_find(struct player *me, int status)
 {
-  struct torp *k = NULL;
+  struct torp *k;
   for (k = firstTorpOf(me); k <= lastTorpOf(me); k++)
-    if (k->t_status == status)
-      break;
-  return k;
+    if (load_acquire(&k->t_status) == status)
+      return k;
+  return NULL;
 }
 
 int t_attribute = TOWNERSAFE | TDETTEAMSAFE;
@@ -95,15 +96,15 @@ int setship(const char *cmds)
     me->p_dir = atoi(token);
     me->p_desdir = atoi(token);
     bay_release(me);
-    me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    atomic_and(&me->p_flags, ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
     goto state_1;
   }
 
   if (!strcmp(token, "speed")) {
     if (!(token = strtok (NULL, delimiters))) return 0;
     me->p_desspeed = atoi(token);
-    me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
-    me->p_flags &= ~(PFPLOCK | PFPLLOCK);
+    atomic_and(&me->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
+    atomic_and(&me->p_flags, ~(PFPLOCK | PFPLLOCK));
     goto state_1;
   }
 
@@ -116,8 +117,8 @@ int setship(const char *cmds)
     if (!(token = strtok (NULL, delimiters))) return 0;
     struct planet *pl = planet_find(token);
     //* lock on, from lock_planet() in interface.c 
-    me->p_flags |= PFPLLOCK;
-    me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+    atomic_or(&me->p_flags, PFPLLOCK);
+    atomic_and(&me->p_flags, ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB));
     me->p_planet = pl->pl_no;
     goto state_1;
   }
@@ -147,8 +148,12 @@ int setship(const char *cmds)
     if (!(token = strtok (NULL, delimiters))) return 0;
     struct ship *myship = &me->p_ship;
     struct torp *k = t_find(me, TFREE);
-    me->p_ntorp++;
-    k->t_status = TMOVE;
+    if (k == NULL) {
+      fprintf(stderr, "setship: no free torpedo slot\n");
+      goto state_1;
+    }
+    /* the daemon decrements the count of the type when it frees it */
+    atomic_inc(&me->p_nplasmatorp);
     k->t_type = TPLASMA;
     k->t_attribute = t_attribute;
     k->t_owner = me->p_no;
@@ -162,6 +167,8 @@ int setship(const char *cmds)
     k->t_war    = me->p_war;
     k->t_team   = me->p_team;
     k->t_whodet = NODET;
+    /* set the status last, as the daemon may move it at once */
+    store_release(&k->t_status, TMOVE);
     goto state_1;
   }
 
@@ -176,7 +183,7 @@ int setship(const char *cmds)
   if (!strcmp(token, "destroy-test-torpedo")) {
     struct torp *k = t_find(me, TMOVE);
     if (k != NULL) {
-      k->t_status = TOFF;
+      compare_and_swap(&k->t_status, TMOVE, TOFF);
     }
     goto state_1;
   }
@@ -231,12 +238,12 @@ int setship(const char *cmds)
   }
 
   if (!strcmp(token, "player")) {
-    me->p_flags &= ~PFOBSERV;
+    atomic_and(&me->p_flags, ~PFOBSERV);
     me->p_status = PALIVE;
     goto state_1;
   }
   if (!strcmp(token, "observer")) {
-    me->p_flags |= PFOBSERV;
+    atomic_or(&me->p_flags, PFOBSERV);
     me->p_status = POBSERV;
     goto state_1;
   }

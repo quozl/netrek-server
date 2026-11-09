@@ -19,6 +19,7 @@
 #include "struct.h"
 #include "data.h"
 #include "ltd_stats.h"
+#include "shmatomic.h"
 
 #define HEIGHT 20
 #define WIDTH 80
@@ -260,9 +261,12 @@ int main(int argc, char **argv)
 		command=0;
 	    }
 	}
-	if (oldmctl!=mctl->mc_current) {
+	if (oldmctl!=load_acquire(&mctl->mc_current)) {
+	    /* work on a copy, as ntserv processes read the entry too */
+	    struct message copy;
 	    oldmctl++;
 	    if (oldmctl==MAXMESSAGE) oldmctl=0;
+	    copy = messages[oldmctl];
 	    wmove(mesg_w, messageline, 0);
 	    waddstr(mesg_w, " ");
 	    messageline++;
@@ -271,20 +275,20 @@ int main(int argc, char **argv)
 	    waddstr(mesg_w, ">");
 	    wclrtoeol(mesg_w);
 	    /* Fix for RCD distresses - 11/18/93 ATH */
-	    if (messages[oldmctl].m_flags == (MTEAM | MDISTR | MVALID)) {
+	    if (copy.m_flags == (MTEAM | MDISTR | MVALID)) {
 		buf[0]='\0';
-		messages[oldmctl].m_flags ^= MDISTR; /* get rid of MDISTR flag 
+		copy.m_flags ^= MDISTR; /* get rid of MDISTR flag
 						     so client isn't confused */
-	        HandleGenDistr(messages[oldmctl].m_data,
-			messages[oldmctl].m_from,
-			messages[oldmctl].m_recpt,&dist);
+	        HandleGenDistr(copy.m_data,
+			copy.m_from,
+			copy.m_recpt,&dist);
 		makedistress(&dist,buf,distmacro[dist.distype].macro);
-		/* note that we do NOT send the F0->FED part 
+		/* note that we do NOT send the F0->FED part
 		   so strncat is fine */
-		buf[MSG_LEN - strlen(messages[oldmctl].m_data)] = '\0';
-	 	strcpy(messages[oldmctl].m_data,buf);
+		buf[MSG_LEN - strlen(copy.m_data)] = '\0';
+	 	strcpy(copy.m_data,buf);
 	    }
-	    wspew_mess(&(messages[oldmctl]));
+	    wspew_mess(&copy);
 	}
 	werase(main_w);
 	for (i=0; i<MAXPLANETS; i++) {
