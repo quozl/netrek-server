@@ -56,7 +56,7 @@ config.h: system.mk
 do_library: null
 	@cd ntserv; $(MAKE) libnetrek.a
 
-do_server: null do_rsa_library
+do_server: null do_rsa_library do_library
 	@cd ntserv; $(MAKE)
 
 do_robots: do_library
