@@ -127,6 +127,17 @@ WIDEN = [
      '                        case TPHOTON: race_widen();'
      ' atomic_dec(&players[owner].p_ntorp); break;\n',
      'udtorps: p_ntorp read-modify-write'),
+    # the daemon clears PFSEEN every update for ships no enemy sees,
+    # such as torpers far from the arena, which toggle shields
+    ('ntserv/daemon.c',
+     '    j->p_flags &= ~PFSEEN;\n',
+     '    { u_int race_f = j->p_flags; race_widen();'
+     ' j->p_flags = race_f & ~PFSEEN; }\n',
+     'udplayersight: p_flags read-modify-write'),
+    ('ntserv/daemon.c',
+     '    atomic_and(&j->p_flags, ~PFSEEN);\n',
+     '    race_widen();\n    atomic_and(&j->p_flags, ~PFSEEN);\n',
+     'udplayersight: p_flags read-modify-write'),
     # before and after the status was set after the other fields
     ('ntserv/torp.c',
      '  k->t_status = TMOVE;\n',

@@ -141,6 +141,8 @@ the scratch build only, at these points:
   it in one step;
 - `udtorps()` in the daemon, between reading and writing `p_ntorp`, or
   before changing it in one step;
+- `udplayersight()` in the daemon, between reading and writing
+  `p_flags` to clear `PFSEEN`, or before changing it in one step;
 - `ntorp()`, while the torpedo is being initialised;
 - `handleDetMReq()`, between testing and setting `t_status`, or before
   doing both in one step;
