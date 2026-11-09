@@ -15,6 +15,7 @@
 #include "struct.h"
 #include "data.h"
 #include "planet.h"
+#include "shmatomic.h"
 
 #if !defined(strcasestr)
 #define strcasestr strstr
@@ -211,7 +212,7 @@ void orbit_release_by_planet(struct planet *pl) {
     if (me->p_flags & PFOBSERV) continue;
     if (me->p_flags & PFORBIT) {
       if (me->p_planet == pl->pl_no) {
-	me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+	atomic_and(&me->p_flags, ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
       }
     }
   }

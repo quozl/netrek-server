@@ -19,6 +19,7 @@
 #include "proto.h"
 #include "sturgeon.h"
 #include "util.h"
+#include "shmatomic.h"
 
 /* file scope prototypes */
 static void auto_features(void);
@@ -174,13 +175,13 @@ static void check_observs(void)
         return;
     }
 
-    me->p_flags |= PFOBSERV;  /* future clients may understand this */
+    atomic_or(&me->p_flags, PFOBSERV);  /* future clients may understand this */
     /* Check if I am locked onto a player */
     if (me->p_flags & PFPLOCK) {
         if ( (me->p_playerl < 0) || (me->p_playerl >= MAXPLAYER) ){
 	    /* I am not locked onto a valid player */
             me->p_playerl = 0;         /* ensure a safe value */
-	    me->p_flags &= ~(PFPLOCK); /* turn off player lock */
+	    atomic_and(&me->p_flags, ~(PFPLOCK)); /* turn off player lock */
             me->p_x = -100000;         /* place me off the tactical */
             me->p_y = -100000;
 	    return;
@@ -201,7 +202,7 @@ static void check_observs(void)
 	  new_warning (100,"Can only lock on own team.");
 	  me->p_x = -100000;
 	  me->p_y = -100000;
-	  me->p_flags &= ~(PFPLOCK); /* turn off player lock */
+	  atomic_and(&me->p_flags, ~(PFPLOCK)); /* turn off player lock */
 	} else {
 	  /* follow a particular player */
 	  me->p_ship.s_type = pl->p_ship.s_type;
@@ -232,7 +233,7 @@ static void check_observs(void)
         if ( (me->p_planet < 0) || (me->p_planet >= MAXPLANETS) ){
 	    /* I am not locked onto a valid planet */
   	    me->p_planet = 0;            /* ensure a safe value */
-	    me->p_flags &= ~(PFPLLOCK);  /* turn off planet lock */
+	    atomic_and(&me->p_flags, ~(PFPLLOCK));  /* turn off planet lock */
 	    me->p_x = -100000;           /* place me off the tactical */
 	    me->p_y = -100000;
 	    return;
@@ -249,7 +250,7 @@ static void check_observs(void)
 	      new_warning(101,"You can only warp to your own team's planets!");
 	    me->p_x = -100000;
 	    me->p_y = -100000;
-	    me->p_flags &= ~(PFPLLOCK); /* turn off planet lock */
+	    atomic_and(&me->p_flags, ~(PFPLLOCK)); /* turn off planet lock */
 	} else {
 	    me->p_x = pln->pl_x;
 	    me->p_y = pln->pl_y;
@@ -396,7 +397,7 @@ static void auto_features(void)
 	    new_warning(UNDEF, "Weapons Officer: Bombarding %s... Ineffective, %d armies left.",
 			planets[me->p_planet].pl_name,    /* Planet name for stats 10/20/96 [007] */
 		    planets[me->p_planet].pl_armies); /* nifty info feature 2/14/92 TMC */
-	    me->p_flags &= ~PFBOMB;
+	    atomic_and(&me->p_flags, ~PFBOMB);
 	}
 	else {
 	    new_warning(UNDEF, "Weapons Officer: Bombarding %s...  Sensors read %d armies left.",
@@ -421,10 +422,10 @@ static void auto_features(void)
 	if (me->p_flags & PFORBIT) {
 	  if (planets[me->p_planet].pl_armies < 5) {
 	    txt = "Too few armies to beam up";
-	    me->p_flags &= ~PFBEAMUP;
+	    atomic_and(&me->p_flags, ~PFBEAMUP);
 	  } else if (me->p_armies == troop_capacity) {
 	    txt = "No more room on board for armies";
-	    me->p_flags &= ~PFBEAMUP;
+	    atomic_and(&me->p_flags, ~PFBEAMUP);
 	  } else {
 	    txt = "Beaming up";
 	  }
@@ -439,10 +440,10 @@ static void auto_features(void)
 	    struct player *base = bay_owner(me);
 	    if (base->p_armies <= 0) {
 		txt = "Too few armies to beam up";
-		me->p_flags &= ~PFBEAMUP;
+		atomic_and(&me->p_flags, ~PFBEAMUP);
 	    } else if (me->p_armies >= troop_capacity) {
 		txt = "No more room on board for armies";
-		me->p_flags &= ~PFBEAMUP;
+		atomic_and(&me->p_flags, ~PFBEAMUP);
 	    } else {
 	        txt = "Beaming up";
 	    }
@@ -461,7 +462,7 @@ static void auto_features(void)
 	if (me->p_flags & PFORBIT) {
 	  if (me->p_armies == 0) {
 	    txt = "No more armies to beam down";
-	    me->p_flags &= ~PFBEAMDOWN;
+	    atomic_and(&me->p_flags, ~PFBEAMDOWN);
 	  } else {
 	    txt = "Beaming down";
 	  }
@@ -476,10 +477,10 @@ static void auto_features(void)
 	    struct player *base = bay_owner(me);
 	    if (me->p_armies <= 0) {
 		txt = "No more armies to beam down";
-		me->p_flags &= ~PFBEAMDOWN;
+		atomic_and(&me->p_flags, ~PFBEAMDOWN);
 	    } else if (base->p_armies >= base->p_ship.s_maxarmies) {
 	        txt = "All troop bunkers are full";
-	        me->p_flags &= ~PFBEAMDOWN;
+	        atomic_and(&me->p_flags, ~PFBEAMDOWN);
 	    } else {
 	        txt = "Transfering ground units";
 	    }
@@ -494,43 +495,43 @@ static void auto_features(void)
 
     if (me->p_flags & PFREPAIR) {
 	if ((me->p_damage == 0) && (me->p_shield == me->p_ship.s_maxshield))
-	    me->p_flags &= ~PFREPAIR;
+	    atomic_and(&me->p_flags, ~PFREPAIR);
     }
     if ((me->p_flags & PFPLOCK) && (!Observer)) { /* set course to player x */
 	int dist;
 
 	pl = &players[me->p_playerl];
 	if (pl->p_status != PALIVE)
-	    me->p_flags &= ~PFPLOCK;
+	    atomic_and(&me->p_flags, ~PFPLOCK);
 	if (me->p_flags & PFTWARP){
 	  if (pl->p_status != PALIVE){
 	     new_warning(UNDEF, "Starbase is dead; Transwarp aborted!", -1);
-	     me->p_flags &= ~PFTWARP;
+	     atomic_and(&me->p_flags, ~PFTWARP);
 	     me->p_speed = 3;
 	     set_speed(0);
 	  }
 	  if (pl->p_ship.s_type != STARBASE){
 	     new_warning(UNDEF, "Starbase has been turned in; Transwarp aborted!", -1);
-	     me->p_flags &= ~PFTWARP;
+	     atomic_and(&me->p_flags, ~PFTWARP);
 	     me->p_speed = 3;
 	     set_speed(0);
 	  }
 	  if(me->p_etemp > me->p_ship.s_maxegntemp - 10){
 	     new_warning(UNDEF,"Warp drive reaching critical temperature!", -1);
-	     me->p_flags &= ~PFTWARP;
+	     atomic_and(&me->p_flags, ~PFTWARP);
 	     me->p_speed = 3;
 	     set_speed(0);
 	  }
  	  else
 	  if (me->p_fuel < (int) (me->p_ship.s_maxfuel/8)){
 	     new_warning(UNDEF, "Not enough fuel to continue transwarp!", -1);
-	     me->p_flags &= ~PFTWARP;
+	     atomic_and(&me->p_flags, ~PFTWARP);
 	     me->p_speed = 3;
 	     set_speed(0);
 	  }
 	  else if(!(me->p_flags & PFPLOCK)){
 	     new_warning(UNDEF, "Lost player lock!", -1);
-	     me->p_flags &= ~PFTWARP;
+	     atomic_and(&me->p_flags, ~PFTWARP);
 	     me->p_speed = 3;
 	     set_speed(0);
 	  }
@@ -549,8 +550,8 @@ static void auto_features(void)
 
 	    if ((dist < 2*DOCKDIST) && (me->p_flags & PFTWARP)){
 	        p_x_y_join(me, pl);
-	        me->p_flags &= ~(PFPLOCK);
-	        me->p_flags &= ~(PFTWARP);
+	        atomic_and(&me->p_flags, ~(PFPLOCK));
+	        atomic_and(&me->p_flags, ~(PFTWARP));
 #ifdef SB_CALVINWARP
                 if (!(pl->p_flags & PFDOCKOK) ||
                     ((pl->p_flags & PFPRESS) &&
@@ -565,7 +566,7 @@ static void auto_features(void)
 #endif
 	    } else {
 	        if ((dist < DOCKDIST) && (me->p_speed <= 2))  {
-		    me->p_flags &= ~PFPLOCK;
+		    atomic_and(&me->p_flags, ~PFPLOCK);
 		    orbit();
 	        }
 	    }
@@ -597,7 +598,7 @@ static void auto_features(void)
 	}
 
 	if ((dist < ENTORBDIST) && (me->p_speed <= 2))  {
-	    me->p_flags &= ~PFPLLOCK;
+	    atomic_and(&me->p_flags, ~PFPLLOCK);
 	    orbit();
 	}
 	else {

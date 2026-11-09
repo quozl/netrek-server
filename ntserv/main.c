@@ -29,6 +29,7 @@
 #include "ip.h"
 #include "util.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 /* file scope prototypes */
 static void noplay(int reason);
@@ -188,7 +189,7 @@ int main(int argc, char **argv)
 
     me = &players[pno];
     if (queues[w_queue].q_flags & QU_OBSERVER)
-        me->p_flags |= PFOBSERV;
+        atomic_or(&me->p_flags, PFOBSERV);
 
     me->p_process = getpid();
     me->p_disconnect = 0;
@@ -421,7 +422,7 @@ int main(int argc, char **argv)
 	}
 
         if (switch_to_observer) {
-          me->p_flags |= PFOBSERV;
+          atomic_or(&me->p_flags, PFOBSERV);
           Observer = 1;
           pmessage(me->p_no, MINDIV, addr_mess(me->p_no, MINDIV),
                    "Switched to observer.");
@@ -429,7 +430,7 @@ int main(int argc, char **argv)
         }
 
         if (switch_to_player) {
-          me->p_flags &= ~PFOBSERV;
+          atomic_and(&me->p_flags, ~PFOBSERV);
           Observer = 0;
           pmessage(me->p_no, MINDIV, addr_mess(me->p_no, MINDIV),
                    "Switched to player.");

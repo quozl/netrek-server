@@ -11,6 +11,7 @@
 #include "data.h"
 #include "proto.h"
 #include "util.h"
+#include "shmatomic.h"
 
 #define planet_(i)       (planets + (i))
 #define player_(i)       (players + (i))
@@ -25,13 +26,13 @@
 
 void de_lock(struct player *me)
 {
-  me->p_flags   &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
+  atomic_and(&me->p_flags, ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS));
   /* upon arrival at a base, during a dock attempt, if the dock fails,
   and we were transwarping in, force a refit delay for five
   seconds. */
   if (me->p_flags & PFTWARP){
-    me->p_flags &= ~PFTWARP;
-    me->p_flags |= PFREFITTING;
+    atomic_and(&me->p_flags, ~PFTWARP);
+    atomic_or(&me->p_flags, PFREFITTING);
     rdelay       = me->p_updates + 50;
   }
 }
@@ -116,8 +117,8 @@ static int dock(struct player *base)
   /*
    * Adjust player structures of myself and the base. */
   dir_from_base   = ((bay_no * 90 + 45) * 256) / 360;
-  me->p_flags    &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
-  me->p_flags    |= PFDOCK;
+  atomic_and(&me->p_flags, ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS));
+  atomic_or(&me->p_flags, PFDOCK);
   me->p_dir       = 64 + dir_from_base;
   me->p_desdir    = me->p_dir;
   me->p_x         = base->p_x + DOCKDIST * Cos[dir_from_base];
@@ -128,8 +129,8 @@ static int dock(struct player *base)
   /* Should never happen, as PFTWARP is unset once player reaches
      2*DOCKDIST from base during auto_features() routine */
   if (me->p_flags & PFTWARP){
-    me->p_flags &= ~PFTWARP;
-    me->p_flags |= PFREFITTING;
+    atomic_and(&me->p_flags, ~PFTWARP);
+    atomic_or(&me->p_flags, PFREFITTING);
     rdelay       = me->p_updates + 50;
   }
 
@@ -174,7 +175,7 @@ void orbit(void)
        * or with even one beam on except from a base: */
       if ((j->p_ship.s_type != STARBASE) || (tractoring_player != NULL))
 	return;
-      me->p_flags &= ~(PFDOCK | PFORBIT);
+      atomic_and(&me->p_flags, ~(PFDOCK | PFORBIT));
       tractoring_player = j;
     }
   }
@@ -253,8 +254,8 @@ void orbit(void)
 #endif
       l->pl_info |= me->p_team;
     }
-    me->p_flags &= ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS);
-    me->p_flags |= PFORBIT;
+    atomic_and(&me->p_flags, ~(PFPLOCK | PFPLLOCK | PFTRACT | PFPRESS));
+    atomic_or(&me->p_flags, PFORBIT);
     me->p_dir    = dir + 64;
     me->p_desdir = dir + 64;
     p_x_y_go(me, l->pl_x + ORBDIST * Cos[dir], l->pl_y + ORBDIST * Sin[dir]);

@@ -10,6 +10,7 @@
 #include "struct.h"
 #include "data.h"
 #include "util.h"
+#include "shmatomic.h"
 
 /*! @brief Identify the base a ship is docked to.
     @warning Checks player::p_flags. Must only be called if a ship is docked.
@@ -82,7 +83,7 @@ void bay_release(struct player *me)
     if (base->p_bays[bay] != VACANT) {
       base->p_bays[bay] = VACANT;
     }
-    me->p_flags &= ~PFDOCK;
+    atomic_and(&me->p_flags, ~PFDOCK);
   }
 }
 
@@ -97,7 +98,7 @@ void bay_release_all(struct player *base)
     if (base->p_bays[i] != VACANT) {
       struct player *pl = p_no(base->p_bays[i]);
       base->p_bays[i] = VACANT;
-      pl->p_flags &= ~PFDOCK;
+      atomic_and(&pl->p_flags, ~PFDOCK);
     }
 }
 

@@ -11,6 +11,7 @@
 #include "draft.h"
 #include "planet.h"
 #include "util.h"
+#include "shmatomic.h"
 
 /* BUGs 2008-04-17 ... a draft can occur without a second captain somehow, workaround is to change a slot team using xtkill and ask them to uncaptain and captain.  Enforced weapon and lock state causes delegation to every player. */
 
@@ -406,9 +407,9 @@ void inl_draft_begin()
     if (inl_draft_ignore(j)) continue;
     j->p_desspeed = 0;
     bay_release(j);
-    j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN |
-                    PFCLOAK);
-    j->p_flags |= PFSEEN;
+    atomic_and(&j->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP |
+                              PFBEAMDOWN | PFCLOAK));
+    atomic_or(&j->p_flags, PFSEEN);
     inl_draft_highlight_off(j);
     inl_draft_assign_to_pool(j);
     inl_draft_place(j);

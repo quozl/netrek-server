@@ -21,6 +21,7 @@
 #include "sturgeon.h"
 #include "planet.h"
 #include "util.h"
+#include "shmatomic.h"
 
 #define DNSBL_WARN_WEBSITE "http://psychosis.net/exploits/"
 
@@ -101,7 +102,7 @@ void enter(int tno, int disp, int pno, int s_type, char *name)
     me->p_updates = 0;
     me->p_flags = PFSHIELD|PFGREEN;
     if (s_type == STARBASE) {
-	me->p_flags |= PFDOCKOK; /* allow docking by default */
+	atomic_or(&me->p_flags, PFDOCKOK); /* allow docking by default */
 	for(i = 0; i < MAXPLAYER; i++)
 	    if (players[i].p_team == me->p_team) {
 	        players[i].p_candock = 1; /* give team permission to dock */

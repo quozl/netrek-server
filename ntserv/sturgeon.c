@@ -358,7 +358,7 @@ static int upgrade(int type, struct player *me, char *item, double base, double 
         kills_req = base + me->p_upgradelist[type] * adder;
 
     me->p_upgrading = 0;
-    me->p_flags &= ~(PFREFIT);
+    atomic_and(&me->p_flags, ~(PFREFIT));
     /* Either kills or rank credits can be spent on upgrades */
     if (type > 0) {
         if (me->p_kills + me->p_rankcredit < kills_req) {
@@ -402,7 +402,7 @@ static int upgrade(int type, struct player *me, char *item, double base, double 
             }
         }
     }
-    me->p_flags |= PFREFITTING;
+    atomic_or(&me->p_flags, PFREFITTING);
     if (type) {
         me->p_upgrades += kills_req;
         me->p_upgradelist[type]++;
@@ -566,7 +566,7 @@ int sturgeon_hook_set_speed(int speed)
     if (sturgeon && me->p_upgrading) {
         if (speed == 0) {
             new_warning(UNDEF,"Upgrade aborted");
-            me->p_flags &= ~(PFREFIT);
+            atomic_and(&me->p_flags, ~(PFREFIT));
             me->p_upgrading = 0;
             return 0;
         }
@@ -578,8 +578,8 @@ int sturgeon_hook_set_speed(int speed)
             case 1: me->p_shield = me->p_ship.s_maxshield;
                     me->p_fuel = me->p_ship.s_maxfuel;
                     me->p_damage = me->p_wtemp = me->p_etemp = 0;
-                    me->p_flags &= ~(PFREFIT);
-                    me->p_flags |= PFREFITTING;
+                    atomic_and(&me->p_flags, ~(PFREFIT));
+                    atomic_or(&me->p_flags, PFREFITTING);
                     rdelay = me->p_updates + 30;
                     new_warning(UNDEF,"Ship being overhauled...");
                     me->p_upgrading = 0;
@@ -600,7 +600,7 @@ int sturgeon_hook_set_speed(int speed)
                     }
                     else {
                         pmessage(me->p_no, MINDIV, addrbuf,"Special weapons are disabled.");
-                        me->p_flags &= ~(PFREFIT);
+                        atomic_and(&me->p_flags, ~(PFREFIT));
                         me->p_upgrading = 0;
                         break;
                     }
@@ -612,7 +612,7 @@ int sturgeon_hook_set_speed(int speed)
                     me->p_upgrading = 7;
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
 	    }
 	    break;
@@ -628,7 +628,7 @@ int sturgeon_hook_set_speed(int speed)
                         sturgeon_apply_upgrade(UPG_HULL, me, 1);
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -653,7 +653,7 @@ int sturgeon_hook_set_speed(int speed)
                          sturgeon_apply_upgrade(UPG_ENGCOOL, me, 1);
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -672,7 +672,7 @@ int sturgeon_hook_set_speed(int speed)
                         sturgeon_apply_upgrade(UPG_WPNCOOL, me, 1);
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -725,11 +725,11 @@ int sturgeon_hook_set_speed(int speed)
                                     me->p_weapons[i].sw_name);
                             pmessage(me->p_no, MINDIV, addrbuf,buf);
                         }
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -752,7 +752,7 @@ int sturgeon_hook_set_speed(int speed)
                         sturgeon_apply_upgrade(UPG_DETDMG, me, 1);
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -761,7 +761,7 @@ int sturgeon_hook_set_speed(int speed)
             switch (speed) {
             case 1:
                 new_warning(UNDEF,"Sorry, cloak upgrades have been disabled.");
-                me->p_flags &= ~(PFREFIT);
+                atomic_and(&me->p_flags, ~(PFREFIT));
                 me->p_upgrading = 0;
                 break;
 
@@ -818,7 +818,7 @@ int sturgeon_hook_set_speed(int speed)
                 }
                 break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -847,7 +847,7 @@ int sturgeon_hook_set_speed(int speed)
                     }
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -873,7 +873,7 @@ int sturgeon_hook_set_speed(int speed)
                     }
                     break;
             default:
-                    me->p_flags &= ~(PFREFIT);
+                    atomic_and(&me->p_flags, ~(PFREFIT));
                     me->p_upgrading = 0;
             }
             break;
@@ -1019,7 +1019,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       if (sw->sw_number > 0)
           sw->sw_number--;
       atomic_inc(&me->p_nplasmatorp);
-      me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBEAMDOWN | PFBEAMUP | PFBOMB);
+      atomic_and(&me->p_flags, ~(PFSHIELD | PFREPAIR | PFBEAMDOWN | PFBEAMUP | PFBOMB));
       me->p_swar |= l->pl_owner;
       me->p_ship.s_maxarmies += me->p_special - 5;
 

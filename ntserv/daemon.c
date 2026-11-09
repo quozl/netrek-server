@@ -846,7 +846,7 @@ static void udplayersight(void)
          * Orbitting any non-owned planet gets you seen */
         ((j->p_flags & PFORBIT) &&
          (planet_(j->p_planet)->pl_owner != j->p_team))) {
-      j->p_flags |= PFSEEN;
+      atomic_or(&j->p_flags, PFSEEN);
       continue;
     }
     max_dist    = (j->p_flags & PFCLOAK) ? (GWIDTH/7) : (GWIDTH/3);
@@ -873,7 +873,7 @@ static void udplayersight(void)
       }
     }
 
-    j->p_flags &= ~PFSEEN;
+    atomic_and(&j->p_flags, ~PFSEEN);
     j->p_lastseenby = VACANT;
 
     /*
@@ -898,7 +898,7 @@ static void udplayersight(void)
 
       dist = dx*dx + dy*dy;
       if (dist <= max_dist_sq) {
-        j->p_flags |= PFSEEN;
+        atomic_or(&j->p_flags, PFSEEN);
         j->p_lastseenby = k->p_no;
         break;
       }
@@ -933,7 +933,7 @@ static void udplayers_pexplode_bays(struct player *j)
 static void udplayerspause_pexplode(struct player *j)
 {
         if (j->p_whydead == TOURNSTART) {
-                j->p_flags &= ~(PFCLOAK|PFORBIT);
+                atomic_and(&j->p_flags, ~(PFCLOAK|PFORBIT));
                 j->p_status = PDEAD;
                 udplayers_pexplode_bays(j);
         }
@@ -1092,7 +1092,7 @@ static void udplayers_pobserv(struct player *j)
 static void udplayers_pexplode(struct player *j)
 {
         j->p_updates++;
-        j->p_flags &= ~PFCLOAK;
+        atomic_and(&j->p_flags, ~PFCLOAK);
         if ((j->p_ship.s_type == STARBASE) &&
             /* todo: fps support, use of fuse for explosion time */
             (j->p_explode == ((2*SBEXPVIEWS-3)/PLAYERFUSE)))
@@ -1107,7 +1107,7 @@ static void udplayers_pexplode(struct player *j)
 
         udplayers_pexplode_bays(j);
         /* And he is ejected from orbit. */
-        j->p_flags &= ~PFORBIT;
+        atomic_and(&j->p_flags, ~PFORBIT);
 
         /* Reduce any torp or plasma timers longer than 5 seconds,
            mainly for ATT torps/plasmas, and sturgeon weapons */
@@ -1489,7 +1489,7 @@ static void udplayers_palive_tractor(struct player *j)
                 int dir;       /* -1 for repress, otherwise 1 */
 
                 if (players[j->p_tractor].p_flags & PFORBIT)
-                        players[j->p_tractor].p_flags &= ~PFORBIT;
+                        atomic_and(&players[j->p_tractor].p_flags, ~PFORBIT);
 
                 j->p_fuel -= TRACTCOST;
                 j->p_etemp += TRACTEHEAT;
@@ -1516,7 +1516,7 @@ static void udplayers_palive_tractor(struct player *j)
                         halfforce/(players[j->p_tractor].p_ship.s_mass);
                 p_x_y_to_internal(&players[j->p_tractor]);
         } else {
-                j->p_flags &= ~(PFTRACT | PFPRESS);
+                atomic_and(&j->p_flags, ~(PFTRACT | PFPRESS));
         }
 }
 
@@ -1528,11 +1528,11 @@ static void udplayers_palive_cool_weapons(struct player *j)
                 j->p_wtemp = 0;
         if (j->p_flags & PFWEP) {
                 if (--j->p_wtime <= 0)
-                        j->p_flags &= ~PFWEP;
+                        atomic_and(&j->p_flags, ~PFWEP);
         }
         else if (j->p_wtemp > j->p_ship.s_maxwpntemp) {
                 if (!(random() % 40)) {
-                        j->p_flags |= PFWEP;
+                        atomic_or(&j->p_flags, PFWEP);
                         /* todo: fps support, use of fuse for duration */
                         j->p_wtime = ((short) (random() % 150) + 100) /
                                 PLAYERFUSE;
@@ -1548,10 +1548,10 @@ static void udplayers_palive_cool_engines(struct player *j)
                 j->p_etemp = 0;
         if (j->p_flags & PFENG) {
                 if (--j->p_etime <= 0)
-                        j->p_flags &= ~PFENG;
+                        atomic_and(&j->p_flags, ~PFENG);
         } else if (j->p_etemp > j->p_ship.s_maxegntemp) {
                 if (!(random() % 40)) {
-                        j->p_flags |= PFENG;
+                        atomic_or(&j->p_flags, PFENG);
                         /* todo: fps support, use of fuse for duration */
                         j->p_etime = ((short) (random() % 150) + 100) /
                                 PLAYERFUSE;
@@ -1565,7 +1565,7 @@ static void udplayers_palive_fuel_cloak(struct player *j)
         /* Charge for cloaking */
         if (j->p_flags & PFCLOAK) {
                 if (j->p_fuel < j->p_ship.s_cloakcost) {
-                        j->p_flags &= ~PFCLOAK;
+                        atomic_and(&j->p_flags, ~PFCLOAK);
                 } else {
                         j->p_fuel -= j->p_ship.s_cloakcost;
                 }
@@ -1608,7 +1608,7 @@ static void udplayers_palive_make_fuel(struct player *j)
                 j->p_fuel = j->p_ship.s_maxfuel;
         if (j->p_fuel < 0) {
                 j->p_desspeed = 0;
-                j->p_flags &= ~PFCLOAK;
+                atomic_and(&j->p_flags, ~PFCLOAK);
         }
 }
 
@@ -1697,8 +1697,8 @@ static void udplayers_palive_set_alert(struct player *j)
         /* Set player's alert status */
 #define YRANGE ((GWIDTH)/7)
 #define RRANGE ((GWIDTH)/10)
-        j->p_flags |= PFGREEN;
-        j->p_flags &= ~(PFRED|PFYELLOW);
+        atomic_or(&j->p_flags, PFGREEN);
+        atomic_and(&j->p_flags, ~(PFRED|PFYELLOW));
         for (k = 0; k < MAXPLAYER; k++) {
                 int dx, dy, dist;
                 if ((players[k].p_status != PALIVE) ||
@@ -1715,13 +1715,13 @@ static void udplayers_palive_set_alert(struct player *j)
                                 continue;
                         dist = dx * dx + dy * dy;
                         if (dist <  RRANGE * RRANGE) {
-                                j->p_flags |= PFRED;
-                                j->p_flags &= ~(PFGREEN|PFYELLOW);
+                                atomic_or(&j->p_flags, PFRED);
+                                atomic_and(&j->p_flags, ~(PFGREEN|PFYELLOW));
                                 /* jac: can't get any worse, should we break; ? */
                         } else if ((dist <  YRANGE * YRANGE) &&
                                    (!(j->p_flags & PFRED))) {
-                                j->p_flags |= PFYELLOW;
-                                j->p_flags &= ~(PFGREEN|PFRED);
+                                atomic_or(&j->p_flags, PFYELLOW);
+                                atomic_and(&j->p_flags, ~(PFGREEN|PFRED));
                         }
                 }
         }
@@ -1756,7 +1756,7 @@ static void udplayers_palive_self_destruct(struct player *j)
         if ((j->p_updates >= j->p_selfdest) ||
             ((j->p_flags & PFGREEN) && (j->p_damage == 0)
                 && (j->p_shield == j->p_ship.s_maxshield))) {
-                j->p_flags &= ~PFSELFDEST;
+                atomic_and(&j->p_flags, ~PFSELFDEST);
                 p_explosion(j, KQUIT, j->p_no);
                 if (self_destruct_credit) {
                         udplayers_palive_self_destruct_credit(j);
@@ -2789,7 +2789,7 @@ static void udsurrend(void)
             !j->p_authorised) {
             j->p_status = PEXPLODE;
             j->p_whydead = KPROVIDENCE;
-            j->p_flags &= ~(PFPLOCK | PFPLLOCK);
+            atomic_and(&j->p_flags, ~(PFPLOCK | PFPLLOCK));
             j->p_x = -100000;         /* place me off the tactical */
             j->p_y = -100000;
             p_x_y_to_internal(j);

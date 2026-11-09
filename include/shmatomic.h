@@ -20,6 +20,13 @@
 #define atomic_inc(p) __atomic_add_fetch((p), 1, __ATOMIC_RELAXED)
 #define atomic_dec(p) __atomic_sub_fetch((p), 1, __ATOMIC_RELAXED)
 
+/* The same for flags changed by more than one process, such as
+   p_flags: set, clear or toggle bits in one indivisible step. */
+
+#define atomic_or(p, v) __atomic_or_fetch((p), (v), __ATOMIC_RELAXED)
+#define atomic_and(p, v) __atomic_and_fetch((p), (v), __ATOMIC_RELAXED)
+#define atomic_xor(p, v) __atomic_xor_fetch((p), (v), __ATOMIC_RELAXED)
+
 /* Change *p from old to new in one indivisible step, as a release
    store, if *p is old, and return true; otherwise leave it and return
    false.  Use it where a test and a change of state must not be

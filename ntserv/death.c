@@ -13,6 +13,7 @@
 #include "proto.h"
 #include "sigpipe.h"
 #include "ltd_stats.h"
+#include "shmatomic.h"
 
 extern int living;
 
@@ -21,7 +22,7 @@ void death(void)
     sigpipe_suspend(SIGALRM);
 
     me->p_status = POUTFIT;             /* Stop the ghost buster */
-    me->p_flags &= ~PFTWARP;
+    atomic_and(&me->p_flags, ~PFTWARP);
 
     switch(me->p_whydead) {
     case KTORP:
@@ -69,7 +70,7 @@ void death(void)
 
 #endif
 
-    me->p_flags &= ~(PFWAR|PFREFITTING);
+    atomic_and(&me->p_flags, ~(PFWAR|PFREFITTING));
 
     /* all INL games advance at guest rate */    
     if (inl_mode) hourratio=5;

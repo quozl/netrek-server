@@ -193,8 +193,8 @@ player's slot 39 times.
 
 Not shown by these runs: loss or duplication of messages on their way
 from the daemon's queue to the clients; and lost shield commands.
-Neither path had a delay then; the daemon's queue has one since, see
-"Message queues" under "Fixes".
+Neither path had a delay then; both have one since, see "Message
+queues" and "Ship flags" under "Fixes".
 
 Plasma is not fired by any client.
 
@@ -371,6 +371,39 @@ after.  Without delays, it drifted once in twenty minutes before the
 fix, to 0 with one torpedo live, a count too low, which before the
 torpedo limit fix would let a ninth torpedo into the next player's
 slots.  Both runs after the fix counted no race at all.
+
+### Ship flags
+
+ntserv and the daemon both changed `p_flags`, each by reading, changing
+and writing it, so that one could undo the other.  A shield command
+could be lost when the daemon, changing another flag such as `PFSEEN`
+or the alert flags, wrote back flags read before ntserv's change.
+
+Each change of `p_flags` in ntserv and the daemon is now an atomic or,
+and or exclusive or.  The flags are still set whole in `enter()`, when
+a slot is freed, and for an observer from the player observed.  Robots
+and tools are not yet changed.
+
+Run on 9 November 2026, same host as above.  "Before" is commit
+`21b66dc`.  The delay in `udplayersight()` is new; the client toggles
+shields for torpers and attackers.
+
+| | Before, `--widen 1000`, 600 s | After, `--widen 1000`, 600 s | After, 1200 s | Before, 1200 s |
+|---|---|---|---|---|
+| torpedoes seen | 29,388 | 29,425 | 57,379 | 57,700 |
+| phaser hits | 2,450 | 2,449 | 4,833 | 4,830 |
+| messages sent | 99,581 | 99,504 | 195,466 | 195,329 |
+| messages received | 99,581 | 99,504 | 195,466 | 195,329 |
+| shield commands | 15,028 | 15,033 | 29,419 | 29,460 |
+| deaths | 0 | 0 | 0 | 2 |
+| `shield-lost` | **18** | **0** | 0 | 0 |
+| `shield-undone` | **1** | **0** | 0 | 0 |
+| all other counts | 0 | 0 | 0 | 0 |
+
+With delays, 19 shield commands were lost or undone before the fix, and
+none after.  Without delays, none were lost in twenty minutes before or
+after; two were lost in all the earlier runs, by attackers, one of them
+without delays.  All four runs counted no other race.
 
 ## Lessons for testing
 

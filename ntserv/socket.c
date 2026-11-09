@@ -1106,7 +1106,7 @@ static int doRead(int asock)
                     /* don't let it undo self destruct */
 		    && *bufptr != CP_PING_RESPONSE
 		    ) {
-		    me->p_flags &= ~PFSELFDEST;
+		    atomic_and(&me->p_flags, ~PFSELFDEST);
 		    new_warning(85,"Self Destruct has been canceled");
 		}
 		((void (*)(char *))handlers[(int)*bufptr].handler)(bufptr);
@@ -1162,7 +1162,7 @@ static void handleSpeedReq(struct speed_cpacket *packet)
 
 static void handleDirReq(struct dir_cpacket *packet)
 {
-    me->p_flags &= ~(PFPLOCK | PFPLLOCK);
+    atomic_and(&me->p_flags, ~(PFPLOCK | PFPLLOCK));
     set_course(packet->dir);
 }
 
@@ -1180,7 +1180,7 @@ static void handleRepairReq(struct repair_cpacket *packet)
     if (packet->state) {
 	repair();
     } else {
-	me->p_flags &= ~(PFREPAIR);
+	atomic_and(&me->p_flags, ~(PFREPAIR));
     }
 }
 
@@ -1190,7 +1190,7 @@ static void handleOrbitReq(struct orbit_cpacket *packet)
 	orbit();
     } else {
 	bay_release(me);
-	me->p_flags &= ~PFORBIT;
+	atomic_and(&me->p_flags, ~PFORBIT);
     }
 }
 
@@ -1209,7 +1209,7 @@ static void handleBombReq(struct bomb_cpacket *packet)
     if (packet->state) {
 	bomb_planet();
     } else {
-	me->p_flags &= ~(PFBOMB);
+	atomic_and(&me->p_flags, ~(PFBOMB));
     }
 }
 
@@ -1220,7 +1220,7 @@ static void handleBeamReq(struct beam_cpacket *packet)
     } else if (packet->state) {
 	beam_down();
     } else {
-	me->p_flags &= ~(PFBEAMUP | PFBEAMDOWN);
+	atomic_and(&me->p_flags, ~(PFBEAMUP | PFBEAMDOWN));
     }
 }
 
@@ -1246,9 +1246,9 @@ static void handleCopilotReq(struct copilot_cpacket *packet)
 /*
  * Unsupported...
  if (packet->state) {
- me->p_flags |= PFCOPILOT;
+ atomic_or(&me->p_flags, PFCOPILOT);
  } else {
- me->p_flags &= ~PFCOPILOT;
+ atomic_and(&me->p_flags, ~PFCOPILOT);
  }
  */
 }
@@ -1370,7 +1370,7 @@ static void handleTractorReq(struct tractor_cpacket *packet)
     }
     target=packet->pnum;
     if (packet->state==0) {
-	me->p_flags &= ~(PFTRACT | PFPRESS);
+	atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
 	return;
     }
     if (me->p_flags & PFCLOAK) {
@@ -1389,10 +1389,10 @@ static void handleTractorReq(struct tractor_cpacket *packet)
 	((double) TRACTDIST) * me->p_ship.s_tractrng) {
 	bay_release(player);
 	bay_release(me);
-	player->p_flags &= ~PFORBIT;
-	me->p_flags &= ~PFORBIT;
+	atomic_and(&player->p_flags, ~PFORBIT);
+	atomic_and(&me->p_flags, ~PFORBIT);
 	me->p_tractor = target;
-	me->p_flags |= PFTRACT;
+	atomic_or(&me->p_flags, PFTRACT);
     } else {
 	new_warning(2,"Weapon's Officer:  Vessel is out of range of our tractor beam.");
     }
@@ -1409,7 +1409,7 @@ static void handleRepressReq(struct repress_cpacket *packet)
     }
     target=packet->pnum;
     if (packet->state==0) {
-	me->p_flags &= ~(PFTRACT | PFPRESS);
+	atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
 	return;
     }
     if (me->p_flags & PFCLOAK) {
@@ -1428,10 +1428,10 @@ static void handleRepressReq(struct repress_cpacket *packet)
 	((double) TRACTDIST) * me->p_ship.s_tractrng) {
 	bay_release(player);
 	bay_release(me);
-	player->p_flags &= ~PFORBIT;
-	me->p_flags &= ~PFORBIT;
+	atomic_and(&player->p_flags, ~PFORBIT);
+	atomic_and(&me->p_flags, ~PFORBIT);
 	me->p_tractor = target;
-	me->p_flags |= (PFTRACT | PFPRESS);
+	atomic_or(&me->p_flags, (PFTRACT | PFPRESS));
     } else {
 	new_warning(2,"Weapon's Officer:  Vessel is out of range of our tractor beam.");
     }
@@ -1754,7 +1754,7 @@ static void handleQuitReq(struct quit_cpacket *packet)
     int sd_time = (me->p_ship.s_type != STARBASE) ? 10 : 60;
     if (is_idle(me)) sd_time = sd_time / 5;
     me->p_selfdest = me->p_updates + sd_time * 10;
-    me->p_flags |= PFSELFDEST;
+    atomic_or(&me->p_flags, PFSELFDEST);
     new_warning(90,"Self destruct initiated");
 }
 
@@ -1882,9 +1882,9 @@ static void handleDockingReq(struct dockperm_cpacket *packet)
 {
     if (me->p_ship.s_type == STARBASE) {
         if (packet->state) {
-            me->p_flags |= PFDOCKOK;
+            atomic_or(&me->p_flags, PFDOCKOK);
         } else {
-            me->p_flags &= ~PFDOCKOK;
+            atomic_and(&me->p_flags, ~PFDOCKOK);
             bay_release_all(me);
         }
     }
@@ -2164,7 +2164,7 @@ static void handleOggV(struct oggv_cpacket *packet)
     if (me->p_df > 100)
 	me->p_df = 100;
 
-    me->p_flags |= PFBPROBOT;
+    atomic_or(&me->p_flags, PFBPROBOT);
 
 #ifdef DEBUG
     printf("%c%c (%s) %d, targ: %d\n",

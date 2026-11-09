@@ -13,6 +13,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "shmatomic.h"
 
 #define MIN_INITIAL_SPEED 2
 #define MAX_TRANSWARP_SPEED 60
@@ -142,8 +143,8 @@ int handleTranswarp(void)
    /* This will undock the ship and turn off stuff that it might be doing. */
    set_speed(1);
 
-   me->p_flags &= ~(PFPLOCK|PFPLLOCK|PFDOCK);
-   me->p_flags |= (PFSHIELD | PFTWARP | PFPLOCK);
+   atomic_and(&me->p_flags, ~(PFPLOCK|PFPLLOCK|PFDOCK));
+   atomic_or(&me->p_flags, (PFSHIELD | PFTWARP | PFPLOCK));
    /*
    me->p_desspeed = (twarpSpeed) ? twarpSpeed : MAX_TRANSWARP_SPEED;
    */

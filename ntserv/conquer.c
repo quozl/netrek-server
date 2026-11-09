@@ -8,6 +8,7 @@
 #include "conquer.h"
 #include "planet.h"
 #include "util.h"
+#include "shmatomic.h"
 
 /* conquest gloating parade */
 
@@ -43,11 +44,11 @@ static void conquer_decloak()
 	for (h = 0, j = &players[0]; h < MAXPLAYER; h++, j++) {
 		if (j->p_status == PFREE) continue;
 		if (is_idle(j)) continue;
-		j->p_flags &= ~PFCLOAK;
-		j->p_flags |= PFSEEN;
+		atomic_and(&j->p_flags, ~PFCLOAK);
+		atomic_or(&j->p_flags, PFSEEN);
 		if (conquer_type != CONQUER_TYPE_END)
-			j->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT |
-					PFBEAMUP | PFBEAMDOWN);
+			atomic_and(&j->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT |
+					PFBEAMUP | PFBEAMDOWN));
 	}
 }
 

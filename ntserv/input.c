@@ -27,6 +27,7 @@
 #include "sigpipe.h"
 #include "packets.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 #define GHOSTTIME       (ghostbust_timer * 1000000 / UPDATE) /* 30 secs */
 
@@ -44,10 +45,10 @@ static void setflag()
     sendflag=1;
 
   if (me->p_updates > delay) {
-    me->p_flags &= ~(PFWAR);
+    atomic_and(&me->p_flags, ~(PFWAR));
   }
   if (me->p_updates > rdelay) {
-    me->p_flags &= ~(PFREFITTING);
+    atomic_and(&me->p_flags, ~(PFREFITTING));
   }
   /* ghostbust a player if the number of missing pings from the
      client exceeds the ghostbust interval */
@@ -127,10 +128,10 @@ void input(void)
 	ping_ghostbust = 0;
 
 	if (me->p_updates > delay) {
-	    me->p_flags &= ~(PFWAR);
+	    atomic_and(&me->p_flags, ~(PFWAR));
 	}
 	if (me->p_updates > rdelay) {
-	    me->p_flags &= ~(PFREFITTING);
+	    atomic_and(&me->p_flags, ~(PFREFITTING));
 	}
 
 	readFromClient();

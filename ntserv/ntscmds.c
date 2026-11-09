@@ -33,6 +33,7 @@
 #include "slotmaint.h"
 #include "packets.h"
 #include "genspkt.h"
+#include "shmatomic.h"
 
 /* Enable to allow BE support to move players between slots; disabled by
    default as the code is experimental and may cause problems with certain
@@ -1186,8 +1187,8 @@ void do_sub(char *comm, struct message *mess)
 	       "Sub out ready ... on your death %s will enter", p->p_mapchars);
       /* the sub in now watches the sub out, enforced */
       p->p_playerl = me->p_no;
-      p->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
-      p->p_flags |= PFPLOCK;
+      atomic_and(&p->p_flags, ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB));
+      atomic_or(&p->p_flags, PFPLOCK);
       /* the sub out will switch to observer on next death */
       me->p_sub_out = 1;
       // on enter of *this* slot, kill the other

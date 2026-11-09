@@ -24,6 +24,7 @@
 #include "util.h"
 #include "draft.h"
 #include "ltd_stats.h"
+#include "shmatomic.h"
 
 /* file scope prototypes */
 static void sendwarn(char *string, int atwar, int team);
@@ -44,7 +45,7 @@ void set_speed(int speed)
     below sets p_desspeed to speed regardless. */
     me->p_desspeed = speed;
     bay_release(me);
-    me->p_flags &= ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    atomic_and(&me->p_flags, ~(PFREPAIR | PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
     has_set_speed++;
 }
 
@@ -54,20 +55,20 @@ void set_course(u_char dir)
     if (me->p_inl_draft == INL_DRAFT_MOVING_TO_PICK) return;
     me->p_desdir = dir;
     bay_release(me);
-    me->p_flags &= ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN);
+    atomic_and(&me->p_flags, ~(PFBOMB | PFORBIT | PFBEAMUP | PFBEAMDOWN));
     has_set_course++;
 }
 
 void shield_up(void)
 {
-    me->p_flags |= PFSHIELD;
-    me->p_flags &= ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+    atomic_or(&me->p_flags, PFSHIELD);
+    atomic_and(&me->p_flags, ~(PFBOMB | PFREPAIR | PFBEAMUP | PFBEAMDOWN));
     has_shield_up++;
 }
 
 void shield_down(void)
 {
-    me->p_flags &= ~PFSHIELD;
+    atomic_and(&me->p_flags, ~PFSHIELD);
     has_shield_down++;
 }
 
@@ -150,8 +151,8 @@ void bomb_planet(void)
 
     if (status->tourn) bombsOutOfTmode = 0;
 
-    me->p_flags |= PFBOMB;
-    me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBEAMUP | PFBEAMDOWN);
+    atomic_or(&me->p_flags, PFBOMB);
+    atomic_and(&me->p_flags, ~(PFSHIELD | PFREPAIR | PFBEAMUP | PFBEAMDOWN));
     has_bombed++;
 }
 
@@ -176,8 +177,8 @@ void beam_up(void)
         new_warning(UNDEF,"Fleet command does not recognize your authority to beam up armies.");
         return;
     }
-    me->p_flags |= PFBEAMUP;
-    me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMDOWN);
+    atomic_or(&me->p_flags, PFBEAMUP);
+    atomic_and(&me->p_flags, ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMDOWN));
     has_beamed_up++;
 }
 
@@ -213,8 +214,8 @@ void beam_down(void)
 	    return;
         }
     }
-    me->p_flags |= PFBEAMDOWN;
-    me->p_flags &= ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP);
+    atomic_or(&me->p_flags, PFBEAMDOWN);
+    atomic_and(&me->p_flags, ~(PFSHIELD | PFREPAIR | PFBOMB | PFBEAMUP));
     has_beamed_down++;
 }
 
@@ -227,33 +228,33 @@ void repair(void)
 #endif
     {
 	me->p_desspeed = 0;
-	me->p_flags |= PFREPAIR;
-	me->p_flags &= ~(PFSHIELD | PFBOMB | PFBEAMUP | PFBEAMDOWN | PFPLOCK | PFPLLOCK);
+	atomic_or(&me->p_flags, PFREPAIR);
+	atomic_and(&me->p_flags, ~(PFSHIELD | PFBOMB | PFBEAMUP | PFBEAMDOWN | PFPLOCK | PFPLLOCK));
 	has_repaired++;
     }
 }
 
 void repair_off(void)
 {
-    me->p_flags &= ~PFREPAIR;
+    atomic_and(&me->p_flags, ~PFREPAIR);
 }
 
 void cloak(void)
 {
-    me->p_flags ^= PFCLOAK;
-    me->p_flags &= ~(PFTRACT | PFPRESS);
+    atomic_xor(&me->p_flags, PFCLOAK);
+    atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
 }
 
 void cloak_on(void)
 {
     if (me->p_inl_draft != INL_DRAFT_OFF) return;
-    me->p_flags |= PFCLOAK;
-    me->p_flags &= ~(PFTRACT | PFPRESS);
+    atomic_or(&me->p_flags, PFCLOAK);
+    atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
 }
 
 void cloak_off(void)
 {
-    me->p_flags &= ~PFCLOAK;
+    atomic_and(&me->p_flags, ~PFCLOAK);
 }
 
 /*! @brief is this slot locked due to a sub in
@@ -280,8 +281,8 @@ void lock_planet(int planet)
     if (planet<0 || planet>=MAXPLANETS) return;
     if (is_sub_in_locked()) return;
 
-    me->p_flags |= PFPLLOCK;
-    me->p_flags &= ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
+    atomic_or(&me->p_flags, PFPLLOCK);
+    atomic_and(&me->p_flags, ~(PFPLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB));
     me->p_planet = planet;
     if (send_short) {
         swarning(LOCKPLANET_TEXT, (u_char) planet, 0);
@@ -303,8 +304,8 @@ void lock_player(int player)
 
     me->p_playerl = player;
     gettimeofday(&me->p_playerl_tv, NULL);
-    me->p_flags &= ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB);
-    me->p_flags |= PFPLOCK;
+    atomic_and(&me->p_flags, ~(PFPLLOCK|PFORBIT|PFBEAMUP|PFBEAMDOWN|PFBOMB));
+    atomic_or(&me->p_flags, PFPLOCK);
 
     /* notify player docking perm status of own SB when locking 7/19/92 TC */
 
@@ -345,7 +346,7 @@ void tractor_player(int player)
 	return;
     }
     if ((player < 0) || (player > MAXPLAYER)) {	/* out of bounds = cancel */
-	me->p_flags &= ~(PFTRACT | PFPRESS);
+	atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
 	return;
     }
     if (me->p_flags & PFCLOAK) {
@@ -359,10 +360,10 @@ void tractor_player(int player)
 	    ((double) TRACTDIST) * me->p_ship.s_tractrng) {
 	bay_release(victim);
 	bay_release(me);
-	victim->p_flags &= ~PFORBIT;
-	me->p_flags &= ~PFORBIT;
+	atomic_and(&victim->p_flags, ~PFORBIT);
+	atomic_and(&me->p_flags, ~PFORBIT);
 	me->p_tractor = player;
-	me->p_flags |= PFTRACT;
+	atomic_or(&me->p_flags, PFTRACT);
     } else {			/* out of range */
     }
 }
@@ -380,7 +381,7 @@ void pressor_player(int player)
     target=player;
 
     if ((target < 0) || (target > MAXPLAYER)) {	/* out of bounds = cancel */
-        me->p_flags &= ~(PFTRACT | PFPRESS);
+        atomic_and(&me->p_flags, ~(PFTRACT | PFPRESS));
         return;
     }
     if (me->p_flags & PFPRESS) return; /* bug fix: moved down 5/1/92 TC */
@@ -398,10 +399,10 @@ void pressor_player(int player)
 	((double) TRACTDIST) * me->p_ship.s_tractrng) {
 	bay_release(victim);
 	bay_release(me);
-	victim->p_flags &= ~(PFORBIT | PFDOCK);
-	me->p_flags &= ~(PFORBIT | PFDOCK);
+	atomic_and(&victim->p_flags, ~(PFORBIT | PFDOCK));
+	atomic_and(&me->p_flags, ~(PFORBIT | PFDOCK));
 	me->p_tractor = target;
-	me->p_flags |= (PFTRACT | PFPRESS);
+	atomic_or(&me->p_flags, (PFTRACT | PFPRESS));
     } else {
         new_warning(2,"Weapon's Officer:  Vessel is out of range of our tractor beam.");
     }
@@ -458,7 +459,7 @@ void declare_war(int mask, int refitdelay)
     }
 
     if (refitdelay && (mask & ~me->p_hostile)) {
-	me->p_flags |= PFWAR;
+	atomic_or(&me->p_flags, PFWAR);
 	delay = me->p_updates + 100;
         new_warning(49,"Pausing ten seconds to re-program battle computers.");
     }
@@ -669,7 +670,7 @@ void do_refit(int type)
 	me->p_kills=0;
 	/* bump all docked ships */
 	bay_release_all(me);
-	me->p_flags |= PFDOCKOK;
+	atomic_or(&me->p_flags, PFDOCKOK);
     }	
 
     
@@ -692,11 +693,11 @@ void do_refit(int type)
     me->p_ship.s_type = type;
     if (type == STARBASE) {
 	bay_init(me);
-	me->p_flags |= PFDOCKOK;
+	atomic_or(&me->p_flags, PFDOCKOK);
     }
 
-    me->p_flags &= ~(PFREFIT|PFWEP|PFENG);
-    me->p_flags |= PFREFITTING;
+    atomic_and(&me->p_flags, ~(PFREFIT|PFWEP|PFENG));
+    atomic_or(&me->p_flags, PFREFITTING);
     rdelay = me->p_updates + 50;
 
     new_warning(62,"You are being transported to your new vessel .... ");
