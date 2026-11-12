@@ -1,0 +1,343 @@
+#!/usr/bin/env python3
+"""
+orphaned-daemon -- check that a game cut off from its shared memory key
+ends, and that a robot does not start a daemon.
+
+Clients, robots and tools find the game by the shared memory key.  If
+the segment is removed while a game runs (by ipcrm, tools/nuke, or a
+second daemon starting), the daemon, ntservs and robots stay attached
+to it and play on, out of reach of setgame and of new connections.
+The newbie robot exits when the key is gone, without stopping its
+robots.  A minute later the daemon restarts it, it finds no key, and it
+starts another daemon.  So games accumulate, and setgame terminate
+stops only the newest.
+
+It builds the tracked files of a source tree, with NEWBIESERVER, into
+a scratch prefix, runs a newbie server there in private network, IPC,
+PID, UTS and mount namespaces (so it needs root, and does not disturb
+any other server on the host), and checks:
+
+  robot-start  newbie, started when no game is running, exits and
+               starts no daemon
+  key-lost     a game with twelve robots ends when its key is removed,
+               and keeps the semaphores, which are found by the key; if
+               it does not end, the test waits for the newbie restart
+               and counts the daemons started
+  terminate    setgame terminate ends a game
+
+Usage, as root, from anywhere; the build takes a minute or so, then the
+checks take about a minute, or three if the game outlives its key:
+
+  tests/orphaned-daemon
+  tests/orphaned-daemon --source DIR    # build another tree
+  tests/orphaned-daemon --work DIR --reuse   # skip the build next time
+
+Exits 1 if a check failed, 0 if none did, 2 on a test failure.
+"""
+
+import argparse
+import os
+import shutil
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SOURCE = os.path.dirname(HERE)
+
+PKEY = 128                      # include/defs.h
+PLAYER_PORT, ROBOT_PORT = 2592, 3592
+ROBOTS = 12                     # MIN_NEWBIE_SLOTS in the sample sysdef
+NAMES = ('netrek-daemon', 'ntserv', 'newbie', 'newbiebot')
+RESTART = 60                    # the daemon restarts a manager each minute
+
+
+class TestError(Exception):
+    pass
+
+
+def log(msg):
+    print('orphaned-daemon: ' + msg, flush=True)
+
+
+def run(cmd, cwd, logfile, env=None):
+    with open(logfile, 'a') as f:
+        r = subprocess.run(cmd, cwd=cwd, stdout=f, stderr=subprocess.STDOUT,
+                           env=env)
+    if r.returncode != 0:
+        with open(logfile) as f:
+            tail = f.read()[-3000:]
+        raise TestError('%s failed, see %s\n%s'
+                        % (' '.join(cmd), logfile, tail))
+
+
+def build(args):
+    src = os.path.join(args.work, 'src')
+    inst = os.path.join(args.work, 'inst')
+    blog = os.path.join(args.work, 'build.log')
+    for d in (src, inst):
+        shutil.rmtree(d, ignore_errors=True)
+    if os.path.exists(blog):
+        os.remove(blog)
+    files = subprocess.run(['git', '-C', args.source, 'ls-files', '-z'],
+                           capture_output=True, check=True).stdout
+    for name in files.decode().split('\0'):
+        if not name or not os.path.isfile(os.path.join(args.source, name)):
+            continue
+        os.makedirs(os.path.join(src, os.path.dirname(name)), exist_ok=True)
+        shutil.copy2(os.path.join(args.source, name), os.path.join(src, name))
+    # INSTALL.Newbie, step 1
+    name = os.path.join(src, 'include', 'config.h.in')
+    with open(name) as f:
+        text = f.read()
+    if text.count('#undef NEWBIESERVER\n') != 1:
+        raise TestError('cannot define NEWBIESERVER in %s' % name)
+    with open(name, 'w') as f:
+        f.write(text.replace('#undef NEWBIESERVER\n',
+                             '#define NEWBIESERVER\n'))
+    log('building %s in %s' % (args.source, args.work))
+    run(['sh', 'autogen.sh'], src, blog)
+    run(['./configure', '--prefix=' + inst], src, blog)
+    run(['make', '-j%d' % (os.cpu_count() or 2)], src, blog)
+    run(['make', 'install'], src, blog)
+    # INSTALL.Newbie, steps 3 and 4; later lines of sysdef win
+    with open(os.path.join(inst, 'etc', 'sysdef'), 'a') as f:
+        f.write('NEWBIE=1\nCHECKSCUM=0\n')
+    with open(os.path.join(inst, 'etc', 'ports'), 'w') as f:
+        f.write('%d ntserv "ntserv" -q 9\n' % PLAYER_PORT)
+        f.write('%d ntserv "ntserv" -q 10\n' % ROBOT_PORT)
+
+
+def reap():
+    """Reap orphans, which come to this process as pid 1."""
+    while True:
+        try:
+            pid, _ = os.waitpid(-1, os.WNOHANG)
+        except ChildProcessError:
+            return
+        if pid == 0:
+            return
+
+
+def procs():
+    """The live processes of the game, as {pid: argv}, by argv[0]."""
+    reap()
+    found = {}
+    for d in os.listdir('/proc'):
+        if not d.isdigit():
+            continue
+        try:
+            with open('/proc/%s/stat' % d) as f:
+                state = f.read().rsplit(')', 1)[1].split()[0]
+            with open('/proc/%s/cmdline' % d, 'rb') as f:
+                argv = f.read().decode(errors='replace').split('\0')
+        except OSError:
+            continue
+        argv[0] = os.path.basename(argv[0])
+        if state != 'Z' and argv[0] in NAMES:
+            found[int(d)] = argv
+    return found
+
+
+def census(found):
+    counts = {}
+    for argv in found.values():
+        counts[argv[0]] = counts.get(argv[0], 0) + 1
+    return ', '.join('%d %s' % (counts[n], n) for n in NAMES
+                     if n in counts) or 'none'
+
+
+def wait_for(test, timeout):
+    end = time.time() + timeout
+    while time.time() < end:
+        if test():
+            return True
+        time.sleep(0.2)
+    return test()
+
+
+def gone():
+    return not procs()
+
+
+def clean():
+    """Kill whatever is left of a game, and remove all IPC, which in this
+    IPC namespace is only the game's.  Kill again until none are left, as
+    newbie may have started a robot meanwhile."""
+    end = time.time() + 10
+    while True:
+        found = procs()
+        if not found:
+            break
+        if time.time() > end:
+            raise TestError('cannot kill %s' % census(found))
+        for pid in found:
+            try:
+                os.kill(pid, 9)
+            except ProcessLookupError:
+                pass
+        time.sleep(0.2)
+    subprocess.run(['ipcrm', '--all'], check=True)
+
+
+def start_game():
+    """Connect as a player, which starts the daemon, which starts newbie,
+    which starts the robots; return when they have all joined."""
+    socket.create_connection(('127.0.0.1', PLAYER_PORT), 5).close()
+
+    def joined():
+        found = procs().values()
+        robots = [a for a in found if a[0] == 'newbiebot']
+        servers = [a for a in found if a[0] == 'ntserv' and a[1:3] == [
+            '-q', '10']]
+        return len(robots) >= ROBOTS and len(servers) >= ROBOTS
+    if not wait_for(joined, 60):
+        raise TestError('robots did not join, have %s' % census(procs()))
+    return procs()
+
+
+def sem_keys():
+    with open('/proc/sysvipc/sem') as f:
+        return set(int(line.split()[0]) for line in list(f)[1:])
+
+
+def daemons():
+    return set(p for p, a in procs().items() if a[0] == 'netrek-daemon')
+
+
+def check_robot_start(inst):
+    """newbie, with no game running, must not start a daemon."""
+    newbie = subprocess.Popen([os.path.join(inst, 'lib', 'newbie')],
+                              cwd=inst, stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL)
+    exited = wait_for(lambda: newbie.poll() is not None, 5)
+    started = daemons()
+    if started or not exited:
+        return False, ('newbie %s, daemons %d, %s'
+                       % ('exited' if exited else 'still running',
+                          len(started), census(procs())))
+    return True, 'newbie exited with status %d' % newbie.returncode
+
+
+def check_key_lost():
+    """A game must end when its key is removed."""
+    before = start_game()
+    old = set(p for p, a in before.items() if a[0] == 'netrek-daemon')
+    detail = 'game of %s' % census(before)
+    subprocess.run(['ipcrm', '-M', str(PKEY)], check=True)
+    t0 = time.time()
+    if wait_for(gone, 10):
+        detail += ' ended in %.1f s' % (time.time() - t0)
+        # the semaphores are found by the key, and a daemon that has
+        # the key next uses them, so the orphaned daemon must keep them
+        if PKEY not in sem_keys():
+            return False, detail + ', but removed the semaphores'
+        return True, detail
+    left = procs()
+    detail += '; 10 s after, left %s' % census(left)
+    # show what the newbie restart then does
+    log('key-lost: game outlived its key, waiting %d s for a newbie restart'
+        % (RESTART + 15))
+    new = set()
+    end = t0 + RESTART + 15
+    while time.time() < end:
+        new |= daemons() - old
+        time.sleep(1)
+    detail += ('; in %d s, new daemons started %d, now %s'
+               % (RESTART + 15, len(new), census(procs())))
+    return False, detail
+
+
+def check_terminate(inst):
+    """setgame terminate must end a game."""
+    before = start_game()
+    detail = 'game of %s' % census(before)
+    subprocess.run([os.path.join(inst, 'lib', 'tools', 'setgame'),
+                    'terminate'], cwd=inst, check=True)
+    t0 = time.time()
+    if wait_for(gone, 15):
+        return True, '%s ended in %.1f s' % (detail, time.time() - t0)
+    return False, detail + '; 15 s after, left %s' % census(procs())
+
+
+def inner(args):
+    """Run the server and the checks, inside the namespaces."""
+    inst = os.path.join(args.work, 'inst')
+    # newbie gives its robots the host name to connect to
+    socket.sethostname('localhost')
+    subprocess.run(['ip', 'link', 'set', 'lo', 'up'], check=True)
+    pidfile = os.path.join(inst, 'var', 'netrekd.pid')
+    if os.path.exists(pidfile):
+        os.remove(pidfile)
+    subprocess.Popen([os.path.join(inst, 'bin', 'netrekd')], cwd=inst,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(100):
+        try:
+            socket.create_connection(('127.0.0.1', PLAYER_PORT), 1).close()
+            break
+        except OSError:
+            time.sleep(0.1)
+    else:
+        raise TestError('server did not listen')
+    # that connection may have started a game; begin without one
+    time.sleep(1)
+    clean()
+
+    failed = 0
+    for name, check in (('robot-start', lambda: check_robot_start(inst)),
+                        ('key-lost', check_key_lost),
+                        ('terminate', lambda: check_terminate(inst))):
+        ok, detail = check()
+        print('%-12s %s  %s' % (name, 'pass' if ok else 'FAIL', detail),
+              flush=True)
+        failed += not ok
+        clean()
+    return 1 if failed else 0
+
+
+def main():
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    ap.add_argument('--source', default=SOURCE,
+                    help='source tree to build (default this one)')
+    ap.add_argument('--work', help='scratch directory (default a new one)')
+    ap.add_argument('--reuse', action='store_true',
+                    help='reuse the build in --work')
+    ap.add_argument('--inner', action='store_true', help=argparse.SUPPRESS)
+    args = ap.parse_args()
+
+    if args.inner:
+        try:
+            sys.exit(inner(args))
+        except TestError as e:
+            log(str(e))
+        except Exception:
+            traceback.print_exc()
+        sys.exit(2)
+
+    if os.geteuid() != 0:
+        log('needs root, for unshare')
+        sys.exit(2)
+    if not args.work:
+        args.work = tempfile.mkdtemp(prefix='orphaned-daemon.')
+    os.makedirs(args.work, exist_ok=True)
+    if not (args.reuse and os.path.exists(os.path.join(args.work, 'inst',
+                                                       'lib', 'newbie'))):
+        try:
+            build(args)
+        except TestError as e:
+            log(str(e))
+            sys.exit(2)
+    cmd = ['unshare', '-n', '-i', '-p', '-u', '-f', '--mount-proc',
+           sys.executable, '-B', os.path.abspath(__file__), '--inner',
+           '--work', args.work]
+    log('running, work in %s' % args.work)
+    r = subprocess.run(cmd).returncode
+    sys.exit(r if r in (0, 1) else 2)
+
+
+if __name__ == '__main__':
+    main()
