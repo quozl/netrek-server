@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 	
     }				/* end for */
     srandom(getpid() * time((long *) 0));
-    openmem(1);
+    openmem(0);
     readsysdefaults();
     if ( (pno = pickslot(QU_ROBOT)) < 0 ) exit(0);
     me = &players[pno];

@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 	
     }				/* end for */
     srandom(getpid() * time((long *) 0));
-    openmem(1);
+    openmem(0);
     readsysdefaults();
 
     sprintf(DogStats,"%s/%s",LOCALSTATEDIR,DOG_STATS);

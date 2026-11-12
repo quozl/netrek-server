@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 
    getpath();
    (void) SIGNAL(SIGCHLD, reaper);
-   openmem(1);
+   openmem(0);
    do_message_post_set(check_command);
    strcpy(robot_host,REMOTEHOST);
    readsysdefaults();

@@ -115,6 +115,7 @@ static void plfight(void);
 static void beam(void);
 static void blowup(struct player *sh);
 static void exitDaemon(int sig);
+static void check_orphaned(void);
 static void save_planets(void);
 static void checkgen(int loser, struct player *winner);
 static int checkwin(struct player *winner);
@@ -359,6 +360,7 @@ int main(int argc, char **argv)
     for (;;) {
         alarm_wait_for();
         move();
+        check_orphaned();
         if (sig_restart) {
             ERROR(1,("daemon: pid %d received SIGHUP for restart, "
                      "exec'ing\n", getpid()));
@@ -3682,6 +3684,25 @@ static void blowup(struct player *sh)
             }
         }
     }
+}
+
+/*! @brief End the game if its shared memory is orphaned.
+    @details New ntserv processes, robots and tools find the game by
+    the shared memory key.  If the segment was removed while the game
+    runs, or another daemon replaced it, they cannot reach this game,
+    setgame cannot stop it, and a manager robot restarted by this
+    daemon would not join it.  So end the game.  Checked about once a
+    second, during a pause too. */
+static void check_orphaned(void)
+{
+    static int ticks = 0;
+
+    if (++ticks < fps) return;
+    ticks = 0;
+    if (!orphaned()) return;
+    ERROR(1,("daemon: shared memory key no longer finds this game, "
+             "ending it\n"));
+    exitDaemon(0);
 }
 
 static void exitDaemon(int sig)

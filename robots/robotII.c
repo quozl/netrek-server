@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 	    ERROR(1,( "Choosing random team.\n"));
 	team = random() % 4;
     }
-    openmem(1);
+    openmem(0);
     readsysdefaults();
     if ( (pno = pickslot(QU_ROBOT)) < 0) exit(0);
     me = &players[pno];

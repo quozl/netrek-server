@@ -27,7 +27,10 @@
  *    It returns 1 if successful and exits if not.
  *  openmem(0) tries to connect to the memory, but will NOT start
  *    the daemon.  It returns 1 if successful, and exits if not.
- *    This is useful for tools, such as xtkill.
+ *    This is useful for tools, such as xtkill, and for robots, which
+ *    are started by the daemon, ntserv or another robot.  If a robot
+ *    finds no memory, the daemon that started it has lost the
+ *    memory, and the robot must not start a second daemon.
  *  openmem(-1) tries to connect to the memory, but will NOT start
  *    the daemon.  It returns 1 if successful, and 0 if not.  
  *    This is useful for tools such as players, which need to 
@@ -41,6 +44,10 @@
  *    It return 1 if successful and 0 on failure
  *  removemem() is called only by the daemon and removes the shared
  *    memory segment.  Returns 1 on success, o on failure
+ *  orphaned() is called by the daemon, and returns 1 if the key no
+ *    longer finds the segment it is attached to, because the segment
+ *    was removed (by ipcrm or tools/nuke) or another daemon replaced
+ *    it.  New ntserv processes, robots and tools cannot reach the game.
  *
  *  setup_memory() is the local routine that assigns all the global variables.
  *
@@ -282,8 +289,15 @@ int setupmem(void) {
     return 1;
 }
 
+int orphaned(void) {
+  return shmget(pkey, SHMFLAG, 0) != shmid;
+}
+
 int removemem(void) {
-  removesem();
+  /* the semaphores are found by the key, not the segment, so after
+     the segment is orphaned they belong to whichever daemon has the
+     key, or the next one */
+  if (!orphaned()) removesem();
   if (shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0) < 0) {
     perror("removemem");
     return 0;

@@ -260,9 +260,10 @@ puck: $(P_OBJS)
 
 Usage
 -----
-Just execute "puck" from the command line.  It has one option
-(-l<number of periods>).  You may want to tailor .sysdef to your taste
-(e.g., set TOURNPLAYERS=9, possibly disallow SBs).
+Just execute "puck" from the command line, while the server is
+running.  It has one option (-l<number of periods>).  You may want to
+tailor .sysdef to your taste (e.g., set TOURNPLAYERS=9, possibly
+disallow SBs).
 
 Rules
 -----

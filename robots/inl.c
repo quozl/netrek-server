@@ -191,7 +191,7 @@ main(int argc, char *argv[])
   srandom(time(NULL));
 
   getpath();
-  openmem(1);
+  openmem(0);
   do_message_post_set(check_command);
   readsysdefaults();
 

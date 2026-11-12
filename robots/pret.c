@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 
     getpath();
     (void) signal(SIGCHLD, reaper);
-    openmem(1);
+    openmem(0);
     strcpy(robot_host,REMOTEHOST);
     readsysdefaults();
     alarm_init();
