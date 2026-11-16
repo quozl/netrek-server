@@ -28,6 +28,10 @@ tests/build
 # tag the release
 git tag $VS
 
+# push the tag, as git push does not, to each repository that gets the
+# release, including GitHub, which had no tags before 2.20.0
+git push origin $VS
+
 # build the distribution file from pristine sources
 cd /tmp
 rm -rf release

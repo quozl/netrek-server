@@ -1,13 +1,71 @@
-2.20.0: released 2026-11-04
+2.20.0: released 2026-11-17
+
+  Every server should be upgraded, as this release fixes security
+  problems, listed below.
 
   The package is now named netrek-server, and installs by default in
   /usr/local/games/netrek-server.  To upgrade a server installed in the
   old default location, configure with
   --prefix=/usr/local/games/netrek-server-vanilla.
 
-  Debian packaging is removed, as it is not an upstream role.
+  End the whole game before installing.  netrekd stop only stops
+  listening for connections; the daemon, ntserv processes and robots
+  keep running the old programs.  End them with lib/tools/setgame
+  terminate, or pkill -f ^netrek-daemon.
 
-  See git log.
+  Security fixes:
+
+  * any player could become an administrator when ADMIN_PASSWORD was
+    not set, then kill, ban and eject players, and with ADMIN_EXEC run
+    shell commands,
+  * on base practice servers, any player could run shell commands, or
+    crash the manager, with the start command,
+  * a client's reverse DNS name could put shell commands into the
+    admin tools,
+  * a client could overflow the stack of ntserv with CP_FEATURE before
+    login, hang its ntserv with a malformed CP_S_MESSAGE, or reach past
+    the player array with a slot letter,
+  * when two logins raced for a new name, both got in, so a second
+    person could play under that name with another password,
+  * buffer overflows in distress carbon copies, the hours file, the
+    .ports file, the multicast responder, short packet messages, mars,
+    setgalaxy, and robotd.
+
+  Changes an administrator may notice:
+
+  * newbie and base practice read robot command files from etc/og, not
+    lib/og; move a customised lib/og/og to etc/og/og,
+  * make install creates etc/og/og if absent, with "hm 9", so newbie
+    robots no longer play at the hardest setting,
+  * robots no longer start a daemon; running puck by hand needs a
+    running server,
+  * the base practice start command no longer takes host and log words,
+  * scores A and newscores work with LTD_STATS, and both exit 0 on
+    success,
+  * ADMIN kill, free, ban, reset and dfreset do what they say again;
+    since 2016 they all ran the quit script,
+  * Debian packaging is removed, as it is not an upstream role.
+
+  Other fixes:
+
+  * with more than one CPU, the daemon, ntserv and robots raced in
+    shared memory, losing player messages, moving torpedoes before they
+    were set up, and rarely taking another player's torpedo slot,
+  * a game whose shared memory key was removed played on out of reach,
+    and its newbie manager started another game each minute; the daemon
+    now ends such a game,
+  * robotd robots lost their team's planets in the join burst to an
+    unexpected SP_FEATURE packet, attacked their own planets, and stayed
+    on TCP,
+  * ntserv dropped a player with "Died in second read()" when a packet
+    split across reads was delayed,
+  * player database index lookups no longer fail while others log in,
+  * base practice compiles again, and its robots connect to ROBOTHOST,
+  * hockey ships no longer turn invisible after a goal,
+  * builds with GCC 14 and 15, current autoconf, and make -j,
+  * PROTOCOL.md describes the network protocol.
+
+  See git log for the rest.
 
 2.19.0: released 2016-12-06
 
