@@ -388,6 +388,7 @@ void updateFlagsAll(int offset)
     struct flags_all_spacket flags_all;
     int i, j, new = 0;
 
+    memset(&flags_all, 0, sizeof(struct flags_all_spacket));
     flags_all.type = SP_FLAGS_ALL;
     flags_all.offset = offset;
     for (i=flags_all.offset * 16, j=0;
@@ -988,6 +989,8 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
 	struct mesg_s_spacket *shortmsg = (struct mesg_s_spacket *) msg;
 	int size;
 
+	/* size is rounded up past the end of the string */
+	memset(msg, 0, sizeof(struct mesg_spacket));
 	shortmsg->type = SP_S_MESSAGE;
 	shortmsg->m_flags=cur->m_flags;
 	shortmsg->m_recpt=cur->m_recpt;
@@ -2539,6 +2542,7 @@ addSequence(char *outbuf, LONG *seq_no)
     packets_sent++;
     ssp = (struct sequence_spacket *) outbuf;
     ssp->type = SP_SEQUENCE;
+    ssp->flag8 = 0;		/* set later by addSequenceFlags */
     ssp->sequence = htons((u_short) *seq_no);
     (*seq_no)++;
 
@@ -2599,6 +2603,7 @@ sendQueuePacket(short pos)
 {
     struct queue_spacket qPacket;
 
+    memset(&qPacket, 0, sizeof(struct queue_spacket));
     qPacket.type=SP_QUEUE;
     qPacket.pos=htons(pos);
     sendClientPacket((CVOID) &qPacket);
@@ -2610,6 +2615,7 @@ sendPickokPacket(int state)
 {
     struct pickok_spacket pickPack;
 
+    memset(&pickPack, 0, sizeof(struct pickok_spacket));
     pickPack.type=SP_PICKOK;
     pickPack.state=state;
     sendClientPacket((CVOID) &pickPack);
@@ -2620,6 +2626,7 @@ sendClientLogin(struct stats *stats)
 {
     struct login_spacket logPacket;
 
+    memset(&logPacket, 0, sizeof(struct login_spacket));
     logPacket.type=SP_LOGIN;
     if (stats==NULL) {
 	logPacket.accept=0;
@@ -2672,6 +2679,7 @@ sendMaskPacket(int mask)
 {
     struct mask_spacket maskPacket;
 
+    memset(&maskPacket, 0, sizeof(struct mask_spacket));
     maskPacket.type=SP_MASK;
     maskPacket.mask=mask;
     sendClientPacket((CVOID) &maskPacket);

@@ -22,6 +22,7 @@ void makeReservedPacket(struct reserved_spacket *packet)
 {
     int i;
 
+    memset(packet, 0, sizeof(struct reserved_spacket));
     for (i=0; i<16; i++) {
 	packet->data[i]= (char) (random() % 256);
     }

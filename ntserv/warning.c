@@ -61,6 +61,7 @@ void warning(char *text) {
 
   struct warning_spacket warn;
 
+  memset(&warn, 0, sizeof(struct warning_spacket));
   if (!send_short) {
 
     warn.type = SP_WARNING;
@@ -103,6 +104,7 @@ void spwarning(char *text, int index) {
   struct warning_spacket warn;
   struct warning_s_spacket swarn;
 
+  memset(&warn, 0, sizeof(struct warning_spacket));
   if (!send_short) {
 
     warn.type = SP_WARNING;
@@ -134,6 +136,7 @@ void s_warning(char *text, int index) {
   /* This is a (sortof) boolean arry to remind the server that he has sent */
   static char sent_to_client[256];
 
+  memset(&warn, 0, sizeof(struct warning_spacket));
 
   /* a warning to the client */
 

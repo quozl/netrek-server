@@ -37,6 +37,7 @@ void makeRSAPacket(void *p)
     struct rsa_key_spacket *packet = (struct rsa_key_spacket *) p;
     int i;
 
+    memset(packet, 0, sizeof(struct rsa_key_spacket));
     for (i=0; i<KEY_SIZE; i++)
 	packet->data[i]=random() % 256;
     /* make sure it is less than the global key */

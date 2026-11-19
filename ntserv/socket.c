@@ -2205,6 +2205,7 @@ static void handleUdpReq(struct udp_req_cpacket *packet)
     struct udp_reply_spacket response;
     int mode;
 
+    memset(&response, 0, sizeof(struct udp_reply_spacket));
     response.type = SP_UDP_REPLY;
 
     if (packet->request == COMM_VERIFY) {
@@ -3144,6 +3145,7 @@ static void handleShortReq(struct shortreq_cpacket *packet)
 {
     struct shortreply_spacket	resp;
 
+    memset(&resp, 0, sizeof(struct shortreply_spacket));
     switch(packet->req){
     case SPK_VOFF:
 	send_short = 0;
