@@ -117,7 +117,7 @@ struct ltd_stats {
                                            torp blow */
     unsigned int plasmaed;		/* number of kills made with a
                                            plamsa */
-#if defined(_64BIT) && defined(linux)
+#if defined(_64BIT) && (defined(linux) || defined(__APPLE__))
   } __attribute__((packed)) kills;
 #else
  } kills;
@@ -304,7 +304,7 @@ struct ltd_stats {
 
   } weapons;
 
-#if defined(_64BIT) && defined(linux)
+#if defined(_64BIT) && (defined(linux) || defined(__APPLE__))
 } __attribute__((packed));
 #else
 };

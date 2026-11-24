@@ -80,7 +80,7 @@ struct queuewait {
 struct status {
     int		active;         /* unused */
     u_char	tourn;		/* Tournament mode? */
-#if defined(_64BIT) && defined(linux)
+#if defined(_64BIT) && (defined(linux) || defined(__APPLE__))
     u_char      pad[3];
 #endif
     /* These stats only updated during tournament mode */
@@ -89,7 +89,7 @@ struct status {
     double	timeprod;
     int		gameup;
     /* CAUTION, adding to this struct invalidates var/global */
-#if defined(_64BIT) && defined(linux)
+#if defined(_64BIT) && (defined(linux) || defined(__APPLE__))
 } __attribute__((packed));
 #else
 };
@@ -392,7 +392,7 @@ struct stats {
 # endif /* ROLLING_STATS */
 
 #endif /* LTD_STATS */
-#if defined(_64BIT) && defined(linux)
+#if defined(_64BIT) && (defined(linux) || defined(__APPLE__))
 } __attribute__((packed));
 #else
 };
