@@ -12,8 +12,8 @@ type: :bugfix
 component: netrek-server-vanilla
 release: 
 reporter: James Cameron <quozl@us.netrek.org>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2012-03-12 03:50:12.335800 Z
 references: []
 
@@ -23,3 +23,11 @@ log_events:
   - James Cameron <quozl@us.netrek.org>
   - created
   - ""
+- - 2026-11-24 21:09:12.142643 Z
+  - James Cameron <quozl@laptop.org>
+  - closed with disposition fixed
+  - |-
+    netrekd now holds a lock on the pid file while it runs, and ignores a
+    pid file that no netrekd has locked, so a pid reused by another
+    process no longer stops it starting, and stop and reload no longer
+    signal that process.

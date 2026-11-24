@@ -192,18 +192,26 @@ the live server.  Then log in, and compare `scores A` dumps.
 7. **Update anything else that names the old prefix**, such as
    scripts, documentation and your shell's `PATH`.
 
-**Stale pid file.**  `netrekd` refuses to start while
-`var/netrekd.pid` names a process it cannot signal.  After a reboot
-that is often an unrelated process owned by root.  A restart script
-can remove a pid file whose process is not that `netrekd`:
+**Stale pid file.**  After 2.20.0, `netrekd` holds a lock on
+`var/netrekd.pid` while it runs, and ignores a pid file that no
+`netrekd` has locked.  `netrekd` 2.20.0 and older refuse to start
+while the file names a process they cannot signal, and as root,
+`stop` and `reload` signal whatever process has that pid.  After a
+reboot that is often an unrelated process.  A restart script for an
+older `netrekd` can remove a pid file whose process is not that
+`netrekd`:
 
 ```
 clear_stale_pid() {     # pid file, program that should own it
     [ -f "$1" ] || return 0
     [ "$(readlink /proc/$(cat "$1")/exe 2>/dev/null)" = "$2" ] || rm -f "$1"
 }
-clear_stale_pid $NEW/var/netrekd.pid $NEW/lib/newstartd
+clear_stale_pid $OLD/var/netrekd.pid $OLD/lib/newstartd
 ```
+
+A newer `netrekd stop` cannot stop an older `netrekd`, which holds no
+lock; it prints the pid instead.  If you install over the old prefix,
+stop the old listener before installing.
 
 ## 6. Check the result
 

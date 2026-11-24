@@ -30,6 +30,8 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <sys/file.h>
 
 #include "defs.h"
 #include "struct.h"
@@ -52,7 +54,10 @@ static void reaper_block();
 static void reaper_unblock();
 static void reaper(int);
 static void hangup(int);
-static void putpid(void);
+static int pid_lock(pid_t *holder);
+static pid_t pid_read(int f);
+static void pid_write(pid_t pid);
+static int pid_signal(char *verb, int sig);
 
 #define SP_BADVERSION 21
 struct badversion_spacket {
@@ -88,6 +93,7 @@ struct progrecord {			/* array of data read from file	*/
 static int num_progs = 0;
 
 int fd;					/* log file file descriptor	*/
+static int pid_fd = -1;			/* pid file, locked while we run */
 
 
 /* sigaction() is a POSIX signal function.  On some systems, it is
@@ -118,7 +124,6 @@ int main (int argc, char *argv[])
   int port_idx = -1;
   int i;
   pid_t pid = 0;
-  FILE *file;
 
   active = 0;
   getpath();
@@ -133,77 +138,34 @@ int main (int argc, char *argv[])
     exit (1);
   }
 
-  /* fetch our previous pid if available */
-  file = fopen (N_NETREKDPID, "r");
-  if (file != NULL) {
-    if (fscanf (file, "%d", &pid) == EOF)
-      if (ferror(file))
-        perror("netrekd: pid fscanf");
-    fclose (file);
-  } else {
-    /* only a total lack of the file is acceptable */
-    if (errno != ENOENT) {
-      perror (N_NETREKDPID);
-      exit(1);
-    }
-  }
-
-  /* check for a request to stop the listener */
+  /* check for a request to stop or reload the listener */
   if (argc == 2) {
-    if (!strcmp (argv[1], "stop")) {
-      if (file != NULL) {
-	if (pid == 0) {
-	  fprintf (stderr, "netrekd: cannot stop, no pid\n");
-	  exit (1);
-	}
-	if (kill (pid, SIGINT) == 0) {
-	  remove (N_NETREKDPID);
-	  fprintf (stderr, "netrekd: stopped pid %d\n", pid);
-	  exit (0);
-	}
-	fprintf (stderr, "netrekd: cannot stop, pid %d\n, may be already stopped\n", pid);
-	perror ("kill");
-	exit (1);
-      }
-      fprintf (stderr, "netrekd: cannot stop, no %s file\n", N_NETREKDPID);
-      exit (1);
-    }
-    if (!strcmp (argv[1], "reload")) {
-      if (file != NULL) {
-	if (pid == 0) {
-	  fprintf (stderr, "netrekd: cannot reload, no pid\n");
-	  exit (1);
-	}
-	if (kill (pid, SIGHUP) == 0) {
-	  fprintf (stderr, "netrekd: sent SIGHUP to pid %d\n", pid);
-	  exit (0);
-	}
-	fprintf (stderr, "netrekd: cannot reload, pid %d not present\n", pid);
-	perror ("kill");
-	exit (1);
-      }
-      fprintf (stderr, "netrekd: cannot reload, no %s file\n", N_NETREKDPID);
-      exit (1);
-    }
+    if (!strcmp (argv[1], "stop")) exit (pid_signal ("stop", SIGINT));
+    if (!strcmp (argv[1], "reload")) exit (pid_signal ("reload", SIGHUP));
   }
 
-  /* check for duplicate start */
-  if (file != NULL) {
-    /* there is a pid file, test the pid is valid */
-    if (kill (pid, 0) == 0) {
-      fprintf (stderr, "netrekd: cannot start, already running as pid %d\n", pid);
-      exit (1);
+  /* only one netrekd runs, the one holding the lock on the pid file;
+     a pid in the file is not enough, as the pid may have been reused */
+  pid_fd = pid_lock (&pid);
+  if (pid_fd < 0) {
+    if (errno == EWOULDBLOCK) {
+      if (pid > 0)
+	fprintf (stderr, "netrekd: cannot start, already running as pid %d\n",
+		 pid);
+      else
+	fprintf (stderr, "netrekd: cannot start, already running\n");
     } else {
-      if (errno != ESRCH) {
-	fprintf (stderr, "netrekd: failed on test of pid %d existence\n", pid);
-	perror ("kill");
-	exit (1);
-      }
+      perror (N_NETREKDPID);
     }
-
-    /* pid was not valid but file was present, so remove it */
-    remove (N_NETREKDPID);
+    exit (1);
   }
+
+  /* forget the previous pid, so that a stop or reload before we record
+     ours will not signal it */
+  if (ftruncate (pid_fd, 0) < 0) perror (N_NETREKDPID);
+
+  /* do not propagate the lock to programs we start */
+  fcntl (pid_fd, F_SETFD, FD_CLOEXEC);
 
   /* allow user to specify a port file to use */
   if (argc == 2) {
@@ -249,6 +211,8 @@ int main (int argc, char *argv[])
 	perror("fork");
 	exit(1);
       }
+      /* record the pid before returning, so a script may signal it */
+      pid_write (pid);
       fprintf (stderr, "netrekd: %s %s.%d started, pid %d,\n"
                "netrekd: logging to %s\n",
                SERVER_NAME, SERVER_VERSION, PATCHLEVEL, pid, LogFile );
@@ -257,6 +221,8 @@ int main (int argc, char *argv[])
 
     /* detach from terminal */
     DETACH;
+  } else {
+    pid_write (getpid ());
   }
 
   /* do not propogate the log to forked processes */
@@ -272,9 +238,6 @@ int main (int argc, char *argv[])
   /* set the standard streams to be line buffered (ANSI C3.159-1989) */
   setvbuf (stderr, NULL, _IOLBF, 0);
   setvbuf (stdout, NULL, _IOLBF, 0);
-
-  /* record our process id */
-  putpid ();
 
   /* run forever */
   for (;;) {
@@ -549,6 +512,8 @@ static void statistics (int port_idx, char *ip)
 
   if (fork() == 0) {
     static struct linger linger = {1, 500};
+    /* do not hold the pid file lock while lingering after netrekd exits */
+    close (pid_fd);
     setsockopt (0, SOL_SOCKET, SO_LINGER, (char *) &linger, sizeof (linger));
     client = fdopen (0, "w");
     if (client != NULL) {
@@ -690,15 +655,134 @@ static void reaper (int sig)
   if (sig) return;
 }
 
-/* write process id to file to assist with automatic signalling */
-static void putpid(void)
+/* open the pid file and take its lock, or if a netrekd already holds
+   the lock, return -1 with errno EWOULDBLOCK and the pid it recorded */
+static int pid_lock(pid_t *holder)
 {
-  FILE *file;
+  struct stat a, b;
+  int f, e;
 
-  file = fopen(N_NETREKDPID, "w");
-  if (file == NULL) return;
-  fprintf (file, "%d\n", (int) getpid());
-  fclose (file);
+  *holder = 0;
+  for (;;) {
+    f = open(N_NETREKDPID, O_RDWR | O_CREAT, 0644);
+    if (f < 0) return -1;
+    if (flock(f, LOCK_EX | LOCK_NB) < 0) {
+      e = errno;
+      if (e == EWOULDBLOCK) *holder = pid_read(f);
+      close(f);
+      errno = e;
+      return -1;
+    }
+    if (fstat(f, &a) < 0) break;
+
+    /* a stop holding the lock may have removed the file after we opened
+       it, in which case another netrekd could lock a new one, so retry */
+    if (stat(N_NETREKDPID, &b) == 0) {
+      if (a.st_dev == b.st_dev && a.st_ino == b.st_ino) return f;
+    } else if (errno != ENOENT) {
+      break;
+    }
+    close(f);
+  }
+  e = errno;
+  close(f);
+  errno = e;
+  return -1;
+}
+
+/* read the pid recorded in the pid file, or 0 if there is none */
+static pid_t pid_read(int f)
+{
+  char buf[32];
+  ssize_t n;
+  long pid;
+
+  n = pread(f, buf, sizeof(buf) - 1, 0);
+  if (n <= 0) return 0;
+  buf[n] = '\0';
+  pid = strtol(buf, NULL, 10);
+  /* zero or a negative pid would signal a group of processes */
+  if (pid <= 0 || pid > INT_MAX) return 0;
+  return (pid_t) pid;
+}
+
+/* write process id to file to assist with automatic signalling */
+static void pid_write(pid_t pid)
+{
+  char buf[32];
+  int n;
+
+  n = snprintf(buf, sizeof(buf), "%d\n", (int) pid);
+  if (ftruncate(pid_fd, 0) < 0 || pwrite(pid_fd, buf, n, 0) != n)
+    perror(N_NETREKDPID);
+}
+
+/* send a signal to the running netrekd, for stop or reload */
+static int pid_signal(char *verb, int sig)
+{
+  pid_t pid;
+  int f, i;
+
+  f = open(N_NETREKDPID, O_RDONLY);
+  if (f < 0) {
+    if (errno == ENOENT)
+      fprintf(stderr, "netrekd: cannot %s, no %s file\n", verb, N_NETREKDPID);
+    else
+      perror(N_NETREKDPID);
+    return 1;
+  }
+
+  /* if we can take the lock then no netrekd is running, and the pid in
+     the file may now belong to some other process, so leave it be */
+  if (flock(f, LOCK_EX | LOCK_NB) == 0) {
+    fprintf(stderr, "netrekd: cannot %s, not running\n", verb);
+    pid = pid_read(f);
+    if (pid > 0 && (kill(pid, 0) == 0 || errno == EPERM))
+      fprintf(stderr, "netrekd: pid %d in %s does not hold the lock; "
+	      "if it is an older netrekd, stop it with kill %d\n",
+	      pid, N_NETREKDPID, pid);
+    close(f);
+    return 1;
+  }
+  if (errno != EWOULDBLOCK) {
+    perror("flock");
+    close(f);
+    return 1;
+  }
+
+  pid = pid_read(f);
+  if (pid == 0) {
+    fprintf(stderr, "netrekd: cannot %s, no pid\n", verb);
+    close(f);
+    return 1;
+  }
+  if (kill(pid, sig) < 0) {
+    fprintf(stderr, "netrekd: cannot %s pid %d\n", verb, pid);
+    perror("kill");
+    close(f);
+    return 1;
+  }
+  if (sig != SIGINT) {
+    fprintf(stderr, "netrekd: sent SIGHUP to pid %d\n", pid);
+    close(f);
+    return 0;
+  }
+
+  /* wait for it to exit, so that a start which follows will succeed */
+  for (i = 0; i < 100; i++) {
+    if (flock(f, LOCK_EX | LOCK_NB) == 0) {
+      /* remove the file while holding the lock; see pid_lock */
+      remove(N_NETREKDPID);
+      fprintf(stderr, "netrekd: stopped pid %d\n", pid);
+      close(f);
+      return 0;
+    }
+    usleep(100000);
+  }
+  fprintf(stderr, "netrekd: sent SIGINT to pid %d, but it has not exited\n",
+	  pid);
+  close(f);
+  return 1;
 }
 
 static int read_portfile (char *portfile)
