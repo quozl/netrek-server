@@ -177,7 +177,7 @@ dist:
         # what has changed
 	cp -p ChangeLog NEWS $(NAME)/
         # what needs to change
-	cp -p BUGS PROJECTS $(NAME)/
+	cp -p BUGS.md PROJECTS $(NAME)/
         # top level documentation
 	cp -p INSTALL INSTALL.INL INSTALL.Newbie README.md \
 	README.developers README.releasing CHANGES PROTOCOL.md $(NAME)/
