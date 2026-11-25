@@ -1546,6 +1546,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 #ifdef STURGEON
         if (sturgeon) {
             struct player *dude;
+            char msgbuf[256];
             char buf2[20];
             int i;
 
@@ -1556,19 +1557,20 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                         sprintf(addrbuf, "GOD->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
                         pmessage(me->p_no, MINDIV, addrbuf,"[C] this message, [u] list upgrades, [k] list kills, [i] inventory");
                         sprintf(addrbuf, "GOD->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-                        sprintf(buf, "Lite: %s. Extrakills: %s. Planetupgrades: %s. Maxupgrades: ",
+                        if (sturgeon_maxupgrades)
+                            snprintf(buf2, sizeof(buf2), "%d", sturgeon_maxupgrades);
+                        else
+                            snprintf(buf2, sizeof(buf2), "inf");
+                        snprintf(msgbuf, sizeof(msgbuf),
+                                "Lite: %s. Extrakills: %s. Planetupgrades: %s. Maxupgrades: %s",
                                 sturgeon_lite ? "on" : "off",
                                 sturgeon_extrakills ? "on" : "off",
-                                sturgeon_planetupgrades ? "on" : "off");
-                        if (sturgeon_maxupgrades)
-                            sprintf(buf2, "%d", sturgeon_maxupgrades);
-                        else
-                            sprintf(buf2, "inf");
-                        strcat(buf, buf2);
-                        pmessage(me->p_no, MINDIV, addrbuf, buf);
-                        sprintf(buf, "Special Weapons: %s", 
+                                sturgeon_planetupgrades ? "on" : "off",
+                                buf2);
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
+                        snprintf(msgbuf, sizeof(msgbuf), "Special Weapons: %s", 
                                 sturgeon_special_weapons ? "on" : "off");
-                        pmessage(me->p_no, MINDIV, addrbuf, buf);
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                         return;
                 }
             }
@@ -1591,40 +1593,40 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                 }
                 else {
                     sprintf(addrbuf, "SPY->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-                    sprintf(buf, "Intelligence indicates that %c%c's inventory includes:", teamlet[dude->p_team], shipnos[dude->p_no]);
-                    pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    snprintf(msgbuf, sizeof(msgbuf), "Intelligence indicates that %c%c's inventory includes:", teamlet[dude->p_team], shipnos[dude->p_no]);
+                    pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                 }
                 if (dude->p_team == me->p_team) {
                     for (i=0; i < NUMSPECIAL; i++) {
                         if (dude->p_weapons[i].sw_number < 0)
-                            sprintf(buf, " inf %s", dude->p_weapons[i].sw_name);
+                            snprintf(msgbuf, sizeof(msgbuf), " inf %s", dude->p_weapons[i].sw_name);
                         else if (dude->p_weapons[i].sw_number > 0)
-                            sprintf(buf, "%4d %s", dude->p_weapons[i].sw_number, dude->p_weapons[i].sw_name);
+                            snprintf(msgbuf, sizeof(msgbuf), "%4d %s", dude->p_weapons[i].sw_number, dude->p_weapons[i].sw_name);
                         else
                             continue;
-                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                     }
                 }
                 else {
-                    *buf = '\0';
+                    msgbuf[0] = '\0';
                     for (i=0; i<=5; i++)
                     if (dude->p_weapons[i].sw_number) {
-                        strcat(buf, "plasmas ");
+                        strcat(msgbuf, "plasmas ");
                         break;
                     }
                     for (i=6; i <= 9; i++) {
                         if (dude->p_weapons[i].sw_number) {
-                            strcat(buf, "nukes ");
+                            strcat(msgbuf, "nukes ");
                             break;
                         }
                     }
                     if (dude->p_weapons[10].sw_number)
-                        strcat(buf, "drones ");
+                        strcat(msgbuf, "drones ");
                     if (dude->p_weapons[11].sw_number)
-                        strcat(buf, "mines ");
+                        strcat(msgbuf, "mines ");
 
-                    if (*buf)
-                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    if (msgbuf[0])
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                     else
                         pmessage(me->p_no, MINDIV, addrbuf,"No special weapons");
                 }
@@ -1651,54 +1653,54 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                 }
                 else {
                     sprintf(addrbuf, "SPY->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-                    sprintf(buf, "%c%c has spent %.2f kills upgrading the following systems:", teamlet[dude->p_team], shipnos[dude->p_no], dude->p_upgrades);
-                    pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    snprintf(msgbuf, sizeof(msgbuf), "%c%c has spent %.2f kills upgrading the following systems:", teamlet[dude->p_team], shipnos[dude->p_no], dude->p_upgrades);
+                    pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                 }
                 if (me->p_team == dude->p_team) {
                     for (i=0; i < NUMUPGRADES; i++) {
                         if (dude->p_upgradelist[i] > 0) {
                             if (i < UPG_OFFSET) {
                                 if (dude->p_no == me->p_no)
-                                    sprintf(buf, "%4d (%6.2f) %s", dude->p_upgradelist[i], baseupgradecost[i] + dude->p_upgradelist[i] * adderupgradecost[i], upgradename[i]);
+                                    snprintf(msgbuf, sizeof(msgbuf), "%4d (%6.2f) %s", dude->p_upgradelist[i], baseupgradecost[i] + dude->p_upgradelist[i] * adderupgradecost[i], upgradename[i]);
                                 else
-                                    sprintf(buf, "%4d %s", dude->p_upgradelist[i], upgradename[i]);
+                                    snprintf(msgbuf, sizeof(msgbuf), "%4d %s", dude->p_upgradelist[i], upgradename[i]);
                             }
                             else
-                                sprintf(buf, "%s upgrade", upgradename[i]);
-                            pmessage(me->p_no, MINDIV, addrbuf, buf);
+                                snprintf(msgbuf, sizeof(msgbuf), "%s upgrade", upgradename[i]);
+                            pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                         }
                     }
                 }
                 else {
-                    *buf = '\0';
+                    msgbuf[0] = '\0';
                     if (dude->p_upgradelist[UPG_PERMSHIELD])
-                        strcat(buf, "shields ");
+                        strcat(msgbuf, "shields ");
                     if (dude->p_upgradelist[UPG_HULL])
-                        strcat(buf, "hull ");
+                        strcat(msgbuf, "hull ");
                     if (dude->p_upgradelist[UPG_FUEL] || dude->p_upgradelist[UPG_RECHARGE]) {
-                        strcat(buf, "fuel ");
+                        strcat(msgbuf, "fuel ");
                     }
                     if (dude->p_upgradelist[UPG_MAXWARP] || dude->p_upgradelist[UPG_ACCEL]
                      || dude->p_upgradelist[UPG_DECEL] || dude->p_upgradelist[UPG_ENGCOOL]) {
-                        strcat(buf, "engines ");
+                        strcat(msgbuf, "engines ");
                     }
                     if (dude->p_upgradelist[UPG_PHASER] || dude->p_upgradelist[UPG_TORPSPEED]
                      || dude->p_upgradelist[UPG_TORPFUSE] || dude->p_upgradelist[UPG_WPNCOOL]) {
-                        strcat(buf, "weapons ");
+                        strcat(msgbuf, "weapons ");
                     }
                     if (dude->p_upgradelist[UPG_CLOAK])
-                        strcat(buf, "cloak ");
+                        strcat(msgbuf, "cloak ");
                     if (dude->p_upgradelist[UPG_TPSTR] || dude->p_upgradelist[UPG_TPRANGE]) {
-                        strcat(buf, "tractors ");
+                        strcat(msgbuf, "tractors ");
                     }
                     if (dude->p_upgradelist[UPG_REPAIR])
-                        strcat(buf, "repair ");
+                        strcat(msgbuf, "repair ");
                     if (dude->p_upgradelist[UPG_FIRECLOAK])
-                        strcat(buf, "fire-while-cloaked ");
+                        strcat(msgbuf, "fire-while-cloaked ");
                     if (dude->p_upgradelist[UPG_DETDMG])
-                        strcat(buf, "det-own-torps-for-damage ");
-                    if (*buf != '\0')
-                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        strcat(msgbuf, "det-own-torps-for-damage ");
+                    if (msgbuf[0] != '\0')
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                     else
                         pmessage(me->p_no, MINDIV, addrbuf,"none");
                 }
@@ -1714,10 +1716,10 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                         i = dude->p_kills * 2.0;
                     if (i > dude->p_ship.s_maxarmies)
                         i = dude->p_ship.s_maxarmies;
-                    sprintf(buf,"%.2f kills/rank credit available (%.2f total), %d/%d armies",
+                    snprintf(msgbuf, sizeof(msgbuf), "%.2f kills/rank credit available (%.2f total), %d/%d armies",
                             dude->p_kills + dude->p_rankcredit, dude->p_kills + dude->p_rankcredit + dude->p_upgrades,
                             dude->p_armies, i);
-                    new_warning(UNDEF,buf);
+                    new_warning(UNDEF, "%s", msgbuf);
                 }
                 else {
                     new_warning(UNDEF,"Kill information only available from teammates");
@@ -1730,6 +1732,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 		shipnos[packet->indiv]);
 	break;
     case (MINDIV|MCONFIG):
+	if (packet->indiv >= MAXPLAYER) return;
 	clientVersion((struct mesg_spacket *) packet);
 	break;
     case MGOD:
@@ -3097,6 +3100,7 @@ static int parseIgnore(struct mesg_cpacket *packet)
     }
 
     if (packet->group != MINDIV) return FALSE; /* below is for indiv only */
+    if (who < 0 || who >= MAXPLAYER) return TRUE;
 
     do {
 	what = 0;
@@ -3124,20 +3128,23 @@ static int parseIgnore(struct mesg_cpacket *packet)
     } while (what != 0);
     ip_ignore_ip_update(me->p_ip, players[who].p_ip, ignored[who]);
 
-    strcpy(buf, "Ignore status for this player: ");
-    noneflag = TRUE;
-    if (ignored[who] & MALL) {
-	strcat(buf, "All "); noneflag = FALSE;
+    {
+	char msgbuf[MSG_LEN];
+	strcpy(msgbuf, "Ignore status for this player: ");
+	noneflag = TRUE;
+	if (ignored[who] & MALL) {
+	    strcat(msgbuf, "All "); noneflag = FALSE;
+	}
+	if (ignored[who] & MTEAM) {
+	    strcat(msgbuf, "Team "); noneflag = FALSE;
+	}
+	if (ignored[who] & MINDIV) {
+	    strcat(msgbuf, "Indiv "); noneflag = FALSE;
+	}
+	if (noneflag)
+	    strcat(msgbuf, "None");
+	new_warning(UNDEF, "%s", msgbuf);
     }
-    if (ignored[who] & MTEAM) {
-	strcat(buf, "Team "); noneflag = FALSE;
-    }
-    if (ignored[who] & MINDIV) {
-	strcat(buf, "Indiv "); noneflag = FALSE;
-    }
-    if (noneflag)
-	strcat(buf, "None");
-    new_warning(UNDEF,buf);
     return TRUE;
 }
 
