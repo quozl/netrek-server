@@ -32,8 +32,8 @@ void detothers ()
     return;
   }
 
-  me->p_fuel  -= myship->s_detcost;
-  me->p_wtemp += myship->s_detcost / 5;
+  atomic_sub(&me->p_fuel, myship->s_detcost);
+  atomic_add(&me->p_wtemp, myship->s_detcost / 5);
 
   for (j = firstPlayer; j <= lastPlayer; j++) {
     if (j->p_status == PFREE)

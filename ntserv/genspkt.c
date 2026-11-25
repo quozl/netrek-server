@@ -24,6 +24,7 @@
 #include "ip.h"
 #include "util.h"
 #include "shmatomic.h"
+#include "shmatomic.h"
 
 /* file scope prototypes */
 static void updateFlagsAll(int offset);
@@ -583,16 +584,18 @@ int sndSelfShip(struct youss_spacket *self, struct player *pl)
 int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 	    struct torp *t, int i, int howmuch)
 {
+    int tstatus = load_acquire(&t->t_status);
+
     /*
      * If it was free before, and is still, do nothing.   */
-    if ((t->t_status == TFREE) && (tpi->status == TFREE))
+    if ((tstatus == TFREE) && (tpi->status == TFREE))
 	return FALSE;
 
     if (howmuch == UPDT_ALL) {
-	if ((t->t_war != tpi->war) || (t->t_status != tpi->status)) {
+	if ((t->t_war != tpi->war) || (tstatus != tpi->status)) {
 	    tpi->type   = SP_TORP_INFO;
 	    tpi->war    = t->t_war;
-	    tpi->status = t->t_status;
+	    tpi->status = tstatus;
 	    tpi->tnum   = htons(i);
 	    sendClientPacket(tpi);
 /*	    return TRUE;*/
@@ -613,17 +616,17 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 	tp->dir  = t->t_dir; /* The robot needs this */
 	tp->tnum = htons(i);
 	sendClientPacket(tp);
-	if ( (t->t_status != tpi->status)
+	if ( (tstatus != tpi->status)
 	     || ((t->t_war & me->p_team) != tpi->war)) {
 	    tpi->type   = SP_TORP_INFO;
 	    tpi->war    = t->t_war & me->p_team;
 	    tpi->tnum   = htons(i);
-	    tpi->status = t->t_status;
+	    tpi->status = tstatus;
 	    sendClientPacket(tpi);
 	}
 	return TRUE;
     } else {
-	if ((t->t_status == TFREE) && (tpi->status == TEXPLODE)) {
+	if ((tstatus == TFREE) && (tpi->status == TEXPLODE)) {
 	    tpi->status = TFREE;
 	    return FALSE;
 	}
@@ -641,16 +644,18 @@ int sndTorp(struct torp_info_spacket *tpi, struct torp_spacket *tp,
 int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	      struct torp *t, int i, int howmuch)
 {
+    int tstatus = load_acquire(&t->t_status);
+
     /*
      * If it was free before, and is still, do nothing.   */
-    if ((t->t_status == TFREE) && (tpi->status == TFREE))
+    if ((tstatus == TFREE) && (tpi->status == TFREE))
 	return FALSE;
 
     if (howmuch == UPDT_ALL) {
-	if ((t->t_war != tpi->war) || (t->t_status != tpi->status)) {
+	if ((t->t_war != tpi->war) || (tstatus != tpi->status)) {
 	    tpi->type   = SP_PLASMA_INFO;
 	    tpi->war    = t->t_war;
-	    tpi->status = t->t_status;
+	    tpi->status = tstatus;
 	    tpi->pnum   = htons(i);
 	    sendClientPacket(tpi);
 /*	    return TRUE;*/
@@ -669,7 +674,7 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	tp->y    = htonl(t->t_y);
 	tp->pnum = htons(i);
 	sendClientPacket(tp);
-	if ( (t->t_status != tpi->status)
+	if ( (tstatus != tpi->status)
 	     || ((t->t_war & me->p_team) != tpi->war)) {
 	    tpi->type   = SP_PLASMA_INFO;
 	    tpi->war    = t->t_war & me->p_team;
@@ -679,12 +684,12 @@ int sndPlasma(struct plasma_info_spacket *tpi, struct plasma_spacket *tp,
 	    if (pingpong_plasma && (t->t_team & me->p_war))
 		tpi->war |= me->p_team;
 	    tpi->pnum   = htons(i);
-	    tpi->status = t->t_status;
+	    tpi->status = tstatus;
 	    sendClientPacket(tpi);
 	}
 	return TRUE;
     } else {
-	if ((t->t_status == TFREE) && (tpi->status == TEXPLODE)) {
+	if ((tstatus == TFREE) && (tpi->status == TEXPLODE)) {
 	    tpi->status = TFREE;
 	    return FALSE;
 	}
@@ -703,13 +708,15 @@ inline static int
 updtPhaser(struct phaser_spacket *ph, struct phaser *phase,
 	   int i, int howmuch)
 {
+    int phstatus = load_acquire(&phase->ph_status);
+
     if (howmuch == UPDT_ALL) {
-	if ( ph->status!=phase->ph_status
+	if ( ph->status!=phstatus
 	     || ph->dir!=phase->ph_dir
 	     || ph->target!=htonl(phase->ph_target)) {
 	    ph->pnum=i;
 	    ph->type=SP_PHASER;
-	    ph->status=phase->ph_status;
+	    ph->status=phstatus;
 	    ph->dir=phase->ph_dir;
 	    ph->x=htonl(phase->ph_x);
 	    ph->y=htonl(phase->ph_y);
@@ -1961,6 +1968,7 @@ void SupdateTorps(void)
 	tinfo = & clientVTorpsInfo[0];
 
 	for (i=0;  i<8;  i++, torp++, tpi++, tp++) {
+	    int tstatus;
 
 #if ((MAXPLAYER*MAXTORP) % 8 != 0)
 /* This normally wont test true..  But this will make the code more flexible,
@@ -1969,17 +1977,19 @@ void SupdateTorps(void)
 		break;
 #endif
 
+	    tstatus = load_acquire(&torp->t_status);
+
 	    if (torp->t_owner==me->p_no) {
 		/* With full weapon resolution, self torps sent via
 		   updateTorps */
 		if (F_full_weapon_resolution)
 		    continue;
 		if (torp->t_war!=tpi->war ||
-		    torp->t_status!=tpi->status) {
+		    tstatus!=tpi->status) {
 		    if (torp->t_war == tpi->war){
 			/* Don't send TMOVE/TFREE . It's encoded in
 			   the SP_S_TORP bitset. */
-			switch(torp->t_status){
+			switch(tstatus){
 			case TFREE:
 			    if (tpi->status == TEXPLODE){
 				/* Send real TFREE if torp exploded */
@@ -1987,11 +1997,11 @@ void SupdateTorps(void)
 				/* set bit for torp */
 				infobitset = infobitset | ( 01  << i);
 				*tinfo++ = ((u_char)tpi->war & 0x0f)
-				    | ((u_char) torp->t_status << 4);
+				    | ((u_char) tstatus << 4);
 			    }
 			    else
 				mustsend = 1;
-			    tpi->status=torp->t_status;
+			    tpi->status=tstatus;
 			    /* Don't forget... */
 			    tp->x=htonl(torp->t_x);
 			    tp->y=htonl(torp->t_y);
@@ -2000,10 +2010,10 @@ void SupdateTorps(void)
 			    continue; /* We continue , because server sends
 					 obsolete data otherwise */
 			case TMOVE:
-			    tpi->status=torp->t_status;
+			    tpi->status=tstatus;
 			    break;
 			default:
-			    tpi->status=torp->t_status;
+			    tpi->status=tstatus;
 			    /* set bit for torp */
 			    infobitset = infobitset | ( 01  << i);
 			    *tinfo++ = ((u_char)tpi->war & 0x0f)
@@ -2014,7 +2024,7 @@ void SupdateTorps(void)
 		    else {
 			tpi->war=torp->t_war;
 			/* set bit for torp */
-			tpi->status=torp->t_status;
+			tpi->status=tstatus;
 			infobitset = infobitset | ( 01  << i);
 			*tinfo++ = ((u_char)tpi->war & 0x0f)
 			    |((u_char) tpi->status << 4);
@@ -2023,7 +2033,7 @@ void SupdateTorps(void)
 		if ( tp->x!=htonl(torp->t_x)
 		     || tp->y!=htonl(torp->t_y)
 		     || ( (torp->t_gspeed == 0)
-			  && (torp->t_status != TFREE))) { /* Hadley */
+			  && (tstatus != TFREE))) { /* Hadley */
 		    tp->type=SP_TORP;
 		    tp->x=htonl(torp->t_x);
 		    tp->y=htonl(torp->t_y);
@@ -2081,8 +2091,8 @@ void SupdateTorps(void)
 		    torp->t_x > me->p_x + SCALE*WINSIDE/2 ||
 		    torp->t_x < me->p_x - SCALE*WINSIDE/2 ||
 		    torp->t_y < me->p_y - SCALE*WINSIDE/2 ||
-		    torp->t_status==TFREE) {
-		    if (torp->t_status==TFREE && tpi->status==TEXPLODE) {
+		    tstatus==TFREE) {
+		    if (tstatus==TFREE && tpi->status==TEXPLODE) {
 			tpi->status=TFREE;
 			continue;
 		    }
@@ -2091,16 +2101,16 @@ void SupdateTorps(void)
 			mustsend = 1;
 		    }
 		} else {	/* in view */
-		    if (torp->t_status!=tpi->status ||
+		    if (tstatus!=tpi->status ||
 			(torp->t_war & me->p_team)!=tpi->war) {
 			if ( (torp->t_war & me->p_team) == tpi->war){
 			    /* Don't send TMOVE/TFREE . It's encoded
 			       in the SP_S_TORP bitset. */
-			    switch(torp->t_status){
+			    switch(tstatus){
 			    case TFREE:
 				/* We continue , because server sends
 				   obsolete data otherwise */
-				tpi->status=torp->t_status;
+				tpi->status=tstatus;
 				mustsend = 1;
 				/* Don't forget... */
 				tp->x=htonl(torp->t_x);
@@ -2108,10 +2118,10 @@ void SupdateTorps(void)
 				tp->dir=torp->t_dir;
 				continue;
 			    case TMOVE:
-				tpi->status=torp->t_status;
+				tpi->status=tstatus;
 				break;				
 			    default:
-				tpi->status=torp->t_status; 
+				tpi->status=tstatus; 
 				infobitset = infobitset | ( 01  << i);   /* set bit for torp */
 				*tinfo++ = ((u_char)tpi->war & 0x0f)|((u_char) tpi->status << 4);
 				break;
@@ -2120,14 +2130,14 @@ void SupdateTorps(void)
 			else {
 			    /* Let the client fade away the explosion on its own */
 			    tpi->war=torp->t_war & me->p_team;
-			    tpi->status=torp->t_status;
+			    tpi->status=tstatus;
 			    infobitset = infobitset | ( 01  << i);   /* set bit for torp */
 			    *tinfo++ = ((u_char)tpi->war & 0x0f)|((u_char) tpi->status << 4);
 			}
 		    }
 		    if (tp->x!=htonl(torp->t_x) ||
 			tp->y!=htonl(torp->t_y) ||
-			(torp->t_gspeed == 0 && torp->t_status != TFREE)) {/*Hadley*/
+			(torp->t_gspeed == 0 && tstatus != TFREE)) {/*Hadley*/
 			tp->x=htonl(torp->t_x);
 			tp->y=htonl(torp->t_y);
 			tp->dir=torp->t_dir;
