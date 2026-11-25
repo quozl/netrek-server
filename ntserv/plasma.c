@@ -92,8 +92,8 @@ void nplasmatorp(u_char course, int attributes)
   }
 
   atomic_inc(&me->p_nplasmatorp);
-  me->p_fuel -= myship->s_plasmacost;
-  me->p_wtemp += (myship->s_plasmacost / 10) - 8;  /* Heat weapons */
+  atomic_sub(&me->p_fuel, myship->s_plasmacost);
+  atomic_add(&me->p_wtemp, (myship->s_plasmacost / 10) - 8);  /* Heat weapons */
 
   /* initialise the plasma, then set its status, as the daemon may move
      it at once */
