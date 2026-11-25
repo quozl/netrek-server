@@ -112,6 +112,7 @@ clean:
 	@cd sequencer; $(MAKE) clean
 	@cd keycomp;   $(MAKE) clean
 	@cd tests/unit; $(MAKE) clean
+	@cd tests/fuzz; $(MAKE) clean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
 	fi
@@ -126,6 +127,7 @@ reallyclean:
 	@cd sequencer; $(MAKE) reallyclean
 	@cd keycomp;   $(MAKE) reallyclean
 	@cd tests/unit; $(MAKE) reallyclean
+	@cd tests/fuzz; $(MAKE) reallyclean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
 		$(MAKE) reallyclean; \

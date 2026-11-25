@@ -96,6 +96,14 @@ jobs:
           ./configure --enable-sanitizers --prefix="$PWD/_inst"
           make -j"$(nproc)"
           make check
+          make -C tests/fuzz CC="${{ matrix.cc }}" check-corpus
+      - name: Short libFuzzer smoke test (Clang)
+        if: matrix.cc == 'clang'
+        run: |
+          make -C tests/fuzz CC=clang fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet
+          for t in fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet; do
+            ./tests/fuzz/$t tests/fuzz/corpus/$t -max_total_time=10
+          done
 
   shm-stress:
     name: SMP Shared-Memory Stress (${{ matrix.os }})
