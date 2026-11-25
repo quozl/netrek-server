@@ -593,8 +593,11 @@ void checkmess()
       buf[0]='\0';
       msg.m_flags ^= MDISTR;
       HandleGenDistr(msg.m_data,msg.m_from,msg.m_recpt,&dist);
-      size = makedistress(&dist,buf,distmacro[dist.distype].macro);
-      strncpy(msg.m_data,buf,size+1);
+      if (dist.distype > 0 && dist.distype < num_distress &&
+          distmacro[dist.distype].macro != NULL) {
+        size = makedistress(&dist,buf,distmacro[dist.distype].macro);
+        strncpy(msg.m_data,buf,size+1);
+      }
       logmessage(&(msg));
     } else {
       logmessage(&(messages[oldmctl]));
