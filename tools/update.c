@@ -227,7 +227,8 @@ int main(int argc, char **argv)
 			fprintf(stderr,"alias name needed\n");
 			exit(0);
 		    }
-		    strcpy(hostname, argv[c]);
+		    strncpy(hostname, argv[c], sizeof(hostname) - 1);
+		    hostname[sizeof(hostname) - 1] = '\0';
 		    break;
 		case 'p' :
 		    if (++c == argc) {
@@ -275,26 +276,35 @@ int main(int argc, char **argv)
 			    putc(c, keyfile);
 			fclose(keylocal);
 		    }
-		    while ((num_read = read(sock, buf, BUFSIZ)) != 0) {
+		    while ((num_read = read(sock, buf, BUFSIZ)) > 0) {
 			num_written = 0;
 			do {
-			    num_written += fwrite(buf + num_written, 
+			    size_t nw = fwrite(buf + num_written,
 					sizeof(*buf),
-					num_read - num_written,keyfile); 
+					num_read - num_written, keyfile);
+			    if (nw == 0) {
+				succeed = FALSE;
+				break;
+			    }
+			    num_written += nw;
 #ifdef DEBUG
 			    printf("Wrote %d bytes\n",num_written);
 #endif
 			} while (num_written < num_read);
+			if (!succeed) break;
 	            }
+		    if (num_read < 0) succeed = FALSE;
 		}
-		fflush(keyfile);
-	 	if (succeed) {
-		    succeed=FALSE;
-		    rewind(keyfile);
-		    while (fgets(buf,BUFSIZ,keyfile))
-			if (strstr(buf,"- end of list -")) succeed=TRUE;
+		if (keyfile != NULL) {
+		    fflush(keyfile);
+		    if (succeed) {
+			succeed=FALSE;
+			rewind(keyfile);
+			while (fgets(buf,BUFSIZ,keyfile))
+			    if (strstr(buf,"- end of list -")) succeed=TRUE;
+		    }
+		    fclose(keyfile);
 		}
-	        fclose(keyfile);
 	        close(sock);
 
 		if (succeed) {
@@ -339,12 +349,14 @@ int main(int argc, char **argv)
 		    if ((featurefile = fopen(Feature_File,"w+")) == NULL) {
 			ERROR(1,("Cannot open %s for output\n",Feature_File));
 		    } else {
-			while ((num_read = read(sock, buf, BUFSIZ)) != 0) {
+			while ((num_read = read(sock, buf, BUFSIZ)) > 0) {
                             num_written = 0;
                             do {
-				num_written += fwrite(buf + num_written,
+				size_t nw = fwrite(buf + num_written,
                                         sizeof(*buf),
-                                        num_read - num_written,featurefile);
+                                        num_read - num_written, featurefile);
+				if (nw == 0) break;
+				num_written += nw;
 #ifdef DEBUG
 				printf("Wrote %d bytes\n",num_written);
 #endif
