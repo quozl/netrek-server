@@ -8,6 +8,7 @@
 #include "data.h"
 #include "packets.h"
 #include "proto.h"
+#include "strutil.h"
 #include "test_harness.h"
 
 /* Minimal stubs for symbols referenced by warning.c / feature.c */
@@ -140,10 +141,45 @@ static void test_new_warning_long_message_no_overflow(void)
     ASSERT_EQ(g_last_warning[MSG_LEN - 1], '\0');
 }
 
+static void test_strutil_copy_and_appendf(void)
+{
+    char small[6];
+    char out[12];
+    size_t pos = 0;
+
+    ASSERT_EQ(netrek_strlcpy(small, "abc", sizeof(small)), 3);
+    ASSERT_STREQ(small, "abc");
+
+    ASSERT_EQ(netrek_strlcpy(small, "hello!", sizeof(small)), 6);
+    ASSERT_STREQ(small, "hello");
+
+    ASSERT_EQ(netrek_strlcpy(small, "", sizeof(small)), 0);
+    ASSERT_STREQ(small, "");
+
+    ASSERT_EQ(netrek_strlcpy(small, NULL, sizeof(small)), 0);
+    ASSERT_STREQ(small, "");
+
+    ASSERT_EQ(netrek_strlcpy(small, "ignored", 0), 7);
+
+    out[0] = '\0';
+    ASSERT_EQ(netrek_appendf(out, sizeof(out), &pos, "hi "), 0);
+    ASSERT_EQ(pos, 3);
+    ASSERT_EQ(netrek_appendf(out, sizeof(out), &pos, "%s", "netrek"), 0);
+    ASSERT_EQ(pos, 9);
+    ASSERT_STREQ(out, "hi netrek");
+    ASSERT_EQ(netrek_appendf(out, sizeof(out), &pos, "12"), 0);
+    ASSERT_EQ(pos, 11);
+    ASSERT_STREQ(out, "hi netrek12");
+    ASSERT_EQ(netrek_appendf(out, sizeof(out), &pos, "overflow"), -1);
+    ASSERT_EQ(pos, sizeof(out) - 1);
+    ASSERT_EQ(out[sizeof(out) - 1], '\0');
+}
+
 int main(void)
 {
     RUN_TEST(test_feature_parser_and_lookup);
     RUN_TEST(test_bans_check_permanent_overflow_and_hits_reset);
     RUN_TEST(test_new_warning_long_message_no_overflow);
+    RUN_TEST(test_strutil_copy_and_appendf);
     TEST_SUMMARY("test_parsers");
 }

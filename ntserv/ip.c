@@ -260,115 +260,171 @@ int flag_test_cidr(char *name, char *ip)
     return 0;
 }
 
-static char name[256];
-
-static char *name_etc(char *prefix, char *ip)
+static int valid_path_component(const char *s)
 {
-  snprintf(name, 255, "%s/ip/%s/%s", SYSCONFDIR, prefix, ip);
-  return name;
+  if (s == NULL)
+    return 0;
+  if (strchr(s, '/') != NULL)
+    return 0;
+  if (strstr(s, "..") != NULL)
+    return 0;
+  return 1;
 }
 
-static char *name_var(char *prefix, char *ip)
+static int build_etc_path(char *dst, size_t size,
+                          const char *prefix, const char *ip)
 {
-  snprintf(name, 255, "%s/ip/%s/%s", LOCALSTATEDIR, prefix, ip);
-  return name;
+  int n;
+  if (!valid_path_component(ip))
+    return 0;
+  n = snprintf(dst, size, "%s/ip/%s/%s", SYSCONFDIR, prefix, ip);
+  return n >= 0 && (size_t) n < size;
+}
+
+static int build_var_path(char *dst, size_t size,
+                          const char *prefix, const char *ip)
+{
+  int n;
+  if (!valid_path_component(ip))
+    return 0;
+  n = snprintf(dst, size, "%s/ip/%s/%s", LOCALSTATEDIR, prefix, ip);
+  return n >= 0 && (size_t) n < size;
 }
 
 /* denied parties list, whether to drop connection in newstartd */
 int ip_deny(char *ip) {
-    return flag_test_cidr(name_etc("deny", ""), ip);
+    char path[256];
+    if (!build_etc_path(path, sizeof(path), "deny", "")) return 0;
+    return flag_test_cidr(path, ip);
 }
 
 /* denied parties list, add to, as a critical defense measure */
 void ip_deny_set(char *ip) {
-  flag_set(name_etc("deny", ip));
+  char path[256];
+  if (!build_etc_path(path, sizeof(path), "deny", ip)) return;
+  flag_set(path);
 }
 
 /* whitelist, whether to trust user more */
 int ip_whitelisted(char *ip) {
-  return flag_test_cidr(name_etc("whitelist", ""), ip);
+  char path[256];
+  if (!build_etc_path(path, sizeof(path), "whitelist", "")) return 0;
+  return flag_test_cidr(path, ip);
 }
 
 /* hide, whether to hide ip address and host name */
 int ip_hide(char *ip) {
-  return flag_test_cidr(name_etc("hide", ""), ip);
+  char path[256];
+  if (!build_etc_path(path, sizeof(path), "hide", "")) return 0;
+  return flag_test_cidr(path, ip);
 }
 
 /* duplicates, whether to allow multiple connections from this ip */
 int ip_duplicates(char *ip) {
-  return flag_test_cidr(name_etc("duplicates", ""), ip);
+  char path[256];
+  if (!build_etc_path(path, sizeof(path), "duplicates", "")) return 0;
+  return flag_test_cidr(path, ip);
 }
 
 /* duplicates, allow them */
 void ip_duplicates_set(char *ip) {
-  flag_set(name_etc("duplicates", ip));
+  char path[256];
+  if (!build_etc_path(path, sizeof(path), "duplicates", ip)) return;
+  flag_set(path);
 }
 
 /* duplicates, deny them */
 void ip_duplicates_clear(char *ip) {
-  flag_clear(name_etc("duplicates", ip));
+  char path[256];
+  if (!build_etc_path(path, sizeof(path), "duplicates", ip)) return;
+  flag_clear(path);
 }
 
 /* global mute, default others :ita to individual, team and all ignore */
 int ip_mute(char *ip) {
+  char path[256];
   if (ip == NULL || ip[0] == '\0') return 0;
-  return flag_test_cidr(name_etc("mute", ""), ip);
+  if (!build_etc_path(path, sizeof(path), "mute", "")) return 0;
+  return flag_test_cidr(path, ip);
 }
 
 /* prevent user from sending messages to all, aka global :a */
 int ip_muteall(char *ip) {
+    char path[256];
     if (ip == NULL || ip[0] == '\0') return 0;
-    return flag_test_cidr(name_etc("muteall", ""), ip);
+    if (!build_etc_path(path, sizeof(path), "muteall", "")) return 0;
+    return flag_test_cidr(path, ip);
 }
 
 /* global ignore, default others :ita to individual ignore */
 int ip_ignore(char *ip) {
+  char path[256];
   if (ip == NULL || ip[0] == '\0') return 0;
-  return flag_test_cidr(name_etc("ignore", ""), ip);
+  if (!build_etc_path(path, sizeof(path), "ignore", "")) return 0;
+  return flag_test_cidr(path, ip);
 }
 
 /* saved doosh message ignore state */
 
 int ip_ignore_doosh(char *ip) {
-  return flag_test(name_var("ignore/doosh", ip));
+  char path[256];
+  if (!build_var_path(path, sizeof(path), "ignore/doosh", ip)) return 0;
+  return flag_test(path);
 }
 
 void ip_ignore_doosh_set(char *ip) {
-  flag_set(name_var("ignore/doosh", ip));
+  char path[256];
+  if (!build_var_path(path, sizeof(path), "ignore/doosh", ip)) return;
+  flag_set(path);
 }
 
 void ip_ignore_doosh_clear(char *ip) {
-  flag_clear(name_var("ignore/doosh", ip));
+  char path[256];
+  if (!build_var_path(path, sizeof(path), "ignore/doosh", ip)) return;
+  flag_clear(path);
 }
 
 /* saved multiline macro ignore state */
 
 int ip_ignore_multi(char *ip) {
-  return flag_test(name_var("ignore/multi", ip));
+  char path[256];
+  if (!build_var_path(path, sizeof(path), "ignore/multi", ip)) return 0;
+  return flag_test(path);
 }
 
 void ip_ignore_multi_set(char *ip) {
-  flag_set(name_var("ignore/multi", ip));
+  char path[256];
+  if (!build_var_path(path, sizeof(path), "ignore/multi", ip)) return;
+  flag_set(path);
 }
 
 void ip_ignore_multi_clear(char *ip) {
-  flag_clear(name_var("ignore/multi", ip));
+  char path[256];
+  if (!build_var_path(path, sizeof(path), "ignore/multi", ip)) return;
+  flag_clear(path);
 }
 
 /* saved ignore state by ip address of both parties */
 
-static char *ip_ignore_ip_name(char *us, char *them) {
-  snprintf(name, 255, "%s/ip/%s/%s-%s", 
-           LOCALSTATEDIR, "ignore/by-ip", us, them);
-  return name;
+static int build_ignore_ip_path(char *dst, size_t size,
+                                const char *us, const char *them)
+{
+  int n;
+  if (!valid_path_component(us) || !valid_path_component(them) ||
+      us[0] == '\0' || them[0] == '\0')
+    return 0;
+  n = snprintf(dst, size, "%s/ip/%s/%s-%s",
+               LOCALSTATEDIR, "ignore/by-ip", us, them);
+  return n >= 0 && (size_t) n < size;
 }
 
 /* check saved ignore state */
 int ip_ignore_ip(char *us, char *them) {
+  char path[256];
   if (us == NULL) return 0;
   if (them == NULL) return 0;
-  char *name = ip_ignore_ip_name(us, them);
-  FILE *file = fopen(name, "r");
+  if (!build_ignore_ip_path(path, sizeof(path), us, them)) return 0;
+  FILE *file = fopen(path, "r");
   int mask = 0;
   if (file == NULL) return mask;
   if (fscanf(file, "%d\n", &mask) == EOF)
@@ -380,8 +436,10 @@ int ip_ignore_ip(char *us, char *them) {
 
 /* update saved ignore state */
 void ip_ignore_ip_update(char *us, char *them, int mask) {
-  char *name = ip_ignore_ip_name(us, them);
-  FILE *file = fopen(name, "w");
+  char path[256];
+  if (us == NULL || them == NULL) return;
+  if (!build_ignore_ip_path(path, sizeof(path), us, them)) return;
+  FILE *file = fopen(path, "w");
   if (file == NULL) return;
   fprintf(file, "%d\n", mask);
   fclose(file);

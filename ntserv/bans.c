@@ -13,6 +13,7 @@
 #include "struct.h"
 #include "data.h"
 #include "blog.h"
+#include "strutil.h"
 
 /*! @brief Add a ban given a player slot number.
     @details Adds a temporary ban to the next empty slot in the list
@@ -28,7 +29,7 @@ int bans_add_temporary_by_player(int who, char *by)
   for (i=0; i<MAXBANS; i++) {
     struct ban *b = &bans[i];
     if (b->b_remain == 0) {
-      strcpy(b->b_ip, j->p_ip);
+      netrek_strlcpy(b->b_ip, j->p_ip, sizeof(b->b_ip));
       b->b_remain = ban_vote_duration;
       ERROR(2,( "ban of %s was voted\n", b->b_ip));
       blog_printf("bans", "%s banned\n\nThe player on IP address %s "

@@ -21,6 +21,8 @@
 #endif
 #include <string.h>
 #include <dirent.h>
+#include <errno.h>
+#include <sys/wait.h>
 
 #include "defs.h"
 #include "struct.h"
@@ -1114,8 +1116,10 @@ void do_be(char *comm, struct message *mess)
     me->p_status = PFREE;
     me = be;
     me->p_no = pno;
-    sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);
-    sprintf(me->p_longname, "%s (%s)", me->p_name, me->p_mapchars);
+    snprintf(me->p_mapchars, sizeof(me->p_mapchars), "%c%c",
+             teamlet[me->p_team], shipnos[me->p_no]);
+    snprintf(me->p_longname, sizeof(me->p_longname), "%s (%s)",
+             me->p_name, me->p_mapchars);
     updateSelf(1);
 }
 
@@ -1427,16 +1431,48 @@ void do_transwarp(char *comm, struct message *mess)
   }
 }
 
-static void toolf(char *cmd, const char *fmt, ...) {
-  char buf[256];
-  va_list args;
+static int run_program(const char *path, char *const argv[])
+{
+  pid_t pid;
+  int status;
 
-  va_start(args, fmt);
-  sprintf(buf, "%s/tools/admin/%s ", LIBDIR, cmd);
-  vsprintf(buf+strlen(buf), fmt, args);
-  va_end(args);
-  if (system(buf) == -1)
-    perror("toolf: system");
+  pid = fork();
+  if (pid < 0) {
+    perror("run_program: fork");
+    return -1;
+  }
+  if (pid == 0) {
+    execv(path, argv);
+    _exit(127);
+  }
+  while (waitpid(pid, &status, 0) < 0) {
+    if (errno != EINTR) {
+      perror("run_program: waitpid");
+      return -1;
+    }
+  }
+  if (!WIFEXITED(status))
+    return -1;
+  return WEXITSTATUS(status);
+}
+
+static void run_admin_tool(const char *cmd, char *const args[], int nargs)
+{
+  char path[256];
+  char *argv[8];
+  int i, n;
+
+  if (nargs < 0 || nargs > 6)
+    return;
+  n = snprintf(path, sizeof(path), "%s/tools/admin/%s", LIBDIR, cmd);
+  if (n < 0 || (size_t) n >= sizeof(path))
+    return;
+
+  argv[0] = path;
+  for (i = 0; i < nargs; i++)
+    argv[i + 1] = args[i];
+  argv[nargs + 1] = NULL;
+  (void) run_program(path, argv);
 }
 
 void do_admin(char *comm, struct message *mess)
@@ -1546,26 +1582,36 @@ void do_admin(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "admin: erm, send 'em a \"mute on\"");
   } else if (!strcmp(one, "quit")) {
     if (them == NULL) return;
-    toolf("quit", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
+    char slot_arg[2] = { them->p_mapchars[1], '\0' };
+    char *args[2] = { p->p_full_hostname, slot_arg };
+    run_admin_tool("quit", args, 2);
     pmessage(who, MINDIV, addr, "admin: player %s forced to quit.", two);
   } else if (!strcmp(one, "kill")) {
     if (them == NULL) return;
-    toolf("kill", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
+    char slot_arg[2] = { them->p_mapchars[1], '\0' };
+    char *args[2] = { p->p_full_hostname, slot_arg };
+    run_admin_tool("kill", args, 2);
     pmessage(who, MINDIV, addr, "admin: player %s killed.", two);
   } else if (!strcmp(one, "free")) {
     if (them == NULL) return;
-    toolf("free", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
+    char slot_arg[2] = { them->p_mapchars[1], '\0' };
+    char *args[2] = { p->p_full_hostname, slot_arg };
+    run_admin_tool("free", args, 2);
     pmessage(who, MINDIV, addr, "admin: player %s free-ed.", two);
   } else if (!strcmp(one, "ban")) {
     if (them == NULL) return;
-    toolf("ban", "%s %s %s", p->p_full_hostname, them->p_ip,
-          them->p_full_hostname);
+    char *args[3] = { p->p_full_hostname, them->p_ip, them->p_full_hostname };
+    run_admin_tool("ban", args, 3);
     pmessage(who, MINDIV, addr, "admin: player %s banned.", two);
   } else if (!strcmp(one, "reset")) {
-    toolf("reset", "%s t", p->p_full_hostname);
+    char mode_arg[2] = "t";
+    char *args[2] = { p->p_full_hostname, mode_arg };
+    run_admin_tool("reset", args, 2);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
   } else if (!strcmp(one, "dfreset")) {
-    toolf("reset", "%s d", p->p_full_hostname);
+    char mode_arg[2] = "d";
+    char *args[2] = { p->p_full_hostname, mode_arg };
+    run_admin_tool("reset", args, 2);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset for df'ing.");
   } else if (!strcmp(one, "exec")) {
     if (!adminexec)
@@ -1593,7 +1639,8 @@ void do_register(char *comm, struct message *mess)
   struct player *p = &players[who];
   char *addr = addr_mess(who,MINDIV);
   extern char *registered_users_name, *registered_users_pass;
-  char *one, *two, filename[64], command[128];
+  char *one, *two, filename[64];
+  char *argv[3];
   FILE *file;
   int status;
 
@@ -1633,7 +1680,7 @@ void do_register(char *comm, struct message *mess)
     return;
   }
 
-  sprintf(filename, "user-requests/%d", p->p_no);
+  snprintf(filename, sizeof(filename), "user-requests/%d", p->p_no);
   file = fopen(filename, "a");
   if (file == NULL) {
     pmessage(who, MINDIV, addr, "Registration refused.");
@@ -1648,8 +1695,10 @@ void do_register(char *comm, struct message *mess)
     return;
   }
 
-  sprintf(command, "tools/register %s", filename);
-  status = system(command);
+  argv[0] = "tools/register";
+  argv[1] = filename;
+  argv[2] = NULL;
+  status = run_program("tools/register", argv);
   if (status != 0) {
     pmessage(who, MINDIV, addr, "Registration could not be processed.");
     return;

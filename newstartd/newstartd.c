@@ -31,6 +31,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <poll.h>
 #include <sys/file.h>
 
 #include "defs.h"
@@ -38,6 +39,7 @@
 #include "data.h"
 #include "proto.h"
 #include "ip.h"
+#include "strutil.h"
 #define MVERS
 #include "version.h"
 #include "patchlevel.h"
@@ -330,8 +332,10 @@ static int get_connection(struct sockaddr_in *peer)
 {
   struct sockaddr_in addr;
   socklen_t addrlen;
-  fd_set accept_fds;
-  int i, st, newsock;
+  struct pollfd pfds[MAXPROG];
+  int pmap[MAXPROG];
+  nfds_t nfds;
+  int i, sock, st, newsock;
 
   int foo = 1;
 
@@ -415,45 +419,44 @@ static int get_connection(struct sockaddr_in *peer)
   /* stage two; wait for a connection on the listening sockets */
 
   for (;;) {				/* wait for a connection */
-    int maxfd = -1;
-    st = 0;
-
-    FD_ZERO(&accept_fds);		/* clear the file descriptor mask */
-    for (i = 0; i < num_progs; i++) {	/* set bits in mask for each sock */
+    nfds = 0;
+    for (i = 0; i < num_progs; i++) {
       sock = prog[i].sock;
-      if (sock < 0 || sock >= FD_SETSIZE) continue;
-      if (prog[i].type == SOCK_STREAM) {
-	FD_SET(sock, &accept_fds);
-	if (sock > maxfd) maxfd = sock;
-	st++;
-      } else if (prog[i].type == SOCK_DGRAM && prog[i].child == 0) {
-	FD_SET(sock, &accept_fds);
-	if (sock > maxfd) maxfd = sock;
-	st++;
+      if (sock < 0) continue;
+      if (prog[i].type == SOCK_STREAM ||
+          (prog[i].type == SOCK_DGRAM && prog[i].child == 0)) {
+        pfds[nfds].fd = sock;
+        pfds[nfds].events = POLLIN;
+        pfds[nfds].revents = 0;
+        pmap[nfds] = i;
+        nfds++;
       }
     }
 
     /* paranoia, it could be possible that we have no sockets ready */
-    if (st == 0) {
+    if (nfds == 0) {
       fprintf(stderr, "netrekd: paranoia, no sockets to listen for\n");
       sleep(1);
       return -1;
     }
 
-    /* block until select() indicates accept() will complete */
-    st = select(maxfd + 1, &accept_fds, 0, 0, 0);
+    /* block until poll() indicates accept() will complete */
+    st = poll(pfds, nfds, -1);
     if (st > 0) break;
     if (restart) return -1;
     if (errno == EINTR) continue;
-    perror("select");
+    perror("poll");
     sleep(1);
   }
 
-  /* find one socket in mask that shows activity */
-  for (i = 0; i < num_progs; i++) {
-    sock = prog[i].sock;
-    if (sock < 0) continue;
-    if (FD_ISSET(sock, &accept_fds)) break;
+  /* find one socket that shows activity */
+  i = num_progs;
+  for (nfds_t k = 0; k < nfds; k++) {
+    if (pfds[k].revents & (POLLIN | POLLERR | POLLHUP)) {
+      i = pmap[k];
+      sock = pfds[k].fd;
+      break;
+    }
   }
 
   /* none of the sockets showed activity? erk */
@@ -568,9 +571,9 @@ static void process (int port_idx, char *ip)
     char logname[BUFSIZ];
 
     time (&curtime);
-    sprintf (logname, "       %-32.32s %s",
-	     ip,
-	     ctime(&curtime));
+    snprintf (logname, sizeof(logname), "       %-32.32s %s",
+              ip,
+              ctime(&curtime));
     if (write (fd, logname, strlen(logname)) == -1)
       perror("process: log write");
     close (fd);
@@ -859,8 +862,8 @@ static int read_portfile (char *portfile)
 
   /* if the .ports file is empty, at least open the standard port */
   if (!i) {
-    strcpy (prog[0].prog, Prog);
-    strcpy (prog[0].progname, Prog);
+    netrek_strlcpy (prog[0].prog, Prog, sizeof(prog[0].prog));
+    netrek_strlcpy (prog[0].progname, Prog, sizeof(prog[0].progname));
     prog[0].addr = INADDR_ANY;
     prog[0].port = PORT;
     prog[0].type = SOCK_STREAM;

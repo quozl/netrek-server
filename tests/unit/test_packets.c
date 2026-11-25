@@ -323,6 +323,51 @@ static void test_send_motd_line_wrap(void)
     ASSERT_EQ(clientDead, 0);
 }
 
+static void test_packet_allowed_in_state(void)
+{
+    fd_set full_mask;
+    struct player p;
+    struct stats st;
+    int i;
+
+    FD_ZERO(&full_mask);
+    for (i = 1; i < 64; i++)
+        FD_SET(i, &full_mask);
+
+    /* Pre-login (p == NULL): only handshake/goodbye/feature packets allowed,
+       even if all bits of mask are set */
+    ASSERT_EQ(packet_allowed_in_state(CP_SOCKET, NULL, NULL, &full_mask), 1);
+    ASSERT_EQ(packet_allowed_in_state(CP_BYE, NULL, NULL, &full_mask), 1);
+    ASSERT_EQ(packet_allowed_in_state(CP_FEATURE, NULL, NULL, &full_mask), 1);
+    ASSERT_EQ(packet_allowed_in_state(CP_SPEED, NULL, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_DIRECTION, NULL, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_TORP, NULL, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_RESETSTATS, NULL, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_OPTIONS, NULL, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_PLANET, NULL, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_PING_RESPONSE, NULL, NULL, &full_mask), 0);
+
+    /* p != NULL, st == NULL: stats-requiring handlers are rejected */
+    memset(&p, 0, sizeof(p));
+    memset(&st, 0, sizeof(st));
+    p.p_status = PALIVE;
+    ASSERT_EQ(packet_allowed_in_state(CP_RESETSTATS, &p, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_OPTIONS, &p, NULL, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_UPDATES, &p, NULL, &full_mask), 1);
+    ASSERT_EQ(packet_allowed_in_state(CP_FEATURE, &p, NULL, &full_mask), 1);
+
+    /* PFWAR / PFREFITTING / PFTWARP block gameplay packets but allow PKT_ALWAYS */
+    p.p_flags = PFWAR;
+    ASSERT_EQ(packet_allowed_in_state(CP_TORP, &p, &st, &full_mask), 0);
+    ASSERT_EQ(packet_allowed_in_state(CP_UPDATES, &p, &st, &full_mask), 1);
+    ASSERT_EQ(packet_allowed_in_state(CP_PING_RESPONSE, &p, &st, &full_mask), 1);
+    ASSERT_EQ(packet_allowed_in_state(CP_RESETSTATS, &p, &st, &full_mask), 1);
+
+    /* Observers respect mask even if PFWAR is set */
+    p.p_status = POBSERV;
+    ASSERT_EQ(packet_allowed_in_state(CP_TORP, &p, &st, &full_mask), 1);
+}
+
 int main(void)
 {
     RUN_TEST(test_prelogin_null_me_packets);
@@ -330,5 +375,6 @@ int main(void)
     RUN_TEST(test_truncated_udp_datagram_does_not_block);
     RUN_TEST(test_ping_loss_extremes);
     RUN_TEST(test_send_motd_line_wrap);
+    RUN_TEST(test_packet_allowed_in_state);
     TEST_SUMMARY("test_packets");
 }

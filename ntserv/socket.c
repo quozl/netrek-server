@@ -134,96 +134,139 @@ static int parseIgnore(struct mesg_cpacket *packet);
 static int check_mesgs(struct mesg_cpacket  *packet);
 static void check_clue(struct mesg_cpacket  *packet);
 
+enum pkt_handler_flags {
+    PKT_NONE             = 0,
+    PKT_ALWAYS           = (1u << 0),
+    PKT_ALLOW_PRELOGIN   = (1u << 1),
+    PKT_REQUIRES_MYSTATS = (1u << 2),
+    PKT_KEEP_SELFDEST    = (1u << 3)
+};
+
 struct packet_handler {
     int size;
     void (*handler)(char *);
+    unsigned int flags;
 };
 
 struct packet_handler handlers[] = {
-    { 0, NULL },		/* record 0 */
-    { sizeof(struct mesg_cpacket), (void (*)(char *)) handleMessageReq },	   /* CP_MESSAGE */
-    { sizeof(struct speed_cpacket), (void (*)(char *)) handleSpeedReq },	   /* CP_SPEED */
-    { sizeof(struct dir_cpacket), (void (*)(char *)) handleDirReq },	   /* CP_DIRECTION */
-    { sizeof(struct phaser_cpacket), (void (*)(char *)) handlePhasReq },	   /* CP_PHASER */
-    { sizeof(struct plasma_cpacket), (void (*)(char *)) handlePlasmaReq },	   /* CP_PLASMA */
-    { sizeof(struct torp_cpacket), (void (*)(char *)) handleTorpReq },	   /* CP_TORP */
-    { sizeof(struct quit_cpacket), (void (*)(char *)) handleQuitReq },	   /* CP_QUIT */
-    { sizeof(struct login_cpacket), (void (*)(char *)) handleLoginReq },	   /* CP_LOGIN */
-    { sizeof(struct outfit_cpacket), (void (*)(char *)) handleOutfit },	   /* CP_OUTFIT */
-    { sizeof(struct war_cpacket), (void (*)(char *)) handleWarReq },	   /* CP_WAR */
-    { sizeof(struct practr_cpacket), (void (*)(char *)) handlePractrReq },	   /* CP_PRACTR */
-    { sizeof(struct shield_cpacket), (void (*)(char *)) handleShieldReq },	   /* CP_SHIELD */
-    { sizeof(struct repair_cpacket), (void (*)(char *)) handleRepairReq },	   /* CP_REPAIR */
-    { sizeof(struct orbit_cpacket), (void (*)(char *)) handleOrbitReq },	   /* CP_ORBIT */
-    { sizeof(struct planlock_cpacket), (void (*)(char *)) handlePlanlockReq },/* CP_PLANLOCK */
-    { sizeof(struct playlock_cpacket), (void (*)(char *)) handlePlaylockReq },/* CP_PLAYLOCK */
-    { sizeof(struct bomb_cpacket), (void (*)(char *)) handleBombReq },	   /* CP_BOMB */
-    { sizeof(struct beam_cpacket), (void (*)(char *)) handleBeamReq },	   /* CP_BEAM */
-    { sizeof(struct cloak_cpacket), (void (*)(char *)) handleCloakReq },	   /* CP_CLOAK */
-    { sizeof(struct det_torps_cpacket), (void (*)(char *)) handleDetTReq },   /* CP_DET_TORPS */
-    { sizeof(struct det_mytorp_cpacket), (void (*)(char *)) handleDetMReq },  /* CP_DET_MYTORP */
-    { sizeof(struct copilot_cpacket), (void (*)(char *)) handleCopilotReq },  /* CP_COPLIOT */
-    { sizeof(struct refit_cpacket), (void (*)(char *)) handleRefitReq }, 	   /* CP_REFIT */
-    { sizeof(struct tractor_cpacket), (void (*)(char *)) handleTractorReq },  /* CP_TRACTOR */
-    { sizeof(struct repress_cpacket), (void (*)(char *)) handleRepressReq },  /* CP_REPRESS */
-    { sizeof(struct coup_cpacket), (void (*)(char *)) handleCoupReq },	   /* CP_COUP */
-    { sizeof(struct socket_cpacket), (void (*)(char *)) handleSocketReq },	   /* CP_SOCKET */
-    { sizeof(struct options_cpacket), (void (*)(char *)) handleOptionsPacket },/* CP_OPTIONS */
-    { sizeof(struct bye_cpacket), (void (*)(char *)) handleByeReq },	   /* CP_BYE */
-    { sizeof(struct dockperm_cpacket), (void (*)(char *)) handleDockingReq }, /* CP_DOCKPERM */
-    { sizeof(struct updates_cpacket), (void (*)(char *)) handleUpdatesReq 	}, /* CP_UPDATES */
-    { sizeof(struct resetstats_cpacket), (void (*)(char *)) handleReset },    /* CP_RESETSTATS */
-    { sizeof(struct reserved_cpacket), (void (*)(char *)) handleReserved },   /* CP_RESERVED */
-    { sizeof(struct scan_cpacket), (void (*)(char *)) handleScan },	   /* CP_SCAN (ATM) */
-    { sizeof(struct udp_req_cpacket), (void (*)(char *)) handleUdpReq },	   /* CP_UDP_REQ */
-    { sizeof(struct sequence_cpacket), (void (*)(char *)) handleSequence },   /* CP_SEQUENCE */
+    { 0, NULL, PKT_NONE },		/* record 0 */
+#ifdef MESSAGES_ALL_TIME
+    { sizeof(struct mesg_cpacket), (void (*)(char *)) handleMessageReq, PKT_ALWAYS },	   /* CP_MESSAGE */
+#else
+    { sizeof(struct mesg_cpacket), (void (*)(char *)) handleMessageReq, PKT_NONE },	   /* CP_MESSAGE */
+#endif
+    { sizeof(struct speed_cpacket), (void (*)(char *)) handleSpeedReq, PKT_NONE },	   /* CP_SPEED */
+    { sizeof(struct dir_cpacket), (void (*)(char *)) handleDirReq, PKT_NONE },	   /* CP_DIRECTION */
+    { sizeof(struct phaser_cpacket), (void (*)(char *)) handlePhasReq, PKT_NONE },	   /* CP_PHASER */
+    { sizeof(struct plasma_cpacket), (void (*)(char *)) handlePlasmaReq, PKT_NONE },	   /* CP_PLASMA */
+    { sizeof(struct torp_cpacket), (void (*)(char *)) handleTorpReq, PKT_NONE },	   /* CP_TORP */
+    { sizeof(struct quit_cpacket), (void (*)(char *)) handleQuitReq, PKT_NONE },	   /* CP_QUIT */
+    { sizeof(struct login_cpacket), (void (*)(char *)) handleLoginReq, PKT_NONE },	   /* CP_LOGIN */
+    { sizeof(struct outfit_cpacket), (void (*)(char *)) handleOutfit, PKT_NONE },	   /* CP_OUTFIT */
+    { sizeof(struct war_cpacket), (void (*)(char *)) handleWarReq, PKT_NONE },	   /* CP_WAR */
+    { sizeof(struct practr_cpacket), (void (*)(char *)) handlePractrReq, PKT_NONE },	   /* CP_PRACTR */
+    { sizeof(struct shield_cpacket), (void (*)(char *)) handleShieldReq, PKT_NONE },	   /* CP_SHIELD */
+    { sizeof(struct repair_cpacket), (void (*)(char *)) handleRepairReq, PKT_NONE },	   /* CP_REPAIR */
+    { sizeof(struct orbit_cpacket), (void (*)(char *)) handleOrbitReq, PKT_NONE },	   /* CP_ORBIT */
+    { sizeof(struct planlock_cpacket), (void (*)(char *)) handlePlanlockReq, PKT_NONE },/* CP_PLANLOCK */
+    { sizeof(struct playlock_cpacket), (void (*)(char *)) handlePlaylockReq, PKT_NONE },/* CP_PLAYLOCK */
+    { sizeof(struct bomb_cpacket), (void (*)(char *)) handleBombReq, PKT_NONE },	   /* CP_BOMB */
+    { sizeof(struct beam_cpacket), (void (*)(char *)) handleBeamReq, PKT_NONE },	   /* CP_BEAM */
+    { sizeof(struct cloak_cpacket), (void (*)(char *)) handleCloakReq, PKT_NONE },	   /* CP_CLOAK */
+    { sizeof(struct det_torps_cpacket), (void (*)(char *)) handleDetTReq, PKT_NONE },   /* CP_DET_TORPS */
+    { sizeof(struct det_mytorp_cpacket), (void (*)(char *)) handleDetMReq, PKT_NONE },  /* CP_DET_MYTORP */
+    { sizeof(struct copilot_cpacket), (void (*)(char *)) handleCopilotReq, PKT_NONE },  /* CP_COPLIOT */
+    { sizeof(struct refit_cpacket), (void (*)(char *)) handleRefitReq, PKT_NONE }, 	   /* CP_REFIT */
+    { sizeof(struct tractor_cpacket), (void (*)(char *)) handleTractorReq, PKT_NONE },  /* CP_TRACTOR */
+    { sizeof(struct repress_cpacket), (void (*)(char *)) handleRepressReq, PKT_NONE },  /* CP_REPRESS */
+    { sizeof(struct coup_cpacket), (void (*)(char *)) handleCoupReq, PKT_NONE },	   /* CP_COUP */
+    { sizeof(struct socket_cpacket), (void (*)(char *)) handleSocketReq, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_SOCKET */
+    { sizeof(struct options_cpacket), (void (*)(char *)) handleOptionsPacket, PKT_ALWAYS | PKT_REQUIRES_MYSTATS },/* CP_OPTIONS */
+    { sizeof(struct bye_cpacket), (void (*)(char *)) handleByeReq, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_BYE */
+    { sizeof(struct dockperm_cpacket), (void (*)(char *)) handleDockingReq, PKT_NONE }, /* CP_DOCKPERM */
+    { sizeof(struct updates_cpacket), (void (*)(char *)) handleUpdatesReq, PKT_ALWAYS }, /* CP_UPDATES */
+    { sizeof(struct resetstats_cpacket), (void (*)(char *)) handleReset, PKT_ALWAYS | PKT_REQUIRES_MYSTATS },    /* CP_RESETSTATS */
+    { sizeof(struct reserved_cpacket), (void (*)(char *)) handleReserved, PKT_ALWAYS },   /* CP_RESERVED */
+    { sizeof(struct scan_cpacket), (void (*)(char *)) handleScan, PKT_NONE },	   /* CP_SCAN (ATM) */
+    { sizeof(struct udp_req_cpacket), (void (*)(char *)) handleUdpReq, PKT_NONE },	   /* CP_UDP_REQ */
+    { sizeof(struct sequence_cpacket), (void (*)(char *)) handleSequence, PKT_NONE },   /* CP_SEQUENCE */
 #ifdef RSA
-    { sizeof(struct rsa_key_cpacket), (void (*)(char *)) handleRSAKey },	   /* CP_RSA_KEY */
+    { sizeof(struct rsa_key_cpacket), (void (*)(char *)) handleRSAKey, PKT_ALWAYS },	   /* CP_RSA_KEY */
 #else
-    { 0, NULL },					   /* 37 */
+    { 0, NULL, PKT_NONE },					   /* 37 */
 #endif
-    { sizeof(struct planet_cpacket), (void (*)(char *)) handlePlanReq },	   /* CP_PLANET */
-    { 0, NULL },					   /* 39 */
-    { 0, NULL },					   /* 40 */
-    { 0, NULL },					   /* 41 */
-    { sizeof(struct ping_cpacket), (void (*)(char *)) handlePingResponse },   /* CP_PING_RESPONSE*/
-    { sizeof(struct shortreq_cpacket), (void (*)(char *)) handleShortReq },   /* CP_S_REQ */
-    { sizeof(struct threshold_cpacket), (void (*)(char *)) handleThresh },    /* CP_S_THRS */
-    { -1, (void (*)(char *)) handleSMessageReq},                              /* CP_S_MESSAGE */
-    { 0, NULL },					   /* 46 */
-    { 0, NULL },					   /* 47 */
-    { 0, NULL },					   /* 48 */
-    { 0, NULL },					   /* 49 */
+    { sizeof(struct planet_cpacket), (void (*)(char *)) handlePlanReq, PKT_KEEP_SELFDEST },	   /* CP_PLANET */
+    { 0, NULL, PKT_NONE },					   /* 39 */
+    { 0, NULL, PKT_NONE },					   /* 40 */
+    { 0, NULL, PKT_NONE },					   /* 41 */
+    { sizeof(struct ping_cpacket), (void (*)(char *)) handlePingResponse, PKT_ALWAYS | PKT_KEEP_SELFDEST },   /* CP_PING_RESPONSE*/
+    { sizeof(struct shortreq_cpacket), (void (*)(char *)) handleShortReq, PKT_NONE },   /* CP_S_REQ */
+    { sizeof(struct threshold_cpacket), (void (*)(char *)) handleThresh, PKT_NONE },    /* CP_S_THRS */
+#ifdef MESSAGES_ALL_TIME
+    { -1, (void (*)(char *)) handleSMessageReq, PKT_ALWAYS },                              /* CP_S_MESSAGE */
+#else
+    { -1, (void (*)(char *)) handleSMessageReq, PKT_NONE },                                /* CP_S_MESSAGE */
+#endif
+    { 0, NULL, PKT_NONE },					   /* 46 */
+    { 0, NULL, PKT_NONE },					   /* 47 */
+    { 0, NULL, PKT_NONE },					   /* 48 */
+    { 0, NULL, PKT_NONE },					   /* 49 */
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
-    { sizeof(struct oggv_cpacket), (void (*)(char *)) handleOggV },           /* CP_OGGV */
+    { sizeof(struct oggv_cpacket), (void (*)(char *)) handleOggV, PKT_NONE },           /* CP_OGGV */
 #else
-    { 0, NULL },					   /* 50 */
+    { 0, NULL, PKT_NONE },					   /* 50 */
 #endif
-    { 0, NULL },					   /* 51 */
-    { 0, NULL },					   /* 52 */
-    { 0, NULL },					   /* 53 */
-    { 0, NULL },					   /* 54 */
-    { 0, NULL },					   /* 55 */
-    { 0, NULL },					   /* 56 */
-    { 0, NULL },					   /* 57 */
-    { 0, NULL },					   /* 58 */
-    { 0, NULL },					   /* 59 */
-    { sizeof(struct feature_cpacket), (void (*)(char *)) handleFeature },	   /* CP_FEATURE */
+    { 0, NULL, PKT_NONE },					   /* 51 */
+    { 0, NULL, PKT_NONE },					   /* 52 */
+    { 0, NULL, PKT_NONE },					   /* 53 */
+    { 0, NULL, PKT_NONE },					   /* 54 */
+    { 0, NULL, PKT_NONE },					   /* 55 */
+    { 0, NULL, PKT_NONE },					   /* 56 */
+    { 0, NULL, PKT_NONE },					   /* 57 */
+    { 0, NULL, PKT_NONE },					   /* 58 */
+    { 0, NULL, PKT_NONE },					   /* 59 */
+    { sizeof(struct feature_cpacket), (void (*)(char *)) handleFeature, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_FEATURE */
 };
 
 extern int sizes[TOTAL_SPACKETS];
 #define NUM_PACKETS (sizeof(handlers) / sizeof(handlers[0]) - 1)
 #define NUM_SIZES (sizeof(sizes) / sizeof(sizes[0]) - 1)
 
+int packet_allowed_in_state(unsigned char type,
+                            const struct player *p,
+                            const struct stats *st,
+                            const void *mask)
+{
+    unsigned int flags;
+    const fd_set *m = (const fd_set *) mask;
+
+    if (type < 1 || type > NUM_PACKETS)
+        return 0;
+    if (handlers[type].handler == NULL)
+        return 0;
+    flags = handlers[type].flags;
+    if (p == NULL)
+        return (flags & PKT_ALLOW_PRELOGIN) != 0;
+    if ((flags & PKT_REQUIRES_MYSTATS) && st == NULL)
+        return 0;
+    if (flags & PKT_ALWAYS)
+        return 1;
+    if (m == NULL || !FD_ISSET(type, m))
+        return 0;
+    if (p->p_status == POBSERV)
+        return 1;
+    return (p->p_flags & (PFWAR | PFREFITTING | PFTWARP)) == 0;
+}
+
 int packetsReceived[NUM_PACKETS+1] = { 0 };
 int packetsSent[NUM_SIZES+1] = { 0 };
 
 #define BUFSIZE 16738
 #define UDPBUFSIZE 1024			/* (tweakable; should be under 1300) */
-static char buf[BUFSIZE];		/* Socket buffer */
-static char udpbuf[UDPBUFSIZE];		/* UDP socket buffer */
-static char *bufptr=buf;
-static char *udpbufptr=udpbuf;
+static char tcp_send_buf[BUFSIZE];	/* Socket buffer */
+static char udp_send_buf[UDPBUFSIZE];	/* UDP socket buffer */
+static char *tcp_send_ptr = tcp_send_buf;
+static char *udp_send_ptr = udp_send_buf;
 #ifdef DOUBLE_UDP
 static char scbuf[UDPBUFSIZE];		/* semi-critical UDP socket buffer */
 static char *scbufptr=scbuf;		/* (only used for double UDP) */
@@ -315,7 +358,7 @@ int use_newyou=0;
 int f_many_self=0;
 
 /* S_P2 */
-#define SizeOfUDPUpdate()               (udpbufptr-udpbuf)
+#define SizeOfUDPUpdate()               (udp_send_ptr - udp_send_buf)
 
 void initClientData(void);
 void updateStatus(int force);
@@ -593,7 +636,8 @@ void updateClient(void)
     /* This can halve your updates */
     if (send_short && skip) {
 	skip = 0;		/* back to default */
-	if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==udpbuf)) {
+	if (tcp_send_ptr == tcp_send_buf &&
+	    (commMode != COMM_UDP || udp_send_ptr == udp_send_buf)) {
 	    /* We sent nothing!  We better send something to wake him */
 	    updateSelf(TRUE);
 	}
@@ -614,7 +658,7 @@ void updateClient(void)
     }
     if (loggod) glog_open();
 
-    if(commMode == COMM_UDP) addSequenceFlags(udpbuf);
+    if (commMode == COMM_UDP) addSequenceFlags(udp_send_buf);
     if(send_short) {
 	updatePlasmas();
 	updateSelf(FALSE);
@@ -649,14 +693,16 @@ void updateClient(void)
     }
 
     last_udp_size = SizeOfUDPUpdate();
-    if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==udpbuf)) {
+    if (tcp_send_ptr == tcp_send_buf &&
+	(commMode != COMM_UDP || udp_send_ptr == udp_send_buf)) {
 	/* We sent nothing!  We better send something to wake him */
 	updateSelf(TRUE);
     }
 
 #ifdef SHORT_THRESHOLD
-    if ((actual_threshold != 0 ) && (((bufptr-buf) + (udpbufptr-udpbuf)) 
-				     > actual_threshold))
+    if ((actual_threshold != 0 ) &&
+	(((tcp_send_ptr - tcp_send_buf) + (udp_send_ptr - udp_send_buf))
+	 > actual_threshold))
 	skip = 1;
     /* Next update is skipped */
     /* Question: Should i only test udpbuffer, or separate both? */
@@ -710,17 +756,17 @@ void sendClientPacket(void *void_packet)
 	 * business as usual
 	 */
 	size=(int) sizes[(int)packet->type];
-	if (bufptr-buf+size >= BUFSIZE) {
-	    t=bufptr-buf;
-	    if (gwrite(sock, buf, t) != t) {
+	if (tcp_send_ptr - tcp_send_buf + size >= BUFSIZE) {
+	    t = tcp_send_ptr - tcp_send_buf;
+	    if (gwrite(sock, tcp_send_buf, t) != t) {
 		ERROR(1,("%s: gwrite(TCP) failed, %s, client marked dead\n",
 		       whoami(), strerror(errno)));
 		clientDead=1;
 	    }
-	    bufptr=buf;
+	    tcp_send_ptr = tcp_send_buf;
 	}
-	memcpy(bufptr, packet, size);
-	bufptr+=size;
+	memcpy(tcp_send_ptr, packet, size);
+	tcp_send_ptr += size;
 
     } else {
 	/*
@@ -764,10 +810,10 @@ void sendClientPacket(void *void_packet)
 	    V_UDPDIAG(("Sending type %d\n", (int)packet->type));
 	    size=sizes[(int)packet->type];
             packets_sent++;
-	    if (udpbufptr-udpbuf+size >= UDPBUFSIZE) {
-		addSequenceFlags(udpbuf);
-		t=udpbufptr-udpbuf;
-		if (gwrite(udpSock, udpbuf, t) != t) {
+	    if (udp_send_ptr - udp_send_buf + size >= UDPBUFSIZE) {
+		addSequenceFlags(udp_send_buf);
+		t = udp_send_ptr - udp_send_buf;
+		if (gwrite(udpSock, udp_send_buf, t) != t) {
 		    ERROR(1,("%s: gwrite(UDP) failed, %s, client marked dead once more\n",
 			     whoami(), strerror(errno)));
 #ifdef EXTRA_GB
@@ -781,10 +827,10 @@ void sendClientPacket(void *void_packet)
 #ifdef DOUBLE_UDP
 		sendSC();	/* send semi-critical info, if needed */
 #endif
-		udpbufptr = udpbuf + addSequence(udpbuf, &sequence);
+		udp_send_ptr = udp_send_buf + addSequence(udp_send_buf, &sequence);
 	    }
-	    memcpy(udpbufptr, packet, size);
-	    udpbufptr+=size;
+	    memcpy(udp_send_ptr, packet, size);
+	    udp_send_ptr += size;
 #ifdef DOUBLE_UDP
 	    if (issc && udpMode == MODE_DOUBLE) {
 		memcpy(scbufptr, packet, size);
@@ -800,17 +846,17 @@ void sendClientPacket(void *void_packet)
 	default:
 	    /* these are critical packets; send them via TCP */
 	    size=sizes[(int)packet->type];
-	    if (bufptr-buf+size >= BUFSIZE) {
-		t=bufptr-buf;
-		if (gwrite(sock, buf, t) != t) {
+	    if (tcp_send_ptr - tcp_send_buf + size >= BUFSIZE) {
+		t = tcp_send_ptr - tcp_send_buf;
+		if (gwrite(sock, tcp_send_buf, t) != t) {
 		    ERROR(1,("%s: critical gwrite(TCP) failed, %s, client marked dead\n",
 			     whoami(), strerror(errno)));
 		    clientDead=1;
 		}
-		bufptr=buf /*+ addSequence(buf)*/;
+		tcp_send_ptr = tcp_send_buf;
 	    }
-	    memcpy(bufptr, packet, size);
-	    bufptr+=size;
+	    memcpy(tcp_send_ptr, packet, size);
+	    tcp_send_ptr += size;
 	    break;
 	}
     }
@@ -824,23 +870,23 @@ void flushSockBuf(void)
     if (clientDead){
 	return;
     }
-    if (bufptr != buf) {
-	t = bufptr - buf; /* GCC 2.4.5 Optimizer Bug don't touch this */
-	if (gwrite(sock, buf, t) != t) {
+    if (tcp_send_ptr != tcp_send_buf) {
+	t = tcp_send_ptr - tcp_send_buf; /* GCC 2.4.5 Optimizer Bug don't touch this */
+	if (gwrite(sock, tcp_send_buf, t) != t) {
 	    ERROR(1,("%s: flush gwrite(TCP) failed, %s, client marked dead\n",
 		     whoami(), strerror(errno)));
 	    clientDead=1;
 	}
-	bufptr=buf /*+ addSequence(buf)*/;
+	tcp_send_ptr = tcp_send_buf;
     }
     /*
      * This is where we try to add fat.  There's no point in checking at
      * the other places which call gwrite(), because they only call it when
      * the buffer is already full.
      */
-    if (udpSock >= 0 && udpMode == MODE_FAT && (udpbufptr-udpbuf)<FAT_THRESH)
+    if (udpSock >= 0 && udpMode == MODE_FAT && (udp_send_ptr - udp_send_buf) < FAT_THRESH)
 	fatten();
-    if (udpSock >= 0 && udpbufptr != udpbuf) {
+    if (udpSock >= 0 && udp_send_ptr != udp_send_buf) {
 #ifdef BROKEN
 	/* debugging only!! */
 # ifdef HOSED
@@ -850,12 +896,12 @@ void flushSockBuf(void)
 # endif
 	    {
 		/* act as if we did the gwrite(), but don't */
-		udpbufptr=udpbuf + addSequence(udpbuf, &sequence);
+		udp_send_ptr = udp_send_buf + addSequence(udp_send_buf, &sequence);
 		goto foo;
 	    }
 #endif
-	t=udpbufptr-udpbuf;
-	if (gwrite(udpSock, udpbuf, t) != t){
+	t = udp_send_ptr - udp_send_buf;
+	if (gwrite(udpSock, udp_send_buf, t) != t){
 	    ERROR(1,("%s: flush gwrite(UDP) failed, %s, client marked dead\n",
 		     whoami(), strerror(errno)));
 #ifdef EXTRA_GB
@@ -869,7 +915,7 @@ void flushSockBuf(void)
 #ifdef DOUBLE_UDP
 	sendSC();
 #endif
-	udpbufptr=udpbuf + addSequence(udpbuf, &sequence);
+	udp_send_ptr = udp_send_buf + addSequence(udp_send_buf, &sequence);
     }
 #ifdef BROKEN
 foo:
@@ -1101,33 +1147,14 @@ static int doRead(int asock)
 	if(asock == udpSock)
 	    packets_received++;
 	if (handlers[(int)*bufptr].handler != NULL) {
-	    if (((FD_ISSET(*bufptr, &inputMask)) &&
-		 (me==NULL || (me->p_status == POBSERV) ||
-		  !(me->p_flags & (PFWAR|PFREFITTING|PFTWARP)
-			  ))) || 
-		*bufptr==CP_RESETSTATS || *bufptr==CP_UPDATES ||
-		*bufptr==CP_OPTIONS || *bufptr==CP_RESERVED ||
-		/* ping response always valid */
-		*bufptr==CP_PING_RESPONSE ||
-#ifdef RSA            		/* NEW -- fix ghostbust problem */
-		*bufptr== CP_RSA_KEY ||
-#endif
-		*bufptr == CP_FEATURE ||
-#ifdef MESSAGES_ALL_TIME	/* off for the moment */
-		*bufptr == CP_MESSAGE ||
-		*bufptr == CP_S_MESSAGE ||
-#endif
-
-		*bufptr==CP_SOCKET || *bufptr==CP_BYE) {
-		if (me && me->p_flags & PFSELFDEST
-		    && *bufptr != CP_PLANET
-                    /* don't let it undo self destruct */
-		    && *bufptr != CP_PING_RESPONSE
-		    ) {
+	    unsigned char ptype = (unsigned char) *bufptr;
+	    if (packet_allowed_in_state(ptype, me, mystats, &inputMask)) {
+		if (me && (me->p_flags & PFSELFDEST) &&
+		    !(handlers[ptype].flags & PKT_KEEP_SELFDEST)) {
 		    atomic_and(&me->p_flags, ~PFSELFDEST);
 		    new_warning(85,"Self Destruct has been canceled");
 		}
-		((void (*)(char *))handlers[(int)*bufptr].handler)(bufptr);
+		((void (*)(char *))handlers[ptype].handler)(bufptr);
 	    }
 	    /* Otherwise we ignore the request */
 	} else {
@@ -2436,8 +2463,8 @@ static int connUdpConn(void)
 	ERROR(2,( "ntserv: tried to open udpSock twice\n"));
 	return 0;	/* pretend we succeeded (this could be bad) */
     }
-    if (udpbufptr != udpbuf) {
-	udpbufptr = udpbuf;		/* clear out any old data */
+    if (udp_send_ptr != udp_send_buf) {
+	udp_send_ptr = udp_send_buf;	/* clear out any old data */
 	sequence--;			/* we just killed a sequence packet */
     }
 
@@ -2604,7 +2631,7 @@ static void sendSC(void)
 
     /* copy sequence #, send what we got, then reset buffer */
     sc_sp = (struct sc_sequence_spacket *) scbuf;
-    ssp = (struct sequence_spacket *) udpbuf;
+    ssp = (struct sequence_spacket *) udp_send_buf;
     sc_sp->type = SP_SC_SEQUENCE;
     sc_sp->sequence = ssp->sequence;
     int t; t=scbufptr-scbuf;
@@ -2805,8 +2832,8 @@ static void fatten(void)
 #endif
 	    if (fatp->pkt_size < bytesleft) {
 		/* got one! */
-		memcpy(udpbufptr, fatp->packet, fatp->pkt_size);
-		udpbufptr += fatp->pkt_size;
+		memcpy(udp_send_ptr, fatp->packet, fatp->pkt_size);
+		udp_send_ptr += fatp->pkt_size;
 		bytesleft -= fatp->pkt_size;
 
                 /* counts as a udp packet sent */
