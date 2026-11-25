@@ -996,7 +996,10 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
 	shortmsg->m_recpt=cur->m_recpt;
 	shortmsg->m_from=cur->m_from;
 	cur->m_data[MSG_LEN-1]='\0'; /* Is this all right ? */
-	strcpy(shortmsg->mesg,&cur->m_data[9]); /* 9 because of GOD messages */
+	if (strlen(cur->m_data) > 9)
+	    strcpy(shortmsg->mesg, &cur->m_data[9]); /* 9 because of GOD messages */
+	else
+	    shortmsg->mesg[0] = '\0';
 	/* Now the size */
 	size = strlen(shortmsg->mesg);
 	size += 6; /* 1 for '\0', 5 packetheader */
@@ -1636,14 +1639,14 @@ void updateMessages(void)
 
             send_msg = FALSE;
 
-            if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER)) {
+            if ((cur->m_from < 0) || (cur->m_from >= MAXPLAYER)) {
                 is_whitelisted = 0;
             } else {
                 p_from = p_no(cur->m_from);
                 is_whitelisted = ip_whitelisted(p_from->p_ip);
             }
 
-            if ((cur->m_from < 0) || (cur->m_from > MAXPLAYER))
+            if ((cur->m_from < 0) || (cur->m_from >= MAXPLAYER))
                 send_msg = TRUE;
             else if (cur->m_flags & MALL) {
                 if (ignored[cur->m_from] & MALL) {
@@ -2660,17 +2663,12 @@ sendMotdLine(char *line)
 	sendClientPacket((CVOID) &motdPacket);
     }
     else {
-	char dmy[MSG_LEN];
-	char *ptr1,*ptr2;
-	int i,j;
-	dmy[MSG_LEN-1] ='\0';
-	for (i=0;i<(int)(((float)(len)/(float)(MSG_LEN-1.0))+0.99);i++) {
-	    ptr1 = dmy; ptr2 = &(line[i*(MSG_LEN-1)]);
-	    for (j=0;j<MSG_LEN-1;j++) *ptr1++ = *ptr2++;
+	int i;
+	for (i = 0; i < len; i += MSG_LEN - 1) {
 	    memset(&motdPacket, 0, sizeof(struct motd_spacket));
 	    motdPacket.type = SP_MOTD;
-	    strncpy(motdPacket.line, dmy, MSG_LEN);
-	    motdPacket.line[MSG_LEN-1]='\0';
+	    strncpy(motdPacket.line, line + i, MSG_LEN - 1);
+	    motdPacket.line[MSG_LEN - 1] = '\0';
 	    sendClientPacket((CVOID) &motdPacket);
 	}
     }
