@@ -40,13 +40,14 @@ static int playing_count_by_ip(int w_queue) {
 /* return number of waiting hosts with same ip */
 static int waiting_count_by_ip(int w_queue) {
   int i, j, k, n;
+  lock_on(LOCK_QUEUE_ADD);
   n = queues[w_queue].count;
-  if (n == 0) return n;
   k = queues[w_queue].first;
-  for (i=0, j=0; i<n; i++) {
-    if (strcmp(waiting[k].ip, ip) == 0) j++;
+  for (i=0, j=0; i<n && k >= 0 && k < MAXWAITING; i++) {
+    if (waiting[k].inuse && strcmp(waiting[k].ip, ip) == 0) j++;
     k = waiting[k].next;
   }
+  lock_off(LOCK_QUEUE_ADD);
   return j;
 }
 
