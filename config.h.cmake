@@ -58,7 +58,7 @@
 #cmakedefine HAVE_ERRNO_H
 #cmakedefine HAVE_CRYPT_H
 
-#cmakedefine SIZEOF_UNSIGNED_CHAR "SIZEOF_UNSIGNED_CHAR}
+#cmakedefine SIZEOF_UNSIGNED_CHAR ${SIZEOF_UNSIGNED_CHAR}
 #cmakedefine SIZEOF_UNSIGNED_SHORT ${SIZEOF_UNSIGNED_SHORT}
 #cmakedefine SIZEOF_UNSIGNED_INT ${SIZEOF_UNSIGNED_INT}
 #cmakedefine SIZEOF_UNSIGNED_LONG ${SIZEOF_UNSIGNED_LONG}
@@ -151,7 +151,7 @@
 #cmakedefine XBIFF_EXECUTABLE "${xbiff_EXECUTABLE}"
 
 // Just plain nasty, isn't there a cleaner way to detect 32bit vs 64bit (taken from the old config.h.in)
-#if (SIZEOF_LONG == 8)
+#if (SIZEOF_SIGNED_LONG == 8)
 #define _64BIT
 #define LONG int
 #define U_LONG u_int
