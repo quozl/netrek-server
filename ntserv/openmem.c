@@ -68,7 +68,7 @@ static int pkey = PKEY;
 static struct memory *sharedMemory = NULL;
 
 /* daemon initialisation is pending */
-static int daemon_initialisation_pending;
+static volatile sig_atomic_t daemon_initialisation_pending;
 
 /* set a different shared memory key for this process and children */
 void setpkey(int nkey)
@@ -106,22 +106,40 @@ static void daemon_ready(int signum)
 static void startdaemon(void)
 {
     pid_t i;
+    sigset_t mask, oldmask;
+    struct sigaction sa, oldsa;
 
-    /* ask to be told when daemon initialisation completes */
+    /* Block SIGUSR1 before fork() so the daemon cannot signal before we wait */
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGUSR1);
+    sigprocmask(SIG_BLOCK, &mask, &oldmask);
+
     daemon_initialisation_pending = 1;
-    signal(SIGUSR1, daemon_ready);
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = daemon_ready;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGUSR1, &sa, &oldsa);
 
     i = fork();
     if (i == (pid_t)0) {
+	sigprocmask(SIG_SETMASK, &oldmask, NULL);
+	sigaction(SIGUSR1, &oldsa, NULL);
 	execl(Daemon, "netrek-daemon", "--tell", (char *) NULL);
 	perror(Daemon);
 	ERROR(1,("Couldn't start daemon!!!\n"));
 	_exit(1);
     }
 
-    /* wait until daemon has initialised */
-    while (daemon_initialisation_pending) pause();
-    signal(SIGUSR1, NULL);
+    if (i > 0) {
+	/* atomically unblock SIGUSR1 and wait until daemon has initialised */
+	while (daemon_initialisation_pending)
+	    sigsuspend(&oldmask);
+    } else {
+	perror("startdaemon: fork");
+    }
+
+    sigaction(SIGUSR1, &oldsa, NULL);
+    sigprocmask(SIG_SETMASK, &oldmask, NULL);
 }
 
 /* connect all the pointers to the various areas of the segment */
@@ -193,21 +211,30 @@ void lock_show(int lock)
 void lock_off(int lock)
 {
   struct sembuf sb = {lock, 1, SEM_UNDO};
-  int stat = semop(semid, &sb, 1);
+  int stat;
+  do {
+    stat = semop(semid, &sb, 1);
+  } while (stat == -1 && errno == EINTR);
   if (stat == -1) perror("lock_off (post): semop (+1)");
 }
 
 void lock_on(int lock)
 {
   struct sembuf sb = {lock, -1, SEM_UNDO};
-  int stat = semop(semid, &sb, 1);
+  int stat;
+  do {
+    stat = semop(semid, &sb, 1);
+  } while (stat == -1 && errno == EINTR);
   if (stat == -1) perror("lock_on: semop (-1)");
 }
 
 void lock_on_nowait(int lock)
 {
   struct sembuf sb = {lock, -1, SEM_UNDO | IPC_NOWAIT};
-  int stat = semop(semid, &sb, 1);
+  int stat;
+  do {
+    stat = semop(semid, &sb, 1);
+  } while (stat == -1 && errno == EINTR);
   if (stat == -1) perror("lock_on_nowait: semop (-1)");
 }
 

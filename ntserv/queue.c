@@ -196,6 +196,8 @@ int queues_init(void)
 }
 
 
+static int queue_update_locked(int w_queue);
+
 /*
  *  Enter an ntserv in to the end of line
  */
@@ -204,12 +206,14 @@ int queue_add(int w_queue)
     struct pqueue *lqueue = &queues[w_queue];
     struct queuewait *lwait;
     int i;
+    int hidden;
 
-    
     /* Ensure that the queue is open */
     if (!(queues[w_queue].q_flags & QU_OPEN)) return -1;
 
-    /* race: another ntserv may try to allocate a queue entry at same time */
+    hidden = ip_hide(ip);
+
+    /* Hold LOCK_QUEUE_ADD across allocation and linked-list insertion */
     lock_on(LOCK_QUEUE_ADD);
     for (i=0;i<MAXWAITING;i++){
         if (waiting[i].inuse == 0) break;
@@ -220,16 +224,16 @@ int queue_add(int w_queue)
         return -1;
     }
 
-    waiting[i].inuse = 1;
-    lock_off(LOCK_QUEUE_ADD);
     lwait = &(waiting[i]);
+    lwait->inuse = 1;
 
     /* If I am the first, do special thing */
     if (lqueue->first == -1) {
 	lqueue->first = i;
-    } else{
+	lwait->previous = -1;
+    } else {
 	waiting[lqueue->last].next = i;
-	lwait->previous    = lqueue->last;
+	lwait->previous = lqueue->last;
     }
 
     lqueue->last       = i;
@@ -237,7 +241,7 @@ int queue_add(int w_queue)
     lwait->count       = lqueue->count++;
     lwait->process     = getpid();
     lwait->w_queue     = w_queue;
-    if (ip_hide(ip)) {
+    if (hidden) {
         strcpy(lwait->ip, "127.0.0.1");
         strcpy(lwait->host, "hidden");
     } else {
@@ -245,6 +249,10 @@ int queue_add(int w_queue)
         lwait->ip[sizeof(lwait->ip) - 1] = '\0';
         strncpy(lwait->host, host, sizeof(lwait->host) - 1);
         lwait->host[sizeof(lwait->host) - 1] = '\0';
+    }
+    lock_off(LOCK_QUEUE_ADD);
+
+    if (!hidden) {
         ip_lookup(ip, lwait->host, lwait->host,
                   NULL, NULL, NULL, sizeof(lwait->host));
     }
@@ -259,10 +267,24 @@ int queue_add(int w_queue)
 int queue_exit(int waitindex)
 {
     struct pqueue *lqueue;
-    struct queuewait *lwait=&(waiting[waitindex]);
-    int w_queue = lwait->w_queue;
+    struct queuewait *lwait;
+    int w_queue;
+
+    if (waitindex < 0 || waitindex >= MAXWAITING) {
+      ERROR(1,("queue_exit: Invalid waitindex %i\n", waitindex));
+      return 0;
+    }
+
+    lock_on(LOCK_QUEUE_ADD);
+    lwait = &(waiting[waitindex]);
+    if (!lwait->inuse) {
+      lock_off(LOCK_QUEUE_ADD);
+      return 0;
+    }
+    w_queue = lwait->w_queue;
 
     if ((w_queue < 0) || (w_queue >= MAXQUEUE)){
+      lock_off(LOCK_QUEUE_ADD);
       ERROR(1,("queue_exit: Invalid queue number %i\n",w_queue));
       return 0;
     }
@@ -272,14 +294,14 @@ int queue_exit(int waitindex)
     if (lwait->previous == -1){ 
 	lqueue->first = lwait->next;
     }
-    else{
+    else if (lwait->previous >= 0 && lwait->previous < MAXWAITING){
 	waiting[lwait->previous].next = lwait->next;
     }
 
     if (lwait->next == -1){
 	lqueue->last = lwait->previous;
     }
-    else{
+    else if (lwait->next >= 0 && lwait->next < MAXWAITING){
 	waiting[lwait->next].previous = lwait->previous;
     }
 
@@ -291,7 +313,8 @@ int queue_exit(int waitindex)
     lwait->process = 0;
     lwait->inuse = 0;
 
-    queue_update(w_queue);  /* Update everyone's count */
+    queue_update_locked(w_queue);  /* Update everyone's count */
+    lock_off(LOCK_QUEUE_ADD);
     ip_waitpid();
 
     return 1;
@@ -314,9 +337,9 @@ int queue_setname(int w_queue, char *name)
 }
 
 /*
- *  Update all of the waiting counts for a given queue
+ *  Update all of the waiting counts for a given queue (caller holds LOCK_QUEUE_ADD)
  */
-int queue_update(int w_queue)
+static int queue_update_locked(int w_queue)
 {
     struct pqueue *lqueue;
     int currentindex = -1;
@@ -330,12 +353,8 @@ int queue_update(int w_queue)
 
     lqueue = &queues[w_queue];
     currentindex = lqueue->first;
-    while (currentindex != -1){
+    while (currentindex >= 0 && currentindex < MAXWAITING){
         current = &(waiting[currentindex]);
-        /* There can be at most MAXWAITING people waiting, but players */
-        /* can exit and enter during this check.  However. this should */
-        /* rarely happen during normal usage, so it is a good check.   */
-        /* The people at the end will be caught the next time through. */
         if (lcount >= MAXWAITING){   /* This is redundant */
 	    ERROR(1,("queues_update: wait count more than MAXWAITING\n"));
 	    break;  /* Exit from the while loop */
@@ -358,6 +377,23 @@ int queue_update(int w_queue)
 }
 
 /*
+ *  Update all of the waiting counts for a given queue
+ */
+int queue_update(int w_queue)
+{
+    int ret;
+
+    if ((w_queue < 0) || (w_queue >= MAXQUEUE)){
+      ERROR(1,("queue_update: Invalid queue number %i\n",w_queue));
+      return 0;
+    }
+    lock_on(LOCK_QUEUE_ADD);
+    ret = queue_update_locked(w_queue);
+    lock_off(LOCK_QUEUE_ADD);
+    return ret;
+}
+
+/*
  *  Remove dead processes from the queue
  */
 int queues_purge(void)
@@ -366,25 +402,26 @@ int queues_purge(void)
     int killcount = 0, next = -1;
     struct pqueue *lqueue;
     struct queuewait *lwait;
+    int dead[MAXWAITING];
+    int ndead = 0, d;
 
+    lock_on(LOCK_QUEUE_ADD);
     for (i=0, lqueue=&(queues[0]); i<MAXQUEUE;i++,lqueue++){
         next = lqueue->first;
-	while (next != -1){
+	while (next >= 0 && next < MAXWAITING){
             lwait = &(waiting[next]);
-	    /* There can be at most MAXWAITING people waiting, but players */
-	    /* can exit and enter during this check.  However. this should */
-	    /* rarely happen during normal usage, so it is a good check.*/
 	    if (killcount++ >= MAXWAITING){   /* This is redundant */
 	      ERROR(1,("queues_purge: trying to kill more than MAXWAITING\n"));
+	      lock_off(LOCK_QUEUE_ADD);
 	      return 0;  /* Exit from queues_purge */
 	    }
 	    if (lwait->inuse == 0){   /* This is redundant */
 	      ERROR(1,("queues_purge: waitq element is not in use\n"));
-	      continue;  /* Check the next queue */
+	      break;  /* Stop scanning this queue */
 	    }
 	    if (lwait->process == 0){   /* This is redundant */
 	      ERROR(1,("queues_purge: waitq element is process 0\n"));
-	      continue;  /* Check the next queue */
+	      break;  /* Stop scanning this queue */
 	    }
 	    /* The waitq element appears valid */
 	    next = lwait->next;
@@ -392,7 +429,8 @@ int queues_purge(void)
 	        if (errno == ESRCH){
                     /* The process is not a valid number */
 		    ERROR(1,("queues_purge: removing dead waitQ player\n"));
-		    queue_exit(lwait->mynum);
+		    if (ndead < MAXWAITING)
+			dead[ndead++] = lwait->mynum;
 		}
 		else if (errno == EINVAL){
 		    /* The value of 0 is not acceptable!!! */
@@ -409,6 +447,15 @@ int queues_purge(void)
 		}
 	    }
 	}
+    }
+    lock_off(LOCK_QUEUE_ADD);
+
+    for (d = 0; d < ndead; d++) {
+	queue_exit(dead[d]);
+    }
+
+    lock_on(LOCK_PICKSLOT);
+    for (i=0, lqueue=&(queues[0]); i<MAXQUEUE; i++, lqueue++){
 	if (lqueue->free_slots > lqueue->max_slots){
 	  /* The queue has more free slots than allowed. */
 	  /* This is typically caused by ghostbusting and such */
@@ -417,6 +464,7 @@ int queues_purge(void)
 	  lqueue->free_slots = lqueue->max_slots;
 	}
     }
+    lock_off(LOCK_PICKSLOT);
 
     return 1;
 }
