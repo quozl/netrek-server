@@ -40,12 +40,13 @@ static int playing_count_by_ip(int w_queue) {
 /* return number of waiting hosts with same ip */
 static int waiting_count_by_ip(int w_queue) {
   int i, j, k, n;
+  struct queuewait *w;
   lock_on(LOCK_QUEUE_ADD);
   n = queues[w_queue].count;
   k = queues[w_queue].first;
-  for (i=0, j=0; i<n && k >= 0 && k < MAXWAITING; i++) {
-    if (waiting[k].inuse && strcmp(waiting[k].ip, ip) == 0) j++;
-    k = waiting[k].next;
+  for (i=0, j=0; i<n && (w = waiter_at(k)) != NULL; i++) {
+    if (w->inuse && strcmp(w->ip, ip) == 0) j++;
+    k = w->next;
   }
   lock_off(LOCK_QUEUE_ADD);
   return j;
@@ -161,14 +162,17 @@ int findslot(int w_queue)
     if (w_queue == QU_PICKUP) blog_pickup_queue_not_full();
 
     rep = 0;
-    oldcount = waiting[mywait].count;
+    if (waiter_at(mywait) == NULL) return -1;
+    oldcount = waiter_at(mywait)->count;
 
     for (;;) {
+        struct queuewait *w = waiter_at(mywait);
         /* Check to ensure that the player still owns his wait slot */
-        if (mypid != waiting[mywait].process){
+        if (w == NULL || mypid != w->process){
           ERROR(1,("findslot: process lost its waitq entry!\n"));
           mywait = queue_add(w_queue);        /* Get me into the queue */
-          if (mywait == -1) return -1;        /* The queue is full! */
+          w = waiter_at(mywait);
+          if (w == NULL) return -1;           /* The queue is full! */
           /* The count should change, so a new packet will be sent. */
         }
 
@@ -182,7 +186,7 @@ int findslot(int w_queue)
 
 	/* Send packets occasionally to see if he is accepting... */
 	if (rep++ % 10 == 0) {
-	    sendQueuePacket((short) waiting[mywait].count);
+	    sendQueuePacket((short) w->count);
 	}
 	
 	if (isClientDead()) {
@@ -191,9 +195,9 @@ int findslot(int w_queue)
 	    exit(0);
 	}
 
-	if (waiting[mywait].count != oldcount) {  /* If my count changed */
-	    sendQueuePacket((short) waiting[mywait].count);
-	    oldcount=waiting[mywait].count;
+	if (w->count != oldcount) {  /* If my count changed */
+	    sendQueuePacket((short) w->count);
+	    oldcount=w->count;
 	}
 
 	/* Message from daemon that it died (is going down) */

@@ -1138,11 +1138,16 @@ static void udplayers_pexplode(struct player *j)
     frames per second rate. */
 static void udplayers_palive_move_in_orbit(struct player *j)
 {
+        struct planet *pl = planet_at(j->p_planet);
+        if (pl == NULL) {
+                atomic_and(&j->p_flags, ~PFORBIT);
+                return;
+        }
         j->p_dir += 2;
         j->p_desdir = j->p_dir;
-        j->p_x_internal = planets[j->p_planet].pl_x * SPM + SPM * ORBDIST
+        j->p_x_internal = pl->pl_x * SPM + SPM * ORBDIST
                 * Cos[(u_char) (j->p_dir - (u_char) 64)];
-        j->p_y_internal = planets[j->p_planet].pl_y * SPM + SPM * ORBDIST
+        j->p_y_internal = pl->pl_y * SPM + SPM * ORBDIST
                 * Sin[(u_char) (j->p_dir - (u_char) 64)];
         j->p_x = spo(j->p_x_internal);
         j->p_y = spo(j->p_y_internal);
@@ -1167,11 +1172,17 @@ static void udplayers_palive_move_in_dock(struct player *j)
 
 static void udships_palive_move_in_dock(struct player *j)
 {
+        struct player *base = player_at(j->p_dock_with);
+        int bay = j->p_dock_bay;
+        if (base == NULL || bay < 0 || bay >= NUMBAYS) {
+                atomic_and(&j->p_flags, ~PFDOCK);
+                return;
+        }
         /* keep position synchronised with base docking port */
-        j->p_x_internal = players[j->p_dock_with].p_x_internal +
-                 SPM*DOCKDIST*Cos[(j->p_dock_bay*90+45)*255/360];
-        j->p_y_internal = players[j->p_dock_with].p_y_internal +
-                 SPM*DOCKDIST*Sin[(j->p_dock_bay*90+45)*255/360];
+        j->p_x_internal = base->p_x_internal +
+                 SPM*DOCKDIST*Cos[(bay*90+45)*255/360];
+        j->p_y_internal = base->p_y_internal +
+                 SPM*DOCKDIST*Sin[(bay*90+45)*255/360];
         j->p_x = spo(j->p_x_internal);
         j->p_y = spo(j->p_y_internal);
 }
@@ -1222,9 +1233,10 @@ static void udplayers_palive_move_in_space(struct player *j)
                         int bays = 0;
                         for (k=0; k<NUMBAYS; k++) {
                                 int pno = load_acquire(&j->p_bays[k]);
-                                if (pno >= 0 && pno < MAXPLAYER) {
+                                struct player *docked = player_at(pno);
+                                if (docked != NULL) {
                                         atomic_sub(&j->p_fuel,
-                                                   players[pno].p_ship.s_warpcost * j->p_speed);
+                                                   docked->p_ship.s_warpcost * j->p_speed);
                                         bays++;
                                 }
                         }
@@ -1481,28 +1493,31 @@ static void udplayers_palive_fuel_shields(struct player *j)
 static void udplayers_palive_tractor(struct player *j)
 {
         float dist;
+        struct player *target;
 
         if (!(j->p_flags & PFTRACT)) return;
+        target = player_at(j->p_tractor);
         /* affect tractor beams */
-        if ((isAlive(&players[j->p_tractor])) &&
+        if ((target != NULL) &&
+            (isAlive(target)) &&
             ((j->p_fuel > TRACTCOST) && !(j->p_flags & PFENG)) &&
-            ((dist=hypot((double)(j->p_x-players[j->p_tractor].p_x),
-                         (double)(j->p_y-players[j->p_tractor].p_y)))
+            ((dist=hypot((double)(j->p_x - target->p_x),
+                         (double)(j->p_y - target->p_y)))
              < ((double) TRACTDIST)*j->p_ship.s_tractrng) &&
             (!(j->p_flags & (PFORBIT | PFDOCK))) &&
-            (!(players[j->p_tractor].p_flags & PFDOCK))) {
+            (!(target->p_flags & PFDOCK))) {
                 float cosTheta, sinTheta;  /* Cos and Sin from me to him */
                 int halfforce; /* Half force of tractor */
                 int dir;       /* -1 for repress, otherwise 1 */
 
-                if (players[j->p_tractor].p_flags & PFORBIT)
-                        atomic_and(&players[j->p_tractor].p_flags, ~PFORBIT);
+                if (target->p_flags & PFORBIT)
+                        atomic_and(&target->p_flags, ~PFORBIT);
 
                 atomic_sub(&j->p_fuel, TRACTCOST);
                 atomic_add(&j->p_etemp, TRACTEHEAT);
 
-                cosTheta = players[j->p_tractor].p_x - j->p_x;
-                sinTheta = players[j->p_tractor].p_y - j->p_y;
+                cosTheta = target->p_x - j->p_x;
+                sinTheta = target->p_y - j->p_y;
                 if (dist == 0) dist = 1; /* prevent divide by zero */
                 cosTheta /= dist;   /* normalize sin and cos */
                 sinTheta /= dist;
@@ -1517,11 +1532,11 @@ static void udplayers_palive_tractor(struct player *j)
                 j->p_y += dir * sinTheta * halfforce/(j->p_ship.s_mass);
                 p_x_y_to_internal(j);
                 /* todo: fps support, tractor pulses at 10 fps */
-                players[j->p_tractor].p_x -= dir * cosTheta *
-                        halfforce/(players[j->p_tractor].p_ship.s_mass);
-                players[j->p_tractor].p_y -= dir * sinTheta *
-                        halfforce/(players[j->p_tractor].p_ship.s_mass);
-                p_x_y_to_internal(&players[j->p_tractor]);
+                target->p_x -= dir * cosTheta *
+                        halfforce/(target->p_ship.s_mass);
+                target->p_y -= dir * sinTheta *
+                        halfforce/(target->p_ship.s_mass);
+                p_x_y_to_internal(target);
         } else {
                 atomic_and(&j->p_flags, ~(PFTRACT | PFPRESS));
         }
@@ -1585,39 +1600,42 @@ static void udplayers_palive_fuel_cloak(struct player *j)
 
 static void udplayers_palive_make_fuel(struct player *j)
 {
-        int dock = j->p_dock_with;
+        struct planet *pl = planet_at(j->p_planet);
+        struct player *base = player_at(j->p_dock_with);
         int fuel;
 
 #ifdef SBFUEL_FIX
         /* Add fuel */
         atomic_add(&j->p_fuel, 2 * j->p_ship.s_recharge);
         if ((j->p_flags & PFORBIT) &&
-            (planets[j->p_planet].pl_flags & PLFUEL) &&
-            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+            (pl != NULL) &&
+            (pl->pl_flags & PLFUEL) &&
+            (!(pl->pl_owner & j->p_war))) {
                 atomic_add(&j->p_fuel, 6 * j->p_ship.s_recharge);
         } else if ((j->p_flags & PFDOCK) &&
-                   dock >= 0 && dock < MAXPLAYER &&
+                   base != NULL &&
                    (j->p_fuel < j->p_ship.s_maxfuel) &&
-                   (players[dock].p_fuel > SBFUELMIN)) {
+                   (base->p_fuel > SBFUELMIN)) {
                 int fc = MIN(10*j->p_ship.s_recharge,
                              j->p_ship.s_maxfuel - j->p_fuel);
                 if (fc > 0) {
                         atomic_add(&j->p_fuel, fc);
-                        atomic_sub(&players[dock].p_fuel, fc);
+                        atomic_sub(&base->p_fuel, fc);
                 }
         }
 #else
         /* Add fuel */
         if ((j->p_flags & PFORBIT) &&
-            (planets[j->p_planet].pl_flags & PLFUEL) &&
-            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+            (pl != NULL) &&
+            (pl->pl_flags & PLFUEL) &&
+            (!(pl->pl_owner & j->p_war))) {
                 atomic_add(&j->p_fuel, 8 * j->p_ship.s_recharge);
         } else if ((j->p_flags & PFDOCK) &&
-                   dock >= 0 && dock < MAXPLAYER &&
+                   base != NULL &&
                    (j->p_fuel < j->p_ship.s_maxfuel)) {
-                if (players[dock].p_fuel > SBFUELMIN) {
+                if (base->p_fuel > SBFUELMIN) {
                         atomic_add(&j->p_fuel, 12*j->p_ship.s_recharge);
-                        atomic_sub(&players[dock].p_fuel, 12*j->p_ship.s_recharge);
+                        atomic_sub(&base->p_fuel, 12*j->p_ship.s_recharge);
                 }
         } else
                 atomic_add(&j->p_fuel, 2 * j->p_ship.s_recharge);
@@ -1634,6 +1652,7 @@ static void udplayers_palive_make_fuel(struct player *j)
 
 static void udplayers_palive_repair(struct player *j)
 {
+        struct planet *pl = planet_at(j->p_planet);
         int repair_needed, repair_progress_old, repair_gained, repair_time = 0;
 
         /* repair shields */
@@ -1642,8 +1661,9 @@ static void udplayers_palive_repair(struct player *j)
                 if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
                         j->p_subshield += j->p_ship.s_repair * 4;
                         if ((j->p_flags & PFORBIT) &&
-                            (planets[j->p_planet].pl_flags & PLREPAIR) &&
-                            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+                            (pl != NULL) &&
+                            (pl->pl_flags & PLREPAIR) &&
+                            (!(pl->pl_owner & j->p_war))) {
                                 j->p_subshield += j->p_ship.s_repair * 4;
                         }
                         if (j->p_flags & PFDOCK)  {
@@ -1679,8 +1699,9 @@ static void udplayers_palive_repair(struct player *j)
                 if ((j->p_flags & PFREPAIR) && (j->p_speed == 0)) {
                         j->p_subdamage += j->p_ship.s_repair * 2;
                         if ((j->p_flags & PFORBIT) &&
-                            (planets[j->p_planet].pl_flags & PLREPAIR) &&
-                            (!(planets[j->p_planet].pl_owner & j->p_war))) {
+                            (pl != NULL) &&
+                            (pl->pl_flags & PLREPAIR) &&
+                            (!(pl->pl_owner & j->p_war))) {
                                 j->p_subdamage += j->p_ship.s_repair * 2;
                         }
                         if (j->p_flags & PFDOCK) {
@@ -1955,8 +1976,8 @@ static void udtwarp(void)
         atomic_add(&j->p_etemp, j->p_ship.s_maxspeed);
 #ifndef SB_CALVINWARP
         /* decelerate if needed */
-        k = &players[j->p_playerl];
-        if (k->p_ship.s_type == STARBASE) {
+        k = player_at(j->p_playerl);
+        if (k != NULL && k->p_ship.s_type == STARBASE) {
             dist = hypot((double) (j->p_x - k->p_x),
                          (double) (j->p_y - k->p_y));
 

@@ -9,6 +9,7 @@
 #include "data.h"
 #include "ip.h"
 #include "proto.h"
+#include "util.h"
 
 /*
  * queue.c:  Wait queue handling routines
@@ -232,7 +233,9 @@ int queue_add(int w_queue)
 	lqueue->first = i;
 	lwait->previous = -1;
     } else {
-	waiting[lqueue->last].next = i;
+	struct queuewait *prev = waiter_at(lqueue->last);
+	if (prev != NULL)
+	    prev->next = i;
 	lwait->previous = lqueue->last;
     }
 
@@ -276,8 +279,8 @@ int queue_exit(int waitindex)
     }
 
     lock_on(LOCK_QUEUE_ADD);
-    lwait = &(waiting[waitindex]);
-    if (!lwait->inuse) {
+    lwait = waiter_at(waitindex);
+    if (lwait == NULL || !lwait->inuse) {
       lock_off(LOCK_QUEUE_ADD);
       return 0;
     }
@@ -294,15 +297,19 @@ int queue_exit(int waitindex)
     if (lwait->previous == -1){ 
 	lqueue->first = lwait->next;
     }
-    else if (lwait->previous >= 0 && lwait->previous < MAXWAITING){
-	waiting[lwait->previous].next = lwait->next;
+    else {
+	struct queuewait *prev = waiter_at(lwait->previous);
+	if (prev != NULL)
+	    prev->next = lwait->next;
     }
 
     if (lwait->next == -1){
 	lqueue->last = lwait->previous;
     }
-    else if (lwait->next >= 0 && lwait->next < MAXWAITING){
-	waiting[lwait->next].previous = lwait->previous;
+    else {
+	struct queuewait *nextw = waiter_at(lwait->next);
+	if (nextw != NULL)
+	    nextw->previous = lwait->previous;
     }
 
     /* Clear the lwait for redundancy */
@@ -353,8 +360,7 @@ static int queue_update_locked(int w_queue)
 
     lqueue = &queues[w_queue];
     currentindex = lqueue->first;
-    while (currentindex >= 0 && currentindex < MAXWAITING){
-        current = &(waiting[currentindex]);
+    while ((current = waiter_at(currentindex)) != NULL){
         if (lcount >= MAXWAITING){   /* This is redundant */
 	    ERROR(1,("queues_update: wait count more than MAXWAITING\n"));
 	    break;  /* Exit from the while loop */
@@ -408,8 +414,7 @@ int queues_purge(void)
     lock_on(LOCK_QUEUE_ADD);
     for (i=0, lqueue=&(queues[0]); i<MAXQUEUE;i++,lqueue++){
         next = lqueue->first;
-	while (next >= 0 && next < MAXWAITING){
-            lwait = &(waiting[next]);
+	while ((lwait = waiter_at(next)) != NULL){
 	    if (killcount++ >= MAXWAITING){   /* This is redundant */
 	      ERROR(1,("queues_purge: trying to kill more than MAXWAITING\n"));
 	      lock_off(LOCK_QUEUE_ADD);

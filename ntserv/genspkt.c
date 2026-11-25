@@ -1646,14 +1646,14 @@ void updateMessages(void)
 
             send_msg = FALSE;
 
-            if ((cur->m_from < 0) || (cur->m_from >= MAXPLAYER)) {
+            p_from = player_at(cur->m_from);
+            if (p_from == NULL) {
                 is_whitelisted = 0;
             } else {
-                p_from = p_no(cur->m_from);
                 is_whitelisted = ip_whitelisted(p_from->p_ip);
             }
 
-            if ((cur->m_from < 0) || (cur->m_from >= MAXPLAYER))
+            if (p_from == NULL)
                 send_msg = TRUE;
             else if (cur->m_flags & MALL) {
                 if (ignored[cur->m_from] & MALL) {

@@ -306,6 +306,27 @@ struct player *p_no(int i)
   return &players[i];
 }
 
+struct player *player_at(int idx)
+{
+  if (players == NULL || idx < 0 || idx >= MAXPLAYER)
+    return NULL;
+  return &players[idx];
+}
+
+struct planet *planet_at(int idx)
+{
+  if (planets == NULL || idx < 0 || idx >= MAXPLANETS)
+    return NULL;
+  return &planets[idx];
+}
+
+struct queuewait *waiter_at(int idx)
+{
+  if (waiting == NULL || idx < 0 || idx >= MAXWAITING)
+    return NULL;
+  return &waiting[idx];
+}
+
 /* convert a text player number to a player struct pointer */
 struct player *player_by_number(char *name)
 {

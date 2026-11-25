@@ -21,7 +21,7 @@
 struct player *bay_owner(struct player *me)
 {
   assert(me->p_flags & PFDOCK);
-  return p_no(me->p_dock_with);
+  return player_at(me->p_dock_with);
 }
 
 /*! @brief Check bays for consistency.
@@ -44,7 +44,11 @@ void bay_consistency_check(struct player *base)
       compare_and_swap(&base->p_bays[i], pno, VACANT);
       continue;
     }
-    ship = p_no(pno);
+    ship = player_at(pno);
+    if (ship == NULL) {
+      compare_and_swap(&base->p_bays[i], pno, VACANT);
+      continue;
+    }
     if (!(ship->p_flags & PFDOCK)) {
       /* ship isn't docked */
       compare_and_swap(&base->p_bays[i], pno, VACANT);
@@ -88,8 +92,9 @@ void bay_release(struct player *me)
     atomic_and(&me->p_flags, ~PFDOCK);
     if (dock_with >= 0 && dock_with < MAXPLAYER &&
         bay >= 0 && bay < NUMBAYS) {
-      struct player *base = p_no(dock_with);
-      compare_and_swap(&base->p_bays[bay], me->p_no, VACANT);
+      struct player *base = player_at(dock_with);
+      if (base != NULL)
+        compare_and_swap(&base->p_bays[bay], me->p_no, VACANT);
     }
   }
 }
@@ -103,8 +108,8 @@ void bay_release_all(struct player *base)
   int i;
   for (i=0; i<NUMBAYS; i++) {
     int pno = atomic_exchange(&base->p_bays[i], VACANT);
-    if (pno >= 0 && pno < MAXPLAYER) {
-      struct player *pl = p_no(pno);
+    struct player *pl = player_at(pno);
+    if (pl != NULL) {
       atomic_and(&pl->p_flags, ~PFDOCK);
     }
   }
