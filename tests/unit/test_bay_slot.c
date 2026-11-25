@@ -1,14 +1,32 @@
 #include "config.h"
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "ip.h"
 #include "util.h"
 #include "proto.h"
 #include "slotmaint.h"
 #include "shmatomic.h"
 #include "test_harness.h"
+
+extern int queues_init(void);
+extern int queue_add(int w_queue);
+extern int queue_exit(int waitindex);
+extern int queue_update(int w_queue);
+extern int queues_purge(void);
+
+/* Stubs for queue.c dependencies on ip.c */
+int ip_hide(char *addr) { (void) addr; return 0; }
+void ip_lookup(char *addr, char *full, char *dns,
+               int *xbl, int *sorbs, int *njabl, int len)
+{
+    (void) addr; (void) full; (void) dns;
+    (void) xbl; (void) sorbs; (void) njabl; (void) len;
+}
+void ip_waitpid(void) {}
 
 /* Track SysV lock acquisitions in-process without needing real IPC semaphores */
 static int g_lock_held[MAXLOCKS];
@@ -30,18 +48,26 @@ void lock_off(int lock)
 }
 
 static struct player g_players[MAXPLAYER];
+static struct planet g_planets[MAXPLANETS];
 static struct pqueue g_queues[MAXQUEUE];
+static struct queuewait g_waiting[MAXWAITING];
 
 static void setup_shm_tables(void)
 {
     int i;
     memset(g_players, 0, sizeof(g_players));
+    memset(g_planets, 0, sizeof(g_planets));
     memset(g_queues, 0, sizeof(g_queues));
+    memset(g_waiting, 0, sizeof(g_waiting));
     memset(g_lock_held, 0, sizeof(g_lock_held));
     memset(g_lock_ops, 0, sizeof(g_lock_ops));
 
     players = g_players;
+    planets = g_planets;
     queues = g_queues;
+    waiting = g_waiting;
+    ip = "127.0.0.1";
+    host = "localhost";
 
     for (i = 0; i < MAXPLAYER; i++) {
         g_players[i].p_no = i;
@@ -175,11 +201,114 @@ static void test_p_x_y_set_and_commit_ordering(void)
     ASSERT_EQ(g_players[0].p_y_internal, spi(5678));
 }
 
+static void test_shm_bounds_accessors(void)
+{
+    setup_shm_tables();
+
+    ASSERT_TRUE(player_at(0) == &g_players[0]);
+    ASSERT_TRUE(player_at(MAXPLAYER - 1) == &g_players[MAXPLAYER - 1]);
+    ASSERT_TRUE(player_at(-1) == NULL);
+    ASSERT_TRUE(player_at(MAXPLAYER) == NULL);
+    ASSERT_TRUE(player_at(INT_MIN) == NULL);
+    ASSERT_TRUE(player_at(INT_MAX) == NULL);
+
+    ASSERT_TRUE(planet_at(0) == &g_planets[0]);
+    ASSERT_TRUE(planet_at(MAXPLANETS - 1) == &g_planets[MAXPLANETS - 1]);
+    ASSERT_TRUE(planet_at(-1) == NULL);
+    ASSERT_TRUE(planet_at(MAXPLANETS) == NULL);
+    ASSERT_TRUE(planet_at(INT_MIN) == NULL);
+    ASSERT_TRUE(planet_at(INT_MAX) == NULL);
+
+    ASSERT_TRUE(waiter_at(0) == &g_waiting[0]);
+    ASSERT_TRUE(waiter_at(MAXWAITING - 1) == &g_waiting[MAXWAITING - 1]);
+    ASSERT_TRUE(waiter_at(-1) == NULL);
+    ASSERT_TRUE(waiter_at(MAXWAITING) == NULL);
+    ASSERT_TRUE(waiter_at(INT_MIN) == NULL);
+    ASSERT_TRUE(waiter_at(INT_MAX) == NULL);
+
+    players = NULL;
+    planets = NULL;
+    waiting = NULL;
+    ASSERT_TRUE(player_at(0) == NULL);
+    ASSERT_TRUE(planet_at(0) == NULL);
+    ASSERT_TRUE(waiter_at(0) == NULL);
+    players = g_players;
+    planets = g_planets;
+    waiting = g_waiting;
+}
+
+static void test_queue_lifecycle_and_lock_balance(void)
+{
+    int w0, w1, w2;
+
+    setup_shm_tables();
+    ASSERT_EQ(queues_init(), 1);
+    ASSERT_EQ(g_queues[QU_PICKUP].first, -1);
+    ASSERT_EQ(g_queues[QU_PICKUP].last, -1);
+    ASSERT_EQ(g_queues[QU_PICKUP].count, 0);
+
+    w0 = queue_add(QU_PICKUP);
+    w1 = queue_add(QU_PICKUP);
+    w2 = queue_add(QU_PICKUP);
+    ASSERT_TRUE(w0 >= 0 && w1 >= 0 && w2 >= 0);
+    ASSERT_EQ(g_queues[QU_PICKUP].first, w0);
+    ASSERT_EQ(g_queues[QU_PICKUP].last, w2);
+    ASSERT_EQ(g_queues[QU_PICKUP].count, 3);
+    ASSERT_EQ(g_waiting[w0].previous, -1);
+    ASSERT_EQ(g_waiting[w0].next, w1);
+    ASSERT_EQ(g_waiting[w1].previous, w0);
+    ASSERT_EQ(g_waiting[w1].next, w2);
+    ASSERT_EQ(g_waiting[w2].previous, w1);
+    ASSERT_EQ(g_waiting[w2].next, -1);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+
+    /* Remove middle element */
+    ASSERT_EQ(queue_exit(w1), 1);
+    ASSERT_EQ(g_waiting[w1].inuse, 0);
+    ASSERT_EQ(g_waiting[w0].next, w2);
+    ASSERT_EQ(g_waiting[w2].previous, w0);
+    ASSERT_EQ(g_queues[QU_PICKUP].count, 2);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+
+    /* Double removal & OOB waitindex must be no-ops with balanced locks */
+    ASSERT_EQ(queue_exit(w1), 0);
+    ASSERT_EQ(queue_exit(-1), 0);
+    ASSERT_EQ(queue_exit(MAXWAITING), 0);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+
+    ASSERT_EQ(queue_update(QU_PICKUP), 1);
+    ASSERT_EQ(g_waiting[w0].count, 0);
+    ASSERT_EQ(g_waiting[w2].count, 1);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+
+    /* queues_purge clamps inflated free_slots and keeps locks balanced */
+    g_queues[QU_PICKUP].free_slots = g_queues[QU_PICKUP].max_slots + 3;
+    ASSERT_EQ(queues_purge(), 1);
+    ASSERT_EQ(g_queues[QU_PICKUP].free_slots, g_queues[QU_PICKUP].max_slots);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+    ASSERT_EQ(g_lock_held[LOCK_PICKSLOT], 0);
+
+    /* Drain remaining entries */
+    ASSERT_EQ(queue_exit(w0), 1);
+    ASSERT_EQ(queue_exit(w2), 1);
+    ASSERT_EQ(g_queues[QU_PICKUP].first, -1);
+    ASSERT_EQ(g_queues[QU_PICKUP].last, -1);
+    ASSERT_EQ(g_queues[QU_PICKUP].count, 0);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+
+    /* Closed queue refuses queue_add cleanly */
+    g_queues[QU_PICKUP].q_flags = 0;
+    ASSERT_EQ(queue_add(QU_PICKUP), -1);
+    ASSERT_EQ(g_lock_held[LOCK_QUEUE_ADD], 0);
+}
+
 int main(void)
 {
     RUN_TEST(test_bay_claim_release_and_ownership_cas);
     RUN_TEST(test_bay_consistency_and_corrupt_indices);
     RUN_TEST(test_pickslot_and_freeslot_invariants);
     RUN_TEST(test_p_x_y_set_and_commit_ordering);
+    RUN_TEST(test_shm_bounds_accessors);
+    RUN_TEST(test_queue_lifecycle_and_lock_balance);
     TEST_SUMMARY("test_bay_slot");
 }

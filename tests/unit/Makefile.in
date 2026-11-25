@@ -39,7 +39,8 @@ test_parsers: test_parsers.c test_harness.h
 
 test_bay_slot: test_bay_slot.c test_harness.h
 	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_bay_slot.c \
-		../../ntserv/bay.o ../../ntserv/slotmaint.o $(OBJS_COMMON) $(EXTRALIBS)
+		../../ntserv/bay.o ../../ntserv/slotmaint.o ../../ntserv/queue.o \
+		$(OBJS_COMMON) $(EXTRALIBS)
 
 test_packets: test_packets.c test_harness.h
 	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_packets.c \
