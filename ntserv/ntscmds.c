@@ -426,6 +426,7 @@ void do_start_basep(void)
     (void) signal(SIGALRM,SIG_DFL);
     execl(Basep, "basep", (char *) NULL);
     perror(Basep);
+    _exit(1);
   }
 }
 #endif
@@ -440,8 +441,9 @@ void do_start_inl(void)
   }
   if (vfork() == 0) {
     (void) signal(SIGALRM,SIG_DFL);
-    execl(Inl, "inl", 0);
+    execl(Inl, "inl", (char *) NULL);
     perror(Inl);
+    _exit(1);
   }
 }
 #endif
@@ -458,6 +460,7 @@ void do_start_puck(void)
     (void) signal(SIGALRM,SIG_DFL);
     execl(Puck, "puck", (char *) NULL);
     perror(Puck);
+    _exit(1);
   }
 }
 #endif
@@ -474,6 +477,7 @@ void do_start_mars(void)
     (void) signal(SIGALRM,SIG_DFL);
     execl(Mars, "mars", (char *) NULL);
     perror(Mars);
+    _exit(1);
   }
 }
 #endif
@@ -828,14 +832,14 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
         if (!strcmp((igntype == IGNORING) ? srcip : destip, p->p_ip)) {
             slot = find_slot_by_ip((igntype == IGNORING) ? destip : srcip, 0);
             if (slot == -1) {
-                strcat(msg, "  ");
+                snprintf(msg, sizeof(msg), "   %s",
+                         (igntype == IGNORING) ? destip : srcip);
             } else {
                 other = &players[slot];
-                sprintf(msg, "%s", other->p_mapchars);
+                snprintf(msg, sizeof(msg), "%.2s %s", other->p_mapchars,
+                         (igntype == IGNORING) ? destip : srcip);
             }
 
-            strncat(msg, " ", MSG_LEN - 1);
-            strncat(msg, (igntype == IGNORING) ? destip : srcip, MSG_LEN - 1);
             snprintf(filename, FNAMESIZE * 2, "%s/%s", dirname, dirent->d_name);
             ignorefile = fopen(filename, "r");
             if (ignorefile == NULL) {
@@ -855,13 +859,13 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
                 continue;
             }
             if (ignmask & MINDIV) {
-                strncat(msg, " Indiv", MSG_LEN - 1);
+                strncat(msg, " Indiv", sizeof(msg) - strlen(msg) - 1);
             }
             if (ignmask & MTEAM) {
-                strncat(msg, " Team", MSG_LEN - 1);
+                strncat(msg, " Team", sizeof(msg) - strlen(msg) - 1);
             }
             if (ignmask & MALL) {
-                strncat(msg, " All", MSG_LEN - 1);
+                strncat(msg, " All", sizeof(msg) - strlen(msg) - 1);
             }
             pmessage(whofrom, MINDIV, addr, "%s", msg);
             hits++;
@@ -1013,7 +1017,10 @@ void do_nowobble(char *comm, struct message *mess)
     who = mess->m_from;
     addr = addr_mess(who,MINDIV);
 
-    nowobble = atoi(comm+strlen("nowobble "));
+    if (strlen(comm) > strlen("nowobble "))
+        nowobble = atoi(comm + strlen("nowobble "));
+    else
+        nowobble = !nowobble;
 
     pmessage(who, MINDIV, addr, "No wobble fix is now %s [%d] {%s}", 
 	     nowobble ? "on (new test mode)" : "off (classic mode)", nowobble, comm );
@@ -1564,10 +1571,13 @@ void do_admin(char *comm, struct message *mess)
       pmessage(who, MINDIV, addr, "admin: exec is not enabled.");
     else
     {
-      if (system(one + 5) == 0) {
-        pmessage(who, MINDIV, addr, "admin: executed \"%s\"", one + 5);
+      char *cmd = strtok(NULL, "");
+      if (cmd == NULL || *cmd == '\0') {
+        pmessage(who, MINDIV, addr, "admin: exec requires a command.");
+      } else if (system(cmd) == 0) {
+        pmessage(who, MINDIV, addr, "admin: executed \"%s\"", cmd);
       } else {
-        pmessage(who, MINDIV, addr, "admin: failed \"%s\"", one + 5);
+        pmessage(who, MINDIV, addr, "admin: failed \"%s\"", cmd);
       }
     }
   } else {
@@ -1659,7 +1669,8 @@ static char *ltd_stats_url_prefix() {
   char *res = fgets(text, 80, file);
   fclose(file);
   if (res == NULL) return NULL;
-  res[strlen(res)-1] = '\0';
+  if (strlen(res) > 0 && res[strlen(res)-1] == '\n')
+    res[strlen(res)-1] = '\0';
   return res;
 }
 
@@ -1695,16 +1706,17 @@ void do_ltd_query(char *comm, struct message *mess, int who)
   if (fork() == 0) {
     (void) signal(SIGALRM,SIG_DFL);
     FILE *fp = fopen(name, "w");
-    if (fp == NULL) return;
+    if (fp == NULL) _exit(1);
     int fd = fileno(fp);
     dup2(fd, 1);
     execl("tools/ltd_dump_html", "ltd_dump_html", me->p_name, (char *) NULL);
     perror("ltd_dump_html");
+    _exit(1);
   }
 
   /* tell the user where to go to see it */
   snprintf(name, 256-1, "%s/stats/%08x.%08x.html", url, me->p_pos, ticks);
-  pmessage(who, MINDIV, addr_mess(who,MINDIV), name);
+  pmessage(who, MINDIV, addr_mess(who,MINDIV), "%s", name);
 
   /* @bug: race condition, client might, if fast enough, access the
   link before the ltd_dump_html process is finished, but this is
