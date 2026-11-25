@@ -1,5 +1,5 @@
 ### Required cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 ### Pretty colors!
 SET(CMAKE_COLOR_MAKEFILE ON)
@@ -56,8 +56,23 @@ INCLUDE (CheckIncludeFile)
 INCLUDE (CheckTypeSize) 
 INCLUDE (CheckLibraryExists)
 INCLUDE (CheckFunctionExists)
+INCLUDE (CheckCCompilerFlag)
 #INCLUDE (FindCurses)
 #INCLUDE (FindX11)
+
+### High-signal compiler warnings
+FOREACH (_warn_flag
+	-Wall
+	-Werror=implicit-function-declaration
+	-Werror=format-security
+	-Werror=sizeof-pointer-memaccess
+	-Werror=return-type)
+	STRING(REGEX REPLACE "[^A-Za-z0-9]" "_" _warn_var "HAVE_C_FLAG${_warn_flag}")
+	CHECK_C_COMPILER_FLAG("${_warn_flag}" ${_warn_var})
+	IF (${_warn_var})
+		ADD_COMPILE_OPTIONS("${_warn_flag}")
+	ENDIF (${_warn_var})
+ENDFOREACH ()
 
 
 ### Platform specific stuff
@@ -69,11 +84,6 @@ IF (UNIX)
 	  	SET(CMAKE_C_CREATE_STATIC_LIBRARY
 	      "<CMAKE_AR> cr <TARGET> <LINK_FLAGS> <OBJECTS> "
 	      "<CMAKE_RANLIB> -c <TARGET> "
-		)
-	
-		SET (CMAKE_C_LINK_FLAGS 
-			-flat-namespace
-			${CMAKE_C_LINK_FLAGS}
 		)
 	ENDIF (APPLE)
 ELSE (UNIX)
