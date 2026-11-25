@@ -320,8 +320,6 @@ extern int    contestsize;
 extern int      dogcounts;
 #endif
 
-extern int      num_distress;
-
 /* copied from BRM data.h */
 extern int      num_distress;
 extern struct dmacro_list distmacro[];
