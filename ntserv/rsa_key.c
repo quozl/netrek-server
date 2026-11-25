@@ -90,8 +90,10 @@ int decryptRSAPacket (void *s,
     done = found = 0;
     do 
     {
-	if (read(fd, &key, sizeof(struct rsa_key)) != sizeof(struct rsa_key))
+	if (read(fd, &key, sizeof(struct rsa_key)) != sizeof(struct rsa_key)) {
 	    done = 1;
+	    break;
+	}
 	if (! (memcmp(key.global, cpacket->global, KEY_SIZE) ||
 	       memcmp(key.public, cpacket->public, KEY_SIZE)))
 	    done = found = 1;
@@ -140,8 +142,8 @@ int decryptRSAPacket (void *s,
 
 #endif
 
-    sprintf(RSA_client_type, "%s / %s",         /* LAB 4/1/93 */
-            key.client_type, key.architecture);
+    snprintf(RSA_client_type, KEY_SIZE * 2 + 1, "%.*s / %.*s", /* LAB 4/1/93 */
+             KEY_SIZE, key.client_type, KEY_SIZE, key.architecture);
     RSA_client_type[KEY_SIZE * 2] = '\0';
 
     return 0;
