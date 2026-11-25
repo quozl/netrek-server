@@ -1,0 +1,56 @@
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+CONFIG = system.mk
+include ../../$(CONFIG)
+
+CC = @CC@
+INCS = -I../../include -I../../ntserv
+CFLAGS = $(FLAGS) $(INCS)
+
+OBJS_COMMON = ../../ntserv/data.o ../../ntserv/glog.o ../../ntserv/ltd_stats.o \
+	../../ntserv/util.o ../../ntserv/sintab.o ../../ntserv/getship.o \
+	../../ntserv/planet.o ../../ntserv/alarm.o
+
+TESTS = test_distress test_ip_cidr test_parsers test_bay_slot test_packets
+
+.PHONY: all check clean reallyclean
+
+all: $(TESTS)
+
+check: all
+	@for t in $(TESTS); do \
+		echo "=== Running $$t ==="; \
+		./$$t || exit 1; \
+	done
+
+test_distress: test_distress.c test_harness.h
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_distress.c \
+		../../ntserv/distress.o $(OBJS_COMMON) $(EXTRALIBS)
+
+test_ip_cidr: test_ip_cidr.c test_harness.h ../../ntserv/ip.c
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_ip_cidr.c \
+		$(OBJS_COMMON) $(EXTRALIBS)
+
+test_parsers: test_parsers.c test_harness.h
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_parsers.c \
+		../../ntserv/feature.o ../../ntserv/bans.o ../../ntserv/warning.o \
+		../../ntserv/blog.o $(OBJS_COMMON) $(EXTRALIBS)
+
+test_bay_slot: test_bay_slot.c test_harness.h
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_bay_slot.c \
+		../../ntserv/bay.o ../../ntserv/slotmaint.o $(OBJS_COMMON) $(EXTRALIBS)
+
+test_packets: test_packets.c test_harness.h
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ ${srcdir}/test_packets.c \
+		../../ntserv/socket.o ../../ntserv/ping.o ../../ntserv/genspkt.o \
+		../../ntserv/distress.o ../../ntserv/feature.o ../../ntserv/ip.o \
+		../../ntserv/warning.o ../../ntserv/sysdefaults.o ../../ntserv/getpath.o \
+		../../ntserv/smessage.o ../../ntserv/rsa_key.o ../../ntserv/draft.o \
+		../../ntserv/gencmds.o ../../ntserv/bans.o ../../ntserv/blog.o \
+		$(OBJS_COMMON) $(EXTRALIBS)
+
+clean:
+	rm -f $(TESTS) *.o
+
+reallyclean: clean

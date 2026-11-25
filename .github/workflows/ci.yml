@@ -33,6 +33,7 @@ jobs:
           ./autogen.sh
           ./configure --prefix="$PWD/_inst"
           make -j"$(nproc)"
+          make check
           make install
 
   cmake:
@@ -94,6 +95,7 @@ jobs:
           ./autogen.sh
           ./configure --enable-sanitizers --prefix="$PWD/_inst"
           make -j"$(nproc)"
+          make check
 
   shm-stress:
     name: SMP Shared-Memory Stress (${{ matrix.os }})

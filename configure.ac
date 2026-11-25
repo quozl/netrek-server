@@ -374,7 +374,8 @@ AC_CONFIG_FILES([system.mk Makefile ntserv/Makefile tools/Makefile
 	keycomp/Makefile robotd/Makefile
 	docs/Makefile tools/no_geno_timer tools/geno_timer
 	docs/sample_geno_timer_crontab docs/sample_sysdef
-	tools/setpath tools/setpath.csh tools/admin/Makefile])
+	tools/setpath tools/setpath.csh tools/admin/Makefile
+	tests/unit/Makefile])
 AC_OUTPUT
 
 echo ""

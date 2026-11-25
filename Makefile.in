@@ -16,7 +16,7 @@ CONFIG=system.mk
 
 include $(CONFIG)
 
-.PHONY: rmdependencies clean reallyclean install installbin \
+.PHONY: rmdependencies clean reallyclean install installbin check \
 	do_library do_server do_listener do_robots do_robotd \
 	do_utilities do_rsa_utilities do_xsg do_pledit
 
@@ -86,6 +86,9 @@ do_rsa_utilities: do_library
 do_listener: do_library
 	@cd newstartd; $(MAKE)
 
+check: do_library
+	@cd tests/unit; $(MAKE) check
+
 cflags.h: Makefile $(CONFIG)
 	@cd ntserv;  $(MAKE) cflags
 
@@ -108,6 +111,7 @@ clean:
 	@cd tools/admin;     $(MAKE) clean
 	@cd sequencer; $(MAKE) clean
 	@cd keycomp;   $(MAKE) clean
+	@cd tests/unit; $(MAKE) clean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
 	fi
@@ -121,6 +125,7 @@ reallyclean:
 	@cd tools;     $(MAKE) reallyclean
 	@cd sequencer; $(MAKE) reallyclean
 	@cd keycomp;   $(MAKE) reallyclean
+	@cd tests/unit; $(MAKE) reallyclean
 	-@if [ -f res-rsa/Makefile ]; then \
 		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
 		$(MAKE) reallyclean; \
