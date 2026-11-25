@@ -200,9 +200,26 @@ static void removesem()
   if (stat == -1) perror("removesem: semctl (IPC_RMID)");
 }
 
+/*
+ * Semaphore lock operations.
+ * Hierarchy: acquire LOCK_QUEUE_ADD before LOCK_PICKSLOT if both are needed;
+ * never hold any lock across fork(), DNS resolution, or blocking I/O.
+ */
+static int valid_lock_index(int lock, const char *caller)
+{
+  if (lock < 0 || lock >= MAXLOCKS) {
+    fprintf(stderr, "%s: invalid lock index %d (valid 0..%d)\n",
+            caller, lock, MAXLOCKS - 1);
+    return 0;
+  }
+  return 1;
+}
+
 void lock_show(int lock)
 {
-  int stat = semctl(semid, lock, GETVAL);
+  int stat;
+  if (!valid_lock_index(lock, "lock_show")) return;
+  stat = semctl(semid, lock, GETVAL);
   if (stat == -1) perror("lock_show: semctl"); else
     fprintf(stderr, "lock_show: lock=%d value=%d (%s)\n", lock, stat,
             stat ? "unlocked" : "LOCKED");
@@ -210,8 +227,12 @@ void lock_show(int lock)
 
 void lock_off(int lock)
 {
-  struct sembuf sb = {lock, 1, SEM_UNDO};
+  struct sembuf sb;
   int stat;
+  if (!valid_lock_index(lock, "lock_off")) return;
+  sb.sem_num = lock;
+  sb.sem_op = 1;
+  sb.sem_flg = SEM_UNDO;
   do {
     stat = semop(semid, &sb, 1);
   } while (stat == -1 && errno == EINTR);
@@ -220,8 +241,12 @@ void lock_off(int lock)
 
 void lock_on(int lock)
 {
-  struct sembuf sb = {lock, -1, SEM_UNDO};
+  struct sembuf sb;
   int stat;
+  if (!valid_lock_index(lock, "lock_on")) return;
+  sb.sem_num = lock;
+  sb.sem_op = -1;
+  sb.sem_flg = SEM_UNDO;
   do {
     stat = semop(semid, &sb, 1);
   } while (stat == -1 && errno == EINTR);
@@ -230,8 +255,12 @@ void lock_on(int lock)
 
 void lock_on_nowait(int lock)
 {
-  struct sembuf sb = {lock, -1, SEM_UNDO | IPC_NOWAIT};
+  struct sembuf sb;
   int stat;
+  if (!valid_lock_index(lock, "lock_on_nowait")) return;
+  sb.sem_num = lock;
+  sb.sem_op = -1;
+  sb.sem_flg = SEM_UNDO | IPC_NOWAIT;
   do {
     stat = semop(semid, &sb, 1);
   } while (stat == -1 && errno == EINTR);

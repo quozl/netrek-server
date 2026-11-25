@@ -497,7 +497,15 @@ because they have initialisation of variables dependent on UPDATE. */
 /* for t-mode messaging, change this according to political environment */
 #define WARMONGER "George W Bush"
 
-/* openmem, lock functions */
+/* openmem, lock functions
+ *
+ * Lock hierarchy & usage rules:
+ *   - If multiple locks are ever acquired together, always acquire LOCK_QUEUE_ADD
+ *     before LOCK_PICKSLOT to avoid ABBA deadlocks.
+ *   - Never hold any semaphore lock across fork(), DNS resolution (ip_lookup),
+ *     or blocking network/disk I/O.
+ *   - Valid lock indices satisfy 0 <= lock < MAXLOCKS.
+ */
 #define MAXLOCKS       32       /* number of locks to be allocated        */
 #define LOCK_PICKSLOT   0       /* prevent PFREE to POUTFIT race          */
 #define LOCK_SETGAME    1       /* general purpose setgame tool lock      */
