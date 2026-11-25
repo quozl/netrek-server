@@ -117,8 +117,12 @@ void readFeatures(void)
    atexit(freeFeatures);
 
    f = fopen(Feature_File, "r");
+   if (!f) {
+      num_features = 0;
+      return;
+   }
    i=0;
-   while(fgets(buf, 511, f)){
+   while(i < num_features && fgets(buf, sizeof(buf), f)){
       line++;
 
       /* comment */
@@ -130,7 +134,7 @@ void readFeatures(void)
       a1 = 0;
       a2 = 0;
 
-      sv = sscanf(buf, "%s %c %s %d %d",
+      sv = sscanf(buf, "%79s %c %63s %d %d",
        features[i].name,
        &features[i].feature_type,
        value_string,
@@ -138,7 +142,7 @@ void readFeatures(void)
       features[i].arg1 = a1;
       features[i].arg2 = a2;
 
-      if(!sv) {
+      if(sv < 3) {
        fprintf(stderr, "%s:%d: syntax error on string %s",
           Feature_File, line, buf);
        continue;
@@ -248,7 +252,9 @@ getFeature(struct feature_cpacket *cpack, /* client request */
 static int feature_cmp(char *f, char *s)
 {
    while(*f && *s){
-      if((islower(*f)?toupper(*f):*f) != (islower(*s)?toupper(*s):*s))
+      unsigned char cf = (unsigned char) *f;
+      unsigned char cs = (unsigned char) *s;
+      if((islower(cf)?toupper(cf):cf) != (islower(cs)?toupper(cs):cs))
        return 0;
       f++; s++;
    }
