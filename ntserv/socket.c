@@ -1289,8 +1289,8 @@ static void handlePlanReq(struct planet_cpacket *packet)
     struct planet *plan;
     struct planet_spacket *pl;
 
-    if (!F_check_planets) return;
-    if (packet->pnum < 0 || packet->pnum > MAXPLANETS) return;
+    if (!F_check_planets || me == NULL) return;
+    if (packet->pnum < 0 || packet->pnum >= MAXPLANETS) return;
 
     plan = &planets[(int) packet->pnum];
 
@@ -1763,6 +1763,7 @@ static void handleQuitReq(struct quit_cpacket *packet)
 
 static void handleOptionsPacket(struct options_cpacket *packet)
 {
+    if (mystats == NULL) return;
     memcpy(mystats->st_keymap, packet->keymap, 96);
 /*    mystats->st_flags = ntohl(packet->flags);*/
     mystats->st_flags = ntohl(packet->flags) |
@@ -1899,6 +1900,7 @@ static void handleReset(struct resetstats_cpacket *packet)
     extern int startTkills, startTlosses, startTarms, 
 	startTplanets, startTticks;
 #endif
+    if (me == NULL || mystats == NULL) return;
     if (packet->verify != 'Y') return;
 
     /* Gee, they seem to want to reset their stats!  Here goes... 
@@ -1964,7 +1966,11 @@ static void handleUpdatesReq(struct updates_cpacket *packet)
     /* the client sends how often he would like to receive a packet in
     microseconds ... which is converted to an integer rate in updates
     per second */
-    int ups = 1000000 / ntohl(packet->usecs);
+    unsigned int usecs = ntohl(packet->usecs);
+    int ups;
+
+    if (me == NULL || usecs == 0) return;
+    ups = 1000000 / usecs;
     if (p_ups_set(me, ups)) {
         /* only send this if the client has shown it understands
         feature packets, by sending us CP_FEATURE, which also sends
@@ -2003,7 +2009,7 @@ static void handleReserved(struct reserved_cpacket *packet)
     struct rsa_key_spacket   rsp;
     char serverName[64];
 
-    if (testtime==1) return;
+    if (me == NULL || testtime==1) return;
     if (memcmp(packet->data, testdata, RESERVED_SIZE) != 0) { /* bcmp LEGACY POSIX.1-2001 */
         testtime=1;
         return;
@@ -2046,7 +2052,7 @@ static void handleRSAKey(struct rsa_key_cpacket *packet)
     struct rsa_key_spacket mysp;
     char serverName[64]; 
 
-    if (testtime==1) return;
+    if (me == NULL || testtime==1) return;
     if (RSA_Client != 1) return;
     memcpy(mysp.data, testdata, KEY_SIZE);
 
@@ -2072,7 +2078,7 @@ static void handleReserved(struct reserved_cpacket *packet)
     struct reserved_spacket mysp;
     char serverName[64];
 
-    if (testtime==1) return;
+    if (me == NULL || testtime==1) return;
     if (memcmp(packet->data, testdata, 16) != 0) {
 	testtime=1;
 	return;
@@ -2128,6 +2134,8 @@ static void handleScan(struct scan_cpacket *packet)
 
 static void handlePingResponse(struct ping_cpacket  *packet)
 {
+    if (me == NULL) return;
+
     /* client requests pings by sending pingme == 1 on TCP socket */
 
     if(rsock == sock){

@@ -62,7 +62,7 @@ void pingResponse(struct ping_cpacket *packet)
    register int    i;
    static int      last_num;
 
-   if (!ping || packet->pingme != 1)
+   if (me == NULL || !ping || packet->pingme != 1)
       return;			/* oops, garbage */
 
    ping_ghostbust = 0;		/* don't ghostbust, client is alive */
@@ -156,31 +156,31 @@ void sendClientPing(void)
 static void calc_loss(int i, struct ping_cpacket *packet)
 {
    /* tloss vars */
-   register int    cp_recv,	/* client packets recv */
+   long long       cp_recv,	/* client packets recv */
                    cp_sent;	/* client packets sent */
-   int             s_to_c_dropped,	/* server to client */
+   long long       s_to_c_dropped,	/* server to client */
                    c_to_s_dropped;	/* client to server */
-   static int      old_s_to_c_dropped,	/* previous update */
-                   old_c_to_s_dropped;	/* "" */
+   static long long old_s_to_c_dropped,	/* previous update */
+                    old_c_to_s_dropped;	/* "" */
    /* iloss vars */
-   int             p_sent, p_recv;
+   long long       p_sent, p_recv;
 
    static
    int             timer;
 
-   static int      inc_packets_sent,	/* packets sent start-point */
-                   inc_packets_received,	/* packets recvd start-pt  */
-                   inc_s_to_c_dropped,	/* dropped s-to-c start-pt */
-                   inc_c_to_s_dropped;	/* dropped c-to-s start-pt */
+   static long long inc_packets_sent,	/* packets sent start-point */
+                    inc_packets_received,	/* packets recvd start-pt  */
+                    inc_s_to_c_dropped,	/* dropped s-to-c start-pt */
+                    inc_c_to_s_dropped;	/* dropped c-to-s start-pt */
 
    if (!timer)
       timer = ping_iloss_interval;
 
-   cp_recv = ntohl(packet->cp_recv);
-   cp_sent = ntohl(packet->cp_sent);
+   cp_recv = (unsigned int) ntohl(packet->cp_recv);
+   cp_sent = (unsigned int) ntohl(packet->cp_sent);
 
    /* at ping time, total packets dropped from server to client */
-   s_to_c_dropped = ping_sent[i].packets_sent_at_ping - cp_recv;
+   s_to_c_dropped = (long long) ping_sent[i].packets_sent_at_ping - cp_recv;
 
    if (s_to_c_dropped < old_s_to_c_dropped) {
       /*
@@ -198,9 +198,13 @@ static void calc_loss(int i, struct ping_cpacket *packet)
       s_to_c_dropped = old_s_to_c_dropped;
    }
    /* total loss server-to-client since start of connection */
-   tloss_sc = 100 -
-      (double) ((100 * (ping_sent[i].packets_sent_at_ping - s_to_c_dropped)) /
-                (double) ping_sent[i].packets_sent_at_ping);
+   if (ping_sent[i].packets_sent_at_ping <= 0)
+      return;
+   tloss_sc = 100.0 -
+      ((100.0 * (double) (ping_sent[i].packets_sent_at_ping - s_to_c_dropped)) /
+       (double) ping_sent[i].packets_sent_at_ping);
+   if (tloss_sc < 0.0) tloss_sc = 0.0;
+   if (tloss_sc > 100.0) tloss_sc = 100.0;
 
    /*
     * at ping time, total packets dropped from client to server NOTE: not
@@ -208,7 +212,7 @@ static void calc_loss(int i, struct ping_cpacket *packet)
     * packets between the time we sent the ping and the time the client
     * received it.
     */
-   c_to_s_dropped = cp_sent - packets_received;
+   c_to_s_dropped = cp_sent - (long long) packets_received;
 
    /*
     * printf("cp_sent: %d, packets_received: %d\n", cp_sent,
@@ -226,14 +230,22 @@ static void calc_loss(int i, struct ping_cpacket *packet)
        * the extra packets we think we got from the client from
        * packets_received.
        */
-      packets_received -= old_c_to_s_dropped - c_to_s_dropped;
+      long long delta = old_c_to_s_dropped - c_to_s_dropped;
+      if (delta >= packets_received)
+         packets_received = 1;
+      else
+         packets_received -= delta;
       /* and adjust c_to_s_dropped so we don't get a negative packet loss */
       c_to_s_dropped = old_c_to_s_dropped;
    }
    /* total loss client-to-server since start of connection */
-   tloss_cs = 100 -
-      (double) ((100 * (packets_received - c_to_s_dropped)) /
-                (double) packets_received);
+   if (packets_received <= 0)
+      return;
+   tloss_cs = 100.0 -
+      ((100.0 * (double) (packets_received - c_to_s_dropped)) /
+       (double) packets_received);
+   if (tloss_cs < 0.0) tloss_cs = 0.0;
+   if (tloss_cs > 100.0) tloss_cs = 100.0;
 
    old_s_to_c_dropped = s_to_c_dropped;
    old_c_to_s_dropped = c_to_s_dropped;
@@ -241,18 +253,18 @@ static void calc_loss(int i, struct ping_cpacket *packet)
    /* Incremental packet loss */
 
    /* packets sent since last ping response */
-   p_sent = ping_sent[i].packets_sent_at_ping - inc_packets_sent;
+   p_sent = (long long) ping_sent[i].packets_sent_at_ping - inc_packets_sent;
 
    /* packets received since last ping response */
-   p_recv = packets_received - inc_packets_received;
+   p_recv = (long long) packets_received - inc_packets_received;
 
-   if (!p_sent || !p_recv) {
+   if (p_sent <= 0 || p_recv <= 0) {
       /* just in case */
       return;
    }
    /* percent loss server-to-client since PACKET_LOSS_INTERVAL */
    iloss_sc = 100 -
-      (int)((100 * (p_sent - (s_to_c_dropped - inc_s_to_c_dropped))) / 
+      (int)((100.0 * (double)(p_sent - (s_to_c_dropped - inc_s_to_c_dropped))) / 
 	    (double)p_sent);
    /*
     * we're not going to do any of the adjustments we did in tloss
@@ -260,10 +272,12 @@ static void calc_loss(int i, struct ping_cpacket *packet)
     */
    if (iloss_sc < 0)
       iloss_sc = 0;
+   if (iloss_sc > 100)
+      iloss_sc = 100;
 
    /* total percent loss client-to-server since PACKET_LOSS_INTERVAL */
    iloss_cs = 100 -
-      (int)((100 * (p_recv - (c_to_s_dropped - inc_c_to_s_dropped))) / 
+      (int)((100.0 * (double)(p_recv - (c_to_s_dropped - inc_c_to_s_dropped))) / 
 	     (double)p_recv);
    /*
     * we're not going to do any of the adjustments we did in tloss
@@ -271,6 +285,8 @@ static void calc_loss(int i, struct ping_cpacket *packet)
     */
    if (iloss_cs < 0)
       iloss_cs = 0;
+   if (iloss_cs > 100)
+      iloss_cs = 100;
 
    /*
     * we update these variables every PACKET_LOSS_INTERVAL seconds to start a
