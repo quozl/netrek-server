@@ -242,10 +242,12 @@ int queue_add(int w_queue)
         strcpy(lwait->host, "hidden");
     } else {
         strncpy(lwait->ip, ip, sizeof(lwait->ip) - 1);
+        lwait->ip[sizeof(lwait->ip) - 1] = '\0';
         strncpy(lwait->host, host, sizeof(lwait->host) - 1);
+        lwait->host[sizeof(lwait->host) - 1] = '\0';
+        ip_lookup(ip, lwait->host, lwait->host,
+                  NULL, NULL, NULL, sizeof(lwait->host));
     }
-    ip_lookup(ip, lwait->host, lwait->host,
-              NULL, NULL, NULL, sizeof(lwait->host));
 
     return i;
 }

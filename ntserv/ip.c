@@ -25,37 +25,40 @@ pid_t pid;
 #define SORBSDOMAIN "dnsbl.sorbs.net"
 #define NJABLDOMAIN "dnsbl.njabl.org"
 
+static int format_dnsbl_host(const char *ip, const char *domain,
+                             char *dnshost, size_t size)
+{
+    struct in_addr in;
+    unsigned char *b;
+
+    if (!inet_aton(ip, &in))
+        return 0;
+    b = (unsigned char *) &in.s_addr;
+    snprintf(dnshost, size, "%u.%u.%u.%u.%s",
+             b[3], b[2], b[1], b[0], domain);
+    return 1;
+}
+
 static int xbltest(char *ip)
 {
-    char *ipbuf = strdup(ip);
-    char **ipptr = &ipbuf;
-    int ipf[4], i;
     char dnshost[256];
 
-    for (i = 0; i < 4; i++)
-        ipf[i] = atoi(strsep(ipptr, "."));
-    sprintf(dnshost, "%d.%d.%d.%d.%s",
-            ipf[3], ipf[2], ipf[1], ipf[0], XBLDOMAIN);
-    free(ipbuf);
+    if (!format_dnsbl_host(ip, XBLDOMAIN, dnshost, sizeof(dnshost)))
+        return 0;
 
     return (int)(gethostbyname(dnshost) != 0);
 }
 
 static int njabltest(char *ip)
 {
-    char *ipbuf = strdup(ip);
-    char **ipptr = &ipbuf;
-    int ipf[4], i;
     char dnshost[256];
     struct hostent *njabl;
 
-    for (i = 0; i < 4; i++)
-        ipf[i] = atoi(strsep(ipptr, "."));
-    sprintf(dnshost, "%d.%d.%d.%d.%s",
-            ipf[3], ipf[2], ipf[1], ipf[0], NJABLDOMAIN);
-    free(ipbuf);
+    if (!format_dnsbl_host(ip, NJABLDOMAIN, dnshost, sizeof(dnshost)))
+        return 0;
 
-    if ((njabl = gethostbyname(dnshost)) && (njabl->h_addr_list[0][3] == 9))
+    if ((njabl = gethostbyname(dnshost)) && njabl->h_addr_list &&
+        njabl->h_addr_list[0] && (unsigned char) njabl->h_addr_list[0][3] == 9)
         return 1;
     else
         return 0;
@@ -63,27 +66,22 @@ static int njabltest(char *ip)
 
 static int sorbstest(char *ip)
 {
-    char *ipbuf = strdup(ip);
-    char **ipptr = &ipbuf;
-    int ipf[4], i;
+    int i;
     char dnshost[256];
     struct hostent *sorbs;
     int proxy = 0, proxyadd = 1;
 
-    for (i = 0; i < 4; i++)
-        ipf[i] = atoi(strsep(ipptr, "."));
-    sprintf(dnshost, "%d.%d.%d.%d.%s",
-            ipf[3], ipf[2], ipf[1], ipf[0], SORBSDOMAIN);
-    free(ipbuf);
+    if (!format_dnsbl_host(ip, SORBSDOMAIN, dnshost, sizeof(dnshost)))
+        return 0;
 
-    if ((sorbs = gethostbyname(dnshost)))
+    if ((sorbs = gethostbyname(dnshost)) && sorbs->h_addr_list)
         for (i = 0; sorbs->h_addr_list[i]; i++) {
-            if ((sorbs->h_addr_list[i][3] >= 2) &&
-                (sorbs->h_addr_list[i][3] <= 4)) {
+            unsigned char last = (unsigned char) sorbs->h_addr_list[i][3];
+            if ((last >= 2) && (last <= 4)) {
                 proxy |= proxyadd;
                 proxyadd *= 2;
             }
-            if (sorbs->h_addr_list[i][3] == 7)
+            if (last == 7)
                 proxy |= 8;
         }
     return proxy;
@@ -171,8 +169,9 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
     /* Resolve the IP from the FQDN resolved above and store the text
        string in fwdhost */
     if (ip_check_dns && (!(forward = gethostbyname(reverse->h_name)) ||
-        !inet_ntop(AF_INET, forward->h_addr_list[0], fwdhost, MAXHOSTNAMESIZE)
-        || strncmp(ip, fwdhost, len - 1))) {
+        !forward->h_addr_list || !forward->h_addr_list[0] ||
+        !inet_ntop(AF_INET, forward->h_addr_list[0], fwdhost, sizeof(fwdhost))
+        || strncmp(ip, fwdhost, len > 0 ? len - 1 : 0))) {
         /* Display the IP in full_hostname and the resolved reverse in
             dns_hostname if the reverse does not forward resolve to an
             IP or if the forward resolution does not match the
@@ -180,7 +179,7 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
         ERROR(3,("ip_to_full_hostname: forward lookup failed for %s (%s)\n",
                  reverse->h_name, ip));
         copy_hostname(p_full_hostname, ip, len);
-        copy_hostname(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE);
+        copy_hostname(p_dns_hostname, reverse->h_name, len);
         _exit(0);
     }
     /* if this test works, then DNS is set up correctly */
@@ -188,8 +187,8 @@ void ip_lookup(char *ip, char *p_full_hostname, char *p_dns_hostname,
     /* Display the resolved reverse in both full_hostname and
        dns_hostname if the resolved forward matches or if IP_CHECK_DNS
        is disabled */
-    copy_hostname(p_full_hostname, reverse->h_name, MAXHOSTNAMESIZE);
-    copy_hostname(p_dns_hostname, reverse->h_name, MAXHOSTNAMESIZE);
+    copy_hostname(p_full_hostname, reverse->h_name, len);
+    copy_hostname(p_dns_hostname, reverse->h_name, len);
     ERROR(3,("ip_to_full_hostname: %s resolved to %s\n", ip, p_full_hostname));
     _exit(0);
 }
@@ -220,14 +219,18 @@ int flag_test_cidr(char *name, char *ip)
 {
     DIR *dp;
     struct dirent *ep;
-    char *str;
-    in_addr_t host, entry;
-    int mask;
+    struct in_addr host_in, entry_in;
+    uint32_t host, entry;
+    char entry_buf[256];
+    char *dash, *endptr;
+    long mask;
 
+    if (ip == NULL || !inet_aton(ip, &host_in))
+        return 0;
     if (!(dp = opendir(name)))
         return 0;
 
-    host = inet_addr(ip);
+    host = ntohl(host_in.s_addr);
     while ((ep = readdir(dp)))
     {
         if (!strcmp(ep->d_name, ip))
@@ -235,16 +238,19 @@ int flag_test_cidr(char *name, char *ip)
             closedir(dp);
             return 1;
         }
-        if (!(str = strtok(ep->d_name, "-")))
+        strncpy(entry_buf, ep->d_name, sizeof(entry_buf) - 1);
+        entry_buf[sizeof(entry_buf) - 1] = '\0';
+        dash = strchr(entry_buf, '-');
+        if (!dash || dash[1] == '\0')
             continue;
-        if (!(str = strtok(NULL, "-")))
+        *dash = '\0';
+        if (!inet_aton(entry_buf, &entry_in))
             continue;
-        if ((entry = inet_addr(ep->d_name)) == -1)
+        mask = strtol(dash + 1, &endptr, 10);
+        if (*endptr != '\0' || mask < 0 || mask > 32)
             continue;
-        mask = atoi(str);
-        if ((mask < 0) || (mask > 32))
-            continue;
-        if ((host << (32 - mask)) == (entry << (32 - mask)))
+        entry = ntohl(entry_in.s_addr);
+        if (mask == 0 || (host >> (32 - mask)) == (entry >> (32 - mask)))
         {
             closedir(dp);
             return 1;
@@ -376,6 +382,7 @@ int ip_ignore_ip(char *us, char *them) {
 void ip_ignore_ip_update(char *us, char *them, int mask) {
   char *name = ip_ignore_ip_name(us, them);
   FILE *file = fopen(name, "w");
+  if (file == NULL) return;
   fprintf(file, "%d\n", mask);
   fclose(file);
 }
