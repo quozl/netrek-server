@@ -1027,10 +1027,13 @@ void updtMessage(struct mesg_spacket *msg, struct message *cur)
 	    msg->m_flags ^= MDISTR; /* get rid of MDISTR flag so client
 				      isn't confused */
 	    HandleGenDistr(cur->m_data,cur->m_from,cur->m_recpt,&dist);
-	    makedistress(&dist,buf,distmacro[dist.distype].macro);
-	    /* note that we do NOT send the F0->FED part 
-	       so strncat is fine */
-	    strcpy(msg->mesg, buf);
+	    if (dist.distype > 0 && dist.distype < num_distress &&
+	        distmacro[dist.distype].macro != NULL) {
+	      makedistress(&dist,buf,distmacro[dist.distype].macro);
+	      /* note that we do NOT send the F0->FED part 
+	         so strncat is fine */
+	      strcpy(msg->mesg, buf);
+	    }
 	}
 
     }
