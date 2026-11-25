@@ -978,12 +978,13 @@ void do_queue_msg(char *comm, struct message *mess)
 	        int k = queues[i].first;
 		int j;
 		
-		for (j=0; j < count; j++) {
+		for (j=0; j < count && k >= 0 && k < MAXWAITING; j++) {
 #ifdef NO_HOSTNAMES
 		  char *them = "hidden";
 #else
 		  char *them = waiting[k].host;
 #endif
+                    if (!waiting[k].inuse) break;
                     int m = find_slot_by_host(waiting[k].host, 0);
 		    if (m != -1) {
 		        struct player *p = &players[m];
