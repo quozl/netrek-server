@@ -391,7 +391,10 @@ int connectToClient(char *machine, int port)
        interval, and cancel the connect after that interval */
 
     /* set the socket non-blocking */
-    stat = ioctl(ns, FIONBIO, "in");
+    {
+	int nonblock = 1;
+	stat = ioctl(ns, FIONBIO, &nonblock);
+    }
     if (stat < 0) {
 	ERROR(1,("%s: ioctl(FIONBIO) failed, %s\n", whoami(), 
 		 strerror(errno)));
@@ -453,7 +456,10 @@ int connectToClient(char *machine, int port)
     }
 
     /* set the socket blocking */
-    stat = ioctl(ns, FIONBIO, "out");
+    {
+	int nonblock = 0;
+	stat = ioctl(ns, FIONBIO, &nonblock);
+    }
     if (stat < 0) {
 	ERROR(1,("%s: ioctl(FIONBIO) failed, %s\n", whoami(), 
 		 strerror(errno)));
@@ -532,7 +538,7 @@ void initClientData(void)
 
 	fat_plasma_info[i].packet = (PTR) &clientPlasmasInfo[i];
 	fat_plasma_info[i].pkt_size = sizeof(struct plasma_info_spacket);
-	fat_plasma_info[i].prev = fat_torp_info[i].next = (FAT_NODE *) NULL;
+	fat_plasma_info[i].prev = fat_plasma_info[i].next = (FAT_NODE *) NULL;
     }
     for (i=0; i<MAXPLANETS; i++) {
 	extern struct planet_spacket clientPlanets[MAXPLANETS];
@@ -587,7 +593,7 @@ void updateClient(void)
     /* This can halve your updates */
     if (send_short && skip) {
 	skip = 0;		/* back to default */
-	if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==buf)) {
+	if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==udpbuf)) {
 	    /* We sent nothing!  We better send something to wake him */
 	    updateSelf(TRUE);
 	}
@@ -643,7 +649,7 @@ void updateClient(void)
     }
 
     last_udp_size = SizeOfUDPUpdate();
-    if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==buf)) {
+    if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==udpbuf)) {
 	/* We sent nothing!  We better send something to wake him */
 	updateSelf(TRUE);
     }
@@ -929,6 +935,11 @@ static int doReadRest(int asock, char *buf, char *bufptr, int *count, int size)
     int temp;
 
     while (size>*count+(buf-bufptr)) {
+	if (asock == udpSock) {
+	    UDPDIAG(("Truncated UDP packet (need %d, have %d), dropping\n",
+		     size, *count + (int)(buf - bufptr)));
+	    return 0;
+	}
 	timeout.tv_sec=MAX(deadline-time(NULL), 0);
 	timeout.tv_usec=0;
 	FD_ZERO(&readfds);
@@ -988,6 +999,13 @@ static int doRead(int asock)
                          (struct sockaddr *)&moo, &moolen)) {
 	    ERROR(1,("%s: portswap recvfrom() failed, %s\n",
 		     whoami(), strerror(errno)));
+        }
+        else if (moo.sin_family != AF_INET ||
+                 moo.sin_addr.s_addr != remoteaddr) {
+            /* Discard datagrams from unexpected source addresses */
+            UDPDIAG(("portswap ignoring packet from unexpected host\n"));
+            (void) recvfrom(asock, buf, BUFSIZ*2, 0, NULL, NULL);
+            return 0;
         }
         else {
             UDPDIAG(("client port is really %d\n", ntohs(moo.sin_port)));
@@ -1118,15 +1136,17 @@ static int doRead(int asock)
 	bufptr+=size;
 	if (bufptr>buf+BUFSIZ) {
 	    memcpy(buf, buf+BUFSIZ, BUFSIZ);
-	    if (count==BUFSIZ*2) {
+	    if (count==BUFSIZ*2 && asock != udpSock) {
 		/*readfds = 1<<asock;*/
 		FD_ZERO(&readfds);
 		FD_SET(asock, &readfds);
 		if (select(asock+1, &readfds, NULL, NULL, &timeout) > 0) {
-		    temp=read(asock,buf+BUFSIZ,BUFSIZ);
+		    do {
+			temp=read(asock,buf+BUFSIZ,BUFSIZ);
+		    } while (temp < 0 && errno == EINTR);
 		    count=BUFSIZ+temp;
 		    if (temp<=0) {
-			sprintf(buf, "Died in third read(), return=%d", temp);
+			snprintf(buf, BUFSIZ*2, "Died in third read(), return=%d", temp);
 			ERROR(1,( "3) read() failed (%d, error %d)\n",
 				  count, errno));
 			logmessage(buf);
@@ -1844,9 +1864,8 @@ static int gwrite(int fd, char *wbuf, size_t size)
 	    }
 	    else if (errno==EINTR) {
 		/* We got interrupted... Let's try it again. */
-		perror("gwrite");
 		errno = (-1);
-		n = 0;
+		continue;
 	    }
 	    else if (errno==EPIPE) {
 		/* The pipe is broken: i.e. the client is dead */
@@ -1868,7 +1887,9 @@ static int gwrite(int fd, char *wbuf, size_t size)
 
 	    snprintf(message, MSG_LEN * 2,
 		     "Died in gwrite, n=%d, errno=%d, <%s@%s>",
-		     n, errno, me->p_login, me->p_full_hostname);
+		     n, errno,
+		     me ? me->p_login : "unknown",
+		     me ? me->p_full_hostname : "unknown");
 	    logmessage(message);
 	    return -1;
 	}
@@ -3238,7 +3259,7 @@ static void handleShortReq(struct shortreq_cpacket *packet)
 
 static void handleThresh(struct threshold_cpacket *packet)
 {
-    send_threshold = packet->thresh;
+    send_threshold = ntohs(packet->thresh);
 #ifdef SHORT_THRESHOLD
     if (  send_threshold == 0) {
 	actual_threshold = 0;
