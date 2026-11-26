@@ -40,11 +40,12 @@ void encryptReservedPacket(struct reserved_spacket *spacket, struct reserved_cpa
     cpacket->type=CP_RESERVED;
 
     if ((address.s_addr = inet_addr(server)) == -1) {
-	if ((hp = gethostbyname(server)) == NULL) {
+	if ((hp = gethostbyname(server)) == NULL ||
+	    hp->h_length != (int) sizeof(address.s_addr)) {
 	    fprintf(stderr, "I don't know any %s!\n", server);
 	    exit(1);
 	} else {
-	    address.s_addr = *(long *) hp->h_addr;
+	    memcpy(&address.s_addr, hp->h_addr, sizeof(address.s_addr));
 	}
     }
 

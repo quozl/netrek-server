@@ -306,6 +306,27 @@ struct player *p_no(int i)
   return &players[i];
 }
 
+struct player *player_at(int idx)
+{
+  if (players == NULL || idx < 0 || idx >= MAXPLAYER)
+    return NULL;
+  return &players[idx];
+}
+
+struct planet *planet_at(int idx)
+{
+  if (planets == NULL || idx < 0 || idx >= MAXPLANETS)
+    return NULL;
+  return &planets[idx];
+}
+
+struct queuewait *waiter_at(int idx)
+{
+  if (waiting == NULL || idx < 0 || idx >= MAXWAITING)
+    return NULL;
+  return &waiting[idx];
+}
+
 /* convert a text player number to a player struct pointer */
 struct player *player_by_number(char *name)
 {
@@ -428,7 +449,7 @@ void p_x_y_set(struct player *j, int p_x, int p_y)
 {
   j->p_x_input = spi(p_x);
   j->p_y_input = spi(p_y);
-  j->p_x_y_set++;
+  store_release(&j->p_x_y_set, j->p_x_y_set + 1);
   /* note: request not obeyed until ship is !(PFDOCK|PFORBIT) */
 }
 
@@ -437,7 +458,7 @@ void p_x_y_commit(struct player *j)
 {
   j->p_x_internal = j->p_x_input;
   j->p_y_internal = j->p_y_input;
-  j->p_x_y_set = 0;
+  store_release(&j->p_x_y_set, 0);
 }
 
 /* convert changed p_x to internal scaled representation */
@@ -468,10 +489,13 @@ int p_ups_set(struct player *me, int client_ups)
 {
   int fpu, ups = client_ups;
 
+  if (fps < 1) return 0;
+
   /* keep requested updates per second within sysdef limits */
   if (ups < minups) ups = minups;
   if (ups > maxups) ups = maxups;
   if (ups > fps) ups = fps;
+  if (ups < 1) ups = 1;
 
   /*
   Convert to a skip count then back to an updates per second that
@@ -493,6 +517,7 @@ int p_ups_set(struct player *me, int client_ups)
   */
 
   fpu = fps / ups;
+  if (fpu < 1) fpu = 1;
   ups = fps / fpu;
 
   /* if there is no effective change, do nothing */

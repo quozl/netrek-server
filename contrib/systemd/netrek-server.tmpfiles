@@ -1,0 +1,3 @@
+d /usr/local/games/netrek-server/var 0750 netrek netrek -
+d /usr/local/games/netrek-server/var/players 0750 netrek netrek -
+d /usr/local/games/netrek-server/var/ip 0750 netrek netrek -

@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
       herror("gethostbyname");
       return 2;
     } else {
-      address.sin_addr.s_addr = *(long *) hp->h_addr;
+      memcpy(&address.sin_addr.s_addr, hp->h_addr, sizeof(address.sin_addr.s_addr));
     }
   }
 

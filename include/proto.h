@@ -239,6 +239,10 @@ void sendClientPacket(void *);
 void flushSockBuf(void);
 void socketPause(int);
 int readFromClient(void);
+int packet_allowed_in_state(unsigned char type,
+                            const struct player *p,
+                            const struct stats *st,
+                            const void *mask);
 int checkVersion(void);
 void logEntry(void);
 int closeUdpConn(void);
@@ -248,6 +252,7 @@ void forceShutdown(int s);
 int practice_robo(void);
 
 /* sysdefaults.c */
+void validate_admin_config(void);
 void readsysdefaults(void);
 int update_sys_defaults(void);
 

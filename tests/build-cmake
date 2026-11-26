@@ -1,35 +1,27 @@
 #!/bin/sh
 set -ev
 
-# test that current working directory matches darcs get expectation
+# test that current working directory matches repository root
 if [ ! -f CMakeLists.txt ]; then
    echo "build: run in wrong directory";
    exit 1;
 fi
 
 # where to build
-BUILDROOT=/tmp/netrek-server.$$
+BUILDROOT=/tmp/netrek-server-cmake.$$
 
 # copy the repository there
-darcs get .. $BUILDROOT
-
-# go there
-cd $BUILDROOT/Vanilla
+git clone . "$BUILDROOT"
 
 # make a build tree directory
-mkdir build
-
-# wander into it
-cd build
+mkdir -p "$BUILDROOT/build"
+cd "$BUILDROOT/build"
 
 # prepare build tree
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$BUILDROOT/out/ ..
+cmake -DCMAKE_INSTALL_PREFIX:PATH="$BUILDROOT/out/" ..
 
-# compile
-make
-
-# install all
-make install
+# compile core server targets
+make ntserv daemon newstartd
 
 # report success
 echo success

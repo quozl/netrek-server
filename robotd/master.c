@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #ifdef mips
 #include <fcntl.h>
@@ -36,7 +37,7 @@ int connect_master(char *m)
    struct sockaddr_in	addr;
    struct hostent	*hp;
 
-   v = sscanf(m, "%*s %s %d", host, &port);
+   v = sscanf(m, "%*s %79s %d", host, &port);
    if(v != 2) {
       fprintf(stderr, "connect_master: bad string %s\n", m);
       return 0;
@@ -51,7 +52,7 @@ int connect_master(char *m)
       return 0;
    }
    addr.sin_family = AF_INET;
-   addr.sin_port   = port;
+   addr.sin_port   = htons(port);
 
    if((addr.sin_addr.s_addr = inet_addr(host)) == -1){
       if((hp = gethostbyname(host))==NULL){
@@ -60,7 +61,7 @@ int connect_master(char *m)
 	 return 0;
       }
       else{
-	 addr.sin_addr.s_addr = *(long *) hp->h_addr;
+	 memcpy(&addr.sin_addr.s_addr, hp->h_addr, sizeof(addr.sin_addr.s_addr));
       }
    }
 

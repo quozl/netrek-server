@@ -1,0 +1,57 @@
+[Unit]
+Description=Netrek Vanilla Server (netrekd)
+Documentation=https://github.com/quozl/netrek-server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=netrek
+Group=netrek
+WorkingDirectory=/usr/local/games/netrek-server
+PIDFile=/usr/local/games/netrek-server/var/netrekd.pid
+ExecStart=/usr/local/games/netrek-server/bin/netrekd start
+ExecReload=/usr/local/games/netrek-server/bin/netrekd reload
+ExecStop=/usr/local/games/netrek-server/bin/netrekd stop
+Restart=on-failure
+RestartSec=5
+
+# Privilege and filesystem sandboxing
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectProc=invisible
+ProcSubset=pid
+ReadWritePaths=/usr/local/games/netrek-server/var
+UMask=0027
+
+# Kernel / capability / syscall restrictions
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Resource bounds
+LimitNOFILE=4096
+TasksMax=256
+
+# Optional IPC isolation: uncomment PrivateIPC=yes if external operator CLI
+# tools running outside this service unit do not need access to SysV SHM/sem.
+# PrivateIPC=yes
+
+[Install]
+WantedBy=multi-user.target

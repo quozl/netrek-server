@@ -1478,8 +1478,8 @@ eoggtype oggtype(char *s)
 	 switch(RANDOM()%3){
 	    case 0: return EOGGRIGHT;
 	    case 1: return EOGGLEFT;
-	    case 2: return EOGGTOP;
-	    break;
+	    case 2:
+	    default: return EOGGTOP;
 	 }
    }
 }
