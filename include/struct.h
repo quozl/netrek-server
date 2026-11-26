@@ -17,6 +17,11 @@
 #include "ltd_stats.h"
 #endif
 
+/*
+ * SHM ownership (struct pqueue):
+ *   - Wait-list linkage (first, last, count) is protected by LOCK_QUEUE_ADD.
+ *   - Slot counts (free_slots, p_status lifecycle) are protected by LOCK_PICKSLOT.
+ */
 struct pqueue {        /* A player queue */
     int    enter_sem;  /* Semaphore like, is the queue active */
     int    free_slots; /* Number of remaining slots for this queue */
@@ -63,6 +68,13 @@ struct pqueue {        /* A player queue */
  * Structure for people who are waiting.
  */
 
+/*
+ * SHM ownership (struct queuewait):
+ *   - Linkage and state (inuse, previous, next, count, w_queue, process) are
+ *     protected by LOCK_QUEUE_ADD.
+ *   - host may be updated asynchronously by the ip_lookup() child process after
+ *     LOCK_QUEUE_ADD has been released.
+ */
 struct queuewait {
     int mynum;                   /* My index in the waiting array */
     int inuse;                   /* Is this record in use */
@@ -409,6 +421,17 @@ struct stats {
 #define ST_INITIAL ST_MAPMODE+ST_NAMEMODE+ST_SHOWSHIELDS+ \
                    ST_KEEPPEACE+ST_SHOWLOCAL*2+ST_SHOWGLOBAL*2;
 
+/*
+ * SHM ownership (struct player):
+ *   - Slot allocation (PFREE <-> POUTFIT) and p_process are protected by
+ *     LOCK_PICKSLOT.
+ *   - p_flags is updated across processes atomically via shmatomic.h.
+ *   - p_bays[] is updated via store_release / compare_and_swap / atomic_exchange.
+ *   - p_x, p_y, p_x_internal, p_y_internal are written by daemon and read by
+ *     others; p_x_input / p_y_input are published by ntserv via p_x_y_set
+ *     store_release / load_acquire.
+ *   - p_ntorp and p_nplasmatorp are updated atomically via shmatomic.h.
+ */
 /*! @struct player struct.h struct */
 struct player {
     int p_no;                   /*!< slot number, from zero to MAXPLAYER */
@@ -578,6 +601,13 @@ struct statentry {
 #define TDETTEAMSAFE   0x020  /* Don't damage detting player's team */
 #define TPRACTICE      0x040  /* Don't damage practice robots */
 
+/*
+ * SHM ownership (struct torp):
+ *   - Photon slots are partitioned per player at [p_no * MAXTORP, (p_no + 1) * MAXTORP),
+ *     and plasma slots follow at MAXPLAYER * MAXTORP + p_no * MAXPLASMA.
+ *   - Spawning ntserv initializes payload fields before release-storing t_status = TMOVE;
+ *     daemon owns subsequent movement, detonation, and expiration.
+ */
 struct torp {
   int t_status;     /* State information */
   int t_type;       /* Currently only TPlasma and TPhoton */
@@ -613,6 +643,11 @@ struct torp {
 #define PHMISS 0x02
 #define PHHIT2 0x04	/* When it hits a photon */
 
+/*
+ * SHM ownership (struct phaser):
+ *   - Indexed per player (phasers[p_no]); player owns writes while ph_status == PHFREE
+ *     and publishes via release-store to ph_status != PHFREE; daemon consumes and ages.
+ */
 struct phaser {
     int ph_status;		/* What it's up to */
     u_char ph_dir;		/* direction */
@@ -638,6 +673,11 @@ struct phaser {
 #define PLCORE 0x800		/* A core world planet */
 #define PLFLAGMASK (PLREPAIR|PLFUEL|PLAGRI|PLHOME|PLCOUP|PLCORE)
 
+/*
+ * SHM ownership (struct planet):
+ *   - Daemon owns planetary growth, revolt, and coup timers; ntserv/robots perform
+ *     beaming, bombing, and pl_info updates on live state.
+ */
 struct planet {
     int pl_no;
     int pl_flags;		/* State information */
@@ -744,6 +784,10 @@ struct ban {
     char b_ip[NAME_LEN];	/* ip address banned		*/
 };
 
+/*
+ * SysV shared-memory segment ABI: field order and sizes must remain binary-compatible
+ * across daemon, ntserv, robots, and operator tools sharing PKEY.
+ */
 struct memory {
     struct context	context[1];
     struct status	status[1];

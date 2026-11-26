@@ -1028,16 +1028,16 @@ void mars_rules(void)
 void do_preferred_ship(char *comm, struct message *mess)
 {
     int who;
-    char shiptype[2];
-    int shipnum;
+    char shiptype[3];
+    int shipnum = -1;
 
     who = mess->m_from;
 
     checkBadPlayerNo(who,"in do_prefered_ship");
 
-    sscanf(comm,"SHIP %2s",shiptype);
-
-    shipnum = lookupshipname(shiptype);
+    shiptype[0] = '\0';
+    if (sscanf(comm,"SHIP %2s",shiptype) == 1)
+        shipnum = lookupshipname(shiptype);
 
     /*
       The default is no starbases or ATTs

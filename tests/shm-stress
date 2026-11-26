@@ -39,6 +39,11 @@ fuelled, cool, healed and in place.  The races counted are:
   phaser-stale           a phaser hit was applied before its target and
                          damage were set (the daemon applies hits every
                          fifth update, so this is rare)
+  bay-oob                a starbase p_bays slot held an out-of-range index
+  queue-corrupt          a wait queue list had an OOB index, cycle, or
+                         count mismatch
+  freeslots-drift        a queue's free_slots went out of bounds or drifted
+                         from actual PFREE player slots
   message-lost-uplink    a message never reached the daemon's queue
   message-lost-downlink  a message in the queue never reached its client
   message-duplicated     a message reached its client twice
@@ -584,7 +589,8 @@ def report(results, out, args):
         fields = m.group(0).split(': ', 1)[1].split()
         summary = dict(zip(fields[::2], map(int, fields[1::2])))
         for k in ('ntorp-drift', 'nplasma-drift', 'torp-slot',
-                  'torp-uninit', 'phaser-stale'):
+                  'torp-uninit', 'phaser-stale',
+                  'bay-oob', 'queue-corrupt', 'freeslots-drift'):
             events[k] = summary.get(k, 0)
     errors = [r for r in results if r.get('error')]
     total = {}

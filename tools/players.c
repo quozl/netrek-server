@@ -16,7 +16,8 @@
 extern int openmem(int);
 
 int mode = 0;
-static char *ships[] = {"SC", "DD", "CA", "BB", "AS", "SB"};
+static char *ships[] = {"SC", "DD", "CA", "BB", "AS", "SB", "GA", "AT"};
+#define SHIP_STR(t) (((t) >= 0 && (t) < (int)(sizeof(ships)/sizeof(ships[0]))) ? ships[(t)] : "??")
 static char *statnames[] = {"F", "O", "A", "E", "D", "Q", "V"};
 static int fd = 1;        /* stdout for non-socket connections */
 
@@ -95,7 +96,7 @@ int main(int argc, char **argv)
 	  case 'd':
 	    output("  %2s: %-16s   %2s %6.2f %6d %7d %6d %6d\n",
 		   players[i].p_mapchars, players[i].p_name,
-		   ships[players[i].p_ship.s_type],
+		   SHIP_STR(players[i].p_ship.s_type),
 		   players[i].p_kills,
 		   players[i].p_damage,
 		   players[i].p_shield,
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
 		   players[i].p_name, 
 		   statnames[players[i].p_status],
 		   players[i].p_ghostbuster,
-		   ships[players[i].p_ship.s_type],
+		   SHIP_STR(players[i].p_ship.s_type),
 #ifdef LTD_STATS
                    ltd_bombing_rating(&(players[i])),
                    ltd_planet_rating(&(players[i])),
@@ -130,7 +131,7 @@ int main(int argc, char **argv)
 		   (fixed_name) ? fixed_name : players[i].p_name,
 		   str(10,players[i].p_login),
 		   str(-24, players[i].p_monitor),
-		   ships[players[i].p_ship.s_type]);
+		   SHIP_STR(players[i].p_ship.s_type));
             free(fixed_name);
 	    break;
 	  case 'v':
@@ -191,14 +192,15 @@ static char *comment_get() {
   char *res = fgets(text, 80, file);
   fclose(file);
   if (res == NULL) return NULL;
-  res[strlen(res)-1] = '\0';
+  if (strlen(res) > 0 && res[strlen(res)-1] == '\n')
+    res[strlen(res)-1] = '\0';
   return res;
 }
 
 /* player count on a queue */
 static int pc(int queue) {
   int j, n = 0;
-  for (j=queues[QU_PICKUP].low_slot;j < queues[QU_PICKUP].high_slot;j++)
+  for (j=queues[queue].low_slot;j < queues[queue].high_slot;j++)
     if (players[j].p_status != PFREE)
       if (!is_robot(&players[j])) n++;
   return n;
@@ -304,7 +306,8 @@ static char *str(int n, char *s)
       if(j <= n)
          return s;
       else {
-         new = (char *) malloc(n);              /* xx, never freed */
+         new = (char *) malloc(n + 1);          /* xx, never freed */
+         if (!new) return s;
          r = new;
          while(*s && i < n){
             *r++ = *s++;
@@ -320,7 +323,8 @@ static char *str(int n, char *s)
       if(j <= n)
          return s;
       else{
-         new = (char *) malloc(n);              /* xx, never freed */
+         new = (char *) malloc(n + 1);          /* xx, never freed */
+         if (!new) return s;
          r = new;
          s += (j-n);
          while(*s){

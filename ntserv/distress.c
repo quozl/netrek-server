@@ -34,83 +34,46 @@ static int skipmacro (char buf[], int index);
 
 char mbuf[MSG_LEN];
 char *getaddr (), *getaddr2 ();
-char *pappend;
 
 /*
- * Like APPEND, and APPEND_CAP, APPEND_INT is an in-line function that
- * stops us from calling sprintf over and over again.
+ * Bounded inline helpers for Pass 1 macro expansion into buf1.
  */
-char *pappend;
-#define APPEND_INT(ptr, i) \
-    ptr += itoa2(i, ptr);
+#define APPEND_INT(ptr, end, i)                 \
+  do {                                          \
+    char _numbuf[16];                           \
+    snprintf(_numbuf, sizeof(_numbuf), "%d", (int)(i)); \
+    APPEND((ptr), (end), _numbuf);              \
+  } while (0)
 
-/*
- * The two in-line defs that follow enable us to avoid calling strcat over
- * and over again.
- */
-#define APPEND(ptr, str)    \
-  {                         \
-    pappend = str;          \
-    while (*pappend)        \
-      *ptr++ = *pappend++;  \
-  }
+#define APPEND(ptr, end, str)                   \
+  do {                                          \
+    const char *_pappend = (str);               \
+    while (*_pappend && (ptr) < (end))          \
+      *(ptr)++ = *_pappend++;                   \
+  } while (0)
 
-#define APPEND_CAP(ptr, cap, str)               \
-  {                                             \
-    pappend = str;                                    \
-    while (*pappend)                                  \
-      {                                                 \
-        *ptr++ = (cap ? toupper(*pappend) : *pappend);  \
-        pappend++;                                      \
-      }                                                 \
-  }
-
-
-/*
- * This is a hacked version from the K&R book.  Basically it puts <n> into
- * <s> in reverse and then reverses the string...
- * MH.  10-18-93
- */
-static int itoa2(int n, char s[])
-{
-    int i, c, j, len;
-
-    if ((c = n) < 0)
-        n = -n;
-
-    i = 0;
-    do {
-        s[i++] = n % 10 + '0';
-    } while ((n /= 10) > 0);
-
-    if (c < 0)
-        s[i++] = '-';
-
-    s[i] = '\0';
-
-    len = i--;
-
-    for (j = 0; i > j; j++, i--)
-    {
-        c = s[i];
-        s[i] = s[j];
-        s[j] = c;
-    }
-
-    return len;
-}
+#define APPEND_CAP(ptr, end, cap, str)          \
+  do {                                          \
+    const char *_pappend = (str);               \
+    while (*_pappend && (ptr) < (end))          \
+      {                                         \
+        *(ptr)++ = ((cap) ? toupper((unsigned char)*_pappend) : *_pappend); \
+        _pappend++;                             \
+      }                                         \
+  } while (0)
 
 /* ARGSUSED */
 static void dist_error(char *str, char *macro, char ch)
 {
               new_warning(UNDEF,"Bad Macro character in distress!");
               ERROR(1,("Unrecognizable special character in distress\n"));
-              ERROR(1,("From: %s@%s. %s: %s (%c)\n",
-                        me->p_name,
-                        me->p_monitor,
-                        str,
-                        macro,
-                        ch));
+              if (me != NULL)
+                ERROR(1,("From: %s@%s. %s: %s (%c)\n",
+                          me->p_name,
+                          me->p_monitor,
+                          str,
+                          macro,
+                          ch));
 }
 
 
@@ -124,13 +87,16 @@ void HandleGenDistr (char *message, u_char from, u_char to,
 
   char *mtext;
   u_char i;
+  size_t rem;
 
   mtext = &message[ADDRLEN];
 
-  memset((char *) dist, 0, sizeof (dist));
+  memset((char *) dist, 0, sizeof (*dist));
 
   dist->sender = from;
   dist->distype = mtext[0] & 0x1f;
+  if (dist->distype >= num_distress)
+    dist->distype = 0;
   dist->macroflag = ((mtext[0] & 0x20) > 0);
   dist->fuelp = mtext[1] & 0x7f;
   dist->dam = mtext[2] & 0x7f;
@@ -166,10 +132,13 @@ void HandleGenDistr (char *message, u_char from, u_char to,
 	dist->pre_app = 0;
   dist->preappend[0] = '\0';
 
-  if (mtext[16+i+1] != '\0') 
+  if (ADDRLEN + 16 + i + 1 < MSG_LEN && mtext[16+i+1] != '\0')
   {
-    strncpy (dist->preappend, &mtext[16+i+1], MSG_LEN - 1);
-    dist->preappend[MSG_LEN - 1] = '\0';
+    rem = MSG_LEN - ADDRLEN - (16 + i + 1);
+    if (rem > MSG_LEN - 1)
+      rem = MSG_LEN - 1;
+    strncpy (dist->preappend, &mtext[16+i+1], rem);
+    dist->preappend[rem] = '\0';
   }
 }
 
@@ -233,6 +202,7 @@ int makedistress (struct distress *dist, /* the info */
 {
   char buf1[10 * MAXMACLEN];
   char *pbuf1;
+  char *buf1_end = buf1 + sizeof(buf1) - 1;
   char buf2[10 * MAXMACLEN];
   char buf3[10 * MAXMACLEN];
   char tmp[10 * MAXMACLEN];
@@ -245,14 +215,15 @@ int makedistress (struct distress *dist, /* the info */
   struct planet *l;
   char c;
   char *macro;
+  int idx;
 
-  sender = &players[dist->sender];
-
-  if (!(*pm))
+  if (!dist || !pm || !(*pm) || dist->sender >= MAXPLAYER)
     {
       cry[0] = '\0';
       return (0);
     }
+
+  sender = &players[dist->sender];
 
   buf1[0] = '\0';
   pbuf1 = buf1;
@@ -266,38 +237,38 @@ int makedistress (struct distress *dist, /* the info */
 	{
 	  pm++;
 
-	  if (!pm)
-	      continue;
+	  if (!(*pm))
+	      break;
 
 	  switch (c = *(pm++))
 	    {
 	    case ' ':
-	      APPEND (pbuf1, " \0");
+	      APPEND (pbuf1, buf1_end, " ");
 	      break;
 	    case 'O':		/* push a 3 character team name into buf */
 	      cap = 1;
 	    case 'o':		/* push a 3 character team name into buf */
-	      if (sender->p_team != ALLTEAM)
-		APPEND_CAP (pbuf1, cap, teamshort[sender->p_team]);
+	      if (sender->p_team >= 0 && sender->p_team < 9)
+		APPEND_CAP (pbuf1, buf1_end, cap, teamshort[sender->p_team]);
 	      cap = 0;
 	      break;
 	    case 'a':		/* push army number into buf */
-	      APPEND_INT(pbuf1, dist->arms);
+	      APPEND_INT(pbuf1, buf1_end, dist->arms);
 	      break;
 	    case 'd':		/* push damage into buf */
-	      APPEND_INT (pbuf1, dist->dam);
+	      APPEND_INT (pbuf1, buf1_end, dist->dam);
 	      break;
 	    case 's':		/* push shields into buf */
-	      APPEND_INT (pbuf1, dist->shld);
+	      APPEND_INT (pbuf1, buf1_end, dist->shld);
 	      break;
 	    case 'f':		/* push fuel into buf */
-	      APPEND_INT (pbuf1, dist->fuelp);
+	      APPEND_INT (pbuf1, buf1_end, dist->fuelp);
 	      break;
 	    case 'w':		/* push wtemp into buf */
-	      APPEND_INT (pbuf1, dist->wtmp);
+	      APPEND_INT (pbuf1, buf1_end, dist->wtmp);
 	      break;
 	    case 'e':		/* push etemp into buf */
-	      APPEND_INT (pbuf1, dist->etmp);
+	      APPEND_INT (pbuf1, buf1_end, dist->etmp);
 	      break;
 
 	    case 'P':		/* push player id into buf */
@@ -311,78 +282,104 @@ int makedistress (struct distress *dist, /* the info */
 	      switch (c)
 		{
 		case 'p':
-		  j = &players[dist->tclose_j];
+		  idx = dist->tclose_j;
 		  break;
 		case 'g':
-		  j = &players[dist->tclose_fr];
+		  idx = dist->tclose_fr;
 		  break;
 		case 'h':
-		  j = &players[dist->tclose_en];
+		  idx = dist->tclose_en;
 		  break;
 		case 'P':
-		  j = &players[dist->close_j];
+		  idx = dist->close_j;
 		  break;
 		case 'G':
-		  j = &players[dist->close_fr];
+		  idx = dist->close_fr;
 		  break;
 		default:
-		  j = &players[dist->close_en];
+		  idx = dist->close_en;
 		  break;
 		}
-	      tmp[0] = j->p_mapchars[1];
-	      tmp[1] = '\0';
-	      APPEND (pbuf1, tmp);
+	      if (idx >= 0 && idx < MAXPLAYER)
+		{
+		  j = &players[idx];
+		  tmp[0] = j->p_mapchars[1];
+		  tmp[1] = '\0';
+		  APPEND (pbuf1, buf1_end, tmp);
+		}
 	      break;
 
 	    case 'n':		/* push planet armies into buf */
-	      l = &planets[dist->tclose_pl];
-	      APPEND_INT (pbuf1,
-			  ((l->pl_info & sender->p_team) ? l->pl_armies : -1));
-              break;
+	      if (dist->tclose_pl < MAXPLANETS)
+		{
+		  l = &planets[dist->tclose_pl];
+		  APPEND_INT (pbuf1, buf1_end,
+			      ((l->pl_info & sender->p_team) ? l->pl_armies : -1));
+		}
+	      break;
             case 'B':
               cap = 1;
 	    case 'b':		/* push planet into buf */
-	      l = &planets[dist->close_pl];
-	      tmp[0] = l->pl_name[0] - 'A' + 'a';
-	      tmp[1] = l->pl_name[1];
-              tmp[2] = l->pl_name[2];
-	      tmp[3] = '\0';
-	      APPEND_CAP (pbuf1, cap, tmp);
+	      if (dist->close_pl < MAXPLANETS)
+		{
+		  l = &planets[dist->close_pl];
+		  tmp[0] = tolower((unsigned char) l->pl_name[0]);
+		  tmp[1] = l->pl_name[1];
+		  tmp[2] = l->pl_name[2];
+		  tmp[3] = '\0';
+		  APPEND_CAP (pbuf1, buf1_end, cap, tmp);
+		}
 	      cap = 0;
 	      break;
 	    case 'L':
 	      cap = 1;
 	    case 'l':		/* push planet into buf */
-	      l = &planets[dist->tclose_pl];
-	      tmp[0] = l->pl_name[0] - 'A' + 'a';
-	      tmp[1] = l->pl_name[1];
-	      tmp[2] = l->pl_name[2];
-	      tmp[3] = '\0';
-	      APPEND_CAP (pbuf1, cap, tmp);
+	      if (dist->tclose_pl < MAXPLANETS)
+		{
+		  l = &planets[dist->tclose_pl];
+		  tmp[0] = tolower((unsigned char) l->pl_name[0]);
+		  tmp[1] = l->pl_name[1];
+		  tmp[2] = l->pl_name[2];
+		  tmp[3] = '\0';
+		  APPEND_CAP (pbuf1, buf1_end, cap, tmp);
+		}
 	      cap = 0;
 	      break;
 	    case 'Z':		/* push a 3 character team name into buf */
 	      cap = 1;
 	    case 'z':		/* push a 3 character team name into buf */
-	      l = &planets[dist->tclose_pl];
-	      APPEND_CAP (pbuf1, cap, teamshort[l->pl_owner]);
+	      if (dist->tclose_pl < MAXPLANETS)
+		{
+		  l = &planets[dist->tclose_pl];
+		  if (l->pl_owner >= 0 && l->pl_owner < 9)
+		    APPEND_CAP (pbuf1, buf1_end, cap, teamshort[l->pl_owner]);
+		}
 	      cap = 0;
 	      break;
 	    case 't':		/* push a team character into buf */
-	      l = &planets[dist->tclose_pl];
-	      tmp[0] = teamlet[l->pl_owner];
-	      tmp[1] = '\0';
-	      APPEND (pbuf1, tmp);
+	      if (dist->tclose_pl < MAXPLANETS)
+		{
+		  l = &planets[dist->tclose_pl];
+		  if (l->pl_owner >= 0 && l->pl_owner < 9)
+		    {
+		      tmp[0] = teamlet[l->pl_owner];
+		      tmp[1] = '\0';
+		      APPEND (pbuf1, buf1_end, tmp);
+		    }
+		}
 	      break;
 	    case 'T':		/* push my team into buf */
-	      tmp[0] = teamlet[sender->p_team];
-	      tmp[1] = '\0';
-	      APPEND (pbuf1, tmp);
+	      if (sender->p_team >= 0 && sender->p_team < 9)
+		{
+		  tmp[0] = teamlet[sender->p_team];
+		  tmp[1] = '\0';
+		  APPEND (pbuf1, buf1_end, tmp);
+		}
 	      break;
 	    case 'c':		/* push my id char into buf */
 	      tmp[0] = sender->p_mapchars[1];
 	      tmp[1] = '\0';
-	      APPEND (pbuf1, tmp);
+	      APPEND (pbuf1, buf1_end, tmp);
 	      break;
 	    case 'W':		/* push WTEMP flag into buf */
 	      if (dist->wtmpflag)
@@ -390,7 +387,7 @@ int makedistress (struct distress *dist, /* the info */
 	      else
 		tmp[0] = '0';
 	      tmp[1] = '\0';
-	      APPEND (pbuf1, tmp);
+	      APPEND (pbuf1, buf1_end, tmp);
 	      break;
 	    case 'E':		/* push ETEMP flag into buf */
 	      if (dist->etempflag)
@@ -398,79 +395,89 @@ int makedistress (struct distress *dist, /* the info */
 	      else
 		tmp[0] = '0';
 	      tmp[1] = '\0';
-	      APPEND (pbuf1, tmp);
+	      APPEND (pbuf1, buf1_end, tmp);
 	      break;
             case 'K':
               cap = 1;
             case 'k':
               if (cap)
-                j = &players[dist->tclose_en];
+                {
+                  cap = 0;
+                  if (dist->tclose_en >= MAXPLAYER)
+                    break;
+                  j = &players[dist->tclose_en];
+                }
               else
                 j = sender;
  
               if (j->p_ship.s_type == STARBASE)
 #ifdef LTD_STATS
-                sprintf (tmp, "%5.2f", (float) ltd_kills(j, LTD_SB));
+                snprintf (tmp, sizeof(tmp), "%5.2f", (float) ltd_kills(j, LTD_SB));
 #else
-                sprintf (tmp, "%5.2f", (float) j->p_stats.st_sbkills);
+                snprintf (tmp, sizeof(tmp), "%5.2f", (float) j->p_stats.st_sbkills);
 #endif
               else
 #ifdef LTD_STATS
-                sprintf (tmp, "%5.2f", (float) ltd_kills(j, LTD_TOTAL));
+                snprintf (tmp, sizeof(tmp), "%5.2f", (float) ltd_kills(j, LTD_TOTAL));
 #else
-                sprintf (tmp, "%5.2f", (float) j->p_stats.st_kills +
-                         j->p_stats.st_tkills);
+                snprintf (tmp, sizeof(tmp), "%5.2f", (float) j->p_stats.st_kills +
+                          j->p_stats.st_tkills);
 #endif
-              APPEND (pbuf1, tmp);
+              APPEND (pbuf1, buf1_end, tmp);
               break;
 
 	    case 'U':		/* push player name into buf */
 	      cap = 1;
 	    case 'u':		/* push player name into buf */
-	      j = &players[dist->tclose_en];
-	      APPEND_CAP (pbuf1, cap, j->p_name);
+	      if (dist->tclose_en < MAXPLAYER)
+		{
+		  j = &players[dist->tclose_en];
+		  APPEND_CAP (pbuf1, buf1_end, cap, j->p_name);
+		}
 	      cap = 0;
 	      break;
 	    case 'I':		/* my player name into buf */
 	      cap = 1;
 	    case 'i':		/* my player name into buf */
-	      APPEND_CAP (pbuf1, cap, sender->p_name);
+	      APPEND_CAP (pbuf1, buf1_end, cap, sender->p_name);
 	      cap = 0;
 	      break;
 	    case 'S':		/* push ship type into buf */
-              APPEND (pbuf1, shiptypes[sender->p_ship.s_type]);
+	      if (sender->p_ship.s_type >= 0 && sender->p_ship.s_type < NUM_TYPES)
+		APPEND (pbuf1, buf1_end, shiptypes[sender->p_ship.s_type]);
 	      break;
                  case 'v':      /* push average ping round trip time into buf */
                  case 'V':      /* push ping stdev into buf */
                  case 'y':      /* push packet loss into buf */
-                   APPEND (pbuf1, "0\0");
+                   APPEND (pbuf1, buf1_end, "0");
+                   break;
             case 'M':           /* push capitalized lastMessage into buf */
             case 'm':           /* push lastMessage into buf */
                    break;
 	    case '*':		/* push %} into buf */
-	      APPEND (pbuf1, "%*\0");
+	      APPEND (pbuf1, buf1_end, "%*");
 	      break;
 	    case '}':		/* push %} into buf */
-	      APPEND (pbuf1, "%}\0");
+	      APPEND (pbuf1, buf1_end, "%}");
 	      break;
 	    case '{':		/* push %{ into buf */
-	      APPEND (pbuf1, "%{\0");
+	      APPEND (pbuf1, buf1_end, "%{");
 	      break;
 	    case '!':		/* push %! into buf */
-	      APPEND (pbuf1, "%!\0");
+	      APPEND (pbuf1, buf1_end, "%!");
 	      break;
 	    case '?':		/* push %? into buf */
-	      APPEND (pbuf1, "%?\0");
+	      APPEND (pbuf1, buf1_end, "%?");
 	      break;
 	    case '%':		/* push %% into buf */
-	      APPEND (pbuf1, "%%\0");
+	      APPEND (pbuf1, buf1_end, "%%");
 	      break;
 	    default:
 /* try to continue
 ** bad macro character is skipped entirely,
 ** the message will be parsed without whatever %. has occurred. - jn
 */
-	      dist_error("Pass 1",macro,*pm-1);
+	      dist_error("Pass 1",macro,c);
 	      break;     
 	    }
 	}
@@ -478,7 +485,7 @@ int makedistress (struct distress *dist, /* the info */
 	{
             tmp[0] = *pm;
             tmp[1] = '\0';
-            APPEND (pbuf1, tmp);
+            APPEND (pbuf1, buf1_end, tmp);
             pm++;
 	}
 
@@ -508,8 +515,8 @@ int makedistress (struct distress *dist, /* the info */
       return (0);
     }
 
-  if (index3 > MSG_LEN)
-	index3 = MSG_LEN;
+  if (index3 >= MSG_LEN)
+	index3 = MSG_LEN - 1;
 
   buf3[index3] = '\0';
 
@@ -599,8 +606,13 @@ static void testmacro (char *bufa, char *bufb, int *inda, int *indb)
 	      continue;
 
 	    case '?':		/* the dreaded conditional, evaluate it */
-	      bufb[*indb] = '0' + solvetest (bufa, inda);
-	      (*indb)++;
+	      if (*indb < 10 * MAXMACLEN - 1)
+		{
+		  bufb[*indb] = '0' + solvetest (bufa, inda);
+		  (*indb)++;
+		}
+	      else
+		return;
 	      state = 0;
 	      continue;
 
@@ -621,7 +633,7 @@ static void testmacro (char *bufa, char *bufb, int *inda, int *indb)
       state = 0;
 
 
-      if (*indb < 10 * MAXMACLEN)
+      if (*indb < 10 * MAXMACLEN - 1)
 	{
 	  bufb[*indb] = bufa[*inda];
 	  (*inda)++;
@@ -648,10 +660,14 @@ static int solvetest (char *bufa, int *inda)
 	 bufa[*inda] != '>' &&
 	 bufa[*inda] != '=')
     {
-
-      bufh[indh++] = bufa[(*inda)++];
+      if (indh < (int)sizeof(bufh) - 1)
+	bufh[indh++] = bufa[*inda];
+      (*inda)++;
     }
   bufh[indh] = '\0';
+
+  if (!bufa[*inda])		/* incomplete is truth, just ask Godel */
+    return (1);
 
   operation = bufa[(*inda)++];
 
@@ -665,7 +681,8 @@ static int solvetest (char *bufa, int *inda)
 		    bufa[*inda] == '!' ||
 		    bufa[*inda] == '}'))
 	{
-	  bufc[indc++] = '%';
+	  if (indc < (int)sizeof(bufc) - 1)
+	    bufc[indc++] = '%';
 	}
       else if (bufa[*inda] == '%')
 	{
@@ -675,15 +692,14 @@ static int solvetest (char *bufa, int *inda)
 	}
 
       state = 0;
-      bufc[indc++] = bufa[(*inda)++];
+      if (indc < (int)sizeof(bufc) - 1)
+	bufc[indc++] = bufa[*inda];
+      (*inda)++;
     }
   bufc[indc] = '\0';
 
   if (bufa[*inda])
     (*inda)--;
-
-  if (!operation)		/* incomplete is truth, just ask Godel */
-    return (1);
 
   switch (operation)
     {

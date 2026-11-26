@@ -396,8 +396,7 @@ tryagain:
         serverName = "nowhere";
     } else {
         serveraddr = addr.sin_addr.s_addr;
-        hp = gethostbyaddr((char *)&addr.sin_addr.s_addr, sizeof(long),AF_INET)
-;
+        hp = gethostbyaddr((char *)&addr.sin_addr.s_addr, sizeof(addr.sin_addr.s_addr), AF_INET);
         if (hp != NULL) {
             serverName = (char *) malloc(strlen(hp->h_name)+1);
             strcpy(serverName, hp->h_name);
@@ -450,7 +449,7 @@ int connectToRWatch(char *machine, int port)
             close(ns);
 	    return 0;
         } else {
-            addr.sin_addr.s_addr = *(long *) hp->h_addr;
+            memcpy(&addr.sin_addr.s_addr, hp->h_addr, sizeof(addr.sin_addr.s_addr));
         }
     }
 
@@ -530,7 +529,7 @@ void callServer(int port, char *server)
 	    printf("Who is %s?\n", server);
 	    exit(0);
 	} else {
-	    addr.sin_addr.s_addr = *(long *) hp->h_addr;
+	    memcpy(&addr.sin_addr.s_addr, hp->h_addr, sizeof(addr.sin_addr.s_addr));
 	}
     }
 
@@ -762,21 +761,21 @@ int doRead(int asock)
                 FD_ZERO(&readfds);
                 FD_SET(asock, &readfds);
 
-                if (select(32,&readfds,0,0,&timeout) == 0) {
+                if (select(asock + 1,&readfds,0,0,&timeout) <= 0) {
                     mprintf("Packet fragment.  Server must be dead\n");
                     serverDead=1;
 
                     return(0);
                 }
                 temp=read(asock,_buf+count,size-(count+(_buf-bufptr)));
-                if(rsock > -1 && !rsock_failed)
-                   gwrite(rsock, _buf+count, temp);
-                count+=temp;
                 if (temp<=0) {
                     mprintf("2) Got read() of %d.  Server is dead\n", temp);
                     serverDead=1;
                     return(0);
                 }
+                if(rsock > -1 && !rsock_failed)
+                   gwrite(rsock, _buf+count, temp);
+                count+=temp;
             }
             if (!valid_index(*bufptr, bufptr)) {
                 mprintf("Packet %d names an out of range slot, aborting...\n", *bufptr);
@@ -800,16 +799,16 @@ int doRead(int asock)
                 if (count==BUFSIZ*2) {
                     FD_ZERO(&readfds);
                     FD_SET(asock, &readfds);
-                    if (select(32,&readfds,0,0,&timeout) != 0) {
+                    if (select(asock + 1,&readfds,0,0,&timeout) > 0) {
                         temp=read(asock,_buf+BUFSIZ,BUFSIZ);
-                        if(rsock > -1 && !rsock_failed)
-                           gwrite(rsock, _buf+BUFSIZ, temp);
-                        count=BUFSIZ+temp;
                         if (temp<=0) {
                             mprintf("3) Got read() of %d.  Server is dead\n", temp);
                             serverDead=1;
                             return(0);
                         }
+                        if(rsock > -1 && !rsock_failed)
+                           gwrite(rsock, _buf+BUFSIZ, temp);
+                        count=BUFSIZ+temp;
                     } else {
                         count=BUFSIZ;
                     }
@@ -1991,9 +1990,12 @@ void handlePlyrLogin(char *buf)
     updatePlayer[packet->pnum]=1;
     pl= &players[packet->pnum];
 
-    strcpy(pl->p_name, packet->name);
-    strcpy(pl->p_monitor, packet->monitor);
-    strcpy(pl->p_login, packet->login);
+    strncpy(pl->p_name, packet->name, sizeof(pl->p_name) - 1);
+    pl->p_name[sizeof(pl->p_name) - 1] = '\0';
+    strncpy(pl->p_monitor, packet->monitor, sizeof(pl->p_monitor) - 1);
+    pl->p_monitor[sizeof(pl->p_monitor) - 1] = '\0';
+    strncpy(pl->p_login, packet->login, sizeof(pl->p_login) - 1);
+    pl->p_login[sizeof(pl->p_login) - 1] = '\0';
     pl->p_stats.st_rank=packet->rank;
     if (packet->pnum == me->p_no) {
 	/* This is me.  Set some stats */
@@ -2048,7 +2050,7 @@ void handlePlyrInfo(char *buf)
     pl= &players[packet->pnum];
     getship(&pl->p_ship, packet->shiptype);
     pl->p_team=packet->team;
-    if(pl->p_team < 9)
+    if(pl->p_team >= 0 && pl->p_team < 9)
        pl->p_mapchars[0]=teamlet[pl->p_team];
     else pl->p_mapchars[0] = '?';
     pl->p_mapchars[1]=shipnos[pl->p_no];
@@ -2163,8 +2165,9 @@ void handlePlanetLoc(char *buf)
     pl= &planets[packet->pnum];
     pl->pl_x=ntohl(packet->x);
     pl->pl_y=ntohl(packet->y);
-    strcpy(pl->pl_name, packet->name);
-    pl->pl_namelen=strlen(packet->name);
+    strncpy(pl->pl_name, packet->name, sizeof(pl->pl_name) - 1);
+    pl->pl_name[sizeof(pl->pl_name) - 1] = '\0';
+    pl->pl_namelen=strlen(pl->pl_name);
     pl->pl_flags|=PLREDRAW;
     reinitPlanets=1;
 }
@@ -2479,7 +2482,7 @@ int openUdpConn(void)
                 printf("Who is %s?\n", serverName);
                 exit(0);
             } else {
-                addr.sin_addr.s_addr = *(long *) hp->h_addr;
+                memcpy(&addr.sin_addr.s_addr, hp->h_addr, sizeof(addr.sin_addr.s_addr));
             }
         }
         serveraddr = addr.sin_addr.s_addr;

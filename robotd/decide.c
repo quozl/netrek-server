@@ -1252,4 +1252,5 @@ int check_distress(Player *p)
 	 }
       }
    }
+   return 0;
 }

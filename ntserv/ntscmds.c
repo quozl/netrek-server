@@ -21,6 +21,8 @@
 #endif
 #include <string.h>
 #include <dirent.h>
+#include <errno.h>
+#include <sys/wait.h>
 
 #include "defs.h"
 #include "struct.h"
@@ -426,6 +428,7 @@ void do_start_basep(void)
     (void) signal(SIGALRM,SIG_DFL);
     execl(Basep, "basep", (char *) NULL);
     perror(Basep);
+    _exit(1);
   }
 }
 #endif
@@ -440,8 +443,9 @@ void do_start_inl(void)
   }
   if (vfork() == 0) {
     (void) signal(SIGALRM,SIG_DFL);
-    execl(Inl, "inl", 0);
+    execl(Inl, "inl", (char *) NULL);
     perror(Inl);
+    _exit(1);
   }
 }
 #endif
@@ -458,6 +462,7 @@ void do_start_puck(void)
     (void) signal(SIGALRM,SIG_DFL);
     execl(Puck, "puck", (char *) NULL);
     perror(Puck);
+    _exit(1);
   }
 }
 #endif
@@ -474,6 +479,7 @@ void do_start_mars(void)
     (void) signal(SIGALRM,SIG_DFL);
     execl(Mars, "mars", (char *) NULL);
     perror(Mars);
+    _exit(1);
   }
 }
 #endif
@@ -828,14 +834,14 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
         if (!strcmp((igntype == IGNORING) ? srcip : destip, p->p_ip)) {
             slot = find_slot_by_ip((igntype == IGNORING) ? destip : srcip, 0);
             if (slot == -1) {
-                strcat(msg, "  ");
+                snprintf(msg, sizeof(msg), "   %s",
+                         (igntype == IGNORING) ? destip : srcip);
             } else {
                 other = &players[slot];
-                sprintf(msg, "%s", other->p_mapchars);
+                snprintf(msg, sizeof(msg), "%.2s %s", other->p_mapchars,
+                         (igntype == IGNORING) ? destip : srcip);
             }
 
-            strncat(msg, " ", MSG_LEN - 1);
-            strncat(msg, (igntype == IGNORING) ? destip : srcip, MSG_LEN - 1);
             snprintf(filename, FNAMESIZE * 2, "%s/%s", dirname, dirent->d_name);
             ignorefile = fopen(filename, "r");
             if (ignorefile == NULL) {
@@ -855,13 +861,13 @@ void do_display_ignores(char *comm, struct message *mess, int who, int igntype)
                 continue;
             }
             if (ignmask & MINDIV) {
-                strncat(msg, " Indiv", MSG_LEN - 1);
+                strncat(msg, " Indiv", sizeof(msg) - strlen(msg) - 1);
             }
             if (ignmask & MTEAM) {
-                strncat(msg, " Team", MSG_LEN - 1);
+                strncat(msg, " Team", sizeof(msg) - strlen(msg) - 1);
             }
             if (ignmask & MALL) {
-                strncat(msg, " All", MSG_LEN - 1);
+                strncat(msg, " All", sizeof(msg) - strlen(msg) - 1);
             }
             pmessage(whofrom, MINDIV, addr, "%s", msg);
             hits++;
@@ -978,12 +984,13 @@ void do_queue_msg(char *comm, struct message *mess)
 	        int k = queues[i].first;
 		int j;
 		
-		for (j=0; j < count; j++) {
+		for (j=0; j < count && k >= 0 && k < MAXWAITING; j++) {
 #ifdef NO_HOSTNAMES
 		  char *them = "hidden";
 #else
 		  char *them = waiting[k].host;
 #endif
+                    if (!waiting[k].inuse) break;
                     int m = find_slot_by_host(waiting[k].host, 0);
 		    if (m != -1) {
 		        struct player *p = &players[m];
@@ -1013,7 +1020,10 @@ void do_nowobble(char *comm, struct message *mess)
     who = mess->m_from;
     addr = addr_mess(who,MINDIV);
 
-    nowobble = atoi(comm+strlen("nowobble "));
+    if (strlen(comm) > strlen("nowobble "))
+        nowobble = atoi(comm + strlen("nowobble "));
+    else
+        nowobble = !nowobble;
 
     pmessage(who, MINDIV, addr, "No wobble fix is now %s [%d] {%s}", 
 	     nowobble ? "on (new test mode)" : "off (classic mode)", nowobble, comm );
@@ -1106,8 +1116,10 @@ void do_be(char *comm, struct message *mess)
     me->p_status = PFREE;
     me = be;
     me->p_no = pno;
-    sprintf(me->p_mapchars,"%c%c",teamlet[me->p_team], shipnos[me->p_no]);
-    sprintf(me->p_longname, "%s (%s)", me->p_name, me->p_mapchars);
+    snprintf(me->p_mapchars, sizeof(me->p_mapchars), "%c%c",
+             teamlet[me->p_team], shipnos[me->p_no]);
+    snprintf(me->p_longname, sizeof(me->p_longname), "%s (%s)",
+             me->p_name, me->p_mapchars);
     updateSelf(1);
 }
 
@@ -1419,16 +1431,48 @@ void do_transwarp(char *comm, struct message *mess)
   }
 }
 
-static void toolf(char *cmd, const char *fmt, ...) {
-  char buf[256];
-  va_list args;
+static int run_program(const char *path, char *const argv[])
+{
+  pid_t pid;
+  int status;
 
-  va_start(args, fmt);
-  sprintf(buf, "%s/tools/admin/%s ", LIBDIR, cmd);
-  vsprintf(buf+strlen(buf), fmt, args);
-  va_end(args);
-  if (system(buf) == -1)
-    perror("toolf: system");
+  pid = fork();
+  if (pid < 0) {
+    perror("run_program: fork");
+    return -1;
+  }
+  if (pid == 0) {
+    execv(path, argv);
+    _exit(127);
+  }
+  while (waitpid(pid, &status, 0) < 0) {
+    if (errno != EINTR) {
+      perror("run_program: waitpid");
+      return -1;
+    }
+  }
+  if (!WIFEXITED(status))
+    return -1;
+  return WEXITSTATUS(status);
+}
+
+static void run_admin_tool(const char *cmd, char *const args[], int nargs)
+{
+  char path[256];
+  char *argv[8];
+  int i, n;
+
+  if (nargs < 0 || nargs > 6)
+    return;
+  n = snprintf(path, sizeof(path), "%s/tools/admin/%s", LIBDIR, cmd);
+  if (n < 0 || (size_t) n >= sizeof(path))
+    return;
+
+  argv[0] = path;
+  for (i = 0; i < nargs; i++)
+    argv[i + 1] = args[i];
+  argv[nargs + 1] = NULL;
+  (void) run_program(path, argv);
 }
 
 void do_admin(char *comm, struct message *mess)
@@ -1538,36 +1582,49 @@ void do_admin(char *comm, struct message *mess)
     pmessage(who, MINDIV, addr, "admin: erm, send 'em a \"mute on\"");
   } else if (!strcmp(one, "quit")) {
     if (them == NULL) return;
-    toolf("quit", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
+    char slot_arg[2] = { them->p_mapchars[1], '\0' };
+    char *args[2] = { p->p_full_hostname, slot_arg };
+    run_admin_tool("quit", args, 2);
     pmessage(who, MINDIV, addr, "admin: player %s forced to quit.", two);
   } else if (!strcmp(one, "kill")) {
     if (them == NULL) return;
-    toolf("kill", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
+    char slot_arg[2] = { them->p_mapchars[1], '\0' };
+    char *args[2] = { p->p_full_hostname, slot_arg };
+    run_admin_tool("kill", args, 2);
     pmessage(who, MINDIV, addr, "admin: player %s killed.", two);
   } else if (!strcmp(one, "free")) {
     if (them == NULL) return;
-    toolf("free", "%s %c", p->p_full_hostname, them->p_mapchars[1]);
+    char slot_arg[2] = { them->p_mapchars[1], '\0' };
+    char *args[2] = { p->p_full_hostname, slot_arg };
+    run_admin_tool("free", args, 2);
     pmessage(who, MINDIV, addr, "admin: player %s free-ed.", two);
   } else if (!strcmp(one, "ban")) {
     if (them == NULL) return;
-    toolf("ban", "%s %s %s", p->p_full_hostname, them->p_ip,
-          them->p_full_hostname);
+    char *args[3] = { p->p_full_hostname, them->p_ip, them->p_full_hostname };
+    run_admin_tool("ban", args, 3);
     pmessage(who, MINDIV, addr, "admin: player %s banned.", two);
   } else if (!strcmp(one, "reset")) {
-    toolf("reset", "%s t", p->p_full_hostname);
+    char mode_arg[2] = "t";
+    char *args[2] = { p->p_full_hostname, mode_arg };
+    run_admin_tool("reset", args, 2);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset.");
   } else if (!strcmp(one, "dfreset")) {
-    toolf("reset", "%s d", p->p_full_hostname);
+    char mode_arg[2] = "d";
+    char *args[2] = { p->p_full_hostname, mode_arg };
+    run_admin_tool("reset", args, 2);
     pmessage(who, MINDIV, addr, "admin: galactic has been reset for df'ing.");
   } else if (!strcmp(one, "exec")) {
     if (!adminexec)
       pmessage(who, MINDIV, addr, "admin: exec is not enabled.");
     else
     {
-      if (system(one + 5) == 0) {
-        pmessage(who, MINDIV, addr, "admin: executed \"%s\"", one + 5);
+      char *cmd = strtok(NULL, "");
+      if (cmd == NULL || *cmd == '\0') {
+        pmessage(who, MINDIV, addr, "admin: exec requires a command.");
+      } else if (system(cmd) == 0) {
+        pmessage(who, MINDIV, addr, "admin: executed \"%s\"", cmd);
       } else {
-        pmessage(who, MINDIV, addr, "admin: failed \"%s\"", one + 5);
+        pmessage(who, MINDIV, addr, "admin: failed \"%s\"", cmd);
       }
     }
   } else {
@@ -1582,7 +1639,8 @@ void do_register(char *comm, struct message *mess)
   struct player *p = &players[who];
   char *addr = addr_mess(who,MINDIV);
   extern char *registered_users_name, *registered_users_pass;
-  char *one, *two, filename[64], command[128];
+  char *one, *two, filename[64];
+  char *argv[3];
   FILE *file;
   int status;
 
@@ -1622,7 +1680,7 @@ void do_register(char *comm, struct message *mess)
     return;
   }
 
-  sprintf(filename, "user-requests/%d", p->p_no);
+  snprintf(filename, sizeof(filename), "user-requests/%d", p->p_no);
   file = fopen(filename, "a");
   if (file == NULL) {
     pmessage(who, MINDIV, addr, "Registration refused.");
@@ -1637,8 +1695,10 @@ void do_register(char *comm, struct message *mess)
     return;
   }
 
-  sprintf(command, "tools/register %s", filename);
-  status = system(command);
+  argv[0] = "tools/register";
+  argv[1] = filename;
+  argv[2] = NULL;
+  status = run_program("tools/register", argv);
   if (status != 0) {
     pmessage(who, MINDIV, addr, "Registration could not be processed.");
     return;
@@ -1659,7 +1719,8 @@ static char *ltd_stats_url_prefix() {
   char *res = fgets(text, 80, file);
   fclose(file);
   if (res == NULL) return NULL;
-  res[strlen(res)-1] = '\0';
+  if (strlen(res) > 0 && res[strlen(res)-1] == '\n')
+    res[strlen(res)-1] = '\0';
   return res;
 }
 
@@ -1695,16 +1756,17 @@ void do_ltd_query(char *comm, struct message *mess, int who)
   if (fork() == 0) {
     (void) signal(SIGALRM,SIG_DFL);
     FILE *fp = fopen(name, "w");
-    if (fp == NULL) return;
+    if (fp == NULL) _exit(1);
     int fd = fileno(fp);
     dup2(fd, 1);
     execl("tools/ltd_dump_html", "ltd_dump_html", me->p_name, (char *) NULL);
     perror("ltd_dump_html");
+    _exit(1);
   }
 
   /* tell the user where to go to see it */
   snprintf(name, 256-1, "%s/stats/%08x.%08x.html", url, me->p_pos, ticks);
-  pmessage(who, MINDIV, addr_mess(who,MINDIV), name);
+  pmessage(who, MINDIV, addr_mess(who,MINDIV), "%s", name);
 
   /* @bug: race condition, client might, if fast enough, access the
   link before the ltd_dump_html process is finished, but this is

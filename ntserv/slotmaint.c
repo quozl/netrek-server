@@ -16,6 +16,7 @@
 #include "util.h"
 #include "proto.h"
 #include "slotmaint.h"
+#include "shmatomic.h"
 
 /* 
  *  Free a slot that was allocated with pickslot.
@@ -26,18 +27,21 @@
  */
 int freeslot(struct player *who)
 {
-    int retvalue = 1;
+    int w_queue;
 
     if (who == NULL) return (-1);
-    if (who->p_status == PFREE){
+
+    lock_on(LOCK_PICKSLOT);
+    if (who->p_status == PFREE) {
+	lock_off(LOCK_PICKSLOT);
 	ERROR(1,("freeslot: Trying to free a PFREE slot\n"));
-	retvalue = -2;
-	/* Since I should have already incremented this, I decrement it
-           now so that the later command does nothing.  A hack, but this
-           code should never be executed. */
-	queues[who->w_queue].free_slots--;
+	return (-2);
     }
-    who->p_status      = PFREE;
+
+    w_queue = who->w_queue;
+
+    /* Clear all fields before publishing PFREE so a concurrent pickslot()
+       or lock-free reader never observes partially cleared state. */
     who->p_flags       = 0;
     who->p_ghostbuster = 0;
 #ifdef LTD_STATS
@@ -46,11 +50,15 @@ int freeslot(struct player *who)
     memset(&who->p_stats, 0, sizeof(struct stats));  
     who->p_stats.st_tticks=1;
 #endif
-    queues[who->w_queue].free_slots++;
     memset(who->voting, 0, sizeof(time_t) * PV_TOTAL);
     who->p_process     = 0;
-    
-    return retvalue;
+
+    store_release(&who->p_status, PFREE);
+    if (w_queue >= 0 && w_queue < MAXQUEUE)
+	queues[w_queue].free_slots++;
+    lock_off(LOCK_PICKSLOT);
+
+    return 1;
 }
 
 /* check for reasons why a slot should not be allocated */
@@ -60,6 +68,7 @@ static int verboten(int w_queue, int i)
     return (i == 29 && !(queues[w_queue].q_flags & QU_TOK));
 }
 
+/* caller must hold LOCK_PICKSLOT */
 static int pickslot_action(int w_queue, int i)
 {
     int j;
@@ -67,15 +76,7 @@ static int pickslot_action(int w_queue, int i)
     if (players[i].p_status != PFREE) return 0;
     if (verboten(w_queue, i)) return 0;
 
-    lock_on(LOCK_PICKSLOT);
-    if (players[i].p_status != PFREE) {
-      lock_off(LOCK_PICKSLOT);
-      return 0;
-    }
-    players[i].p_status = POUTFIT;      /* possible race code */
-    lock_off(LOCK_PICKSLOT);
-
-    /* Set up the player struct now */
+    /* Set up the player struct before publishing POUTFIT */
     players[i].p_no          = i;
     players[i].p_team        = NOBODY;
     players[i].p_ghostbuster = 0;
@@ -95,8 +96,9 @@ static int pickslot_action(int w_queue, int i)
     players[i].p_stats.st_flags=ST_INITIAL;
     players[i].p_process     = 0;
     memset(players[i].voting, 0, sizeof(time_t) * PV_TOTAL);
+    store_release(&players[i].p_status, POUTFIT);
     if (queues[w_queue].q_flags & QU_OBSERVER) Observer++;
-    /* Update the queue info */
+    /* Update the queue info under LOCK_PICKSLOT */
     queues[w_queue].free_slots--;
     return 1;
 }
@@ -137,16 +139,14 @@ int pickslot(int w_queue)
     /* Ensure that the queue is open */
     if (!(queues[w_queue].q_flags & QU_OPEN)) return -2;
 
-    if (queues[w_queue].enter_sem-- < 1) return -1;
-    /* ASSERT: enter_sem <= 0, so no one else can enter */
-
+    lock_on(LOCK_PICKSLOT);
     if (queues[w_queue].free_slots <= 0) {  /* no free slots */
-        queues[w_queue].enter_sem = 1;      /* give back control */
+        lock_off(LOCK_PICKSLOT);
         return -1;
     }
 
     i = scanqueue(w_queue, pickslot_action);
-    queues[w_queue].enter_sem = 1;      /* give back control */
+    lock_off(LOCK_PICKSLOT);
     return i;
 }
 
@@ -156,7 +156,7 @@ int slots_free(int w_queue)
     int i, count = 0;
 
     for (i = queues[w_queue].low_slot; i < queues[w_queue].high_slot; i++)
-        if (players[i].p_status == PFREE)
+        if (load_acquire(&players[i].p_status) == PFREE)
             count++;
     return count;
 }
@@ -169,7 +169,7 @@ int slots_playing(int w_queue, int showempty)
     int i, count = 0;
 
     for (i = queues[w_queue].low_slot; i < queues[w_queue].high_slot; i++)
-        if ((players[i].p_status != PFREE) &&
+        if ((load_acquire(&players[i].p_status) != PFREE) &&
             !is_robot(&players[i]) &&
             (players[i].w_queue == w_queue) &&
             ((players[i].p_team != ALLTEAM) || showempty))

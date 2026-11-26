@@ -168,9 +168,9 @@ void ntorp(u_char course, int attributes)
   /*
    * Change my ship state: less fuel, more weapon temp  */
   atomic_inc(&me->p_ntorp);
-  me->p_fuel -= c_fuel;
-  me->p_wtemp += c_wtemp;
-  me->p_etemp += c_etemp;
+  atomic_sub(&me->p_fuel, c_fuel);
+  atomic_add(&me->p_wtemp, c_wtemp);
+  atomic_add(&me->p_etemp, c_etemp);
 
   /*
    * Initialize torp, then set its status, as the daemon may move it at

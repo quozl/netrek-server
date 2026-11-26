@@ -6,6 +6,7 @@
 #include "copyright.h"
 #include "config.h"
 #include <assert.h>
+#include <stddef.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -21,7 +22,7 @@
 struct player *bay_owner(struct player *me)
 {
   assert(me->p_flags & PFDOCK);
-  return p_no(me->p_dock_with);
+  return player_at(me->p_dock_with);
 }
 
 /*! @brief Check bays for consistency.
@@ -38,21 +39,30 @@ void bay_consistency_check(struct player *base)
   struct player *ship;
 
   for (i=0; i<NUMBAYS; i++) {
-    if (base->p_bays[i] == VACANT) continue;
-    ship = p_no(base->p_bays[i]);
+    int pno = load_acquire(&base->p_bays[i]);
+    if (pno == VACANT) continue;
+    if (pno < 0 || pno >= MAXPLAYER) {
+      compare_and_swap(&base->p_bays[i], pno, VACANT);
+      continue;
+    }
+    ship = player_at(pno);
+    if (ship == NULL) {
+      compare_and_swap(&base->p_bays[i], pno, VACANT);
+      continue;
+    }
     if (!(ship->p_flags & PFDOCK)) {
       /* ship isn't docked */
-      base->p_bays[i] = VACANT;
+      compare_and_swap(&base->p_bays[i], pno, VACANT);
       continue;
     }
     if (ship->p_dock_with != base->p_no) {
       /* ship is docked but not with this base */
-      base->p_bays[i] = VACANT;
+      compare_and_swap(&base->p_bays[i], pno, VACANT);
       continue;
     }
     if (ship->p_dock_bay != i) {
       /* ship is docked with this base but not on this bay */
-      base->p_bays[i] = VACANT;
+      compare_and_swap(&base->p_bays[i], pno, VACANT);
       continue;
     }
   }
@@ -68,7 +78,7 @@ void bay_claim(struct player *base, struct player *me, int bay_no)
 {
   me->p_dock_with = base->p_no;
   me->p_dock_bay  = bay_no;
-  base->p_bays[bay_no] = me->p_no;
+  store_release(&base->p_bays[bay_no], me->p_no);
 }
 
 /*! @brief Release of a bay by a docked ship.
@@ -78,12 +88,15 @@ void bay_claim(struct player *base, struct player *me, int bay_no)
 void bay_release(struct player *me)
 {
   if (me->p_flags & PFDOCK) {
-    struct player *base = p_no(me->p_dock_with);
+    int dock_with = me->p_dock_with;
     int bay = me->p_dock_bay;
-    if (base->p_bays[bay] != VACANT) {
-      base->p_bays[bay] = VACANT;
-    }
     atomic_and(&me->p_flags, ~PFDOCK);
+    if (dock_with >= 0 && dock_with < MAXPLAYER &&
+        bay >= 0 && bay < NUMBAYS) {
+      struct player *base = player_at(dock_with);
+      if (base != NULL)
+        compare_and_swap(&base->p_bays[bay], me->p_no, VACANT);
+    }
   }
 }
 
@@ -94,12 +107,13 @@ void bay_release(struct player *me)
 void bay_release_all(struct player *base)
 {
   int i;
-  for (i=0; i<NUMBAYS; i++) 
-    if (base->p_bays[i] != VACANT) {
-      struct player *pl = p_no(base->p_bays[i]);
-      base->p_bays[i] = VACANT;
+  for (i=0; i<NUMBAYS; i++) {
+    int pno = atomic_exchange(&base->p_bays[i], VACANT);
+    struct player *pl = player_at(pno);
+    if (pl != NULL) {
       atomic_and(&pl->p_flags, ~PFDOCK);
     }
+  }
 }
 
 /*! @brief Initialise all bays.
