@@ -174,7 +174,7 @@ void phaser(u_char course)
   /* See if the phaser hit a plasma torpedo: */
   for (t = firstPlasma; t <= lastPlasma; t++) {
     /* Don't check non-plasmas or my plasmas: */
-    if ((t->t_status != TMOVE) || (t->t_owner == me->p_no))
+    if ((load_acquire(&t->t_status) != TMOVE) || (t->t_owner == me->p_no))
       continue;
     if (!pingpong_plasma) {    /* Dont check if in pingpong plasma mode */
       if ((!(t->t_war & me->p_team)) &&
@@ -244,8 +244,8 @@ void phaser(u_char course)
 
   /*
    * Adjust me to reflect new conditions.  */
-  me->p_fuel  -= myship->s_phasercost;
-  me->p_wtemp += myship->s_phasercost / 10;
+  atomic_sub(&me->p_fuel, myship->s_phasercost);
+  atomic_add(&me->p_wtemp, myship->s_phasercost / 10);
 
 
 #ifdef LTD_STATS

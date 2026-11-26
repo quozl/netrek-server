@@ -428,7 +428,7 @@ void p_x_y_set(struct player *j, int p_x, int p_y)
 {
   j->p_x_input = spi(p_x);
   j->p_y_input = spi(p_y);
-  j->p_x_y_set++;
+  store_release(&j->p_x_y_set, j->p_x_y_set + 1);
   /* note: request not obeyed until ship is !(PFDOCK|PFORBIT) */
 }
 
@@ -437,7 +437,7 @@ void p_x_y_commit(struct player *j)
 {
   j->p_x_internal = j->p_x_input;
   j->p_y_internal = j->p_y_input;
-  j->p_x_y_set = 0;
+  store_release(&j->p_x_y_set, 0);
 }
 
 /* convert changed p_x to internal scaled representation */

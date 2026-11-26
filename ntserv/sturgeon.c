@@ -955,7 +955,7 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
     if (sw->sw_number > 0)
       sw->sw_number--;
     atomic_inc(&me->p_nplasmatorp);
-    me->p_wtemp += (sw->sw_damage * 1.5 + 10); /* Heat weapons */
+    atomic_add(&me->p_wtemp, (int)(sw->sw_damage * 1.5 + 10)); /* Heat weapons */
     if (sw->sw_number < 0)
       sprintf(buf, "Firing %s", sw->sw_name);
     else
@@ -1129,8 +1129,8 @@ void sturgeon_nplasmatorp(u_char course, int attributes)
       }
 
       atomic_inc(&me->p_ntorp);
-      me->p_fuel -= sw->sw_fuelcost;
-      me->p_wtemp += (sw->sw_damage/5);  /* Heat weapons */
+      atomic_sub(&me->p_fuel, sw->sw_fuelcost);
+      atomic_add(&me->p_wtemp, sw->sw_damage / 5);  /* Heat weapons */
 
       /* Setup data in new torp (fighter), then set its status, as the
          daemon may move it at once */

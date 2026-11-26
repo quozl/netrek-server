@@ -29,7 +29,7 @@ void new_warning(int index, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
 
-  vsprintf(temp, fmt, args);
+  vsnprintf(temp, sizeof(temp), fmt, args);
 
   va_end(args);
 

@@ -980,7 +980,7 @@ static void udplayers_pause(void) {
     j = &players[i];
 
     /* adopt new coordinates if requested */
-    if (j->p_x_y_set) p_x_y_commit(j);
+    if (load_acquire(&j->p_x_y_set)) p_x_y_commit(j);
 
     switch(j->p_status) {
       case PFREE:       /* reset ghostbuster and continue */
@@ -1214,18 +1214,21 @@ static void udplayers_palive_move_in_space(struct player *j)
                 }
                 j->p_fuel = 0;
         } else {
-                j->p_fuel -= (j->p_ship.s_warpcost * j->p_speed);
-                j->p_etemp += j->p_speed;
+                atomic_sub(&j->p_fuel, j->p_ship.s_warpcost * j->p_speed);
+                atomic_add(&j->p_etemp, j->p_speed);
 
                 /* Charge SB's for mass of docked vessels ... */
                 if (j->p_ship.s_type == STARBASE) {
                         int bays = 0;
-                        for (k=0; k<NUMBAYS; k++)
-                                if(j->p_bays[k] != VACANT) {
-                                        j->p_fuel -= players[j->p_bays[k]].p_ship.s_warpcost * j->p_speed;
+                        for (k=0; k<NUMBAYS; k++) {
+                                int pno = load_acquire(&j->p_bays[k]);
+                                if (pno >= 0 && pno < MAXPLAYER) {
+                                        atomic_sub(&j->p_fuel,
+                                                   players[pno].p_ship.s_warpcost * j->p_speed);
                                         bays++;
                                 }
-                        j->p_etemp += .7*(j->p_speed * bays);
+                        }
+                        atomic_add(&j->p_etemp, (int)(.7 * (j->p_speed * bays)));
                 }
         }
 
@@ -1248,7 +1251,7 @@ static void udplayers_palive_move_in_space(struct player *j)
 static void udships_palive_move_in_space(struct player *j)
 {
         /* adopt new coordinates if requested */
-        if (j->p_x_y_set) p_x_y_commit(j);
+        if (load_acquire(&j->p_x_y_set)) p_x_y_commit(j);
 
         /* calculate new coordinates given current speed and direction */
         j->p_x_internal +=
@@ -1458,16 +1461,16 @@ static void udplayers_palive_fuel_shields(struct player *j)
         if (j->p_flags & PFSHIELD) {  /* This is a kludge, I know. */
                 switch (j->p_ship.s_type) {
                 case SCOUT:
-                        j->p_fuel -= 2;
+                        atomic_sub(&j->p_fuel, 2);
                         break;
                 case DESTROYER:
                 case CRUISER:
                 case BATTLESHIP:
                 case ASSAULT:
-                        j->p_fuel -= 3;
+                        atomic_sub(&j->p_fuel, 3);
                         break;
                 case STARBASE:
-                        j->p_fuel -= 6;
+                        atomic_sub(&j->p_fuel, 6);
                         break;
                 default:
                         break;
@@ -1495,8 +1498,8 @@ static void udplayers_palive_tractor(struct player *j)
                 if (players[j->p_tractor].p_flags & PFORBIT)
                         atomic_and(&players[j->p_tractor].p_flags, ~PFORBIT);
 
-                j->p_fuel -= TRACTCOST;
-                j->p_etemp += TRACTEHEAT;
+                atomic_sub(&j->p_fuel, TRACTCOST);
+                atomic_add(&j->p_etemp, TRACTEHEAT);
 
                 cosTheta = players[j->p_tractor].p_x - j->p_x;
                 sinTheta = players[j->p_tractor].p_y - j->p_y;
@@ -1526,10 +1529,12 @@ static void udplayers_palive_tractor(struct player *j)
 
 static void udplayers_palive_cool_weapons(struct player *j)
 {
+        int wt;
+
         /* cool weapons */
-        j->p_wtemp -= j->p_ship.s_wpncoolrate;
-        if (j->p_wtemp < 0)
-                j->p_wtemp = 0;
+        wt = atomic_sub(&j->p_wtemp, j->p_ship.s_wpncoolrate);
+        if (wt < 0)
+                compare_and_swap(&j->p_wtemp, wt, 0);
         if (j->p_flags & PFWEP) {
                 if (--j->p_wtime <= 0)
                         atomic_and(&j->p_flags, ~PFWEP);
@@ -1546,10 +1551,12 @@ static void udplayers_palive_cool_weapons(struct player *j)
 
 static void udplayers_palive_cool_engines(struct player *j)
 {
+        int et;
+
         /* cool engine */
-        j->p_etemp -= j->p_ship.s_egncoolrate;
-        if (j->p_etemp < 0)
-                j->p_etemp = 0;
+        et = atomic_sub(&j->p_etemp, j->p_ship.s_egncoolrate);
+        if (et < 0)
+                compare_and_swap(&j->p_etemp, et, 0);
         if (j->p_flags & PFENG) {
                 if (--j->p_etime <= 0)
                         atomic_and(&j->p_flags, ~PFENG);
@@ -1571,45 +1578,54 @@ static void udplayers_palive_fuel_cloak(struct player *j)
                 if (j->p_fuel < j->p_ship.s_cloakcost) {
                         atomic_and(&j->p_flags, ~PFCLOAK);
                 } else {
-                        j->p_fuel -= j->p_ship.s_cloakcost;
+                        atomic_sub(&j->p_fuel, j->p_ship.s_cloakcost);
                 }
         }
 }
 
 static void udplayers_palive_make_fuel(struct player *j)
 {
+        int dock = j->p_dock_with;
+        int fuel;
+
 #ifdef SBFUEL_FIX
         /* Add fuel */
-        j->p_fuel += 2 * j->p_ship.s_recharge;
+        atomic_add(&j->p_fuel, 2 * j->p_ship.s_recharge);
         if ((j->p_flags & PFORBIT) &&
             (planets[j->p_planet].pl_flags & PLFUEL) &&
             (!(planets[j->p_planet].pl_owner & j->p_war))) {
-                j->p_fuel += 6 * j->p_ship.s_recharge;
+                atomic_add(&j->p_fuel, 6 * j->p_ship.s_recharge);
         } else if ((j->p_flags & PFDOCK) &&
+                   dock >= 0 && dock < MAXPLAYER &&
                    (j->p_fuel < j->p_ship.s_maxfuel) &&
-                   (players[j->p_dock_with].p_fuel > SBFUELMIN)) {
+                   (players[dock].p_fuel > SBFUELMIN)) {
                 int fc = MIN(10*j->p_ship.s_recharge,
                              j->p_ship.s_maxfuel - j->p_fuel);
-                j->p_fuel += fc;
-                players[j->p_dock_with].p_fuel -= fc;
+                if (fc > 0) {
+                        atomic_add(&j->p_fuel, fc);
+                        atomic_sub(&players[dock].p_fuel, fc);
+                }
         }
 #else
         /* Add fuel */
         if ((j->p_flags & PFORBIT) &&
             (planets[j->p_planet].pl_flags & PLFUEL) &&
             (!(planets[j->p_planet].pl_owner & j->p_war))) {
-                j->p_fuel += 8 * j->p_ship.s_recharge;
-        } else if ((j->p_flags & PFDOCK) && (j->p_fuel < j->p_ship.s_maxfuel)) {
-                if (players[j->p_dock_with].p_fuel > SBFUELMIN) {
-                        j->p_fuel += 12*j->p_ship.s_recharge;
-                        players[j->p_dock_with].p_fuel -= 12*j->p_ship.s_recharge;
+                atomic_add(&j->p_fuel, 8 * j->p_ship.s_recharge);
+        } else if ((j->p_flags & PFDOCK) &&
+                   dock >= 0 && dock < MAXPLAYER &&
+                   (j->p_fuel < j->p_ship.s_maxfuel)) {
+                if (players[dock].p_fuel > SBFUELMIN) {
+                        atomic_add(&j->p_fuel, 12*j->p_ship.s_recharge);
+                        atomic_sub(&players[dock].p_fuel, 12*j->p_ship.s_recharge);
                 }
         } else
-                j->p_fuel += 2 * j->p_ship.s_recharge;
+                atomic_add(&j->p_fuel, 2 * j->p_ship.s_recharge);
 #endif /* SBFUEL_FIX */
 
-        if (j->p_fuel > j->p_ship.s_maxfuel)
-                j->p_fuel = j->p_ship.s_maxfuel;
+        fuel = j->p_fuel;
+        if (fuel > j->p_ship.s_maxfuel)
+                compare_and_swap(&j->p_fuel, fuel, j->p_ship.s_maxfuel);
         if (j->p_fuel < 0) {
                 j->p_desspeed = 0;
                 atomic_and(&j->p_flags, ~PFCLOAK);
@@ -1935,8 +1951,8 @@ static void udtwarp(void)
         if ((j->p_speed *= 2) > (j->p_desspeed))
             j->p_speed = j->p_desspeed;
         /* deduct fuel and raise etemp */
-        j->p_fuel -= (int)((j->p_ship.s_warpcost * j->p_speed) * 0.8);
-        j->p_etemp += j->p_ship.s_maxspeed;
+        atomic_sub(&j->p_fuel, (int)((j->p_ship.s_warpcost * j->p_speed) * 0.8));
+        atomic_add(&j->p_etemp, j->p_ship.s_maxspeed);
 #ifndef SB_CALVINWARP
         /* decelerate if needed */
         k = &players[j->p_playerl];
