@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include "defs.h"
 #include "struct.h"
@@ -88,6 +89,8 @@ static void init_fuzz_env(void)
     int i, flags;
     if (g_tcp_sv[0] >= 0)
         return;
+
+    signal(SIGPIPE, SIG_IGN);
 
     memset(&g_shm, 0, sizeof(g_shm));
     memset(&g_stats, 0, sizeof(g_stats));
