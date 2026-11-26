@@ -22,6 +22,11 @@
  *   phaser-stale     ph_target or ph_damage changed after the daemon
  *                    had already applied the hit, so the hit used the
  *                    previous shot's target and damage
+ *   bay-oob          a starbase p_bays[b] held an out-of-range slot index
+ *   queue-corrupt    a wait queue's linked list has an out-of-range waiter
+ *                    index, cycle, or count mismatch
+ *   freeslots-drift  a queue's free_slots is out of bounds or disagrees with
+ *                    PFREE player slots in the queue
  *
  * Ships are recognised by login name: torper, attacker and victim.
  *
@@ -48,9 +53,13 @@
 
 static volatile struct memory *m;
 
-enum { E_NTORP, E_NPLASMA, E_SLOT, E_UNINIT, E_PHASER, E_MAX };
+enum {
+  E_NTORP, E_NPLASMA, E_SLOT, E_UNINIT, E_PHASER,
+  E_BAY_OOB, E_QUEUE_CORRUPT, E_FREESLOTS_DRIFT, E_MAX
+};
 static const char *ename[E_MAX] = {
-  "ntorp-drift", "nplasma-drift", "torp-slot", "torp-uninit", "phaser-stale"
+  "ntorp-drift", "nplasma-drift", "torp-slot", "torp-uninit", "phaser-stale",
+  "bay-oob", "queue-corrupt", "freeslots-drift"
 };
 static long events[E_MAX];
 
@@ -263,6 +272,117 @@ static void check_counts(double t)
   }
 }
 
+/* starbase bay invariant tracking */
+static double bay_since[MAXPLAYER][NUMBAYS];
+static int bay_reported[MAXPLAYER][NUMBAYS];
+
+static void check_bays(double t)
+{
+  int i, b;
+
+  for (i = 0; i < MAXPLAYER; i++) {
+    for (b = 0; b < NUMBAYS; b++) {
+      int pno = m->players[i].p_bays[b];
+      if (pno != VACANT && (pno < 0 || pno >= MAXPLAYER)) {
+        if (bay_since[i][b] == 0) {
+          bay_since[i][b] = t;
+        } else if (!bay_reported[i][b] && t - bay_since[i][b] > 0.05) {
+          bay_reported[i][b] = 1;
+          event(E_BAY_OOB, "player %d bay %d holds invalid slot %d", i, b, pno);
+        }
+      } else {
+        bay_since[i][b] = 0;
+        bay_reported[i][b] = 0;
+      }
+    }
+  }
+}
+
+/* wait queue linkage and free_slots invariant tracking */
+static double q_corrupt_since[MAXQUEUE], q_drift_since[MAXQUEUE];
+static int q_corrupt_rep[MAXQUEUE], q_drift_rep[MAXQUEUE];
+
+static void check_queues(double t)
+{
+  int q;
+
+  for (q = 0; q < MAXQUEUE; q++) {
+    volatile struct pqueue *pq = &m->queues[q];
+    int k = pq->first;
+    int walked = 0;
+    int corrupt = 0;
+    int bad_idx = -1;
+    int max_slots = pq->max_slots;
+    int free_slots = pq->free_slots;
+    int drift = 0;
+    int actual_free = -1;
+
+    while (k != -1) {
+      if (k < 0 || k >= MAXWAITING) {
+        corrupt = 1;
+        bad_idx = k;
+        break;
+      }
+      walked++;
+      if (walked > MAXWAITING) {
+        corrupt = 2;
+        break;
+      }
+      k = m->waiting[k].next;
+    }
+    if (!corrupt && (u_int) walked != pq->count)
+      corrupt = 3;
+
+    if (corrupt) {
+      if (q_corrupt_since[q] == 0) {
+        q_corrupt_since[q] = t;
+      } else if (!q_corrupt_rep[q] && t - q_corrupt_since[q] > 0.1) {
+        q_corrupt_rep[q] = 1;
+        if (corrupt == 1)
+          event(E_QUEUE_CORRUPT, "queue %d has out-of-range waiter index %d", q, bad_idx);
+        else if (corrupt == 2)
+          event(E_QUEUE_CORRUPT, "queue %d wait list exceeded MAXWAITING (cycle)", q);
+        else
+          event(E_QUEUE_CORRUPT, "queue %d walked %d waiters, count %u", q, walked, pq->count);
+      }
+    } else {
+      q_corrupt_since[q] = 0;
+      q_corrupt_rep[q] = 0;
+    }
+
+    if (free_slots < 0 || free_slots > max_slots) {
+      drift = 1;
+    } else if (q == QU_PICKUP && (pq->q_flags & QU_OPEN) &&
+               pq->low_slot >= 0 && pq->high_slot <= MAXPLAYER &&
+               pq->low_slot < pq->high_slot &&
+               pq->max_slots == pq->high_slot - pq->low_slot) {
+      int s;
+      actual_free = 0;
+      for (s = pq->low_slot; s < pq->high_slot; s++) {
+        if (m->players[s].p_status == PFREE)
+          actual_free++;
+      }
+      if (free_slots != actual_free)
+        drift = 2;
+    }
+
+    if (drift) {
+      if (q_drift_since[q] == 0) {
+        q_drift_since[q] = t;
+      } else if (!q_drift_rep[q] && t - q_drift_since[q] > 0.2) {
+        q_drift_rep[q] = 1;
+        if (drift == 1)
+          event(E_FREESLOTS_DRIFT, "queue %d free_slots %d outside [0, %d]", q, free_slots, max_slots);
+        else
+          event(E_FREESLOTS_DRIFT, "queue %d free_slots %d differs from PFREE count %d", q, free_slots, actual_free);
+      }
+    } else {
+      q_drift_since[q] = 0;
+      q_drift_rep[q] = 0;
+    }
+  }
+}
+
 /* count stress test messages as the daemon puts them in the main
    queue; an entry is read a little after the index moves, as the daemon
    advances mc_current before it copies the message in */
@@ -418,6 +538,8 @@ int main(int argc, char **argv)
     polls++;
     if (t >= next_count) {
       check_counts(t);
+      check_bays(t);
+      check_queues(t);
       poll_messages(t);
       next_count = t + 0.001;
     }
