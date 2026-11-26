@@ -285,11 +285,14 @@ int main(int argc, char **argv)
 	        HandleGenDistr(copy.m_data,
 			copy.m_from,
 			copy.m_recpt,&dist);
-		makedistress(&dist,buf,distmacro[dist.distype].macro);
-		/* note that we do NOT send the F0->FED part
-		   so strncat is fine */
-		buf[MSG_LEN - strlen(copy.m_data)] = '\0';
-	 	strcpy(copy.m_data,buf);
+		if (dist.distype > 0 && dist.distype < num_distress &&
+		    distmacro[dist.distype].macro != NULL) {
+		  makedistress(&dist,buf,distmacro[dist.distype].macro);
+		  /* note that we do NOT send the F0->FED part
+		     so strncat is fine */
+		  buf[MSG_LEN - 1] = '\0';
+		  strcpy(copy.m_data,buf);
+		}
 	    }
 	    wspew_mess(&copy);
 	}

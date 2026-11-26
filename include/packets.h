@@ -1275,3 +1275,35 @@ struct ltd_spacket { /* SP_LTD py-struct pending #62 */
     unsigned int wsdi;  /* weap smack damage inflicted, weapons.plasma.damage.inflicted */
     unsigned int wsdt;  /* weap smack damage taken, weapons.plasma.damage.taken */
 } __attribute__ ((packed));
+
+/* Compile-time verification of Netrek wire-protocol ABI invariants.
+   Catch 64-bit LONG/U_LONG misconfiguration or unintended struct padding
+   at build time rather than silently corrupting the network protocol. */
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#define NETREK_STATIC_ASSERT(cond, name) _Static_assert((cond), #name)
+#else
+#define NETREK_STATIC_ASSERT(cond, name) \
+    typedef char netrek_static_assert_##name[(cond) ? 1 : -1]
+#endif
+
+NETREK_STATIC_ASSERT(sizeof(LONG) == 4, long_must_be_32bit);
+NETREK_STATIC_ASSERT(sizeof(U_LONG) == 4, u_long_must_be_32bit);
+NETREK_STATIC_ASSERT(sizeof(struct mesg_spacket) == 84, mesg_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct plyr_info_spacket) == 4, plyr_info_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct plyr_login_spacket) == 52, plyr_login_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct player_spacket) == 12, player_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct you_spacket) == 32, you_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct status_spacket) == 28, status_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct planet_spacket) == 12, planet_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct planet_loc_spacket) == 28, planet_loc_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct torp_spacket) == 12, torp_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct phaser_spacket) == 16, phaser_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct feature_cpacket) == 88, feature_cpacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct feature_spacket) == 88, feature_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct login_cpacket) == 52, login_cpacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct mesg_cpacket) == 84, mesg_cpacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct updates_cpacket) == 8, updates_cpacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct ping_cpacket) == 12, ping_cpacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct ping_spacket) == 8, ping_spacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct udp_req_cpacket) == 8, udp_req_cpacket_size);
+NETREK_STATIC_ASSERT(sizeof(struct udp_reply_spacket) == 8, udp_reply_spacket_size);
