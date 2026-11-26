@@ -64,59 +64,59 @@
 
 /* file scope prototypes */
 
-static void handleTorpReq(struct torp_cpacket *packet);
-static void handlePhasReq(struct phaser_cpacket *packet);
-static void handleSpeedReq(struct speed_cpacket *packet);
-static void handleDirReq(struct dir_cpacket *packet);
-static void handleShieldReq(struct shield_cpacket *packet);
-static void handleRepairReq(struct repair_cpacket *packet);
-static void handleOrbitReq(struct orbit_cpacket *packet);
-static void handlePractrReq(struct practr_cpacket *packet);
-static void handleBombReq(struct bomb_cpacket *packet);
-static void handleBeamReq(struct beam_cpacket *packet);
-static void handleCloakReq(struct cloak_cpacket *packet);
-static void handleDetTReq(struct det_torps_cpacket *packet);
-static void handleCopilotReq(struct copilot_cpacket *packet);
-static void handleOutfit(struct outfit_cpacket *packet);
-static void handleLoginReq(struct login_cpacket *packet);
-static void handlePlasmaReq(struct plasma_cpacket *packet);
-static void handleWarReq(struct war_cpacket *packet);
-static void handlePlanReq(struct planet_cpacket *packet);
-static void handlePlanlockReq(struct planlock_cpacket *packet);
-static void handlePlaylockReq(struct playlock_cpacket *packet);
-static void handleDetMReq(struct det_mytorp_cpacket *packet);
-static void handleTractorReq(struct tractor_cpacket *packet);
-static void handleRepressReq(struct repress_cpacket *packet);
-static void handleCoupReq(struct coup_cpacket *packet);
-static void handleRefitReq(struct refit_cpacket *packet);
-static void handleMessageReq(struct mesg_cpacket *packet);
-static void handleQuitReq(struct quit_cpacket *packet);
-static void handleOptionsPacket(struct options_cpacket *packet);
-static void handleSocketReq(struct socket_cpacket *packet);
-static void handleByeReq(struct bye_cpacket *packet);
-static void handleDockingReq(struct dockperm_cpacket *packet);
-static void handleReset(struct resetstats_cpacket *packet);
-static void handleUpdatesReq(struct updates_cpacket *packet);
-static void handleReserved(struct reserved_cpacket *packet);
-static void handleScan(struct scan_cpacket *packet);
-static void handleUdpReq(struct udp_req_cpacket *packet);
-static void handleSequence(void);
-static void handleShortReq(struct shortreq_cpacket *packet);
-static void handleThresh(struct threshold_cpacket *packet);
-static void handleSMessageReq(struct mesg_s_cpacket *packet);
+static void handleTorpReq(char *raw);
+static void handlePhasReq(char *raw);
+static void handleSpeedReq(char *raw);
+static void handleDirReq(char *raw);
+static void handleShieldReq(char *raw);
+static void handleRepairReq(char *raw);
+static void handleOrbitReq(char *raw);
+static void handlePractrReq(char *raw);
+static void handleBombReq(char *raw);
+static void handleBeamReq(char *raw);
+static void handleCloakReq(char *raw);
+static void handleDetTReq(char *raw);
+static void handleCopilotReq(char *raw);
+static void handleOutfit(char *raw);
+static void handleLoginReq(char *raw);
+static void handlePlasmaReq(char *raw);
+static void handleWarReq(char *raw);
+static void handlePlanReq(char *raw);
+static void handlePlanlockReq(char *raw);
+static void handlePlaylockReq(char *raw);
+static void handleDetMReq(char *raw);
+static void handleTractorReq(char *raw);
+static void handleRepressReq(char *raw);
+static void handleCoupReq(char *raw);
+static void handleRefitReq(char *raw);
+static void handleMessageReq(char *raw);
+static void handleQuitReq(char *raw);
+static void handleOptionsPacket(char *raw);
+static void handleSocketReq(char *raw);
+static void handleByeReq(char *raw);
+static void handleDockingReq(char *raw);
+static void handleReset(char *raw);
+static void handleUpdatesReq(char *raw);
+static void handleReserved(char *raw);
+static void handleScan(char *raw);
+static void handleUdpReq(char *raw);
+static void handleSequence(char *raw);
+static void handleShortReq(char *raw);
+static void handleThresh(char *raw);
+static void handleSMessageReq(char *raw);
 
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
-static void handleOggV(struct oggv_cpacket *packet);
+static void handleOggV(char *raw);
 #endif
-static void handleFeature(struct feature_cpacket *cpacket);
+static void handleFeature(char *raw);
 
 extern int ignored[];
 
 #ifdef RSA
-static void handleRSAKey();
+static void handleRSAKey(char *raw);
 #endif
 
-static void handlePingResponse(struct ping_cpacket  *packet);
+static void handlePingResponse(char *raw);
 static void clientVersion(struct mesg_spacket *packet);
 static int doRead(int asock);
 static int gwrite(int fd, char *wbuf, size_t size);
@@ -151,68 +151,68 @@ struct packet_handler {
 struct packet_handler handlers[] = {
     { 0, NULL, PKT_NONE },		/* record 0 */
 #ifdef MESSAGES_ALL_TIME
-    { sizeof(struct mesg_cpacket), (void (*)(char *)) handleMessageReq, PKT_ALWAYS },	   /* CP_MESSAGE */
+    { sizeof(struct mesg_cpacket), handleMessageReq, PKT_ALWAYS },	   /* CP_MESSAGE */
 #else
-    { sizeof(struct mesg_cpacket), (void (*)(char *)) handleMessageReq, PKT_NONE },	   /* CP_MESSAGE */
+    { sizeof(struct mesg_cpacket), handleMessageReq, PKT_NONE },	   /* CP_MESSAGE */
 #endif
-    { sizeof(struct speed_cpacket), (void (*)(char *)) handleSpeedReq, PKT_NONE },	   /* CP_SPEED */
-    { sizeof(struct dir_cpacket), (void (*)(char *)) handleDirReq, PKT_NONE },	   /* CP_DIRECTION */
-    { sizeof(struct phaser_cpacket), (void (*)(char *)) handlePhasReq, PKT_NONE },	   /* CP_PHASER */
-    { sizeof(struct plasma_cpacket), (void (*)(char *)) handlePlasmaReq, PKT_NONE },	   /* CP_PLASMA */
-    { sizeof(struct torp_cpacket), (void (*)(char *)) handleTorpReq, PKT_NONE },	   /* CP_TORP */
-    { sizeof(struct quit_cpacket), (void (*)(char *)) handleQuitReq, PKT_NONE },	   /* CP_QUIT */
-    { sizeof(struct login_cpacket), (void (*)(char *)) handleLoginReq, PKT_NONE },	   /* CP_LOGIN */
-    { sizeof(struct outfit_cpacket), (void (*)(char *)) handleOutfit, PKT_NONE },	   /* CP_OUTFIT */
-    { sizeof(struct war_cpacket), (void (*)(char *)) handleWarReq, PKT_NONE },	   /* CP_WAR */
-    { sizeof(struct practr_cpacket), (void (*)(char *)) handlePractrReq, PKT_NONE },	   /* CP_PRACTR */
-    { sizeof(struct shield_cpacket), (void (*)(char *)) handleShieldReq, PKT_NONE },	   /* CP_SHIELD */
-    { sizeof(struct repair_cpacket), (void (*)(char *)) handleRepairReq, PKT_NONE },	   /* CP_REPAIR */
-    { sizeof(struct orbit_cpacket), (void (*)(char *)) handleOrbitReq, PKT_NONE },	   /* CP_ORBIT */
-    { sizeof(struct planlock_cpacket), (void (*)(char *)) handlePlanlockReq, PKT_NONE },/* CP_PLANLOCK */
-    { sizeof(struct playlock_cpacket), (void (*)(char *)) handlePlaylockReq, PKT_NONE },/* CP_PLAYLOCK */
-    { sizeof(struct bomb_cpacket), (void (*)(char *)) handleBombReq, PKT_NONE },	   /* CP_BOMB */
-    { sizeof(struct beam_cpacket), (void (*)(char *)) handleBeamReq, PKT_NONE },	   /* CP_BEAM */
-    { sizeof(struct cloak_cpacket), (void (*)(char *)) handleCloakReq, PKT_NONE },	   /* CP_CLOAK */
-    { sizeof(struct det_torps_cpacket), (void (*)(char *)) handleDetTReq, PKT_NONE },   /* CP_DET_TORPS */
-    { sizeof(struct det_mytorp_cpacket), (void (*)(char *)) handleDetMReq, PKT_NONE },  /* CP_DET_MYTORP */
-    { sizeof(struct copilot_cpacket), (void (*)(char *)) handleCopilotReq, PKT_NONE },  /* CP_COPLIOT */
-    { sizeof(struct refit_cpacket), (void (*)(char *)) handleRefitReq, PKT_NONE }, 	   /* CP_REFIT */
-    { sizeof(struct tractor_cpacket), (void (*)(char *)) handleTractorReq, PKT_NONE },  /* CP_TRACTOR */
-    { sizeof(struct repress_cpacket), (void (*)(char *)) handleRepressReq, PKT_NONE },  /* CP_REPRESS */
-    { sizeof(struct coup_cpacket), (void (*)(char *)) handleCoupReq, PKT_NONE },	   /* CP_COUP */
-    { sizeof(struct socket_cpacket), (void (*)(char *)) handleSocketReq, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_SOCKET */
-    { sizeof(struct options_cpacket), (void (*)(char *)) handleOptionsPacket, PKT_ALWAYS | PKT_REQUIRES_MYSTATS },/* CP_OPTIONS */
-    { sizeof(struct bye_cpacket), (void (*)(char *)) handleByeReq, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_BYE */
-    { sizeof(struct dockperm_cpacket), (void (*)(char *)) handleDockingReq, PKT_NONE }, /* CP_DOCKPERM */
-    { sizeof(struct updates_cpacket), (void (*)(char *)) handleUpdatesReq, PKT_ALWAYS }, /* CP_UPDATES */
-    { sizeof(struct resetstats_cpacket), (void (*)(char *)) handleReset, PKT_ALWAYS | PKT_REQUIRES_MYSTATS },    /* CP_RESETSTATS */
-    { sizeof(struct reserved_cpacket), (void (*)(char *)) handleReserved, PKT_ALWAYS },   /* CP_RESERVED */
-    { sizeof(struct scan_cpacket), (void (*)(char *)) handleScan, PKT_NONE },	   /* CP_SCAN (ATM) */
-    { sizeof(struct udp_req_cpacket), (void (*)(char *)) handleUdpReq, PKT_NONE },	   /* CP_UDP_REQ */
-    { sizeof(struct sequence_cpacket), (void (*)(char *)) handleSequence, PKT_NONE },   /* CP_SEQUENCE */
+    { sizeof(struct speed_cpacket), handleSpeedReq, PKT_NONE },	   /* CP_SPEED */
+    { sizeof(struct dir_cpacket), handleDirReq, PKT_NONE },	   /* CP_DIRECTION */
+    { sizeof(struct phaser_cpacket), handlePhasReq, PKT_NONE },	   /* CP_PHASER */
+    { sizeof(struct plasma_cpacket), handlePlasmaReq, PKT_NONE },	   /* CP_PLASMA */
+    { sizeof(struct torp_cpacket), handleTorpReq, PKT_NONE },	   /* CP_TORP */
+    { sizeof(struct quit_cpacket), handleQuitReq, PKT_NONE },	   /* CP_QUIT */
+    { sizeof(struct login_cpacket), handleLoginReq, PKT_NONE },	   /* CP_LOGIN */
+    { sizeof(struct outfit_cpacket), handleOutfit, PKT_NONE },	   /* CP_OUTFIT */
+    { sizeof(struct war_cpacket), handleWarReq, PKT_NONE },	   /* CP_WAR */
+    { sizeof(struct practr_cpacket), handlePractrReq, PKT_NONE },	   /* CP_PRACTR */
+    { sizeof(struct shield_cpacket), handleShieldReq, PKT_NONE },	   /* CP_SHIELD */
+    { sizeof(struct repair_cpacket), handleRepairReq, PKT_NONE },	   /* CP_REPAIR */
+    { sizeof(struct orbit_cpacket), handleOrbitReq, PKT_NONE },	   /* CP_ORBIT */
+    { sizeof(struct planlock_cpacket), handlePlanlockReq, PKT_NONE },/* CP_PLANLOCK */
+    { sizeof(struct playlock_cpacket), handlePlaylockReq, PKT_NONE },/* CP_PLAYLOCK */
+    { sizeof(struct bomb_cpacket), handleBombReq, PKT_NONE },	   /* CP_BOMB */
+    { sizeof(struct beam_cpacket), handleBeamReq, PKT_NONE },	   /* CP_BEAM */
+    { sizeof(struct cloak_cpacket), handleCloakReq, PKT_NONE },	   /* CP_CLOAK */
+    { sizeof(struct det_torps_cpacket), handleDetTReq, PKT_NONE },   /* CP_DET_TORPS */
+    { sizeof(struct det_mytorp_cpacket), handleDetMReq, PKT_NONE },  /* CP_DET_MYTORP */
+    { sizeof(struct copilot_cpacket), handleCopilotReq, PKT_NONE },  /* CP_COPLIOT */
+    { sizeof(struct refit_cpacket), handleRefitReq, PKT_NONE }, 	   /* CP_REFIT */
+    { sizeof(struct tractor_cpacket), handleTractorReq, PKT_NONE },  /* CP_TRACTOR */
+    { sizeof(struct repress_cpacket), handleRepressReq, PKT_NONE },  /* CP_REPRESS */
+    { sizeof(struct coup_cpacket), handleCoupReq, PKT_NONE },	   /* CP_COUP */
+    { sizeof(struct socket_cpacket), handleSocketReq, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_SOCKET */
+    { sizeof(struct options_cpacket), handleOptionsPacket, PKT_ALWAYS | PKT_REQUIRES_MYSTATS },/* CP_OPTIONS */
+    { sizeof(struct bye_cpacket), handleByeReq, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_BYE */
+    { sizeof(struct dockperm_cpacket), handleDockingReq, PKT_NONE }, /* CP_DOCKPERM */
+    { sizeof(struct updates_cpacket), handleUpdatesReq, PKT_ALWAYS }, /* CP_UPDATES */
+    { sizeof(struct resetstats_cpacket), handleReset, PKT_ALWAYS | PKT_REQUIRES_MYSTATS },    /* CP_RESETSTATS */
+    { sizeof(struct reserved_cpacket), handleReserved, PKT_ALWAYS },   /* CP_RESERVED */
+    { sizeof(struct scan_cpacket), handleScan, PKT_NONE },	   /* CP_SCAN (ATM) */
+    { sizeof(struct udp_req_cpacket), handleUdpReq, PKT_NONE },	   /* CP_UDP_REQ */
+    { sizeof(struct sequence_cpacket), handleSequence, PKT_NONE },   /* CP_SEQUENCE */
 #ifdef RSA
-    { sizeof(struct rsa_key_cpacket), (void (*)(char *)) handleRSAKey, PKT_ALWAYS },	   /* CP_RSA_KEY */
+    { sizeof(struct rsa_key_cpacket), handleRSAKey, PKT_ALWAYS },	   /* CP_RSA_KEY */
 #else
     { 0, NULL, PKT_NONE },					   /* 37 */
 #endif
-    { sizeof(struct planet_cpacket), (void (*)(char *)) handlePlanReq, PKT_KEEP_SELFDEST },	   /* CP_PLANET */
+    { sizeof(struct planet_cpacket), handlePlanReq, PKT_KEEP_SELFDEST },	   /* CP_PLANET */
     { 0, NULL, PKT_NONE },					   /* 39 */
     { 0, NULL, PKT_NONE },					   /* 40 */
     { 0, NULL, PKT_NONE },					   /* 41 */
-    { sizeof(struct ping_cpacket), (void (*)(char *)) handlePingResponse, PKT_ALWAYS | PKT_KEEP_SELFDEST },   /* CP_PING_RESPONSE*/
-    { sizeof(struct shortreq_cpacket), (void (*)(char *)) handleShortReq, PKT_NONE },   /* CP_S_REQ */
-    { sizeof(struct threshold_cpacket), (void (*)(char *)) handleThresh, PKT_NONE },    /* CP_S_THRS */
+    { sizeof(struct ping_cpacket), handlePingResponse, PKT_ALWAYS | PKT_KEEP_SELFDEST },   /* CP_PING_RESPONSE*/
+    { sizeof(struct shortreq_cpacket), handleShortReq, PKT_NONE },   /* CP_S_REQ */
+    { sizeof(struct threshold_cpacket), handleThresh, PKT_NONE },    /* CP_S_THRS */
 #ifdef MESSAGES_ALL_TIME
-    { -1, (void (*)(char *)) handleSMessageReq, PKT_ALWAYS },                              /* CP_S_MESSAGE */
+    { -1, handleSMessageReq, PKT_ALWAYS },                              /* CP_S_MESSAGE */
 #else
-    { -1, (void (*)(char *)) handleSMessageReq, PKT_NONE },                                /* CP_S_MESSAGE */
+    { -1, handleSMessageReq, PKT_NONE },                                /* CP_S_MESSAGE */
 #endif
     { 0, NULL, PKT_NONE },					   /* 46 */
     { 0, NULL, PKT_NONE },					   /* 47 */
     { 0, NULL, PKT_NONE },					   /* 48 */
     { 0, NULL, PKT_NONE },					   /* 49 */
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
-    { sizeof(struct oggv_cpacket), (void (*)(char *)) handleOggV, PKT_NONE },           /* CP_OGGV */
+    { sizeof(struct oggv_cpacket), handleOggV, PKT_NONE },           /* CP_OGGV */
 #else
     { 0, NULL, PKT_NONE },					   /* 50 */
 #endif
@@ -225,7 +225,7 @@ struct packet_handler handlers[] = {
     { 0, NULL, PKT_NONE },					   /* 57 */
     { 0, NULL, PKT_NONE },					   /* 58 */
     { 0, NULL, PKT_NONE },					   /* 59 */
-    { sizeof(struct feature_cpacket), (void (*)(char *)) handleFeature, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_FEATURE */
+    { sizeof(struct feature_cpacket), handleFeature, PKT_ALWAYS | PKT_ALLOW_PRELOGIN },	   /* CP_FEATURE */
 };
 
 extern int sizes[TOTAL_SPACKETS];
@@ -1154,7 +1154,7 @@ static int doRead(int asock)
 		    atomic_and(&me->p_flags, ~PFSELFDEST);
 		    new_warning(85,"Self Destruct has been canceled");
 		}
-		((void (*)(char *))handlers[ptype].handler)(bufptr);
+		handlers[ptype].handler(bufptr);
 	    }
 	    /* Otherwise we ignore the request */
 	} else {
@@ -1192,29 +1192,34 @@ static int doRead(int asock)
     return 1;
 }
 
-static void handleTorpReq(struct torp_cpacket *packet)
+static void handleTorpReq(char *raw)
 {
+    struct torp_cpacket *packet = (struct torp_cpacket *) raw;
     ntorp(packet->dir, TWOBBLE | TOWNERSAFE | TDETTEAMSAFE);
 }
 
-static void handlePhasReq(struct phaser_cpacket *packet)
+static void handlePhasReq(char *raw)
 {
+    struct phaser_cpacket *packet = (struct phaser_cpacket *) raw;
     phaser(packet->dir);
 }
 
-static void handleSpeedReq(struct speed_cpacket *packet)
+static void handleSpeedReq(char *raw)
 {
+    struct speed_cpacket *packet = (struct speed_cpacket *) raw;
     set_speed(packet->speed);
 }
 
-static void handleDirReq(struct dir_cpacket *packet)
+static void handleDirReq(char *raw)
 {
+    struct dir_cpacket *packet = (struct dir_cpacket *) raw;
     atomic_and(&me->p_flags, ~(PFPLOCK | PFPLLOCK));
     set_course(packet->dir);
 }
 
-static void handleShieldReq(struct shield_cpacket *packet)
+static void handleShieldReq(char *raw)
 {
+    struct shield_cpacket *packet = (struct shield_cpacket *) raw;
     if (packet->state) {
 	shield_up();
     } else {
@@ -1222,8 +1227,9 @@ static void handleShieldReq(struct shield_cpacket *packet)
     }
 }
 
-static void handleRepairReq(struct repair_cpacket *packet)
+static void handleRepairReq(char *raw)
 {
+    struct repair_cpacket *packet = (struct repair_cpacket *) raw;
     if (packet->state) {
 	repair();
     } else {
@@ -1231,8 +1237,9 @@ static void handleRepairReq(struct repair_cpacket *packet)
     }
 }
 
-static void handleOrbitReq(struct orbit_cpacket *packet)
+static void handleOrbitReq(char *raw)
 {
+    struct orbit_cpacket *packet = (struct orbit_cpacket *) raw;
     if (packet->state) {
 	orbit();
     } else {
@@ -1241,8 +1248,9 @@ static void handleOrbitReq(struct orbit_cpacket *packet)
     }
 }
 
-static void handlePractrReq(struct practr_cpacket *packet)
+static void handlePractrReq(char *raw)
 {
+    (void) raw;
     if (is_idle(me)) return;
     if (practice_robo()) return;
     if (twarpMode) {
@@ -1251,8 +1259,9 @@ static void handlePractrReq(struct practr_cpacket *packet)
     }
 }
 
-static void handleBombReq(struct bomb_cpacket *packet)
+static void handleBombReq(char *raw)
 {
+    struct bomb_cpacket *packet = (struct bomb_cpacket *) raw;
     if (packet->state) {
 	bomb_planet();
     } else {
@@ -1260,8 +1269,9 @@ static void handleBombReq(struct bomb_cpacket *packet)
     }
 }
 
-static void handleBeamReq(struct beam_cpacket *packet)
+static void handleBeamReq(char *raw)
 {
+    struct beam_cpacket *packet = (struct beam_cpacket *) raw;
     if (packet->state==1) {
 	beam_up();
     } else if (packet->state) {
@@ -1271,8 +1281,9 @@ static void handleBeamReq(struct beam_cpacket *packet)
     }
 }
 
-static void handleCloakReq(struct cloak_cpacket *packet)
+static void handleCloakReq(char *raw)
 {
+    struct cloak_cpacket *packet = (struct cloak_cpacket *) raw;
     if (packet->state) {
 	cloak_on();
     } else {
@@ -1281,34 +1292,33 @@ static void handleCloakReq(struct cloak_cpacket *packet)
 }
 
 /*ARGSUSED*/
-static void handleDetTReq(struct det_torps_cpacket *packet)
+static void handleDetTReq(char *raw)
 {
+    (void) raw;
     if (is_idle(me)) return;
     detothers();
 }
 
 /*ARGSUSED*/
-static void handleCopilotReq(struct copilot_cpacket *packet)
+static void handleCopilotReq(char *raw)
 {
+    (void) raw;
 /*
  * Unsupported...
- if (packet->state) {
- atomic_or(&me->p_flags, PFCOPILOT);
- } else {
- atomic_and(&me->p_flags, ~PFCOPILOT);
- }
  */
 }
 
-static void handleOutfit(struct outfit_cpacket *packet)
+static void handleOutfit(char *raw)
 {
+    struct outfit_cpacket *packet = (struct outfit_cpacket *) raw;
     shipPick=packet->ship;
     teamPick=packet->team;
 }
 
-static void handleLoginReq(struct login_cpacket *packet)
+static void handleLoginReq(char *raw)
 {
-    
+    struct login_cpacket *packet = (struct login_cpacket *) raw;
+
     strncpy(namePick, packet->name, NAME_LEN);
     namePick[NAME_LEN-1]=0;
     strncpy(passPick, packet->password, NAME_LEN);
@@ -1321,18 +1331,21 @@ static void handleLoginReq(struct login_cpacket *packet)
     login[NAME_LEN-1]=0;
 }
 
-static void handlePlasmaReq(struct plasma_cpacket *packet)
+static void handlePlasmaReq(char *raw)
 {
+    struct plasma_cpacket *packet = (struct plasma_cpacket *) raw;
     nplasmatorp(packet->dir, 0);
 }
 
-static void handleWarReq(struct war_cpacket *packet)
+static void handleWarReq(char *raw)
 {
+    struct war_cpacket *packet = (struct war_cpacket *) raw;
     declare_war(packet->newmask, 1);
 }
 
-static void handlePlanReq(struct planet_cpacket *packet)
+static void handlePlanReq(char *raw)
 {
+    struct planet_cpacket *packet = (struct planet_cpacket *) raw;
     struct planet *plan;
     struct planet_spacket *pl;
 
@@ -1363,18 +1376,21 @@ static void handlePlanReq(struct planet_cpacket *packet)
     }
 }
 
-static void handlePlanlockReq(struct planlock_cpacket *packet)
+static void handlePlanlockReq(char *raw)
 {
+    struct planlock_cpacket *packet = (struct planlock_cpacket *) raw;
     lock_planet(packet->pnum);
 }
 
-static void handlePlaylockReq(struct playlock_cpacket *packet)
+static void handlePlaylockReq(char *raw)
 {
+    struct playlock_cpacket *packet = (struct playlock_cpacket *) raw;
     lock_player(packet->pnum);
 }
 
-static void handleDetMReq(struct det_mytorp_cpacket *packet)
+static void handleDetMReq(char *raw)
 {
+    struct det_mytorp_cpacket *packet = (struct det_mytorp_cpacket *) raw;
     struct torp *t;
     int n = ntohs(packet->tnum);
 
@@ -1406,8 +1422,9 @@ static void handleDetMReq(struct det_mytorp_cpacket *packet)
 	}
 }
 
-static void handleTractorReq(struct tractor_cpacket *packet)
+static void handleTractorReq(char *raw)
 {
+    struct tractor_cpacket *packet = (struct tractor_cpacket *) raw;
     int target;
     struct player *player;
 
@@ -1445,8 +1462,9 @@ static void handleTractorReq(struct tractor_cpacket *packet)
     }
 }
 
-static void handleRepressReq(struct repress_cpacket *packet)
+static void handleRepressReq(char *raw)
 {
+    struct repress_cpacket *packet = (struct repress_cpacket *) raw;
     int target;
     struct player *player;
 
@@ -1484,21 +1502,21 @@ static void handleRepressReq(struct repress_cpacket *packet)
     }
 }
 
-static void handleCoupReq(struct coup_cpacket *packet)
+static void handleCoupReq(char *raw)
 {
+    (void) raw;
     coup();
-
-    /* get rid of annoying compiler warning */
-    if (packet) return;
 }
 
-static void handleRefitReq(struct refit_cpacket *packet)
+static void handleRefitReq(char *raw)
 {
+    struct refit_cpacket *packet = (struct refit_cpacket *) raw;
     do_refit(packet->ship);
 }
 
-static void handleSMessageReq(struct mesg_s_cpacket *packet)
+static void handleSMessageReq(char *raw)
 {
+    struct mesg_s_cpacket *packet = (struct mesg_s_cpacket *) raw;
 /* If someone would delete the hardcoded things in handleMessageReq */
 /*      like     packet->mesg[69]='\0';   */
 /* we could give handleMessageReq the packet without copying */
@@ -1516,12 +1534,13 @@ static void handleSMessageReq(struct mesg_s_cpacket *packet)
     len = (unsigned char) packet->length - 4;
     if (len > MSG_LEN - 1) len = MSG_LEN - 1;
     if (len > 0) memcpy(mesPacket.mesg, packet->mesg, len);
-    handleMessageReq(& mesPacket);
+    handleMessageReq((char *) &mesPacket);
 /* I hope this was it */
 }
 
-static void handleMessageReq(struct mesg_cpacket *packet)
+static void handleMessageReq(char *raw)
 {
+    struct mesg_cpacket *packet = (struct mesg_cpacket *) raw;
     char addrbuf[9];
     static time_t lasttime=0 /*, time()*/ ;
     static int balance=0;	/* make sure he doesn't get carried away */
@@ -1799,17 +1818,19 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 }
 
 /*ARGSUSED*/
-static void handleQuitReq(struct quit_cpacket *packet)
+static void handleQuitReq(char *raw)
 {
     int sd_time = (me->p_ship.s_type != STARBASE) ? 10 : 60;
+    (void) raw;
     if (is_idle(me)) sd_time = sd_time / 5;
     me->p_selfdest = me->p_updates + sd_time * 10;
     atomic_or(&me->p_flags, PFSELFDEST);
     new_warning(90,"Self destruct initiated");
 }
 
-static void handleOptionsPacket(struct options_cpacket *packet)
+static void handleOptionsPacket(char *raw)
 {
+    struct options_cpacket *packet = (struct options_cpacket *) raw;
     if (mystats == NULL) return;
     memcpy(mystats->st_keymap, packet->keymap, 96);
 /*    mystats->st_flags = ntohl(packet->flags);*/
@@ -1818,16 +1839,18 @@ static void handleOptionsPacket(struct options_cpacket *packet)
     keeppeace=(mystats->st_flags / ST_KEEPPEACE) & 1;
 }
 
-static void handleSocketReq(struct socket_cpacket *packet)
+static void handleSocketReq(char *raw)
 {
+    struct socket_cpacket *packet = (struct socket_cpacket *) raw;
     nextSocket=ntohl(packet->socket);
     userVersion=packet->version;
     userUdpVersion=packet->udp_version;
 }
 
 /*ARGSUSED*/
-static void handleByeReq(struct bye_cpacket *packet)
+static void handleByeReq(char *raw)
 {
+    (void) raw;
 }
 
 int checkVersion(void)
@@ -1930,8 +1953,9 @@ static int gwrite(int fd, char *wbuf, size_t size)
     return orig;
 }
 
-static void handleDockingReq(struct dockperm_cpacket *packet)
+static void handleDockingReq(char *raw)
 {
+    struct dockperm_cpacket *packet = (struct dockperm_cpacket *) raw;
     if (me->p_ship.s_type == STARBASE) {
         if (packet->state) {
             atomic_or(&me->p_flags, PFDOCKOK);
@@ -1942,8 +1966,9 @@ static void handleDockingReq(struct dockperm_cpacket *packet)
     }
 }
 
-static void handleReset(struct resetstats_cpacket *packet)
+static void handleReset(char *raw)
 {
+    struct resetstats_cpacket *packet = (struct resetstats_cpacket *) raw;
 #ifndef lint
     extern int startTkills, startTlosses, startTarms, 
 	startTplanets, startTticks;
@@ -2009,8 +2034,9 @@ static void handleReset(struct resetstats_cpacket *packet)
 #endif /* lint */
 }
 
-static void handleUpdatesReq(struct updates_cpacket *packet)
+static void handleUpdatesReq(char *raw)
 {
+    struct updates_cpacket *packet = (struct updates_cpacket *) raw;
     /* the client sends how often he would like to receive a packet in
     microseconds ... which is converted to an integer rate in updates
     per second */
@@ -2050,8 +2076,9 @@ static void clientVersion(struct mesg_spacket *packet)
 
 #ifdef RSA
 
-static void handleReserved(struct reserved_cpacket *packet)
+static void handleReserved(char *raw)
 {
+    struct reserved_cpacket *packet = (struct reserved_cpacket *) raw;
     struct reserved_cpacket mycp;
     struct reserved_spacket mysp;
     struct rsa_key_spacket   rsp;
@@ -2095,8 +2122,9 @@ static void handleReserved(struct reserved_cpacket *packet)
         testtime=1;
 }
 
-static void handleRSAKey(struct rsa_key_cpacket *packet)
+static void handleRSAKey(char *raw)
 {
+    struct rsa_key_cpacket *packet = (struct rsa_key_cpacket *) raw;
     struct rsa_key_spacket mysp;
     char serverName[64]; 
 
@@ -2120,8 +2148,9 @@ static void handleRSAKey(struct rsa_key_cpacket *packet)
 
 #else
 
-static void handleReserved(struct reserved_cpacket *packet)
+static void handleReserved(char *raw)
 {
+    struct reserved_cpacket *packet = (struct reserved_cpacket *) raw;
     struct reserved_cpacket mycp;
     struct reserved_spacket mysp;
     char serverName[64];
@@ -2147,8 +2176,9 @@ static void handleReserved(struct reserved_cpacket *packet)
 #endif
 
 
-static void handleScan(struct scan_cpacket *packet)
+static void handleScan(char *raw)
 {
+    struct scan_cpacket *packet = (struct scan_cpacket *) raw;
 /*
   struct scan_spacket response;
   struct player *pp;
@@ -2180,8 +2210,9 @@ static void handleScan(struct scan_cpacket *packet)
   if (packet) return;
 }
 
-static void handlePingResponse(struct ping_cpacket  *packet)
+static void handlePingResponse(char *raw)
 {
+    struct ping_cpacket *packet = (struct ping_cpacket *) raw;
     if (me == NULL) return;
 
     /* client requests pings by sending pingme == 1 on TCP socket */
@@ -2215,8 +2246,9 @@ static void handlePingResponse(struct ping_cpacket  *packet)
 
 #if defined(BASEPRACTICE) || defined(NEWBIESERVER) || defined(PRETSERVER)
 /* these are sent by the robots when a parameter changes */
-static void handleOggV(struct oggv_cpacket *packet)
+static void handleOggV(char *raw)
 {
+    struct oggv_cpacket *packet = (struct oggv_cpacket *) raw;
     me->p_df = packet->def;
     me->p_tg = packet->targ;
 
@@ -2234,8 +2266,9 @@ static void handleOggV(struct oggv_cpacket *packet)
 }
 #endif                          /* BASEPRACTICE || NEWBIESERVER */
 
-static void handleFeature(struct feature_cpacket *cpacket)
+static void handleFeature(char *raw)
 {
+    struct feature_cpacket *cpacket = (struct feature_cpacket *) raw;
     struct feature_spacket       spacket;
     int was = F_client_feature_packets;
 
@@ -2259,8 +2292,9 @@ static void handleFeature(struct feature_cpacket *cpacket)
  * ---------------------------------------------------------------------------
  */
 
-static void handleUdpReq(struct udp_req_cpacket *packet)
+static void handleUdpReq(char *raw)
 {
+    struct udp_req_cpacket *packet = (struct udp_req_cpacket *) raw;
     struct udp_reply_spacket response;
     int mode;
 
@@ -2600,8 +2634,9 @@ static void printUdpInfo(void)
 	     addr.sin_family, ntohs(addr.sin_port)));
 }
 
-static void handleSequence(void)
+static void handleSequence(char *raw)
 {
+    (void) raw;
     /* we don't currently deal with sequence numbers from clients */
 }
 
@@ -3204,8 +3239,9 @@ static int parseIgnore(struct mesg_cpacket *packet)
     return TRUE;
 }
 
-static void handleShortReq(struct shortreq_cpacket *packet)
+static void handleShortReq(char *raw)
 {
+    struct shortreq_cpacket *packet = (struct shortreq_cpacket *) raw;
     struct shortreply_spacket	resp;
 
     memset(&resp, 0, sizeof(struct shortreply_spacket));
@@ -3299,8 +3335,9 @@ static void handleShortReq(struct shortreq_cpacket *packet)
     sendClientPacket((struct player_spacket *) &resp);
 }
 
-static void handleThresh(struct threshold_cpacket *packet)
+static void handleThresh(char *raw)
 {
+    struct threshold_cpacket *packet = (struct threshold_cpacket *) raw;
     send_threshold = ntohs(packet->thresh);
 #ifdef SHORT_THRESHOLD
     if (  send_threshold == 0) {
