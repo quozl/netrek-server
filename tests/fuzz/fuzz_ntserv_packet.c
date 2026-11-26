@@ -70,15 +70,8 @@ int bouncePingStats(int from) { (void) from; return 0; }
 int bounceWhois(int from) { (void) from; return 0; }
 int bounceUDPStats(int from) { (void) from; return 0; }
 
-static struct player g_players[MAXPLAYER];
-static struct planet g_planets[MAXPLANETS];
-static struct status g_status;
-static struct context g_context;
+static struct memory g_shm;
 static struct stats g_stats;
-static struct mctl g_mctl;
-static struct message g_messages[MAXMESSAGE];
-static struct message g_oob[MAXUPLINK];
-static struct message g_uplink[MAXPLAYER * MAXUPLINK];
 
 static int g_tcp_sv[2] = { -1, -1 };
 static int g_udp_sv[2] = { -1, -1 };
@@ -96,36 +89,39 @@ static void init_fuzz_env(void)
     if (g_tcp_sv[0] >= 0)
         return;
 
-    memset(g_players, 0, sizeof(g_players));
-    memset(g_planets, 0, sizeof(g_planets));
-    memset(&g_status, 0, sizeof(g_status));
-    memset(&g_context, 0, sizeof(g_context));
+    memset(&g_shm, 0, sizeof(g_shm));
     memset(&g_stats, 0, sizeof(g_stats));
-    memset(&g_mctl, 0, sizeof(g_mctl));
-    memset(g_messages, 0, sizeof(g_messages));
-    memset(g_oob, 0, sizeof(g_oob));
-    memset(g_uplink, 0, sizeof(g_uplink));
     memset(ignored, 0, sizeof(int) * MAXPLAYER);
 
-    for (i = 0; i < MAXPLAYER; i++) {
-        g_players[i].p_no = i;
-        g_players[i].p_status = PALIVE;
-        g_players[i].p_team = FED;
-        g_players[i].p_mapchars[0] = 'F';
-        g_players[i].p_mapchars[1] = '0';
-        strcpy(g_players[i].p_name, "Fuzzer");
-        strcpy(g_players[i].p_login, "fuzz");
-        strcpy(g_players[i].p_ip, "127.0.0.1");
-    }
+    context = g_shm.context;
+    status = g_shm.status;
+    players = g_shm.players;
+    torps = g_shm.torps;
+    planets = g_shm.planets;
+    phasers = g_shm.phasers;
+    mctl = g_shm.mctl;
+    messages = g_shm.messages;
+    uplink = g_shm.uplink;
+    oob = g_shm.oob;
+    teams = g_shm.teams;
+    shipvals = g_shm.shipvals;
+    queues = g_shm.queues;
+    waiting = g_shm.waiting;
+    bans = g_shm.bans;
 
-    players = g_players;
-    planets = g_planets;
-    status = &g_status;
-    context = &g_context;
-    mctl = &g_mctl;
-    messages = g_messages;
-    oob = g_oob;
-    uplink = g_uplink;
+    getshipdefaults();
+
+    for (i = 0; i < MAXPLAYER; i++) {
+        players[i].p_no = i;
+        players[i].p_status = PALIVE;
+        players[i].p_team = FED;
+        players[i].p_mapchars[0] = 'F';
+        players[i].p_mapchars[1] = '0';
+        strcpy(players[i].p_name, "Fuzzer");
+        strcpy(players[i].p_login, "fuzz");
+        strcpy(players[i].p_ip, "127.0.0.1");
+        getship(&players[i].p_ship, CRUISER);
+    }
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, g_tcp_sv) != 0)
         abort();
@@ -166,7 +162,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     drain_fd(g_udp_sv[1]);
 
     clientDead = 0;
-    me = (mode & 1) ? &g_players[0] : NULL;
+    me = (mode & 1) ? &players[0] : NULL;
+    myship = (mode & 1) ? &players[0].p_ship : NULL;
     mystats = (mode & 1) ? &g_stats : NULL;
     FD_ZERO(&inputMask);
     if (mode & 1) {
