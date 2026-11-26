@@ -1149,12 +1149,20 @@ static int doRead(int asock)
 	if (handlers[(int)*bufptr].handler != NULL) {
 	    unsigned char ptype = (unsigned char) *bufptr;
 	    if (packet_allowed_in_state(ptype, me, mystats, &inputMask)) {
+		union {
+		    long align;
+		    double dalign;
+		    char raw[512];
+		} aligned_pkt;
 		if (me && (me->p_flags & PFSELFDEST) &&
 		    !(handlers[ptype].flags & PKT_KEEP_SELFDEST)) {
 		    atomic_and(&me->p_flags, ~PFSELFDEST);
 		    new_warning(85,"Self Destruct has been canceled");
 		}
-		handlers[ptype].handler(bufptr);
+		if (size > 0 && size <= (int) sizeof(aligned_pkt.raw)) {
+		    memcpy(aligned_pkt.raw, bufptr, (size_t) size);
+		    handlers[ptype].handler(aligned_pkt.raw);
+		}
 	    }
 	    /* Otherwise we ignore the request */
 	} else {
