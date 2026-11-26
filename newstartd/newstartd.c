@@ -31,6 +31,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <poll.h>
 #include <sys/file.h>
 
 #include "defs.h"
@@ -38,6 +39,7 @@
 #include "data.h"
 #include "proto.h"
 #include "ip.h"
+#include "strutil.h"
 #define MVERS
 #include "version.h"
 #include "patchlevel.h"
@@ -251,13 +253,16 @@ int main (int argc, char *argv[])
       pid_t pid;
       struct sockaddr_in addr;
 
+      memset(&addr, 0, sizeof(addr));
+
       /* wait for one connection */
       port_idx = get_connection (&addr);
       if (port_idx < 0) continue;
       prog[port_idx].accepts++;
 
-      /* check this client against denied parties */
-      if (ip_deny(inet_ntoa(addr.sin_addr))) {
+      /* check this client against denied parties (stream sockets have peer) */
+      if (prog[port_idx].type == SOCK_STREAM &&
+	  ip_deny(inet_ntoa(addr.sin_addr))) {
 	prog[port_idx].denials++;
 	deny (inet_ntoa(addr.sin_addr));
 	close (0);
@@ -327,8 +332,10 @@ static int get_connection(struct sockaddr_in *peer)
 {
   struct sockaddr_in addr;
   socklen_t addrlen;
-  fd_set accept_fds;
-  int i, st, newsock;
+  struct pollfd pfds[MAXPROG];
+  int pmap[MAXPROG];
+  nfds_t nfds;
+  int i, sock, st, newsock;
 
   int foo = 1;
 
@@ -393,7 +400,7 @@ static int get_connection(struct sockaddr_in *peer)
       }
 
       if (prog[i].type == SOCK_STREAM) {
-	if (listen(sock, 1) < 0) {
+	if (listen(sock, 16) < 0) {
 	  perror("listen");
 	  close(sock);
 	  sleep(1);
@@ -412,41 +419,44 @@ static int get_connection(struct sockaddr_in *peer)
   /* stage two; wait for a connection on the listening sockets */
 
   for (;;) {				/* wait for a connection */
-    st = 0;
-
-    FD_ZERO(&accept_fds);		/* clear the file descriptor mask */
-    for (i = 0; i < num_progs; i++) {	/* set bits in mask for each sock */
+    nfds = 0;
+    for (i = 0; i < num_progs; i++) {
       sock = prog[i].sock;
       if (sock < 0) continue;
-      if (prog[i].type == SOCK_STREAM)
-	FD_SET(sock, &accept_fds);
-      if (prog[i].type == SOCK_DGRAM)
-	if (prog[i].child == 0)
-	  FD_SET(sock, &accept_fds);
-      st++;
+      if (prog[i].type == SOCK_STREAM ||
+          (prog[i].type == SOCK_DGRAM && prog[i].child == 0)) {
+        pfds[nfds].fd = sock;
+        pfds[nfds].events = POLLIN;
+        pfds[nfds].revents = 0;
+        pmap[nfds] = i;
+        nfds++;
+      }
     }
 
     /* paranoia, it could be possible that we have no sockets ready */
-    if (st == 0) {
+    if (nfds == 0) {
       fprintf(stderr, "netrekd: paranoia, no sockets to listen for\n");
       sleep(1);
       return -1;
     }
 
-    /* block until select() indicates accept() will complete */
-    st = select(32, &accept_fds, 0, 0, 0);
+    /* block until poll() indicates accept() will complete */
+    st = poll(pfds, nfds, -1);
     if (st > 0) break;
     if (restart) return -1;
     if (errno == EINTR) continue;
-    perror("select");
+    perror("poll");
     sleep(1);
   }
 
-  /* find one socket in mask that shows activity */
-  for (i = 0; i < num_progs; i++) {
-    sock = prog[i].sock;
-    if (sock < 0) continue;
-    if (FD_ISSET(sock, &accept_fds)) break;
+  /* find one socket that shows activity */
+  i = num_progs;
+  for (nfds_t k = 0; k < nfds; k++) {
+    if (pfds[k].revents & (POLLIN | POLLERR | POLLHUP)) {
+      i = pmap[k];
+      sock = pfds[k].fd;
+      break;
+    }
   }
 
   /* none of the sockets showed activity? erk */
@@ -487,9 +497,9 @@ static void deny(char *ip)
     char logname[BUFSIZ];
 
     time (&curtime);
-    sprintf (logname, "Denied %-32.32s %s",
-	     ip,
-	     ctime(&curtime));
+    snprintf (logname, sizeof(logname), "Denied %-32.32s %s",
+	      ip,
+	      ctime(&curtime));
     if (write (fd, logname, strlen(logname)) == -1)
       perror("deny: log write");
   }
@@ -501,16 +511,17 @@ static void deny(char *ip)
   packet.why = BADVERSION_DENIED;
   if (write (0, (char *) &packet, sizeof(packet)) == -1)
     perror("deny: packet write");
-
-  sleep (2);
 }
 
 static void statistics (int port_idx, char *ip)
 {
   FILE *client;
   int i;
+  pid_t pid;
 
-  if (fork() == 0) {
+  reaper_block();
+  pid = fork();
+  if (pid == 0) {
     static struct linger linger = {1, 500};
     /* do not hold the pid file lock while lingering after netrekd exits */
     close (pid_fd);
@@ -536,7 +547,12 @@ static void statistics (int port_idx, char *ip)
     }
     exit (1);
   } else {
+    if (pid > 0)
+      active++;
+    else
+      perror("fork");
     close (0);
+    reaper_unblock();
   }
 
   /* get rid of compiler warning */
@@ -555,9 +571,9 @@ static void process (int port_idx, char *ip)
     char logname[BUFSIZ];
 
     time (&curtime);
-    sprintf (logname, "       %-32.32s %s",
-	     ip,
-	     ctime(&curtime));
+    snprintf (logname, sizeof(logname), "       %-32.32s %s",
+              ip,
+              ctime(&curtime));
     if (write (fd, logname, strlen(logname)) == -1)
       perror("process: log write");
     close (fd);
@@ -631,7 +647,7 @@ static void reaper (int sig)
   for (;;) {
     pid = wait3(&stat, WNOHANG, 0);
     if (pid > 0) {
-      active--;
+      if (active > 0) active--;
       if (debug) fprintf (stderr, "active--: %d: pid %d terminated\n",
 			  active, pid);
       int i;
@@ -846,11 +862,15 @@ static int read_portfile (char *portfile)
 
   /* if the .ports file is empty, at least open the standard port */
   if (!i) {
-    strcpy (prog[0].prog, Prog);
-    strcpy (prog[0].progname, Prog);
+    netrek_strlcpy (prog[0].prog, Prog, sizeof(prog[0].prog));
+    netrek_strlcpy (prog[0].progname, Prog, sizeof(prog[0].progname));
+    prog[0].addr = INADDR_ANY;
     prog[0].port = PORT;
+    prog[0].type = SOCK_STREAM;
     prog[0].nargs = 0;
     prog[0].sock = -1;
+    prog[0].internal = 0;
+    prog[0].child = 0;
     prog[0].accepts = 0;
     prog[0].denials = 0;
     prog[0].forks = 0;

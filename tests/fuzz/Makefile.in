@@ -1,0 +1,81 @@
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+CC = @CC@
+WARN_FLAGS = @WARN_CFLAGS@ -Wall
+SAN_FLAGS = -g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer
+INCS = -I../../include -I../../ntserv
+
+TARGETS = fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet
+CORPUS_TARGETS = $(addsuffix _corpus,$(TARGETS))
+
+NTSERV_BASE = ../../ntserv/data.o ../../ntserv/glog.o ../../ntserv/ltd_stats.o \
+	../../ntserv/util.o ../../ntserv/sintab.o ../../ntserv/getship.o \
+	../../ntserv/planet.o ../../ntserv/alarm.o
+
+.PHONY: all check-corpus clean reallyclean
+
+all: $(CORPUS_TARGETS)
+
+fuzz_distress_corpus: fuzz_distress.c fuzz_driver.c
+	$(CC) $(WARN_FLAGS) $(SAN_FLAGS) $(INCS) -o $@ ${srcdir}/fuzz_driver.c ${srcdir}/fuzz_distress.c \
+		../../ntserv/distress.o $(NTSERV_BASE) -lm
+
+fuzz_feature_corpus: fuzz_feature.c fuzz_driver.c
+	$(CC) $(WARN_FLAGS) $(SAN_FLAGS) $(INCS) -o $@ ${srcdir}/fuzz_driver.c ${srcdir}/fuzz_feature.c \
+		../../ntserv/feature.o $(NTSERV_BASE) -lm
+
+fuzz_ip_cidr_corpus: fuzz_ip_cidr.c fuzz_driver.c ../../ntserv/ip.c
+	$(CC) $(WARN_FLAGS) $(SAN_FLAGS) $(INCS) -o $@ ${srcdir}/fuzz_driver.c ${srcdir}/fuzz_ip_cidr.c \
+		$(NTSERV_BASE) -lm
+
+fuzz_ntserv_packet_corpus: fuzz_ntserv_packet.c fuzz_driver.c
+	$(CC) $(WARN_FLAGS) $(SAN_FLAGS) $(INCS) -o $@ ${srcdir}/fuzz_driver.c ${srcdir}/fuzz_ntserv_packet.c \
+		../../ntserv/socket.o ../../ntserv/ping.o ../../ntserv/genspkt.o \
+		../../ntserv/distress.o ../../ntserv/feature.o ../../ntserv/ip.o \
+		../../ntserv/warning.o ../../ntserv/sysdefaults.o ../../ntserv/getpath.o \
+		../../ntserv/smessage.o ../../ntserv/rsa_key.o ../../ntserv/draft.o \
+		../../ntserv/gencmds.o ../../ntserv/bans.o ../../ntserv/blog.o \
+		$(NTSERV_BASE) -lresolv -lm
+
+fuzz_robotd_packet_corpus: fuzz_robotd_packet.c fuzz_driver.c ../../robotd/socket.c
+	$(CC) $(WARN_FLAGS) $(SAN_FLAGS) -Wno-parentheses -I../../robotd -o $@ \
+		${srcdir}/fuzz_driver.c ${srcdir}/fuzz_robotd_packet.c \
+		../../robotd/data.o ../../robotd/getship.o ../../robotd/sintab.o -lm
+
+# LibFuzzer targets (for Clang with libFuzzer)
+fuzz_distress: fuzz_distress.c
+	$(CC) $(WARN_FLAGS) -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -g -O1 $(INCS) -o $@ ${srcdir}/fuzz_distress.c \
+		../../ntserv/distress.o $(NTSERV_BASE) -lm
+
+fuzz_feature: fuzz_feature.c
+	$(CC) $(WARN_FLAGS) -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -g -O1 $(INCS) -o $@ ${srcdir}/fuzz_feature.c \
+		../../ntserv/feature.o $(NTSERV_BASE) -lm
+
+fuzz_ip_cidr: fuzz_ip_cidr.c ../../ntserv/ip.c
+	$(CC) $(WARN_FLAGS) -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -g -O1 $(INCS) -o $@ ${srcdir}/fuzz_ip_cidr.c \
+		$(NTSERV_BASE) -lm
+
+fuzz_ntserv_packet: fuzz_ntserv_packet.c
+	$(CC) $(WARN_FLAGS) -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -g -O1 $(INCS) -o $@ ${srcdir}/fuzz_ntserv_packet.c \
+		../../ntserv/socket.o ../../ntserv/ping.o ../../ntserv/genspkt.o \
+		../../ntserv/distress.o ../../ntserv/feature.o ../../ntserv/ip.o \
+		../../ntserv/warning.o ../../ntserv/sysdefaults.o ../../ntserv/getpath.o \
+		../../ntserv/smessage.o ../../ntserv/rsa_key.o ../../ntserv/draft.o \
+		../../ntserv/gencmds.o ../../ntserv/bans.o ../../ntserv/blog.o \
+		$(NTSERV_BASE) -lresolv -lm
+
+fuzz_robotd_packet: fuzz_robotd_packet.c ../../robotd/socket.c
+	$(CC) $(WARN_FLAGS) -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -g -O1 -Wno-parentheses -I../../robotd -o $@ ${srcdir}/fuzz_robotd_packet.c \
+		../../robotd/data.o ../../robotd/getship.o ../../robotd/sintab.o -lm
+
+check-corpus: $(CORPUS_TARGETS)
+	@for t in $(TARGETS); do \
+		echo "=== Corpus check: $$t ==="; \
+		./$${t}_corpus ${srcdir}/corpus/$$t/* || exit 1; \
+	done
+
+clean:
+	rm -f $(TARGETS) $(CORPUS_TARGETS) *.o crash-* leak-*
+
+reallyclean: clean

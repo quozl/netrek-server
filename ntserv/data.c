@@ -294,11 +294,7 @@ int     dogcounts=0;
 char Cambot[FNAMESIZE];
 char Cambot_out[FNAMESIZE];
 
-int num_distress;
-
 /* the following copied out of BRM data.c */
-
-int num_distress;
 
      /* the index into distmacro array should correspond 
    	with the correct dist_type */
@@ -331,6 +327,8 @@ struct  dmacro_list distmacro[] = {
 	{ 'E', "help", " %T%c->%O Help(%S)! %s%% shd, %d%% dmg, %f%% fuel,%?%S=SB%{ %w%% wtmp,%!%}%E%{ ETEMP!%}%W%{ WTEMP!%} %a armies!\0" },
 	{ '\0', '\0', '\0'},
 };
+
+int num_distress = (int)(sizeof(distmacro) / sizeof(distmacro[0])) - 1;
 
 
 

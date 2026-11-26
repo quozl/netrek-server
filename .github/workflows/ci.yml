@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - "hardening*"
+      - "fix/*"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  autotools:
+    name: Autotools (${{ matrix.os }}, ${{ matrix.cc }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev ${{ matrix.cc == 'clang' && 'clang' || '' }}
+      - name: Configure and build
+        env:
+          CC: ${{ matrix.cc }}
+        run: |
+          ./autogen.sh
+          ./configure --prefix="$PWD/_inst"
+          make -j"$(nproc)"
+          make check
+          make install
+
+  cmake:
+    name: CMake (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev libx11-dev
+      - name: Configure and build core server targets
+        run: |
+          mkdir -p build
+          cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$PWD/_cmake_inst"
+          cmake --build build --target ntserv daemon newstartd -j"$(nproc)"
+
+  feature-flags:
+    name: Optional feature-flag compile matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure --prefix="$PWD/_inst"
+      - name: Compile optional feature configurations
+        run: |
+          WARN="-Wall -Werror=implicit-function-declaration -Werror=format-security -Werror=sizeof-pointer-memaccess -Werror=return-type"
+          for def in "-DSTURGEON" "-DDNSBL_CHECK" "-DNEWBIESERVER" "-DBASEPRACTICE" "-DPRETSERVER" "-DSBFUEL_FIX" "-USBFUEL_FIX"; do
+            echo "=== Checking $def ==="
+            for src in ntserv/socket.c ntserv/sturgeon.c ntserv/ip.c ntserv/daemon.c ntserv/ntscmds.c ntserv/genspkt.c; do
+              gcc -g -O2 $WARN $def -Iinclude -Intserv -c "$src" -o /tmp/feat_check.o
+            done
+          done
+          rm -f /tmp/feat_check.o
+
+  sanitizers:
+    name: Sanitizers ASan+UBSan (${{ matrix.cc }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev ${{ matrix.cc == 'clang' && 'clang' || '' }}
+      - name: Configure and build with ASan + UBSan
+        env:
+          CC: ${{ matrix.cc }}
+        run: |
+          ./autogen.sh
+          ./configure --enable-sanitizers --prefix="$PWD/_inst"
+          make -j"$(nproc)"
+          make check
+          make -C tests/fuzz CC="${{ matrix.cc }}" check-corpus
+      - name: Short libFuzzer smoke test (Clang)
+        if: matrix.cc == 'clang'
+        run: |
+          make -C tests/fuzz CC=clang fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet
+          for t in fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet; do
+            ./tests/fuzz/$t tests/fuzz/corpus/$t -max_total_time=10
+          done
+
+  shm-stress:
+    name: SMP Shared-Memory Stress (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev python3
+      - name: Run shm-stress
+        run: |
+          sudo tests/shm-stress --duration 30
+
+  valgrind:
+    name: Valgrind Memcheck (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev valgrind
+      - name: Build and run unit tests & fuzz corpora under Valgrind
+        run: |
+          ./autogen.sh
+          ./configure --prefix="$PWD/_inst"
+          make
+          make -C tests/unit all
+          make -C tests/fuzz SAN_FLAGS="-g -O1" all
+          for t in test_distress test_ip_cidr test_parsers test_bay_slot test_packets; do
+            echo "=== Valgrind: tests/unit/$t ==="
+            valgrind --error-exitcode=1 --track-origins=yes ./tests/unit/$t
+          done
+          for t in fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet; do
+            echo "=== Valgrind: tests/fuzz/${t}_corpus ==="
+            valgrind --error-exitcode=1 --track-origins=yes ./tests/fuzz/${t}_corpus tests/fuzz/corpus/$t/*
+          done
