@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev ${{ matrix.cc == 'clang' && 'clang' || '' }}
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev ${{ matrix.cc == 'clang' && 'clang' || '' }}
       - name: Configure and build
         env:
           CC: ${{ matrix.cc }}
@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake libgdbm-dev libncurses-dev libgmp-dev libx11-dev
+          sudo apt-get install -y cmake libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev libx11-dev
       - name: Configure and build core server targets
         run: |
           mkdir -p build
@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev
       - name: Configure
         run: |
           ./autogen.sh
@@ -86,7 +86,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev ${{ matrix.cc == 'clang' && 'clang' || '' }}
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev ${{ matrix.cc == 'clang' && 'clang' || '' }}
       - name: Configure and build with ASan + UBSan
         env:
           CC: ${{ matrix.cc }}
@@ -107,7 +107,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev python3
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev python3
       - name: Run shm-stress
         run: |
           sudo tests/shm-stress --duration 30
