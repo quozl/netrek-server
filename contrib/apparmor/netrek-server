@@ -1,0 +1,70 @@
+# AppArmor profile for Netrek Vanilla Server (netrekd / newstartd / ntserv / daemon / robots)
+# Install to /etc/apparmor.d/netrek-server
+# See contrib/apparmor/README.md for rollout, customization, and local overrides.
+
+abi <abi/3.0>,
+
+include <tunables/global>
+
+@{NETREK_DIR}=/usr/local/games/netrek-server
+
+# bin/netrekd is a symlink to lib/newstartd, so both paths are listed.
+# Child server processes (ntserv, daemon, robots, tools) inherit confinement via ix.
+profile netrek-server @{NETREK_DIR}/{lib/newstartd,bin/netrekd} flags=(attach_disconnected) {
+  include <abstractions/base>
+  include <abstractions/nameservice>
+
+  # Networking (TCP client ports, UDP mode, metaserver queries, DNSBL/DNS lookups)
+  network inet stream,
+  network inet dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network unix stream,
+  network unix dgram,
+
+  # Signals within the confined server process tree and reload/stop from systemd
+  signal (send, receive) peer=netrek-server,
+  signal (receive) set=(term, int, hup, kill) peer=unconfined,
+
+  # Read/execute installed server binaries while preserving this profile (ix)
+  @{NETREK_DIR}/ r,
+  @{NETREK_DIR}/bin/ r,
+  @{NETREK_DIR}/bin/** rix,
+  @{NETREK_DIR}/lib/ r,
+  @{NETREK_DIR}/lib/** rix,
+
+  # Intentionally omit /bin/sh and arbitrary external binaries to block shell
+  # escapes from ADMIN_EXEC=1 or SCRIPT_TOURN_*. If you explicitly rely on
+  # shell-based tools/admin scripts or hooks, add constrained rules in
+  # /etc/apparmor.d/local/netrek-server (see contrib/apparmor/README.md).
+
+  # Configuration directory (read-only by default)
+  @{NETREK_DIR}/etc/ r,
+  @{NETREK_DIR}/etc/** r,
+
+  # Uncomment or place in local/netrek-server only if using DENY_DUPLICATES=1
+  # or in-game "admin ban" / "admin duplicates":
+  # @{NETREK_DIR}/etc/ip/deny/** rwk,
+  # @{NETREK_DIR}/etc/ip/duplicates/** rwk,
+
+  # Runtime state, logs, PID file locks (flock -> k), player DB, ignore state
+  @{NETREK_DIR}/var/ rw,
+  @{NETREK_DIR}/var/** rwk,
+
+  # Ephemeral files (unit/tool scratch files if invoked under confinement)
+  owner /tmp/netrek_* rw,
+
+  # Minimal self-inspection
+  @{PROC}/@{pid}/status r,
+  @{PROC}/@{pid}/stat r,
+
+  # Defense-in-depth explicit denials
+  deny /etc/shadow r,
+  deny /etc/gshadow r,
+  deny /root/** rwx,
+  deny /home/** rwx,
+  deny @{PROC}/sys/** w,
+
+  # Site-specific additions
+  include if exists <local/netrek-server>
+}
