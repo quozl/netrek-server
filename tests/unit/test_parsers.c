@@ -175,11 +175,47 @@ static void test_strutil_copy_and_appendf(void)
     ASSERT_EQ(out[sizeof(out) - 1], '\0');
 }
 
+static void test_validate_admin_config(void)
+{
+    int saved_exec = adminexec;
+    char saved_pass[ADMIN_PASS_LEN];
+
+    memcpy(saved_pass, admin_password, sizeof(saved_pass));
+
+    /* Empty password forces adminexec off */
+    adminexec = 1;
+    admin_password[0] = '\0';
+    validate_admin_config();
+    ASSERT_EQ(adminexec, 0);
+
+    /* Default "password" forces adminexec off */
+    adminexec = 1;
+    netrek_strlcpy(admin_password, "password", sizeof(admin_password));
+    validate_admin_config();
+    ASSERT_EQ(adminexec, 0);
+
+    /* Short non-default password warns but keeps setting intact */
+    adminexec = 1;
+    netrek_strlcpy(admin_password, "short1", sizeof(admin_password));
+    validate_admin_config();
+    ASSERT_EQ(adminexec, 1);
+
+    /* Strong password leaves adminexec enabled */
+    adminexec = 1;
+    netrek_strlcpy(admin_password, "StrongPassphrase123", sizeof(admin_password));
+    validate_admin_config();
+    ASSERT_EQ(adminexec, 1);
+
+    adminexec = saved_exec;
+    memcpy(admin_password, saved_pass, sizeof(admin_password));
+}
+
 int main(void)
 {
     RUN_TEST(test_feature_parser_and_lookup);
     RUN_TEST(test_bans_check_permanent_overflow_and_hits_reset);
     RUN_TEST(test_new_warning_long_message_no_overflow);
     RUN_TEST(test_strutil_copy_and_appendf);
+    RUN_TEST(test_validate_admin_config);
     TEST_SUMMARY("test_parsers");
 }

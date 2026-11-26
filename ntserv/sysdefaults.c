@@ -12,6 +12,7 @@
 #include "copyright2.h"
 #include "sysdefaults.h"
 #include "proto.h"
+#include "strutil.h"
 
 /* file scope prototypes */
 static void shipdefs (int set, FILE *f);
@@ -19,6 +20,53 @@ static void readstrings(char *type, char *string, char **keys, int *array,
                         int max);
 
 static struct stat oldstat;
+
+static size_t sysdef_char_limit(const void *p)
+{
+  if (p == admin_password)
+    return sizeof(admin_password);
+  if (p == server_advertise_filter)
+    return sizeof(server_advertise_filter);
+  if (p == robot_host)
+    return sizeof(robot_host);
+  if (p == Motd)
+    return sizeof(Motd);
+  if (p == script_tourn_start)
+    return sizeof(script_tourn_start);
+  if (p == script_tourn_end)
+    return sizeof(script_tourn_end);
+  return 0;
+}
+
+static void read_sysdef_token(const char *src, char *dst, size_t dstsize)
+{
+  size_t len = 0;
+
+  if (dst == NULL || dstsize == 0)
+    return;
+  while (*src == ' ' || *src == '\t' || *src == '\r' || *src == '\n')
+    src++;
+  while (*src != '\0' && *src != ' ' && *src != '\t' &&
+         *src != '\r' && *src != '\n') {
+    if (len + 1 < dstsize)
+      dst[len++] = *src;
+    src++;
+  }
+  dst[len] = '\0';
+}
+
+void validate_admin_config(void)
+{
+  if (adminexec != 0 &&
+      (admin_password[0] == '\0' || strcmp(admin_password, "password") == 0)) {
+    ERROR(1, ("SECURITY: ADMIN_EXEC disabled because ADMIN_PASSWORD is unset or default\n"));
+    adminexec = 0;
+  } else if (admin_password[0] != '\0' &&
+             strcmp(admin_password, "password") != 0 &&
+             strlen(admin_password) < 8) {
+    ERROR(1, ("SECURITY: ADMIN_PASSWORD is shorter than 8 characters\n"));
+  }
+}
 
 static void setarray ( struct sysdef_array *a, int v )
 {
@@ -117,6 +165,7 @@ void readsysdefaults(void)
     f=fopen(SysDef_File, "r");
     if (f==NULL) {
 	ERROR(1,("No system defaults file!  Using coded defaults.\n"));
+        validate_admin_config();
         return;
     }
     stat(SysDef_File, &oldstat);
@@ -147,7 +196,13 @@ void readsysdefaults(void)
 		    }
 		    break;
 		case SYSDEF_CHAR:
-		    sscanf(s,"%s", (char *) sysdef_keywords[j].p);
+		    {
+			size_t limit = sysdef_char_limit(sysdef_keywords[j].p);
+			if (limit > 0)
+			    read_sysdef_token(s, (char *) sysdef_keywords[j].p, limit);
+			else
+			    read_sysdef_token(s, (char *) sysdef_keywords[j].p, MSG_LEN);
+		    }
 		    break;
 		case SYSDEF_ARRAY:
 		    {
@@ -213,6 +268,7 @@ void readsysdefaults(void)
       surrenderStart=0;
     }
 
+    validate_admin_config();
     fclose(f);
 }
 

@@ -252,6 +252,7 @@ void forceShutdown(int s);
 int practice_robo(void);
 
 /* sysdefaults.c */
+void validate_admin_config(void);
 void readsysdefaults(void);
 int update_sys_defaults(void);
 
