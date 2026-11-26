@@ -2,6 +2,7 @@
 #define PING 1
 #include "../../robotd/socket.c"
 #include <stdarg.h>
+#include <stdint.h>
 
 /* Stubs for robotd symbols referenced by robotd/socket.c */
 void mprintf(char *format, ...) { (void) format; }
