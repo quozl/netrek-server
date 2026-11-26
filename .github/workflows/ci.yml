@@ -121,3 +121,28 @@ jobs:
       - name: Run shm-stress
         run: |
           sudo tests/shm-stress --duration 30
+
+  valgrind:
+    name: Valgrind Memcheck (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool libgdbm-dev libncurses-dev libgmp-dev libcrypt-dev valgrind
+      - name: Build and run unit tests & fuzz corpora under Valgrind
+        run: |
+          ./autogen.sh
+          ./configure --prefix="$PWD/_inst"
+          make
+          make -C tests/unit all
+          make -C tests/fuzz SAN_FLAGS="-g -O1" all
+          for t in test_distress test_ip_cidr test_parsers test_bay_slot test_packets; do
+            echo "=== Valgrind: tests/unit/$t ==="
+            valgrind --error-exitcode=1 --track-origins=yes ./tests/unit/$t
+          done
+          for t in fuzz_distress fuzz_feature fuzz_ip_cidr fuzz_ntserv_packet fuzz_robotd_packet; do
+            echo "=== Valgrind: tests/fuzz/${t}_corpus ==="
+            valgrind --error-exitcode=1 --track-origins=yes ./tests/fuzz/${t}_corpus tests/fuzz/corpus/$t/*
+          done
