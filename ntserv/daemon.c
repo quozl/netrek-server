@@ -3096,17 +3096,19 @@ static void plfight(void)
   int rnd;
   int ab;
   char buf[90];
-  char addrbuf[10];
+  char addrbuf[32];
 
   for (h = 0, l = &planets[h]; h < MAXPLANETS; h++, l++) {
     if (l->pl_flags & PLCOUP) {
       l->pl_flags &= ~PLCOUP;
-      sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
+      snprintf(addrbuf, sizeof(addrbuf), "%-3.3s->%s ", l->pl_name,
+               teamshort[l->pl_owner]);
       pmessage(l->pl_owner, MTEAM | MCOUP1, addrbuf,
                "Planet lost in political struggle");
       l->pl_owner = (l->pl_flags & ALLTEAM);
       l->pl_armies = 4;
-      sprintf(addrbuf, "%-3s->%s ", l->pl_name, teamshort[l->pl_owner]);
+      snprintf(addrbuf, sizeof(addrbuf), "%-3.3s->%s ", l->pl_name,
+               teamshort[l->pl_owner]);
       pmessage(l->pl_owner, MTEAM | MCOUP2, addrbuf,
                "Previous dictatorship overthrown in coup d'etat");
     }
