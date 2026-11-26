@@ -6,6 +6,7 @@
 #include "copyright.h"
 #include "config.h"
 #include <assert.h>
+#include <stddef.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
