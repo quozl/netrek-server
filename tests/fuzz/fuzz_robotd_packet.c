@@ -1,6 +1,17 @@
 #define ATM 1
 #define PING 1
+#include <stdlib.h>
+#include <setjmp.h>
+
+static jmp_buf g_fuzz_exit_jmp;
+static __attribute__((noreturn)) void fuzz_robotd_exit(int code)
+{
+    (void) code;
+    longjmp(g_fuzz_exit_jmp, 1);
+}
+#define exit(c) fuzz_robotd_exit(c)
 #include "../../robotd/socket.c"
+#undef exit
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -93,6 +104,7 @@ static void init_robotd_state(void)
     udpSock = -1;
     rsock = -1;
     _master_sock = -1;
+    serveraddr = htonl(INADDR_LOOPBACK);
     g_init = 1;
 }
 
@@ -102,6 +114,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     char pktbuf[256];
 
     init_robotd_state();
+    if (setjmp(g_fuzz_exit_jmp) != 0)
+        return 0;
 
     while (offset < size) {
         int type = data[offset];

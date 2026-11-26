@@ -77,6 +77,8 @@ static struct context g_context;
 static struct stats g_stats;
 static struct mctl g_mctl;
 static struct message g_messages[MAXMESSAGE];
+static struct message g_oob[MAXUPLINK];
+static struct message g_uplink[MAXPLAYER * MAXUPLINK];
 
 static int g_tcp_sv[2] = { -1, -1 };
 static int g_udp_sv[2] = { -1, -1 };
@@ -101,6 +103,8 @@ static void init_fuzz_env(void)
     memset(&g_stats, 0, sizeof(g_stats));
     memset(&g_mctl, 0, sizeof(g_mctl));
     memset(g_messages, 0, sizeof(g_messages));
+    memset(g_oob, 0, sizeof(g_oob));
+    memset(g_uplink, 0, sizeof(g_uplink));
     memset(ignored, 0, sizeof(int) * MAXPLAYER);
 
     for (i = 0; i < MAXPLAYER; i++) {
@@ -120,6 +124,8 @@ static void init_fuzz_env(void)
     context = &g_context;
     mctl = &g_mctl;
     messages = g_messages;
+    oob = g_oob;
+    uplink = g_uplink;
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, g_tcp_sv) != 0)
         abort();
