@@ -19,19 +19,31 @@ RestartSec=5
 # Privilege and filesystem sandboxing
 NoNewPrivileges=yes
 PrivateTmp=yes
+PrivateDevices=yes
 ProtectSystem=strict
 ProtectHome=yes
+ProtectProc=invisible
+ProcSubset=pid
 ReadWritePaths=/usr/local/games/netrek-server/var
 UMask=0027
 
-# Kernel / capability restrictions
+# Kernel / capability / syscall restrictions
 CapabilityBoundingSet=
 AmbientCapabilities=
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
 RestrictNamespaces=yes
+RestrictRealtime=yes
 RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 LockPersonality=yes
 MemoryDenyWriteExecute=yes
 SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
 
 # Resource bounds
 LimitNOFILE=4096

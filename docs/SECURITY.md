@@ -8,7 +8,7 @@ Never run `netrekd`, `ntserv`, `daemon`, or robots as `root`. Reference unit fil
 
 - `contrib/systemd/netrek-server.sysusers` — creates the unprivileged `netrek` system account (`/usr/sbin/nologin`).
 - `contrib/systemd/netrek-server.tmpfiles` — provisions `var/`, `var/players/`, and `var/ip/` with `0750` ownership for `netrek:netrek`.
-- `contrib/systemd/netrek-server.service` — runs `bin/netrekd start` (`Type=forking`) under `NoNewPrivileges=yes`, `ProtectSystem=strict`, `ProtectHome=yes`, empty `CapabilityBoundingSet`, `MemoryDenyWriteExecute=yes`, `UMask=0027`, and bounded file/task limits.
+- `contrib/systemd/netrek-server.service` — runs `bin/netrekd start` (`Type=forking`) under `NoNewPrivileges=yes`, `PrivateDevices=yes`, `ProtectSystem=strict`, `ProtectHome=yes`, `ProtectProc=invisible`, `ProtectKernel*`/`ProtectControlGroups`/`ProtectClock`, empty `CapabilityBoundingSet`, `RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX`, `SystemCallFilter=@system-service`, `MemoryDenyWriteExecute=yes`, `UMask=0027`, and bounded file/task limits.
 
 ### SysV Shared Memory & `PrivateIPC`
 The daemon, `ntserv`, and robots share SysV shared memory and semaphores (`PKEY`). If you do not run external operator CLI tools outside the service unit to inspect/manipulate shared memory, uncomment `PrivateIPC=yes` in `netrek-server.service` for complete IPC namespace isolation.
