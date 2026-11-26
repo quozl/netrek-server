@@ -3353,10 +3353,11 @@ static void handleThresh(char *raw)
 	new_warning(UNDEF,"Threshold test deactivated.");
     }
     else {
-	actual_threshold = send_threshold / numupdates;
+	int nu = (numupdates > 0) ? numupdates : 1;
+	actual_threshold = send_threshold / nu;
 	if ( actual_threshold < 60 ) { /* my low value */
 	    actual_threshold = 60; /* means: 1 SP_S_PLAYER+SP_S_YOU + 16 bytes */
-	    new_warning(UNDEF, "Threshold set to %d .  %d / Update(Server limit!)", numupdates * 60, 60);
+	    new_warning(UNDEF, "Threshold set to %d .  %d / Update(Server limit!)", nu * 60, 60);
 	}
 	else {
 	    new_warning(UNDEF, "Threshold set to %d .  %d / Update",send_threshold , actual_threshold);

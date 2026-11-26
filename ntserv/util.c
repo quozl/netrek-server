@@ -468,10 +468,13 @@ int p_ups_set(struct player *me, int client_ups)
 {
   int fpu, ups = client_ups;
 
+  if (fps < 1) return 0;
+
   /* keep requested updates per second within sysdef limits */
   if (ups < minups) ups = minups;
   if (ups > maxups) ups = maxups;
   if (ups > fps) ups = fps;
+  if (ups < 1) ups = 1;
 
   /*
   Convert to a skip count then back to an updates per second that
@@ -493,6 +496,7 @@ int p_ups_set(struct player *me, int client_ups)
   */
 
   fpu = fps / ups;
+  if (fpu < 1) fpu = 1;
   ups = fps / fpu;
 
   /* if there is no effective change, do nothing */
