@@ -43,24 +43,7 @@ void encryptReservedPacket(struct reserved_spacket *spacket,
 }
 void recv_from_master(struct mastercomm_spacket *p) { (void) p; }
 
-/* Minimal UI/game-loop symbols referenced in socket.c handlers */
-int redrawPlayer[MAXPLAYER];
-int redrawall;
-int mapmode;
-int namemode;
-int showShields;
-int showStats;
-int warncount;
-int warntimer;
-int infomapped;
-int mustexit;
-int messtime;
-int keeppeace;
-int showlocal;
-int showgalactic;
-int tournMask;
-int remap[16];
-int oldalert;
+/* Minimal UI/game-loop symbols referenced in socket.c handlers (others come from robotd/data.o) */
 State _state;
 Player *me_p;
 int _tcheck;
