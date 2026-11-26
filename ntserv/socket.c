@@ -391,7 +391,10 @@ int connectToClient(char *machine, int port)
        interval, and cancel the connect after that interval */
 
     /* set the socket non-blocking */
-    stat = ioctl(ns, FIONBIO, "in");
+    {
+	int nonblock = 1;
+	stat = ioctl(ns, FIONBIO, &nonblock);
+    }
     if (stat < 0) {
 	ERROR(1,("%s: ioctl(FIONBIO) failed, %s\n", whoami(), 
 		 strerror(errno)));
@@ -453,7 +456,10 @@ int connectToClient(char *machine, int port)
     }
 
     /* set the socket blocking */
-    stat = ioctl(ns, FIONBIO, "out");
+    {
+	int nonblock = 0;
+	stat = ioctl(ns, FIONBIO, &nonblock);
+    }
     if (stat < 0) {
 	ERROR(1,("%s: ioctl(FIONBIO) failed, %s\n", whoami(), 
 		 strerror(errno)));
@@ -532,7 +538,7 @@ void initClientData(void)
 
 	fat_plasma_info[i].packet = (PTR) &clientPlasmasInfo[i];
 	fat_plasma_info[i].pkt_size = sizeof(struct plasma_info_spacket);
-	fat_plasma_info[i].prev = fat_torp_info[i].next = (FAT_NODE *) NULL;
+	fat_plasma_info[i].prev = fat_plasma_info[i].next = (FAT_NODE *) NULL;
     }
     for (i=0; i<MAXPLANETS; i++) {
 	extern struct planet_spacket clientPlanets[MAXPLANETS];
@@ -587,7 +593,7 @@ void updateClient(void)
     /* This can halve your updates */
     if (send_short && skip) {
 	skip = 0;		/* back to default */
-	if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==buf)) {
+	if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==udpbuf)) {
 	    /* We sent nothing!  We better send something to wake him */
 	    updateSelf(TRUE);
 	}
@@ -643,7 +649,7 @@ void updateClient(void)
     }
 
     last_udp_size = SizeOfUDPUpdate();
-    if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==buf)) {
+    if (bufptr==buf && (commMode!=COMM_UDP || udpbufptr==udpbuf)) {
 	/* We sent nothing!  We better send something to wake him */
 	updateSelf(TRUE);
     }
@@ -929,6 +935,11 @@ static int doReadRest(int asock, char *buf, char *bufptr, int *count, int size)
     int temp;
 
     while (size>*count+(buf-bufptr)) {
+	if (asock == udpSock) {
+	    UDPDIAG(("Truncated UDP packet (need %d, have %d), dropping\n",
+		     size, *count + (int)(buf - bufptr)));
+	    return 0;
+	}
 	timeout.tv_sec=MAX(deadline-time(NULL), 0);
 	timeout.tv_usec=0;
 	FD_ZERO(&readfds);
@@ -988,6 +999,13 @@ static int doRead(int asock)
                          (struct sockaddr *)&moo, &moolen)) {
 	    ERROR(1,("%s: portswap recvfrom() failed, %s\n",
 		     whoami(), strerror(errno)));
+        }
+        else if (moo.sin_family != AF_INET ||
+                 moo.sin_addr.s_addr != remoteaddr) {
+            /* Discard datagrams from unexpected source addresses */
+            UDPDIAG(("portswap ignoring packet from unexpected host\n"));
+            (void) recvfrom(asock, buf, BUFSIZ*2, 0, NULL, NULL);
+            return 0;
         }
         else {
             UDPDIAG(("client port is really %d\n", ntohs(moo.sin_port)));
@@ -1118,15 +1136,17 @@ static int doRead(int asock)
 	bufptr+=size;
 	if (bufptr>buf+BUFSIZ) {
 	    memcpy(buf, buf+BUFSIZ, BUFSIZ);
-	    if (count==BUFSIZ*2) {
+	    if (count==BUFSIZ*2 && asock != udpSock) {
 		/*readfds = 1<<asock;*/
 		FD_ZERO(&readfds);
 		FD_SET(asock, &readfds);
 		if (select(asock+1, &readfds, NULL, NULL, &timeout) > 0) {
-		    temp=read(asock,buf+BUFSIZ,BUFSIZ);
+		    do {
+			temp=read(asock,buf+BUFSIZ,BUFSIZ);
+		    } while (temp < 0 && errno == EINTR);
 		    count=BUFSIZ+temp;
 		    if (temp<=0) {
-			sprintf(buf, "Died in third read(), return=%d", temp);
+			snprintf(buf, BUFSIZ*2, "Died in third read(), return=%d", temp);
 			ERROR(1,( "3) read() failed (%d, error %d)\n",
 				  count, errno));
 			logmessage(buf);
@@ -1289,8 +1309,8 @@ static void handlePlanReq(struct planet_cpacket *packet)
     struct planet *plan;
     struct planet_spacket *pl;
 
-    if (!F_check_planets) return;
-    if (packet->pnum < 0 || packet->pnum > MAXPLANETS) return;
+    if (!F_check_planets || me == NULL) return;
+    if (packet->pnum < 0 || packet->pnum >= MAXPLANETS) return;
 
     plan = &planets[(int) packet->pnum];
 
@@ -1546,6 +1566,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 #ifdef STURGEON
         if (sturgeon) {
             struct player *dude;
+            char msgbuf[256];
             char buf2[20];
             int i;
 
@@ -1556,19 +1577,20 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                         sprintf(addrbuf, "GOD->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
                         pmessage(me->p_no, MINDIV, addrbuf,"[C] this message, [u] list upgrades, [k] list kills, [i] inventory");
                         sprintf(addrbuf, "GOD->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-                        sprintf(buf, "Lite: %s. Extrakills: %s. Planetupgrades: %s. Maxupgrades: ",
+                        if (sturgeon_maxupgrades)
+                            snprintf(buf2, sizeof(buf2), "%d", sturgeon_maxupgrades);
+                        else
+                            snprintf(buf2, sizeof(buf2), "inf");
+                        snprintf(msgbuf, sizeof(msgbuf),
+                                "Lite: %s. Extrakills: %s. Planetupgrades: %s. Maxupgrades: %s",
                                 sturgeon_lite ? "on" : "off",
                                 sturgeon_extrakills ? "on" : "off",
-                                sturgeon_planetupgrades ? "on" : "off");
-                        if (sturgeon_maxupgrades)
-                            sprintf(buf2, "%d", sturgeon_maxupgrades);
-                        else
-                            sprintf(buf2, "inf");
-                        strcat(buf, buf2);
-                        pmessage(me->p_no, MINDIV, addrbuf, buf);
-                        sprintf(buf, "Special Weapons: %s", 
+                                sturgeon_planetupgrades ? "on" : "off",
+                                buf2);
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
+                        snprintf(msgbuf, sizeof(msgbuf), "Special Weapons: %s", 
                                 sturgeon_special_weapons ? "on" : "off");
-                        pmessage(me->p_no, MINDIV, addrbuf, buf);
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                         return;
                 }
             }
@@ -1591,40 +1613,40 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                 }
                 else {
                     sprintf(addrbuf, "SPY->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-                    sprintf(buf, "Intelligence indicates that %c%c's inventory includes:", teamlet[dude->p_team], shipnos[dude->p_no]);
-                    pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    snprintf(msgbuf, sizeof(msgbuf), "Intelligence indicates that %c%c's inventory includes:", teamlet[dude->p_team], shipnos[dude->p_no]);
+                    pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                 }
                 if (dude->p_team == me->p_team) {
                     for (i=0; i < NUMSPECIAL; i++) {
                         if (dude->p_weapons[i].sw_number < 0)
-                            sprintf(buf, " inf %s", dude->p_weapons[i].sw_name);
+                            snprintf(msgbuf, sizeof(msgbuf), " inf %s", dude->p_weapons[i].sw_name);
                         else if (dude->p_weapons[i].sw_number > 0)
-                            sprintf(buf, "%4d %s", dude->p_weapons[i].sw_number, dude->p_weapons[i].sw_name);
+                            snprintf(msgbuf, sizeof(msgbuf), "%4d %s", dude->p_weapons[i].sw_number, dude->p_weapons[i].sw_name);
                         else
                             continue;
-                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                     }
                 }
                 else {
-                    *buf = '\0';
+                    msgbuf[0] = '\0';
                     for (i=0; i<=5; i++)
                     if (dude->p_weapons[i].sw_number) {
-                        strcat(buf, "plasmas ");
+                        strcat(msgbuf, "plasmas ");
                         break;
                     }
                     for (i=6; i <= 9; i++) {
                         if (dude->p_weapons[i].sw_number) {
-                            strcat(buf, "nukes ");
+                            strcat(msgbuf, "nukes ");
                             break;
                         }
                     }
                     if (dude->p_weapons[10].sw_number)
-                        strcat(buf, "drones ");
+                        strcat(msgbuf, "drones ");
                     if (dude->p_weapons[11].sw_number)
-                        strcat(buf, "mines ");
+                        strcat(msgbuf, "mines ");
 
-                    if (*buf)
-                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    if (msgbuf[0])
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                     else
                         pmessage(me->p_no, MINDIV, addrbuf,"No special weapons");
                 }
@@ -1651,54 +1673,54 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                 }
                 else {
                     sprintf(addrbuf, "SPY->%c%c ", teamlet[me->p_team], shipnos[me->p_no]);
-                    sprintf(buf, "%c%c has spent %.2f kills upgrading the following systems:", teamlet[dude->p_team], shipnos[dude->p_no], dude->p_upgrades);
-                    pmessage(me->p_no, MINDIV, addrbuf,buf);
+                    snprintf(msgbuf, sizeof(msgbuf), "%c%c has spent %.2f kills upgrading the following systems:", teamlet[dude->p_team], shipnos[dude->p_no], dude->p_upgrades);
+                    pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                 }
                 if (me->p_team == dude->p_team) {
                     for (i=0; i < NUMUPGRADES; i++) {
                         if (dude->p_upgradelist[i] > 0) {
                             if (i < UPG_OFFSET) {
                                 if (dude->p_no == me->p_no)
-                                    sprintf(buf, "%4d (%6.2f) %s", dude->p_upgradelist[i], baseupgradecost[i] + dude->p_upgradelist[i] * adderupgradecost[i], upgradename[i]);
+                                    snprintf(msgbuf, sizeof(msgbuf), "%4d (%6.2f) %s", dude->p_upgradelist[i], baseupgradecost[i] + dude->p_upgradelist[i] * adderupgradecost[i], upgradename[i]);
                                 else
-                                    sprintf(buf, "%4d %s", dude->p_upgradelist[i], upgradename[i]);
+                                    snprintf(msgbuf, sizeof(msgbuf), "%4d %s", dude->p_upgradelist[i], upgradename[i]);
                             }
                             else
-                                sprintf(buf, "%s upgrade", upgradename[i]);
-                            pmessage(me->p_no, MINDIV, addrbuf, buf);
+                                snprintf(msgbuf, sizeof(msgbuf), "%s upgrade", upgradename[i]);
+                            pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                         }
                     }
                 }
                 else {
-                    *buf = '\0';
+                    msgbuf[0] = '\0';
                     if (dude->p_upgradelist[UPG_PERMSHIELD])
-                        strcat(buf, "shields ");
+                        strcat(msgbuf, "shields ");
                     if (dude->p_upgradelist[UPG_HULL])
-                        strcat(buf, "hull ");
+                        strcat(msgbuf, "hull ");
                     if (dude->p_upgradelist[UPG_FUEL] || dude->p_upgradelist[UPG_RECHARGE]) {
-                        strcat(buf, "fuel ");
+                        strcat(msgbuf, "fuel ");
                     }
                     if (dude->p_upgradelist[UPG_MAXWARP] || dude->p_upgradelist[UPG_ACCEL]
                      || dude->p_upgradelist[UPG_DECEL] || dude->p_upgradelist[UPG_ENGCOOL]) {
-                        strcat(buf, "engines ");
+                        strcat(msgbuf, "engines ");
                     }
                     if (dude->p_upgradelist[UPG_PHASER] || dude->p_upgradelist[UPG_TORPSPEED]
                      || dude->p_upgradelist[UPG_TORPFUSE] || dude->p_upgradelist[UPG_WPNCOOL]) {
-                        strcat(buf, "weapons ");
+                        strcat(msgbuf, "weapons ");
                     }
                     if (dude->p_upgradelist[UPG_CLOAK])
-                        strcat(buf, "cloak ");
+                        strcat(msgbuf, "cloak ");
                     if (dude->p_upgradelist[UPG_TPSTR] || dude->p_upgradelist[UPG_TPRANGE]) {
-                        strcat(buf, "tractors ");
+                        strcat(msgbuf, "tractors ");
                     }
                     if (dude->p_upgradelist[UPG_REPAIR])
-                        strcat(buf, "repair ");
+                        strcat(msgbuf, "repair ");
                     if (dude->p_upgradelist[UPG_FIRECLOAK])
-                        strcat(buf, "fire-while-cloaked ");
+                        strcat(msgbuf, "fire-while-cloaked ");
                     if (dude->p_upgradelist[UPG_DETDMG])
-                        strcat(buf, "det-own-torps-for-damage ");
-                    if (*buf != '\0')
-                        pmessage(me->p_no, MINDIV, addrbuf,buf);
+                        strcat(msgbuf, "det-own-torps-for-damage ");
+                    if (msgbuf[0] != '\0')
+                        pmessage(me->p_no, MINDIV, addrbuf, "%s", msgbuf);
                     else
                         pmessage(me->p_no, MINDIV, addrbuf,"none");
                 }
@@ -1714,10 +1736,10 @@ static void handleMessageReq(struct mesg_cpacket *packet)
                         i = dude->p_kills * 2.0;
                     if (i > dude->p_ship.s_maxarmies)
                         i = dude->p_ship.s_maxarmies;
-                    sprintf(buf,"%.2f kills/rank credit available (%.2f total), %d/%d armies",
+                    snprintf(msgbuf, sizeof(msgbuf), "%.2f kills/rank credit available (%.2f total), %d/%d armies",
                             dude->p_kills + dude->p_rankcredit, dude->p_kills + dude->p_rankcredit + dude->p_upgrades,
                             dude->p_armies, i);
-                    new_warning(UNDEF,buf);
+                    new_warning(UNDEF, "%s", msgbuf);
                 }
                 else {
                     new_warning(UNDEF,"Kill information only available from teammates");
@@ -1730,6 +1752,7 @@ static void handleMessageReq(struct mesg_cpacket *packet)
 		shipnos[packet->indiv]);
 	break;
     case (MINDIV|MCONFIG):
+	if (packet->indiv >= MAXPLAYER) return;
 	clientVersion((struct mesg_spacket *) packet);
 	break;
     case MGOD:
@@ -1760,6 +1783,7 @@ static void handleQuitReq(struct quit_cpacket *packet)
 
 static void handleOptionsPacket(struct options_cpacket *packet)
 {
+    if (mystats == NULL) return;
     memcpy(mystats->st_keymap, packet->keymap, 96);
 /*    mystats->st_flags = ntohl(packet->flags);*/
     mystats->st_flags = ntohl(packet->flags) |
@@ -1844,9 +1868,8 @@ static int gwrite(int fd, char *wbuf, size_t size)
 	    }
 	    else if (errno==EINTR) {
 		/* We got interrupted... Let's try it again. */
-		perror("gwrite");
 		errno = (-1);
-		n = 0;
+		continue;
 	    }
 	    else if (errno==EPIPE) {
 		/* The pipe is broken: i.e. the client is dead */
@@ -1868,7 +1891,9 @@ static int gwrite(int fd, char *wbuf, size_t size)
 
 	    snprintf(message, MSG_LEN * 2,
 		     "Died in gwrite, n=%d, errno=%d, <%s@%s>",
-		     n, errno, me->p_login, me->p_full_hostname);
+		     n, errno,
+		     me ? me->p_login : "unknown",
+		     me ? me->p_full_hostname : "unknown");
 	    logmessage(message);
 	    return -1;
 	}
@@ -1896,6 +1921,7 @@ static void handleReset(struct resetstats_cpacket *packet)
     extern int startTkills, startTlosses, startTarms, 
 	startTplanets, startTticks;
 #endif
+    if (me == NULL || mystats == NULL) return;
     if (packet->verify != 'Y') return;
 
     /* Gee, they seem to want to reset their stats!  Here goes... 
@@ -1961,7 +1987,11 @@ static void handleUpdatesReq(struct updates_cpacket *packet)
     /* the client sends how often he would like to receive a packet in
     microseconds ... which is converted to an integer rate in updates
     per second */
-    int ups = 1000000 / ntohl(packet->usecs);
+    unsigned int usecs = ntohl(packet->usecs);
+    int ups;
+
+    if (me == NULL || usecs == 0) return;
+    ups = 1000000 / usecs;
     if (p_ups_set(me, ups)) {
         /* only send this if the client has shown it understands
         feature packets, by sending us CP_FEATURE, which also sends
@@ -2000,7 +2030,7 @@ static void handleReserved(struct reserved_cpacket *packet)
     struct rsa_key_spacket   rsp;
     char serverName[64];
 
-    if (testtime==1) return;
+    if (me == NULL || testtime==1) return;
     if (memcmp(packet->data, testdata, RESERVED_SIZE) != 0) { /* bcmp LEGACY POSIX.1-2001 */
         testtime=1;
         return;
@@ -2043,7 +2073,7 @@ static void handleRSAKey(struct rsa_key_cpacket *packet)
     struct rsa_key_spacket mysp;
     char serverName[64]; 
 
-    if (testtime==1) return;
+    if (me == NULL || testtime==1) return;
     if (RSA_Client != 1) return;
     memcpy(mysp.data, testdata, KEY_SIZE);
 
@@ -2069,7 +2099,7 @@ static void handleReserved(struct reserved_cpacket *packet)
     struct reserved_spacket mysp;
     char serverName[64];
 
-    if (testtime==1) return;
+    if (me == NULL || testtime==1) return;
     if (memcmp(packet->data, testdata, 16) != 0) {
 	testtime=1;
 	return;
@@ -2125,6 +2155,8 @@ static void handleScan(struct scan_cpacket *packet)
 
 static void handlePingResponse(struct ping_cpacket  *packet)
 {
+    if (me == NULL) return;
+
     /* client requests pings by sending pingme == 1 on TCP socket */
 
     if(rsock == sock){
@@ -3097,6 +3129,7 @@ static int parseIgnore(struct mesg_cpacket *packet)
     }
 
     if (packet->group != MINDIV) return FALSE; /* below is for indiv only */
+    if (who < 0 || who >= MAXPLAYER) return TRUE;
 
     do {
 	what = 0;
@@ -3124,20 +3157,23 @@ static int parseIgnore(struct mesg_cpacket *packet)
     } while (what != 0);
     ip_ignore_ip_update(me->p_ip, players[who].p_ip, ignored[who]);
 
-    strcpy(buf, "Ignore status for this player: ");
-    noneflag = TRUE;
-    if (ignored[who] & MALL) {
-	strcat(buf, "All "); noneflag = FALSE;
+    {
+	char msgbuf[MSG_LEN];
+	strcpy(msgbuf, "Ignore status for this player: ");
+	noneflag = TRUE;
+	if (ignored[who] & MALL) {
+	    strcat(msgbuf, "All "); noneflag = FALSE;
+	}
+	if (ignored[who] & MTEAM) {
+	    strcat(msgbuf, "Team "); noneflag = FALSE;
+	}
+	if (ignored[who] & MINDIV) {
+	    strcat(msgbuf, "Indiv "); noneflag = FALSE;
+	}
+	if (noneflag)
+	    strcat(msgbuf, "None");
+	new_warning(UNDEF, "%s", msgbuf);
     }
-    if (ignored[who] & MTEAM) {
-	strcat(buf, "Team "); noneflag = FALSE;
-    }
-    if (ignored[who] & MINDIV) {
-	strcat(buf, "Indiv "); noneflag = FALSE;
-    }
-    if (noneflag)
-	strcat(buf, "None");
-    new_warning(UNDEF,buf);
     return TRUE;
 }
 
@@ -3238,7 +3274,7 @@ static void handleShortReq(struct shortreq_cpacket *packet)
 
 static void handleThresh(struct threshold_cpacket *packet)
 {
-    send_threshold = packet->thresh;
+    send_threshold = ntohs(packet->thresh);
 #ifdef SHORT_THRESHOLD
     if (  send_threshold == 0) {
 	actual_threshold = 0;

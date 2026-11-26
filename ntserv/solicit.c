@@ -54,6 +54,7 @@ static int udp_attach(struct metaserver *m)
   m->sock = socket(AF_INET, SOCK_DGRAM, 0);
   if (m->sock < 0) {
     perror("solicit: udp_attach: socket");
+    m->sock = -1;
     return 0;
   }
 
@@ -61,7 +62,7 @@ static int udp_attach(struct metaserver *m)
   /* bind to interface attached to this.host.name */
 
   /* first check if perhaps it is a fake INL server address */
-  if ((tolower(m->type[0]) == 'i') &&
+  if ((tolower((unsigned char) m->type[0]) == 'i') &&
       (strncasecmp(m->ours, "home.", 5) == 0 ||
        strncasecmp(m->ours, "away.", 5) == 0)) {
     ours += 5;
@@ -77,6 +78,8 @@ static int udp_attach(struct metaserver *m)
     if ((hp = gethostbyname(ours)) == NULL) {
       /* bad hostname or unable to get ip address */
       ERROR(1,("Bad host name field in metaservers file.\n"));
+      close(m->sock);
+      m->sock = -1;
       return 0;
     } else {
       memcpy(&(m->address.sin_addr.s_addr), hp->h_addr, 4);
@@ -88,6 +91,8 @@ static int udp_attach(struct metaserver *m)
   m->address.sin_port        = 0;
   if (bind(m->sock,(struct sockaddr *)&m->address, sizeof(m->address)) < 0) {
     perror("solicit: udp_attach: unable to bind to desired interface (this.host.name field)");
+    close(m->sock);
+    m->sock = -1;
     return 0;
   }
 
@@ -103,6 +108,8 @@ static int udp_attach(struct metaserver *m)
     if ((hp = gethostbyname(m->host)) == NULL) {
       /* if it didn't work, return failure and warning */
       ERROR(1,("solicit: udp_attach: metaserver %s not resolved\n", m->host));
+      close(m->sock);
+      m->sock = -1;
       return 0;
     }
     memcpy(&(m->address.sin_addr.s_addr), hp->h_addr, 4);
@@ -174,7 +181,8 @@ static void initialise()
 
     token = strtok(line, " ");        /* meta host name */
     if (token == NULL) continue;
-    strncpy(m->host, token, 32);
+    strncpy(m->host, token, sizeof(m->host) - 1);
+    m->host[sizeof(m->host) - 1] = '\0';
     ERROR(1,("solicit: Using metaserver: %s\n", m->host));
 
     token = strtok(NULL, " ");        /* meta port */
@@ -191,11 +199,13 @@ static void initialise()
 
     token = strtok(NULL, " ");        /* our host name */
     if (token == NULL) continue;
-    strncpy(m->ours, token, 32);
+    strncpy(m->ours, token, sizeof(m->ours) - 1);
+    m->ours[sizeof(m->ours) - 1] = '\0';
 
     token = strtok(NULL, " ");        /* server type */
     if (token == NULL) continue;
-    strncpy(m->type, token, 2);
+    strncpy(m->type, token, sizeof(m->type) - 1);
+    m->type[sizeof(m->type) - 1] = '\0';
 
     token = strtok(NULL, " ");        /* player port */
     if (token == NULL) continue;
@@ -207,7 +217,8 @@ static void initialise()
 
     token = strtok(NULL, "\n");       /* comment text */
     if (token == NULL) continue;
-    strncpy(m->comment, token, 32);
+    strncpy(m->comment, token, sizeof(m->comment) - 1);
+    m->comment[sizeof(m->comment) - 1] = '\0';
 
     /* force minimum and maximum delays (see note on #define) */
     if (m->minimum < META_MINIMUM_DELAY)
@@ -271,6 +282,8 @@ void solicit(int force)
   time_t now = time(NULL);
   int gamefull = 0;               /* is the game full? */
   int isrsa = 0;                  /* is this server RSA? */
+
+  packet[0] = '\0';
 
   /* perform first time initialisation or recheck */
   if (initialised == 0) {
@@ -366,39 +379,52 @@ void solicit(int force)
 #endif
 
       /* build start of the packet, the server information */
-      if (report_users) {
-        sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
-                /* version */   "b",
-                /* address */   m->ours,
-                /* type    */   m->type,
-                /* port    */   m->pport,
-                /* observe */   m->oport,
-                /* players */   nplayers,
-                /* free    */   nfree,
-                /* t-mode  */   status->tourn ? "y" : "n",
-                /* RSA     */   isrsa ? "y" : "n",
-                /* full    */   gamefull ? "y" : "n",
-                /* comment */   m->comment
-                );
-      } else {
-        sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
-                /* version */   "b",
-                /* address */   m->ours,
-                /* type    */   m->type,
-                /* port    */   m->pport,
-                /* observe */   m->oport,
-                /* players */   0,
-                /* free    */   16,
-                /* t-mode  */   status->tourn ? "y" : "n",
-                /* RSA     */   isrsa ? "y" : "n",
-                /* full    */   "n",
-                /* comment */   m->comment
-                );
+      {
+        size_t rem = sizeof(packet) - (size_t)(here - packet);
+        int written;
+
+        if (report_users) {
+          written = snprintf(here, rem, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
+                  /* version */   "b",
+                  /* address */   m->ours,
+                  /* type    */   m->type,
+                  /* port    */   m->pport,
+                  /* observe */   m->oport,
+                  /* players */   nplayers,
+                  /* free    */   nfree,
+                  /* t-mode  */   status->tourn ? "y" : "n",
+                  /* RSA     */   isrsa ? "y" : "n",
+                  /* full    */   gamefull ? "y" : "n",
+                  /* comment */   m->comment
+                  );
+        } else {
+          written = snprintf(here, rem, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
+                  /* version */   "b",
+                  /* address */   m->ours,
+                  /* type    */   m->type,
+                  /* port    */   m->pport,
+                  /* observe */   m->oport,
+                  /* players */   0,
+                  /* free    */   16,
+                  /* t-mode  */   status->tourn ? "y" : "n",
+                  /* RSA     */   isrsa ? "y" : "n",
+                  /* full    */   "n",
+                  /* comment */   m->comment
+                  );
+        }
+        if (written < 0)
+          continue;
+        if ((size_t)written >= rem)
+          here += rem - 1;
+        else
+          here += written;
       }
-      here += strlen(here);
 
       /* now append per-player information to the packet */
       for (j=0; j<MAXPLAYER; j++) {
+        size_t rem;
+        int written;
+
         /* ignore free slots and local players */
         if (players[j].p_status == PFREE ||
             is_local(&players[j]) ||
@@ -420,7 +446,8 @@ void solicit(int force)
         name  = (name[0] == 0)  ? unknown : name;
         login = (login[0] == 0) ? unknown : login;
 
-        sprintf(here, "%c\n%c\n%d\n%d\n%s\n%s@%s\n",
+        rem = sizeof(packet) - (size_t)(here - packet);
+        written = snprintf(here, rem, "%c\n%c\n%d\n%d\n%s\n%s@%s\n",
                 /* number */   players[j].p_mapchars[1],
                 /* team   */   players[j].p_mapchars[0],
                 /* class  */   players[j].p_ship.s_type,
@@ -430,9 +457,14 @@ void solicit(int force)
                 /* name   */   name,
                 /* user   */   login,
                 /* host   */   players[j].p_monitor );
-        here += strlen(here);
         free(fixed_name);      /*because name_fix malloc()s a string */
         free(fixed_login);
+        if (written < 0 || (size_t)written >= rem) {
+          /* Truncate cleanly at the previous complete player record */
+          *here = '\0';
+          break;
+        }
+        here += written;
       }
     }
 
@@ -451,24 +483,31 @@ void solicit(int force)
     /* send the packet */
     if (udp_tx(m, packet, here-packet)) {
       m->sent=time(NULL);
-      strcpy(m->prior, packet);
+      strncpy(m->prior, packet, sizeof(m->prior) - 1);
+      m->prior[sizeof(m->prior) - 1] = '\0';
     }
   }
 }
 
 void solicit_delist(char *host, char *ours)
 {
-  int i;
+  int i, written;
   char packet[MAXMETABYTES];
-  char *here = packet;
   struct metaserver *m = (struct metaserver *) calloc(1, sizeof(struct metaserver));
 
-  strcpy(m->host, host);
+  if (m == NULL) return;
+  m->sock = -1;
+  strncpy(m->host, host, sizeof(m->host) - 1);
+  m->host[sizeof(m->host) - 1] = '\0';
   m->port = 3521;
-  strcpy(m->ours, ours);
-  udp_attach(m);
+  strncpy(m->ours, ours, sizeof(m->ours) - 1);
+  m->ours[sizeof(m->ours) - 1] = '\0';
+  if (!udp_attach(m)) {
+    free(m);
+    return;
+  }
 
-  sprintf(here, "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
+  written = snprintf(packet, sizeof(packet), "%s\n%s\n%s\n%d\n%d\n%d\n%d\n%s\n%s\n%s\n%s\n",
           /* version */   "b",
           /* address */   m->ours,
           /* type    */   "B",
@@ -481,11 +520,16 @@ void solicit_delist(char *host, char *ours)
           /* full    */   "y",
           /* comment */   "delist"
           );
-  here += strlen(here);
-  for (i=0; i<8; i++) {
-    udp_tx(m, packet, here - packet);
-    fprintf(stderr, "tx ");
-    sleep(1);
+  if (written > 0) {
+    if ((size_t)written >= sizeof(packet))
+      written = (int)sizeof(packet) - 1;
+    for (i=0; i<8; i++) {
+      udp_tx(m, packet, written);
+      fprintf(stderr, "tx ");
+      sleep(1);
+    }
   }
+  udp_detach(m);
+  free(m);
   fprintf(stderr, "\n");
 }

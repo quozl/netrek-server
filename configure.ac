@@ -287,6 +287,88 @@ fi
 
 AC_SUBST(RANLIB_FLAGS)
 
+#--------------------------------------------------------------------
+#       Compiler warning, hardening, and sanitizer flags
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(sanitizers,
+  [  --enable-sanitizers     build with AddressSanitizer and UndefinedBehaviorSanitizer],
+  [enable_sanitizers=$enableval], [enable_sanitizers=no])
+
+AC_ARG_ENABLE(hardening,
+  [  --disable-hardening     disable stack protector and FORTIFY_SOURCE hardening flags],
+  [enable_hardening=$enableval], [enable_hardening=yes])
+
+WARN_CFLAGS=""
+for flag in \
+    -Werror=implicit-function-declaration \
+    -Werror=format-security \
+    -Werror=sizeof-pointer-memaccess \
+    -Werror=return-type; do
+  AC_MSG_CHECKING([whether $CC accepts $flag])
+  save_CFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS $flag"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
+    [AC_MSG_RESULT([yes]); WARN_CFLAGS="$WARN_CFLAGS $flag"],
+    [AC_MSG_RESULT([no])])
+  CFLAGS="$save_CFLAGS"
+done
+AC_SUBST(WARN_CFLAGS)
+
+HARDEN_CFLAGS=""
+HARDEN_LDFLAGS=""
+if test "x$enable_hardening" = "xyes"; then
+  for flag in -fstack-protector-strong; do
+    AC_MSG_CHECKING([whether $CC accepts $flag])
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS $flag"
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
+      [AC_MSG_RESULT([yes]); HARDEN_CFLAGS="$HARDEN_CFLAGS $flag"],
+      [AC_MSG_RESULT([no])])
+    CFLAGS="$save_CFLAGS"
+  done
+  if test "x$enable_sanitizers" != "xyes"; then
+    case " $CFLAGS " in
+      *" -O1 "*|*" -O2 "*|*" -O3 "*|*" -Os "*)
+        AC_MSG_CHECKING([whether $CC accepts -D_FORTIFY_SOURCE=2])
+        save_CFLAGS="$CFLAGS"
+        CFLAGS="$CFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]], [])],
+          [AC_MSG_RESULT([yes]); HARDEN_CFLAGS="$HARDEN_CFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"],
+          [AC_MSG_RESULT([no])])
+        CFLAGS="$save_CFLAGS"
+        ;;
+    esac
+  fi
+  AC_MSG_CHECKING([whether $CC accepts -Wl,-z,relro,-z,now])
+  save_LDFLAGS="$LDFLAGS"
+  LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
+    [AC_MSG_RESULT([yes]); HARDEN_LDFLAGS="$HARDEN_LDFLAGS -Wl,-z,relro,-z,now"],
+    [AC_MSG_RESULT([no])])
+  LDFLAGS="$save_LDFLAGS"
+fi
+AC_SUBST(HARDEN_CFLAGS)
+AC_SUBST(HARDEN_LDFLAGS)
+
+SANITIZER_CFLAGS=""
+SANITIZER_LDFLAGS=""
+if test "x$enable_sanitizers" = "xyes"; then
+  SANITIZER_CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+  SANITIZER_LDFLAGS="-fsanitize=address,undefined"
+  AC_MSG_CHECKING([whether $CC supports $SANITIZER_CFLAGS])
+  save_CFLAGS="$CFLAGS"
+  save_LDFLAGS="$LDFLAGS"
+  CFLAGS="$CFLAGS $SANITIZER_CFLAGS"
+  LDFLAGS="$LDFLAGS $SANITIZER_LDFLAGS"
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
+    [AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no]); AC_MSG_ERROR([compiler does not support --enable-sanitizers])])
+  CFLAGS="$save_CFLAGS"
+  LDFLAGS="$save_LDFLAGS"
+fi
+AC_SUBST(SANITIZER_CFLAGS)
+AC_SUBST(SANITIZER_LDFLAGS)
+
 AC_CONFIG_FILES([system.mk Makefile ntserv/Makefile tools/Makefile
 	sequencer/Makefile newstartd/Makefile robots/Makefile
 	keycomp/Makefile robotd/Makefile

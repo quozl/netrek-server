@@ -14,11 +14,14 @@
 #define load_acquire(p) __atomic_load_n((p), __ATOMIC_ACQUIRE)
 #define store_release(p, v) __atomic_store_n((p), (v), __ATOMIC_RELEASE)
 
-/* A count changed by more than one process, such as p_ntorp, must be
-   changed in one indivisible step, or one change may undo another. */
+/* A count changed by more than one process, such as p_ntorp or p_fuel,
+   must be changed in one indivisible step, or one change may undo another. */
 
 #define atomic_inc(p) __atomic_add_fetch((p), 1, __ATOMIC_RELAXED)
 #define atomic_dec(p) __atomic_sub_fetch((p), 1, __ATOMIC_RELAXED)
+#define atomic_add(p, v) __atomic_add_fetch((p), (v), __ATOMIC_RELAXED)
+#define atomic_sub(p, v) __atomic_sub_fetch((p), (v), __ATOMIC_RELAXED)
+#define atomic_exchange(p, v) __atomic_exchange_n((p), (v), __ATOMIC_ACQ_REL)
 
 /* The same for flags changed by more than one process, such as
    p_flags: set, clear or toggle bits in one indivisible step. */

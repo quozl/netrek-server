@@ -397,7 +397,7 @@ void goto_protect(struct planet *pl, Player *p, int dock)
 	    dntlock = 1;
 	 }
 	 dntlock = (dntlock || !_state.do_lock);
-	 if(pdist < ORBDIST/2 < (12000* (me->p_speed) * (me->p_speed))/
+	 if(pdist - ORBDIST/2 < (12000* (me->p_speed) * (me->p_speed))/
 	    SH_DECINT(me)){
 	    if(!_state.lock && !dntlock){
 	       if(DEBUG & DEBUG_DISENGAGE){

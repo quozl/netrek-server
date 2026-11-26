@@ -1468,7 +1468,8 @@ unsigned char get_new_course2(int avdir, int hittime, unsigned char dc, int i)
       case 0:   return d?dc+10:dc-10;
       case 1:   return d?avdir+64:avdir-64;
       case 2:   return d?dc-128:dc+128;
-      case 3:   return RANDOM()%256;
+      case 3:
+      default:  return RANDOM()%256;
    }
 }
 
@@ -1483,20 +1484,18 @@ unsigned char get_new_course3(int avdir, int hittime, unsigned char dc, int i)
 	    case 0:   return d?dc+10:dc-10;
 	    case 1:   return d?avdir+64:avdir-64;
 	    case 2:   return d?dc-128:dc+128;
-	    case 3:   return RANDOM()%256;
+	    case 3:
+	    default:  return RANDOM()%256;
 	 }
-	 break;
       case 2:
 	 switch(i){
 	    case 1:   return d?avdir+64:avdir-64;
 	    case 2:   return d?dc-128:dc+128;
 	    default:   return RANDOM()%256;
 	 }
-	 break;
 
       default:
 	 return RANDOM()%256;
-	 break;
    }
 }
 
