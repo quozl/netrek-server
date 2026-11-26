@@ -111,6 +111,14 @@ static void init_fuzz_env(void)
 
     getshipdefaults();
 
+    fps = 50;
+    distortion = 10;
+    minups = 1;
+    defups = 10;
+    maxups = 50;
+    ping_freq = 2;
+    ping_iloss_interval = 10;
+
     for (i = 0; i < MAXPLAYER; i++) {
         players[i].p_no = i;
         players[i].p_status = PALIVE;
@@ -121,6 +129,8 @@ static void init_fuzz_env(void)
         strcpy(players[i].p_login, "fuzz");
         strcpy(players[i].p_ip, "127.0.0.1");
         getship(&players[i].p_ship, CRUISER);
+        players[i].p_ups = defups;
+        players[i].p_fpu = fps / defups;
     }
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, g_tcp_sv) != 0)
